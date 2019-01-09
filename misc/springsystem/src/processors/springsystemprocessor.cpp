@@ -29,13 +29,12 @@
 
 #include <inviwo/springsystem/processors/springsystemprocessor.h>
 
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <modules/base/algorithm/meshutils.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/util/zip.h>
+
 #include <inviwo/springsystem/datastructures/springsystem.h>
 #include <inviwo/springsystem/utils/springsystemutils.h>
-#include <inviwo/core/interaction/events/pickingevent.h>
-
-#include <inviwo/core/util/zip.h>
 
 #include <chrono>
 
@@ -70,7 +69,6 @@ SpringSystemProcessor::SpringSystemProcessor()
                          InvalidationLevel::Valid)
     , externalForce_("externalForce", "Ext. Force F [N]", dvec2(0.0f, -9.81f), dvec2(-10.0f),
                      dvec2(10.0f))
-    , meshScale_("meshScale", "Mesh Scale", 1.0f, 0.01f, 10.0f)
     , scaleFactor_("scaleFactor", "Scale Factor for Mesh coloring", 1.0f, 0.01f, 1000.0f)
     , advanceButton_("advanceBtn", "Advance")
     , resetButton_("resetBtn", "Reset")
@@ -87,7 +85,7 @@ SpringSystemProcessor::SpringSystemProcessor()
                    })
     , springSystem_{getSystem()}
     , nodePicking_{this, springSystem_.getNumberOfNodes(),
-                   [this](PickingEvent *p) { handlePicking(p); }} {
+                   [this](PickingEvent* p) { handlePicking(p); }} {
 
     addPort(nodeOutport_);
     addPort(springOutport_);
@@ -102,7 +100,6 @@ SpringSystemProcessor::SpringSystemProcessor()
     addProperty(deltaT_);
     addProperty(iterationsPerStep_);
     addProperty(externalForce_);
-    addProperty(meshScale_);
     addProperty(scaleFactor_);
 
     addProperty(advanceButton_);
@@ -124,52 +121,69 @@ SpringSystemProcessor::SpringSystemProcessor()
     camera_.setCollapsed(true);
 }
 
+namespace {
+
+template <typename P, typename T, typename Arg>
+void sync(T& obj, const P& property, void (T::*setter)(Arg)) {
+    if (property.isModified()) {
+        (obj.*setter)(property.get());
+    }
+}
+template <typename P, typename T, typename V>
+void sync(T& obj, const P& property, V T::*member) {
+    if (property.isModified()) {
+        obj.*member = property.get();
+    }
+}
+
+template <typename T>
+void syncer(T&) {}
+template <typename T, typename Pair, typename... Args>
+void syncer(T& obj, Pair&& item, Args&&... args) {
+    sync(obj, item.first, item.second);
+    syncer(obj, std::forward<Args>(args)...);
+}
+
+}  // namespace
+
 void SpringSystemProcessor::process() {
-    if (nodeCount_.isModified() || nodeSpacing_.isModified()) {
+    using Sys = GravitySpringSystem<2, double>;
+
+    if (springLayout_.isModified() || nodeCount_.isModified() || nodeSpacing_.isModified()) {
         springSystem_ = getSystem();
         nodePicking_.resize(springSystem_.getNumberOfNodes());
     }
-    if (dampingCoeff_.isModified()) {
-        springSystem_.globalSpringDampning = dampingCoeff_.get();
-    }
-    if (nodeMass_.isModified()) {
-        springSystem_.globalNodeMass = nodeMass_.get();
-    }
-    if (springConst_.isModified()) {
-        springSystem_.globalSpringConstant = springConst_.get();
-    }
-    if (springRestLength_.isModified()) {
-        springSystem_.globalSpringLength = springRestLength_.get();
-    }
-    if (springLayout_.isModified()) {
-        springSystem_ = getSystem();
-    }
-    if (externalForce_.isModified()) {
-        springSystem_.globalExternalForce = externalForce_.get();
-    }
+
+    syncer(springSystem_, std::make_pair(dampingCoeff_, &Sys::globalSpringDampning),
+           std::make_pair(nodeMass_, &Sys::globalNodeMass),
+           std::make_pair(springConst_, &Sys::globalSpringConstant),
+           std::make_pair(springRestLength_, &Sys::globalSpringLength),
+           std::make_pair(externalForce_, &Sys::globalExternalForce));
 
     if (advance_) {
         advance_ = false;
-        springSystem_.integrate(iterationsPerStep_.get());
+        springSystem_.integrate(iterationsPerStep_);
         meshDirty_ = true;
     }
 
-    if (meshScale_.isModified() || scaleFactor_.isModified() || meshDirty_) {
+    if (meshDirty_ || scaleFactor_.isModified()) {
         updateMesh();
     }
 }
 
-void SpringSystemProcessor::deserialize(Deserializer &d) {
+void SpringSystemProcessor::deserialize(Deserializer& d) {
     Processor::deserialize(d);
     updateSystemFromProperties();
 }
 
 void SpringSystemProcessor::updateMesh() {
-    const float nodeRadius = 0.1f * meshScale_.get();
+    using NodeMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::PickingBuffer,
+                               buffertraits::ScalarMetaBuffer>;
+    using SpringMesh = TypedMesh<buffertraits::PositionsBuffer>;
 
-    const auto &positions = springSystem_.getPositions();
-    const auto &forces = springSystem_.getForces();
-    const auto &springs = springSystem_.getSprings();
+    const auto& positions = springSystem_.getPositions();
+    const auto& forces = springSystem_.getForces();
+    const auto& springs = springSystem_.getSprings();
 
     auto nodeMesh = std::make_shared<NodeMesh>();
     nodeMesh->reserveSizeInVertexBuffer(positions.size());
@@ -181,15 +195,14 @@ void SpringSystemProcessor::updateMesh() {
     auto springIndices = springMesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
     springIndices->reserve(springs.size() * 2);
 
-    for (auto &&item : util::enumerate(positions, forces)) {
+    for (auto&& item : util::enumerate(positions, forces)) {
         springMesh->addVertex(vec3(item.second(), 0.0f));
-        const auto ind =
-            nodeMesh->addVertex(vec3(item.second(), 0.0f), nodeRadius,
-                                static_cast<uint32_t>(nodePicking_.getPickingId(item.first())),
-                                static_cast<float>(glm::length(item.third()) / scaleFactor_.get()));
+        const auto pick = static_cast<uint32_t>(nodePicking_.getPickingId(item.first()));
+        const auto meta = static_cast<float>(glm::length(item.third()) / scaleFactor_.get());
+        const auto ind = nodeMesh->addVertex(vec3(item.second(), 0.0f), pick, meta);
         nodeIndices->add(ind);
     }
-    for (const auto &spring : springs) {
+    for (const auto& spring : springs) {
         springIndices->add(static_cast<uint32_t>(spring.first));
         springIndices->add(static_cast<uint32_t>(spring.second));
     }
@@ -211,7 +224,7 @@ GravitySpringSystem<2, double> SpringSystemProcessor::getSystem() {
                 return springmass::createLineGrid<2, double>(nodeCount_, nodeSpacing_);
             }
             case 2: {
-                const double offset = (nodeCount_ - 1) * nodeSpacing_ * 0.5;
+                const double offset = (std::ptrdiff_t{nodeCount_} - 1) * nodeSpacing_ * 0.5;
                 const dvec2 origin(-offset, offset);
                 return springmass::createRectangularGrid<2, double>(size2_t(nodeCount_), origin,
                                                                     dvec2(nodeSpacing_));
@@ -231,13 +244,18 @@ GravitySpringSystem<2, double> SpringSystemProcessor::getSystem() {
         }
     }();
 
-    return GravitySpringSystem<2, double>{
-        deltaT_.get(),          std::move(grid.positions), std::move(grid.springs),
-        std::move(grid.locked), externalForce_.get(),      nodeMass_.get(),
-        springConst_.get(),     springRestLength_.get(),   dampingCoeff_.get()};
+    return GravitySpringSystem<2, double>{deltaT_,
+                                          std::move(grid.positions),
+                                          std::move(grid.springs),
+                                          std::move(grid.locked),
+                                          externalForce_,
+                                          nodeMass_,
+                                          springConst_,
+                                          springRestLength_,
+                                          dampingCoeff_};
 }
 
-void SpringSystemProcessor::handlePicking(PickingEvent *p) {
+void SpringSystemProcessor::handlePicking(PickingEvent* p) {
     if (p->getPressState() == PickingPressState::Move &&
         p->getPressItems().count(PickingPressItem::Primary)) {
         const auto worldDelta = p->getWorldSpaceDeltaAtPressDepth(camera_);

@@ -73,7 +73,7 @@ public:
     void constrainVelocity(size_t, Vector&) const {}
 
     std::vector<bool> lockedNodes;
-    ComponentType globalNodeMass{i};
+    ComponentType globalNodeMass{1};
     ComponentType globalSpringConstant{1};
     ComponentType globalSpringLength{1};
     ComponentType globalSpringDampning{1};

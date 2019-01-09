@@ -74,11 +74,6 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    using NodeMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::RadiiBuffer,
-                               buffertraits::PickingBuffer, buffertraits::ScalarMetaBuffer>;
-
-    using SpringMesh = TypedMesh<buffertraits::PositionsBuffer>;
-
     void updateMesh();
     void updateSystemFromProperties();
     void handlePicking(PickingEvent* pe);
@@ -99,7 +94,6 @@ private:
     DoubleProperty deltaT_;
     IntProperty iterationsPerStep_;
     DoubleVec2Property externalForce_;
-    FloatProperty meshScale_;
     FloatProperty scaleFactor_;
     ButtonProperty advanceButton_;
     ButtonProperty resetButton_;
