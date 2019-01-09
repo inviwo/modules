@@ -11,12 +11,11 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    def rootDir = pwd()
-    def util = load "${rootDir}/inviwo/tools/jenkins/util.groovy"          
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"          
     properties(util.defaultProperties())
  
     try {
-        def external = [${env.WORKSPACE}/modules/misc]
+        def external = ["${env.WORKSPACE}/modules/misc"]
         def extraOn = []
         def off = ["ABUFFERGL" , "DISCRETEDATA", "GLFW", "HDF5"]
 
