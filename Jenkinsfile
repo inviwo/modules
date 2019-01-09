@@ -11,7 +11,8 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"      
+    def rootDir = pwd()
+    def util = load "${rootDir}/inviwo/tools/jenkins/util.groovy"          
     properties(util.defaultProperties())
  
     try {
