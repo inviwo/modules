@@ -74,7 +74,7 @@ public:
 
     std::vector<bool> lockedNodes;
     Vector globalExternalForce = Vector{0};
-    ComponentType globalNodeMass{i};
+    ComponentType globalNodeMass{1};
     ComponentType globalSpringConstant{1};
     ComponentType globalSpringLength{1};
     ComponentType globalSpringDampning{1};
