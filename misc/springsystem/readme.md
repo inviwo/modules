@@ -1,1 +1,3 @@
-SpringSystem module has functionality for simulating a spring mass system
+# SpringSystem Module
+
+This module provides functionality for simulating a spring mass system.
