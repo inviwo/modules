@@ -42,8 +42,7 @@ namespace inviwo {
  * @see SpringSystem
  */
 template <size_t N, typename ComponentType = double>
-class ZeroSpringSystem
-    : public SpringSystem<N, ComponentType, ZeroSpringSystem<N, ComponentType>> {
+class ZeroSpringSystem : public SpringSystem<N, ComponentType, ZeroSpringSystem<N, ComponentType>> {
 public:
     using Base = SpringSystem<N, ComponentType, ZeroSpringSystem<N, ComponentType>>;
     using SpringIndices = typename Base::SpringIndices;
@@ -51,9 +50,9 @@ public:
     using Vector = glm::vec<Components, ComponentType>;
 
     ZeroSpringSystem(ComponentType timeStep, std::vector<Vector> positions,
-                        std::vector<SpringIndices> springs, std::vector<bool> aLockedNodes,
-                        ComponentType nodeMass, ComponentType springConstant,
-                        ComponentType springLength, ComponentType springDampning)
+                     std::vector<SpringIndices> springs, std::vector<bool> aLockedNodes,
+                     ComponentType nodeMass, ComponentType springConstant,
+                     ComponentType springLength, ComponentType springDampning)
         : Base(timeStep, std::move(positions), std::move(springs))
         , lockedNodes{std::move(aLockedNodes)}
         , globalNodeMass{nodeMass}
@@ -63,7 +62,7 @@ public:
 
     bool isLocked(size_t i) const { return lockedNodes[i]; }
     Vector externalForce(size_t i) { return Vector{0}; }
-    ComponentType nodeMass(size_t i) {return globalNodeMass;}
+    ComponentType nodeMass(size_t i) { return globalNodeMass; }
 
     ComponentType springConstant(size_t i) const { return globalSpringConstant; }
     ComponentType springLength(size_t i) const { return globalSpringLength; }

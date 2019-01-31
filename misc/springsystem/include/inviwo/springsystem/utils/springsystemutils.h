@@ -31,7 +31,6 @@
 
 #include <inviwo/springsystem/springsystemmoduledefine.h>
 #include <inviwo/springsystem/datastructures/springsystem.h>
-#include <inviwo/springsystem/datastructures/zerospringsystem.h>
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {

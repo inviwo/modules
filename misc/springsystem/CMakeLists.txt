@@ -18,7 +18,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-	src/datastructures/springsystem.cpp
+    src/datastructures/springsystem.cpp
     src/datastructures/gravityspringsystem.cpp
     src/datastructures/zerospringsystem.cpp
     src/processors/springsystemprocessor.cpp
@@ -37,7 +37,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/springsystem-test.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/tests/springsystem-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

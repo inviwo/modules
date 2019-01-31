@@ -47,19 +47,35 @@ namespace inviwo {
 class Mesh;
 class PickingEvent;
 
-/** \docpage{org.inviwo.SpringSystemProcessor, Spring Mass System Processor}
- * ![](org.inviwo.SpringSystemProcessor.png?classIdentifier=org.inviwo.SpringSystemProcessor)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.SpringSystemExampleProcessor, Spring System Example}
+ * ![](org.inviwo.SpringSystemExampleProcessor.png?classIdentifier=org.inviwo.SpringSystemExampleProcessor)
+ *
+ * A example processor demonstrating the use of the spring system
  *
  * ### Outports
- *   * __Geometry__  geometry representing the spring mass system with spheres (nodes) and cylinders
- * (springs)
+ *   * __nodes__ A point mesh of all the nodes.
+ *   * __springs__ A line mesh of all springs.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __Spring Layout__
+ *   * __Number of Nodes__
+ *   * __Node Spacing__
+ *   * __Damping Coefficient__
+ *   * __Mass of Node [kg]__
+ *   * __Spring Elasticity k [N/m]__
+ *   * __Spring Length [m]__
+ *   * __Delta T [s]__
+ *   * __Iterations Per Step_
+ *   * __Ext. Force F [N]__
+ *   * __Scale Factor for Mesh coloring__
+ *   * __Advance__
+ *   * __Reset__
+ *   * __Start Solver__
+ *   * __Stop Solver__ 
+ *   * __Log Status__ 
+ *   * __Camera__ 
+ *
  */
-
 class IVW_MODULE_SPRINGSYSTEM_API SpringSystemProcessor : public Processor,
                                                           public ActivityIndicatorOwner {
 public:

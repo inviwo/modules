@@ -42,8 +42,8 @@ namespace inviwo {
 /**
  * \class SpringSystem
  *
- * \brief this class is representing a spring mass system including a solver using either the Euler
- * or Verlet integration scheme.
+ * \brief this class is representing a spring mass system including a solver using either the Verlet
+ * integration scheme.
  *
  * @see SpringMassConfig
  * @see ConstGravityConfig
