@@ -110,7 +110,12 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	#${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tensorvisbase-test.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tensorvisbase-unittest-main.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/arithmic-operations.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/de_normalization.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/distance-measures.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/set-operations.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/to-string.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
