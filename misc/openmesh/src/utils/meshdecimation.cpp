@@ -29,6 +29,4 @@
 
 #include <modules/openmesh/utils/meshdecimation.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

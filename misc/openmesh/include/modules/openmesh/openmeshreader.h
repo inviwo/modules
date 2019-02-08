@@ -48,7 +48,7 @@ public:
     OpenMeshReader();
     OpenMeshReader(const OpenMeshReader& rhs) = default;
     OpenMeshReader& operator=(const OpenMeshReader& that) = default;
-    virtual OpenMeshReader* clone() const override{ return new OpenMeshReader(*this);}
+    virtual OpenMeshReader* clone() const override { return new OpenMeshReader(*this); }
     virtual ~OpenMeshReader() = default;
 
     virtual std::shared_ptr<Mesh> readData(const std::string& filePath) override;

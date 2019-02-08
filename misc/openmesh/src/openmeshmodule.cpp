@@ -35,7 +35,6 @@
 #include <modules/openmesh/processors/trianglestowireframe.h>
 #include <modules/openmesh/processors/meshdecimationprocessor.h>
 
-
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES_WAS_DEFINED
 #define _USE_MATH_DEFINES
@@ -61,7 +60,6 @@ OpenMeshModule::OpenMeshModule(InviwoApplication* app) : InviwoModule(app, "Open
     registerDataWriter(util::make_unique<OpenMeshWriter>());
 
     LogInfo("OpenMesh version: " << OM_GET_VER << "." << OM_GET_MAJ << "." << OM_GET_MIN);
-
 }
 
 }  // namespace inviwo

@@ -52,11 +52,11 @@ public:
     virtual ~OpenMeshWriter() = default;
 
     virtual void writeData(const Mesh* data, const std::string filePath) const override;
-/*
-    virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
-        const Mesh*, const std::string&) const override;
+    /*
+        virtual std::unique_ptr<std::vector<unsigned char>> writeDataToBuffer(
+            const Mesh*, const std::string&) const override;
 
-    virtual bool writeDataToRepresentation(const repr*, repr*) const override;*/
+        virtual bool writeDataToRepresentation(const repr*, repr*) const override;*/
 };
 
 }  // namespace inviwo

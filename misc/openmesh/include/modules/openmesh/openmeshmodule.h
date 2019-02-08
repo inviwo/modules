@@ -41,6 +41,6 @@ public:
     virtual ~OpenMeshModule() = default;
 };
 
-} // namespace inviwo
+}  // namespace inviwo
 
-#endif // IVW_OPENMESHMODULE_H
+#endif  // IVW_OPENMESHMODULE_H

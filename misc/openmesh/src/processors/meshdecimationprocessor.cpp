@@ -52,12 +52,13 @@ MeshDecimationProcessor::MeshDecimationProcessor() : Processor() {
 }
 
 void MeshDecimationProcessor::process() {
-    auto mesh = openmeshutil::fromInviwo(*inmesh_.getData(),openmeshutil::TransformCoordinates::DataToModel);
-    openmeshutil::decimate(mesh, vertDecimation_.get() , faceDecimation_.get());
+    auto mesh = openmeshutil::fromInviwo(*inmesh_.getData(),
+                                         openmeshutil::TransformCoordinates::DataToModel);
+    openmeshutil::decimate(mesh, vertDecimation_.get(), faceDecimation_.get());
     auto newMesh = openmeshutil::toInviwo(mesh);
     newMesh->copyMetaDataFrom(*inmesh_.getData());
     newMesh->setWorldMatrix(inmesh_.getData()->getWorldMatrix());
-    //newMesh->setModelMatrix(inmesh_.getData()->getModelMatrix());
+    // newMesh->setModelMatrix(inmesh_.getData()->getModelMatrix());
     outmesh_.setData(newMesh);
 }
 

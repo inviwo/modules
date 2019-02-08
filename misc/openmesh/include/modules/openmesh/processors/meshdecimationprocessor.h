@@ -72,7 +72,8 @@ private:
     MeshInport inmesh_{"inmesh"};
     MeshOutport outmesh_{"outmesh"};
 
-    FloatProperty vertDecimation_{"vertDecimation", "Vertex Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
+    FloatProperty vertDecimation_{
+        "vertDecimation", "Vertex Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
     FloatProperty faceDecimation_{"faceDecimation", "Face Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
 };
 
