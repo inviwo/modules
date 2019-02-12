@@ -31,7 +31,7 @@ node {
             state: state,
             modulePaths: modulePaths, 
             onModules: [],  
-            offModules: ["ABUFFERGL"]
+            offModules: ["ABUFFERGL"],
             opts: [:]
         )
         util.filterfiles()
