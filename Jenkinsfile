@@ -11,29 +11,28 @@ node {
             sh 'git submodule update --init --recursive'
         }
     }
-    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"          
-    properties(util.defaultProperties())
 
-    def modulePaths = ["${env.WORKSPACE}/modules/misc"]
-    def on = []
-    def off = ["ABUFFERGL" , "DISCRETEDATA", "GLFW", "HDF5"]
+    def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"          
+    if(!env.disabledProperties) properties(util.defaultProperties())
+    println "Env:" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
 
     Map state = [
         env: env,
-        params: params, 
         build: currentBuild, 
         errors: [],
         display: 0,
         addLabel: {label -> },
         removeLabel: {label -> }
     ]
- 
+
+    def modulePaths = ["${env.WORKSPACE}/modules/misc"]
     try {
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
-            onModules: on,  
-            offModules: off
+            onModules: [],  
+            offModules: ["ABUFFERGL"]
+            opts: [:]
         )
         util.filterfiles()
         util.format(state)
@@ -44,11 +43,15 @@ node {
         util.copyright(state)    
         util.doxygen(state)
 
-        currentBuild.result = 'SUCCESS'
+        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
     } catch (e) {
         currentBuild.result = 'FAILURE'
         throw e
     } finally {
         util.slack(state, "#jenkins-branch-pr")
+        if (!state.errors.isEmpty()) {
+            println "Errors in: ${state.errors.join(", ")}"
+            state.build.description = "Errors in: ${state.errors.join(' ')}"
+        }
     }
 }
