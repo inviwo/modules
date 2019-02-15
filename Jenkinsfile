@@ -14,7 +14,7 @@ node {
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"          
     if(!env.disabledProperties) properties(util.defaultProperties())
-    println "Env:" + env.getEnvironment()?.collect{"${it.key.padLeft(25)} = ${it.value}"}?.join("\n") ?: ''
+    util.printMap("Environment", env.getEnvironment())
 
     Map state = [
         env: env,
@@ -26,7 +26,7 @@ node {
     ]
 
     def modulePaths = ["${env.WORKSPACE}/modules/misc"]
-    try {
+    util.wrap(state, "#jenkins-branch-pr") {
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
@@ -42,16 +42,5 @@ node {
         util.regression(state, modulePaths)
         util.copyright(state)    
         util.doxygen(state)
-
-        state.build.result = state.errors.isEmpty() ? 'SUCCESS' : 'UNSTABLE'
-    } catch (e) {
-        currentBuild.result = 'FAILURE'
-        throw e
-    } finally {
-        util.slack(state, "#jenkins-branch-pr")
-        if (!state.errors.isEmpty()) {
-            println "Errors in: ${state.errors.join(", ")}"
-            state.build.description = "Errors in: ${state.errors.join(' ')}"
-        }
     }
 }
