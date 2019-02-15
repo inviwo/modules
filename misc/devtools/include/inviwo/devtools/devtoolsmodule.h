@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,10 +26,17 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/springsystem/datastructures/zerospringsystem.h>
+#include <inviwo/devtools/devtoolsmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
+class IVW_MODULE_DEVTOOLS_API DevToolsModule : public InviwoModule {
+public:
+    DevToolsModule(InviwoApplication* app);
+    virtual ~DevToolsModule() = default;
+};
 
 }  // namespace inviwo
