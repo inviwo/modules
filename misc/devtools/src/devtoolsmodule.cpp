@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,50 @@
  *
  *********************************************************************************/
 
-#include <inviwo/springsystem/springsystemmodule.h>
-#include <inviwo/springsystem/processors/springsystemprocessor.h>
+#include <inviwo/devtools/devtoolsmodule.h>
+#include <inviwo/devtools/processors/eventlogger.h>
 
 namespace inviwo {
 
-SpringSystemModule::SpringSystemModule(InviwoApplication* app)
-    : InviwoModule(app, "SpringSystem") {
+DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
-    registerProcessor<SpringSystemProcessor>();
+    // registerProcessor<DevToolsProcessor>();
+    registerProcessor<ImageEventLogger>();
+    registerProcessor<VolumeEventLogger>();
+    registerProcessor<MeshEventLogger>();
 
     // Properties
-    // registerProperty<SpringSystemProperty>();
+    // registerProperty<DevToolsProperty>();
 
     // Readers and writes
-    // registerDataReader(util::make_unique<SpringSystemReader>());
-    // registerDataWriter(util::make_unique<SpringSystemWriter>());
+    // registerDataReader(util::make_unique<DevToolsReader>());
+    // registerDataWriter(util::make_unique<DevToolsWriter>());
 
     // Data converters
-    // registerRepresentationConverter(util::make_unique<SpringSystemDisk2RAMConverter>());
+    // registerRepresentationConverter(util::make_unique<DevToolsDisk2RAMConverter>());
 
     // Ports
-    // registerPort<SpringSystemOutport>("SpringSystemOutport");
-    // registerPort<SpringSystemInport>("SpringSystemInport");
+    // registerPort<DevToolsOutport>();
+    // registerPort<DevToolsInport>();
 
     // PropertyWidgets
-    // registerPropertyWidget<SpringSystemPropertyWidget, SpringSystemProperty>("Default");
+    // registerPropertyWidget<DevToolsPropertyWidget, DevToolsProperty>("Default");
 
     // Dialogs
-    // registerDialog<SpringSystemDialog>(SpringSystemOutport);
+    // registerDialog<DevToolsDialog>(DevToolsOutport);
 
-    // Other varius things
-    // registerCapabilities(util::make_unique<SpringSystemCapabilities>());
-    // registerSettings(util::make_unique<SpringSystemSettings>());
-    // registerMetaData(util::make_unique<SpringSystemMetaData>());
-    // registerPortInspector("SpringSystemOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<SpringSystemDrawer>());
+    // Other things
+    // registerCapabilities(util::make_unique<DevToolsCapabilities>());
+    // registerSettings(util::make_unique<DevToolsSettings>());
+    // registerMetaData(util::make_unique<DevToolsMetaData>());
+    // registerPortInspector("DevToolsOutport", "path/workspace.inv");
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
+    // registerDrawer(util::make_unique_ptr<DevToolsDrawer>());
 }
 
 }  // namespace inviwo

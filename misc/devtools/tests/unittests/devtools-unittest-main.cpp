@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,32 @@
  *
  *********************************************************************************/
 
-#include <inviwo/springsystem/datastructures/zerospringsystem.h>
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <ext/vld/vld.h>
+#endif
+#endif
 
-namespace inviwo {
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-}  // namespace inviwo
+int main(int argc, char** argv) {
+    int ret = -1;
+    {
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+        VLDDisable();
+        ::testing::InitGoogleTest(&argc, argv);
+        VLDEnable();
+#else
+        ::testing::InitGoogleTest(&argc, argv);
+#endif
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}
