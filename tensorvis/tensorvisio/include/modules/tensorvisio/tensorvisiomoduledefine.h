@@ -3,7 +3,7 @@
 
 #ifdef INVIWO_ALL_DYN_LINK //DYNAMIC
 // If we are building DLL files we must declare dllexport/dllimport
-#ifdef IVW_MODULE_TENSORFIELDIO_EXPORTS
+#ifdef IVW_MODULE_TENSORVISIO_EXPORTS
 #ifdef _WIN32
 #define IVW_MODULE_TENSORVISIO_API __declspec(dllexport)
 #else //UNIX (GCC)
