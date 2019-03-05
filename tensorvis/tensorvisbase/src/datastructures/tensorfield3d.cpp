@@ -744,7 +744,7 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
     minorEigenVectors.resize(size_);
 
 #pragma omp parallel for
-    for (size_t i = 0; i < tensors_.size(); i++) {
+    for (int i = 0; i < static_cast<int>(tensors_.size()); i++) {
         auto tensor = tensors_[i];
         auto eigenValuesAndEigenVectors = func(tensor);
 
