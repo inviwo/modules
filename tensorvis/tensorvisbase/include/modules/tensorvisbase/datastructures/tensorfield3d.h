@@ -21,39 +21,40 @@ public:
     TensorField3D() = delete;
 
     // Contructors with ready tensors
-    TensorField3D(size3_t dimensions, const std::vector<dmat3> &data,
-                  const dvec3 &extends = dvec3(1.0), double sliceCoord = 0.0);
-    TensorField3D(size_t x, size_t y, size_t z, const std::vector<dmat3> &data,
-                  const dvec3 &extends = dvec3(1.0), double sliceCoord = 0.0);
-    TensorField3D(size3_t dimensions, const std::vector<dmat3> &data,
+    TensorField3D(size3_t dimensions, std::vector<dmat3> data,
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
+
+    TensorField3D(size_t x, size_t y, size_t z, std::vector<dmat3> data,
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
+    TensorField3D(size3_t dimensions, std::vector<dmat3> data,
                   const std::vector<double> &majorEigenvalues,
                   const std::vector<double> &middleEigenvalues,
                   const std::vector<double> &minorEigenvalues,
                   const std::vector<dvec3> &majorEigenvectors,
                   const std::vector<dvec3> &middleEigenvectors,
-                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extends = dvec3(1.0),
+                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extent = dvec3(1.0),
                   double sliceCoord = 0.0);
-    TensorField3D(size_t x, size_t y, size_t z, const std::vector<dmat3> &data,
+    TensorField3D(size_t x, size_t y, size_t z, std::vector<dmat3> data,
                   const std::vector<double> &majorEigenvalues,
                   const std::vector<double> &middleEigenvalues,
                   const std::vector<double> &minorEigenvalues,
                   const std::vector<dvec3> &majorEigenvectors,
                   const std::vector<dvec3> &middleEigenvectors,
-                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extends = dvec3(1.0),
+                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extent = dvec3(1.0),
                   double sliceCoord = 0.0);
 
     // Constructors with raw data
     TensorField3D(size3_t dimensions, const std::vector<double> &data,
-                  const dvec3 &extends = dvec3(1.0), double sliceCoord = 0.0);
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
     TensorField3D(size_t x, size_t y, size_t z, const std::vector<double> &data,
-                  const dvec3 &extends = dvec3(1.0), double sliceCoord = 0.0);
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
     TensorField3D(size3_t dimensions, const std::vector<double> &data,
                   const std::vector<double> &majorEigenvalues,
                   const std::vector<double> &middleEigenvalues,
                   const std::vector<double> &minorEigenvalues,
                   const std::vector<dvec3> &majorEigenvectors,
                   const std::vector<dvec3> &middleEigenvectors,
-                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extends = dvec3(1.0),
+                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extent = dvec3(1.0),
                   double sliceCoord = 0.0);
     TensorField3D(size_t x, size_t y, size_t z, const std::vector<double> &data,
                   const std::vector<double> &majorEigenvalues,
@@ -61,12 +62,12 @@ public:
                   const std::vector<double> &minorEigenvalues,
                   const std::vector<dvec3> &majorEigenvectors,
                   const std::vector<dvec3> &middleEigenvectors,
-                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extends = dvec3(1.0),
+                  const std::vector<dvec3> &minorEigenvectors, const dvec3 &extent = dvec3(1.0),
                   double sliceCoord = 0.0);
 
-    TensorField3D(size3_t dimensions, const std::vector<dmat3> &data,
+    TensorField3D(size3_t dimensions, std::vector<dmat3> data,
                   const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> &metaData,
-                  const dvec3 &extends = dvec3(1.0), double sliceCoord = 0.0);
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
 
     TensorField3D(const TensorField3D &) = delete;
     TensorField3D &operator=(const TensorField3D &) = delete;
@@ -144,7 +145,7 @@ public:
 
     template <typename T = double>
     glm::tvec3<T> getExtends() const {
-        return glm::tvec3<T>(extends_);
+        return glm::tvec3<T>(extent_);
     }
 
     template <typename T = double>
@@ -152,7 +153,7 @@ public:
         return glm::tvec3<T>(offset_);
     }
 
-    void setExtends(const dvec3 &extends) { extends_ = extends; }
+    void setExtends(const dvec3 &extent) { extent_ = extent; }
 
     template <typename T = size_t>
     glm::tvec3<T> getBounds() const {
@@ -162,9 +163,9 @@ public:
     glm::tvec3<T> getSpacing() const {
         auto bounds = getBounds<T>();
 
-        auto extends = getExtends<T>();
+        auto extent = getExtends<T>();
 
-        return extends / bounds;
+        return extent / bounds;
     }
     size_t getSize() const { return size_; }
     glm::u8 rank() const { return 2; }
@@ -200,15 +201,15 @@ public:
 
     dmat3 getBasis() const;
     void setBasis(const dmat3 &basis) {
-        extends_.x = basis[0][0];
-        extends_.y = basis[1][1];
-        extends_.z = basis[2][2];
+        extent_.x = basis[0][0];
+        extent_.y = basis[1][1];
+        extent_.z = basis[2][2];
     };
 
     void setBasis(const mat3 &basis) {
-        extends_.x = double(basis[0][0]);
-        extends_.y = double(basis[1][1]);
-        extends_.z = double(basis[2][2]);
+        extent_.x = double(basis[0][0]);
+        extent_.y = double(basis[1][1]);
+        extent_.z = double(basis[2][2]);
     };
 
     dmat4 getBasisAndOffset() const;
@@ -322,7 +323,7 @@ protected:
     void computeDataMaps();
 
     size3_t dimensions_;
-    dvec3 extends_;
+    dvec3 extent_;
     util::IndexMapper3D indexMapper_;
     std::vector<dmat3> tensors_;
     size_t size_;

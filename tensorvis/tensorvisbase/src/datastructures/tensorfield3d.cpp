@@ -7,23 +7,27 @@
 
 #include <modules/tensorvisbase/datastructures/tensorfield3d.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/util/stdextensions.h>
+
 #include <modules/eigenutils/eigenutils.h>
 #include <modules/tensorvisbase/util/misc.h>
 
+#include <inviwo/core/util/exception.h>
+
 namespace inviwo {
-TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<dmat3> &data,
-                             const dvec3 &extends, double sliceCoord)
+
+TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, const dvec3 &extent,
+                             double sliceCoord)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(dimensions)
-    , tensors_(data)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
+    , tensors_(std::move(data))
+    , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
-    if (dimensions.x * dimensions.y * dimensions.z != data.size()) {
-        LogError("Data/dimensions mismatch in TensorField3D constructor.");
-        return;
+    if (size_ != tensors_.size()) {
+        throw Exception("Data/dimensions mismatch in TensorField3D constructor.", IVW_CONTEXT);
     }
 
     computeEigenValuesAndEigenVectors();
@@ -32,11 +36,11 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<dmat3> 
 }
 
 TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double> &data,
-                             const dvec3 &extends, double sliceCoord)
+                             const dvec3 &extent, double sliceCoord)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(dimensions)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
+    , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
@@ -66,12 +70,12 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
                              const std::vector<double> &minorEigenValues,
                              const std::vector<dvec3> &majorEigenVectors,
                              const std::vector<dvec3> &middleEigenVectors,
-                             const std::vector<dvec3> &minorEigenVectors, const dvec3 &extends,
+                             const std::vector<dvec3> &minorEigenVectors, const dvec3 &extent,
                              double sliceCoord)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(dimensions)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
+    , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
@@ -95,26 +99,24 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
     addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors, TensorFeature::IntermediateEigenVector);
+    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
+                                          TensorFeature::IntermediateEigenVector);
     addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
 }
 
-TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<dmat3> &data,
-                             const std::vector<double> &majorEigenValues,
-                             const std::vector<double> &middleEigenValues,
-                             const std::vector<double> &minorEigenValues,
-                             const std::vector<dvec3> &majorEigenVectors,
-                             const std::vector<dvec3> &middleEigenVectors,
-                             const std::vector<dvec3> &minorEigenVectors, const dvec3 &extends,
-                             double sliceCoord)
+TensorField3D::TensorField3D(
+    const size3_t dimensions, std::vector<dmat3> data, const std::vector<double> &majorEigenValues,
+    const std::vector<double> &middleEigenValues, const std::vector<double> &minorEigenValues,
+    const std::vector<dvec3> &majorEigenVectors, const std::vector<dvec3> &middleEigenVectors,
+    const std::vector<dvec3> &minorEigenVectors, const dvec3 &extent, double sliceCoord)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(dimensions)
-    , tensors_(data)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
+    , tensors_(std::move(data))
+    , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
@@ -123,7 +125,8 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<dmat3> 
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
     addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors, TensorFeature::IntermediateEigenVector);
+    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
+                                          TensorFeature::IntermediateEigenVector);
     addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
@@ -131,12 +134,11 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<dmat3> 
 }
 
 TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             const std::vector<dmat3> &data, const dvec3 &extends,
-                             double sliceCoord)
+                             std::vector<dmat3> data, const dvec3 &extent, double sliceCoord)
     : dimensions_(size3_t(x, y, z))
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(size3_t(x, y, z))
-    , tensors_(data)
+    , tensors_(std::move(data))
     , size_(x * y * z)
     , rank_(2)
     , dimensionality_(3)
@@ -147,10 +149,10 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
 }
 
 TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             const std::vector<double> &data, const dvec3 &extends,
+                             const std::vector<double> &data, const dvec3 &extent,
                              double sliceCoord)
     : dimensions_(size3_t(x, y, z))
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(size3_t(x, y, z))
     , size_(x * y * z)
     , rank_(2)
@@ -181,9 +183,9 @@ TensorField3D::TensorField3D(
     const std::vector<double> &majorEigenValues, const std::vector<double> &middleEigenValues,
     const std::vector<double> &minorEigenValues, const std::vector<dvec3> &majorEigenVectors,
     const std::vector<dvec3> &middleEigenVectors, const std::vector<dvec3> &minorEigenVectors,
-    const dvec3 &extends, double sliceCoord)
+    const dvec3 &extent, double sliceCoord)
     : dimensions_(size3_t(x, y, z))
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(size3_t(x, y, z))
     , size_(x * y * z)
     , rank_(2)
@@ -209,23 +211,26 @@ TensorField3D::TensorField3D(
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
     addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors, TensorFeature::IntermediateEigenVector);
+    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
+                                          TensorFeature::IntermediateEigenVector);
     addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
 }
 
-TensorField3D::TensorField3D(
-    const size_t x, const size_t y, const size_t z, const std::vector<dmat3> &data,
-    const std::vector<double> &majorEigenValues, const std::vector<double> &middleEigenValues,
-    const std::vector<double> &minorEigenValues, const std::vector<dvec3> &majorEigenVectors,
-    const std::vector<dvec3> &middleEigenVectors, const std::vector<dvec3> &minorEigenVectors,
-    const dvec3 &extends, double sliceCoord)
+TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
+                             std::vector<dmat3> data, const std::vector<double> &majorEigenValues,
+                             const std::vector<double> &middleEigenValues,
+                             const std::vector<double> &minorEigenValues,
+                             const std::vector<dvec3> &majorEigenVectors,
+                             const std::vector<dvec3> &middleEigenVectors,
+                             const std::vector<dvec3> &minorEigenVectors, const dvec3 &extent,
+                             double sliceCoord)
     : dimensions_(size3_t(x, y, z))
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(size3_t(x, y, z))
-    , tensors_(data)
+    , tensors_(std::move(data))
     , size_(x * y * z)
     , rank_(2)
     , dimensionality_(3)
@@ -235,7 +240,8 @@ TensorField3D::TensorField3D(
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
     addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors, TensorFeature::IntermediateEigenVector);
+    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
+                                          TensorFeature::IntermediateEigenVector);
     addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
@@ -243,14 +249,14 @@ TensorField3D::TensorField3D(
 }
 
 TensorField3D::TensorField3D(
-    const size3_t dimensions, const std::vector<dmat3> &data,
+    const size3_t dimensions, std::vector<dmat3> data,
     const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> &metaData,
-    const dvec3 &extends, double sliceCoord)
+    const dvec3 &extent, double sliceCoord)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , indexMapper_(dimensions)
-    , tensors_(data)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
+    , tensors_(std::move(data))
+    , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
@@ -281,7 +287,7 @@ std::string TensorField3D::getDataInfo() const {
                                             dataMapEigenValues_[2].valueRange.y)
        << tensorutil::getHTMLTableRowString("Min minor field eigenvalue",
                                             dataMapEigenValues_[2].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Extends", extends_)
+       << tensorutil::getHTMLTableRowString("Extends", extent_)
 
        << "</table>";
     return ss.str();
@@ -451,13 +457,13 @@ std::pair<glm::uint8, dmat3> TensorField3D::sample(
 }
 
 dmat3 TensorField3D::getBasis() const {
-    return dmat3(dvec3(extends_.x, 0.0, 0.0), dvec3(0.0, extends_.y, 0.0),
-                 dvec3(0.0, 0.0, extends_.z));
+    return dmat3(dvec3(extent_.x, 0.0, 0.0), dvec3(0.0, extent_.y, 0.0),
+                 dvec3(0.0, 0.0, extent_.z));
 }
 
 dmat4 TensorField3D::getBasisAndOffset() const {
-    auto basis = dmat3(dvec3(extends_.x, 0.0, 0.0), dvec3(0.0, extends_.y, 0.0),
-                       dvec3(0.0, 0.0, extends_.z));
+    auto basis =
+        dmat3(dvec3(extent_.x, 0.0, 0.0), dvec3(0.0, extent_.y, 0.0), dvec3(0.0, 0.0, extent_.z));
 
     dmat4 modelMatrix;
 
@@ -622,7 +628,7 @@ const std::vector<double> &TensorField3D::minorEigenValues() const {
 const std::vector<dmat3> &TensorField3D::tensors() const { return tensors_; }
 
 int TensorField3D::getNumDefinedEntries() const {
-    return std::count(std::begin(binaryMask_), std::end(binaryMask_), 1);
+    return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
 }
 
 bool TensorField3D::hasMetaData(const TensorFeature feature) const {
@@ -683,7 +689,7 @@ bool TensorField3D::hasMetaData(const TensorFeature feature) const {
 }
 
 std::shared_ptr<TensorField3D> TensorField3D::clone() const {
-    auto tensorField = std::make_shared<TensorField3D>(dimensions_, tensors_, metaData_, extends_);
+    auto tensorField = std::make_shared<TensorField3D>(dimensions_, tensors_, metaData_, extent_);
 
     if (hasMask()) tensorField->setMask(binaryMask_);
 
@@ -693,38 +699,25 @@ std::shared_ptr<TensorField3D> TensorField3D::clone() const {
 void TensorField3D::computeEigenValuesAndEigenVectors() {
     auto func = [](const dmat3 &tensor) -> std::array<std::pair<double, dvec3>, 3> {
         if (tensor == dmat3(0.0)) {
+            return {{std::make_pair(0, dvec3{0}), std::make_pair(0, dvec3{0}),
+                     std::make_pair(0, dvec3{0})}};
             return std::array<std::pair<double, dvec3>, 3>{std::pair<double, dvec3>{0, dvec3(0)},
                                                            std::pair<double, dvec3>{0, dvec3(0)},
                                                            std::pair<double, dvec3>{0, dvec3(0)}};
         }
 
-        Eigen::EigenSolver<Eigen::Matrix<double, 3, 3>> solver(util::glm2eigen(tensor));
+        Eigen::EigenSolver<Eigen::Matrix3d> solver(util::glm2eigen(tensor));
+        const auto eigenValues = util::eigen2glm<double, 3, 1>(solver.eigenvalues().real());
+        const auto eigenVectors = util::eigen2glm<double, 3, 3>(solver.eigenvectors().real());
 
-        auto lambda1 = solver.eigenvalues().col(0)[0].real();
-        auto lambda2 = solver.eigenvalues().col(0)[1].real();
-        auto lambda3 = solver.eigenvalues().col(0)[2].real();
+        const auto range =
+            util::as_range(glm::value_ptr(eigenValues), glm::value_ptr(eigenValues) + 3);
 
-        auto ev1 =
-            dvec3(solver.eigenvectors().col(0).real()[0], solver.eigenvectors().col(0).real()[1],
-                  solver.eigenvectors().col(0).real()[2]);
-        auto ev2 =
-            dvec3(solver.eigenvectors().col(1).real()[0], solver.eigenvectors().col(1).real()[1],
-                  solver.eigenvectors().col(1).real()[2]);
-        auto ev3 =
-            dvec3(solver.eigenvectors().col(2).real()[0], solver.eigenvectors().col(2).real()[1],
-                  solver.eigenvectors().col(2).real()[2]);
+        const auto ordering = util::ordering(range, std::greater<double>());
 
-        std::array<std::pair<double, dvec3>, 3> sortable;
-        sortable[0] = {lambda1, ev1};
-        sortable[1] = {lambda2, ev2};
-        sortable[2] = {lambda3, ev3};
-
-        std::sort(sortable.begin(), sortable.end(),
-                  [](const std::pair<double, dvec3> &pairA, const std::pair<double, dvec3> &pairB) {
-                      return pairA.first > pairB.first;
-                  });
-
-        return sortable;
+        return {{std::make_pair(eigenValues[ordering[0]], eigenVectors[ordering[0]]),
+                 std::make_pair(eigenValues[ordering[1]], eigenVectors[ordering[1]]),
+                 std::make_pair(eigenValues[ordering[2]], eigenVectors[ordering[2]])}};
     };
 
     std::vector<double> majorEigenValues;
@@ -762,7 +755,8 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
     addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors, TensorFeature::IntermediateEigenVector);
+    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
+                                          TensorFeature::IntermediateEigenVector);
     addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 }
 
