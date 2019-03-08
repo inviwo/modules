@@ -215,8 +215,8 @@ void MohrCircleProcessor::drawCircle(const dvec2& position, const double radius,
     nvgContext_->beginPath();
     nvgContext_->fillColor(fillColor);
     nvgContext_->strokeColor(strokeColor);
-    nvgContext_->strokeWidth(strokeWidth);
-    nvgContext_->circle(position, radius);
+    nvgContext_->strokeWidth(static_cast<float>(strokeWidth));
+    nvgContext_->circle(position, static_cast<float>(radius));
 
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -241,7 +241,7 @@ void MohrCircleProcessor::drawCoordinateSystem() const {
     nvgContext_->moveTo(dvec2(xCoordForYAxis, fromYAxis));
     nvgContext_->lineTo(dvec2(xCoordForYAxis, toYAxis));
 
-    nvgContext_->strokeWidth(axisThickness_.get());
+    nvgContext_->strokeWidth(static_cast<float>(axisThickness_.get()));
     nvgContext_->strokeColor(axisColor_.get());
 
     nvgContext_->stroke();
@@ -258,7 +258,7 @@ void MohrCircleProcessor::drawCoordinateSystem() const {
     nvgContext_->moveTo(dvec2(fromXAxis, yCoordForXAxis));
     nvgContext_->lineTo(dvec2(toXAxis, yCoordForXAxis));
 
-    nvgContext_->strokeWidth(axisThickness_.get());
+    nvgContext_->strokeWidth(static_cast<float>(axisThickness_.get()));
     nvgContext_->strokeColor(axisColor_.get());
 
     nvgContext_->stroke();
@@ -268,7 +268,7 @@ void MohrCircleProcessor::drawCoordinateSystem() const {
     drawArrowHead(dvec2(toXAxis, yCoordForXAxis), dvec2(1.0, 0.0), arrowSize_.get());
 
     nvgContext_->beginPath();
-    nvgContext_->fontSize(fontSize_.get());
+    nvgContext_->fontSize(static_cast<float>(fontSize_.get()));
     nvgContext_->fontFace("fonty");
     nvgContext_->textAlign(NanoVGContext::Alignment::Center_Bottom);
     nvgContext_->fillColor(fontColor_.get());
@@ -276,7 +276,7 @@ void MohrCircleProcessor::drawCoordinateSystem() const {
     nvgContext_->closePath();
 
     nvgContext_->beginPath();
-    nvgContext_->fontSize(fontSize_.get());
+    nvgContext_->fontSize(static_cast<float>(fontSize_.get()));
     nvgContext_->fontFace("fonty");
     nvgContext_->textAlign(NanoVGContext::Alignment::Right_Middle);
     nvgContext_->fillColor(fontColor_.get());

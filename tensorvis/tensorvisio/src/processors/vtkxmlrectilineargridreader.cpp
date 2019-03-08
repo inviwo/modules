@@ -27,9 +27,6 @@
  *
  *********************************************************************************/
 
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#endif
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/indexmapper.h>
@@ -236,7 +233,3 @@ void VTKXMLRectilinearGridReader::initializeResources() {}
 void VTKXMLRectilinearGridReader::process() {}
 
 }  // namespace inviwo
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#endif
