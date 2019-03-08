@@ -53,29 +53,20 @@ const ProcessorInfo VTKRectilinearGridReader::processorInfo_{
 const ProcessorInfo VTKRectilinearGridReader::getProcessorInfo() const { return processorInfo_; }
 
 VTKRectilinearGridReader::VTKRectilinearGridReader()
-    : Processor()
-    , file_("caseFile", "Case file", "", "ensight")
-    , outport_("outport") {
-    addProperty(file_);
-
-    file_.clearNameFilters();
-    file_.addNameFilter("VTK Rectilinear Grid (*.vtk)");
+    : Processor(), file_("caseFile", "Case file", "", "ensight"), outport_("outport") {
 
     addPort(outport_);
+    addProperty(file_);
+
+    file_.addNameFilter("VTK Rectilinear Grid File (*.vtr)");
 }
 
 VTKRectilinearGridReader::~VTKRectilinearGridReader() {}
 
 void VTKRectilinearGridReader::process() {
-    
-    if (file_.get() == "") {
-        LogInfo("No case file selected");
+    if (!filesystem::fileExists(file_)) {
         return;
     }
-    /*if (!filesystem::fileExists(file_.get())) {
-        LogWarn("Could not find file: " << file_.get());
-        return;
-    }*/
 
     auto reader = vtkSmartPointer<vtkRectilinearGridReader>::New();
 
@@ -115,9 +106,9 @@ void VTKRectilinearGridReader::process() {
                 int coord[3] = {int(x), int(y), int(z)};
                 auto id = grid->ComputePointId(coord);
                 auto index = indexMapper(x, y, z) * 9;
-                
+
                 tensor = tensors->GetTuple9(id);
-                
+
                 outVec[index] = tensor[0];
                 outVec[index + 1] = tensor[1];
                 outVec[index + 2] = tensor[2];
@@ -134,6 +125,7 @@ void VTKRectilinearGridReader::process() {
     }
 
     auto tensorField = std::make_shared<TensorField3D>(dimensions, outVec, extends);
+    tensorField->setOffset({bounds[0], bounds[2], bounds[4]});
 
     outport_.setData(tensorField);
 }

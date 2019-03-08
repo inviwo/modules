@@ -33,44 +33,54 @@
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/properties/buttonproperty.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <vtkSmartPointer.h>
+#include <vtkXMLRectilinearGridReader.h>
+#include <warn/pop>
+
+// class vtkXMLRectilinearGridReader;
 
 namespace inviwo {
+
+class TensorField3D;
 
 /** \docpage{org.inviwo.VTKXMLRectilinearGridReader, VTK Rectilinear Grid Reader}
  * ![](org.inviwo.VTKXMLRectilinearGridReader.png?classIdentifier=org.inviwo.VTKXMLRectilinearGridReader)
  *
- * ...
- *
- * ### Properties
- *   * __Case file__ ...
- *
  */
-class IVW_MODULE_TENSORVISIO_API VTKXMLRectilinearGridReader : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKXMLRectilinearGridReader : public Processor,
+                                                               public ActivityIndicatorOwner {
 public:
     VTKXMLRectilinearGridReader();
-    virtual ~VTKXMLRectilinearGridReader();
+    virtual ~VTKXMLRectilinearGridReader() = default;
+
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void initializeResources() override;
-    virtual void process() override;
+private:
+    void createTensorField();
 
-	private:
     FileProperty file_;
     TensorField3DOutport outport_;
-    ButtonProperty loadArrays_;
-    ButtonProperty loadData_;
-    OptionPropertyInt arrays_;
+    OptionPropertyInt dataArrays_;
+    BoolProperty transposeTensor_;
+    ButtonProperty reloadButton_;
 
+    bool reloadData_ = false;
+    vtkSmartPointer<vtkXMLRectilinearGridReader> reader_;
+    std::shared_ptr<TensorField3D> tensorfield_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_VTKXMLRECTILINEARGRIDREADER_H
