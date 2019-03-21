@@ -56,7 +56,7 @@ TensorField3DAnisotropy::TensorField3DAnisotropy()
                     tensorutil::Anisotropy::abs_lamda1_minus_lamda2},
                    {"2", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda3_str + "|",
                     tensorutil::Anisotropy::abs_lamda1_minus_lamda3},
-                   {"3", "bary", tensorutil::Anisotropy::barycentric},
+                   {"3", "Barycentric", tensorutil::Anisotropy::barycentric},
                    {"4", "|" + tensorutil::lamda1_str + "| - |" + tensorutil::lamda2_str + "|",
                     tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2}},
                   0)

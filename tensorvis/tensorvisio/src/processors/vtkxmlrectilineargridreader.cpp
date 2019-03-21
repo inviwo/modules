@@ -27,23 +27,23 @@
  *
  *********************************************************************************/
 
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#endif
+#include <modules/tensorvisio/processors/vtkxmlrectilineargridreader.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/network/networklock.h>
-#include <modules/tensorvisio/processors/vtkxmlrectilineargridreader.h>
+#include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/exception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkPointData.h>
-#include <vtkSmartPointer.h>
 #include <vtkXMLRectilinearGridReader.h>
 #include <vtkXMLReader.h>
 #include <vtkRectilinearGrid.h>
 #include <vtkDataArray.h>
+#include <vtkDataArrayAccessor.h>
+#include <vtkArrayDispatch.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -60,183 +60,146 @@ const ProcessorInfo VTKXMLRectilinearGridReader::getProcessorInfo() const { retu
 
 VTKXMLRectilinearGridReader::VTKXMLRectilinearGridReader()
     : Processor()
-    , file_("caseFile", "Case file", "", "ensight", InvalidationLevel::Valid)
+    , file_("caseFile", "Case file", "", "ensight")
     , outport_("outport")
-    , loadArrays_("loadArrays", "Load arrays", InvalidationLevel::Valid)
-    , loadData_("loadData", "Load data", InvalidationLevel::Valid)
-    , arrays_("arrays", "Arrays", InvalidationLevel::Valid) {
-    file_.clearNameFilters();
-    file_.addNameFilter("VTK XML Rectilinear Grid (*.vtk)");
-
-    addProperty(file_);
-    addProperty(loadArrays_);
-    addProperty(arrays_);
-    addProperty(loadData_);
-
-    loadArrays_.onChange([this] {
-        if (file_.get() == "") {
-            LogInfo("No case file selected");
-            return;
-        }
-
-        auto reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
-
-        reader->SetFileName(file_.get().c_str());
-
-        reader->Update();
-
-        auto grid = reader->GetOutput();
-
-        auto points = grid->GetPointData();
-
-        std::vector<std::string> keys;
-        std::vector<std::string> identifiers;
-        std::vector<int> values;
-
-        for (int i = 0; i < points->GetNumberOfArrays(); i++) {
-            auto c_name = points->GetArrayName(i);
-            auto name = std::string(c_name);
-
-            identifiers.push_back(name);
-
-            std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-
-            keys.push_back(name);
-
-            values.push_back(i);
-        }
-
-        NetworkLock lock;
-        arrays_.replaceOptions(keys, identifiers, values);
-    });
-
-    loadData_.onChange([this] {
-        if (file_.get().empty()) {
-            LogInfo("No case file selected");
-            return;
-        }
-
-        auto reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
-
-        reader->SetFileName(file_.get().c_str());
-
-        reader->Update();
-
-        auto grid = reader->GetOutput();
-
-        auto points = grid->GetPointData();
-
-        double bounds[6];
-        grid->GetBounds(bounds);
-
-        auto extends = dvec3(bounds[1] - bounds[0], bounds[3] - bounds[2], bounds[5] - bounds[4]);
-
-        auto tensors = points->GetArray(arrays_.getSelectedIdentifier().c_str());
-
-        auto type = tensors->GetDataType();
-
-        auto dimensionsPtr = grid->GetDimensions();
-
-        size3_t dimensions(dimensionsPtr[0], dimensionsPtr[1], dimensionsPtr[2]);
-        ivec3 iDimensions(dimensions);
-
-        switch (type) {
-            case 0:
-                LogInfo("Data type void.");
-                break;
-            case 1:
-                LogInfo("Data type bit.");
-                break;
-            case 2:
-                LogInfo("Data type char.");
-                break;
-            case 3:
-                LogInfo("Data type unsigned char.");
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                break;
-            case 9:
-                break;
-            case 10:
-                break;
-            case 11:
-                LogInfo("Data type double.");
-                break;
-            case 12:
-                break;
-            case 13:
-                break;
-            case 14:
-                break;
-            case 15:
-                LogInfo("Data type signed char.");
-                break;
-
-            default:
-                break;
-        }
-
-        double* tensor;
-
-        auto outVec = std::vector<double>();
-
-        auto size = dimensions.x * dimensions.z * dimensions.y;
-
-        // TODO: find number of components or something here instead of hardcoding 9
-        outVec.resize(size * 9);
-
-        util::IndexMapper3D indexMapper(dimensions);
-
-        for (int x = 0; x < iDimensions.x; x++) {
-            for (int y = 0; y < iDimensions.y; y++) {
-                for (int z = 0; z < iDimensions.z; z++) {
-                    int coord[3] = {x, y, z};
-                    auto id = grid->ComputePointId(coord);
-                    auto index = indexMapper(size3_t(x, y, z)) * 9;
-
-                    tensor = tensors->GetTuple9(id);
-
-                    outVec[index] = tensor[0];
-                    outVec[index + 1] = tensor[1];
-                    outVec[index + 2] = tensor[2];
-
-                    outVec[index + 3] = tensor[3];
-                    outVec[index + 4] = tensor[4];
-                    outVec[index + 5] = tensor[5];
-
-                    outVec[index + 6] = tensor[6];
-                    outVec[index + 7] = tensor[7];
-                    outVec[index + 8] = tensor[8];
-                }
-            }
-        }
-
-        auto tensorField = std::make_shared<TensorField3D>(dimensions, outVec, extends);
-
-        outport_.setData(tensorField);
-
-        invalidate(InvalidationLevel::InvalidOutput);
-    });
+    , dataArrays_("arrays", "Arrays")
+    , transposeTensor_("transposeTensor", "Transpose Tensor", false)
+    , reloadButton_("reload", "Reload Data") {
 
     addPort(outport_);
+
+    addProperty(file_);
+    addProperty(dataArrays_);
+    addProperty(transposeTensor_);
+    addProperty(reloadButton_);
+
+    file_.addNameFilter("VTK Rectilinear Grid File (*.vtr)");
+
+    reloadButton_.onChange([this]() { reader_ = nullptr; });
 }
 
-VTKXMLRectilinearGridReader::~VTKXMLRectilinearGridReader() {}
+void VTKXMLRectilinearGridReader::process() {
+    if (!reader_ || file_.isModified()) {
+        if (!filesystem::fileExists(file_)) {
+            return;
+        }
 
-void VTKXMLRectilinearGridReader::initializeResources() {}
+        getActivityIndicator().setActive(true);
+        dispatchPool([this, filename = file_.get()]() {
+            LogInfo("Loading VTK Rectilinear Grid: " << filename);
 
-void VTKXMLRectilinearGridReader::process() {}
+            IVW_CPU_PROFILING_IF(200, "Create Grid Reader");
+            auto reader = vtkSmartPointer<vtkXMLRectilinearGridReader>::New();
+            reader->SetFileName(filename.c_str());
+            reader->Update();
+            dispatchFront([this, reader]() {
+                reader_ = reader;
+
+                auto points = reader_->GetOutput()->GetPointData();
+                std::vector<OptionPropertyIntOption> options;
+                for (int i = 0; i < points->GetNumberOfArrays(); ++i) {
+                    const auto name = std::string{points->GetArrayName(i)};
+                    options.push_back({toLower(name), name, i});
+                }
+                NetworkLock lock(&dataArrays_);
+                dataArrays_.replaceOptions(options);
+                getActivityIndicator().setActive(false);
+                invalidate(InvalidationLevel::InvalidOutput);
+            });
+        });
+    }
+
+    if (!reader_) return;
+
+    if (!tensorfield_ || dataArrays_.isModified() || transposeTensor_.isModified()) {
+        createTensorField();
+    }
+
+    if (!tensorfield_) return;
+
+    outport_.setData(tensorfield_);
+}
+
+namespace detail {
+
+// implementation of worker based on VTK example for vtkDataArrayAccessor
+// \see https://vtk.org/Wiki/VTK/Tutorials/DataArrays
+struct dmat3Convert {
+
+    template <typename T>
+    void operator()(T *array) {
+        using ValueType = vtkDataArrayAccessor<T>::APIType;
+
+        vtkDataArrayAccessor<T> access(array);
+
+        tensors.reserve(static_cast<size_t>(array->GetNumberOfTuples()));
+        const int numComps = std::max(array->GetNumberOfComponents(), 9);
+        util::IndexMapper<2, int> indexMapper(ivec2{3});
+        for (vtkIdType i = 0; i < array->GetNumberOfTuples(); ++i) {
+            dmat3 tensor;
+            for (int comp = 0; comp < numComps; ++comp) {
+                const auto index = indexMapper(comp);
+                const auto value = access.Get(i, comp);
+                if (transpose) {
+                    tensor[index.y][index.x] = static_cast<double>(value);
+                } else {
+                    tensor[index.x][index.y] = static_cast<double>(value);
+                }
+            }
+            tensors.emplace_back(std::move(tensor));
+        }
+    }
+
+    bool transpose = false;
+    std::vector<dmat3> tensors;
+};
+
+}  // namespace detail
+
+void VTKXMLRectilinearGridReader::createTensorField() {
+    getActivityIndicator().setActive(true);
+    dispatchPool([this, reader = reader_, arrayName = dataArrays_.getSelectedIdentifier()]() {
+        IVW_CPU_PROFILING_IF(200, "Create Tensor Field");
+        auto grid = reader->GetOutput();
+        auto points = grid->GetPointData();
+
+        const auto dims = glm::make_vec3(grid->GetDimensions());
+
+        std::array<double, 6> bounds;
+        grid->GetBounds(bounds.data());
+        const dvec3 extent{bounds[1] - bounds[0], bounds[3] - bounds[2], bounds[5] - bounds[4]};
+
+        bool found = false;
+        for (int i = 0; i < points->GetNumberOfArrays() && !found; ++i) {
+            found = arrayName == std::string{points->GetArrayName(i)};
+        }
+        if (!found) {
+            throw Exception("VTK data does not contain an array '" + arrayName + "'", IVW_CONTEXT);
+        }
+
+        auto dataArray = points->GetArray(arrayName.c_str());
+        const int numComponents = dataArray->GetNumberOfComponents();
+        if (numComponents > 9) {
+            LogWarn("Data array '" << arrayName << "' holds " << numComponents
+                                   << " per tuple. Using only the first 9.");
+        }
+
+        detail::dmat3Convert converter;
+        converter.transpose = transposeTensor_.get();
+        if (!vtkArrayDispatch::Dispatch::Execute(dataArray, converter)) {
+            converter(dataArray);  // dispatch failed, call fallback
+        }
+
+        auto tensorfield =
+            std::make_shared<TensorField3D>(size3_t{dims}, std::move(converter.tensors), extent);
+        tensorfield->setOffset({bounds[0], bounds[2], bounds[4]});
+
+        dispatchFront([this, tensorfield]() {
+            tensorfield_ = tensorfield;
+            getActivityIndicator().setActive(false);
+            invalidate(InvalidationLevel::InvalidOutput);
+        });
+    });
+}
 
 }  // namespace inviwo
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#endif

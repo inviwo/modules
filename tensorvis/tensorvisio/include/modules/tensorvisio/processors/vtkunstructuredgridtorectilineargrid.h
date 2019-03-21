@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
@@ -37,50 +37,56 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/processors/activityindicator.h>
+
+#include <atomic>
+
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKUnstructuredGridToRectilinearGrid, VTK Unstructured Grid To Rectilinear Grid}
+/** \docpage{org.inviwo.VTKUnstructuredGridToRectilinearGrid, VTK Unstructured Grid To Rectilinear
+ * Grid}
  * ![](org.inviwo.VTKUnstructuredGridReader.png?classIdentifier=org.inviwo.VTKUnstructuredGridToRectilinearGrid)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-
-/**
- * \class VTKUnstructuredGridToRectilinearGrid
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API VTKUnstructuredGridToRectilinearGrid : public Processor, ProgressBarOwner {
+class IVW_MODULE_TENSORVISIO_API VTKUnstructuredGridToRectilinearGrid
+    : public Processor,
+      public ActivityIndicatorOwner,
+      public ProgressBarOwner {
 public:
-	VTKUnstructuredGridToRectilinearGrid();
-    virtual ~VTKUnstructuredGridToRectilinearGrid() = default;
-     
+    VTKUnstructuredGridToRectilinearGrid();
+    virtual ~VTKUnstructuredGridToRectilinearGrid();
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 protected:
+    enum class State { NotStarted, Working, Abort, Done, Invalid };
+
+    struct WorkerState {
+        std::atomic<State> state = State::NotStarted;
+        std::atomic<bool> abortConversion_ = false;
+        std::atomic<bool> processorExists_ = true;
+
+        std::string inputFile_;
+        std::string outputFile_;
+        ivec3 dims_ = ivec3(1);
+    };
+
     void loadData();
 
     FileProperty file_;
-	FileProperty outFile_;
+    FileProperty outFile_;
 
-	IntVec3Property dimensions_;
+    IntVec3Property dimensions_;
 
-	ButtonProperty button_;
+    ButtonProperty button_;
+    ButtonProperty abortButton_;
+
+    std::shared_ptr<WorkerState> state_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
+#endif  // IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H

@@ -27,10 +27,6 @@
  *
  *********************************************************************************/
 
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#endif
-
 #include <modules/base/algorithm/meshutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/tensorvisbase/util/tensorfieldutil.h>
@@ -360,7 +356,5 @@ std::shared_ptr<BasicMesh> generateSliceLevelGeometryForTensorField(
 }
 
 }  // namespace tensorutil
+
 }  // namespace inviwo
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#endif

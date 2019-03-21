@@ -27,10 +27,6 @@
  *
  *********************************************************************************/
 
-#ifdef _MSC_VER
-#pragma optimize("",off)
-#endif
-
 #include <modules/tensorvisio/processors/vtkstructuredgridreader.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/indexmapper.h>
@@ -154,6 +150,3 @@ void VTKStructuredGridReader::process() {
 }
 
 }  // namespace inviwo
-#ifdef _MSC_VER
-#pragma optimize("",on)
-#endif

@@ -30,6 +30,9 @@
 #include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
 #include <modules/vtk/util/lambda2func.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/common/inviwoapplication.h>
+
+#include <inviwo/core/util/clock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -65,124 +68,232 @@ const ProcessorInfo VTKUnstructuredGridToRectilinearGrid::getProcessorInfo() con
 
 VTKUnstructuredGridToRectilinearGrid::VTKUnstructuredGridToRectilinearGrid()
     : Processor()
+    , ActivityIndicatorOwner()
     , file_("file", "File", "", "VTK", InvalidationLevel::Valid)
     , outFile_("outFile", "Output file", "", "VTK", InvalidationLevel::Valid)
     , dimensions_("dimensions", "Output dimensions", ivec3(32), ivec3(2), ivec3(2048))
-    , button_("button", "Read", InvalidationLevel::Valid) {
+    , button_("button", "Convert Data")
+    , abortButton_("abortButton", "Abort Conversion", InvalidationLevel::Valid)
+    , state_(std::make_shared<WorkerState>()) {
     addProperty(file_);
     addProperty(outFile_);
     addProperty(dimensions_);
     addProperty(button_);
+    addProperty(abortButton_);
+
+    button_.onChange([this]() {
+        if (state_->state != State::Working) {
+            loadData();
+        }
+    });
+    abortButton_.onChange([this]() {
+        if (state_->state == State::Working) {
+            state_->abortConversion_ = true;
+        }
+    });
 
     file_.clearNameFilters();
     file_.addNameFilter("VTK Unstructured Grid (*.vtk)");
     file_.addNameFilter("VTK Unstructured Grid (*.vtu)");
 
-    button_.onChange([this]() { loadData(); });
+    outFile_.addNameFilter("VTK Rectilinear Grid (*.vtr)");
+
+    progressBar_.hide();
+}
+
+VTKUnstructuredGridToRectilinearGrid::~VTKUnstructuredGridToRectilinearGrid() {
+    state_->processorExists_ = false;
+    state_->abortConversion_ = true;
 }
 
 void VTKUnstructuredGridToRectilinearGrid::process() {}
 
 void VTKUnstructuredGridToRectilinearGrid::loadData() {
-    if (file_.get() == "") {
-        LogInfo("No case file selected");
+    if (!filesystem::fileExists(file_.get())) {
+        LogError("Could not open file: " << file_.get());
         return;
     }
 
-    auto reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
+    state_->inputFile_ = file_;
+    state_->outputFile_ = outFile_;
+    state_->dims_ = dimensions_;
+    state_->abortConversion_ = false;
 
-    reader->SetFileName(file_.get().c_str());
+    const auto done = [this, state = state_]() {
+        if (state->processorExists_) {
+            dispatchFront([this]() {
+                progressBar_.hide();
+                getActivityIndicator().setActive(false);
+            });
+        }
+    };
+    const auto abort = [this, state = state_, done]() {
+        state->state = State::Abort;
+        LogWarnCustom("VTK conversion", "Conversion aborted");
+        done();
+    };
 
-    std::cout << "Reading." << std::endl;
-    reader->Update();
-    std::cout << "Done reading." << std::endl;
+    auto& activityIndicator = getActivityIndicator();
 
-    auto unstructuredGrid = reader->GetOutput();
+    auto dispatch = [state = state_, pb = &progressBar_, activityIndicator, done,
+                     abort]() mutable -> void {
+        auto log = [](const std::string& message) { LogInfoCustom("VTK conversion", message); };
+        const auto progressUpdate = [pb, state](float f) {
+            if (state->processorExists_) {
+                dispatchFront([f, pb]() {
+                    f < 1.0 ? pb->show() : pb->hide();
+                    pb->updateProgress(f);
+                });
+            }
+        };
+        auto updateActivity = [&activityIndicator, state](bool active) {
+            if (state->processorExists_) {
+                dispatchFront([active](ActivityIndicator& i) { i.setActive(active); },
+                              std::ref(activityIndicator));
+            }
+        };
 
-    auto bounds = unstructuredGrid->GetBounds();
+        updateActivity(true);
+        state->state = State::Working;
 
-    auto gridSize = dimensions_.get();
-    const auto gridBounds = dvec3(gridSize - ivec3(1));
+        Clock globalClock;
+        globalClock.start();
+        const float progressIncr = 1.0f / 6.0f;
+        float progress = 0.0f;
+        progressUpdate(progress);
 
-    // auto& pb = progressBar_;
+        log("Reading input file: " + state->inputFile_);
+        auto reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
+        reader->SetFileName(state->inputFile_.c_str());
+        reader->Update();
+        progress += progressIncr;
+        progressUpdate(progress);
+        log("Done");
 
-    // pb.show();
+        if (state->abortConversion_) {
+            abort();
+            return;
+        }
 
-    auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-        [/*&pb*/](vtkObject* caller, long unsigned int eventId, void* clientData,
-                  void* callData) -> void {
-            vtkProbeFilter* testFilter = static_cast<vtkProbeFilter*>(caller);
-            std::cout << std::fixed << std::setprecision(6);
-            std::cout << "Probing progress: " << testFilter->GetProgress() * 100. << "%"
-                      << std::endl;
+        auto unstructuredGrid = reader->GetOutput();
 
-            // pb.updateProgress(testFilter->GetProgress());
-        });
+        const auto bounds = unstructuredGrid->GetBounds();
+        const auto gridSize = state->dims_;
+        const auto gridBounds = dvec3(gridSize - ivec3(1));
 
-    // pb.hide();
+        auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
+            [&pb, log, state, &progress, progressIncr, progressUpdate](
+                vtkObject* caller, long unsigned int eventId, void* clientData,
+                void* callData) -> void {
+                vtkProbeFilter* testFilter = static_cast<vtkProbeFilter*>(caller);
+                if (testFilter->GetProgress() > 0.0) {
+                    std::ostringstream os;
+                    os << std::fixed << std::setprecision(1) << testFilter->GetProgress() * 100.0
+                       << "%";
+                    log(os.str());
+                    progress += testFilter->GetProgress() * progressIncr;
+                    progressUpdate(progress);
+                }
+            });
 
-    vtkSmartPointer<vtkCallbackCommand> progressCallback =
-        vtkSmartPointer<vtkCallbackCommand>::New();
-    progressCallback->SetCallback(fn);
+        vtkSmartPointer<vtkCallbackCommand> progressCallback =
+            vtkSmartPointer<vtkCallbackCommand>::New();
+        progressCallback->SetCallback(fn);
 
-    std::cout << "Generating grid." << std::endl;
-    auto pointSet = vtkSmartPointer<vtkRectilinearGrid>::New();
-    pointSet->SetDimensions(glm::value_ptr(gridSize));
+        log("Generating grid...");
+        auto pointSet = vtkSmartPointer<vtkRectilinearGrid>::New();
+        pointSet->SetDimensions(glm::value_ptr(gridSize));
 
-    auto xCoordinates = vtkSmartPointer<vtkDoubleArray>::New();
-    auto yCoordinates = vtkSmartPointer<vtkDoubleArray>::New();
-    auto zCoordinates = vtkSmartPointer<vtkDoubleArray>::New();
+        auto xCoordinates = vtkSmartPointer<vtkDoubleArray>::New();
+        auto yCoordinates = vtkSmartPointer<vtkDoubleArray>::New();
+        auto zCoordinates = vtkSmartPointer<vtkDoubleArray>::New();
 
-    const auto xRange = std::abs(bounds[0] - bounds[1]);
-    const auto yRange = std::abs(bounds[2] - bounds[3]);
-    const auto zRange = std::abs(bounds[4] - bounds[5]);
+        const auto xRange = std::abs(bounds[0] - bounds[1]);
+        const auto yRange = std::abs(bounds[2] - bounds[3]);
+        const auto zRange = std::abs(bounds[4] - bounds[5]);
 
-    const auto stepSize =
-        dvec3(xRange / gridBounds.x, yRange / gridBounds.y, zRange / gridBounds.z);
+        const auto stepSize =
+            dvec3(xRange / gridBounds.x, yRange / gridBounds.y, zRange / gridBounds.z);
 
-    for (int z = 0; z < gridSize.z; z++) {
-        const auto zCoord = bounds[4] + static_cast<double>(z) * stepSize.z;
-        zCoordinates->InsertNextValue(zCoord);
-    }
-    for (int y = 0; y < gridSize.y; y++) {
-        const auto yCoord = bounds[2] + static_cast<double>(y) * stepSize.y;
-        yCoordinates->InsertNextValue(yCoord);
-    }
-    for (int x = 0; x < gridSize.x; x++) {
-        const auto xCoord = bounds[0] + static_cast<double>(x) * stepSize.x;
-        xCoordinates->InsertNextValue(xCoord);
-    }
+        for (int z = 0; z < gridSize.z; z++) {
+            const auto zCoord = bounds[4] + static_cast<double>(z) * stepSize.z;
+            zCoordinates->InsertNextValue(zCoord);
+        }
+        for (int y = 0; y < gridSize.y; y++) {
+            const auto yCoord = bounds[2] + static_cast<double>(y) * stepSize.y;
+            yCoordinates->InsertNextValue(yCoord);
+        }
+        for (int x = 0; x < gridSize.x; x++) {
+            const auto xCoord = bounds[0] + static_cast<double>(x) * stepSize.x;
+            xCoordinates->InsertNextValue(xCoord);
+        }
 
-    pointSet->SetXCoordinates(xCoordinates);
-    pointSet->SetYCoordinates(yCoordinates);
-    pointSet->SetZCoordinates(zCoordinates);
+        pointSet->SetXCoordinates(xCoordinates);
+        pointSet->SetYCoordinates(yCoordinates);
+        pointSet->SetZCoordinates(zCoordinates);
+        progress += progressIncr;
+        progressUpdate(progress);
+        log("Done.");
 
-    std::cout << "Done generating grid." << std::endl;
+        if (state->abortConversion_) {
+            abort();
+            return;
+        }
 
-    vtkSmartPointer<vtkCellTreeLocator> cellLocator = vtkSmartPointer<vtkCellTreeLocator>::New();
-    cellLocator->SetDataSet(pointSet);
-    std::cout << "Building Cell Tree Locator." << std::endl;
-    cellLocator->BuildLocator();
-    std::cout << "Done building Cell Tree Locator." << std::endl;
+        vtkSmartPointer<vtkCellTreeLocator> cellLocator =
+            vtkSmartPointer<vtkCellTreeLocator>::New();
+        cellLocator->SetDataSet(pointSet);
+        log("Building Cell Tree Locator...");
+        cellLocator->BuildLocator();
+        progress += progressIncr;
+        progressUpdate(progress);
+        log("Done.");
 
-    auto probeFilter = vtkSmartPointer<vtkProbeFilter>::New();
-    probeFilter->SetSourceData(unstructuredGrid);
-    probeFilter->SetCellLocatorPrototype(cellLocator);
-    probeFilter->SetInputData(pointSet);
+        if (state->abortConversion_) {
+            abort();
+            return;
+        }
 
-    probeFilter->AddObserver(vtkCommand::ProgressEvent, progressCallback);
+        log("Probing...");
+        auto probeFilter = vtkSmartPointer<vtkProbeFilter>::New();
+        probeFilter->SetSourceData(unstructuredGrid);
+        probeFilter->SetCellLocatorPrototype(cellLocator);
+        probeFilter->SetInputData(pointSet);
+        probeFilter->AddObserver(vtkCommand::ProgressEvent, progressCallback);
 
-    std::cout << "Probing." << std::endl;
-    probeFilter->Update();
-    std::cout << "Done probing." << std::endl;
-    auto rectilieanrGrid = probeFilter->GetRectilinearGridOutput();
+        probeFilter->Update();
+        log("Done.");
 
-    // Write file
-    auto writer_xml = vtkSmartPointer<vtkXMLRectilinearGridWriter>::New();
-    writer_xml->SetFileName(outFile_.get().c_str());
-    writer_xml->SetInputData(rectilieanrGrid);
-    std::cout << "Writing." << std::endl;
-    writer_xml->Write();
-    std::cout << "Done writing." << std::endl;
+        if (state->abortConversion_) {
+            abort();
+            return;
+        }
+
+        // Write file
+        log("Writing output file...");
+        auto rectilieanrGrid = probeFilter->GetRectilinearGridOutput();
+        auto writer_xml = vtkSmartPointer<vtkXMLRectilinearGridWriter>::New();
+        writer_xml->SetFileName(state->outputFile_.c_str());
+        writer_xml->SetInputData(rectilieanrGrid);
+        writer_xml->Write();
+        progress += progressIncr;
+        progressUpdate(progress);
+        log("Done.");
+
+        globalClock.stop();
+
+        const int min = static_cast<int>(globalClock.getElapsedSeconds() / 60.0);
+        const double sec = static_cast<int>(globalClock.getElapsedSeconds() - min * 60.0);
+        log("Converting Unstructured Grid to Rectilinear (VTK): " + std::to_string(min) + "min " +
+            std::to_string(sec) + "s");
+
+        done();
+        state->state = State::Done;
+    };
+
+    state_->state = State::NotStarted;
+
+    dispatchPool(dispatch);
 }
+
 }  // namespace inviwo
