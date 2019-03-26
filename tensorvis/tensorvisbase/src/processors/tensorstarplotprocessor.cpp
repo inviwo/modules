@@ -35,8 +35,7 @@
 #include <modules/opengl/buffer/renderbufferobject.h>
 #include <modules/opengl/texture/texture2d.h>
 #include <modules/opengl/buffer/framebufferobject.h>
-
-#define PETITEVIKING_DEBUG
+#include <modules/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 
@@ -119,6 +118,7 @@ TensorStarPlotProcessor::TensorStarPlotProcessor()
                       PropertySemantics::Color)
     , margin_("margin", "Margin", 40.0, 0.0, 500.0, 0.1)
     , rotate_("rotate_", "Rotate", false)
+    , showControlPoints_("showControlPoints","Show control points",false)
     , eventPorperty_("position", "Position",
                      [this](Event* e) {
                          if (auto ev = e->getAs<MouseEvent>()) {
@@ -580,36 +580,36 @@ void TensorStarPlotProcessor::drawDots3D(size_t offset) const {
     nvgContext_->fill();
     nvgContext_->stroke();
 
-#ifdef PETITEVIKING_DEBUG
-    nvgContext_->beginPath();
+    if(showControlPoints_.get()) {
+        nvgContext_->beginPath();
 
-    const auto p1 = center + axis1_3d_ * length * 0.7;
-    const auto p2 = center - axis3_3d_ * length * 0.2;
-    const auto p3 = center - axis2_3d_ * length * 0.4;
-    const auto p4 = center - axis1_3d_ * length * 0.9;
-    const auto p5 = center + axis3_3d_ * length * 0.6;
-    const auto p6 = center + axis2_3d_ * length * 0.15;
+        const auto p1 = center + axis1_3d_ * length * 0.7;
+        const auto p2 = center - axis3_3d_ * length * 0.2;
+        const auto p3 = center - axis2_3d_ * length * 0.4;
+        const auto p4 = center - axis1_3d_ * length * 0.9;
+        const auto p5 = center + axis3_3d_ * length * 0.6;
+        const auto p6 = center + axis2_3d_ * length * 0.15;
 
-    auto controlPoints =
-            nvgContext_->getCubicBezierCurveControlPoints({p5, p6, p1, p2, p3, p4, p5, p6, p1, p2, p3});
-    const auto& firstControlPoints = controlPoints.first;
-    const auto& secondControlPoints = controlPoints.second;
+        auto controlPoints =
+                tensorutil::getCubicBezierCurveControlPoints({p5, p6, p1, p2, p3, p4, p5, p6, p1, p2, p3});
+        const auto &firstControlPoints = controlPoints.first;
+        const auto &secondControlPoints = controlPoints.second;
 
-    nvgContext_->moveTo(p1);
-    nvgContext_->bezierCurveTo(firstControlPoints[2], secondControlPoints[2], p2);
-    nvgContext_->bezierCurveTo(firstControlPoints[3], secondControlPoints[3], p3);
-    nvgContext_->bezierCurveTo(firstControlPoints[4], secondControlPoints[4], p4);
-    nvgContext_->bezierCurveTo(firstControlPoints[5], secondControlPoints[5], p5);
-    nvgContext_->bezierCurveTo(firstControlPoints[6], secondControlPoints[6], p6);
-    nvgContext_->bezierCurveTo(firstControlPoints[7], secondControlPoints[7], p1);
+        nvgContext_->moveTo(p1);
+        nvgContext_->bezierCurveTo(firstControlPoints[2], secondControlPoints[2], p2);
+        nvgContext_->bezierCurveTo(firstControlPoints[3], secondControlPoints[3], p3);
+        nvgContext_->bezierCurveTo(firstControlPoints[4], secondControlPoints[4], p4);
+        nvgContext_->bezierCurveTo(firstControlPoints[5], secondControlPoints[5], p5);
+        nvgContext_->bezierCurveTo(firstControlPoints[6], secondControlPoints[6], p6);
+        nvgContext_->bezierCurveTo(firstControlPoints[7], secondControlPoints[7], p1);
 
-    nvgContext_->closePath();
-    nvgContext_->fillColor(vec4(0.8f, 0.3f, 0.0f, 0.7f));
-    nvgContext_->fill();
-    nvgContext_->strokeColor(vec4(0.8f, 0.3f, 0.0f, 1.0f));
-    nvgContext_->strokeWidth(2.0f);
-    nvgContext_->stroke();
-#endif
+        nvgContext_->closePath();
+        nvgContext_->fillColor(vec4(0.8f, 0.3f, 0.0f, 0.7f));
+        nvgContext_->fill();
+        nvgContext_->strokeColor(vec4(0.8f, 0.3f, 0.0f, 1.0f));
+        nvgContext_->strokeWidth(2.0f);
+        nvgContext_->stroke();
+    }
 }
 
 void TensorStarPlotProcessor::drawDotsEigenValues() const {
@@ -903,12 +903,11 @@ void TensorStarPlotProcessor::process() {
 
     RenderBufferObject stencilBufferObject;
     stencilBufferObject.activate();
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, dimensions.x,
-                             dimensions.y);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, dimensions.x, dimensions.y);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
-                                 stencilBufferObject.getID());
+                              stencilBufferObject.getID());
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,
-                                 stencilBufferObject.getID());
+                              stencilBufferObject.getID());
 
     glClear(GL_STENCIL_BUFFER_BIT);
 

@@ -133,6 +133,8 @@ private:
     DoubleProperty margin_;
     BoolProperty rotate_;
 
+    BoolProperty showControlPoints_;
+
     NanoVGContext* nvgContext_;
 
     EventProperty eventPorperty_;
