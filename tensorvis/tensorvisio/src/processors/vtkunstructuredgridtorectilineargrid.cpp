@@ -42,14 +42,9 @@
 #include <vtkPointData.h>
 #include <vtkSmartPointer.h>
 #include <vtkUnstructuredGrid.h>
-#include <vtkUnstructuredGridReader.h>
-#include <vtkRectilinearGrid.h>
-#include <vtkXMLRectilinearGridWriter.h>
 #include <vtkProbeFilter.h>
 #include <vtkCallbackCommand.h>
-#include <vtkObject.h>
 #include <vtkCellTreeLocator.h>
-#include <vtkXMLWriter.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -69,14 +64,12 @@ const ProcessorInfo VTKUnstructuredGridToRectilinearGrid::getProcessorInfo() con
 VTKUnstructuredGridToRectilinearGrid::VTKUnstructuredGridToRectilinearGrid()
     : Processor()
     , ActivityIndicatorOwner()
-    , file_("file", "File", "", "VTK", InvalidationLevel::Valid)
-    , outFile_("outFile", "Output file", "", "VTK", InvalidationLevel::Valid)
     , dimensions_("dimensions", "Output dimensions", ivec3(32), ivec3(2), ivec3(2048))
     , button_("button", "Convert Data")
     , abortButton_("abortButton", "Abort Conversion", InvalidationLevel::Valid)
+    , inport_("inport")
+    , outport_("outport")
     , state_(std::make_shared<WorkerState>()) {
-    addProperty(file_);
-    addProperty(outFile_);
     addProperty(dimensions_);
     addProperty(button_);
     addProperty(abortButton_);
@@ -91,14 +84,10 @@ VTKUnstructuredGridToRectilinearGrid::VTKUnstructuredGridToRectilinearGrid()
             state_->abortConversion_ = true;
         }
     });
-
-    file_.clearNameFilters();
-    file_.addNameFilter("VTK Unstructured Grid (*.vtk)");
-    file_.addNameFilter("VTK Unstructured Grid (*.vtu)");
-
-    outFile_.addNameFilter("VTK Rectilinear Grid (*.vtr)");
-
     progressBar_.hide();
+
+    addPort(inport_);
+    addPort(outport_);
 }
 
 VTKUnstructuredGridToRectilinearGrid::~VTKUnstructuredGridToRectilinearGrid() {
@@ -109,13 +98,6 @@ VTKUnstructuredGridToRectilinearGrid::~VTKUnstructuredGridToRectilinearGrid() {
 void VTKUnstructuredGridToRectilinearGrid::process() {}
 
 void VTKUnstructuredGridToRectilinearGrid::loadData() {
-    if (!filesystem::fileExists(file_.get())) {
-        LogError("Could not open file: " << file_.get());
-        return;
-    }
-
-    state_->inputFile_ = file_;
-    state_->outputFile_ = outFile_;
     state_->dims_ = dimensions_;
     state_->abortConversion_ = false;
 
@@ -133,12 +115,19 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         done();
     };
 
-    auto& activityIndicator = getActivityIndicator();
+    auto grid = *inport_.getData().get();
 
-    auto dispatch = [state = state_, pb = &progressBar_, activityIndicator, done,
-                     abort]() mutable -> void {
+    if (grid->GetDataObjectType() != 4) {
+        LogError("Input is not an unstructured grid. (" +
+                 std::to_string(grid->GetDataObjectType()) + ")");
+        return;
+    }
+
+    auto unstructuredGrid = static_cast<vtkUnstructuredGrid*>(grid);
+
+    auto dispatch = [this, done, abort, unstructuredGrid]() mutable -> void {
         auto log = [](const std::string& message) { LogInfoCustom("VTK conversion", message); };
-        const auto progressUpdate = [pb, state](float f) {
+        const auto progressUpdate = [pb = &this->progressBar_, state = this->state_](float f) {
             if (state->processorExists_) {
                 dispatchFront([f, pb]() {
                     f < 1.0 ? pb->show() : pb->hide();
@@ -146,7 +135,8 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
                 });
             }
         };
-        auto updateActivity = [&activityIndicator, state](bool active) {
+        auto updateActivity = [& activityIndicator = this->getActivityIndicator(),
+                               state = this->state_](bool active) {
             if (state->processorExists_) {
                 dispatchFront([active](ActivityIndicator& i) { i.setActive(active); },
                               std::ref(activityIndicator));
@@ -154,7 +144,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         };
 
         updateActivity(true);
-        state->state = State::Working;
+        this->state_->state = State::Working;
 
         Clock globalClock;
         globalClock.start();
@@ -162,27 +152,17 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         float progress = 0.0f;
         progressUpdate(progress);
 
-        log("Reading input file: " + state->inputFile_);
-        auto reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
-        reader->SetFileName(state->inputFile_.c_str());
-        reader->Update();
-        progress += progressIncr;
-        progressUpdate(progress);
-        log("Done");
-
-        if (state->abortConversion_) {
+        if (this->state_->abortConversion_) {
             abort();
             return;
         }
 
-        auto unstructuredGrid = reader->GetOutput();
-
         const auto bounds = unstructuredGrid->GetBounds();
-        const auto gridSize = state->dims_;
+        const auto gridSize = this->state_->dims_;
         const auto gridBounds = dvec3(gridSize - ivec3(1));
 
         auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-            [&pb, log, state, &progress, progressIncr, progressUpdate](
+            [log, &progress, progressIncr, progressUpdate](
                 vtkObject* caller, long unsigned int eventId, void* clientData,
                 void* callData) -> void {
                 vtkProbeFilter* testFilter = static_cast<vtkProbeFilter*>(caller);
@@ -235,7 +215,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         progressUpdate(progress);
         log("Done.");
 
-        if (state->abortConversion_) {
+        if (this->state_->abortConversion_) {
             abort();
             return;
         }
@@ -249,7 +229,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         progressUpdate(progress);
         log("Done.");
 
-        if (state->abortConversion_) {
+        if (this->state_->abortConversion_) {
             abort();
             return;
         }
@@ -264,18 +244,14 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         probeFilter->Update();
         log("Done.");
 
-        if (state->abortConversion_) {
+        if (this->state_->abortConversion_) {
             abort();
             return;
         }
 
         // Write file
         log("Writing output file...");
-        auto rectilieanrGrid = probeFilter->GetRectilinearGridOutput();
-        auto writer_xml = vtkSmartPointer<vtkXMLRectilinearGridWriter>::New();
-        writer_xml->SetFileName(state->outputFile_.c_str());
-        writer_xml->SetInputData(rectilieanrGrid);
-        writer_xml->Write();
+        auto rectiliearGrid = probeFilter->GetRectilinearGridOutput();
         progress += progressIncr;
         progressUpdate(progress);
         log("Done.");
@@ -288,7 +264,11 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
             std::to_string(sec) + "s");
 
         done();
-        state->state = State::Done;
+        this->state_->state = State::Done;
+
+        dispatchFront([this, rectiliearGrid]() {
+            this->outport_.setData(std::make_shared<vtkRectilinearGrid*>(rectiliearGrid));
+        });
     };
 
     state_->state = State::NotStarted;

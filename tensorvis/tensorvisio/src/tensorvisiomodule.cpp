@@ -35,6 +35,7 @@
 #include <modules/tensorvisio/processors/tensorfield2dimport.h>
 #include <modules/tensorvisio/processors/tensorfield3dexport.h>
 #include <modules/tensorvisio/processors/tensorfield3dimport.h>
+#include <modules/tensorvisio/processors/vtkreader.h>
 #include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
 #include <modules/tensorvisio/processors/vtkstructuredgridreader.h>
 #include <modules/tensorvisio/processors/vtktotensorfield3d.h>
@@ -43,6 +44,7 @@
 #include <modules/tensorvisio/processors/vtkxmlrectilineargridreader.h>
 #include <modules/tensorvisio/processors/vtkstructuredpointsreader.h>
 #include <modules/tensorvisio/processors/vtkvolumereader.h>
+#include <modules/tensorvisio/processors/vtkwriter.h>
 
 namespace inviwo {
 
@@ -53,6 +55,7 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app,
     registerProcessor<TensorField2DImport>();
     registerProcessor<TensorField3DExport>();
     registerProcessor<TensorField3DImport>();
+    registerProcessor<VTKReader>();
     registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
     registerProcessor<VTKStructuredGridReader>();
     registerProcessor<VTKToTensorField3D>();
@@ -61,6 +64,7 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app,
     registerProcessor<VTKXMLRectilinearGridReader>();
     registerProcessor<VTKStructuredPointsReader>();
     registerProcessor<VTKVolumeReader>();
+    registerProcessor<VTKWriter>();
 }
 
 } // namespace

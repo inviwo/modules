@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,72 +27,61 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
-#define IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
+#pragma once
 
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/datainport.h>
-
-#include <atomic>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkRectilinearGrid.h>
+#include <vtkSmartPointer.h>
+#include <vtkXMLGenericDataObjectReader.h>
 #include <vtkDataObject.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKUnstructuredGridToRectilinearGrid, VTK Unstructured Grid To Rectilinear
- * Grid}
- * ![](org.inviwo.VTKUnstructuredGridReader.png?classIdentifier=org.inviwo.VTKUnstructuredGridToRectilinearGrid)
+/** \docpage{org.inviwo.VTKReader, VTKReader}
+ * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
 
-class IVW_MODULE_TENSORVISIO_API VTKUnstructuredGridToRectilinearGrid
-    : public Processor,
-      public ActivityIndicatorOwner,
-      public ProgressBarOwner {
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor {
 public:
-    VTKUnstructuredGridToRectilinearGrid();
-    virtual ~VTKUnstructuredGridToRectilinearGrid();
+    VTKReader();
+    virtual ~VTKReader() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    enum class State { NotStarted, Working, Abort, Done, Invalid };
+private:
+    FileProperty file_;
+    ButtonProperty reloadButton_;
+    DataOutport<vtkDataObject*> outport_;
 
-    struct WorkerState {
-        std::atomic<State> state = State::NotStarted;
-        std::atomic<bool> abortConversion_ = false;
-        std::atomic<bool> processorExists_ = true;
+    vtkSmartPointer<vtkXMLGenericDataObjectReader> reader_;
 
-        ivec3 dims_ = ivec3(1);
-    };
-
-    void loadData();
-
-    IntVec3Property dimensions_;
-
-    ButtonProperty button_;
-    ButtonProperty abortButton_;
-
-    DataInport<vtkDataObject*> inport_;
-    DataOutport<vtkRectilinearGrid*> outport_;
-
-    std::shared_ptr<WorkerState> state_;
+    void createReader();
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
