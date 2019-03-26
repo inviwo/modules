@@ -128,8 +128,6 @@ struct dmat3Convert {
 
     template <typename T>
     void operator()(T *array) {
-        using ValueType = vtkDataArrayAccessor<T>::APIType;
-
         vtkDataArrayAccessor<T> access(array);
 
         tensors.reserve(static_cast<size_t>(array->GetNumberOfTuples()));
