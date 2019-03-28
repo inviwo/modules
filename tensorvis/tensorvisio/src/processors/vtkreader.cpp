@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/clock.h>
+#include <fstream>
 
 namespace inviwo {
 
@@ -48,42 +49,87 @@ VTKReader::VTKReader()
     : Processor()
     , file_("vtkFile", "VTK file", "", "VTK")
     , reloadButton_("reload", "Reload Data")
-    , outport_("VTKDataObjectOutport") {
+    , outport_("VTKDataObjectOutport")
+    , xmlreader_(nullptr)
+    , legacyreader_(nullptr)
+    , data_(vtkSmartPointer<vtkDataObject>::New()) {
 
-    file_.addNameFilter("Serial vtkImageData (structured) (.vti)");
-    file_.addNameFilter("Serial vtkPolyData (unstructured) (.vtp)");
-    file_.addNameFilter("Serial vtkRectilinearGrid (structured) (.vtr)");
-    file_.addNameFilter("Serial vtkStructuredGrid (structured) (.vts)");
-    file_.addNameFilter("Serial vtkUnstructuredGrid (unstructured) (.vtu)");
+    file_.addNameFilter("VTK ImageData (structured) (.vti)");
+    file_.addNameFilter("VTK PolyData (unstructured) (.vtp)");
+    file_.addNameFilter("VTK RectilinearGrid (structured) (.vtr)");
+    file_.addNameFilter("VTK StructuredGrid (structured) (.vts)");
+    file_.addNameFilter("VTK UnstructuredGrid (unstructured) (.vtu)");
+    file_.addNameFilter("Legacy (*vtk)");
     file_.addNameFilter("Parallel vtkImageData (structured) (.pvti)");
     file_.addNameFilter("Parallel vtkPolyData (unstructured) (.pvtp)");
     file_.addNameFilter("Parallel vtkRectilinearGrid (structured) (.pvtr)");
     file_.addNameFilter("Parallel vtkStructuredGrid (structured) (.pvts)");
     file_.addNameFilter("Parallel vtkUnstructuredGrid (unstructured) (.pvtu)");
-    file_.addNameFilter("Legacy (*vtk)");
 
     addProperty(file_);
 
     addPort(outport_);
 
-    reloadButton_.onChange([this]() { reader_ = nullptr; });
+    reloadButton_.onChange([this]() {
+        xmlreader_ = nullptr;
+        legacyreader_ = nullptr;
+    });
 }
 
 void VTKReader::process() {
-    if (!filesystem::fileExists(file_)) {
+    const auto fileName = file_.get();
+
+    if (!filesystem::fileExists(fileName)) {
+        LogError("File " << fileName << "not found.");
         return;
     }
-    if (!reader_ || file_.isModified()) {
-        createReader();
+
+    const auto fileType = determineFileType(fileName);
+
+    if (file_.isModified()) {
+        data_ = read(fileType);
     }
 
-    outport_.setData(std::make_shared<vtkDataObject*>(reader_->GetOutput()));
+    outport_.setData(std::make_shared<vtkDataObject*>(data_));
 }
 
-void VTKReader::createReader() {
-    reader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
-    reader_->SetFileName(file_.get().c_str());
-    reader_->Update();
+VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName) const {
+    std::string line{};
+    std::ifstream infile(fileName);
+
+    std::getline(infile, line);
+
+    if (line.find("xml") != std::string::npos) {
+        LogInfo("VTK XML file detected.");
+        return VTKFileType::XML;
+    }
+    if (line.find("vtk") != std::string::npos) {
+        LogInfo("VTK Legacy file detected.");
+        return VTKFileType::Legacy;
+    }
+    LogInfo("File type could not be determined.") { return VTKFileType::Unknown; }
+}
+
+vtkDataObject* VTKReader::read(const VTKFileType fileType) {
+    switch (fileType) {
+        case VTKFileType::Legacy:
+            if (!legacyreader_) {
+                legacyreader_ = vtkSmartPointer<vtkGenericDataObjectReader>::New();
+            }
+            legacyreader_->SetFileName(file_.get().c_str());
+            legacyreader_->Update();
+            return legacyreader_->GetOutput();
+        case VTKFileType::XML:
+            if (!xmlreader_) {
+                xmlreader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
+            }
+            xmlreader_->SetFileName(file_.get().c_str());
+            xmlreader_->Update();
+            return xmlreader_->GetOutput();
+        default:
+            break;
+    }
+    return vtkSmartPointer<vtkDataObject>::New();
 }
 
 }  // namespace inviwo

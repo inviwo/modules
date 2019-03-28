@@ -117,7 +117,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
 
     auto grid = *inport_.getData().get();
 
-    if (grid->GetDataObjectType() != 4) {
+    if (grid->GetDataObjectType() != VTK_UNSTRUCTURED_GRID) {
         LogError("Input is not an unstructured grid. (" +
                  std::to_string(grid->GetDataObjectType()) + ")");
         return;

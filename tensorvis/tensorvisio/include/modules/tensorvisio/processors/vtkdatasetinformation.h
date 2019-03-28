@@ -32,24 +32,19 @@
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
 #include <vtkDataObject.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-
-
-/** \docpage{org.inviwo.VTKReader, VTKReader}
- * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
+/** \docpage{org.inviwo.VTKDataSetInformation, VTKData Set Information}
+ * ![](org.inviwo.VTKDataSetInformation.png?classIdentifier=org.inviwo.VTKDataSetInformation)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -67,10 +62,10 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKDataSetInformation : public Processor {
 public:
-    VTKReader();
-    virtual ~VTKReader() = default;
+    VTKDataSetInformation();
+    virtual ~VTKDataSetInformation() = default;
 
     virtual void process() override;
 
@@ -78,22 +73,34 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class VTKFileType{
-        XML,
-        Legacy,
-        Unknown
+    class ArrayInformationProperty : public CompositeProperty {
+    public:
+        ArrayInformationProperty() = delete;
+        ArrayInformationProperty(const std::string& arrayName, const std::string& dataType,
+                                 const std::string& numberOfComponents)
+            : CompositeProperty(arrayName, arrayName)
+            , dataType_(arrayName + "dataType", "Data type", dataType)
+            , numberOfComponents_(arrayName + "numberOfComponents", "Number of components",
+                                  numberOfComponents) {
+            addProperty(dataType_);
+            addProperty(numberOfComponents_);
+            dataType_.setReadOnly(true);
+            numberOfComponents_.setReadOnly(true);
+        }
+
+        const std::string& getDataType() const { return dataType_.get(); }
+        const std::string& getNumberOfComponents() const { return numberOfComponents_.get(); }
+
+    private:
+        StringProperty dataType_;
+        StringProperty numberOfComponents_;
     };
 
-    FileProperty file_;
-    ButtonProperty reloadButton_;
-    DataOutport<vtkDataObject*> outport_;
+    DataInport<vtkDataObject*> inport_;
 
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
-    vtkDataObject* data_;
-
-    VTKFileType determineFileType(const std::string &fileName) const;
-    vtkDataObject* read(const VTKFileType fileType);
+    StringProperty className_;
+    CompositeProperty pointDataArrays_;
+    CompositeProperty cellDataArrays_;
 };
 
 }  // namespace inviwo

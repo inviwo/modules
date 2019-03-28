@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/tensorfield2dimport.h
     include/modules/tensorvisio/processors/tensorfield3dexport.h
     include/modules/tensorvisio/processors/tensorfield3dimport.h
+    include/modules/tensorvisio/processors/vtkdatasetinformation.h
     include/modules/tensorvisio/processors/vtkreader.h
     include/modules/tensorvisio/processors/vtkrectilineargridreader.h
     include/modules/tensorvisio/processors/vtkstructuredgridreader.h
@@ -38,6 +39,7 @@ set(SOURCE_FILES
     src/processors/tensorfield2dimport.cpp
     src/processors/tensorfield3dexport.cpp
     src/processors/tensorfield3dimport.cpp
+    src/processors/vtkdatasetinformation.cpp
     src/processors/vtkreader.cpp
     src/processors/vtkrectilineargridreader.cpp
     src/processors/vtkstructuredgridreader.cpp
