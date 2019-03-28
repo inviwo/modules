@@ -37,6 +37,7 @@
 #include <vtkCellData.h>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
+#include <vtkDoubleArray.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -62,23 +63,64 @@ VTKDataSetInformation::VTKDataSetInformation()
 
     addProperty(className_);
     addProperty(pointDataArrays_);
+    addProperty(cellDataArrays_);
 }
 
 void VTKDataSetInformation::process() {
-    auto dataObject = *inport_.getData().get();
-    auto dataSet = static_cast<vtkDataSet*>(dataObject);
+    auto dataSet = *inport_.getData().get();
 
-    className_.set(std::string{dataObject->GetClassName()});
+    className_.set(std::string{dataSet->GetClassName()});
 
-    auto pointData = dataSet->GetPointData();
+    const auto pointData = dataSet->GetPointData();
+    const auto cellData = dataSet->GetCellData();
+
+    auto stringReplace = [](std::string str, const std::string& from,
+                            const std::string& to) -> const std::string {
+        size_t start_pos{0};
+        while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length();
+        }
+        return str;
+    };
 
     NetworkLock lock;
+
+    std::vector<std::string> identifiers{};
+    for (const auto& property : pointDataArrays_.getProperties()) {
+        identifiers.emplace_back(property->getIdentifier());
+    }
+    for (const auto &identifier : identifiers) {
+        pointDataArrays_.removeProperty(identifier);
+    }
+
+    identifiers.clear();
+    for (const auto& property : cellDataArrays_.getProperties()) {
+        identifiers.emplace_back(property->getIdentifier());
+    }
+    for (const auto &identifier : identifiers) {
+        cellDataArrays_.removeProperty(identifier);
+    }
+
     for (int i{0}; i < pointData->GetNumberOfArrays(); ++i) {
-        auto array = pointData->GetArray(i);
+        const auto array = pointData->GetArray(i);
+        const auto arrayName = std::string{array->GetName()};
+
         pointDataArrays_.addProperty(new ArrayInformationProperty{
-            std::string{array->GetName()}, std::string{array->GetDataTypeAsString()},
+            arrayName, stringReplace(stringReplace(arrayName, ".", ""), " ", ""),
+            std::string{array->GetDataTypeAsString()},
             std::to_string(array->GetNumberOfComponents())});
     }
+
+    for (int i{0}; i < cellData->GetNumberOfArrays(); ++i) {
+        const auto array = cellData->GetArray(i);
+        const auto arrayName = std::string{array->GetName()};
+        cellDataArrays_.addProperty(new ArrayInformationProperty{
+            arrayName, stringReplace(stringReplace(arrayName, ".", ""), " ", ""),
+            std::string{array->GetDataTypeAsString()},
+            std::to_string(array->GetNumberOfComponents())});
+    }
+
     lock.~NetworkLock();
 }
 

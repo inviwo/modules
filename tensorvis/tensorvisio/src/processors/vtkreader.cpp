@@ -52,7 +52,7 @@ VTKReader::VTKReader()
     , outport_("VTKDataObjectOutport")
     , xmlreader_(nullptr)
     , legacyreader_(nullptr)
-    , data_(vtkSmartPointer<vtkDataObject>::New()) {
+    , data_(nullptr) {
 
     file_.addNameFilter("VTK ImageData (structured) (.vti)");
     file_.addNameFilter("VTK PolyData (unstructured) (.vtp)");
@@ -90,7 +90,9 @@ void VTKReader::process() {
         data_ = read(fileType);
     }
 
-    outport_.setData(std::make_shared<vtkDataObject*>(data_));
+    if (!data_) return;
+
+    outport_.setData(std::make_shared<vtkDataSet*>(data_));
 }
 
 VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName) const {
@@ -100,7 +102,6 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
     std::getline(infile, line);
 
     if (line.find("xml") != std::string::npos) {
-        LogInfo("VTK XML file detected.");
         return VTKFileType::XML;
     }
     if (line.find("vtk") != std::string::npos) {
@@ -110,7 +111,7 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
     LogInfo("File type could not be determined.") { return VTKFileType::Unknown; }
 }
 
-vtkDataObject* VTKReader::read(const VTKFileType fileType) {
+vtkDataSet* VTKReader::read(const VTKFileType fileType) {
     switch (fileType) {
         case VTKFileType::Legacy:
             if (!legacyreader_) {
@@ -118,18 +119,22 @@ vtkDataObject* VTKReader::read(const VTKFileType fileType) {
             }
             legacyreader_->SetFileName(file_.get().c_str());
             legacyreader_->Update();
-            return legacyreader_->GetOutput();
+            LogInfo("VTK Legacy file version "
+                    << std::to_string(legacyreader_->GetFileMajorVersion()) << "."
+                    << std::to_string(legacyreader_->GetFileMinorVersion()) << " detected.");
+            return static_cast<vtkDataSet*>(legacyreader_->GetOutput());
         case VTKFileType::XML:
             if (!xmlreader_) {
                 xmlreader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
             }
             xmlreader_->SetFileName(file_.get().c_str());
             xmlreader_->Update();
-            return xmlreader_->GetOutput();
+            LogInfo("VTK XML file detected.");
+            return static_cast<vtkDataSet*>(xmlreader_->GetOutput());
         default:
             break;
     }
-    return vtkSmartPointer<vtkDataObject>::New();
+    return nullptr;
 }
 
 }  // namespace inviwo

@@ -111,15 +111,15 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
     };
     const auto abort = [this, state = state_, done]() {
         state->state = State::Abort;
-        LogWarnCustom("VTK conversion", "Conversion aborted");
+        LogWarnCustom("VTK conversion", "Conversion aborted.");
         done();
     };
 
     auto grid = *inport_.getData().get();
 
     if (grid->GetDataObjectType() != VTK_UNSTRUCTURED_GRID) {
-        LogError("Input is not an unstructured grid. (" +
-                 std::to_string(grid->GetDataObjectType()) + ")");
+        LogError("Input is not an unstructured grid but a " + std::string{grid->GetClassName()} +
+                 ". Aborting.");
         return;
     }
 

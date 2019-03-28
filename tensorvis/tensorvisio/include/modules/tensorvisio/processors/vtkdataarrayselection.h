@@ -32,24 +32,20 @@
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
 #include <vtkDataSet.h>
+#include <vtkDataArray.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-
-
-/** \docpage{org.inviwo.VTKReader, VTKReader}
- * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
+/** \docpage{org.inviwo.VTKDataArraySelection, VTKData Array Selection}
+ * ![](org.inviwo.VTKDataArraySelection.png?classIdentifier=org.inviwo.VTKDataArraySelection)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -67,33 +63,23 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKDataArraySelection : public Processor {
 public:
-    VTKReader();
-    virtual ~VTKReader() = default;
+    VTKDataArraySelection();
+    virtual ~VTKDataArraySelection() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class VTKFileType{
-        XML,
-        Legacy,
-        Unknown
-    };
+    DataInport<vtkDataSet*> inport_;
+    DataOutport<vtkDataArray*> outport_;
 
-    FileProperty file_;
-    ButtonProperty reloadButton_;
-    DataOutport<vtkDataSet*> outport_;
-
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
-    vtkDataSet* data_;
-
-    VTKFileType determineFileType(const std::string &fileName) const;
-    vtkDataSet* read(const VTKFileType fileType);
+    OptionPropertyInt arrays_;
+    int offset_;
 };
 
 }  // namespace inviwo

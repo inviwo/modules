@@ -46,7 +46,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkRectilinearGrid.h>
-#include <vtkDataObject.h>
+#include <vtkDataSet.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -87,7 +87,7 @@ protected:
     ButtonProperty button_;
     ButtonProperty abortButton_;
 
-    DataInport<vtkDataObject*> inport_;
+    DataInport<vtkDataSet*> inport_;
     DataOutport<vtkRectilinearGrid*> outport_;
 
     std::shared_ptr<WorkerState> state_;

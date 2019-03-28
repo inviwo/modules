@@ -32,24 +32,17 @@
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/ports/datainport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
-#include <vtkDataSet.h>
+#include <vtkDataArray.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-
-
-/** \docpage{org.inviwo.VTKReader, VTKReader}
- * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
+/** \docpage{org.inviwo.VTKDataArrayToTensorField3D, VTKData Array To Tensor Field3D}
+ * ![](org.inviwo.VTKDataArrayToTensorField3D.png?classIdentifier=org.inviwo.VTKDataArrayToTensorField3D)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -67,10 +60,10 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKDataArrayToTensorField3D : public Processor {
 public:
-    VTKReader();
-    virtual ~VTKReader() = default;
+    VTKDataArrayToTensorField3D();
+    virtual ~VTKDataArrayToTensorField3D() = default;
 
     virtual void process() override;
 
@@ -78,22 +71,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class VTKFileType{
-        XML,
-        Legacy,
-        Unknown
-    };
-
-    FileProperty file_;
-    ButtonProperty reloadButton_;
-    DataOutport<vtkDataSet*> outport_;
-
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
-    vtkDataSet* data_;
-
-    VTKFileType determineFileType(const std::string &fileName) const;
-    vtkDataSet* read(const VTKFileType fileType);
+    DataInport<vtkDataArray*> inport_;
 };
 
 }  // namespace inviwo
