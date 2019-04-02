@@ -82,7 +82,7 @@ protected:
 
     void loadData();
 
-    IntVec3Property dimensions_;
+    IntProperty maxDimension_;
 
     ButtonProperty button_;
     ButtonProperty abortButton_;

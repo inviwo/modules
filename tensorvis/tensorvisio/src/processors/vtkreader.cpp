@@ -99,9 +99,15 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
     std::string line{};
     std::ifstream infile(fileName);
 
+    // VTK file header is always ASCII so we can just read the first line.
     std::getline(infile, line);
 
+    // This is what should be in the header according to documentation.
     if (line.find("xml") != std::string::npos) {
+        return VTKFileType::XML;
+    }
+    // This is what Paraview puts into their header...
+    if (line.find("VTKFile") != std::string::npos) {
         return VTKFileType::XML;
     }
     if (line.find("vtk") != std::string::npos) {

@@ -96,7 +96,7 @@ private:
         StringProperty numberOfComponents_;
     };
 
-    DataInport<vtkDataSet*> inport_;
+    DataInport<vtkDataSet *> inport_;
 
     StringProperty className_;
     CompositeProperty pointDataArrays_;

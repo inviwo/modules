@@ -48,8 +48,25 @@ const ProcessorInfo VTKDataArraySelection::processorInfo_{
 };
 const ProcessorInfo VTKDataArraySelection::getProcessorInfo() const { return processorInfo_; }
 
+void VTKDataArraySelection::serialize(Serializer& s) const {
+    Processor::serialize(s);
+
+    s.serialize("previouslySelectedArrayName_", previouslySelectedArrayName_);
+}
+
+void VTKDataArraySelection::deserialize(Deserializer& d) {
+    Processor::deserialize(d);
+
+    d.deserialize("previouslySelectedArrayName_", previouslySelectedArrayName_);
+}
+
 VTKDataArraySelection::VTKDataArraySelection()
-    : Processor(), inport_("inport"), outport_("outport"), arrays_("arrays", "arrays") {
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , arrays_("arrays", "arrays")
+    , offset_{0}
+    , previouslySelectedArrayName_{} {
     addPort(inport_);
     addPort(outport_);
 
@@ -60,6 +77,10 @@ VTKDataArraySelection::VTKDataArraySelection()
 
 void VTKDataArraySelection::initializeResources() {
     if (!inport_.hasData()) return;
+
+    auto dataSet = *inport_.getData().get();
+    auto pointData = dataSet->GetPointData();
+    auto cellData = dataSet->GetCellData();
 
     auto stringReplace = [](std::string str, const std::string& from,
                             const std::string& to) -> const std::string {
@@ -72,10 +93,6 @@ void VTKDataArraySelection::initializeResources() {
     };
 
     arrays_.clearOptions();
-
-    auto dataSet = *inport_.getData().get();
-    auto pointData = dataSet->GetPointData();
-    auto cellData = dataSet->GetCellData();
 
     int i{0};
     for (; i < pointData->GetNumberOfArrays(); ++i) {
@@ -91,7 +108,16 @@ void VTKDataArraySelection::initializeResources() {
             {cellData->GetArray(i)->GetName()}, i + offset_);
     }
 
+    // If the data set contains an array with the same name as the previous data set, we set the
+    // selected option to that array. This is mostly for serialization purposes.
+    for (const auto& option : arrays_.getOptions()) {
+        if (option.id_ == previouslySelectedArrayName_) {
+            arrays_.setSelectedIndex(option.value_);
+            return;
+        }
+    }
     arrays_.setSelectedIndex(0);
+    previouslySelectedArrayName_ = arrays_.getOptionDisplayName(0);
 }
 
 void VTKDataArraySelection::process() {
@@ -99,6 +125,8 @@ void VTKDataArraySelection::process() {
     if (!arrays_.getOptions().size()) return;
 
     auto selectedOption = arrays_.get();
+    previouslySelectedArrayName_ = arrays_.getOptionDisplayName(selectedOption);
+
     auto dataSet = *inport_.getData().get();
     // point array
     if (selectedOption < offset_) {

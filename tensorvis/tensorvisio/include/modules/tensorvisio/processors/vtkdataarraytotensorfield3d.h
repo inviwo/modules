@@ -33,10 +33,14 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <modules/tensorvisbase/ports/tensorfieldport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkDataArray.h>
+#include <vtkDataSet.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -71,7 +75,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<vtkDataArray*> inport_;
+    DataInport<vtkDataArray*> dataArrayInport_;
+    DataInport<vtkDataSet*> dataSetInport_;
+
+    TensorField3DOutport tensorField3DOutport_;
+
+    BoolProperty normalizeExtents_;
 };
 
 }  // namespace inviwo

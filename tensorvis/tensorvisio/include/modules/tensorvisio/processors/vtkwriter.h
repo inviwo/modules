@@ -33,10 +33,14 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkRectilinearGrid.h>
+#include <vtkXMLDataSetWriter.h>
+#include <vtkDataSet.h>
+#include <vtkSmartPointer.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -71,7 +75,13 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<vtkRectilinearGrid*> inport_;
+    DataInport<vtkDataSet*> inport_;
+    vtkSmartPointer<vtkXMLDataSetWriter> writer_;
+
+    FileProperty file_;
+    ButtonProperty button_;
+
+    void export_isacppkeyword();
 };
 
 }  // namespace inviwo

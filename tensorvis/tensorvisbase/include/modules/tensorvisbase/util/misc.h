@@ -423,5 +423,13 @@ inline std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveContro
     return controlPoints;
 }
 
+inline dvec3 vtk_ExtentFromBounds(const double* bounds) {
+    return dvec3{bounds[1] - bounds[0], bounds[3] - bounds[2], bounds[5] - bounds[4]};
+}
+
+inline dvec3 vtk_OffsetFromBounds(const double* bounds) {
+    return dvec3{bounds[0], bounds[2], bounds[4]};
+}
+
 }  // namespace tensorutil
 }  // namespace inviwo

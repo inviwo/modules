@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <modules/tensorvisio/processors/vtkwriter.h>
+#include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {
 
@@ -41,8 +42,63 @@ const ProcessorInfo VTKWriter::processorInfo_{
 };
 const ProcessorInfo VTKWriter::getProcessorInfo() const { return processorInfo_; }
 
-VTKWriter::VTKWriter() : Processor(), inport_("inport") { addPort(inport_); }
+VTKWriter::VTKWriter()
+    : Processor()
+    , inport_("inport")
+    , writer_(vtkSmartPointer<vtkXMLDataSetWriter>::New())
+    , file_("file", "File name", "", "vtk")
+    , button_("button", "Export") {
+    addPort(inport_);
+
+    addProperty(file_);
+    file_.setAcceptMode(AcceptMode::Save);
+
+    addProperty(button_);
+    button_.onChange([this]() { this->export_isacppkeyword(); });
+}
 
 void VTKWriter::process() {}
+
+void VTKWriter::export_isacppkeyword() {
+    if (!inport_.hasData()) return;
+
+    auto dataSet = *inport_.getData().get();
+
+    if (file_.get().empty()) file_.requestFile();
+
+    std::string ending{};
+
+    if (!file_.get().empty()) {
+        switch (dataSet->GetDataObjectType()) {
+            case VTK_STRUCTURED_GRID:
+                ending = "vts";
+                break;
+            case VTK_IMAGE_DATA:
+                ending = "vti";
+                break;
+            case VTK_POLY_DATA:
+                ending = "vtp";
+                break;
+            case VTK_RECTILINEAR_GRID:
+                ending = "vtr";
+                break;
+            case VTK_UNSTRUCTURED_GRID:
+                ending = "vtu";
+                break;
+            default:
+                ending = "vtk";
+                break;
+        }
+
+        std::string vtkConvention = filesystem::replaceFileExtension(file_.get(), ending);
+        // write
+        writer_->SetInputData(dataSet);
+        writer_->SetFileName(vtkConvention.c_str());
+        writer_->Write();
+        LogProcessorInfo("File written to " << vtkConvention);
+    } else {
+        LogProcessorWarn("Error: Please specify a file to write to");
+    }
+}
 
 }  // namespace inviwo

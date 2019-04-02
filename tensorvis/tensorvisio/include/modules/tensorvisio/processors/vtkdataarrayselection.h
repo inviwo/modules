@@ -74,12 +74,16 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
+
 private:
     DataInport<vtkDataSet*> inport_;
     DataOutport<vtkDataArray*> outport_;
 
     OptionPropertyInt arrays_;
     int offset_;
+    std::string previouslySelectedArrayName_;
 };
 
 }  // namespace inviwo

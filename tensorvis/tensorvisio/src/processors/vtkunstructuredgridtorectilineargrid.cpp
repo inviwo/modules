@@ -53,9 +53,9 @@ namespace inviwo {
 const ProcessorInfo VTKUnstructuredGridToRectilinearGrid::processorInfo_{
     "org.inviwo.VTKUnstructuredGridToRectilinearGrid",  // Class identifier
     "VTK Unstructured Grid To Rectilinear Grid",        // Display name
-    "Tensor",                                           // Category
+    "VTK",                                              // Category
     CodeState::Experimental,                            // Code state
-    Tags::None,                                         // Tags
+    Tags::CPU,                                          // Tags
 };
 const ProcessorInfo VTKUnstructuredGridToRectilinearGrid::getProcessorInfo() const {
     return processorInfo_;
@@ -64,13 +64,13 @@ const ProcessorInfo VTKUnstructuredGridToRectilinearGrid::getProcessorInfo() con
 VTKUnstructuredGridToRectilinearGrid::VTKUnstructuredGridToRectilinearGrid()
     : Processor()
     , ActivityIndicatorOwner()
-    , dimensions_("dimensions", "Output dimensions", ivec3(32), ivec3(2), ivec3(2048))
+    , maxDimension_("maxDimension", "Max output dimension", 32, 2, 2048)
     , button_("button", "Convert Data")
     , abortButton_("abortButton", "Abort Conversion", InvalidationLevel::Valid)
     , inport_("inport")
     , outport_("outport")
     , state_(std::make_shared<WorkerState>()) {
-    addProperty(dimensions_);
+    addProperty(maxDimension_);
     addProperty(button_);
     addProperty(abortButton_);
 
@@ -98,7 +98,6 @@ VTKUnstructuredGridToRectilinearGrid::~VTKUnstructuredGridToRectilinearGrid() {
 void VTKUnstructuredGridToRectilinearGrid::process() {}
 
 void VTKUnstructuredGridToRectilinearGrid::loadData() {
-    state_->dims_ = dimensions_;
     state_->abortConversion_ = false;
 
     const auto done = [this, state = state_]() {
@@ -124,6 +123,22 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
     }
 
     auto unstructuredGrid = static_cast<vtkUnstructuredGrid*>(grid);
+
+    auto bounds = unstructuredGrid->GetBounds();
+
+    const auto xRange = std::abs(bounds[0] - bounds[1]);
+    const auto yRange = std::abs(bounds[2] - bounds[3]);
+    const auto zRange = std::abs(bounds[4] - bounds[5]);
+
+    const auto largestRange = std::max(xRange, std::max(yRange, zRange));
+
+    const auto maxDim = maxDimension_.get();
+
+    const int xDim = static_cast<int>((xRange / largestRange) * maxDim);
+    const int yDim = static_cast<int>((yRange / largestRange) * maxDim);
+    const int zDim = static_cast<int>((zRange / largestRange) * maxDim);
+
+    state_->dims_ = {xDim, yDim, zDim};
 
     auto dispatch = [this, done, abort, unstructuredGrid]() mutable -> void {
         auto log = [](const std::string& message) { LogInfoCustom("VTK conversion", message); };
