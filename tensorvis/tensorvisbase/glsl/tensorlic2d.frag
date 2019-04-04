@@ -55,7 +55,7 @@ in vec3 texCoord_;
 void traverse(inout float v, inout int c, vec2 posForTensorFieldSampling, float stepSize,
               int steps) {
     vec2 previousV0 =
-        rk4(vec2(posForTensorFieldSampling.x,posForTensorFieldSampling.y), stepSize, useMinor, tensorFieldColor, normalizeVectors);
+        rk4(posForTensorFieldSampling, stepSize, useMinor, tensorFieldColor, normalizeVectors);
 
     for (int i = 0; i < steps; i++) {
         vec2 V0;

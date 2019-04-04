@@ -142,8 +142,9 @@ void TensorFieldLIC::process() {
     shader_.setUniform("eigenValueRange", eigenValueRange_);
     shader_.setUniform("hasInputImage", hasInputImage);
 
-    auto dDimensions = vec2(outport_.getDimensions());
-    auto ratio = std::min(dDimensions.x, dDimensions.y) / std::max(dDimensions.x, dDimensions.y);
+    const auto dDimensions = vec2(outport_.getDimensions());
+    const auto ratio =
+        std::min(dDimensions.x, dDimensions.y) / std::max(dDimensions.x, dDimensions.y);
 
     shader_.setUniform("ratio", ratio);
 
