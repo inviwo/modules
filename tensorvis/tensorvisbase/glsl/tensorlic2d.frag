@@ -47,13 +47,15 @@ uniform float eigenValueRange;
 uniform float minEigenValue;
 uniform float maxEigenValue;
 uniform bool hasInputImage;
+uniform float ratio;
+uniform vec4 backgroundColor;
 
 in vec3 texCoord_;
 
 void traverse(inout float v, inout int c, vec2 posForTensorFieldSampling, float stepSize,
               int steps) {
     vec2 previousV0 =
-        rk4(posForTensorFieldSampling, stepSize, useMinor, tensorFieldColor, normalizeVectors);
+        rk4(vec2(posForTensorFieldSampling.x,posForTensorFieldSampling.y), stepSize, useMinor, tensorFieldColor, normalizeVectors);
 
     for (int i = 0; i < steps; i++) {
         vec2 V0;
@@ -68,6 +70,10 @@ void traverse(inout float v, inout int c, vec2 posForTensorFieldSampling, float 
         if (dot(previousV0, V0) < 0) {
             V0 = -V0;
         }
+
+        V0.x = ratio * V0.x;
+
+        V0 = normalize(V0);
 
         previousV0 = V0;
 
@@ -104,7 +110,7 @@ void main() {
     vec4 tensorVector = texture(tensorFieldColor, newTexForNoiseTextureSampling);
     if (tensorVector[0] == 0 && tensorVector[1] == 0 && tensorVector[2] == 0 &&
         tensorVector[3] == 0) {
-        FragData0 = vec4(1);
+        FragData0 = backgroundColor;
         return;
     }
 
