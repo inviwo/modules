@@ -57,21 +57,19 @@ public:
     virtual void DisplayDebugText(const char*) override;
 };
 
-VtkOutputLogger* VtkOutputLogger::instance_ = nullptr;
-
 vtkStandardNewMacro(InviwoVtkOutputWindow);
 
 void InviwoVtkOutputWindow::DisplayText(const char* msg) { LogInfoCustom("VTK", msg); }
 
-void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) { LogErrorCustom("VTK", msg); }
+void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) { LogErrorCustom("VTK (error)", msg); }
 
-void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) { LogWarnCustom("VTK", msg); }
+void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) { LogWarnCustom("VTK (warn)", msg); }
 
 void InviwoVtkOutputWindow::DisplayGenericWarningText(const char* msg) {
-    LogWarnCustom("VTK (Generic)", msg);
+    LogWarnCustom("VTK (generic)", msg);
 }
 
-void InviwoVtkOutputWindow::DisplayDebugText(const char* msg) { LogInfoCustom("VTK (debug", msg); }
+void InviwoVtkOutputWindow::DisplayDebugText(const char* msg) { LogInfoCustom("VTK (debug)", msg); }
 
 VtkOutputLogger::VtkOutputLogger() : outputWindow_{vtkSmartPointer<InviwoVtkOutputWindow>::New()} {
     vtkOutputWindow::SetInstance(outputWindow_);

@@ -47,8 +47,8 @@
 
 namespace inviwo {
 
-TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app, "TensorVisIO") {
-    VtkOutputLogger::init();
+TensorVisIOModule::TensorVisIOModule(InviwoApplication* app)
+    : InviwoModule{app, "TensorVisIO"}, vtkoutput_{std::make_shared<VtkOutputLogger>()} {
 
     registerProcessor<AmiraTensorReader>();
     registerProcessor<NRRDReader>();

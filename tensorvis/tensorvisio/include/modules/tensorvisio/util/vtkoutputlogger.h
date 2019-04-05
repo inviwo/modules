@@ -30,7 +30,6 @@
 
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/util/singleton.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,22 +41,15 @@ namespace inviwo {
 class InviwoVtkOutputWindow;
 
 /** \class VtkOutputLogger
- * \brief singleton for mapping VTK logging output to Inviwo's logcentral instead of the regular VTK
- * output window
+ * \brief mapping VTK logging output to Inviwo's logcentral instead of the regular VTK output window
  */
-class IVW_MODULE_TENSORVISIO_API VtkOutputLogger : public Singleton<VtkOutputLogger> {
+class IVW_MODULE_TENSORVISIO_API VtkOutputLogger {
 public:
     VtkOutputLogger();
-    VtkOutputLogger(const VtkOutputLogger&) = delete;
-    VtkOutputLogger& operator=(const VtkOutputLogger&) = delete;
-
     virtual ~VtkOutputLogger() = default;
 
 private:
     vtkSmartPointer<InviwoVtkOutputWindow> outputWindow_;
-
-    friend Singleton<VtkOutputLogger>;
-    static VtkOutputLogger* instance_;
 };
 
 }  // namespace inviwo

@@ -35,12 +35,17 @@
 
 namespace inviwo {
 
+class VtkOutputLogger;
+
 class IVW_MODULE_TENSORVISIO_API TensorVisIOModule : public InviwoModule {
 public:
     TensorVisIOModule(InviwoApplication* app);
     virtual ~TensorVisIOModule() = default;
+
+private:
+    std::shared_ptr<VtkOutputLogger> vtkoutput_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TENSORFIELDIOMODULE_H
+#endif  // IVW_TENSORFIELDIOMODULE_H
