@@ -37,6 +37,8 @@
 #include <modules/tensorvisbase/datastructures/tensorfield2d.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -83,6 +85,7 @@ private:
     BoolProperty intensityMapping_;
     BoolProperty useRK4_;
     BoolProperty majorMinor_;
+    FloatVec4Property backgroundColor_;
 
     Shader shader_;
     Image tf_texture_;

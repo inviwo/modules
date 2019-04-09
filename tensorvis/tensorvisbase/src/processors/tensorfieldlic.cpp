@@ -55,6 +55,8 @@ TensorFieldLIC::TensorFieldLIC()
     , intensityMapping_("intensityMapping", "Enable intensity remapping", false)
     , useRK4_("useRK4", "Use Runge-Kutta4", true)
     , majorMinor_("useMinor", "Use minor eigenvectors", false)
+    , backgroundColor_("backgroundColor", "Background color", vec4(1.0f), vec4(0.0f), vec4(1.0f),
+                       vec4(0.01f), InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , shader_("tensorlic2d.frag") {
     imageInport_.setOptional(true);
 
@@ -64,6 +66,7 @@ TensorFieldLIC::TensorFieldLIC()
     addProperty(intensityMapping_);
     addProperty(useRK4_);
     addProperty(majorMinor_);
+    addProperty(backgroundColor_);
 
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
@@ -133,11 +136,17 @@ void TensorFieldLIC::process() {
     updateEigenValues();
 
     utilgl::setUniforms(shader_, outport_, samples_, stepLength_, normalizeVectors_,
-                        intensityMapping_, useRK4_, majorMinor_);
+                        intensityMapping_, useRK4_, majorMinor_, backgroundColor_);
     shader_.setUniform("minEigenValue", minVal_);
     shader_.setUniform("maxEigenValue", maxVal_);
     shader_.setUniform("eigenValueRange", eigenValueRange_);
     shader_.setUniform("hasInputImage", hasInputImage);
+
+    const auto dDimensions = vec2(outport_.getDimensions());
+    const auto ratio =
+        std::min(dDimensions.x, dDimensions.y) / std::max(dDimensions.x, dDimensions.y);
+
+    shader_.setUniform("ratio", ratio);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
