@@ -31,6 +31,9 @@
 
 #include <modules/opengl/shader/shadermanager.h>
 
+#include <modules/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h>
+#include <modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
+
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
 #include <modules/tensorvisbase/processors/eigenvaluefieldtoimage.h>
 #include <modules/tensorvisbase/processors/hyperstreamlines.h>
@@ -93,8 +96,8 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProperty<EigenValueProperty>();
     registerProperty<TensorGlyphProperty>();
 
-#if defined(__GNUC__)
-    LogInfo("Compiled using GCC " << std::to_string(__GNUC__) << "."
+    registerDataVisualizer(std::make_unique<HyperLICVisualizer3D>(app));
+    registerDataVisualizer(std::make_unique<AnisotropyRaycastingVisualizer>(app));
                                  << std::to_string(__GNUC_MINOR__));
 #endif
 }

@@ -5,8 +5,8 @@ ivw_module(TensorVisBase)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-	include/modules/tensorvisbase/tensorvisbasemodule.h
-	include/modules/tensorvisbase/tensorvisbasemoduledefine.h
+    include/modules/tensorvisbase/tensorvisbasemodule.h
+    include/modules/tensorvisbase/tensorvisbasemoduledefine.h
     include/modules/tensorvisbase/datastructures/deformablecube.h
     include/modules/tensorvisbase/datastructures/deformablecylinder.h
     include/modules/tensorvisbase/datastructures/deformablesphere.h
@@ -16,6 +16,8 @@ set(HEADER_FILES
     include/modules/tensorvisbase/datastructures/tensorfieldmetadata.h
     include/modules/tensorvisbase/datastructures/tensorfieldmetadataimpl.h
     include/modules/tensorvisbase/datastructures/tensorfieldmetadataspecializations.h
+    include/modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h
+    include/modules/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h
     include/modules/tensorvisbase/ports/tensorfieldport.h
     include/modules/tensorvisbase/processors/eigenvaluefieldtoimage.h
     include/modules/tensorvisbase/processors/hyperstreamlines.h
@@ -43,22 +45,24 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/volumeactualdataandvaluerange.h
     include/modules/tensorvisbase/properties/eigenvalueproperty.h
     include/modules/tensorvisbase/properties/tensorglyphproperty.h
-	include/modules/tensorvisbase/util/misc.h
-	include/modules/tensorvisbase/util/tensorfieldutil.h
-	include/modules/tensorvisbase/util/tensorutil.h
+    include/modules/tensorvisbase/util/misc.h
+    include/modules/tensorvisbase/util/tensorfieldutil.h
+    include/modules/tensorvisbase/util/tensorutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-	src/tensorvisbasemodule.cpp
+    src/tensorvisbasemodule.cpp
     src/datastructures/deformablecube.cpp
     src/datastructures/deformablecylinder.cpp
     src/datastructures/deformablesphere.cpp
     src/datastructures/hyperstreamlinetracer.cpp
     src/datastructures/tensorfield2d.cpp
     src/datastructures/tensorfield3d.cpp
+    src/datavisualizer/anisotropyraycastingvisualizer.cpp
+    src/datavisualizer/hyperlicvisualizer3d.cpp
     src/processors/eigenvaluefieldtoimage.cpp
     src/processors/hyperstreamlines.cpp
     src/processors/imagetospherefield.cpp
@@ -110,23 +114,23 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tensorvisbase-unittest-main.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/arithmic-operations.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/de_normalization.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/distance-measures.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/set-operations.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/to-string.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/tensorvisbase-unittest-main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/arithmic-operations.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/de_normalization.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/distance-measures.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/set-operations.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/to-string.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
 if (NOT OPENMP_FOUND)
-	find_package(OpenMP QUIET)
-	if (OPENMP_FOUND)
-		MESSAGE(STATUS "OpenMP flag set in TensorVisBase module.")
-		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-		set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-	endif()
+    find_package(OpenMP QUIET)
+    if (OPENMP_FOUND)
+        MESSAGE(STATUS "OpenMP flag set in TensorVisBase module.")
+        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+    endif()
 endif()
 
 
