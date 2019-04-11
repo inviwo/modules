@@ -142,6 +142,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
 
     auto dispatch = [this, done, abort, unstructuredGrid]() mutable -> void {
         auto log = [](const std::string& message) { LogInfoCustom("VTK conversion", message); };
+
         const auto progressUpdate = [pb = &this->progressBar_, state = this->state_](float f) {
             if (state->processorExists_) {
                 dispatchFront([f, pb]() {
@@ -150,6 +151,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
                 });
             }
         };
+
         auto updateActivity = [& activityIndicator = this->getActivityIndicator(),
                                state = this->state_](bool active) {
             if (state->processorExists_) {

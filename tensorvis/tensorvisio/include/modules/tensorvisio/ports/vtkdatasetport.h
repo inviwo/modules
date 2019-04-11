@@ -29,71 +29,58 @@
 
 #pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <modules/tensorvisio/datastructures/vtkdataset.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
-#include <vtkDataSet.h>
-#include <vtkDataObject.h>
+#include <vtkCellData.h>
+#include <vtkDataArray.h>
 #include <warn/pop>
+
+#include <tuple>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKReader, VTKReader}
- * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+/**
+ * \ingroup ports
  */
+using VTKDataSetInport = DataInport<VTKDataSet>;
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \ingroup ports
  */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor, public ProgressBarOwner {
-public:
-    VTKReader();
-    virtual ~VTKReader() = default;
+using VTKDataSetOutport = DataOutport<VTKDataSet>;
 
-    virtual void process() override;
+template <>
+struct DataTraits<VTKDataSet> {
+    static std::string classIdentifier() { return "org.inviwo.VTKDataSet"; }
+    static std::string dataName() { return "VTK Data Set"; }
+    static uvec3 colorCode() { return uvec3(50, 110, 35); }
+    static Document info(const VTKDataSet& data) {
+        std::ostringstream oss;
+        oss << "VTK type: " << std::string{data->GetClassName()};
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+        //        auto [names, types] = [](const VTKDataSet& dataSet)
+        //            -> std::pair<std::vector<std::string>, std::vector<std::string>> {
+        //            std::vector<std::string> names{};
+        //            std::vector<std::string> types{};
+        //            auto cellData = dataSet->GetCellData();
+        //            for (int i = 0; i < cellData->GetNumberOfArrays(); ++i) {
+        //                names.emplace_back(cellData->GetArray(i)->GetName());
+        //                types.emplace_back(cellData->GetArray(i)->GetClassName());
+        //            }
+        //            return std::pair<std::vector<std::string>, std::vector<std::string>>(names,
+        //            types);
+        //        };
 
-private:
-    enum class VTKFileType { XML, Legacy, Unknown };
-
-    FileProperty file_;
-    ButtonProperty reloadButton_;
-    VTKDataSetOutport outport_;
-
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
-
-    std::shared_ptr<VTKDataSet> data_;
-
-    VTKFileType determineFileType(const std::string& fileName) const;
-    bool read(const VTKFileType fileType);
-    void readLegacy();
-    void readXML();
+        Document doc;
+        doc.append("p", oss.str());
+        return doc;
+    }
 };
 
 }  // namespace inviwo

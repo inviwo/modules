@@ -67,7 +67,7 @@ VTKDataSetInformation::VTKDataSetInformation()
 }
 
 void VTKDataSetInformation::process() {
-    auto dataSet = *inport_.getData().get();
+    const auto& dataSet = *inport_.getData();
 
     className_.set(std::string{dataSet->GetClassName()});
 

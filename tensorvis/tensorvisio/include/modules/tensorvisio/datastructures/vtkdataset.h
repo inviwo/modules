@@ -28,72 +28,41 @@
  *********************************************************************************/
 
 #pragma once
-
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
+
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <utility>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
 #include <vtkDataSet.h>
-#include <vtkDataObject.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKReader, VTKReader}
- * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief Wrapper class for vtkDataSet pointer
+ * Wrapper class for vtkDataSet pointer so we don't have to explicitly take care of memory handling
+ * etc.
  */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor, public ProgressBarOwner {
+class IVW_MODULE_TENSORVISIO_API VTKDataSet {
 public:
-    VTKReader();
-    virtual ~VTKReader() = default;
+    VTKDataSet() = delete;
+    explicit VTKDataSet(vtkSmartPointer<vtkDataSet> dataSet) : dataSet_(dataSet) {}
+    virtual ~VTKDataSet() {}
 
-    virtual void process() override;
+    vtkSmartPointer<vtkDataSet> operator->() const { return dataSet_; }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    /// Attempts to get the dimensions of the data set. This will only work if the data set is of
+    /// type rectiliniar grid, structured grid or structured points. Otherwise [0,0,0] will be
+    /// returned. The method is here because the GetDimensions() method is not declared const in VTK
+    /// so if you have a VTKDataSet on the inport you will not be able to determine its
+    /// dimensions unless you clone it...
+    size3_t getDimensions() const;
 
 private:
-    enum class VTKFileType { XML, Legacy, Unknown };
-
-    FileProperty file_;
-    ButtonProperty reloadButton_;
-    VTKDataSetOutport outport_;
-
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
-
-    std::shared_ptr<VTKDataSet> data_;
-
-    VTKFileType determineFileType(const std::string& fileName) const;
-    bool read(const VTKFileType fileType);
-    void readLegacy();
-    void readXML();
+    vtkSmartPointer<vtkDataSet> dataSet_;
 };
 
 }  // namespace inviwo

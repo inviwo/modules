@@ -35,6 +35,7 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
+#include <modules/tensorvisio/ports/vtkdatasetport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -96,7 +97,7 @@ private:
         StringProperty numberOfComponents_;
     };
 
-    DataInport<vtkDataSet *> inport_;
+    VTKDataSetInport inport_;
 
     StringProperty className_;
     CompositeProperty pointDataArrays_;

@@ -8,14 +8,15 @@ include(${VTK_USE_FILE})
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/modules/tensorvisio/datastructures/vtkdataset.h
+    include/modules/tensorvisio/ports/vtkdatasetport.h
     include/modules/tensorvisio/processors/amiratensorreader.h
     include/modules/tensorvisio/processors/nrrdreader.h
     include/modules/tensorvisio/processors/tensorfield2dexport.h
     include/modules/tensorvisio/processors/tensorfield2dimport.h
     include/modules/tensorvisio/processors/tensorfield3dexport.h
     include/modules/tensorvisio/processors/tensorfield3dimport.h
-    include/modules/tensorvisio/processors/vtkdataarrayselection.h
-    include/modules/tensorvisio/processors/vtkdataarraytotensorfield3d.h
+    include/modules/tensorvisio/processors/vtkdatasettotensorfield3d.h
     include/modules/tensorvisio/processors/vtkdatasetinformation.h
     include/modules/tensorvisio/processors/vtkreader.h
     include/modules/tensorvisio/processors/vtkrectilineargridreader.h
@@ -35,14 +36,15 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/vtkdataset.cpp
+    src/ports/vtkdatasetport.cpp
     src/processors/amiratensorreader.cpp
     src/processors/nrrdreader.cpp
     src/processors/tensorfield2dexport.cpp
     src/processors/tensorfield2dimport.cpp
     src/processors/tensorfield3dexport.cpp
     src/processors/tensorfield3dimport.cpp
-    src/processors/vtkdataarrayselection.cpp
-    src/processors/vtkdataarraytotensorfield3d.cpp
+    src/processors/vtkdatasettotensorfield3d.cpp
     src/processors/vtkdatasetinformation.cpp
     src/processors/vtkreader.cpp
     src/processors/vtkrectilineargridreader.cpp

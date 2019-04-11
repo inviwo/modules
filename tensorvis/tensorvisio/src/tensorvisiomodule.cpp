@@ -35,8 +35,7 @@
 #include <modules/tensorvisio/processors/tensorfield2dimport.h>
 #include <modules/tensorvisio/processors/tensorfield3dexport.h>
 #include <modules/tensorvisio/processors/tensorfield3dimport.h>
-#include <modules/tensorvisio/processors/vtkdataarrayselection.h>
-#include <modules/tensorvisio/processors/vtkdataarraytotensorfield3d.h>
+#include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
 #include <modules/tensorvisio/processors/vtkdatasetinformation.h>
 #include <modules/tensorvisio/processors/vtkreader.h>
 #include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
@@ -51,15 +50,14 @@
 
 namespace inviwo {
 
-TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app, "TensorVisIO") {   
-	registerProcessor<AmiraTensorReader>();
-	registerProcessor<NRRDReader>();
+TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app, "TensorVisIO") {
+    registerProcessor<AmiraTensorReader>();
+    registerProcessor<NRRDReader>();
     registerProcessor<TensorField2DExport>();
     registerProcessor<TensorField2DImport>();
     registerProcessor<TensorField3DExport>();
     registerProcessor<TensorField3DImport>();
-    registerProcessor<VTKDataArraySelection>();
-    registerProcessor<VTKDataArrayToTensorField3D>();
+    registerProcessor<VTKDataSetToTensorField3D>();
     registerProcessor<VTKDataSetInformation>();
     registerProcessor<VTKReader>();
     registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
@@ -73,4 +71,4 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app,
     registerProcessor<VTKWriter>();
 }
 
-} // namespace
+}  // namespace inviwo

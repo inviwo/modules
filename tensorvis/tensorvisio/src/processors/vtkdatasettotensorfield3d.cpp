@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtkdataarraytotensorfield3d.h>
+#include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
 #include <modules/tensorvisbase/util/misc.h>
 
 #include <warn/push>
@@ -37,66 +37,87 @@
 #include <vtkStructuredPoints.h>
 #include <vtkDoubleArray.h>
 #include <vtkFloatArray.h>
+#include <vtkPointData.h>
+#include <vtkCellData.h>
 #include <warn/pop>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VTKDataArrayToTensorField3D::processorInfo_{
-    "org.inviwo.VTKDataArrayToTensorField3D",  // Class identifier
-    "VTK Data Array To Tensor Field 3D",       // Display name
-    "VTK",                                     // Category
-    CodeState::Experimental,                   // Code state
-    Tags::CPU,                                 // Tags
+const ProcessorInfo VTKDataSetToTensorField3D::processorInfo_{
+    "org.inviwo.VTKDataSetToTensorField3D",  // Class identifier
+    "VTK Data Set To Tensor Field 3D",       // Display name
+    "VTK",                                   // Category
+    CodeState::Experimental,                 // Code state
+    Tags::CPU,                               // Tags
 };
-const ProcessorInfo VTKDataArrayToTensorField3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VTKDataSetToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
-VTKDataArrayToTensorField3D::VTKDataArrayToTensorField3D()
+VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     : Processor()
-    , dataArrayInport_("dataArrayInport")
     , dataSetInport_("dataSetInport")
     , tensorField3DOutport_("tensorField3DOutport")
-    , normalizeExtents_("normalizeExtents", "Normalize extents", false) {
+    , normalizeExtents_("normalizeExtents", "Normalize extents", false)
+    , arrays_("arrays", "arrays")
+    , offset_{0}
+    , previouslySelectedArrayName_{} {
     addPort(dataSetInport_);
-    addPort(dataArrayInport_);
     addPort(tensorField3DOutport_);
 
     addProperty(normalizeExtents_);
+
+    addProperty(arrays_);
+
+    dataSetInport_.onChange([this]() { initializeResources(); });
 }
 
-void VTKDataArrayToTensorField3D::process() {
-    if (!dataArrayInport_.hasData()) return;
+void VTKDataSetToTensorField3D::initializeResources() {
     if (!dataSetInport_.hasData()) return;
 
-    auto dataArray = *dataArrayInport_.getData().get();
+    const auto& dataSet = *dataSetInport_.getData();
+    auto pointData = dataSet->GetPointData();
 
-    if (dataArray->GetNumberOfComponents() != 9) {
-        LogProcessorError("No tensor data provided.");
-        return;
+    auto stringReplace = [](std::string str, const std::string& from,
+                            const std::string& to) -> const std::string {
+        size_t start_pos{0};
+        while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+            str.replace(start_pos, from.length(), to);
+            start_pos += to.length();
+        }
+        return str;
+    };
+
+    arrays_.clearOptions();
+
+    for (int i{0}; i < pointData->GetNumberOfArrays(); ++i) {
+        auto array = pointData->GetArray(i);
+
+        if (array->GetNumberOfComponents() != 9) continue;
+
+        arrays_.addOption(stringReplace(stringReplace(array->GetName(), ".", ""), " ", ""),
+                          {array->GetName()}, {array->GetName()});
     }
 
-    auto dataSet = *dataSetInport_.getData().get();
-
-    // As far as I can see, I have to do this because there is no superclass for all those data set
-    // types that have the method "GetDimensions()".
-    int* dimsptr{nullptr};
-
-    switch (dataSet->GetDataObjectType()) {
-        case VTK_RECTILINEAR_GRID:
-            dimsptr = dynamic_cast<vtkRectilinearGrid*>(dataSet)->GetDimensions();
-            break;
-        case VTK_STRUCTURED_GRID:
-            dimsptr = dynamic_cast<vtkStructuredGrid*>(dataSet)->GetDimensions();
-            break;
-        case VTK_STRUCTURED_POINTS:
-            dimsptr = dynamic_cast<vtkStructuredPoints*>(dataSet)->GetDimensions();
-            break;
-        default:
-            LogProcessorWarn("Data set type not supported.");
+    // If the data set contains an array with the same name as the previous data set, we set the
+    // selected option to that array. This is mostly for serialization purposes.
+    for (const auto& option : arrays_.getOptions()) {
+        if (option.id_ == previouslySelectedArrayName_) {
+            arrays_.setSelectedValue(option.value_);
             return;
+        }
     }
+    arrays_.setSelectedIndex(0);
+    previouslySelectedArrayName_ = arrays_.getOptionDisplayName(0);
+}
 
-    size3_t dimensions{dimsptr[0], dimsptr[1], dimsptr[2]};
+void VTKDataSetToTensorField3D::process() {
+    if (!dataSetInport_.hasData()) return;
+
+    const auto& dataSet = *dataSetInport_.getData();
+
+    auto dataArray = dataSet->GetPointData()->GetArray(arrays_.get().c_str());
+
+    const auto dimensions = dataSet.getDimensions();
 
     LogProcessorInfo("Attempting to generate tensor field from array \""
                      << std::string{dataArray->GetName()} << "\"");

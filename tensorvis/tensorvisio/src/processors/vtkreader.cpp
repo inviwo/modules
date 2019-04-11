@@ -31,6 +31,13 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/clock.h>
+#include <modules/vtk/util/lambda2func.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <vtkCallbackCommand.h>
+#include <warn/pop>
+
 #include <fstream>
 
 namespace inviwo {
@@ -70,6 +77,8 @@ VTKReader::VTKReader()
 
     addPort(outport_);
 
+    progressBar_.hide();
+
     reloadButton_.onChange([this]() {
         xmlreader_ = nullptr;
         legacyreader_ = nullptr;
@@ -77,22 +86,18 @@ VTKReader::VTKReader()
 }
 
 void VTKReader::process() {
-    const auto fileName = file_.get();
-
-    if (!filesystem::fileExists(fileName)) {
-        LogError("File " << fileName << "not found.");
-        return;
-    }
-
-    const auto fileType = determineFileType(fileName);
-
     if (file_.isModified()) {
-        data_ = read(fileType);
+        const auto fileName = file_.get();
+
+        if (!filesystem::fileExists(fileName)) {
+            LogError("File " << fileName << "not found.");
+            return;
+        }
+
+        const auto fileType = determineFileType(fileName);
+
+        read(fileType);
     }
-
-    if (!data_) return;
-
-    outport_.setData(std::make_shared<vtkDataSet*>(data_));
 }
 
 VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName) const {
@@ -117,30 +122,103 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
     LogInfo("File type could not be determined.") { return VTKFileType::Unknown; }
 }
 
-vtkDataSet* VTKReader::read(const VTKFileType fileType) {
+bool VTKReader::read(const VTKFileType fileType) {
     switch (fileType) {
         case VTKFileType::Legacy:
-            if (!legacyreader_) {
-                legacyreader_ = vtkSmartPointer<vtkGenericDataObjectReader>::New();
-            }
-            legacyreader_->SetFileName(file_.get().c_str());
-            legacyreader_->Update();
-            LogInfo("VTK Legacy file version "
-                    << std::to_string(legacyreader_->GetFileMajorVersion()) << "."
-                    << std::to_string(legacyreader_->GetFileMinorVersion()) << " detected.");
-            return static_cast<vtkDataSet*>(legacyreader_->GetOutput());
-        case VTKFileType::XML:
-            if (!xmlreader_) {
-                xmlreader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
-            }
-            xmlreader_->SetFileName(file_.get().c_str());
-            xmlreader_->Update();
-            LogInfo("VTK XML file detected.");
-            return static_cast<vtkDataSet*>(xmlreader_->GetOutput());
-        default:
+            readLegacy();
             break;
+        case VTKFileType::XML:
+            readXML();
+            break;
+        default:
+            return false;
     }
-    return nullptr;
+    return true;
 }
 
+void VTKReader::readLegacy() {
+    dispatchPool([this]() {
+        const auto progressUpdate = [this](float f) {
+            dispatchFront([this, f]() {
+                f < 1.0 ? progressBar_.show() : progressBar_.hide();
+                progressBar_.updateProgress(f);
+            });
+        };
+
+        auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
+            [progressUpdate](vtkObject* caller, long unsigned int eventId, void* clientData,
+                             void* callData) -> void {
+                auto reader = dynamic_cast<vtkGenericDataObjectReader*>(caller);
+                if (reader->GetProgress() > 0.0) {
+                    progressUpdate(float(reader->GetProgress()));
+                }
+            });
+
+        vtkSmartPointer<vtkCallbackCommand> progressCallback =
+            vtkSmartPointer<vtkCallbackCommand>::New();
+        progressCallback->SetCallback(fn);
+
+        if (!legacyreader_) {
+            legacyreader_ = vtkSmartPointer<vtkGenericDataObjectReader>::New();
+        }
+        legacyreader_->AddObserver(vtkCommand::ProgressEvent, progressCallback);
+        legacyreader_->SetFileName(file_.get().c_str());
+        legacyreader_->Update();
+        LogInfo("VTK Legacy file version "
+                << std::to_string(legacyreader_->GetFileMajorVersion()) << "."
+                << std::to_string(legacyreader_->GetFileMinorVersion()) << " detected.");
+
+        dispatchFront([this]() {
+            // Severing out the data set since the reader's destructor crashes if another smart
+            // pointer has taken ownership of its data set.
+            vtkSmartPointer<vtkDataSet> dataSet =
+                vtkDataSet::SafeDownCast(legacyreader_->GetOutput());
+
+            data_ = std::make_shared<VTKDataSet>(dataSet);
+            outport_.setData(data_);
+        });
+    });
+}
+
+void VTKReader::readXML() {
+    dispatchPool([this]() {
+        const auto progressUpdate = [this](float f) {
+            dispatchFront([this, f]() {
+                f < 1.0 ? progressBar_.show() : progressBar_.hide();
+                progressBar_.updateProgress(f);
+            });
+        };
+
+        auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
+            [progressUpdate](vtkObject* caller, long unsigned int eventId, void* clientData,
+                             void* callData) -> void {
+                auto reader = dynamic_cast<vtkXMLGenericDataObjectReader*>(caller);
+                if (reader->GetProgress() > 0.0) {
+                    progressUpdate(float(reader->GetProgress()));
+                }
+            });
+
+        vtkSmartPointer<vtkCallbackCommand> progressCallback =
+            vtkSmartPointer<vtkCallbackCommand>::New();
+        progressCallback->SetCallback(fn);
+
+        if (!xmlreader_) {
+            xmlreader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
+        }
+        xmlreader_->AddObserver(vtkCommand::ProgressEvent, progressCallback);
+        xmlreader_->SetFileName(file_.get().c_str());
+        xmlreader_->Update();
+        LogInfo("VTK XML file detected.");
+
+        dispatchFront([this]() {
+            // Severing out the data set since the reader's destructor crashes if another smart
+            // pointer has taken ownership of its data set.
+            vtkSmartPointer<vtkDataSet> dataSet =
+                vtkDataSet::SafeDownCast(legacyreader_->GetOutput());
+
+            data_ = std::make_shared<VTKDataSet>(dataSet);
+            outport_.setData(data_);
+        });
+    });
+}
 }  // namespace inviwo

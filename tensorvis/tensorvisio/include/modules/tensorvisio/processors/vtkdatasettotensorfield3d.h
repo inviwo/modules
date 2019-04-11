@@ -36,17 +36,17 @@
 #include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
+#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkDataArray.h>
-#include <vtkDataSet.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKDataArrayToTensorField3D, VTKData Array To Tensor Field3D}
- * ![](org.inviwo.VTKDataArrayToTensorField3D.png?classIdentifier=org.inviwo.VTKDataArrayToTensorField3D)
+/** \docpage{org.inviwo.VTKDataSetToTensorField3D, VTK Data Set To Tensor Field3D}
+ * ![](org.inviwo.VTKDataSetToTensorField3D.png?classIdentifier=org.inviwo.VTKDataSetToTensorField3D)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -64,23 +64,27 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKDataArrayToTensorField3D : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor {
 public:
-    VTKDataArrayToTensorField3D();
-    virtual ~VTKDataArrayToTensorField3D() = default;
+    VTKDataSetToTensorField3D();
+    virtual ~VTKDataSetToTensorField3D() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<vtkDataArray*> dataArrayInport_;
-    DataInport<vtkDataSet*> dataSetInport_;
+    VTKDataSetInport dataSetInport_;
 
     TensorField3DOutport tensorField3DOutport_;
 
     BoolProperty normalizeExtents_;
+
+    OptionPropertyString arrays_;
+    int offset_;
+    std::string previouslySelectedArrayName_;
 };
 
 }  // namespace inviwo
