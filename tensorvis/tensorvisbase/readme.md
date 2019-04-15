@@ -17,3 +17,5 @@ Based on the standard LIC method, the HyperLIC indicates the directions of the m
 - [ ] Add visualizer for TensorField2D port
 - [ ] Update glyph rendering with instancing
 - [ ] Extend TensorField3DSlice to non-aa slicing
+- [ ] TensorField3D slice outputs wrong slice geometry
+- [ ] Pickable seeding geometry
