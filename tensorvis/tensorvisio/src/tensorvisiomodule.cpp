@@ -41,6 +41,7 @@
 #include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
 #include <modules/tensorvisio/processors/flowguifilereader.h>
 #include <modules/tensorvisio/processors/vtkwriter.h>
+#include <modules/tensorvisio/util/vtkoutputlogger.h>
 
 namespace inviwo {
 
