@@ -1,9 +1,14 @@
 # TensorVisBase module
 
-This does all the basic tensor visualization stuff.
-For loading/saving tensor fields see the _tensorvisio_ module.
+## Synopsis
+
+This module contains some of the basic tensor visualization techniques.
+For loading/saving tensor fields see the
+[_tensorvisio_](https://github.com/inviwo/modules/tree/master/tensorvis/tensorvisio) module.
+
 
 ## Available visualizers
+
 ### HyperLIC
 Available for 2D and 3D tensor fields (3D tensor fields will be sliced).
 Based on the standard LIC method, the HyperLIC indicates the directions of the major/minor eigenvectors of the tensor field.
