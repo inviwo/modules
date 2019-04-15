@@ -38,14 +38,13 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/processors/activityindicator.h>
-#include <inviwo/core/ports/dataoutport.h>
 #include <modules/tensorvisio/ports/vtkdatasetport.h>
 
 #include <atomic>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkRectilinearGrid.h>
+#include <vtkSmartPointer.h>
 #include <vtkDataSet.h>
 #include <warn/pop>
 
@@ -88,9 +87,10 @@ protected:
     ButtonProperty abortButton_;
 
     VTKDataSetInport inport_;
+    VTKDataSetOutport outport_;
 
-    DataOutport<vtkRectilinearGrid*> outport_;
-
+    std::shared_ptr<VTKDataSet> data_;
+    vtkSmartPointer<vtkDataSet> dataSet_;
     std::shared_ptr<WorkerState> state_;
 };
 

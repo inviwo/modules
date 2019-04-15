@@ -266,12 +266,9 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
             return;
         }
 
-        // Write file
-        log("Writing output file...");
-        auto rectiliearGrid = probeFilter->GetRectilinearGridOutput();
+        dataSet_ = probeFilter->GetRectilinearGridOutput();
         progress += progressIncr;
         progressUpdate(progress);
-        log("Done.");
 
         globalClock.stop();
 
@@ -283,8 +280,9 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         done();
         this->state_->state = State::Done;
 
-        dispatchFront([this, rectiliearGrid]() {
-            this->outport_.setData(std::make_shared<vtkRectilinearGrid*>(rectiliearGrid));
+        dispatchFront([this]() {
+            data_ = std::make_shared<VTKDataSet>(dataSet_);
+            outport_.setData(data_);
         });
     };
 
