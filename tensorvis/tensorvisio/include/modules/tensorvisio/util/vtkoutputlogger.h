@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_TENSORFIELDIOMODULE_H
-#define IVW_TENSORFIELDIOMODULE_H
+#pragma once
 
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwo.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <vtkSmartPointer.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-class VtkOutputLogger;
+class InviwoVtkOutputWindow;
 
-class IVW_MODULE_TENSORVISIO_API TensorVisIOModule : public InviwoModule {
+/** \class VtkOutputLogger
+ * \brief mapping VTK logging output to Inviwo's logcentral instead of the regular VTK output window
+ */
+class IVW_MODULE_TENSORVISIO_API VtkOutputLogger {
 public:
-    TensorVisIOModule(InviwoApplication* app);
-    TensorVisIOModule(const TensorVisIOModule&) = delete;
-    TensorVisIOModule(TensorVisIOModule&&) = delete;
-    TensorVisIOModule& operator=(const TensorVisIOModule&) = delete;
-    TensorVisIOModule& operator=(TensorVisIOModule&&) = delete;
-    virtual ~TensorVisIOModule();
+    VtkOutputLogger();
+    virtual ~VtkOutputLogger() = default;
 
 private:
-    std::unique_ptr<VtkOutputLogger> vtkoutput_;
+    vtkSmartPointer<InviwoVtkOutputWindow> outputWindow_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDIOMODULE_H

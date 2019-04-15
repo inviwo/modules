@@ -44,7 +44,9 @@
 
 namespace inviwo {
 
-TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app, "TensorVisIO") {
+TensorVisIOModule::TensorVisIOModule(InviwoApplication* app)
+    : InviwoModule{app, "TensorVisIO"}, vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+
     registerProcessor<AmiraTensorReader>();
     registerProcessor<NRRDReader>();
     registerProcessor<TensorField2DExport>();
@@ -58,5 +60,7 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule(app,
     registerProcessor<FlowGUIFileReader>();
     registerProcessor<VTKWriter>();
 }
+
+TensorVisIOModule::~TensorVisIOModule() = default;
 
 }  // namespace inviwo
