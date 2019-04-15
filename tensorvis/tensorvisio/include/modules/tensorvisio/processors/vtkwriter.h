@@ -32,14 +32,13 @@
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <modules/tensorvisio/ports/vtkdatasetport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkXMLDataSetWriter.h>
-#include <vtkDataSet.h>
 #include <vtkSmartPointer.h>
 #include <warn/pop>
 
@@ -75,7 +74,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<vtkDataSet*> inport_;
+    VTKDataSetInport inport_;
     vtkSmartPointer<vtkXMLDataSetWriter> writer_;
 
     FileProperty file_;

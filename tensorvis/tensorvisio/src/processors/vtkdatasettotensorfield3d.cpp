@@ -112,40 +112,44 @@ void VTKDataSetToTensorField3D::initializeResources() {
 
 void VTKDataSetToTensorField3D::process() {
     if (!dataSetInport_.hasData()) return;
+    dispatchPool([this]() {
+        const auto& dataSet = *dataSetInport_.getData();
 
-    const auto& dataSet = *dataSetInport_.getData();
+        auto dataArray = dataSet->GetPointData()->GetArray(arrays_.get().c_str());
 
-    auto dataArray = dataSet->GetPointData()->GetArray(arrays_.get().c_str());
+        const auto dimensions = dataSet.getDimensions();
 
-    const auto dimensions = dataSet.getDimensions();
+        LogProcessorInfo("Attempting to generate tensor field from array \""
+                         << std::string{dataArray->GetName()} << "\"");
 
-    LogProcessorInfo("Attempting to generate tensor field from array \""
-                     << std::string{dataArray->GetName()} << "\"");
+        const auto bounds = dataSet->GetBounds();
+        auto extent = tensorutil::vtk_ExtentFromBounds(bounds);
+        const auto offset = tensorutil::vtk_OffsetFromBounds(bounds);
 
-    const auto bounds = dataSet->GetBounds();
-    auto extent = tensorutil::vtk_ExtentFromBounds(bounds);
-    const auto offset = tensorutil::vtk_OffsetFromBounds(bounds);
+        if (normalizeExtents_.get()) {
+            extent /= std::max(std::max(extent.x, extent.y), extent.z);
+        }
 
-    if (normalizeExtents_.get()) {
-        extent /= std::max(std::max(extent.x, extent.y), extent.z);
-    }
+        std::shared_ptr<TensorField3D> tensorField;
+        if (dataArray->GetDataType() == VTK_DOUBLE) {
+            tensorField = std::make_shared<TensorField3D>(
+                dimensions, dynamic_cast<vtkDoubleArray*>(dataArray)->GetPointer(0), extent);
+            tensorField->setOffset(offset);
 
-    if (dataArray->GetDataType() == VTK_DOUBLE) {
-        auto tensorField = std::make_shared<TensorField3D>(
-            dimensions, dynamic_cast<vtkDoubleArray*>(dataArray)->GetPointer(0), extent);
-        tensorField->setOffset(offset);
-        tensorField3DOutport_.setData(tensorField);
-    } else if (dataArray->GetDataType() == VTK_FLOAT) {
-        auto tensorField = std::make_shared<TensorField3D>(
-            dimensions, dynamic_cast<vtkFloatArray*>(dataArray)->GetPointer(0), extent);
-        tensorField->setOffset(offset);
-        tensorField3DOutport_.setData(tensorField);
-    } else {
-        LogProcessorError("Failed to generate tensor field from array \""
-                          << std::string{dataArray->GetName()} << "\" because data type is "
-                          << std::string{dataArray->GetDataTypeAsString()} << ".");
-        return;
-    }
-}
+        } else if (dataArray->GetDataType() == VTK_FLOAT) {
+            tensorField = std::make_shared<TensorField3D>(
+                dimensions, dynamic_cast<vtkFloatArray*>(dataArray)->GetPointer(0), extent);
+            tensorField->setOffset(offset);
+            tensorField3DOutport_.setData(tensorField);
+        } else {
+            LogProcessorError("Failed to generate tensor field from array \""
+                              << std::string{dataArray->GetName()} << "\" because data type is "
+                              << std::string{dataArray->GetDataTypeAsString()} << ".");
+            return;
+        }
+
+        dispatchFront([this, tensorField]() { tensorField3DOutport_.setData(tensorField); });
+    });
+}  // namespace inviwo
 
 }  // namespace inviwo

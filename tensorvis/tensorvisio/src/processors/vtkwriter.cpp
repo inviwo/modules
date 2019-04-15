@@ -62,7 +62,7 @@ void VTKWriter::process() {}
 void VTKWriter::export_isacppkeyword() {
     if (!inport_.hasData()) return;
 
-    auto dataSet = *inport_.getData().get();
+    auto dataSet = *inport_.getData();
 
     if (file_.get().empty()) file_.requestFile();
 
@@ -92,7 +92,7 @@ void VTKWriter::export_isacppkeyword() {
 
         std::string vtkConvention = filesystem::replaceFileExtension(file_.get(), ending);
         // write
-        writer_->SetInputData(dataSet);
+        writer_->SetInputData(*dataSet);
         writer_->SetFileName(vtkConvention.c_str());
         writer_->Write();
         LogProcessorInfo("File written to " << vtkConvention);

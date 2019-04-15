@@ -1,19 +1,19 @@
-#include <modules/tensorvisio/processors/witofilereader.h>
+#include <modules/tensorvisio/processors/flowguifilereader.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo WitoFileReader::processorInfo_{
-    "org.inviwo.WitoFileReader",  // Class identifier
+const ProcessorInfo FlowGUIFileReader::processorInfo_{
+    "org.inviwo.FlowGUIFileReader",  // Class identifier
     "Wito File Reader",           // Display name
     "Tensor",                     // Category
     CodeState::Experimental,      // Code state
     Tags::CPU,                    // Tags
 };
-const ProcessorInfo WitoFileReader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo FlowGUIFileReader::getProcessorInfo() const { return processorInfo_; }
 
-WitoFileReader::WitoFileReader()
+FlowGUIFileReader::FlowGUIFileReader()
     : Processor()
     , inFile_("inFile", "File", "")
     , fieldType_("fieldType", "Field type", {{"scalar", "Scalar", 0}, {"vec4", "Vec4", 1}})
@@ -25,7 +25,7 @@ WitoFileReader::WitoFileReader()
     addPort(outportVec3_);
 }
 
-void WitoFileReader::process() {
+void FlowGUIFileReader::process() {
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {

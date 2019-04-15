@@ -53,6 +53,7 @@ public:
     virtual ~VTKDataSet() {}
 
     vtkSmartPointer<vtkDataSet> operator->() const { return dataSet_; }
+    vtkSmartPointer<vtkDataSet> operator*() const { return dataSet_; }
 
     /// Attempts to get the dimensions of the data set. This will only work if the data set is of
     /// type rectiliniar grid, structured grid or structured points. Otherwise [0,0,0] will be

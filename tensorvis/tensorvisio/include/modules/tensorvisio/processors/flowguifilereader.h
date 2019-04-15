@@ -60,10 +60,10 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API WitoFileReader : public Processor { 
+class IVW_MODULE_TENSORVISIO_API FlowGUIFileReader : public Processor {
 public:
-    WitoFileReader();
-    virtual ~WitoFileReader() = default;
+    FlowGUIFileReader();
+    virtual ~FlowGUIFileReader() = default;
      
     virtual void process() override;
 

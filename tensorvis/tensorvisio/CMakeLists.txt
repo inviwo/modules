@@ -19,15 +19,9 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/vtkdatasettotensorfield3d.h
     include/modules/tensorvisio/processors/vtkdatasetinformation.h
     include/modules/tensorvisio/processors/vtkreader.h
-    include/modules/tensorvisio/processors/vtkrectilineargridreader.h
-    include/modules/tensorvisio/processors/vtkstructuredgridreader.h
-    include/modules/tensorvisio/processors/vtkstructuredpointsreader.h
-    include/modules/tensorvisio/processors/vtktotensorfield3d.h
     include/modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h
-    include/modules/tensorvisio/processors/vtkvolumereader.h
     include/modules/tensorvisio/processors/vtkwriter.h
-    include/modules/tensorvisio/processors/vtkxmlrectilineargridreader.h
-    include/modules/tensorvisio/processors/witofilereader.h
+    include/modules/tensorvisio/processors/flowguifilereader.h
     include/modules/tensorvisio/tensorvisiomodule.h
     include/modules/tensorvisio/tensorvisiomoduledefine.h
 )
@@ -47,15 +41,9 @@ set(SOURCE_FILES
     src/processors/vtkdatasettotensorfield3d.cpp
     src/processors/vtkdatasetinformation.cpp
     src/processors/vtkreader.cpp
-    src/processors/vtkrectilineargridreader.cpp
-    src/processors/vtkstructuredgridreader.cpp
-    src/processors/vtkstructuredpointsreader.cpp
-    src/processors/vtktotensorfield3d.cpp
     src/processors/vtkunstructuredgridtorectilineargrid.cpp
-    src/processors/vtkvolumereader.cpp
     src/processors/vtkwriter.cpp
-    src/processors/vtkxmlrectilineargridreader.cpp
-    src/processors/witofilereader.cpp
+    src/processors/flowguifilereader.cpp
     src/tensorvisiomodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

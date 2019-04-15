@@ -39,7 +39,7 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/ports/datainport.h>
+#include <modules/tensorvisio/ports/vtkdatasetport.h>
 
 #include <atomic>
 
@@ -87,7 +87,8 @@ protected:
     ButtonProperty button_;
     ButtonProperty abortButton_;
 
-    DataInport<vtkDataSet*> inport_;
+    VTKDataSetInport inport_;
+
     DataOutport<vtkRectilinearGrid*> outport_;
 
     std::shared_ptr<WorkerState> state_;

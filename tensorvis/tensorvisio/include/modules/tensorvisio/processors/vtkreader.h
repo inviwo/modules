@@ -89,6 +89,7 @@ private:
     vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
 
     std::shared_ptr<VTKDataSet> data_;
+    vtkSmartPointer<vtkDataSet> dataSet_;
 
     VTKFileType determineFileType(const std::string& fileName) const;
     bool read(const VTKFileType fileType);
