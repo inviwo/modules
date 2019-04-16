@@ -28,36 +28,97 @@
  *********************************************************************************/
 
 #include <modules/tensorvisio/datastructures/vtkdataset.h>
+#include <modules/tensorvisbase/util/misc.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkRectilinearGrid.h>
 #include <vtkStructuredGrid.h>
 #include <vtkStructuredPoints.h>
+#include <vtkCellData.h>
+#include <vtkPointData.h>
+#include <vtkArray.h>
 #include <warn/pop>
 
 namespace inviwo {
 
 size3_t VTKDataSet::getDimensions() const {
-    int* dimsptr{nullptr};
+    ivec3 dims{0};
 
     switch (dataSet_->GetDataObjectType()) {
         case VTK_RECTILINEAR_GRID:
-            dimsptr = dynamic_cast<vtkRectilinearGrid*>(dataSet_.GetPointer())->GetDimensions();
+            vtkRectilinearGrid::SafeDownCast(dataSet_.GetPointer())
+                ->GetDimensions(glm::value_ptr(dims));
             break;
         case VTK_STRUCTURED_GRID:
-            dimsptr = dynamic_cast<vtkStructuredGrid*>(dataSet_.GetPointer())->GetDimensions();
+            vtkStructuredGrid::SafeDownCast(dataSet_.GetPointer())
+                ->GetDimensions(glm::value_ptr(dims));
             break;
         case VTK_STRUCTURED_POINTS:
-            dimsptr = dynamic_cast<vtkStructuredPoints*>(dataSet_.GetPointer())->GetDimensions();
+            vtkStructuredPoints::SafeDownCast(dataSet_.GetPointer())
+                ->GetDimensions(glm::value_ptr(dims));
             break;
         default:
             break;
     }
 
-    if (!dimsptr)
-        return size3_t{0};
-    else
-        return size3_t{dimsptr[0], dimsptr[1], dimsptr[2]};
+    return size3_t{dims};
+}
+
+std::string VTKDataSet::getDataInfo() const {
+    auto [cellNames, cellTypes] = [](const VTKDataSet& dataSet)
+        -> std::pair<std::vector<std::string>, std::vector<std::string>> {
+        std::vector<std::string> outNames{};
+        std::vector<std::string> outTypes{};
+        auto cellData = dataSet->GetCellData();
+        if (!cellData) return {};
+        for (int i = 0; i < cellData->GetNumberOfArrays(); ++i) {
+            outNames.emplace_back(cellData->GetArray(i)->GetName());
+            outTypes.emplace_back(cellData->GetArray(i)->GetClassName());
+        }
+        return {outNames, outTypes};
+    }(*this);
+
+    auto [pointNames, pointTypes] = [](const VTKDataSet& dataSet)
+        -> std::pair<std::vector<std::string>, std::vector<std::string>> {
+        std::vector<std::string> outNames{};
+        std::vector<std::string> outTypes{};
+        auto pointData = dataSet->GetPointData();
+        if (!pointData) return {};
+        for (int i = 0; i < pointData->GetNumberOfArrays(); ++i) {
+            outNames.emplace_back(pointData->GetArray(i)->GetName());
+            outTypes.emplace_back(pointData->GetArray(i)->GetClassName());
+        }
+        return {outNames, outTypes};
+    }(*this);
+
+    std::stringstream ss;
+    ss << "<table border='0' cellspacing='0' cellpadding='0' "
+          "style='border-color:white;white-space:pre;'>/n"
+       << tensorutil::getHTMLTableRowString("Type", "VTK data set")
+       << tensorutil::getHTMLTableRowString("Class name", std::string{dataSet_->GetClassName()});
+
+    if (!cellNames.empty()) {
+        ss << "</br>";
+        ss << "</br>";
+
+        ss << tensorutil::getHTMLTableIntermediateHeaderString("Cell data arrays");
+        for (size_t j{0}; j < cellNames.size(); ++j) {
+            ss << tensorutil::getHTMLTableRowString(cellNames[j], cellTypes[j]);
+        }
+    }
+
+    if (!pointNames.empty()) {
+        ss << "</br>";
+        ss << "</br>";
+
+        ss << tensorutil::getHTMLTableIntermediateHeaderString("Point data arrays");
+        for (size_t j{0}; j < pointNames.size(); ++j) {
+            ss << tensorutil::getHTMLTableRowString(pointNames[j], pointTypes[j]);
+        }
+    }
+
+    ss << "</table>";
+    return ss.str();
 }
 }  // namespace inviwo

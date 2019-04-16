@@ -60,22 +60,10 @@ struct DataTraits<VTKDataSet> {
     static std::string classIdentifier() { return "org.inviwo.VTKDataSet"; }
     static std::string dataName() { return "VTK Data Set"; }
     static uvec3 colorCode() { return uvec3(50, 110, 35); }
+
     static Document info(const VTKDataSet& data) {
         std::ostringstream oss;
-        oss << "VTK type: " << std::string{data->GetClassName()};
-
-        //        auto [names, types] = [](const VTKDataSet& dataSet)
-        //            -> std::pair<std::vector<std::string>, std::vector<std::string>> {
-        //            std::vector<std::string> names{};
-        //            std::vector<std::string> types{};
-        //            auto cellData = dataSet->GetCellData();
-        //            for (int i = 0; i < cellData->GetNumberOfArrays(); ++i) {
-        //                names.emplace_back(cellData->GetArray(i)->GetName());
-        //                types.emplace_back(cellData->GetArray(i)->GetClassName());
-        //            }
-        //            return std::pair<std::vector<std::string>, std::vector<std::string>>(names,
-        //            types);
-        //        };
+        oss << data.getDataInfo();
 
         Document doc;
         doc.append("p", oss.str());

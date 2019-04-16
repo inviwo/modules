@@ -48,7 +48,7 @@ const ProcessorInfo VTKReader::processorInfo_{
     "VTK Reader",             // Display name
     "VTK",                    // Category
     CodeState::Experimental,  // Code state
-    Tags::CPU,                // Tags
+    "CPU, Data Input, VTK",   // Tags
 };
 const ProcessorInfo VTKReader::getProcessorInfo() const { return processorInfo_; }
 
@@ -107,12 +107,14 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
     // VTK file header is always ASCII so we can just read the first line.
     std::getline(infile, line);
 
+    line = toLower(line);
+
     // This is what should be in the header according to documentation.
     if (line.find("xml") != std::string::npos) {
         return VTKFileType::XML;
     }
     // This is what Paraview puts into their header...
-    if (line.find("VTKFile") != std::string::npos) {
+    if (line.find("vtkfile") != std::string::npos) {
         return VTKFileType::XML;
     }
     if (line.find("vtk") != std::string::npos) {
@@ -137,6 +139,8 @@ bool VTKReader::read(const VTKFileType fileType) {
 
 void VTKReader::readLegacy() {
     dispatchPool([this]() {
+        dispatchFront([this]() { getActivityIndicator().setActive(true); });
+
         const auto progressUpdate = [this](float f) {
             dispatchFront([this, f]() {
                 f < 1.0 ? progressBar_.show() : progressBar_.hide();
@@ -167,14 +171,16 @@ void VTKReader::readLegacy() {
 
         dispatchFront([this]() {
             data_ = std::make_shared<VTKDataSet>(dataSet_);
+            getActivityIndicator().setActive(false);
             outport_.setData(data_);
-            invalidate(InvalidationLevel::InvalidOutput);
         });
     });
 }
 
 void VTKReader::readXML() {
     dispatchPool([this]() {
+        dispatchFront([this]() { getActivityIndicator().setActive(true); });
+
         const auto progressUpdate = [this](float f) {
             dispatchFront([this, f]() {
                 f < 1.0 ? progressBar_.show() : progressBar_.hide();
@@ -205,8 +211,8 @@ void VTKReader::readXML() {
 
         dispatchFront([this]() {
             data_ = std::make_shared<VTKDataSet>(dataSet_);
+            getActivityIndicator().setActive(false);
             outport_.setData(data_);
-            invalidate(InvalidationLevel::InvalidOutput);
         });
     });
 }

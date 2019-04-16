@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/processors/activityindicator.h>
 #include <modules/tensorvisio/ports/vtkdatasetport.h>
 
 #include <warn/push>
@@ -68,7 +69,9 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor, public ProgressBarOwner {
+class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor,
+                                             public ProgressBarOwner,
+                                             public ActivityIndicatorOwner {
 public:
     VTKReader();
     virtual ~VTKReader() = default;

@@ -45,6 +45,7 @@
 #include <vtkProbeFilter.h>
 #include <vtkCallbackCommand.h>
 #include <vtkCellTreeLocator.h>
+#include <vtkRectilinearGrid.h>
 #include <warn/pop>
 
 namespace inviwo {

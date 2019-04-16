@@ -29,6 +29,8 @@
 
 #include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
 #include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/networklock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -60,7 +62,8 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     , normalizeExtents_("normalizeExtents", "Normalize extents", false)
     , arrays_("arrays", "arrays")
     , offset_{0}
-    , previouslySelectedArrayName_{} {
+    , previouslySelectedArrayName_{}
+    , busy_(false) {
     addPort(dataSetInport_);
     addPort(tensorField3DOutport_);
 
@@ -77,45 +80,45 @@ void VTKDataSetToTensorField3D::initializeResources() {
     const auto& dataSet = *dataSetInport_.getData();
     auto pointData = dataSet->GetPointData();
 
-    auto stringReplace = [](std::string str, const std::string& from,
-                            const std::string& to) -> const std::string {
-        size_t start_pos{0};
-        while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-            str.replace(start_pos, from.length(), to);
-            start_pos += to.length();
-        }
-        return str;
-    };
-
-    arrays_.clearOptions();
+    std::vector<OptionPropertyOption<std::string>> options{};
 
     for (int i{0}; i < pointData->GetNumberOfArrays(); ++i) {
         auto array = pointData->GetArray(i);
 
         if (array->GetNumberOfComponents() != 9) continue;
 
-        arrays_.addOption(stringReplace(stringReplace(array->GetName(), ".", ""), " ", ""),
-                          {array->GetName()}, {array->GetName()});
+        std::string name{array->GetName()};
+        auto identifier = name;
+
+        replaceInString(identifier, ".", "");
+        replaceInString(identifier, " ", "");
+
+        options.emplace_back(identifier, name, name);
     }
 
-    // If the data set contains an array with the same name as the previous data set, we set the
-    // selected option to that array. This is mostly for serialization purposes.
-    for (const auto& option : arrays_.getOptions()) {
-        if (option.id_ == previouslySelectedArrayName_) {
-            arrays_.setSelectedValue(option.value_);
-            return;
-        }
-    }
-    arrays_.setSelectedIndex(0);
-    previouslySelectedArrayName_ = arrays_.getOptionDisplayName(0);
+    arrays_.replaceOptions(options);
 }
 
 void VTKDataSetToTensorField3D::process() {
     if (!dataSetInport_.hasData()) return;
+    if (busy_) return;
+
+    busy_ = true;
+
     dispatchPool([this]() {
+        dispatchFront([this]() {
+            {
+                NetworkLock lock;
+                arrays_.setReadOnly(true);
+            }
+            getActivityIndicator().setActive(true);
+        });
+
         const auto& dataSet = *dataSetInport_.getData();
 
         auto dataArray = dataSet->GetPointData()->GetArray(arrays_.get().c_str());
+
+        if (!dataArray) return;
 
         const auto dimensions = dataSet.getDimensions();
 
@@ -133,14 +136,13 @@ void VTKDataSetToTensorField3D::process() {
         std::shared_ptr<TensorField3D> tensorField;
         if (dataArray->GetDataType() == VTK_DOUBLE) {
             tensorField = std::make_shared<TensorField3D>(
-                dimensions, dynamic_cast<vtkDoubleArray*>(dataArray)->GetPointer(0), extent);
+                dimensions, vtkDoubleArray::SafeDownCast(dataArray)->GetPointer(0), extent);
             tensorField->setOffset(offset);
 
         } else if (dataArray->GetDataType() == VTK_FLOAT) {
             tensorField = std::make_shared<TensorField3D>(
-                dimensions, dynamic_cast<vtkFloatArray*>(dataArray)->GetPointer(0), extent);
+                dimensions, vtkFloatArray::SafeDownCast(dataArray)->GetPointer(0), extent);
             tensorField->setOffset(offset);
-            tensorField3DOutport_.setData(tensorField);
         } else {
             LogProcessorError("Failed to generate tensor field from array \""
                               << std::string{dataArray->GetName()} << "\" because data type is "
@@ -148,8 +150,16 @@ void VTKDataSetToTensorField3D::process() {
             return;
         }
 
-        dispatchFront([this, tensorField]() { tensorField3DOutport_.setData(tensorField); });
-    });
-}  // namespace inviwo
+        busy_ = false;
 
+        dispatchFront([this, tensorField]() {
+            {
+                NetworkLock lock;
+                arrays_.setReadOnly(false);
+            }
+            getActivityIndicator().setActive(false);
+            tensorField3DOutport_.setData(tensorField);
+        });
+    });
+}
 }  // namespace inviwo

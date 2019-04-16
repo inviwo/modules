@@ -29,6 +29,7 @@
 
 #include <modules/tensorvisio/processors/vtkdatasetinformation.h>
 #include <inviwo/core/network/networklock.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -67,22 +68,12 @@ VTKDataSetInformation::VTKDataSetInformation()
 }
 
 void VTKDataSetInformation::process() {
-    const auto& dataSet = *inport_.getData();
+    const auto &dataSet = *inport_.getData();
 
     className_.set(std::string{dataSet->GetClassName()});
 
     const auto pointData = dataSet->GetPointData();
     const auto cellData = dataSet->GetCellData();
-
-    auto stringReplace = [](std::string str, const std::string &from,
-                            const std::string &to) -> const std::string {
-        size_t start_pos{0};
-        while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-            str.replace(start_pos, from.length(), to);
-            start_pos += to.length();
-        }
-        return str;
-    };
 
     {
         NetworkLock lock;
@@ -103,24 +94,29 @@ void VTKDataSetInformation::process() {
             cellDataArrays_.removeProperty(identifier);
         }
 
-        std::vector<std::string> names{};
         for (int i{0}; i < pointData->GetNumberOfArrays(); ++i) {
             const auto array = pointData->GetArray(i);
-            const auto arrayName = std::string{array->GetName()};
-            names.emplace_back(arrayName);
+            auto arrayName = std::string{array->GetName()};
+            auto identifier = arrayName;
+
+            replaceInString(identifier, ".", "");
+            replaceInString(identifier, " ", "");
+
             pointDataArrays_.addProperty(new ArrayInformationProperty{
-                arrayName, stringReplace(stringReplace(arrayName, ".", ""), " ", ""),
-                std::string{array->GetDataTypeAsString()},
+                arrayName, identifier, std::string{array->GetDataTypeAsString()},
                 std::to_string(array->GetNumberOfComponents())});
         }
 
         for (int i{0}; i < cellData->GetNumberOfArrays(); ++i) {
             const auto array = cellData->GetArray(i);
             const auto arrayName = std::string{array->GetName()};
-            names.emplace_back(arrayName);
+            auto identifier = arrayName;
+
+            replaceInString(identifier, ".", "");
+            replaceInString(identifier, " ", "");
+
             cellDataArrays_.addProperty(new ArrayInformationProperty{
-                arrayName, stringReplace(stringReplace(arrayName, ".", ""), " ", ""),
-                std::string{array->GetDataTypeAsString()},
+                arrayName, identifier, std::string{array->GetDataTypeAsString()},
                 std::to_string(array->GetNumberOfComponents())});
         }
     }

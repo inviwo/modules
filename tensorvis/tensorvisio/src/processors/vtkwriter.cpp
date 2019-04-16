@@ -38,7 +38,7 @@ const ProcessorInfo VTKWriter::processorInfo_{
     "VTK Writer",             // Display name
     "VTK",                    // Category
     CodeState::Experimental,  // Code state
-    Tags::CPU,                // Tags
+    "CPU, Data Output, VTK",  // Tags
 };
 const ProcessorInfo VTKWriter::getProcessorInfo() const { return processorInfo_; }
 
@@ -96,8 +96,6 @@ void VTKWriter::export_isacppkeyword() {
         writer_->SetFileName(vtkConvention.c_str());
         writer_->Write();
         LogProcessorInfo("File written to " << vtkConvention);
-    } else {
-        LogProcessorWarn("Error: Please specify a file to write to");
     }
 }
 

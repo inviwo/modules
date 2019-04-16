@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/processors/activityindicator.h>
 
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
 #include <modules/tensorvisio/ports/vtkdatasetport.h>
@@ -64,7 +65,7 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor, public ActivityIndicatorOwner {
 public:
     VTKDataSetToTensorField3D();
     virtual ~VTKDataSetToTensorField3D() = default;
@@ -85,6 +86,7 @@ private:
     OptionPropertyString arrays_;
     int offset_;
     std::string previouslySelectedArrayName_;
+    bool busy_;
 };
 
 }  // namespace inviwo

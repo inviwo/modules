@@ -55,11 +55,14 @@ public:
     vtkSmartPointer<vtkDataSet> operator->() const { return dataSet_; }
     vtkSmartPointer<vtkDataSet> operator*() const { return dataSet_; }
 
-    /// Attempts to get the dimensions of the data set. This will only work if the data set is of
-    /// type rectiliniar grid, structured grid or structured points. Otherwise [0,0,0] will be
-    /// returned. The method is here because the GetDimensions() method is not declared const in VTK
-    /// so if you have a VTKDataSet on the inport you will not be able to determine its
-    /// dimensions unless you clone it...
+    std::string getDataInfo() const;
+
+    /** Attempts to get the dimensions of the data set. This will only work if the data set
+     * is of type rectiliniar grid, structured grid or structured points. Otherwise [0,0,0] will be
+     * returned. The method is here because the GetDimensions() method is not declared const in VTK
+     * so if you have a VTKDataSet on the inport you will not be able to determine its
+     * dimensions unless you clone it...
+     * */
     size3_t getDimensions() const;
 
 private:
