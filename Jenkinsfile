@@ -25,7 +25,7 @@ node {
         removeLabel: {label -> }
     ]
 
-    def modulePaths = ["${env.WORKSPACE}/modules/misc"]
+    def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis"]
     util.wrap(state, "#jenkins-branch-pr") {
         util.buildStandard(
             state: state,
