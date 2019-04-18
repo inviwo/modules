@@ -297,18 +297,46 @@ std::shared_ptr<BasicMesh> generateBoundingBoxForTensorField(
 std::shared_ptr<BasicMesh> generateSliceLevelGeometryForTensorField(
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
     const CartesianCoordinateAxis axis, const size_t sliceNr) {
-    auto modelMatrix = tensorField->getBasisAndOffset();
 
+    auto mesh = detail::generateSliceGeometry(tensorField, color, axis, sliceNr);
+
+    auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
+
+    indices->add({3, 0, 1, 2, 3, 0, 1});
+
+    return mesh;
+}
+
+std::shared_ptr<BasicMesh> generateSlicePlaneGeometryForTensorField(
+    std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
+    const CartesianCoordinateAxis axis, const size_t sliceNr) {
+
+    auto mesh = detail::generateSliceGeometry(tensorField, color, axis, sliceNr);
+
+    auto indices = mesh->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
+
+    indices->add(0);
+    indices->add(1);
+    indices->add(2);
+
+    indices->add(2);
+    indices->add(3);
+    indices->add(0);
+
+    return mesh;
+}
+
+namespace detail {
+std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorField3D> tensorField,
+                                                 const vec4 color,
+                                                 const CartesianCoordinateAxis axis,
+                                                 const size_t sliceNr) {
     auto bounds = tensorField->getBounds<float>();
     auto bounds_t = tensorField->getBounds<size_t>();
     auto extends = tensorField->getExtends<float>();
     auto offset = tensorField->getOffset<float>();
 
     auto mesh = std::make_shared<BasicMesh>();
-    mesh->setModelMatrix(modelMatrix);
-    mesh->setWorldMatrix(mat4(1));
-
-
 
     switch (axis) {
         case CartesianCoordinateAxis::X: {
@@ -319,9 +347,9 @@ std::shared_ptr<BasicMesh> generateSliceLevelGeometryForTensorField(
             xFrac *= slice;
 
             mesh->addVertex(offset + vec3(xFrac, 0.0f, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(xFrac, 1.0f, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(xFrac, 1.0f, 1.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(xFrac, 0.0f, 1.0f), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(xFrac, extends.y, 0.0f), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(xFrac, extends.y, extends.z), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(xFrac, 0.0f, extends.z), vec3(1), vec3(), color);
         } break;
         case CartesianCoordinateAxis::Y: {
             auto yFrac = extends.y / bounds.y;
@@ -331,9 +359,9 @@ std::shared_ptr<BasicMesh> generateSliceLevelGeometryForTensorField(
             yFrac *= slice;
 
             mesh->addVertex(offset + vec3(0.0f, yFrac, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(1.0f, yFrac, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(1.0f, yFrac, 1.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(0.0f, yFrac, 1.0f), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(extends.x, yFrac, 0.0f), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(extends.x, yFrac, extends.z), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(0.0f, yFrac, extends.z), vec3(1), vec3(), color);
         } break;
         case CartesianCoordinateAxis::Z: {
             auto zFrac = extends.z / bounds.z;
@@ -343,17 +371,15 @@ std::shared_ptr<BasicMesh> generateSliceLevelGeometryForTensorField(
             zFrac *= slice;
 
             mesh->addVertex(offset + vec3(0.0f, 0.0f, zFrac), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(1.0f, 0.0f, zFrac), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(1.0f, 1.0f, zFrac), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(0.0f, 1.0f, zFrac), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(extends.x, 0.0f, zFrac), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(extends.x, extends.y, zFrac), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(0.0f, extends.y, zFrac), vec3(1), vec3(), color);
         } break;
     }
 
-    auto idx = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
-    idx->add({3, 0, 1, 2, 3, 0, 1});
-
     return mesh;
 }
+}  // namespace detail
 
 }  // namespace tensorutil
 

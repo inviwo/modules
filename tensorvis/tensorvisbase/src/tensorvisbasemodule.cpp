@@ -38,10 +38,14 @@
 #include <modules/tensorvisbase/processors/eigenvaluefieldtoimage.h>
 #include <modules/tensorvisbase/processors/hyperstreamlines.h>
 #include <modules/tensorvisbase/processors/imagetospherefield.h>
+#include <modules/tensorvisbase/processors/invariantspacecombine.h>
+#include <modules/tensorvisbase/processors/invariantspaceselection.h>
+#include <modules/tensorvisbase/processors/invariantspacetodataframe.h>
 #include <modules/tensorvisbase/processors/mohrcircleprocessor.h>
 #include <modules/tensorvisbase/processors/tensorfield2danisotropy.h>
 #include <modules/tensorvisbase/processors/tensorfield2dsubsample.h>
 #include <modules/tensorvisbase/processors/tensorfield2dsubset.h>
+#include <modules/tensorvisbase/processors/tensorfield3dangle.h>
 #include <modules/tensorvisbase/processors/tensorfield3danisotropy.h>
 #include <modules/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
 #include <modules/tensorvisbase/processors/tensorfield3dboundingbox.h>
@@ -71,10 +75,12 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<EigenvalueFieldToImage>();
     registerProcessor<HyperStreamlines>();
     registerProcessor<ImageToSphereField>();
+    registerProcessor<InvariantSpaceCombine>();
     registerProcessor<MohrCircleProcessor>();
     registerProcessor<TensorField2DAnisotropy>();
     registerProcessor<TensorField2DSubsample>();
     registerProcessor<TensorField2DSubset>();
+    registerProcessor<TensorField3DAngle>();
     registerProcessor<TensorField3DAnisotropy>();
     registerProcessor<TensorField3DBasisManipulation>();
     registerProcessor<TensorField3DBoundingBox>();
@@ -92,14 +98,14 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorInformation>();
     registerProcessor<TensorStarPlotProcessor>();
     registerProcessor<VolumeActualDataAndValueRange>();
+    registerProcessor<InvariantSpaceToDataFrame>();
+    registerProcessor<InvariantSpaceSelection>();
 
     registerProperty<EigenValueProperty>();
     registerProperty<TensorGlyphProperty>();
 
     registerDataVisualizer(std::make_unique<HyperLICVisualizer3D>(app));
     registerDataVisualizer(std::make_unique<AnisotropyRaycastingVisualizer>(app));
-                                 << std::to_string(__GNUC_MINOR__));
-#endif
 }
 
 }  // namespace inviwo

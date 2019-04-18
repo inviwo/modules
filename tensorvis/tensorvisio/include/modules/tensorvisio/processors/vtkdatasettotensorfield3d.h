@@ -39,6 +39,7 @@
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
 #include <modules/tensorvisio/ports/vtkdatasetport.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -83,10 +84,13 @@ private:
 
     BoolProperty normalizeExtents_;
 
-    OptionPropertyString arrays_;
-    int offset_;
-    std::string previouslySelectedArrayName_;
+    OptionPropertyString tensors_;
+    OptionPropertyString scalars_;
+    ButtonProperty generate_;
+
     bool busy_;
+
+    void generate();
 };
 
 }  // namespace inviwo

@@ -54,22 +54,24 @@ TensorFieldToVolume::TensorFieldToVolume()
     addPort(inport_);
     addPort(outport_);
 
-    feature_.addOption("majorEigenVector", "Major eigenvector", 0);
-    feature_.addOption("intermediateEigenVector", "Intermediate eigenvector", 1);
-    feature_.addOption("minorEigenVector", "Minor eigenvector", 2);
-    feature_.addOption("majorEigenValue", "Major eigenvalue", 3);
-    feature_.addOption("intermediateEigenValue", "Intermediate eigenvalue", 4);
-    feature_.addOption("minorEigenValue", "Minor eigenvalue", 5);
+    feature_.addOption("majorEigenVector", "Major eigenvector", TensorFeature::MajorEigenVector);
+    feature_.addOption("intermediateEigenVector", "Intermediate eigenvector",
+                       TensorFeature::IntermediateEigenVector);
+    feature_.addOption("minorEigenVector", "Minor eigenvector", TensorFeature::MinorEigenVector);
+    feature_.addOption("majorEigenValue", "Major eigenvalue", TensorFeature::Sigma1);
+    feature_.addOption("intermediateEigenValue", "Intermediate eigenvalue", TensorFeature::Sigma2);
+    feature_.addOption("minorEigenValue", "Minor eigenvalue", TensorFeature::Sigma3);
+    feature_.addOption("hill", "Hill", TensorFeature::HillYieldCriterion);
 
     addProperty(feature_);
     addProperty(normalizeVectors_);
 
-    feature_.onChange([this]() {
+    /*feature_.onChange([this]() {
         if (feature_.get() > 2)
             normalizeVectors_.setVisible(false);
         else
             normalizeVectors_.setVisible(true);
-    });
+    });*/
 }
 
 void TensorFieldToVolume::process() {
@@ -77,7 +79,39 @@ void TensorFieldToVolume::process() {
 
     auto option = feature_.get();
 
-    if (option < 3) {
+    const auto &metaData = *tensorField->getMetaDataContainer(uint64_t(option));
+
+    const auto numberOfComponents = metaData.getNumberOfComponents();
+
+    auto vol = std::make_shared<Volume>(tensorField->getDimensions(), DataFormatBase::get(NumericType::Float, numberOfComponents, 32));
+
+    auto volRAM = vol->getEditableRepresentation<VolumeRAM>();
+
+    /*volRAM->dispatch<void, dispatching::filter::Floats>([this](auto repr) {
+        auto ptr=repr->getTypedData();
+
+        //std::copy(--,--,ptr);
+    });*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*if (option < 3) {
         auto vol = std::make_shared<Volume>(tensorField->getDimensions(), DataVec3Float32::get());
         auto volRAM = vol->getEditableRepresentation<VolumeRAM>();
         auto data = static_cast<glm::f32vec3*>(volRAM->getData());
@@ -120,7 +154,7 @@ void TensorFieldToVolume::process() {
         vol->dataMap_ = tensorField->dataMapEigenValues_[option - 3];
 
         outport_.setData(vol);
-    }
+    }*/
 }
 
 }  // namespace inviwo

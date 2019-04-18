@@ -443,7 +443,7 @@
                     <Processor content="org.inviwo.VTKUnstructuredGridToRectilinearGrid" />
                     <Processor content="org.inviwo.VTKStructuredGridReader" />
                     <Processor content="org.inviwo.VTKToTensorField3D" />
-                    <Processor content="org.inviwo.WitoFileReader" />
+                    <Processor content="org.inviwo.FlowGUIFileReader" />
                     <Processor content="org.inviwo.VTKRectilinearGridReader" />
                     <Processor content="org.inviwo.VTKXMLRectilinearGridReader" />
                     <Processor content="org.inviwo.VTKStructuredPointsReader" />
