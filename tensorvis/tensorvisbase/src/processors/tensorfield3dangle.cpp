@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -45,35 +45,40 @@ const ProcessorInfo TensorField3DAngle::getProcessorInfo() const { return proces
 TensorField3DAngle::TensorField3DAngle()
     : Processor()
     , tensorField3DInport1_("tensorField3DInport1")
-    , tensorField3DInport2_("tensorField3DInport2")
+    , fiberOrientation_("fiberOrientation")
     , invariantSpaceOutport_("invariantSpaceOutport") {
     addPort(tensorField3DInport1_);
-    addPort(tensorField3DInport2_);
+    addPort(fiberOrientation_);
     addPort(invariantSpaceOutport_);
 }
 
 void TensorField3DAngle::process() {
-    if (!tensorField3DInport1_.hasData() || !tensorField3DInport2_.hasData()) return;
+    if (!tensorField3DInport1_.hasData() || !fiberOrientation_.hasData()) return;
 
     auto tf1 = tensorField3DInport1_.getData();
-    auto tf2 = tensorField3DInport2_.getData();
+    auto fot = fiberOrientation_.getData();
 
     const auto& maev1 = tf1->majorEigenVectors();
-    const auto& maev2 = tf2->majorEigenVectors();
-
     const auto& inev1 = tf1->middleEigenVectors();
-    const auto& inev2 = tf2->middleEigenVectors();
-
     const auto& miev1 = tf1->minorEigenVectors();
-    const auto& miev2 = tf2->minorEigenVectors();
+
+    const auto& maev2 = fot->majorEigenVectors();
 
     const auto numberOfElements = maev1.size();
 
-    auto iv = std::make_shared<InvariantSpace>(3, std::vector<std::string>{"phi1", "phi2", "phi3"});
+    auto iv = std::make_shared<InvariantSpace>(
+        3, std::vector<std::string>{u8"φmax", u8"φmiddle", u8"φmin"},
+        std::vector<TensorFeature>{TensorFeature::Unspecified, TensorFeature::Unspecified,
+                                   TensorFeature::Unspecified});
+
+    auto convertAngle = [](auto angle) {
+        return angle >= glm::half_pi<double>() ? glm::pi<double>() - angle : angle;
+    };
 
     for (size_t i = 0; i < numberOfElements; ++i) {
-        iv->addPoint({glm::angle(maev1[i], maev2[i]), glm::angle(inev1[i], inev2[i]),
-                      glm::angle(miev1[i], miev2[i])});
+        iv->addPoint({convertAngle(glm::angle(maev1[i], maev2[i])),
+                      convertAngle(glm::angle(inev1[i], maev2[i])),
+                      convertAngle(glm::angle(miev1[i], maev2[i]))});
     }
 
     invariantSpaceOutport_.setData(iv);

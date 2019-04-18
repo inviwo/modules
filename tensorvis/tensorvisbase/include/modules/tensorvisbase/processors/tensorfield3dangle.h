@@ -40,22 +40,8 @@ namespace inviwo {
 /** \docpage{org.inviwo.TensorField3DAngle, Tensor Field 3D Angle}
  * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DAngle)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorField3DAngle : public Processor {
 public:
     TensorField3DAngle();
@@ -68,7 +54,7 @@ public:
 
 private:
     TensorField3DInport tensorField3DInport1_;
-    TensorField3DInport tensorField3DInport2_;
+    TensorField3DInport fiberOrientation_;
 
     InvariantSpaceOutport invariantSpaceOutport_;
 };

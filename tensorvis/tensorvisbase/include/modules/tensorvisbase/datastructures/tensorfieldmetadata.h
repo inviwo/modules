@@ -43,6 +43,7 @@ enum class TensorFeature : uint64_t {
     Rotation = util::constexpr_hash("Rotation"),
     FrobeniusNorm = util::constexpr_hash("FrobeniusNorm"),
     HillYieldCriterion = util::constexpr_hash("HillYieldCriterion"),
+    Unspecified = util::constexpr_hash("Unspecified"),
     NumberOfTensorFeatures = util::constexpr_hash("NumberOfTensorFeatures")
 };
 
@@ -124,6 +125,9 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
             break;
         case TensorFeature::HillYieldCriterion:
             os << "HillYieldCriterion";
+            break;
+        case TensorFeature::Unspecified:
+            os << "Unspecified";
             break;
         default:
             os << "Undefined";

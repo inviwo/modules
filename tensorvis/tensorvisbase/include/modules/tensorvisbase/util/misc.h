@@ -243,6 +243,23 @@ std::string to_string(const T& list) {
     return str;
 }
 
+template <typename T, size_t N>
+std::string to_string(const std::array<T, N>& arr) {
+    std::stringstream ss;
+    ss << "[ ";
+
+    for (size_t i{0}; i < N; ++i) {
+        ss << std::to_string(arr[i]) << ", ";
+    }
+
+    auto str = ss.str();
+
+    str[str.size() - 2] = ' ';
+    str[str.size() - 1] = ']';
+
+    return str;
+}
+
 inline vec3 hcl2rgb(const vec3& hcl) {
     const auto PI = 3.1415926536f;
     const auto hclGamma = 3.0f;

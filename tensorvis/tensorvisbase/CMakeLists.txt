@@ -5,8 +5,6 @@ ivw_module(TensorVisBase)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/tensorvisbase/tensorvisbasemodule.h
-    include/modules/tensorvisbase/tensorvisbasemoduledefine.h
     include/modules/tensorvisbase/datastructures/deformablecube.h
     include/modules/tensorvisbase/datastructures/deformablecylinder.h
     include/modules/tensorvisbase/datastructures/deformablesphere.h
@@ -24,6 +22,7 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/hyperstreamlines.h
     include/modules/tensorvisbase/processors/imagetospherefield.h
     include/modules/tensorvisbase/processors/invariantspacecombine.h
+    include/modules/tensorvisbase/processors/invariantspacefilter.h
     include/modules/tensorvisbase/processors/invariantspaceselection.h
     include/modules/tensorvisbase/processors/invariantspacetodataframe.h
     include/modules/tensorvisbase/processors/mohrcircleprocessor.h
@@ -50,6 +49,8 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/volumeactualdataandvaluerange.h
     include/modules/tensorvisbase/properties/eigenvalueproperty.h
     include/modules/tensorvisbase/properties/tensorglyphproperty.h
+    include/modules/tensorvisbase/tensorvisbasemodule.h
+    include/modules/tensorvisbase/tensorvisbasemoduledefine.h
     include/modules/tensorvisbase/util/misc.h
     include/modules/tensorvisbase/util/tensorfieldutil.h
     include/modules/tensorvisbase/util/tensorutil.h
@@ -59,7 +60,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    src/tensorvisbasemodule.cpp
     src/datastructures/deformablecube.cpp
     src/datastructures/deformablecylinder.cpp
     src/datastructures/deformablesphere.cpp
@@ -73,6 +73,7 @@ set(SOURCE_FILES
     src/processors/hyperstreamlines.cpp
     src/processors/imagetospherefield.cpp
     src/processors/invariantspacecombine.cpp
+    src/processors/invariantspacefilter.cpp
     src/processors/invariantspaceselection.cpp
     src/processors/invariantspacetodataframe.cpp
     src/processors/mohrcircleprocessor.cpp
@@ -99,6 +100,7 @@ set(SOURCE_FILES
     src/processors/volumeactualdataandvaluerange.cpp
     src/properties/eigenvalueproperty.cpp
     src/properties/tensorglyphproperty.cpp
+    src/tensorvisbasemodule.cpp
     src/tensorvisbasemodule.cpp
     src/util/tensorfieldutil.cpp
     src/util/tensorutil.cpp

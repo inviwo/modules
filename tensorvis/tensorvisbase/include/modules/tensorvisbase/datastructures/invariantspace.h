@@ -1,3 +1,10 @@
+#ifdef _MSC_VER
+#pragma optimize("", off)
+#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
+
 #pragma once
 
 #include <inviwo/core/common/inviwo.h>
@@ -9,7 +16,8 @@ namespace inviwo {
 using InvariantSpaceAxis = std::vector<glm::f64>;
 struct InvariantSpace {
     InvariantSpace() = default;
-    InvariantSpace(size_t numberOfDimensions, const std::vector<std::string>& identifiers);
+    InvariantSpace(size_t numberOfDimensions, const std::vector<std::string>& identifiers,
+                   const std::vector<TensorFeature>& metaDataTypes);
     ~InvariantSpace() = default;
 
     glm::u8 getNumberOfDimensions() const { return static_cast<glm::u8>(data_.size()); }
@@ -155,6 +163,8 @@ struct InvariantSpace {
     const auto& getMinMax(size_t index) const { return minmax_[index]; }
     const auto& getMinMaxes() const { return minmax_; }
 
+    std::string getDataInfo() const;
+
 private:
     std::vector<InvariantSpaceAxis*> data_;
     std::vector<std::string> identifiers_;
@@ -162,6 +172,33 @@ private:
     std::vector<std::array<glm::f64, 2>> minmax_;
 };
 
+/**
+ * \ingroup ports
+ */
 using InvariantSpaceInport = DataInport<InvariantSpace>;
+
+/**
+ * \ingroup ports
+ */
 using InvariantSpaceOutport = DataOutport<InvariantSpace>;
+
+template <>
+struct DataTraits<InvariantSpace> {
+    static std::string classIdentifier() { return "org.inviwo.InvariantSpace"; }
+    static std::string dataName() { return "InvariantSpace"; }
+    static uvec3 colorCode() { return uvec3(10, 150, 235); }
+    static Document info(const InvariantSpace& data) {
+        std::ostringstream oss;
+        oss << data.getDataInfo();
+        Document doc;
+        doc.append("p", oss.str());
+        return doc;
+    }
+};
 }  // namespace inviwo
+
+#ifdef _MSC_VER
+#pragma optimize("", on)
+#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
+#pragma GCC pop_options
+#endif
