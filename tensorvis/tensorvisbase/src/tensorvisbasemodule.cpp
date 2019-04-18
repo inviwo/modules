@@ -39,6 +39,7 @@
 #include <modules/tensorvisbase/processors/hyperstreamlines.h>
 #include <modules/tensorvisbase/processors/imagetospherefield.h>
 #include <modules/tensorvisbase/processors/invariantspacecombine.h>
+#include <modules/tensorvisbase/processors/invariantspacefilter.h>
 #include <modules/tensorvisbase/processors/invariantspaceselection.h>
 #include <modules/tensorvisbase/processors/invariantspacetodataframe.h>
 #include <modules/tensorvisbase/processors/mohrcircleprocessor.h>
@@ -76,6 +77,7 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<HyperStreamlines>();
     registerProcessor<ImageToSphereField>();
     registerProcessor<InvariantSpaceCombine>();
+    registerProcessor<InvariantSpaceFilter>();
     registerProcessor<MohrCircleProcessor>();
     registerProcessor<TensorField2DAnisotropy>();
     registerProcessor<TensorField2DSubsample>();

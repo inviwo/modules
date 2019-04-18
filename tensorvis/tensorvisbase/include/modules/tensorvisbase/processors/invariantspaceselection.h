@@ -24,8 +24,6 @@ private:
 
     InvariantSpaceOutport outport_;
 
-    BoolProperty filterZeroes_;
-
     CompositeProperty invariantSpaceAxes_;
 
     BoolProperty sigma1_;
@@ -54,6 +52,7 @@ private:
     BoolProperty shapeFactor_;
     BoolProperty isotropicScaling_;
     BoolProperty rotation_;
+    BoolProperty hill_;
 };
 
 }  // namespace inviwo

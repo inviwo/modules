@@ -1,10 +1,3 @@
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-#endif
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -34,48 +27,34 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/invariantspacecombine.h>
-#include <modules/tensorvisbase/util/misc.h>
+#pragma once
+
+#include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/tensorvisbase/datastructures/invariantspace.h>
+#include <modules/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo InvariantSpaceCombine::processorInfo_{
-    "org.inviwo.InvariantSpaceCombine",  // Class identifier
-    "Invariant Space Combine",           // Display name
-    "Tensor",                            // Category
-    CodeState::Experimental,             // Code state
-    Tags::CPU,                           // Tags
+/** \docpage{org.inviwo.InvariantSpaceFilter, Invariant Space Filter}
+ * ![](org.inviwo.InvariantSpaceFilter.png?classIdentifier=org.inviwo.InvariantSpaceFilter)
+ */
+class IVW_MODULE_TENSORVISBASE_API InvariantSpaceFilter : public Processor {
+public:
+    InvariantSpaceFilter();
+    virtual ~InvariantSpaceFilter() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    InvariantSpaceInport invariantSpaceInport_;
+    TensorField3DInport tensorField3DInport_;
+
+    InvariantSpaceOutport invariantSpaceOutport_;
 };
-const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
-
-InvariantSpaceCombine::InvariantSpaceCombine()
-    : Processor()
-    , invariantSpaceInport1_("invariantSpaceInport1")
-    , invariantSpaceInport2_("invariantSpaceInport2")
-    , outport_("outport") {
-    addPort(invariantSpaceInport1_);
-    addPort(invariantSpaceInport2_);
-    addPort(outport_);
-}
-
-void InvariantSpaceCombine::process() {
-    auto iv1 = invariantSpaceInport1_.getData();
-    auto iv2 = invariantSpaceInport2_.getData();
-
-    auto ivOut = std::make_shared<InvariantSpace>();
-
-    ivOut->addAxes(iv1);
-    ivOut->addAxes(iv2);
-
-    outport_.setData(ivOut);
-}
 
 }  // namespace inviwo
-
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC pop_options
-#endif

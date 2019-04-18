@@ -20,7 +20,6 @@ InvariantSpaceSelection::InvariantSpaceSelection()
     : Processor()
     , tensorFieldInport_("tensorFieldInport")
     , outport_("outport")
-    , filterZeroes_("filterZeroes", "Filter zeroes", false)
     , invariantSpaceAxes_("invariantSpaceAxes_", "Invariant space axes")
     , sigma1_("sigma1", tensorutil::sigma1_str, true)
     , sigma2_("sigma2", tensorutil::sigma2_str, true)
@@ -41,11 +40,10 @@ InvariantSpaceSelection::InvariantSpaceSelection()
     , pureShear_("pureShear", "Pure shear", false)
     , shapeFactor_("shapeFactor", "Shape-Factor", false)
     , isotropicScaling_("isotropicScaling", "Isotropic scaling", false)
-    , rotation_("rotation", "Rotation", false) {
+    , rotation_("rotation", "Rotation", false)
+    , hill_("hill", "Hill", false) {
     addPort(tensorFieldInport_);
     addPort(outport_);
-
-    addProperty(filterZeroes_);
 
     invariantSpaceAxes_.addProperty(sigma1_);
     invariantSpaceAxes_.addProperty(sigma2_);
@@ -67,6 +65,8 @@ InvariantSpaceSelection::InvariantSpaceSelection()
     invariantSpaceAxes_.addProperty(shapeFactor_);
     invariantSpaceAxes_.addProperty(isotropicScaling_);
     invariantSpaceAxes_.addProperty(rotation_);
+    invariantSpaceAxes_.addProperty(hill_);
+
     addProperty(invariantSpaceAxes_);
 
     invariantSpaceAxes_.onChange([this]() {
@@ -131,6 +131,9 @@ InvariantSpaceSelection::InvariantSpaceSelection()
         }
         if (rotation_.get()) {
             selectedIndices.insert(Rotation::id());
+        }
+        if (hill_.get()) {
+            selectedIndices.insert(HillYieldCriterion::id());
         }
     });
 }
@@ -290,21 +293,16 @@ void InvariantSpaceSelection::process() {
                 "Requested meta data Rotation not available. Consider adding a meta data "
                 "processor.")
     }
-
-    if (filterZeroes_.get()) {
-        const auto& tensors = tensorField->tensors();
-        auto filteredInvariantSpace = std::make_shared<InvariantSpace>(
-            invariantSpace->getNumberOfDimensions(), invariantSpace->getIdentifiers());
-
-        for (size_t i = 0; i < invariantSpace->getNumElements(); i++) {
-            if (tensors[i] != dmat3(0)) {
-                filteredInvariantSpace->addPoint(invariantSpace->getPoint(i));
-            }
-        }
-        outport_.setData(filteredInvariantSpace);
-    } else {
-        outport_.setData(invariantSpace);
+    if (hill_.get()) {
+        if (tensorField->hasMetaData<HillYieldCriterion>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<HillYieldCriterion>());
+        else
+            LogWarn(
+                "Requested meta data HillYieldCriterion not available. Consider adding a meta data "
+                "processor.")
     }
+
+    outport_.setData(invariantSpace);
 }
 
 }  // namespace inviwo

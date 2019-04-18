@@ -69,7 +69,11 @@ void TensorField3DAngle::process() {
 
     const auto numberOfElements = maev1.size();
 
-    auto iv = std::make_shared<InvariantSpace>(3, std::vector<std::string>{"phi1", "phi2", "phi3"});
+    auto iv = std::make_shared<InvariantSpace>(
+        3, std::vector<std::string>{"phi1", "phi2", "phi3"},
+        std::vector<TensorFeature>{TensorFeature::Unspecified,
+                                   TensorFeature::Unspecified,
+                                   TensorFeature::Unspecified});
 
     for (size_t i = 0; i < numberOfElements; ++i) {
         iv->addPoint({glm::angle(maev1[i], maev2[i]), glm::angle(inev1[i], inev2[i]),
