@@ -98,6 +98,7 @@ private:
     BoolProperty isotropicScaling_;
     BoolProperty rotation_;
     BoolProperty frobeniusNorm_;
+//    BoolProperty hillYieldCriterion_;
 
     ButtonProperty selectAll_;
     ButtonProperty deselectAll_;

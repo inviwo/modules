@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/modules/tensorvisbase/datastructures/deformablecylinder.h
     include/modules/tensorvisbase/datastructures/deformablesphere.h
     include/modules/tensorvisbase/datastructures/hyperstreamlinetracer.h
+    include/modules/tensorvisbase/datastructures/invariantspace.h
     include/modules/tensorvisbase/datastructures/tensorfield2d.h
     include/modules/tensorvisbase/datastructures/tensorfield3d.h
     include/modules/tensorvisbase/datastructures/tensorfieldmetadata.h
@@ -22,10 +23,14 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/eigenvaluefieldtoimage.h
     include/modules/tensorvisbase/processors/hyperstreamlines.h
     include/modules/tensorvisbase/processors/imagetospherefield.h
+    include/modules/tensorvisbase/processors/invariantspacecombine.h
+    include/modules/tensorvisbase/processors/invariantspaceselection.h
+    include/modules/tensorvisbase/processors/invariantspacetodataframe.h
     include/modules/tensorvisbase/processors/mohrcircleprocessor.h
     include/modules/tensorvisbase/processors/tensorfield2danisotropy.h
     include/modules/tensorvisbase/processors/tensorfield2dsubsample.h
     include/modules/tensorvisbase/processors/tensorfield2dsubset.h
+    include/modules/tensorvisbase/processors/tensorfield3dangle.h
     include/modules/tensorvisbase/processors/tensorfield3danisotropy.h
     include/modules/tensorvisbase/processors/tensorfield3dbasismanipulation.h
     include/modules/tensorvisbase/processors/tensorfield3dboundingbox.h
@@ -59,6 +64,7 @@ set(SOURCE_FILES
     src/datastructures/deformablecylinder.cpp
     src/datastructures/deformablesphere.cpp
     src/datastructures/hyperstreamlinetracer.cpp
+    src/datastructures/invariantspace.cpp
     src/datastructures/tensorfield2d.cpp
     src/datastructures/tensorfield3d.cpp
     src/datavisualizer/anisotropyraycastingvisualizer.cpp
@@ -66,10 +72,14 @@ set(SOURCE_FILES
     src/processors/eigenvaluefieldtoimage.cpp
     src/processors/hyperstreamlines.cpp
     src/processors/imagetospherefield.cpp
+    src/processors/invariantspacecombine.cpp
+    src/processors/invariantspaceselection.cpp
+    src/processors/invariantspacetodataframe.cpp
     src/processors/mohrcircleprocessor.cpp
     src/processors/tensorfield2danisotropy.cpp
     src/processors/tensorfield2dsubsample.cpp
     src/processors/tensorfield2dsubset.cpp
+    src/processors/tensorfield3dangle.cpp
     src/processors/tensorfield3danisotropy.cpp
     src/processors/tensorfield3dbasismanipulation.cpp
     src/processors/tensorfield3dboundingbox.cpp
@@ -89,6 +99,7 @@ set(SOURCE_FILES
     src/processors/volumeactualdataandvaluerange.cpp
     src/properties/eigenvalueproperty.cpp
     src/properties/tensorglyphproperty.cpp
+    src/tensorvisbasemodule.cpp
     src/util/tensorfieldutil.cpp
     src/util/tensorutil.cpp
 )

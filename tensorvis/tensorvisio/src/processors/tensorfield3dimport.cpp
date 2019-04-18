@@ -265,16 +265,22 @@ void TensorField3DImport::initializeResources() {
                 case FrobeniusNorm::id():
                     ptr = std::make_unique<FrobeniusNorm>();
                     break;
+                case HillYieldCriterion::id():
+                    ptr = std::make_unique<HillYieldCriterion>();
+                    break;
                 default:
+                    // clang-format off
                     LogError(
-                        "Default case reached. Revise tensor field import for missing "
-                        "meta data "
-                        "entry.");
+                        "Default case reached. Revise tensor field import for missing meta data "
+                        "entry."
+                    )
                     LogError(
-                        "The imported tensor field now does not have all the meta "
-                        "data with which "
-                        "it was stored.");
+                        "The imported tensor field now does not have all the meta data with which "
+                        "it was stored."
+                    )
+
                     continue;
+                    // clang-format on
             }
 
             ptr->deserialize(inFile, numElements);

@@ -27,63 +27,41 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/optionproperty.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkDataSet.h>
-#include <vtkDataArray.h>
-#include <warn/pop>
+#include <modules/tensorvisbase/processors/invariantspacecombine.h>
+#include <modules/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKDataArraySelection, VTKData Array Selection}
- * ![](org.inviwo.VTKDataArraySelection.png?classIdentifier=org.inviwo.VTKDataArraySelection)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API VTKDataArraySelection : public Processor {
-public:
-    VTKDataArraySelection();
-    virtual ~VTKDataArraySelection() = default;
-
-    virtual void initializeResources() override;
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
-private:
-    DataInport<vtkDataSet*> inport_;
-    DataOutport<vtkDataArray*> outport_;
-
-    OptionPropertyInt arrays_;
-    int offset_;
-    std::string previouslySelectedArrayName_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo InvariantSpaceCombine::processorInfo_{
+    "org.inviwo.InvariantSpaceCombine",  // Class identifier
+    "Invariant Space Combine",           // Display name
+    "Tensor",                            // Category
+    CodeState::Experimental,             // Code state
+    Tags::CPU,                           // Tags
 };
+const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
+
+InvariantSpaceCombine::InvariantSpaceCombine()
+    : Processor()
+    , invariantSpaceInport1_("invariantSpaceInport1")
+    , invariantSpaceInport2_("invariantSpaceInport2")
+    , outport_("outport") {
+    addPort(invariantSpaceInport1_);
+    addPort(invariantSpaceInport2_);
+    addPort(outport_);
+}
+
+void InvariantSpaceCombine::process() {
+    auto iv1 = invariantSpaceInport1_.getData();
+    auto iv2 = invariantSpaceInport2_.getData();
+
+    auto ivOut = std::make_shared<InvariantSpace>();
+
+    ivOut->addAxes(iv1);
+    ivOut->addAxes(iv2);
+
+    outport_.setData(ivOut);
+}
 
 }  // namespace inviwo

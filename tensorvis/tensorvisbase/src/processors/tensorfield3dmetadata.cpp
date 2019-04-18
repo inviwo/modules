@@ -37,9 +37,9 @@ namespace inviwo {
 const ProcessorInfo TensorField3DMetaData::processorInfo_{
     "org.inviwo.TensorField3DMetaData",  // Class identifier
     "Tensor Field 3D Meta Data",         // Display name
-    "Tensor visualization",              // Category
+    "Tensor",                            // Category
     CodeState::Experimental,             // Code state
-    Tags::None,                          // Tags
+    Tags::CPU,                           // Tags
 };
 const ProcessorInfo TensorField3DMetaData::getProcessorInfo() const { return processorInfo_; }
 
@@ -71,6 +71,7 @@ TensorField3DMetaData::TensorField3DMetaData()
     , isotropicScaling_("isotropicScaling", "Isotropic scaling", true)
     , rotation_("rotation", "Rotation", true)
     , frobeniusNorm_("frobeniusNorm", "Frobenius Norm", true)
+//    , hillYieldCriterion_("hillYieldCriterion", "Hill yield criterion", true)
     , selectAll_("selectAll", "Select all")
     , deselectAll_("deselectAll", "Deselect all")
     , tensorFieldOut_(nullptr) {
@@ -102,6 +103,7 @@ TensorField3DMetaData::TensorField3DMetaData()
     addProperty(isotropicScaling_);
     addProperty(rotation_);
     addProperty(frobeniusNorm_);
+//    addProperty(hillYieldCriterion_);
 
     addProperty(selectAll_);
     addProperty(deselectAll_);
@@ -154,6 +156,7 @@ void TensorField3DMetaData::initializeResources() {
         isotropicScaling_.set(tensorFieldOut_->hasMetaData<IsotropicScaling>());
         rotation_.set(tensorFieldOut_->hasMetaData<Rotation>());
         frobeniusNorm_.set(tensorFieldOut_->hasMetaData<FrobeniusNorm>());
+//        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<HillYieldCriterion>());
     }
 }
 
@@ -259,7 +262,8 @@ void TensorField3DMetaData::addMetaData() {
             linearAnisotropy.emplace_back((eigenValues[0] - eigenValues[1]) / denominator);
         }
 
-        tensorFieldOut_->addMetaData<LinearAnisotropy>(linearAnisotropy, TensorFeature::LinearAnisotropy);
+        tensorFieldOut_->addMetaData<LinearAnisotropy>(linearAnisotropy,
+                                                       TensorFeature::LinearAnisotropy);
     }
     if (planarAnisotropy_.get() && !tensorFieldOut_->hasMetaData<PlanarAnisotropy>()) {
         std::vector<double> planarAnisotropy;
@@ -286,7 +290,8 @@ void TensorField3DMetaData::addMetaData() {
             planarAnisotropy.emplace_back((2.0 * (eigenValues[1] - eigenValues[2])) / denominator);
         }
 
-        tensorFieldOut_->addMetaData<PlanarAnisotropy>(planarAnisotropy, TensorFeature::PlanarAnisotropy);
+        tensorFieldOut_->addMetaData<PlanarAnisotropy>(planarAnisotropy,
+                                                       TensorFeature::PlanarAnisotropy);
     }
     if (sphericalAnisotropy_.get() && !tensorFieldOut_->hasMetaData<SphericalAnisotropy>()) {
         std::vector<double> sphericalAnisotropy;
@@ -313,7 +318,8 @@ void TensorField3DMetaData::addMetaData() {
             sphericalAnisotropy.emplace_back((3.0 * eigenValues[2]) / denominator);
         }
 
-        tensorFieldOut_->addMetaData<SphericalAnisotropy>(sphericalAnisotropy, TensorFeature::SphericalAnisotropy);
+        tensorFieldOut_->addMetaData<SphericalAnisotropy>(sphericalAnisotropy,
+                                                          TensorFeature::SphericalAnisotropy);
     }
     if (diffusivity_.get() && !tensorFieldOut_->hasMetaData<Diffusivity>()) {
         std::vector<double> diffusivity;
@@ -334,8 +340,8 @@ void TensorField3DMetaData::addMetaData() {
                       [](const double& valA, const double& valB) { return valA > valB; });
 
             diffusivity.emplace_back(eigenValues[0] * eigenValues[0] +
-                                  eigenValues[1] * eigenValues[1] +
-                                  eigenValues[2] * eigenValues[2]);
+                                     eigenValues[1] * eigenValues[1] +
+                                     eigenValues[2] * eigenValues[2]);
         }
 
         tensorFieldOut_->addMetaData<Diffusivity>(diffusivity, TensorFeature::Diffusivity);
@@ -373,7 +379,7 @@ void TensorField3DMetaData::addMetaData() {
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             shapeFactor.emplace_back((majorEigenValues[i] - intermediateEigenValues[i]) /
-                                  (majorEigenValues[i] - minorEigenValues[i]));
+                                     (majorEigenValues[i] - minorEigenValues[i]));
         }
 
         tensorFieldOut_->addMetaData<ShapeFactor>(shapeFactor, TensorFeature::ShapeFactor);
@@ -383,7 +389,8 @@ void TensorField3DMetaData::addMetaData() {
 
         isotropicScaling.resize(tensors.size(), 0.0);
 
-        tensorFieldOut_->addMetaData<IsotropicScaling>(isotropicScaling, TensorFeature::IsotropicScaling);
+        tensorFieldOut_->addMetaData<IsotropicScaling>(isotropicScaling,
+                                                       TensorFeature::IsotropicScaling);
     }
     if (rotation_.get() && !tensorFieldOut_->hasMetaData<Rotation>()) {
         std::vector<double> rotation;

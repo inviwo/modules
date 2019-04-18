@@ -47,7 +47,7 @@ TensorFieldSlice::TensorFieldSlice()
     , inport_("inport")
     , outport2D_("outport2D")
     , outport3D_("outport3D")
-    , meshOutport_("meshOutport")
+    , sliceOutport_("meshOutport")
     , planeOutport_("planeOutport")
     , offsetOutport_("offsetOutport")
     , sliceAlongAxis_("sliceAxis", "Slice along axis",
@@ -56,11 +56,12 @@ TensorFieldSlice::TensorFieldSlice()
                        {"z", "Z axis", CartesianCoordinateAxis::Z}},
                       0)
     , sliceNr_("sliceNr", "Slice number", 0, 0, 2, 1)
-    , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f)) {
+    , sliceColor_("sliceColor", "Slice color", vec4(1.0f), vec4(0.0f), vec4(1.0f))
+    , planeColor_("planeColor", "Plane color", vec4(1.0f), vec4(0.0f), vec4(1.0f)) {
     addPort(inport_);
     addPort(outport2D_);
     addPort(outport3D_);
-    addPort(meshOutport_);
+    addPort(sliceOutport_);
     addPort(planeOutport_);
     addPort(offsetOutport_);
 
@@ -69,8 +70,11 @@ TensorFieldSlice::TensorFieldSlice()
     addProperty(sliceAlongAxis_);
     addProperty(sliceNr_);
 
-    color_.setSemantics(PropertySemantics::Color);
-    addProperty(color_);
+    sliceColor_.setSemantics(PropertySemantics::Color);
+    addProperty(sliceColor_);
+
+    planeColor_.setSemantics(PropertySemantics::Color);
+    addProperty(planeColor_);
 
     inport_.onChange([&]() {
         if (!inport_.hasData() || !inport_.getData().get()) return;
@@ -119,8 +123,6 @@ void TensorFieldSlice::process() {
     uvec3 axis{};
     auto tensorField = inport_.getData();
     auto dimensions = tensorField->getDimensions();
-    auto bounds = tensorField->getBounds<float>();
-    auto extends = tensorField->getExtends<float>();
 
     size2_t offsetDimensions{0};
 
@@ -161,69 +163,10 @@ void TensorFieldSlice::process() {
         tensorutil::getSlice2D(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
     outport3D_.setData(
         tensorutil::getSlice3D(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
-
-    auto mesh = tensorutil::generateSliceLevelGeometryForTensorField(
-        inport_.getData(), color_.get(), sliceAlongAxis_.get(), sliceNr_.get());
-
-    meshOutport_.setData(mesh);
-
-    auto plane = std::make_shared<BasicMesh>();
-    plane->setModelMatrix(mat4(1.f));
-    auto inds = plane->addIndexBuffer(DrawType::Triangles, ConnectivityType::None);
-
-    switch (sliceAlongAxis_.get()) {
-        case CartesianCoordinateAxis::X: {
-            auto xFrac = extends.x / bounds.x;
-            xFrac *= sliceNr_.get();
-
-            plane->addVertex(vec3(xFrac, 0.f, 1.f), vec3(1.f, 0.f, 0.f), vec3(0.f, 0.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(xFrac, 0.f, 0.f), vec3(1.f, 0.f, 0.f), vec3(0.f, 0.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(xFrac, 1.f, 1.f), vec3(1.f, 0.f, 0.f), vec3(1.f, 1.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(xFrac, 1.f, 0.f), vec3(1.f, 0.f, 0.f), vec3(1.f, 0.f, 0.f),
-                             color_.get());
-
-        } break;
-        case CartesianCoordinateAxis::Y: {
-            auto yFrac = extends.y / bounds.y;
-            yFrac *= sliceNr_.get();
-
-            plane->addVertex(vec3(0.f, yFrac, 0.f), vec3(1.f, 0.f, 0.f), vec3(0.f, 0.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(0.f, yFrac, 1.f), vec3(1.f, 0.f, 0.f), vec3(0.f, 1.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(1.f, yFrac, 0.f), vec3(1.f, 0.f, 0.f), vec3(1.f, 0.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(1.f, yFrac, 1.f), vec3(1.f, 0.f, 0.f), vec3(1.f, 1.f, 0.f),
-                             color_.get());
-        } break;
-        case CartesianCoordinateAxis::Z: {
-            auto zFrac = extends.z / bounds.z;
-            zFrac *= sliceNr_.get();
-
-            plane->addVertex(vec3(0.f, 0.f, zFrac), vec3(1.f, 0.f, 0.f), vec3(0.f, 0.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(0.f, 1.f, zFrac), vec3(1.f, 0.f, 0.f), vec3(0.f, 1.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(1.f, 0.f, zFrac), vec3(1.f, 0.f, 0.f), vec3(1.f, 0.f, 0.f),
-                             color_.get());
-            plane->addVertex(vec3(1.f, 1.f, zFrac), vec3(1.f, 0.f, 0.f), vec3(1.f, 1.f, 0.f),
-                             color_.get());
-
-        } break;
-    }
-
-    inds->add(0);
-    inds->add(1);
-    inds->add(2);
-
-    inds->add(1);
-    inds->add(2);
-    inds->add(3);
-
-    planeOutport_.setData(plane);
+    sliceOutport_.setData(tensorutil::generateSliceLevelGeometryForTensorField(
+        inport_.getData(), sliceColor_.get(), sliceAlongAxis_.get(), sliceNr_.get()));
+    planeOutport_.setData(tensorutil::generateSlicePlaneGeometryForTensorField(
+        tensorField, planeColor_.get(), sliceAlongAxis_.get(), sliceNr_.get()));
 }
 
 }  // namespace inviwo

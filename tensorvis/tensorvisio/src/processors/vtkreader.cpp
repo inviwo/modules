@@ -173,6 +173,7 @@ void VTKReader::readLegacy() {
             data_ = std::make_shared<VTKDataSet>(dataSet_);
             getActivityIndicator().setActive(false);
             outport_.setData(data_);
+            invalidate(InvalidationLevel::InvalidOutput);
         });
     });
 }
@@ -213,6 +214,7 @@ void VTKReader::readXML() {
             data_ = std::make_shared<VTKDataSet>(dataSet_);
             getActivityIndicator().setActive(false);
             outport_.setData(data_);
+            invalidate(InvalidationLevel::InvalidOutput);
         });
     });
 }

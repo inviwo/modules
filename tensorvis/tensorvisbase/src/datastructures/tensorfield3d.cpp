@@ -188,7 +188,9 @@ TensorField3D::TensorField3D(size3_t dimensions, const double *data, const dvec3
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
     tensors_.resize(size_);
-    std::memcpy(tensors_.data(), data, size_ * sizeof(double) * 9);
+    for (size_t i = 0; i < size_; ++i) {
+        std::copy(data + i * 9, data + (i + 1) * 9, glm::value_ptr(tensors_[i]));
+    }
 
     computeEigenValuesAndEigenVectors();
     computeNormalizedScreenCoordinates(sliceCoord);
@@ -204,14 +206,11 @@ TensorField3D::TensorField3D(size3_t dimensions, const float *data, const dvec3 
     , rank_(2)
     , dimensionality_(3)
     , offset_(dvec3(0.0)) {
-    // Convert float to double
-    std::vector<float> floatArray;
-    floatArray.resize(size_ * 9);
-    std::memcpy(floatArray.data(), data, size_ * sizeof(float) * 9);
-    std::vector<double> doubleArray(floatArray.begin(), floatArray.end());
 
     tensors_.resize(size_);
-    std::memcpy(tensors_.data(), doubleArray.data(), doubleArray.size() * sizeof(double));
+    for (size_t i = 0; i < size_; ++i) {
+        std::copy(data + i * 9, data + (i + 1) * 9, glm::value_ptr(tensors_[i]));
+    }
 
     computeEigenValuesAndEigenVectors();
     computeNormalizedScreenCoordinates(sliceCoord);
