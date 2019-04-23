@@ -21,8 +21,8 @@ public:
     TensorField3D() = delete;
 
     // Contructors with ready tensors
-    TensorField3D(size3_t dimensions, std::vector<dmat3> data,
-                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
+    TensorField3D(size3_t dimensions, std::vector<dmat3> data, const dvec3 &extent = dvec3(1.0),
+                  double sliceCoord = 0.0);
 
     TensorField3D(size_t x, size_t y, size_t z, std::vector<dmat3> data,
                   const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
@@ -48,6 +48,14 @@ public:
                   const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
     TensorField3D(size_t x, size_t y, size_t z, const std::vector<double> &data,
                   const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
+
+    // The pointer that is handed in should point to the data that will be copied.
+    TensorField3D(size3_t dimensions, const double *data,
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
+    TensorField3D(size3_t dimensions, const float *data,
+                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
+
+
     TensorField3D(size3_t dimensions, const std::vector<double> &data,
                   const std::vector<double> &majorEigenvalues,
                   const std::vector<double> &middleEigenvalues,

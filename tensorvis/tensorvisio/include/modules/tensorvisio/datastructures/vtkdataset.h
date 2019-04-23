@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,11 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
-#define IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
-
+#pragma once
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/processors/activityindicator.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
 
-#include <atomic>
+#include <inviwo/core/common/inviwo.h>
+#include <utility>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -50,50 +41,32 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKUnstructuredGridToRectilinearGrid, VTK Unstructured Grid To Rectilinear
- * Grid}
- * ![](org.inviwo.VTKUnstructuredGridReader.png?classIdentifier=org.inviwo.VTKUnstructuredGridToRectilinearGrid)
+/**
+ * \brief Wrapper class for vtkDataSet pointer
+ * Wrapper class for vtkDataSet pointer so we don't have to explicitly take care of memory handling
+ * etc.
  */
-
-class IVW_MODULE_TENSORVISIO_API VTKUnstructuredGridToRectilinearGrid
-    : public Processor,
-      public ActivityIndicatorOwner,
-      public ProgressBarOwner {
+class IVW_MODULE_TENSORVISIO_API VTKDataSet {
 public:
-    VTKUnstructuredGridToRectilinearGrid();
-    virtual ~VTKUnstructuredGridToRectilinearGrid();
+    VTKDataSet() = delete;
+    explicit VTKDataSet(vtkSmartPointer<vtkDataSet> dataSet) : dataSet_(dataSet) {}
+    virtual ~VTKDataSet() {}
 
-    virtual void process() override;
+    vtkSmartPointer<vtkDataSet> operator->() const { return dataSet_; }
+    vtkSmartPointer<vtkDataSet> operator*() const { return dataSet_; }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    std::string getDataInfo() const;
 
-protected:
-    enum class State { NotStarted, Working, Abort, Done, Invalid };
+    /** Attempts to get the dimensions of the data set. This will only work if the data set
+     * is of type rectiliniar grid, structured grid or structured points. Otherwise [0,0,0] will be
+     * returned. The method is here because the GetDimensions() method is not declared const in VTK
+     * so if you have a VTKDataSet on the inport you will not be able to determine its
+     * dimensions unless you clone it...
+     * */
+    size3_t getDimensions() const;
 
-    struct WorkerState {
-        std::atomic<State> state = State::NotStarted;
-        std::atomic<bool> abortConversion_ = false;
-        std::atomic<bool> processorExists_ = true;
-
-        ivec3 dims_ = ivec3(1);
-    };
-
-    void loadData();
-
-    IntProperty maxDimension_;
-
-    ButtonProperty button_;
-    ButtonProperty abortButton_;
-
-    VTKDataSetInport inport_;
-    VTKDataSetOutport outport_;
-
-    std::shared_ptr<VTKDataSet> data_;
+private:
     vtkSmartPointer<vtkDataSet> dataSet_;
-    std::shared_ptr<WorkerState> state_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H

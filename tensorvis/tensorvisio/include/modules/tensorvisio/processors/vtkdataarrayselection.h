@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,48 +24,66 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_VTKVOLUMEREADER_H
-#define IVW_VTKVOLUMEREADER_H
+#pragma once
 
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/properties/optionproperty.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <vtkDataSet.h>
+#include <vtkDataArray.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKVolumeReader, VTK Rectilinear Grid Reader}
- * ![](org.inviwo.VTKVolumeReader.png?classIdentifier=org.inviwo.VTKVolumeReader)
+/** \docpage{org.inviwo.VTKDataArraySelection, VTKData Array Selection}
+ * ![](org.inviwo.VTKDataArraySelection.png?classIdentifier=org.inviwo.VTKDataArraySelection)
+ * Explanation of how to use the processor.
  *
- * ...
- * 
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
  * ### Properties
- *   * __Case file__ ...
- *
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_TENSORVISIO_API VTKVolumeReader : public Processor {
+
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISIO_API VTKDataArraySelection : public Processor {
 public:
-    VTKVolumeReader();
-    virtual ~VTKVolumeReader();
+    VTKDataArraySelection();
+    virtual ~VTKDataArraySelection() = default;
+
+    virtual void initializeResources() override;
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    virtual void process();
-    virtual void loadData();
+    virtual void serialize(Serializer& s) const override;
+    virtual void deserialize(Deserializer& d) override;
 
-    FileProperty file_;
-
-    VolumeOutport outport_;
 private:
+    DataInport<vtkDataSet*> inport_;
+    DataOutport<vtkDataArray*> outport_;
+
+    OptionPropertyInt arrays_;
+    int offset_;
+    std::string previouslySelectedArrayName_;
 };
 
-}  // namespace
-
-#endif  // IVW_VTKVOLUMEREADER_H
+}  // namespace inviwo

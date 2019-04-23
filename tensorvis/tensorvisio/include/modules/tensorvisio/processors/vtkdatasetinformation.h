@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,73 +27,81 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
-#define IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H
+#pragma once
 
 #include <modules/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/processors/progressbarowner.h>
-#include <inviwo/core/processors/activityindicator.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
 #include <modules/tensorvisio/ports/vtkdatasetport.h>
-
-#include <atomic>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
 #include <vtkDataSet.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKUnstructuredGridToRectilinearGrid, VTK Unstructured Grid To Rectilinear
- * Grid}
- * ![](org.inviwo.VTKUnstructuredGridReader.png?classIdentifier=org.inviwo.VTKUnstructuredGridToRectilinearGrid)
+/** \docpage{org.inviwo.VTKDataSetInformation, VTKData Set Information}
+ * ![](org.inviwo.VTKDataSetInformation.png?classIdentifier=org.inviwo.VTKDataSetInformation)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
 
-class IVW_MODULE_TENSORVISIO_API VTKUnstructuredGridToRectilinearGrid
-    : public Processor,
-      public ActivityIndicatorOwner,
-      public ProgressBarOwner {
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISIO_API VTKDataSetInformation : public Processor {
 public:
-    VTKUnstructuredGridToRectilinearGrid();
-    virtual ~VTKUnstructuredGridToRectilinearGrid();
+    VTKDataSetInformation();
+    virtual ~VTKDataSetInformation() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-protected:
-    enum class State { NotStarted, Working, Abort, Done, Invalid };
+private:
+    class ArrayInformationProperty : public CompositeProperty {
+    public:
+        ArrayInformationProperty() = delete;
+        ArrayInformationProperty(const std::string &arrayName, const std::string &identifier,
+                                 const std::string &dataType, const std::string &numberOfComponents)
+            : CompositeProperty(identifier, arrayName)
+            , dataType_(identifier + "dataType", "Data type", dataType)
+            , numberOfComponents_(identifier + "numberOfComponents", "Components",
+                                  numberOfComponents) {
+            addProperty(dataType_);
+            addProperty(numberOfComponents_);
+            dataType_.setReadOnly(true);
+            numberOfComponents_.setReadOnly(true);
+        }
 
-    struct WorkerState {
-        std::atomic<State> state = State::NotStarted;
-        std::atomic<bool> abortConversion_ = false;
-        std::atomic<bool> processorExists_ = true;
+        const std::string &getDataType() const { return dataType_.get(); }
+        const std::string &getNumberOfComponents() const { return numberOfComponents_.get(); }
 
-        ivec3 dims_ = ivec3(1);
+    private:
+        StringProperty dataType_;
+        StringProperty numberOfComponents_;
     };
 
-    void loadData();
-
-    IntProperty maxDimension_;
-
-    ButtonProperty button_;
-    ButtonProperty abortButton_;
-
     VTKDataSetInport inport_;
-    VTKDataSetOutport outport_;
 
-    std::shared_ptr<VTKDataSet> data_;
-    vtkSmartPointer<vtkDataSet> dataSet_;
-    std::shared_ptr<WorkerState> state_;
+    StringProperty className_;
+    CompositeProperty pointDataArrays_;
+    CompositeProperty cellDataArrays_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VTKUNSTRUCTUREDGRIDTORECTILINEARGRID_H

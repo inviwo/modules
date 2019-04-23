@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,48 +24,51 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_VTKSTRUCTUREDPOINTSREADER_H
-#define IVW_VTKSTRUCTUREDPOINTSREADER_H
+#pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/common/inviwocoredefine.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <modules/tensorvisio/datastructures/vtkdataset.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
+#include <vtkCellData.h>
+#include <vtkDataArray.h>
+#include <warn/pop>
+
+#include <tuple>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKRectilinearGridReader, VTK Rectilinear Grid Reader}
- * ![](org.inviwo.VTKRectilinearGridReader.png?classIdentifier=org.inviwo.VTKRectilinearGridReader)
- *
- * ...
- * 
- * ### Properties
- *   * __Case file__ ...
- *
+/**
+ * \ingroup ports
  */
-class IVW_MODULE_TENSORVISIO_API VTKStructuredPointsReader : public Processor {
-public:
-    VTKStructuredPointsReader();
-    virtual ~VTKStructuredPointsReader();
+using VTKDataSetInport = DataInport<VTKDataSet>;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+/**
+ * \ingroup ports
+ */
+using VTKDataSetOutport = DataOutport<VTKDataSet>;
 
-protected:
-    virtual void process();
-    virtual void loadData();
+template <>
+struct DataTraits<VTKDataSet> {
+    static std::string classIdentifier() { return "org.inviwo.VTKDataSet"; }
+    static std::string dataName() { return "VTK Data Set"; }
+    static uvec3 colorCode() { return uvec3(50, 110, 35); }
 
-    FileProperty file_;
+    static Document info(const VTKDataSet& data) {
+        std::ostringstream oss;
+        oss << data.getDataInfo();
 
-    TensorField3DOutport outport_;
-private:
+        Document doc;
+        doc.append("p", oss.str());
+        return doc;
+    }
 };
 
-}  // namespace
-
-#endif  // IVW_VTKSTRUCTUREDPOINTSREADER_H
+}  // namespace inviwo

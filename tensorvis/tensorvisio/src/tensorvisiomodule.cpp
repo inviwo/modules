@@ -35,14 +35,12 @@
 #include <modules/tensorvisio/processors/tensorfield2dimport.h>
 #include <modules/tensorvisio/processors/tensorfield3dexport.h>
 #include <modules/tensorvisio/processors/tensorfield3dimport.h>
+#include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
+#include <modules/tensorvisio/processors/vtkdatasetinformation.h>
+#include <modules/tensorvisio/processors/vtkreader.h>
 #include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <modules/tensorvisio/processors/vtkstructuredgridreader.h>
-#include <modules/tensorvisio/processors/vtktotensorfield3d.h>
-#include <modules/tensorvisio/processors/witofilereader.h>
-#include <modules/tensorvisio/processors/vtkrectilineargridreader.h>
-#include <modules/tensorvisio/processors/vtkxmlrectilineargridreader.h>
-#include <modules/tensorvisio/processors/vtkstructuredpointsreader.h>
-#include <modules/tensorvisio/processors/vtkvolumereader.h>
+#include <modules/tensorvisio/processors/flowguifilereader.h>
+#include <modules/tensorvisio/processors/vtkwriter.h>
 #include <modules/tensorvisio/util/vtkoutputlogger.h>
 
 namespace inviwo {
@@ -56,14 +54,12 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app)
     registerProcessor<TensorField2DImport>();
     registerProcessor<TensorField3DExport>();
     registerProcessor<TensorField3DImport>();
+    registerProcessor<VTKDataSetToTensorField3D>();
+    registerProcessor<VTKDataSetInformation>();
+    registerProcessor<VTKReader>();
     registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKStructuredGridReader>();
-    registerProcessor<VTKToTensorField3D>();
-    registerProcessor<WitoFileReader>();
-    registerProcessor<VTKRectilinearGridReader>();
-    registerProcessor<VTKXMLRectilinearGridReader>();
-    registerProcessor<VTKStructuredPointsReader>();
-    registerProcessor<VTKVolumeReader>();
+    registerProcessor<FlowGUIFileReader>();
+    registerProcessor<VTKWriter>();
 }
 
 TensorVisIOModule::~TensorVisIOModule() = default;
