@@ -98,7 +98,7 @@ struct MajorEigenVectors : MetaDataType<dvec3> {
 
     uint64_t getId() const override { return id(); }
 
-    static constexpr uint64_t id() { return util::constexpr_hash("MajorEigenVectors"); }
+    static constexpr uint64_t id() { return util::constexpr_hash("MajorEigenVector"); }
 };
 
 struct IntermediateEigenVectors : MetaDataType<dvec3> {
@@ -113,7 +113,7 @@ struct IntermediateEigenVectors : MetaDataType<dvec3> {
 
     uint64_t getId() const override { return id(); }
 
-    static constexpr uint64_t id() { return util::constexpr_hash("IntermediateEigenVectors"); }
+    static constexpr uint64_t id() { return util::constexpr_hash("IntermediateEigenVector"); }
 };
 
 struct MinorEigenVectors : MetaDataType<dvec3> {
@@ -128,7 +128,7 @@ struct MinorEigenVectors : MetaDataType<dvec3> {
 
     uint64_t getId() const override { return id(); }
 
-    static constexpr uint64_t id() { return util::constexpr_hash("MinorEigenVectors"); }
+    static constexpr uint64_t id() { return util::constexpr_hash("MinorEigenVector"); }
 };
 
 struct MajorEigenValues : MetaDataType<glm::f64> {
@@ -143,7 +143,7 @@ struct MajorEigenValues : MetaDataType<glm::f64> {
 
     uint64_t getId() const override { return id(); }
 
-    static constexpr uint64_t id() { return util::constexpr_hash("MajorEigenValues"); }
+    static constexpr uint64_t id() { return util::constexpr_hash("Sigma1"); }
 };
 
 struct IntermediateEigenValues : MetaDataType<glm::f64> {
@@ -158,7 +158,7 @@ struct IntermediateEigenValues : MetaDataType<glm::f64> {
 
     uint64_t getId() const override { return id(); }
 
-    static constexpr uint64_t id() { return util::constexpr_hash("IntermediateEigenValues"); }
+    static constexpr uint64_t id() { return util::constexpr_hash("Sigma2"); }
 };
 
 struct MinorEigenValues : MetaDataType<glm::f64> {
@@ -173,7 +173,7 @@ struct MinorEigenValues : MetaDataType<glm::f64> {
 
     uint64_t getId() const override { return id(); }
 
-    static constexpr uint64_t id() { return util::constexpr_hash("MinorEigenValues"); }
+    static constexpr uint64_t id() { return util::constexpr_hash("Sigma3"); }
 };
 
 struct LodeAngle : MetaDataType<glm::f64> {
