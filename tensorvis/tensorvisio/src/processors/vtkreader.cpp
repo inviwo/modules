@@ -61,17 +61,17 @@ VTKReader::VTKReader()
     , legacyreader_(nullptr)
     , data_(nullptr) {
 
-    file_.addNameFilter("VTK ImageData (structured) (.vti)");
-    file_.addNameFilter("VTK PolyData (unstructured) (.vtp)");
-    file_.addNameFilter("VTK RectilinearGrid (structured) (.vtr)");
-    file_.addNameFilter("VTK StructuredGrid (structured) (.vts)");
-    file_.addNameFilter("VTK UnstructuredGrid (unstructured) (.vtu)");
-    file_.addNameFilter("Legacy (*vtk)");
-    file_.addNameFilter("Parallel vtkImageData (structured) (.pvti)");
-    file_.addNameFilter("Parallel vtkPolyData (unstructured) (.pvtp)");
-    file_.addNameFilter("Parallel vtkRectilinearGrid (structured) (.pvtr)");
-    file_.addNameFilter("Parallel vtkStructuredGrid (structured) (.pvts)");
-    file_.addNameFilter("Parallel vtkUnstructuredGrid (unstructured) (.pvtu)");
+    file_.addNameFilter(FileExtension("vti", "VTK ImageData (structured)"));
+    file_.addNameFilter(FileExtension("vtp", "VTK PolyData (unstructured)"));
+    file_.addNameFilter(FileExtension("vtr", "VTK RectilinearGrid (structured)"));
+    file_.addNameFilter(FileExtension("vts", "VTK StructuredGrid (structured)"));
+    file_.addNameFilter(FileExtension("vtu", "VTK UnstructuredGrid (unstructured)"));
+    file_.addNameFilter(FileExtension("vtk", "Legacy VTK Format"));
+    file_.addNameFilter(FileExtension("pvti", "Parallel vtkImageData (structured)"));
+    file_.addNameFilter(FileExtension("pvtp", "Parallel vtkPolyData (unstructured)"));
+    file_.addNameFilter(FileExtension("pvtr", "Parallel vtkRectilinearGrid (structured)"));
+    file_.addNameFilter(FileExtension("pvts", "Parallel vtkStructuredGrid (structured)"));
+    file_.addNameFilter(FileExtension("pvtu", "Parallel vtkUnstructuredGrid (unstructured)"));
 
     addProperty(file_);
 
