@@ -87,7 +87,6 @@ void TensorFieldToVolume::process() {
         LogError("Tensorfield has no metadata (id) for \'" << feature_.get() << "\'");
         return;
     }
-    
 
     const auto metaData = tensorField->getMetaDataContainer(uint64_t(feature_.get()));
     const auto numberOfComponents = metaData->getNumberOfComponents();
@@ -95,40 +94,44 @@ void TensorFieldToVolume::process() {
     auto vol =
         std::make_shared<Volume>(tensorField->getDimensions(),
                                  DataFormatBase::get(NumericType::Float, numberOfComponents, 32));
-    
+
     using P = typename util::same_extent<vec2, double>::type;
     P a{2.0};
     auto v = vec2(a);
 
     DataMapper map =
-        vol->getEditableRepresentation<VolumeRAM>()->dispatch<DataMapper, dispatching::filter::Floats>([this, metaData](auto repr) {
-            auto ptr = repr->getDataTyped();
-            using ValueType = util::PrecisionValueType<decltype(repr)>;
-            // TODO: use type of metadata instead of assuming double!
-            using P = typename util::same_extent<ValueType, double>::type;
+        vol->getEditableRepresentation<VolumeRAM>()
+            ->dispatch<DataMapper, dispatching::filter::Floats>([this, metaData](auto repr) {
+                auto ptr = repr->getDataTyped();
+                using ValueType = util::PrecisionValueType<decltype(repr)>;
+                // TODO: use type of metadata instead of assuming double!
+                using P = typename util::same_extent<ValueType, double>::type;
 
-            const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
-            std::transform(srcData, srcData + glm::compMul(repr->getDimensions()), ptr,
-                           [](P v) { return static_cast<ValueType>(v); });
+                const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
+#include <warn/push>
+#include <warn/ignore/conversion>
+                std::transform(srcData, srcData + glm::compMul(repr->getDimensions()), ptr,
+                               [](P v) { return static_cast<ValueType>(v); });
+#include <warn/pop>
 
-            const auto minmax = util::dataMinMax(srcData, glm::compMul(repr->getDimensions()));
+                const auto minmax = util::dataMinMax(srcData, glm::compMul(repr->getDimensions()));
 
-            DataMapper datamap;
+                DataMapper datamap;
 
-            double max = std::numeric_limits<float>::lowest();
-            double min = std::numeric_limits<float>::max();
-            for (size_t i = 0; i < 4; ++i) {
-                if ((minmax.first[i] == minmax.second[i]) && (minmax.first[i] == 0.0)) {
-                    break;
+                double max = std::numeric_limits<float>::lowest();
+                double min = std::numeric_limits<float>::max();
+                for (size_t i = 0; i < 4; ++i) {
+                    if ((minmax.first[i] == minmax.second[i]) && (minmax.first[i] == 0.0)) {
+                        break;
+                    }
+                    max = std::max(max, minmax.second[i]);
+                    min = std::min(min, minmax.first[i]);
                 }
-                max = std::max(max, minmax.second[i]);
-                min = std::min(min, minmax.first[i]);
-            }
 
-            datamap.dataRange = dvec2{min, max};
-            datamap.valueRange = dvec2{min, max};
-            return datamap;
-        });
+                datamap.dataRange = dvec2{min, max};
+                datamap.valueRange = dvec2{min, max};
+                return datamap;
+            });
 
     vol->setModelMatrix(tensorField->getBasisAndOffset());
     vol->dataMap_ = map;
