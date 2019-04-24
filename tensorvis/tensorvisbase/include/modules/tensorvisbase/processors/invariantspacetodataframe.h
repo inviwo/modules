@@ -4,7 +4,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/tensorvisbase/datastructures/invariantspace.h>
-#include <modules/plotting/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
@@ -20,7 +20,7 @@ public:
 
 private:
     InvariantSpaceInport inport_;
-    plot::DataFrameOutport outport_;
+    DataFrameOutport outport_;
 };
 
 }  // namespace inviwo

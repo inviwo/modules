@@ -51,7 +51,7 @@ InvariantSpaceToDataFrame::InvariantSpaceToDataFrame()
 void InvariantSpaceToDataFrame::process() {
     const auto& invariantSpace = *inport_.getData();
 
-    auto dataFrame = std::make_shared<plot::DataFrame>();
+    auto dataFrame = std::make_shared<DataFrame>();
 
     size_t i{0};
     for (const auto axis : invariantSpace) {
