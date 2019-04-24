@@ -386,7 +386,14 @@ void TensorField3DMetaData::addMetaData() {
     if (isotropicScaling_.get() && !tensorFieldOut_->hasMetaData<IsotropicScaling>()) {
         std::vector<double> isotropicScaling;
 
-        isotropicScaling.resize(tensors.size(), 0.0);
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& intermediateEigenValues =
+            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+
+        for (size_t i = 0; i < majorEigenValues.size(); i++) {
+            isotropicScaling.emplace_back((majorEigenValues[i] + intermediateEigenValues[i] + minorEigenValues[i]) / 3.0);
+        }
 
         tensorFieldOut_->addMetaData<IsotropicScaling>(isotropicScaling,
                                                        TensorFeature::IsotropicScaling);
