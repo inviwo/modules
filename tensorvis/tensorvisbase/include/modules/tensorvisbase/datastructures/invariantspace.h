@@ -40,8 +40,8 @@ struct InvariantSpace {
     }
 
     template <typename T>
-    void addAxis(const MetaDataType<T>* metaData) {
-        identifiers_.push_back(metaData->getDisplayName());
+    void addAxis(const MetaDataType<T>* metaData, const std::string& name = "") {
+        identifiers_.push_back(name.empty() ? metaData->getDisplayName() : name);
         metaDataTypes_.push_back(metaData->type_);
         minmax_.push_back({{metaData->getMinMax().first, metaData->getMinMax().second}});
 

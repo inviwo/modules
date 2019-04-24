@@ -207,7 +207,8 @@ void InvariantSpaceSelection::process() {
     }
     if (lodeAngle_.get()) {
         if (tensorField->hasMetaData<LodeAngle>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<LodeAngle>());
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<LodeAngle>(),
+                                    lodeAngle_.getDisplayName());
         else
             LogWarn(
                 "Requested meta data LodeAngle not available. Consider adding a meta data "
@@ -215,7 +216,8 @@ void InvariantSpaceSelection::process() {
     }
     if (anisotropy_.get()) {
         if (tensorField->hasMetaData<Anisotropy>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<Anisotropy>());
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<Anisotropy>(),
+                                    anisotropy_.getDisplayName());
         else
             LogWarn(
                 "Requested meta data Anisotropy not available. Consider adding a meta data "
@@ -271,7 +273,8 @@ void InvariantSpaceSelection::process() {
     }
     if (shapeFactor_.get()) {
         if (tensorField->hasMetaData<ShapeFactor>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<ShapeFactor>());
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<ShapeFactor>(),
+                                    shapeFactor_.getDisplayName());
         else
             LogWarn(
                 "Requested meta data ShapeFactor not available. Consider adding a meta data "
@@ -279,7 +282,8 @@ void InvariantSpaceSelection::process() {
     }
     if (isotropicScaling_.get()) {
         if (tensorField->hasMetaData<IsotropicScaling>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<IsotropicScaling>());
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<IsotropicScaling>(),
+                                    isotropicScaling_.getDisplayName());
         else
             LogWarn(
                 "Requested meta data IsotropicScaling not available. Consider adding a meta data "
@@ -287,7 +291,8 @@ void InvariantSpaceSelection::process() {
     }
     if (rotation_.get()) {
         if (tensorField->hasMetaData<Rotation>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<Rotation>());
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<Rotation>(),
+                                    rotation_.getDisplayName());
         else
             LogWarn(
                 "Requested meta data Rotation not available. Consider adding a meta data "
@@ -295,7 +300,8 @@ void InvariantSpaceSelection::process() {
     }
     if (hill_.get()) {
         if (tensorField->hasMetaData<HillYieldCriterion>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<HillYieldCriterion>());
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<HillYieldCriterion>(),
+                                    hill_.getDisplayName());
         else
             LogWarn(
                 "Requested meta data HillYieldCriterion not available. Consider adding a meta data "
