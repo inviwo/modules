@@ -109,6 +109,7 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
     }
 
     auto tensorField = std::make_shared<TensorField2D>(dimensions, sliceData);
+    tensorField->setOffset(inTensorField->getOffset());
 
     return tensorField;
 }
@@ -171,6 +172,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
 
     auto tensorField =
         std::make_shared<TensorField3D>(dimensions, sliceData, inTensorField->getExtends(), frac);
+    tensorField->setOffset(inTensorField->getOffset());
 
     return tensorField;
 }

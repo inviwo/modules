@@ -271,11 +271,15 @@ public:
         return metaData_.find(T::id()) != std::end(metaData_);
     }
     bool hasMetaData(TensorFeature feature) const;
+    bool hasMetaData(const uint64_t id) const;
 
     // Returns a reference to the actual data
     template <typename T>
     const auto &getMetaData() const {
         const auto it = metaData_.find(T::id());
+        if (it == metaData_.end()) {
+            throw Exception("Could not locate metadata for ID " + std::to_string(T::id()));
+        }
         const auto ptr = static_cast<const T *>(it->second.get());
         return ptr->data_;
     }
@@ -284,6 +288,9 @@ public:
     template <typename T>
     const auto getMetaDataContainer() const {
         const auto it = metaData_.find(T::id());
+        if (it == metaData_.end()) {
+            throw Exception("Could not locate metadata for ID " + std::to_string(T::id()));
+        }
         return static_cast<const T *>(it->second.get());
     }
 
@@ -291,12 +298,18 @@ public:
     template <typename T>
     const auto getMetaDataPtr() const {
         const auto it = metaData_.find(T::id());
+        if (it == metaData_.end()) {
+            throw Exception("Could not locate metadata for ID " + std::to_string(T::id()));
+        }
         const auto ptr = static_cast<const T *>(it->second.get());
         return &(ptr->data_);
     }
 
     const auto getMetaDataContainer(const uint64_t id) const {
         const auto it = metaData_.find(id);
+        if (it == metaData_.end()) {
+            throw Exception("Could not locate metadata for ID " + std::to_string(id));
+        }
         return it->second.get();
     }
 

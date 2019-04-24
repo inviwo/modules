@@ -173,15 +173,16 @@ void VTKDataSetToTensorField3D::generate() {
             auto scalarIterator = scalars.begin();
 
             if (scalarArray->GetDataType() == VTK_DOUBLE) {
-                const auto data = vtkDoubleArray::SafeDownCast(tensorArray)->GetPointer(0);
+                const auto data = vtkDoubleArray::SafeDownCast(scalarArray)->GetPointer(0);
 
                 for (int i = 0; i < size; ++i) {
                     std::copy(data + i, data + (i + 1), scalarIterator++);
                 }
+
                 tensorField->addMetaData<HillYieldCriterion>(scalars,
                                                              TensorFeature::HillYieldCriterion);
             } else if (scalarArray->GetDataType() == VTK_FLOAT) {
-                const auto data = vtkFloatArray::SafeDownCast(tensorArray)->GetPointer(0);
+                const auto data = vtkFloatArray::SafeDownCast(scalarArray)->GetPointer(0);
 
                 for (int i = 0; i < size; ++i) {
                     std::copy(data + i, data + (i + 1), scalarIterator++);

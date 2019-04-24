@@ -69,15 +69,20 @@ void TensorGlyphProcessor::process() {
 
     auto meshes = new std::vector<std::shared_ptr<Mesh>>();
 
+    const vec3 voxelDist{tensorField->getExtends() / dvec3(dimensions)};
+    const vec3 offset{tensorField->getOffset()};
+
     for (size_t z = 0; z < dimensions.z; z++) {
         for (size_t y = 0; y < dimensions.y; y++) {
             for (size_t x = 0; x < dimensions.x; x++) {
                 const auto& tensor = tensorField->at(size3_t(x, y, z)).second;
-                ;                               if (tensor == comp) continue;
+                                               if (tensor == comp) continue;
                 const auto index = indexMapper(size3_t(x, y, z));
 
-                const auto dpos = tensorField->getNormalizedVolumePosition(index);
-                const auto pos = vec3(dpos);
+                //const auto dpos = tensorField->getNormalizedVolumePosition(index);
+                //const auto pos = vec3(dpos);
+
+                const vec3 pos{voxelDist * vec3{x, y, z} + offset};
 
                 meshes->emplace_back(glyphParameters_.generateGlyph(tensorField, index, pos));
             }

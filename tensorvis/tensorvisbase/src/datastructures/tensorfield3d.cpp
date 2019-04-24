@@ -720,6 +720,8 @@ bool TensorField3D::hasMetaData(const TensorFeature feature) const {
             return hasMetaData<Rotation>();
         case TensorFeature::FrobeniusNorm:
             return hasMetaData<FrobeniusNorm>();
+        case TensorFeature::HillYieldCriterion:
+            return hasMetaData<HillYieldCriterion>();
         default:
             break;
     }
@@ -727,8 +729,13 @@ bool TensorField3D::hasMetaData(const TensorFeature feature) const {
     return false;
 }
 
+bool TensorField3D::hasMetaData(const uint64_t id) const {
+    return metaData_.find(id) != metaData_.end();
+}
+
 std::shared_ptr<TensorField3D> TensorField3D::clone() const {
     auto tensorField = std::make_shared<TensorField3D>(dimensions_, tensors_, metaData_, extent_);
+    tensorField->setOffset(getOffset());
 
     if (hasMask()) tensorField->setMask(binaryMask_);
 
