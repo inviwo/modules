@@ -36,9 +36,9 @@ namespace inviwo {
 const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};
 std::string TensorGlyphProperty::getClassIdentifier() const { return classIdentifier; }
 
-//constexpr std::array<std::array<dvec2, 3>, 10> TensorGlyphProperty::tri_uv;
+// constexpr std::array<std::array<dvec2, 3>, 10> TensorGlyphProperty::tri_uv;
 
-//constexpr std::array<std::array<dvec3, 3>, 10> TensorGlyphProperty::tri_alpha_beta;
+// constexpr std::array<std::array<dvec3, 3>, 10> TensorGlyphProperty::tri_alpha_beta;
 
 TensorGlyphProperty::TensorGlyphProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
@@ -87,12 +87,14 @@ TensorGlyphProperty::TensorGlyphProperty(const TensorGlyphProperty& rhs)
     , size_(rhs.size_)
     , gamma_(rhs.gamma_)
     , color_(rhs.color_)
-    , useEigenBasis_(rhs.useEigenBasis_) {}
+    , useEigenBasis_(rhs.useEigenBasis_) {
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+}
 
 TensorGlyphProperty& TensorGlyphProperty::operator=(const TensorGlyphProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        glyphType_ = that.glyphType_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
     }
     return *this;
 }
@@ -468,28 +470,28 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
     std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
     const double size) {
     std::array<std::array<dvec2, 3>, 10> tri_uv{
-            {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},
-                    {dvec2(0.00, 0.00), dvec2(0.25, 0.25), dvec2(0.00, 0.50)},
-                    {dvec2(0.00, 0.50), dvec2(0.50, 0.00), dvec2(0.00, 1.00)},
-                    {dvec2(0.00, 1.00), dvec2(0.50, 0.00), dvec2(0.50, 0.50)},
-                    {dvec2(0.00, 1.00), dvec2(0.50, 0.50), dvec2(0.50, 1.00)},
-                    {dvec2(0.50, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 1.00)},
-                    {dvec2(1.00, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 0.50)},
-                    {dvec2(1.00, 0.50), dvec2(0.50, 1.00), dvec2(1.00, 0.00)},
-                    {dvec2(1.00, 0.00), dvec2(0.50, 1.00), dvec2(0.50, 0.50)},
-                    {dvec2(1.00, 0.00), dvec2(0.50, 0.50), dvec2(0.50, 0.00)}}};
+        {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},
+         {dvec2(0.00, 0.00), dvec2(0.25, 0.25), dvec2(0.00, 0.50)},
+         {dvec2(0.00, 0.50), dvec2(0.50, 0.00), dvec2(0.00, 1.00)},
+         {dvec2(0.00, 1.00), dvec2(0.50, 0.00), dvec2(0.50, 0.50)},
+         {dvec2(0.00, 1.00), dvec2(0.50, 0.50), dvec2(0.50, 1.00)},
+         {dvec2(0.50, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 1.00)},
+         {dvec2(1.00, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 0.50)},
+         {dvec2(1.00, 0.50), dvec2(0.50, 1.00), dvec2(1.00, 0.00)},
+         {dvec2(1.00, 0.00), dvec2(0.50, 1.00), dvec2(0.50, 0.50)},
+         {dvec2(1.00, 0.00), dvec2(0.50, 0.50), dvec2(0.50, 0.00)}}};
 
     std::array<std::array<dvec3, 3>, 10> tri_alpha_beta{
-            {{dvec3(1.0, 1.0, 0.0), dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0)},
-                    {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-                    {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-                    {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-                    {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)},
-                    {dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 1.0, 0.0)},
-                    {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-                    {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-                    {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-                    {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)}}};
+        {{dvec3(1.0, 1.0, 0.0), dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0)},
+         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
+         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
+         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
+         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)},
+         {dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 1.0, 0.0)},
+         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
+         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
+         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
+         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)}}};
 
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get());
 

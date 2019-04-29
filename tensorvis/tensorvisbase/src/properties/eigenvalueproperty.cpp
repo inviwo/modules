@@ -50,14 +50,14 @@ EigenValueProperty::EigenValueProperty(const EigenValueProperty& rhs)
     : CompositeProperty(rhs)
     , lambda1_(rhs.lambda1_)
     , lambda2_(rhs.lambda2_)
-    , lambda3_(rhs.lambda3_) {}
+    , lambda3_(rhs.lambda3_) {
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+}
 
 EigenValueProperty& EigenValueProperty::operator=(const EigenValueProperty& that) {
     if (this != &that) {
         CompositeProperty::operator=(that);
-        lambda1_ = that.lambda1_;
-        lambda2_ = that.lambda2_;
-        lambda3_ = that.lambda3_;
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
     }
     return *this;
 }
