@@ -130,7 +130,7 @@ private:
 
     const std::shared_ptr<BasicMesh> generateSuperquadric(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const double size);
+        const dvec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateSuperquadric(const dmat3& tensor, const dvec3& pos,
                                                           const float size,
@@ -142,11 +142,11 @@ private:
 
     const std::shared_ptr<BasicMesh> generateReynolds(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const double size);
+        const float size);
 
     const std::shared_ptr<BasicMesh> generateQuadric(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const double size);
+        const dvec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateCube(const dmat3& tensor, const dvec3& pos,
                                                   const float size,
@@ -158,15 +158,19 @@ private:
 
     const std::shared_ptr<BasicMesh> generateHWY(std::shared_ptr<const TensorField3D> tensorField,
                                                  size_t index, const dvec3 pos, const dvec4& color,
-                                                 const double size);
+                                                 const float size);
 
     const std::shared_ptr<BasicMesh> generateCombinedReynoldsHWY(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const double size);
+        const dvec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateSuperquadricExtended(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const double size);
+        const float size);
+
+    std::shared_ptr<BasicMesh> createSuperquadric(const std::array<double, 3>& eigenValues,
+                                                  const dvec3& pos, const float size,
+                                                  const dvec4& color) const;
 
     //    static constexpr std::array<std::array<dvec2, 3>, 10> tri_uv{
     //        {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},

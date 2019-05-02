@@ -51,8 +51,8 @@ TensorField3DImport::TensorField3DImport()
     : Processor()
     , inFile_("inFile", "File")
     , outport_("outport")
-    , normalizeExtends_("normalizeExtends", "Normalize extends", true)
-    , extends_("extends", "Extends", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f),
+    , normalizeExtents_("normalizeExtents", "Normalize extents", true)
+    , extents_("extents", "Extents", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f),
                InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(1.f), vec3(-1000.f), vec3(1000.f), vec3(0.0001f),
               InvalidationLevel::Valid)
@@ -63,11 +63,11 @@ TensorField3DImport::TensorField3DImport()
 
     addProperty(inFile_);
 
-    addProperty(normalizeExtends_);
+    addProperty(normalizeExtents_);
 
-    extends_.setReadOnly(true);
-    extends_.setCurrentStateAsDefault();
-    addProperty(extends_);
+    extents_.setReadOnly(true);
+    extents_.setCurrentStateAsDefault();
+    addProperty(extents_);
 
     offset_.setReadOnly(true);
     offset_.setCurrentStateAsDefault();
@@ -93,7 +93,7 @@ void TensorField3DImport::initializeResources() {
 
     size_t version;
     size3_t dimensions;
-    auto extends = dvec3(1.0);
+    auto extents = dvec3(1.0);
     auto offset = dvec3(0.0);
     size_t rank;
     size_t dimensionality;
@@ -135,11 +135,11 @@ void TensorField3DImport::initializeResources() {
     inFile.read(reinterpret_cast<char *>(&dimensions.y), sizeof(size_t));
     inFile.read(reinterpret_cast<char *>(&dimensions.z), sizeof(size_t));
 
-    // Read the extends
+    // Read the extents
 
-    inFile.read(reinterpret_cast<char *>(&extends.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extends.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extends.z), sizeof(double));
+    inFile.read(reinterpret_cast<char *>(&extents.x), sizeof(double));
+    inFile.read(reinterpret_cast<char *>(&extents.y), sizeof(double));
+    inFile.read(reinterpret_cast<char *>(&extents.z), sizeof(double));
 
     inFile.read(reinterpret_cast<char *>(&offset.x), sizeof(double));
     inFile.read(reinterpret_cast<char *>(&offset.y), sizeof(double));
@@ -306,9 +306,9 @@ void TensorField3DImport::initializeResources() {
         return;
     }
 
-    dextends_ = extends;
+    dextents_ = extents;
 
-    tensorFieldOut_ = std::make_shared<TensorField3D>(dimensions, tensors, metaData, extends);
+    tensorFieldOut_ = std::make_shared<TensorField3D>(dimensions, tensors, metaData, extents);
 
     tensorFieldOut_->dataMapEigenValues_ = dataMapperEigenValues;
     tensorFieldOut_->dataMapEigenVectors_ = dataMapperEigenVectors;
@@ -317,7 +317,7 @@ void TensorField3DImport::initializeResources() {
 
     tensorFieldOut_->setMask(mask);
 
-    extends_.set(extends);
+    extents_.set(extents);
     offset_.set(offset);
     dimensions_.set(dimensions);
 }
@@ -325,15 +325,15 @@ void TensorField3DImport::initializeResources() {
 void TensorField3DImport::process() {
     if (!tensorFieldOut_) return;
 
-    auto extends = dextends_;
+    auto extents = dextents_;
 
-    if (normalizeExtends_.get()) {
-        extends /= std::max(std::max(extends.x, extends.y), extends.z);
+    if (normalizeExtents_.get()) {
+        extents /= std::max(std::max(extents.x, extents.y), extents.z);
     }
 
-    extends_.set(vec3(extends));
+    extents_.set(vec3(extents));
 
-    tensorFieldOut_->setExtends(extends);
+    tensorFieldOut_->setExtents(extents);
 
     outport_.setData(tensorFieldOut_);
 }

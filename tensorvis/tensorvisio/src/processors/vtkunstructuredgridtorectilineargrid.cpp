@@ -182,8 +182,8 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
 
         auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
             [log, &progress, progressIncr, progressUpdate](
-                vtkObject* caller, long unsigned int eventId, void* clientData,
-                void* callData) -> void {
+                vtkObject* caller, long unsigned int /*eventId*/, void* /*clientData*/,
+                void* /*callData*/) -> void {
                 vtkProbeFilter* testFilter = static_cast<vtkProbeFilter*>(caller);
                 if (testFilter->GetProgress() > 0.0) {
                     std::ostringstream os;

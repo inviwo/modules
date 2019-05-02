@@ -36,7 +36,7 @@ namespace inviwo {
 const ProcessorInfo InvariantSpaceFilter::processorInfo_{
     "org.inviwo.InvariantSpaceFilter",  // Class identifier
     "Invariant Space Filter",           // Display name
-    "Undefined",                        // Category
+    "Tensor",                           // Category
     CodeState::Experimental,            // Code state
     Tags::CPU,                          // Tags
 };

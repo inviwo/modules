@@ -64,13 +64,13 @@ bool HyperLICVisualizer3D::isOutportSupported(const Outport* port) const {
 bool HyperLICVisualizer3D::hasSourceProcessor() const { return false; }
 bool HyperLICVisualizer3D::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> HyperLICVisualizer3D::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* net) const {
+std::pair<Processor*, Outport*> HyperLICVisualizer3D::addSourceProcessor(const std::string&,
+                                                                         ProcessorNetwork*) const {
     return {nullptr, nullptr};
 }
 
 std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outport,
-                                                                 ProcessorNetwork* net) const {
+                                                                   ProcessorNetwork* net) const {
 
     auto slicer = net->addProcessor(util::makeProcessor<TensorFieldSlice>(GP{0, 3}));
     auto noiser = net->addProcessor(util::makeProcessor<NoiseProcessor>(GP{1, 6}));
@@ -87,7 +87,7 @@ std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outp
 }
 
 std::vector<Processor*> HyperLICVisualizer3D::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::string&, ProcessorNetwork*) const {
 
     return {nullptr};
 }

@@ -101,7 +101,7 @@ public:
         return glm::tvec2<T>(dimensions_);
     }
     template <typename T = double>
-    glm::tvec2<T> getExtends() const {
+    glm::tvec2<T> getExtents() const {
         return glm::tvec2<T>(extends_);
     }
     template <typename T = size_t>

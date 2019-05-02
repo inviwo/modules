@@ -45,13 +45,13 @@ TensorField2DImport::TensorField2DImport()
     : Processor()
     , inFile_("inFile", "File", "")
     , outport_("outport")
-    , extends_("", "", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f)) {
+    , extents_("", "", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f)) {
     addPort(outport_);
 
     addProperty(inFile_);
-    extends_.setReadOnly(true);
-    extends_.setCurrentStateAsDefault();
-    addProperty(extends_);
+    extents_.setReadOnly(true);
+    extents_.setCurrentStateAsDefault();
+    addProperty(extents_);
 }
 
 void TensorField2DImport::buildTensors(const std::vector<double>& data, std::vector<dmat2>& tensors) const
@@ -73,7 +73,7 @@ void TensorField2DImport::process() {
 
     size_t version;
     size2_t dimensions;
-    auto extends = dvec2(1.0);
+    auto extents = dvec2(1.0);
     size_t rank;
     size_t dimensionality;
     bool hasEigenInfo;
@@ -110,8 +110,8 @@ void TensorField2DImport::process() {
     }
 
     if (version > 1) {
-        inFile.read(reinterpret_cast<char*>(&extends.x), sizeof(double));
-        inFile.read(reinterpret_cast<char*>(&extends.y), sizeof(double));
+        inFile.read(reinterpret_cast<char*>(&extents.x), sizeof(double));
+        inFile.read(reinterpret_cast<char*>(&extents.y), sizeof(double));
     }
 
     auto numElements = dimensions.x * dimensions.y;
@@ -172,15 +172,15 @@ void TensorField2DImport::process() {
     if (hasEigenInfo) {
         auto tensorField =
             std::make_shared<TensorField2D>(dimensions, tensors, majorEigenvalues, minorEigenvalues,
-                                            majorEigenvectors, minorEigenvectors, extends);
+                                            majorEigenvectors, minorEigenvectors, extents);
 
-        extends_.set(tensorField->getExtends());
+        extents_.set(tensorField->getExtents());
 
         outport_.setData(tensorField);
     } else {
-        auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors, extends);
+        auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors, extents);
 
-        extends_.set(tensorField->getExtends());
+        extents_.set(tensorField->getExtents());
 
         outport_.setData(tensorField);
     }

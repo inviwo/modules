@@ -50,9 +50,9 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &tensorField,
-                                    Shader *shader, TextureUnitContainer &textureUnits) {
-    auto volumes = tensorField->getVolumeRepresentation();
+void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &,
+                                    Shader *, TextureUnitContainer &) {
+    //auto volumes = tensorField->getVolumeRepresentation();
 }
 
 std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> inTensorField,
@@ -171,7 +171,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
     }
 
     auto tensorField =
-        std::make_shared<TensorField3D>(dimensions, sliceData, inTensorField->getExtends(), frac);
+        std::make_shared<TensorField3D>(dimensions, sliceData, inTensorField->getExtents(), frac);
     tensorField->setOffset(inTensorField->getOffset());
 
     return tensorField;
@@ -237,7 +237,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
         }
     }
 
-    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtends());
+    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtents());
 }
 
 std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
@@ -273,7 +273,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
         }
     }
 
-    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtends());
+    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtents());
 }
 
 std::shared_ptr<PosTexColorMesh> generateBoundingBoxAdjacencyForTensorField(
@@ -335,7 +335,7 @@ std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorFie
                                                  const size_t sliceNr) {
     auto bounds = tensorField->getBounds<float>();
     auto bounds_t = tensorField->getBounds<size_t>();
-    auto extends = tensorField->getExtends<float>();
+    auto extends = tensorField->getExtents<float>();
     auto offset = tensorField->getOffset<float>();
 
     auto mesh = std::make_shared<BasicMesh>();

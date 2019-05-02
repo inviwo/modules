@@ -75,7 +75,7 @@ private:
 
     void buildTensors(const std::vector<double>& data, std::vector<dmat2> & tensors) const;
 
-    FloatVec2Property extends_;
+    FloatVec2Property extents_;
 };
 
 } // namespace

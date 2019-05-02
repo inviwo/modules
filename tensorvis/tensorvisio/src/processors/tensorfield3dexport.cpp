@@ -102,8 +102,8 @@ void TensorField3DExport::exportBinary() const {
     auto dimensions = tensorField->getDimensions();
     outFile.write(reinterpret_cast<const char *>(&dimensions), sizeof(size_t) * 3);
 
-    auto extends = tensorField->getExtends();
-    outFile.write(reinterpret_cast<const char *>(&extends), sizeof(double) * 3);
+    auto extents = tensorField->getExtents();
+    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(double) * 3);
 
     auto offset = tensorField->getOffset();
     outFile.write(reinterpret_cast<const char *>(&offset), sizeof(double) * 3);

@@ -152,7 +152,7 @@ public:
     }
 
     template <typename T = double>
-    glm::tvec3<T> getExtends() const {
+    glm::tvec3<T> getExtents() const {
         return glm::tvec3<T>(extent_);
     }
 
@@ -161,7 +161,7 @@ public:
         return glm::tvec3<T>(offset_);
     }
 
-    void setExtends(const dvec3 &extent) { extent_ = extent; }
+    void setExtents(const dvec3 &extent) { extent_ = extent; }
 
     template <typename T = size_t>
     glm::tvec3<T> getBounds() const {
@@ -171,7 +171,7 @@ public:
     glm::tvec3<T> getSpacing() const {
         auto bounds = getBounds<T>();
 
-        auto extent = getExtends<T>();
+        auto extent = getExtents<T>();
 
         return extent / bounds;
     }

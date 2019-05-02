@@ -88,7 +88,7 @@ void TensorField2DAnisotropy::process() {
                     glm::abs(majorEigenValues[index] - minorEigenValues[index]);
                 max = std::max(max, val);
                 min = std::min(min, val);
-                data[index] = val;
+                data[index] = static_cast<glm::f32>(val);
             });
         }
         break;
@@ -106,7 +106,7 @@ void TensorField2DAnisotropy::process() {
 
                 max = std::max(max, val);
                 min = std::min(min, val);
-                data[index] = val;
+                data[index] = static_cast<glm::f32>(val);
             });
         }
         break;

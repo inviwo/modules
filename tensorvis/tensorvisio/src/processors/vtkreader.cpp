@@ -149,8 +149,8 @@ void VTKReader::readLegacy() {
         };
 
         auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-            [progressUpdate](vtkObject* caller, long unsigned int eventId, void* clientData,
-                             void* callData) -> void {
+            [progressUpdate](vtkObject* caller, long unsigned int /*eventId*/, void* /*clientData*/,
+                             void* /*callData*/) -> void {
                 auto reader = dynamic_cast<vtkGenericDataObjectReader*>(caller);
                 if (reader->GetProgress() > 0.0) {
                     progressUpdate(float(reader->GetProgress()));
@@ -190,8 +190,8 @@ void VTKReader::readXML() {
         };
 
         auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-            [progressUpdate](vtkObject* caller, long unsigned int eventId, void* clientData,
-                             void* callData) -> void {
+            [progressUpdate](vtkObject* caller, long unsigned int /*eventId*/, void* /*clientData*/,
+                             void* /*callData*/) -> void {
                 auto reader = dynamic_cast<vtkXMLGenericDataObjectReader*>(caller);
                 if (reader->GetProgress() > 0.0) {
                     progressUpdate(float(reader->GetProgress()));
