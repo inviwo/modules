@@ -58,7 +58,6 @@ void MeshDecimationProcessor::process() {
     auto newMesh = openmeshutil::toInviwo(mesh);
     newMesh->copyMetaDataFrom(*inmesh_.getData());
     newMesh->setWorldMatrix(inmesh_.getData()->getWorldMatrix());
-    // newMesh->setModelMatrix(inmesh_.getData()->getModelMatrix());
     outmesh_.setData(newMesh);
 }
 

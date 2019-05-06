@@ -38,26 +38,25 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshDecimationProcessor, Mesh Decimation Processor}
- * ![](org.inviwo.MeshDecimationProcessor.png?classIdentifier=org.inviwo.MeshDecimationProcessor)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
+    /** \docpage{org.inviwo.MeshDecimationProcessor, Mesh Decimation}
+    * ![](org.inviwo.MeshDecimationProcessor.png?classIdentifier=org.inviwo.MeshDecimationProcessor)
+    * 
+    * Reduces the number of triangles in the input mesh.
+    * Stops when either the Vertex- or the Face decimation ratio is reach. 
+    * 
+    * 
+    * ### Inports
+    *   * __inmesh__ Input mesh.
+    * 
+    * ### Outports
+    *   * __outmesh__ Decimated mesh.
+    * 
+    * ### Properties
+    *   * __Vertex Decimation ratio__ Percentage of vertices to keep.
+    *   * __Face Decimation ratio__ Percentage of faces to keep.
+    * 
+    */
 
-/**
- * \class MeshDecimationProcessor
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_OPENMESH_API MeshDecimationProcessor : public Processor {
 public:
     MeshDecimationProcessor();

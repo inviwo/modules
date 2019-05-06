@@ -45,8 +45,6 @@ const ProcessorInfo TrianglesToWireframe::getProcessorInfo() const { return proc
 TrianglesToWireframe::TrianglesToWireframe() : Processor() {
     addPort(mesh_);
     addPort(wireframe_);
-
-    addPort(testPort_);
 }
 
 void TrianglesToWireframe::process() {

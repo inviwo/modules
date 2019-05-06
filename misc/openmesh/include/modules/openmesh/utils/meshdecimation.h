@@ -50,6 +50,7 @@
 
 #ifdef _USE_MATH_DEFINES_WAS_DEFINED
 #undef _USE_MATH_DEFINES
+#undef _USE_MATH_DEFINES_WAS_DEFINED
 #endif
 
 namespace inviwo {
@@ -78,7 +79,7 @@ void decimate(Mesh &mesh, VertexFraction vertexFraction, FaceFraction faceFracti
     decimater.module(hModQuadric).unset_max_err();
     decimater.initialize();
     decimater.decimate_to_faces(static_cast<size_t>(mesh.n_vertices() * vertexFraction.fraction),
-                                static_cast<size_t>(mesh.n_vertices() * faceFraction.fraction));
+                                static_cast<size_t>(mesh.n_faces() * faceFraction.fraction));
     mesh.garbage_collection();
 }
 

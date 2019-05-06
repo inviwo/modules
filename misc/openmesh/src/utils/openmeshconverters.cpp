@@ -43,7 +43,7 @@ void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordi
     auto &texCoords = inmesh.getTexCoords()->getRAMRepresentation()->getDataContainer();
     auto &colors = inmesh.getColors()->getRAMRepresentation()->getDataContainer();
 
-    mat4 m;
+    mat4 m{1.0f};
     if (transform == TransformCoordinates::DataToModel) {
         m = inmesh.getCoordinateTransformer().getDataToModelMatrix();
     } else if (transform == TransformCoordinates::DataToWorld) {
@@ -76,7 +76,7 @@ void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoord
     auto &texCoords = inmesh.getTexCoordList()->getRAMRepresentation()->getDataContainer();
     auto &colors = inmesh.getColorList()->getRAMRepresentation()->getDataContainer();
 
-    mat4 m;
+    mat4 m{1.0f};
     if (transform == TransformCoordinates::DataToModel) {
         m = inmesh.getCoordinateTransformer().getDataToModelMatrix();
     } else if (transform == TransformCoordinates::DataToWorld) {
@@ -102,7 +102,7 @@ void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoord
 
 void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates transform) {
 
-    mat4 m;
+    mat4 m{1.0f};
     if (transform == TransformCoordinates::DataToModel) {
         m = inmesh.getCoordinateTransformer().getDataToModelMatrix();
     } else if (transform == TransformCoordinates::DataToWorld) {

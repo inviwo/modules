@@ -41,23 +41,14 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.TrianglesToWireframe, Triangles To Wireframe}
  * ![](org.inviwo.TrianglesToWireframe.png?classIdentifier=org.inviwo.TrianglesToWireframe)
- * Explanation of how to use the processor.
+ * Converts an input mesh to a wireframe mesh. Converts triangle faces in the input mesh to lines,
+ * keeps lines from the inout mesh as is.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __mesh__ <description>.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TrianglesToWireframe
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ *   * __wireframe__ <description>.
  */
 class IVW_MODULE_OPENMESH_API TrianglesToWireframe : public Processor {
 public:
@@ -72,7 +63,6 @@ public:
 private:
     MeshInport mesh_{"mesh"};
     MeshOutport wireframe_{"wireframe"};
-    MeshOutport testPort_{"test"};
 };
 
 }  // namespace inviwo
