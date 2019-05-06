@@ -36,7 +36,6 @@ set(HEADER_FILES
     include/modules/openmesh/processors/trianglestowireframe.h
     include/modules/openmesh/utils/meshdecimation.h
     include/modules/openmesh/utils/meshiteratorutils.h
-    include/modules/openmesh/utils/meshproximity.h
     include/modules/openmesh/utils/openmeshconverters.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -51,7 +50,6 @@ set(SOURCE_FILES
     src/processors/trianglestowireframe.cpp
     src/utils/meshdecimation.cpp
     src/utils/meshiteratorutils.cpp
-    src/utils/meshproximity.cpp
     src/utils/openmeshconverters.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
@@ -82,7 +80,7 @@ target_link_libraries(${${mod}_target} PUBLIC
 )
 target_include_directories(${${mod}_target} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/ext/OpenMesh/src)
 
-ivw_register_license_file(NAME OpenMesh VERSION 7.0 MODULE Mesh TYPE "3-clause BSD License"
+ivw_register_license_file(NAME OpenMesh VERSION 7.0 MODULE OpenMesh TYPE "3-clause BSD License"
     URL https://www.openmesh.org/
     FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/OpenMesh/LICENSE
 )
