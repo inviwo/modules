@@ -64,6 +64,9 @@ using TriMesh = OpenMesh::TriMesh_ArrayKernelT<CustomMeshTraits>;
 
 namespace openmeshutil {
 
+/**
+* Convert a mesh from OpenMesh- to Inviwo format
+*/
 template <typename OM_Mesh>
 std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
     auto newmesh = std::make_shared<Mesh>();
@@ -178,6 +181,9 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
 
 enum class TransformCoordinates { NoTransform, DataToModel, DataToWorld };
 
+/**
+* Convert a mesh from Inviwo- to OpenMesh format
+*/
 IVW_MODULE_OPENMESH_API TriMesh
 fromInviwo(const Mesh &inmesh, TransformCoordinates transform = TransformCoordinates::DataToWorld);
 

@@ -54,7 +54,6 @@ namespace inviwo {
     * ### Properties
     *   * __Vertex Decimation ratio__ Percentage of vertices to keep.
     *   * __Face Decimation ratio__ Percentage of faces to keep.
-    * 
     */
 
 class IVW_MODULE_OPENMESH_API MeshDecimationProcessor : public Processor {

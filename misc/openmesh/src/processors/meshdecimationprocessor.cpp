@@ -39,7 +39,7 @@ const ProcessorInfo MeshDecimationProcessor::processorInfo_{
     "Mesh Decimation",                     // Display name
     "Mesh Processing",                     // Category
     CodeState::Experimental,               // Code state
-    Tags::None,                            // Tags
+    Tags::CPU,                             // Tags
 };
 const ProcessorInfo MeshDecimationProcessor::getProcessorInfo() const { return processorInfo_; }
 
@@ -52,12 +52,15 @@ MeshDecimationProcessor::MeshDecimationProcessor() : Processor() {
 }
 
 void MeshDecimationProcessor::process() {
-    auto mesh = openmeshutil::fromInviwo(*inmesh_.getData(),
-                                         openmeshutil::TransformCoordinates::DataToModel);
-    openmeshutil::decimate(mesh, vertDecimation_.get(), faceDecimation_.get());
-    auto newMesh = openmeshutil::toInviwo(mesh);
+    //! [OpenMesh Decimation]
+    using namespace openmeshutil;
+    auto mesh = fromInviwo(*inmesh_.getData(), TransformCoordinates::DataToModel);
+    decimate(mesh, vertDecimation_.get(), faceDecimation_.get());
+    auto newMesh = toInviwo(mesh);
     newMesh->copyMetaDataFrom(*inmesh_.getData());
     newMesh->setWorldMatrix(inmesh_.getData()->getWorldMatrix());
+    //! [OpenMesh Decimation]
+
     outmesh_.setData(newMesh);
 }
 

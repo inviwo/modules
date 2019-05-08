@@ -38,7 +38,7 @@ const ProcessorInfo TrianglesToWireframe::processorInfo_{
     "Triangles To Wireframe",           // Display name
     "Mesh Operation",                   // Category
     CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    Tags::CPU,                          // Tags
 };
 const ProcessorInfo TrianglesToWireframe::getProcessorInfo() const { return processorInfo_; }
 

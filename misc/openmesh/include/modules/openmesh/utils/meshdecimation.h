@@ -57,20 +57,33 @@ namespace inviwo {
 
 namespace openmeshutil {
 
+//! Utility struct to differentiate between Face and Vertex Fraction in mesh decimation
 struct FaceFraction {
     FaceFraction(float fraction = 0.5f) : fraction(fraction) {}
     float fraction;
 };
 
+//! Utility struct to differentiate between Face and Vertex Fraction in openmeshutil::decimate
 struct VertexFraction {
     VertexFraction(float fraction = 0.5f) : fraction(fraction) {}
     float fraction;
 };
 
-template <typename Mesh>
-void decimate(Mesh &mesh, VertexFraction vertexFraction, FaceFraction faceFraction) {
-    using Decimater = typename OpenMesh::Decimater::DecimaterT<Mesh>;
-    using HModQuadric = typename OpenMesh::Decimater::ModQuadricT<Mesh>::Handle;
+/**
+ * Utility function to reduce the number of triangles in a mesh.
+ * Stops when either the Vertex- or the Face decimation ratio is reach.
+ *
+ * Example: 
+ * \snippet modules/misc/openmesh/src/processors/meshdecimationprocessor.cpp OpenMesh Decimation
+ *
+ * @param mesh An OpenMesh mesh (see fromInviwo(...) and ::toInviwo(...))
+ * @param vertexFraction percentage of vertices to keep
+ * @param faceFraction percentage of faces to keep
+ */
+template <typename OMesh>
+void decimate(OMesh &mesh, VertexFraction vertexFraction, FaceFraction faceFraction) {
+    using Decimater = typename OpenMesh::Decimater::DecimaterT<OMesh>;
+    using HModQuadric = typename OpenMesh::Decimater::ModQuadricT<OMesh>::Handle;
 
     Decimater decimater(mesh);
     HModQuadric hModQuadric;
@@ -83,11 +96,25 @@ void decimate(Mesh &mesh, VertexFraction vertexFraction, FaceFraction faceFracti
     mesh.garbage_collection();
 }
 
+/**
+ * Utility function to reduce the number of triangles in a mesh
+ * Stops when either the Face decimation ratio is reach.
+ *
+ * @param mesh   (@see inviwo::openmeshutil::fromInviwo)
+ * @param faceFraction percentage of faces to keep
+ */
 template <typename Mesh>
 void decimate(Mesh &mesh, FaceFraction faceFraction) {
     return decimate(mesh, 0, faceFraction);
 }
 
+/**
+ * Utility function to reduce the number of triangles in a mesh
+ * Stops when either the Face decimation ratio is reach.
+ *
+ * @param mesh   (@see inviwo::openmeshutil::fromInviwo)
+ * @param vertexFraction percentage of vertices to keep
+ */
 template <typename Mesh>
 void decimate(Mesh &mesh, VertexFraction vertexFraction) {
     return decimate(mesh, vertexFraction, 0);
