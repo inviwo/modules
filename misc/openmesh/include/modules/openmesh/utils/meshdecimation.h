@@ -98,7 +98,7 @@ void decimate(OMesh &mesh, VertexFraction vertexFraction, FaceFraction faceFract
 
 /**
  * Utility function to reduce the number of triangles in a mesh
- * Stops when either the Face decimation ratio is reach.
+ * Stops when the Face decimation ratio is reach.
  *
  * @param mesh   (@see inviwo::openmeshutil::fromInviwo)
  * @param faceFraction percentage of faces to keep
@@ -110,7 +110,7 @@ void decimate(Mesh &mesh, FaceFraction faceFraction) {
 
 /**
  * Utility function to reduce the number of triangles in a mesh
- * Stops when either the Face decimation ratio is reach.
+ * Stops when the Vertex decimation ratio is reach.
  *
  * @param mesh   (@see inviwo::openmeshutil::fromInviwo)
  * @param vertexFraction percentage of vertices to keep
