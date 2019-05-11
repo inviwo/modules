@@ -77,10 +77,10 @@ void FlowGUIFileReader::process() {
 
             volume->setOffset(minBounds);
             auto basis = mat3(1.f);
-            auto extends = maxBounds - minBounds;
-            basis[0][0] = extends.x;
-            basis[1][1] = extends.y;
-            basis[2][2] = extends.z;
+            auto extents = maxBounds - minBounds;
+            basis[0][0] = extents.x;
+            basis[1][1] = extents.y;
+            basis[2][2] = extents.z;
             volume->setBasis(basis);
 
             volumes_vec3->emplace_back(
@@ -123,10 +123,10 @@ void FlowGUIFileReader::process() {
 
             volume->setOffset(minBounds);
             auto basis = mat3(1);
-            auto extends = maxBounds - minBounds;
-            basis[0][0] = extends.x;
-            basis[1][1] = extends.y;
-            basis[2][2] = extends.z;
+            auto extents = maxBounds - minBounds;
+            basis[0][0] = extents.x;
+            basis[1][1] = extents.y;
+            basis[2][2] = extents.z;
             volume->setBasis(basis);
 
             volume->dataMap_.valueRange = vec2(min, max);

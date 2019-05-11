@@ -87,6 +87,15 @@ std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateSliceLevelGeomet
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
     const CartesianCoordinateAxis axis, const size_t sliceNr);
 
+std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateSlicePlaneGeometryForTensorField(
+    std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
+    const CartesianCoordinateAxis axis, const size_t sliceNr);
+
+namespace detail{
+std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
+                                                 const CartesianCoordinateAxis axis, const size_t sliceNr);
+}
+
 template <typename C>
 void forEachVoxel(const TensorField3D &v, C callback) {
     const auto &dims = v.getDimensions();

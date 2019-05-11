@@ -32,6 +32,7 @@
 
 namespace inviwo {
 namespace tensorutil {
+namespace detail {
 inline std::string getHTMLTableColumnString(const std::string& item) {
     return "  <td style='color:#bbb;padding-right:8px;'>"
            "  <span style=\"white-space: nowrap;\">" +
@@ -40,28 +41,46 @@ inline std::string getHTMLTableColumnString(const std::string& item) {
            "  </td>";
 }
 
+inline std::string getHTMLTableColumnSpanString(const std::string& item,
+                                                const size_t numberOfColumnsToSpan) {
+    return "  <td colspan=\"" + std::to_string(numberOfColumnsToSpan) +
+           "\" style='color:#bbb;padding-right:8px;'>"
+           "  <span style=\"white-space: nowrap;\">"
+           "<strong>" +
+           item +
+           "</strong></span>"
+           "</td>";
+}
+}  // namespace detail
+
 inline std::string getHTMLTableRowString(const std::string& left, const std::string& right) {
-    return "<tr>" + getHTMLTableColumnString(left) + getHTMLTableColumnString(right) + "</tr>";
+    return "<tr>" + detail::getHTMLTableColumnString(left) +
+           detail::getHTMLTableColumnString(right) + "</tr>";
 }
 
 inline std::string getHTMLTableRowString(const std::string& left, const dvec3& right) {
-    return "<tr>" + getHTMLTableColumnString(left) +
-           getHTMLTableColumnString(glm::to_string(right)) + "</tr>";
+    return "<tr>" + detail::getHTMLTableColumnString(left) +
+           detail::getHTMLTableColumnString(glm::to_string(right)) + "</tr>";
 }
 
 inline std::string getHTMLTableRowString(const std::string& left, const size3_t& right) {
-    return "<tr>" + getHTMLTableColumnString(left) +
-           getHTMLTableColumnString(glm::to_string(uvec3(right))) + "</tr>";
+    return "<tr>" + detail::getHTMLTableColumnString(left) +
+           detail::getHTMLTableColumnString(glm::to_string(uvec3(right))) + "</tr>";
 }
 
 inline std::string getHTMLTableRowString(const std::string& left, const size_t right) {
-    return "<tr>" + getHTMLTableColumnString(left) +
-           getHTMLTableColumnString(std::to_string(right)) + "</tr>";
+    return "<tr>" + detail::getHTMLTableColumnString(left) +
+           detail::getHTMLTableColumnString(std::to_string(right)) + "</tr>";
 }
 
 inline std::string getHTMLTableRowString(const std::string& left, const double right) {
-    return "<tr>" + getHTMLTableColumnString(left) +
-           getHTMLTableColumnString(std::to_string(right)) + "</tr>";
+    return "<tr>" + detail::getHTMLTableColumnString(left) +
+           detail::getHTMLTableColumnString(std::to_string(right)) + "</tr>";
+}
+
+inline std::string getHTMLTableIntermediateHeaderString(const std::string& header,
+                                                        size_t numberOfColumnsToSpan = 2) {
+    return "<tr>" + detail::getHTMLTableColumnSpanString(header, numberOfColumnsToSpan) + "</tr>";
 }
 
 inline size_t numberOfElements(const size3_t& vec) { return vec.x * vec.y * vec.z; }
@@ -165,9 +184,12 @@ std::vector<T> union_set(const std::vector<T>& vec1, const std::vector<T>& vec2)
     std::set_union(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), std::back_inserter(ret));
     return ret;
 }
-
-// Input: Two vectors
-// Output: Concatenation of the entries of the input vectors. Vec2 is appended to Vec1
+/**
+ * \brief Returns concatenation of two vectors. vec2 is appended to vec1.
+ * \param[in] vec1: Vector 1
+ * \param[in] vec2: Vector 2
+ * \returns Concatenation of the entries of the input vectors
+ */
 template <typename T>
 std::vector<T> concatenate(const std::vector<T>& vec1, const std::vector<T>& vec2) {
     std::vector<T> ret(vec1);
@@ -211,6 +233,23 @@ std::string to_string(const T& list) {
 
     for (const auto& val : list) {
         ss << std::to_string(val) << ", ";
+    }
+
+    auto str = ss.str();
+
+    str[str.size() - 2] = ' ';
+    str[str.size() - 1] = ']';
+
+    return str;
+}
+
+template <typename T, size_t N>
+std::string to_string(const std::array<T, N>& arr) {
+    std::stringstream ss;
+    ss << "[ ";
+
+    for (size_t i{0}; i < N; ++i) {
+        ss << std::to_string(arr[i]) << ", ";
     }
 
     auto str = ss.str();

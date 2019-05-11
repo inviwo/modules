@@ -1,8 +1,15 @@
+#ifdef _MSC_VER
+#pragma optimize("", off)
+#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,62 +31,51 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_VTKSTRUCTUREDGRIDREADER_H
-#define IVW_VTKSTRUCTUREDGRIDREADER_H
-
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <modules/tensorvisbase/processors/invariantspacecombine.h>
+#include <modules/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKStructuredGridReader, VTKStructured Grid Reader}
- * ![](org.inviwo.VTKStructuredGridReader.png?classIdentifier=org.inviwo.VTKStructuredGridReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-
-/**
- * \class VTKStructuredGridReader
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API VTKStructuredGridReader : public Processor { 
-public:
-    VTKStructuredGridReader();
-    virtual ~VTKStructuredGridReader() = default;
-     
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-private:
-    FileProperty file_;
-
-    TensorField3DOutport outport_;
-
-    BoolProperty normalizeBasis_;
-
-    ButtonProperty invalidate_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo InvariantSpaceCombine::processorInfo_{
+    "org.inviwo.InvariantSpaceCombine",  // Class identifier
+    "Invariant Space Combine",           // Display name
+    "Tensor",                            // Category
+    CodeState::Experimental,             // Code state
+    Tags::CPU,                           // Tags
 };
+const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
 
-} // namespace
+InvariantSpaceCombine::InvariantSpaceCombine()
+    : Processor()
+    , invariantSpaceInport1_("invariantSpaceInport1")
+    , invariantSpaceInport2_("invariantSpaceInport2")
+    , outport_("outport") {
+    addPort(invariantSpaceInport1_);
+    addPort(invariantSpaceInport2_);
+    addPort(outport_);
+}
 
-#endif // IVW_VTKSTRUCTUREDGRIDREADER_H
+void InvariantSpaceCombine::process() {
+    auto iv1 = invariantSpaceInport1_.getData();
+    auto iv2 = invariantSpaceInport2_.getData();
 
+    auto ivOut = std::make_shared<InvariantSpace>();
+
+    ivOut->addAxes(iv1);
+    ivOut->addAxes(iv2);
+
+    outport_.setData(ivOut);
+}
+
+}  // namespace inviwo
+
+
+#ifdef _MSC_VER
+#pragma optimize("", on)
+#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
+#pragma GCC pop_options
+#endif

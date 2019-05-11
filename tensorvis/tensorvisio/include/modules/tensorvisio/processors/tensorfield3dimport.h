@@ -76,15 +76,15 @@ private:
 
     TensorField3DOutport outport_;
 
-    BoolProperty normalizeExtends_;
+    BoolProperty normalizeExtents_;
 
-    FloatVec3Property extends_;
+    FloatVec3Property extents_;
 
     FloatVec3Property offset_;
     IntVec3Property dimensions_;
     std::shared_ptr<TensorField3D> tensorFieldOut_;
 
-    dvec3 dextends_;
+    dvec3 dextents_;
 
     void buildTensors(const std::vector<double> &data, std::vector<dmat3> &tensors) const;
 };

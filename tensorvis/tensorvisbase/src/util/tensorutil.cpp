@@ -29,6 +29,8 @@
 
 #include <modules/tensorvisbase/util/tensorutil.h>
 
+#include <inviwo/core/util/exception.h>
+
 namespace inviwo {
 namespace tensorutil {
 vec4 tensor2DToDvec4(const dmat2 &tensor) {
@@ -78,7 +80,10 @@ double calculateI3(const dmat3 &tensor) {
  * Calculates the first invariant of the stress deviator tensor
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
  */
-double calculateJ1(const dmat3 &tensor) { return 0.0; }
+double calculateJ1(const dmat3 &) { 
+    throw Exception("not implemented");
+    return 0.0; 
+}
 
 /*
  * Calculates the first invariant of the stress deviator tensor

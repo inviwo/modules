@@ -329,7 +329,7 @@ void TensorStarPlotProcessor::drawGrid2D() const {
         nvgContext_->lineTo(center + (i * frac * axis1_2d_));
 
         nvgContext_->strokeColor(gridColor_.get());
-        nvgContext_->strokeWidth(gridThickness_.get());
+        nvgContext_->strokeWidth(static_cast<float>(gridThickness_.get()));
 
         nvgContext_->stroke();
 
@@ -361,7 +361,7 @@ void TensorStarPlotProcessor::drawGrid3D() const {
         nvgContext_->lineTo(center + (i * frac * axis1_3d_));
 
         nvgContext_->strokeColor(gridColor_.get());
-        nvgContext_->strokeWidth(gridThickness_.get());
+        nvgContext_->strokeWidth(static_cast<float>(gridThickness_.get()));
 
         if (i == numTicksGrid_.get() && fillGrid_.get()) {
             nvgContext_->fillColor(gridFillColor_.get());
@@ -389,7 +389,7 @@ void TensorStarPlotProcessor::drawTicks2D() const {
             nvgContext_->lineTo(center + (i * frac * axis) + tickLength_.get() * -tickDirection);
 
             nvgContext_->strokeColor(tickColor_.get());
-            nvgContext_->strokeWidth(tickThickness_.get());
+            nvgContext_->strokeWidth(static_cast<float>(tickThickness_.get()));
 
             nvgContext_->stroke();
 
@@ -430,7 +430,7 @@ void TensorStarPlotProcessor::drawTicks3D() const {
             nvgContext_->lineTo(center + (i * frac * axis) + tickLength_.get() * -tickDirection);
 
             nvgContext_->strokeColor(tickColor_.get());
-            nvgContext_->strokeWidth(tickThickness_.get());
+            nvgContext_->strokeWidth(static_cast<float>(tickThickness_.get()));
 
             nvgContext_->stroke();
 
@@ -474,7 +474,7 @@ void TensorStarPlotProcessor::drawTicksEigenValues() const {
             nvgContext_->lineTo(center + (i * frac * axis) + tickLength_.get() * -tickDirection);
 
             nvgContext_->strokeColor(tickColor_.get());
-            nvgContext_->strokeWidth(tickThickness_.get());
+            nvgContext_->strokeWidth(static_cast<float>(tickThickness_.get()));
 
             nvgContext_->stroke();
 
@@ -501,6 +501,8 @@ void TensorStarPlotProcessor::drawTicksEigenValues() const {
 void TensorStarPlotProcessor::drawDots2D() const {
     const auto dimensions = outport_.getDimensions();
     const auto center = dvec2(dimensions / size2_t(2));
+    const auto dotRadius = static_cast<float>(dotRadius_.get());
+    const auto dotStrokeWidth = static_cast<float>(dotStrokeWidth_.get());
 
     const auto tensorField = tensorField2DInport_.getData();
     size_t offset = 0;
@@ -518,18 +520,18 @@ void TensorStarPlotProcessor::drawDots2D() const {
     const auto length = center.y - margin_.get();
 
     nvgContext_->beginPath();
-    nvgContext_->circle(center + axis1_3d_ * frac1 * length, dotRadius_.get());
+    nvgContext_->circle(center + axis1_3d_ * frac1 * length, dotRadius);
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
     nvgContext_->closePath();
 
     nvgContext_->beginPath();
-    nvgContext_->circle(center + axis2_3d_ * frac2 * length, dotRadius_.get());
+    nvgContext_->circle(center + axis2_3d_ * frac2 * length, dotRadius);
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -539,6 +541,8 @@ void TensorStarPlotProcessor::drawDots2D() const {
 void TensorStarPlotProcessor::drawDots3D(size_t offset) const {
     const auto dimensions = outport_.getDimensions();
     const auto center = dvec2(dimensions / size2_t(2));
+    const auto dotRadius = static_cast<float>(dotRadius_.get());
+    const auto dotStrokeWidth = static_cast<float>(dotStrokeWidth_.get());
 
     const auto tensorField = tensorField3DInport_.getData();
 
@@ -554,28 +558,28 @@ void TensorStarPlotProcessor::drawDots3D(size_t offset) const {
     const auto length = center.y - margin_.get();
 
     nvgContext_->beginPath();
-    nvgContext_->circle(center + axis1_3d_ * frac1 * length, dotRadius_.get());
+    nvgContext_->circle(center + axis1_3d_ * frac1 * length, dotRadius);
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
 
     nvgContext_->beginPath();
     if (!flipLambda2Axis_.get())
-        nvgContext_->circle(center + axis2_3d_ * frac2 * length, dotRadius_.get());
+        nvgContext_->circle(center + axis2_3d_ * frac2 * length, dotRadius);
     else
-        nvgContext_->circle(center - axis2_3d_ * frac2 * length, dotRadius_.get());
+        nvgContext_->circle(center - axis2_3d_ * frac2 * length, dotRadius);
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
 
     nvgContext_->beginPath();
-    nvgContext_->circle(center + axis3_3d_ * frac3 * length, dotRadius_.get());
+    nvgContext_->circle(center + axis3_3d_ * frac3 * length, dotRadius);
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -615,8 +619,10 @@ void TensorStarPlotProcessor::drawDots3D(size_t offset) const {
 void TensorStarPlotProcessor::drawDotsEigenValues() const {
     const auto dimensions = outport_.getDimensions();
     const auto center = dvec2(dimensions / size2_t(2));
+    const auto dotRadius = static_cast<float>(dotRadius_.get());
+    const auto dotStrokeWidth = static_cast<float>(dotStrokeWidth_.get());
 
-    const auto fivePercentOfTheRadius = dotRadius_.get() / 100.0f * 25.0f;
+    const auto fivePercentOfTheRadius = dotRadius / 100.0f * 25.0f;
 
     const auto length = center.y - margin_.get();
 
@@ -630,7 +636,7 @@ void TensorStarPlotProcessor::drawDotsEigenValues() const {
     const auto frac3 = lambda3 / max;
 
     nvgContext_->beginPath();
-    nvgContext_->circle(center + axis1_3d_ * frac1 * length, dotRadius_.get());
+    nvgContext_->circle(center + axis1_3d_ * frac1 * length, dotRadius);
     nvgContext_->fillHitRegion(0);
     auto id = nvgContext_->hitTest(mousePos_.x, static_cast<float>(dimensions.y) - mousePos_.y,
                                    NanoVGContext::HitTestRegion::Fill);
@@ -638,11 +644,11 @@ void TensorStarPlotProcessor::drawDotsEigenValues() const {
         nvgContext_->restore();
         nvgContext_->beginPath();
         nvgContext_->circle(center + axis1_3d_ * frac1 * length,
-                            dotRadius_.get() + fivePercentOfTheRadius);
+                            dotRadius + fivePercentOfTheRadius);
     }
 
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -650,9 +656,9 @@ void TensorStarPlotProcessor::drawDotsEigenValues() const {
 
     nvgContext_->beginPath();
     if (!flipLambda2Axis_.get())
-        nvgContext_->circle(center + axis2_3d_ * frac2 * length, dotRadius_.get());
+        nvgContext_->circle(center + axis2_3d_ * frac2 * length, dotRadius);
     else
-        nvgContext_->circle(center - axis2_3d_ * frac2 * length, dotRadius_.get());
+        nvgContext_->circle(center - axis2_3d_ * frac2 * length, dotRadius);
     nvgContext_->fillHitRegion(1);
     id = nvgContext_->hitTest(mousePos_.x, static_cast<float>(dimensions.y) - mousePos_.y,
                               NanoVGContext::HitTestRegion::Fill);
@@ -660,17 +666,17 @@ void TensorStarPlotProcessor::drawDotsEigenValues() const {
         nvgContext_->restore();
         nvgContext_->beginPath();
         nvgContext_->circle(center - axis2_3d_ * frac2 * length,
-                            dotRadius_.get() + fivePercentOfTheRadius);
+                            dotRadius + fivePercentOfTheRadius);
     }
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
     nvgContext_->closePath();
 
     nvgContext_->beginPath();
-    nvgContext_->circle(center + axis3_3d_ * frac3 * length, dotRadius_.get());
+    nvgContext_->circle(center + axis3_3d_ * frac3 * length, dotRadius);
     nvgContext_->fillHitRegion(2);
     id = nvgContext_->hitTest(mousePos_.x, static_cast<float>(dimensions.y) - mousePos_.y,
                               NanoVGContext::HitTestRegion::Fill);
@@ -678,10 +684,10 @@ void TensorStarPlotProcessor::drawDotsEigenValues() const {
         nvgContext_->restore();
         nvgContext_->beginPath();
         nvgContext_->circle(center + axis3_3d_ * frac3 * length,
-                            dotRadius_.get() + fivePercentOfTheRadius);
+                            dotRadius + fivePercentOfTheRadius);
     }
     nvgContext_->strokeColor(dotStrokeColor_.get());
-    nvgContext_->strokeWidth(dotStrokeWidth_.get());
+    nvgContext_->strokeWidth(dotStrokeWidth);
     nvgContext_->fillColor(dotColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -716,7 +722,7 @@ void TensorStarPlotProcessor::drawStar3D(size_t offset) const {
     nvgContext_->lineTo(center + axis1_3d_ * length * frac1);
 
     nvgContext_->strokeColor(strokeColor_.get());
-    nvgContext_->strokeWidth(strokeThickness_.get());
+    nvgContext_->strokeWidth(static_cast<float>(strokeThickness_.get()));
     nvgContext_->fillColor(fillColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -747,7 +753,7 @@ void TensorStarPlotProcessor::drawStarEigenValues() const {
     nvgContext_->lineTo(center + axis1_3d_ * length * frac1);
 
     nvgContext_->strokeColor(strokeColor_.get());
-    nvgContext_->strokeWidth(strokeThickness_.get());
+    nvgContext_->strokeWidth(static_cast<float>(strokeThickness_.get()));
     nvgContext_->fillColor(fillColor_.get());
     nvgContext_->fill();
     nvgContext_->stroke();
@@ -836,7 +842,7 @@ void TensorStarPlotProcessor::drawAxis(const dvec2& from, const dvec2& to) const
     nvgContext_->lineTo(to);
 
     nvgContext_->strokeColor(axisColor_.get());
-    nvgContext_->strokeWidth(axisThickness_.get());
+    nvgContext_->strokeWidth(static_cast<float>(axisThickness_.get()));
 
     nvgContext_->stroke();
 
@@ -846,7 +852,7 @@ void TensorStarPlotProcessor::drawAxis(const dvec2& from, const dvec2& to) const
 void TensorStarPlotProcessor::drawLabel(const dvec2& at, const std::string& label) const {
     nvgContext_->beginPath();
 
-    nvgContext_->fontSize(fontSize_.get());
+    nvgContext_->fontSize(static_cast<float>(fontSize_.get()));
     nvgContext_->fontFace("fonty");
     nvgContext_->textAlign(NanoVGContext::Alignment::Center_Middle);
     nvgContext_->fillColor(fontColor_.get());
@@ -903,7 +909,7 @@ void TensorStarPlotProcessor::process() {
 
     RenderBufferObject stencilBufferObject;
     stencilBufferObject.activate();
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, dimensions.x, dimensions.y);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<GLsizei>(dimensions.x), static_cast<GLsizei>(dimensions.y));
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
                               stencilBufferObject.getID());
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,

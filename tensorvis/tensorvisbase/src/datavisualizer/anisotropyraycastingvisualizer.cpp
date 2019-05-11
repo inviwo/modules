@@ -67,7 +67,7 @@ bool AnisotropyRaycastingVisualizer::hasSourceProcessor() const { return false; 
 bool AnisotropyRaycastingVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> AnisotropyRaycastingVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::string&, ProcessorNetwork*) const {
     return {nullptr, nullptr};
 }
 
@@ -93,7 +93,7 @@ std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> AnisotropyRaycastingVisualizer::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::string&, ProcessorNetwork*) const {
 
     return {nullptr};
 }

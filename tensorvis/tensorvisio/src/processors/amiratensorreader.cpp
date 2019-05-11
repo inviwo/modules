@@ -63,7 +63,7 @@ void AmiraTensorReader::process() {
     LogInfo("BoundingBox in y-Direction: [" << ymin << " ... " << ymax << "]\n");
     LogInfo("BoundingBox in z-Direction: [" << zmin << " ... " << zmax << "]\n");
 
-    auto extends = dvec3(xmax - xmin, ymax - ymin, zmax - zmin);
+    auto extents = dvec3(xmax - xmin, ymax - ymin, zmax - zmin);
 
     // Type of the field: scalar, vector
     int NumComponents(0);
@@ -147,7 +147,7 @@ void AmiraTensorReader::process() {
 
             delete[] pData;
             
-            outport_.setData(std::make_shared<TensorField3D>(xDim, yDim, zDim, rawData_, extends));
+            outport_.setData(std::make_shared<TensorField3D>(xDim, yDim, zDim, rawData_, extents));
         }
     }
 

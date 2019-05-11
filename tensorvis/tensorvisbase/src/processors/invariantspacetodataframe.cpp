@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,55 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DIMPORT_H
-#define IVW_TENSORFIELD2DIMPORT_H
-
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <modules/tensorvisbase/ports/tensorfieldport.h>
+#include <modules/tensorvisbase/processors/invariantspacetodataframe.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DImport, Tensor Field2DImport}
- * ![](org.inviwo.TensorField2DImport.png?classIdentifier=org.inviwo.TensorField2DImport)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- * 
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-
-/**
- * \class TensorField2DImport
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor { 
-public:
-    TensorField2DImport();
-    virtual ~TensorField2DImport() = default;
-     
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-private:
-    FileProperty inFile_;
-
-    TensorField2DOutport outport_;
-
-    void buildTensors(const std::vector<double>& data, std::vector<dmat2> & tensors) const;
-
-    FloatVec2Property extents_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo InvariantSpaceToDataFrame::processorInfo_{
+    "org.inviwo.InvariantSpaceToDataFrame",  // Class identifier
+    "Invariant Space To Data Frame",         // Display name
+    "Tensor",                                // Category
+    CodeState::Experimental,                 // Code state
+    Tags::CPU,                               // Tags
 };
+const ProcessorInfo InvariantSpaceToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
-} // namespace
+InvariantSpaceToDataFrame::InvariantSpaceToDataFrame()
+    : Processor(), inport_("inport"), outport_("outport") {
 
-#endif // IVW_TENSORFIELD2DIMPORT_H
+    addPort(inport_);
+    addPort(outport_);
+}
 
+void InvariantSpaceToDataFrame::process() {
+    const auto& invariantSpace = *inport_.getData();
+
+    auto dataFrame = std::make_shared<DataFrame>();
+
+    size_t i{0};
+    for (const auto axis : invariantSpace) {
+        auto buffer = std::make_shared<Buffer<glm::f32>>();
+
+        buffer->setSize(axis->size());
+
+        const auto data = axis->data();
+
+        for (size_t j{0}; j < axis->size(); ++j) {
+            buffer->getEditableRepresentation<BufferRAM>()->setFromDouble(j, data[j]);
+        }
+
+        dataFrame->addColumnFromBuffer(invariantSpace.getIdentifier(i), buffer);
+
+        i++;
+    }
+
+    dataFrame->updateIndexBuffer();
+
+    outport_.setData(dataFrame);
+}
+
+}  // namespace inviwo

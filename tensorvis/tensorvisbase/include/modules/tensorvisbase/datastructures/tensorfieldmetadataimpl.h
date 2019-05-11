@@ -36,7 +36,7 @@ MetaDataType<T>::MetaDataType(std::vector<T> data, const TensorFeature type)
 
 template <typename T>
 const void *MetaDataType<T>::getDataPtr() const {
-    return &data_;
+    return data_.data();
 }
 
 template <typename T>

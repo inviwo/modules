@@ -96,7 +96,7 @@ void TensorField3DAnisotropy::process() {
                             glm::abs(majorEigenValues[index] - intermediateEigenValues[index]);
                         max = std::max(max, val);
                         min = std::min(min, val);
-                        data[index] = val;
+                        data[index] = static_cast<glm::f32>(val);
                     });
             }
             break;
@@ -114,7 +114,7 @@ void TensorField3DAnisotropy::process() {
 
                         max = std::max(max, val);
                         min = std::min(min, val);
-                        data[index] = val;
+                        data[index] = static_cast<glm::f32>(val);
                     });
             }
             break;
@@ -172,7 +172,7 @@ void TensorField3DAnisotropy::process() {
 
                         max = std::max(max, val);
                         min = std::min(min, val);
-                        data[index] = val;
+                        data[index] = static_cast<glm::f32>(val);
                     });
             }
             break;
@@ -182,7 +182,7 @@ void TensorField3DAnisotropy::process() {
     outputVolume->dataMap_.dataRange = vec2(min, max);
     outputVolume->dataMap_.valueRange = vec2(min, max);
 
-    const auto extends = tensorField->getExtends();
+    const auto extends = tensorField->getExtents();
 
     outputVolume->setBasis(
         mat3(vec3(extends.x, 0., 0.), vec3(0., extends.y, 0.), vec3(0., 0., extends.z)));

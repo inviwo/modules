@@ -50,7 +50,7 @@ void TensorField3DMaskToVolume::process() {
     auto tensorField = inport_.getData();
     auto mask = tensorField->getMask();
     auto dimensions = tensorField->getDimensions();
-    auto extends = tensorField->getExtends();
+    auto extends = tensorField->getExtents();
 
     auto volume = std::make_shared<Volume>(dimensions, DataFloat32::get());
     auto volumeRAM = volume->getEditableRepresentation<VolumeRAM>();
@@ -97,9 +97,9 @@ void TensorField3DMaskToVolume::process() {
     std::memcpy(volumeData, fData, f.size());
 
     glm::mat3 basis(1);
-    basis[0][0] = extends.x;
-    basis[1][1] = extends.y;
-    basis[2][2] = extends.z;
+    basis[0][0] = static_cast<float>(extends.x);
+    basis[1][1] = static_cast<float>(extends.y);
+    basis[2][2] = static_cast<float>(extends.z);
 
     volume->setBasis(basis);
     volume->setOffset(vec3(0.f));

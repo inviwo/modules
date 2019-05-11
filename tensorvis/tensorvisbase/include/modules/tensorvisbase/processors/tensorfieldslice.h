@@ -80,13 +80,14 @@ namespace inviwo {
         TensorField2DOutport outport2D_;
         TensorField3DOutport outport3D_;
 
-        MeshOutport meshOutport_;
+        MeshOutport sliceOutport_;
         MeshOutport planeOutport_;
         DataOutport<size_t> offsetOutport_;
 
         TemplateOptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
         OrdinalProperty<size_t> sliceNr_;
-        FloatVec4Property color_;
+        FloatVec4Property sliceColor_;
+        FloatVec4Property planeColor_;
     };
 
 }  // namespace

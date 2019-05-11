@@ -29,61 +29,34 @@
 
 #pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
+#include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/properties/optionproperty.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkDataSet.h>
-#include <vtkDataArray.h>
-#include <warn/pop>
+#include <modules/tensorvisbase/ports/tensorfieldport.h>
+#include <modules/tensorvisbase/datastructures/invariantspace.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKDataArraySelection, VTKData Array Selection}
- * ![](org.inviwo.VTKDataArraySelection.png?classIdentifier=org.inviwo.VTKDataArraySelection)
+/** \docpage{org.inviwo.TensorField3DAngle, Tensor Field 3D Angle}
+ * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DAngle)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API VTKDataArraySelection : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DAngle : public Processor {
 public:
-    VTKDataArraySelection();
-    virtual ~VTKDataArraySelection() = default;
+    TensorField3DAngle();
+    virtual ~TensorField3DAngle() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void serialize(Serializer& s) const override;
-    virtual void deserialize(Deserializer& d) override;
-
 private:
-    DataInport<vtkDataSet*> inport_;
-    DataOutport<vtkDataArray*> outport_;
+    TensorField3DInport tensorField3DInport1_;
+    TensorField3DInport fiberOrientation_;
 
-    OptionPropertyInt arrays_;
-    int offset_;
-    std::string previouslySelectedArrayName_;
+    InvariantSpaceOutport invariantSpaceOutport_;
 };
 
 }  // namespace inviwo

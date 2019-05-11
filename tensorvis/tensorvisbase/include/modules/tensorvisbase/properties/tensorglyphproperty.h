@@ -113,6 +113,15 @@ protected:
     BoolProperty useEigenBasis_;
 
 private:
+    auto props() {
+        return std::tie(glyphType_, resolutionTheta_, resolutionPhi_, size_, gamma_, color_,
+                        useEigenBasis_);
+    }
+    auto props() const {
+        return std::tie(glyphType_, resolutionTheta_, resolutionPhi_, size_, gamma_, color_,
+                        useEigenBasis_);
+    }
+
     void evalColorReadOnly();
     double signedExponentiation(double x, double a);
     dvec3 cartesianToSpherical(const dvec3& pos) const;
@@ -121,7 +130,7 @@ private:
 
     const std::shared_ptr<BasicMesh> generateSuperquadric(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const double size);
+        const dvec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateSuperquadric(const dmat3& tensor, const dvec3& pos,
                                                           const float size,
@@ -133,11 +142,11 @@ private:
 
     const std::shared_ptr<BasicMesh> generateReynolds(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const double size);
+        const float size);
 
     const std::shared_ptr<BasicMesh> generateQuadric(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const double size);
+        const dvec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateCube(const dmat3& tensor, const dvec3& pos,
                                                   const float size,
@@ -149,39 +158,43 @@ private:
 
     const std::shared_ptr<BasicMesh> generateHWY(std::shared_ptr<const TensorField3D> tensorField,
                                                  size_t index, const dvec3 pos, const dvec4& color,
-                                                 const double size);
+                                                 const float size);
 
     const std::shared_ptr<BasicMesh> generateCombinedReynoldsHWY(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const double size);
+        const dvec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateSuperquadricExtended(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const double size);
+        const float size);
 
-//    static constexpr std::array<std::array<dvec2, 3>, 10> tri_uv{
-//        {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},
-//         {dvec2(0.00, 0.00), dvec2(0.25, 0.25), dvec2(0.00, 0.50)},
-//         {dvec2(0.00, 0.50), dvec2(0.50, 0.00), dvec2(0.00, 1.00)},
-//         {dvec2(0.00, 1.00), dvec2(0.50, 0.00), dvec2(0.50, 0.50)},
-//         {dvec2(0.00, 1.00), dvec2(0.50, 0.50), dvec2(0.50, 1.00)},
-//         {dvec2(0.50, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 1.00)},
-//         {dvec2(1.00, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 0.50)},
-//         {dvec2(1.00, 0.50), dvec2(0.50, 1.00), dvec2(1.00, 0.00)},
-//         {dvec2(1.00, 0.00), dvec2(0.50, 1.00), dvec2(0.50, 0.50)},
-//         {dvec2(1.00, 0.00), dvec2(0.50, 0.50), dvec2(0.50, 0.00)}}};
-//
-//    static constexpr std::array<std::array<dvec3, 3>, 10> tri_alpha_beta{
-//        {{dvec3(1.0, 1.0, 0.0), dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0)},
-//         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-//         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-//         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-//         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)},
-//         {dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 1.0, 0.0)},
-//         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-//         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-//         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-//         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)}}};
+    std::shared_ptr<BasicMesh> createSuperquadric(const std::array<double, 3>& eigenValues,
+                                                  const dvec3& pos, const float size,
+                                                  const dvec4& color) const;
+
+    //    static constexpr std::array<std::array<dvec2, 3>, 10> tri_uv{
+    //        {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},
+    //         {dvec2(0.00, 0.00), dvec2(0.25, 0.25), dvec2(0.00, 0.50)},
+    //         {dvec2(0.00, 0.50), dvec2(0.50, 0.00), dvec2(0.00, 1.00)},
+    //         {dvec2(0.00, 1.00), dvec2(0.50, 0.00), dvec2(0.50, 0.50)},
+    //         {dvec2(0.00, 1.00), dvec2(0.50, 0.50), dvec2(0.50, 1.00)},
+    //         {dvec2(0.50, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 1.00)},
+    //         {dvec2(1.00, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 0.50)},
+    //         {dvec2(1.00, 0.50), dvec2(0.50, 1.00), dvec2(1.00, 0.00)},
+    //         {dvec2(1.00, 0.00), dvec2(0.50, 1.00), dvec2(0.50, 0.50)},
+    //         {dvec2(1.00, 0.00), dvec2(0.50, 0.50), dvec2(0.50, 0.00)}}};
+    //
+    //    static constexpr std::array<std::array<dvec3, 3>, 10> tri_alpha_beta{
+    //        {{dvec3(1.0, 1.0, 0.0), dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0)},
+    //         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
+    //         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
+    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
+    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)},
+    //         {dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 1.0, 0.0)},
+    //         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
+    //         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
+    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
+    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)}}};
 
     const std::array<bool, 10> tri_rotate = {false, true, true,  true,  true,
                                              true,  true, false, false, false};
