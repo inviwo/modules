@@ -34,6 +34,9 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <modules/openmesh/utils/meshiteratorutils.h>
 
 #ifndef _USE_MATH_DEFINES
@@ -51,6 +54,8 @@
 #undef _USE_MATH_DEFINES
 #endif
 
+#include <functional>
+
 namespace inviwo {
 
 struct CustomMeshTraits : public OpenMesh::DefaultTraits {
@@ -63,98 +68,75 @@ struct CustomMeshTraits : public OpenMesh::DefaultTraits {
 using TriMesh = OpenMesh::TriMesh_ArrayKernelT<CustomMeshTraits>;
 
 namespace openmeshutil {
+namespace detail {
+
+template <typename T>
+struct InviwoBufferType {
+    using type = Buffer<T>;
+};
+
+template <typename T, unsigned D>
+struct InviwoBufferType<OpenMesh::VectorT<T, D>> {
+    using type = Buffer<Vector<D, T>>;
+};
+
+template <typename T, unsigned dim>
+glm::vec<dim, T> toGLM(const OpenMesh::VectorT<T, dim> &v) {
+    glm::vec<dim, T> res;
+    for (unsigned i = 0; i < dim; i++) {
+        res[i] = v[i];
+    }
+    return res;
+}
+
+template <typename T>
+T toGLM(const T &v) { return v; }
+
+template <typename T, typename OM_Mesh, typename Func>
+void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, BufferType bufferType, Func callback) {
+    auto vertices = std::make_shared<typename detail::InviwoBufferType<typename T>::type>();
+    auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
+    ivwMesh.addBuffer(bufferType, vertices);
+    for (const OpenMesh::VertexHandle &v_it : omMesh.vertices()) {
+        vec.push_back(detail::toGLM(callback(v_it)));
+    }
+};
+
+}  // namespace detail
 
 /**
-* Convert a mesh from OpenMesh- to Inviwo format
-*/
+ * Convert a mesh from OpenMesh- to Inviwo format
+ */
 template <typename OM_Mesh>
 std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
+    using namespace std::placeholders;
     auto newmesh = std::make_shared<Mesh>();
 
-    {
-        using T = typename OM_Mesh::Point;
-        using Vec = typename inviwo::Vector<T::dim(), typename T::value_type>;
-        auto vertices = std::make_shared<Buffer<Vec>>();
-        auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-        newmesh->addBuffer(BufferType::PositionAttrib, vertices);
-        for (const OpenMesh::VertexHandle &v_it : mesh.vertices()) {
-            auto point = mesh.point(v_it);
-            Vec pos;
-            for (int i = 0; i < T::dim(); i++) {
-                pos[i] = point[i];
-            }
-            vec.push_back(pos);
-        }
-    }
+    detail::convertOMtoInviwoBuffer<typename OM_Mesh::Point>(*newmesh, mesh, BufferType::PositionAttrib,
+                                             [m = &mesh](auto it) { return m->point(it); });
 
     if (mesh.has_vertex_colors()) {
-        using T = typename OM_Mesh::Color;
-        using Vec = typename inviwo::Vector<T::dim(), typename T::value_type>;
-        auto vertices = std::make_shared<Buffer<Vec>>();
-        auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-        newmesh->addBuffer(BufferType::ColorAttrib, vertices);
-        for (const OpenMesh::VertexHandle &v_it : mesh.vertices()) {
-            auto point = mesh.color(v_it);
-            Vec pos;
-            for (int i = 0; i < T::dim(); i++) {
-                pos[i] = point[i];
-            }
-            vec.push_back(pos);
-        }
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::Color>(*newmesh, mesh, BufferType::ColorAttrib,
+                                                 [m = &mesh](auto it) { return m->color(it); });
     }
 
     if (mesh.has_vertex_normals()) {
-        using T = typename OM_Mesh::Normal;
-        using Vec = typename inviwo::Vector<T::dim(), typename T::value_type>;
-        auto vertices = std::make_shared<Buffer<Vec>>();
-        auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-        newmesh->addBuffer(BufferType::NormalAttrib, vertices);
-        for (const OpenMesh::VertexHandle &v_it : mesh.vertices()) {
-            auto point = mesh.normal(v_it);
-            Vec pos;
-            for (int i = 0; i < T::dim(); i++) {
-                pos[i] = point[i];
-            }
-            vec.push_back(pos);
-        }
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::Normal>(*newmesh, mesh, BufferType::NormalAttrib,
+                                                  [m = &mesh](auto it) { return m->normal(it); });
     }
 
     if (mesh.has_vertex_texcoords3D()) {
-        using T = typename OM_Mesh::TexCoord3D;
-        using Vec = typename inviwo::Vector<T::dim(), typename T::value_type>;
-        auto vertices = std::make_shared<Buffer<Vec>>();
-        auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-        newmesh->addBuffer(BufferType::TexcoordAttrib, vertices);
-        for (const OpenMesh::VertexHandle &v_it : mesh.vertices()) {
-            auto point = mesh.texcoord3D(v_it);
-            Vec pos;
-            for (int i = 0; i < T::dim(); i++) {
-                pos[i] = point[i];
-            }
-            vec.push_back(pos);
-        }
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::TexCoord3D>(
+            *newmesh, mesh, BufferType::TexcoordAttrib,
+            [m = &mesh](auto it) { return m->texcoord3D(it); });
     } else if (mesh.has_vertex_texcoords2D()) {
-        using T = typename OM_Mesh::TexCoord2D;
-        using Vec = typename inviwo::Vector<T::dim(), typename T::value_type>;
-        auto vertices = std::make_shared<Buffer<Vec>>();
-        auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-        newmesh->addBuffer(BufferType::TexcoordAttrib, vertices);
-        for (const OpenMesh::VertexHandle &v_it : mesh.vertices()) {
-            auto point = mesh.texcoord2D(v_it);
-            Vec pos;
-            for (int i = 0; i < T::dim(); i++) {
-                pos[i] = point[i];
-            }
-            vec.push_back(pos);
-        }
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::TexCoord2D>(
+            *newmesh, mesh, BufferType::TexcoordAttrib,
+            [m = &mesh](auto it) { return m->texcoord2D(it); });
     } else if (mesh.has_vertex_texcoords1D()) {
-        using T = typename OM_Mesh::TexCoord1D;
-        auto vertices = std::make_shared<Buffer<T>>();
-        auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-        newmesh->addBuffer(BufferType::TexcoordAttrib, vertices);
-        for (const OpenMesh::VertexHandle &v_it : mesh.vertices()) {
-            vec.push_back(mesh.texcoord1D(v_it));
-        }
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::TexCoord1D>(
+            *newmesh, mesh, BufferType::TexcoordAttrib,
+            [m = &mesh](auto it) { return m->texcoord1D(it); });
     }
 
     auto indicesRam = std::make_shared<IndexBufferRAM>();
@@ -182,8 +164,8 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
 enum class TransformCoordinates { NoTransform, DataToModel, DataToWorld };
 
 /**
-* Convert a mesh from Inviwo- to OpenMesh format
-*/
+ * Convert a mesh from Inviwo- to OpenMesh format
+ */
 IVW_MODULE_OPENMESH_API TriMesh
 fromInviwo(const Mesh &inmesh, TransformCoordinates transform = TransformCoordinates::DataToWorld);
 

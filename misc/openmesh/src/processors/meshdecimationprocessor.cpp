@@ -60,7 +60,6 @@ void MeshDecimationProcessor::process() {
     newMesh->copyMetaDataFrom(*inmesh_.getData());
     newMesh->setWorldMatrix(inmesh_.getData()->getWorldMatrix());
     //! [OpenMesh Decimation]
-
     outmesh_.setData(newMesh);
 }
 
