@@ -71,34 +71,34 @@ namespace openmeshutil {
 namespace detail {
 
 template <typename T>
-struct InviwoBufferType {
+struct BufferConvertHelper {
     using type = Buffer<T>;
+    using value_type = T;
+    static T convertValue(const T &v) { return v; }
 };
 
 template <typename T, unsigned D>
-struct InviwoBufferType<OpenMesh::VectorT<T, D>> {
+struct BufferConvertHelper<OpenMesh::VectorT<T, D>> {
     using type = Buffer<Vector<D, T>>;
+    using value_type = Vector<D, T>;
+    static glm::vec<D, T> convertValue(const OpenMesh::VectorT<T, D> &v) {
+        glm::vec<D, T> res;
+        for (unsigned i = 0; i < D; i++) {
+            res[i] = v[i];
+        }
+        return res;
+    }
 };
 
-template <typename T, unsigned dim>
-glm::vec<dim, T> toGLM(const OpenMesh::VectorT<T, dim> &v) {
-    glm::vec<dim, T> res;
-    for (unsigned i = 0; i < dim; i++) {
-        res[i] = v[i];
-    }
-    return res;
-}
-
-template <typename T>
-T toGLM(const T &v) { return v; }
-
 template <typename T, typename OM_Mesh, typename Func>
-void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, BufferType bufferType, Func callback) {
-    auto vertices = std::make_shared<typename detail::InviwoBufferType<T>::type>();
+void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, BufferType bufferType,
+                             Func callback) {
+    using Helper = typename detail::BufferConvertHelper<T>;
+    auto vertices = std::make_shared<typename Helper::type>();
     auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
     ivwMesh.addBuffer(bufferType, vertices);
     for (const OpenMesh::VertexHandle &v_it : omMesh.vertices()) {
-        vec.emplace_back(detail::toGLM(callback(v_it)));
+        vec.push_back(Helper::convertValue(callback(v_it)));
     }
 };
 
@@ -112,17 +112,18 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
     using namespace std::placeholders;
     auto newmesh = std::make_shared<Mesh>();
 
-    detail::convertOMtoInviwoBuffer<typename OM_Mesh::Point>(*newmesh, mesh, BufferType::PositionAttrib,
-                                             [m = &mesh](auto it) { return m->point(it); });
+    detail::convertOMtoInviwoBuffer<typename OM_Mesh::Point>(
+        *newmesh, mesh, BufferType::PositionAttrib, [m = &mesh](auto it) { return m->point(it); });
 
     if (mesh.has_vertex_colors()) {
-        detail::convertOMtoInviwoBuffer<typename OM_Mesh::Color>(*newmesh, mesh, BufferType::ColorAttrib,
-                                                 [m = &mesh](auto it) { return m->color(it); });
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::Color>(
+            *newmesh, mesh, BufferType::ColorAttrib, [m = &mesh](auto it) { return m->color(it); });
     }
 
     if (mesh.has_vertex_normals()) {
-        detail::convertOMtoInviwoBuffer<typename OM_Mesh::Normal>(*newmesh, mesh, BufferType::NormalAttrib,
-                                                  [m = &mesh](auto it) { return m->normal(it); });
+        detail::convertOMtoInviwoBuffer<typename OM_Mesh::Normal>(
+            *newmesh, mesh, BufferType::NormalAttrib,
+            [m = &mesh](auto it) { return m->normal(it); });
     }
 
     if (mesh.has_vertex_texcoords3D()) {
