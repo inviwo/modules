@@ -94,7 +94,7 @@ T toGLM(const T &v) { return v; }
 
 template <typename T, typename OM_Mesh, typename Func>
 void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, BufferType bufferType, Func callback) {
-    auto vertices = std::make_shared<typename detail::InviwoBufferType<typename T>::type>();
+    auto vertices = std::make_shared<typename detail::InviwoBufferType<T>::type>();
     auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
     ivwMesh.addBuffer(bufferType, vertices);
     for (const OpenMesh::VertexHandle &v_it : omMesh.vertices()) {
