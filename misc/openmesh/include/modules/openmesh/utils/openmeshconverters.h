@@ -98,7 +98,7 @@ void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, Buffe
     auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
     ivwMesh.addBuffer(bufferType, vertices);
     for (const OpenMesh::VertexHandle &v_it : omMesh.vertices()) {
-        vec.push_back(detail::toGLM(callback(v_it)));
+        vec.emplace_back(detail::toGLM(callback(v_it)));
     }
 };
 
