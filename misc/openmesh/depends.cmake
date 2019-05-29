@@ -7,5 +7,5 @@ set(EnableByDefault ON)
 
 set(dependencies
     #InviwoOpenGLModule
-    #InviwoBaseGLModule  
+    InviwoBaseModule  
 )

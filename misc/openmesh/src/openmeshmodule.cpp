@@ -32,7 +32,6 @@
 #include <modules/openmesh/openmeshreader.h>
 #include <modules/openmesh/openmeshwriter.h>
 
-#include <modules/openmesh/processors/trianglestowireframe.h>
 #include <modules/openmesh/processors/meshdecimationprocessor.h>
 
 #ifndef _USE_MATH_DEFINES
@@ -52,7 +51,6 @@
 namespace inviwo {
 
 OpenMeshModule::OpenMeshModule(InviwoApplication* app) : InviwoModule(app, "OpenMesh") {
-    registerProcessor<TrianglesToWireframe>();
     registerProcessor<MeshDecimationProcessor>();
 
     // Readers and writes

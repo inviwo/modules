@@ -33,9 +33,7 @@ set(HEADER_FILES
     include/modules/openmesh/openmeshreader.h
     include/modules/openmesh/openmeshwriter.h
     include/modules/openmesh/processors/meshdecimationprocessor.h
-    include/modules/openmesh/processors/trianglestowireframe.h
     include/modules/openmesh/utils/meshdecimation.h
-    include/modules/openmesh/utils/meshiteratorutils.h
     include/modules/openmesh/utils/openmeshconverters.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -47,9 +45,7 @@ set(SOURCE_FILES
     src/openmeshreader.cpp
     src/openmeshwriter.cpp
     src/processors/meshdecimationprocessor.cpp
-    src/processors/trianglestowireframe.cpp
     src/utils/meshdecimation.cpp
-    src/utils/meshiteratorutils.cpp
     src/utils/openmeshconverters.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

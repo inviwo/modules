@@ -37,7 +37,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
-#include <modules/openmesh/utils/meshiteratorutils.h>
+#include <modules/base/algorithm/meshutils.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES_WAS_DEFINED
