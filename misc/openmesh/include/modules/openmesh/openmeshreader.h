@@ -41,7 +41,7 @@ namespace inviwo {
 /**
  * \class OpenMeshReader
  * \ingroup dataio
- * \brief Writer for various mesh types using the OpenMesh library
+ * \brief Reader for various mesh types using the OpenMesh library
  */
 class IVW_MODULE_OPENMESH_API OpenMeshReader : public DataReaderType<Mesh> {
 public:
