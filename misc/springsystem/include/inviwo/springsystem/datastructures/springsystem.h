@@ -270,7 +270,7 @@ void SpringSystem<Components, ComponentType, Derived>::print(
         auto displacement = dir * (dist - derived().springLength(i));
 
         ss << "\n"
-           << std::setw(6) << (i++) << ":  l0 = " << derived().springLength(i) << ", l = " << dist
+           << std::setw(6) << (i + 1) << ":  l0 = " << derived().springLength(i) << ", l = " << dist
            << ", s = " << displacement;
     }
     ss << "\n-----------------------------";
