@@ -39,6 +39,7 @@
 #define _USE_MATH_DEFINES
 #endif
 
+#include <modules/openmesh/processors/vertexnormals.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <OpenMesh/Core/System/config.h>
@@ -52,6 +53,7 @@ namespace inviwo {
 
 OpenMeshModule::OpenMeshModule(InviwoApplication* app) : InviwoModule(app, "OpenMesh") {
     registerProcessor<MeshDecimationProcessor>();
+    registerProcessor<VertexNormals>();
 
     // Readers and writes
     registerDataReader(util::make_unique<OpenMeshReader>());

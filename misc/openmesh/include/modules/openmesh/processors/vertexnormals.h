@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,35 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MESHDECIMATIONPROCESSOR_H
-#define IVW_MESHDECIMATIONPROCESSOR_H
+#pragma once
 
 #include <modules/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MeshDecimationProcessor, Mesh Decimation}
- * ![](org.inviwo.MeshDecimationProcessor.png?classIdentifier=org.inviwo.MeshDecimationProcessor)
- *
- * Reduces the number of triangles in the input mesh.
- * Stops when either the Vertex- or the Face decimation ratio is reached.
- *
+/** \docpage{org.inviwo.VertexNormals, Vertex Normals}
+ * ![](org.inviwo.VertexNormals.png?classIdentifier=org.inviwo.VertexNormals)
+ * generates vertex normals for the input mesh. Existing vertex normals will only be overwritten if
+ * enforced.
  *
  * ### Inports
- *   * __inmesh__ Input mesh.
+ *   * __mesh__  input mesh
  *
  * ### Outports
- *   * __outmesh__ Decimated mesh.
- *
- * ### Properties
- *   * __Vertex Decimation ratio__ Percentage of vertices to keep.
- *   * __Face Decimation ratio__ Percentage of faces to keep.
+ *   * __outport__  output mesh with vertex normals
  */
 
-class IVW_MODULE_OPENMESH_API MeshDecimationProcessor : public Processor {
+/**
+ * \brief generate vertex normals for a Mesh using OpenMesh
+ */
+class IVW_MODULE_OPENMESH_API VertexNormals : public Processor {
 public:
-    MeshDecimationProcessor();
-    virtual ~MeshDecimationProcessor() = default;
+    VertexNormals();
+    virtual ~VertexNormals() = default;
 
     virtual void process() override;
 
@@ -67,14 +63,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    MeshInport inmesh_{"inmesh"};
-    MeshOutport outmesh_{"outmesh"};
+    MeshInport inport_{"mesh"};
+    MeshOutport outport_{"outport"};
 
-    FloatProperty vertDecimation_{
-        "vertDecimation", "Vertex Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
-    FloatProperty faceDecimation_{"faceDecimation", "Face Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
+    BoolProperty override_{"overrideNormals", "Override Normals", false};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_MESHDECIMATIONPROCESSOR_H

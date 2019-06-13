@@ -33,6 +33,7 @@ set(HEADER_FILES
     include/modules/openmesh/openmeshreader.h
     include/modules/openmesh/openmeshwriter.h
     include/modules/openmesh/processors/meshdecimationprocessor.h
+    include/modules/openmesh/processors/vertexnormals.h
     include/modules/openmesh/utils/meshdecimation.h
     include/modules/openmesh/utils/openmeshconverters.h
 )
@@ -45,6 +46,7 @@ set(SOURCE_FILES
     src/openmeshreader.cpp
     src/openmeshwriter.cpp
     src/processors/meshdecimationprocessor.cpp
+    src/processors/vertexnormals.cpp
     src/utils/meshdecimation.cpp
     src/utils/openmeshconverters.cpp
 )
