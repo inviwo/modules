@@ -35,11 +35,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MeshDecimationProcessor::processorInfo_{
-    "org.inviwo.MeshDecimationProcessor",  // Class identifier
-    "Mesh Decimation",                     // Display name
-    "Mesh Processing",                     // Category
-    CodeState::Experimental,               // Code state
-    Tags::CPU,                             // Tags
+    "org.inviwo.openmesh.MeshDecimationProcessor",  // Class identifier
+    "Mesh Decimation",                              // Display name
+    "Mesh Processing",                              // Category
+    CodeState::Experimental,                        // Code state
+    Tags::CPU,                                      // Tags
 };
 const ProcessorInfo MeshDecimationProcessor::getProcessorInfo() const { return processorInfo_; }
 

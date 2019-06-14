@@ -35,11 +35,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VertexNormals::processorInfo_{
-    "org.inviwo.VertexNormals",  // Class identifier
-    "Vertex Normals",            // Display name
-    "Mesh Processing",           // Category
-    CodeState::Stable,           // Code state
-    Tags::CPU,                   // Tags
+    "org.inviwo.openmesh.VertexNormals",  // Class identifier
+    "Vertex Normals",                     // Display name
+    "Mesh Processing",                    // Category
+    CodeState::Stable,                    // Code state
+    Tags::CPU,                            // Tags
 };
 const ProcessorInfo VertexNormals::getProcessorInfo() const { return processorInfo_; }
 
@@ -54,7 +54,7 @@ void VertexNormals::process() {
     if (inport_.getData()->findBuffer(BufferType::NormalAttrib).first && !override_) {
         outport_.setData(inport_.getData());
         return;
-    } 
+    }
 
     auto mesh = openmeshutil::fromInviwo(*inport_.getData(),
                                          openmeshutil::TransformCoordinates::DataToModel);
