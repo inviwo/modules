@@ -27,33 +27,33 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENMESHWRITER_H
-#define IVW_OPENMESHWRITER_H
+#ifndef IVW_OPENMESHREADER_H
+#define IVW_OPENMESHREADER_H
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datawriter.h>
+#include <inviwo/core/io/datareader.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/logcentral.h>
 
 namespace inviwo {
 
 /**
- * \class OpenMeshWriter
+ * \class OpenMeshReader
  * \ingroup dataio
- * \brief Writer for various mesh types using the OpenMesh library
+ * \brief Reader for various mesh types using the OpenMesh library
  */
-class IVW_MODULE_OPENMESH_API OpenMeshWriter : public DataWriterType<Mesh> {
+class IVW_MODULE_OPENMESH_API OpenMeshReader : public DataReaderType<Mesh> {
 public:
-    OpenMeshWriter();
-    OpenMeshWriter(const OpenMeshWriter& rhs) = default;
-    OpenMeshWriter& operator=(const OpenMeshWriter& that) = default;
-    virtual OpenMeshWriter* clone() const override;
-    virtual ~OpenMeshWriter() = default;
+    OpenMeshReader();
+    OpenMeshReader(const OpenMeshReader& rhs) = default;
+    OpenMeshReader& operator=(const OpenMeshReader& that) = default;
+    virtual OpenMeshReader* clone() const override { return new OpenMeshReader(*this); }
+    virtual ~OpenMeshReader() = default;
 
-    virtual void writeData(const Mesh* data, const std::string filePath) const override;
+    virtual std::shared_ptr<Mesh> readData(const std::string& filePath) override;
 };
 
 }  // namespace inviwo
 
-#endif  // IVW_OPENMESHWRITER_H
+#endif  // IVW_OPENMESHREADER_H

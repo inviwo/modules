@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/utils/meshdecimation.h>
+#include <inviwo/openmesh/utils/meshdecimation.h>
 
 namespace inviwo {}  // namespace inviwo

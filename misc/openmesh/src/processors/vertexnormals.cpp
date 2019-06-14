@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/processors/vertexnormals.h>
+#include <inviwo/openmesh/processors/vertexnormals.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
-#include <modules/openmesh/utils/openmeshconverters.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 namespace inviwo {
 
@@ -59,16 +59,9 @@ void VertexNormals::process() {
     auto mesh = openmeshutil::fromInviwo(*inport_.getData(),
                                          openmeshutil::TransformCoordinates::DataToModel);
 
-    //if (mesh.has_vertex_normals()) {
-    //    // get rid of existing normals
-    //    mesh.release_vertex_normals();
-    //}
-
-    // we need face normals to update the vertex normals
+    // generate face normals in order to update the vertex normals
     mesh.request_face_normals();
-    // let the mesh update the normals
     mesh.update_normals();
-    // dispose the face normals, as we don't need them anymore
     mesh.release_face_normals();
 
     auto newMesh = openmeshutil::toInviwo(mesh);

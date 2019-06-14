@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/openmeshwriter.h>
+#include <inviwo/openmesh/openmeshwriter.h>
 
-#include <modules/openmesh/utils/openmeshconverters.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

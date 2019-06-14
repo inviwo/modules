@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/processors/meshdecimationprocessor.h>
-#include <modules/openmesh/utils/meshdecimation.h>
-#include <modules/openmesh/utils/openmeshconverters.h>
+#include <inviwo/openmesh/processors/meshdecimationprocessor.h>
+#include <inviwo/openmesh/utils/meshdecimation.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 namespace inviwo {
 

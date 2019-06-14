@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/utils/openmeshconverters.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/util/zip.h>

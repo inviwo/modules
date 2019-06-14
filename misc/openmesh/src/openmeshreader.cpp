@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/openmeshreader.h>
+#include <inviwo/openmesh/openmeshreader.h>
 
-#include <modules/openmesh/utils/openmeshconverters.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 #define _USE_MATH_DEFINES
 #include <warn/push>

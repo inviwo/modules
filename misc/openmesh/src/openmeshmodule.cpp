@@ -27,19 +27,19 @@
  *
  *********************************************************************************/
 
-#include <modules/openmesh/openmeshmodule.h>
+#include <inviwo/openmesh/openmeshmodule.h>
 
-#include <modules/openmesh/openmeshreader.h>
-#include <modules/openmesh/openmeshwriter.h>
+#include <inviwo/openmesh/openmeshreader.h>
+#include <inviwo/openmesh/openmeshwriter.h>
 
-#include <modules/openmesh/processors/meshdecimationprocessor.h>
+#include <inviwo/openmesh/processors/meshdecimationprocessor.h>
 
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES_WAS_DEFINED
 #define _USE_MATH_DEFINES
 #endif
 
-#include <modules/openmesh/processors/vertexnormals.h>
+#include <inviwo/openmesh/processors/vertexnormals.h>
 #include <warn/push>
 #include <warn/ignore/all>
 #include <OpenMesh/Core/System/config.h>

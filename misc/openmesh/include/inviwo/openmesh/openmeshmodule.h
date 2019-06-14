@@ -30,7 +30,7 @@
 #ifndef IVW_OPENMESHMODULE_H
 #define IVW_OPENMESHMODULE_H
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
