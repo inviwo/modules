@@ -28,13 +28,14 @@ ivw_folder(OpenMeshTools ext/OpenMesh)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/openmesh/openmeshmodule.h
-    include/modules/openmesh/openmeshmoduledefine.h
-    include/modules/openmesh/openmeshreader.h
-    include/modules/openmesh/openmeshwriter.h
-    include/modules/openmesh/processors/meshdecimationprocessor.h
-    include/modules/openmesh/utils/meshdecimation.h
-    include/modules/openmesh/utils/openmeshconverters.h
+    include/inviwo/openmesh/openmeshmodule.h
+    include/inviwo/openmesh/openmeshmoduledefine.h
+    include/inviwo/openmesh/openmeshreader.h
+    include/inviwo/openmesh/openmeshwriter.h
+    include/inviwo/openmesh/processors/meshdecimationprocessor.h
+    include/inviwo/openmesh/processors/vertexnormals.h
+    include/inviwo/openmesh/utils/meshdecimation.h
+    include/inviwo/openmesh/utils/openmeshconverters.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -45,6 +46,7 @@ set(SOURCE_FILES
     src/openmeshreader.cpp
     src/openmeshwriter.cpp
     src/processors/meshdecimationprocessor.cpp
+    src/processors/vertexnormals.cpp
     src/utils/meshdecimation.cpp
     src/utils/openmeshconverters.cpp
 )

@@ -30,7 +30,7 @@
 #ifndef IVW_MESHDECIMATION_H
 #define IVW_MESHDECIMATION_H
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/util/clock.h>

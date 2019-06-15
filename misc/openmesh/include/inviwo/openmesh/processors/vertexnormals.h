@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,33 +27,46 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENMESHREADER_H
-#define IVW_OPENMESHREADER_H
+#pragma once
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/io/datareader.h>
-#include <inviwo/core/datastructures/geometry/mesh.h>
-#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 namespace inviwo {
 
-/**
- * \class OpenMeshReader
- * \ingroup dataio
- * \brief Reader for various mesh types using the OpenMesh library
+/** \docpage{org.inviwo.VertexNormals, Vertex Normals}
+ * ![](org.inviwo.VertexNormals.png?classIdentifier=org.inviwo.VertexNormals)
+ * generates vertex normals for the input mesh. Existing vertex normals will only be overwritten if
+ * enforced.
+ *
+ * ### Inports
+ *   * __mesh__  input mesh
+ *
+ * ### Outports
+ *   * __outport__  output mesh with vertex normals
  */
-class IVW_MODULE_OPENMESH_API OpenMeshReader : public DataReaderType<Mesh> {
-public:
-    OpenMeshReader();
-    OpenMeshReader(const OpenMeshReader& rhs) = default;
-    OpenMeshReader& operator=(const OpenMeshReader& that) = default;
-    virtual OpenMeshReader* clone() const override { return new OpenMeshReader(*this); }
-    virtual ~OpenMeshReader() = default;
 
-    virtual std::shared_ptr<Mesh> readData(const std::string& filePath) override;
+/**
+ * \brief generate vertex normals for a Mesh using OpenMesh
+ */
+class IVW_MODULE_OPENMESH_API VertexNormals : public Processor {
+public:
+    VertexNormals();
+    virtual ~VertexNormals() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    MeshInport inport_{"mesh"};
+    MeshOutport outport_{"outport"};
+
+    BoolProperty override_{"overrideNormals", "Override Normals", false};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENMESHREADER_H

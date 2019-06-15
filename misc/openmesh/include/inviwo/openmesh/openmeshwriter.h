@@ -30,7 +30,7 @@
 #ifndef IVW_OPENMESHWRITER_H
 #define IVW_OPENMESHWRITER_H
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/io/datawriter.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>

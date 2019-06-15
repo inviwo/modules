@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,20 @@
  *
  *********************************************************************************/
 
-#include <inviwo/openmesh/processors/meshdecimationprocessor.h>
-#include <inviwo/openmesh/utils/meshdecimation.h>
-#include <inviwo/openmesh/utils/openmeshconverters.h>
+#ifndef IVW_OPENMESHMODULE_H
+#define IVW_OPENMESHMODULE_H
+
+#include <inviwo/openmesh/openmeshmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo MeshDecimationProcessor::processorInfo_{
-    "org.inviwo.openmesh.MeshDecimationProcessor",  // Class identifier
-    "Mesh Decimation",                              // Display name
-    "Mesh Processing",                              // Category
-    CodeState::Experimental,                        // Code state
-    Tags::CPU,                                      // Tags
+class IVW_MODULE_OPENMESH_API OpenMeshModule : public InviwoModule {
+public:
+    OpenMeshModule(InviwoApplication* app);
+    virtual ~OpenMeshModule() = default;
 };
-const ProcessorInfo MeshDecimationProcessor::getProcessorInfo() const { return processorInfo_; }
-
-MeshDecimationProcessor::MeshDecimationProcessor() : Processor() {
-    addPort(inmesh_);
-    addPort(outmesh_);
-
-    addProperty(vertDecimation_);
-    addProperty(faceDecimation_);
-}
-
-void MeshDecimationProcessor::process() {
-    //! [OpenMesh Decimation]
-    using namespace openmeshutil;
-    auto mesh = fromInviwo(*inmesh_.getData(), TransformCoordinates::DataToModel);
-    decimate(mesh, vertDecimation_.get(), faceDecimation_.get());
-    auto newMesh = toInviwo(mesh);
-    newMesh->copyMetaDataFrom(*inmesh_.getData());
-    newMesh->setWorldMatrix(inmesh_.getData()->getWorldMatrix());
-    //! [OpenMesh Decimation]
-    outmesh_.setData(newMesh);
-}
 
 }  // namespace inviwo
+
+#endif  // IVW_OPENMESHMODULE_H

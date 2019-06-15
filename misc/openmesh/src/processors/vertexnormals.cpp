@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,20 +27,47 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_OPENMESHMODULE_H
-#define IVW_OPENMESHMODULE_H
-
-#include <modules/openmesh/openmeshmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/openmesh/processors/vertexnormals.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OPENMESH_API OpenMeshModule : public InviwoModule {
-public:
-    OpenMeshModule(InviwoApplication* app);
-    virtual ~OpenMeshModule() = default;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VertexNormals::processorInfo_{
+    "org.inviwo.openmesh.VertexNormals",  // Class identifier
+    "Vertex Normals",                     // Display name
+    "Mesh Processing",                    // Category
+    CodeState::Stable,                    // Code state
+    Tags::CPU,                            // Tags
 };
+const ProcessorInfo VertexNormals::getProcessorInfo() const { return processorInfo_; }
+
+VertexNormals::VertexNormals() : Processor() {
+
+    addPort(inport_);
+    addPort(outport_);
+    addProperty(override_);
+}
+
+void VertexNormals::process() {
+    if (inport_.getData()->findBuffer(BufferType::NormalAttrib).first && !override_) {
+        outport_.setData(inport_.getData());
+        return;
+    }
+
+    auto mesh = openmeshutil::fromInviwo(*inport_.getData(),
+                                         openmeshutil::TransformCoordinates::DataToModel);
+
+    // generate face normals in order to update the vertex normals
+    mesh.request_face_normals();
+    mesh.update_normals();
+    mesh.release_face_normals();
+
+    auto newMesh = openmeshutil::toInviwo(mesh);
+    newMesh->copyMetaDataFrom(*inport_.getData());
+    newMesh->setWorldMatrix(inport_.getData()->getWorldMatrix());
+    outport_.setData(newMesh);
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_OPENMESHMODULE_H

@@ -30,7 +30,7 @@
 #ifndef IVW_OPENMESHCONVERTERS_H
 #define IVW_OPENMESHCONVERTERS_H
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>

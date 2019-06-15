@@ -535,7 +535,7 @@
             </Module>
             <Module name="OpenMesh" version="0">
                 <Processors>
-                    <Processor content="org.inviwo.MeshDecimationProcessor" />
+                    <Processor content="org.inviwo.openmesh.MeshDecimationProcessor" />
                 </Processors>
             </Module>
             <Module name="SpringSystem" version="0">
@@ -1217,7 +1217,7 @@
                     </MetaDataItem>
                 </MetaDataMap>
             </Processor>
-            <Processor type="org.inviwo.MeshDecimationProcessor" identifier="Mesh Decimation" displayName="Mesh Decimation">
+            <Processor type="org.inviwo.openmesh.MeshDecimationProcessor" identifier="Mesh Decimation" displayName="Mesh Decimation">
                 <PortGroups>
                     <PortGroup content="default" key="inmesh" />
                     <PortGroup content="default" key="outmesh" />

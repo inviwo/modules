@@ -30,7 +30,7 @@
 #ifndef IVW_MESHDECIMATIONPROCESSOR_H
 #define IVW_MESHDECIMATIONPROCESSOR_H
 
-#include <modules/openmesh/openmeshmoduledefine.h>
+#include <inviwo/openmesh/openmeshmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -42,7 +42,7 @@ namespace inviwo {
  * ![](org.inviwo.MeshDecimationProcessor.png?classIdentifier=org.inviwo.MeshDecimationProcessor)
  *
  * Reduces the number of triangles in the input mesh.
- * Stops when either the Vertex- or the Face decimation ratio is reach.
+ * Stops when either the Vertex- or the Face decimation ratio is reached.
  *
  *
  * ### Inports
