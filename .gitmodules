@@ -2,5 +2,5 @@
 	path = misc/openmesh/ext/OpenMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
 [submodule "topovis/topologytoolkit/ext/ttk/tt"]
-	path = topovis/topologytoolkit/ext/ttk/tt
+	path = topovis/topologytoolkit/ext/ttk/ttk/tt
 	url = https://github.com/inviwo/ttk
