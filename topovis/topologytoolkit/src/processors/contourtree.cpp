@@ -46,8 +46,6 @@
 #include <algorithm>
 #include <map>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

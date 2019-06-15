@@ -35,8 +35,6 @@
 #include <ttk/core/base/ftmTree/FTMTree_CT.h>
 #include <warn/pop>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 namespace topology {
