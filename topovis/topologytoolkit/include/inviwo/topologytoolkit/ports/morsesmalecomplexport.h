@@ -50,7 +50,7 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
 
     // critical points
     struct CriticalPoints {
-        int numberOfPoints;
+        ttk::SimplexId numberOfPoints;
         std::vector<float> points;
         std::vector<char> points_cellDimensions;
         std::vector<ttk::SimplexId> points_cellIds;
@@ -61,7 +61,7 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
     };
     // 1-separatrices
     struct Separatrices {
-        int numberOfPoints;
+        ttk::SimplexId numberOfPoints;
         std::vector<float> points;
         std::vector<char> points_smoothingMask;
         std::vector<char> points_cellDimensions;
