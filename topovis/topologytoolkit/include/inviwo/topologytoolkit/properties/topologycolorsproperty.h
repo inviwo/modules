@@ -26,52 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-
-#include <inviwo/topologytoolkit/ports/triangulationdataport.h>
-#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
- * ![](org.inviwo.MorseSmaleComplex.png?classIdentifier=org.inviwo.MorseSmaleComplex)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __triangulation__   input triangulation
- *
- * ### Outports
- *   * __outport__     Mesh with critical points, separation lines, and separation surfaces
- *
- * ### Properties
- */
-
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty {
 public:
-    MorseSmaleComplex();
-    virtual ~MorseSmaleComplex() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    topology::TriangulationInport inport_{"triangulation"};
-    topology::MorseSmaleComplexOutport outport_{"outport"};
-
-    BoolProperty separationSurfaces_;
+    TopologyColorsProperty();
+    virtual ~TopologyColorsProperty() = default;
 };
 
 }  // namespace inviwo

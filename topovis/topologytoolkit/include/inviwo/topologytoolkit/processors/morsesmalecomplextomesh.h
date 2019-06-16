@@ -33,34 +33,33 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-
-#include <inviwo/topologytoolkit/ports/triangulationdataport.h>
-#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
- * ![](org.inviwo.MorseSmaleComplex.png?classIdentifier=org.inviwo.MorseSmaleComplex)
+/** \docpage{org.inviwo.MorseSmaleComplexToMesh, Morse Smale Complex To Mesh}
+ * ![](org.inviwo.MorseSmaleComplexToMesh.png?classIdentifier=org.inviwo.MorseSmaleComplexToMesh)
  * Explanation of how to use the processor.
  *
  * ### Inports
- *   * __triangulation__   input triangulation
+ *   * __<Inport1>__ <description>.
  *
  * ### Outports
- *   * __outport__     Mesh with critical points, separation lines, and separation surfaces
+ *   * __<Outport1>__ <description>.
  *
  * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
 
 /**
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexToMesh : public Processor {
 public:
-    MorseSmaleComplex();
-    virtual ~MorseSmaleComplex() = default;
+    MorseSmaleComplexToMesh();
+    virtual ~MorseSmaleComplexToMesh() = default;
 
     virtual void process() override;
 
@@ -68,10 +67,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    topology::TriangulationInport inport_{"triangulation"};
-    topology::MorseSmaleComplexOutport outport_{"outport"};
-
-    BoolProperty separationSurfaces_;
+    ImageOutport outport_;
+    FloatVec3Property position_;
 };
 
 }  // namespace inviwo
