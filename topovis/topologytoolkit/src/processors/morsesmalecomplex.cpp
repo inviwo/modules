@@ -64,7 +64,7 @@ void MorseSmaleComplex::process() {
     // Save input and properties needed to calculate ttk contour tree to local variables
     const auto inportData = inport_.getData();
 
-    // construction of ttk contour tree
+    // construction of ttk Morse-Smale Complex
     auto computeMsc = [this, inportData](const auto buffer) {
         using ValueType = util::PrecisionValueType<decltype(buffer)>;
         using PrimitiveType = typename DataFormat<ValueType>::primitive;
