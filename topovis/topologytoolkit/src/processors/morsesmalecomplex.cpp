@@ -53,115 +53,50 @@ const ProcessorInfo MorseSmaleComplex::processorInfo_{
 };
 const ProcessorInfo MorseSmaleComplex::getProcessorInfo() const { return processorInfo_; }
 
-MorseSmaleComplex::MorseSmaleComplex() : Processor(), separationSurfaces_{"separationSurfaces", "Separation Surfaces", true } {
+MorseSmaleComplex::MorseSmaleComplex()
+    : Processor() {
 
     addPort(inport_);
     addPort(outport_);
-    addProperty(separationSurfaces_);
 }
 
 void MorseSmaleComplex::process() {
+    // Save input and properties needed to calculate ttk contour tree to local variables
+    const auto inportData = inport_.getData();
 
     // construction of ttk contour tree
-    auto computeTree = [this, inportData, threadCount, treeType, segmentation,
-                        normalization](const auto buffer) {
+    auto computeMsc = [this, inportData](const auto buffer) {
         using ValueType = util::PrecisionValueType<decltype(buffer)>;
         using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
+        auto mscData = std::make_shared<topology::MorseSmaleComplexData>();
+        mscData->triangulation = inportData;
+
         std::vector<int> offsets(inportData->getOffsets());
 
-        auto tree = std::make_shared<topology::ContourTree>();
+        ttk::MorseSmaleComplex morseSmaleComplex;
+        morseSmaleComplex.setupTriangulation(
+            const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
+        // FIXME: ttk::MorseSmaleComplex has some issues with correct constness
+        morseSmaleComplex.setInputScalarField(const_cast<PrimitiveType *>(buffer->getDataContainer().data()));
+        morseSmaleComplex.setInputOffsets(offsets.data());
 
-        tree->setThreadNumber(threadCount);
-        tree->setupTriangulation(const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
-        // tree->setDebugLevel(0);
-        tree->setVertexScalars(buffer->getDataContainer().data());
-        tree->setVertexSoSoffsets(offsets.data());
-        tree->setTreeType(static_cast<int>(treeType));
-        tree->setSegmentation(segmentation);
-        tree->setNormalizeIds(normalization);
+        mscData->setMSCOutput(morseSmaleComplex,
+                              inportData->getTriangulation().getNumberOfVertices());
 
-        tree->build<PrimitiveType, int>();
-        return tree;
+        morseSmaleComplex.execute<PrimitiveType, int>();
+
+        return mscData;
     };
 
-    dispatchPool([this, inportData = inport_.getData(),
-                  computeTree]() {
-        auto treeData = std::make_shared<topology::ContourTreeData>();
-        treeData->type = treeType;
-        treeData->triangulation = inportData;
+    dispatchPool([this, inportData, computeMsc]() {
+        auto mscData = inportData->getScalarValues()
+                           ->getRepresentation<BufferRAM>()
+                           ->dispatch<std::shared_ptr<topology::MorseSmaleComplexData>,
+                                      dispatching::filter::Scalars>(computeMsc);
 
-        treeData->tree =
-            inportData->getScalarValues()
-                ->getRepresentation<BufferRAM>()
-                ->dispatch<std::shared_ptr<topology::ContourTree>, dispatching::filter::Scalars>(
-                    computeTree);
-
-        dispatchFront([this, treeData]() {
-            treeData_ = treeData;
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-
-        treeIsFinished_ = true;
+        dispatchFront([this, mscData]() { outport_.setData(mscData); });
     });
-    }
-
-    outport_.setData(treeData_);
-
-
-
-    ttk::MorseSmaleComplex morseSmaleComplex;
-    // critical points
-    int criticalPoints_numberOfPoints;
-    std::vector<float> criticalPoints_points;
-    std::vector<char> criticalPoints_points_cellDimensions;
-    std::vector<int> criticalPoints_points_cellIds;
-    std::vector<char> criticalPoints_points_isOnBoundary;
-    std::vector<float> criticalPoints_points_cellScalars;
-    std::vector<int> criticalPoints_points_PLVertexIdentifiers;
-    std::vector<int> criticalPoints_points_manifoldSize;
-    // 1-separatrices
-    int separatrices1_numberOfPoints;
-    std::vector<float> separatrices1_points;
-    std::vector<char> separatrices1_points_smoothingMask;
-    std::vector<char> separatrices1_points_cellDimensions;
-    std::vector<int> separatrices1_points_cellIds;
-    int separatrices1_numberOfCells{};
-    std::vector<int> separatrices1_cells;
-    std::vector<int> separatrices1_cells_sourceIds;
-    std::vector<int> separatrices1_cells_destinationIds;
-    std::vector<int> separatrices1_cells_separatrixIds;
-    std::vector<char> separatrices1_cells_separatrixTypes;
-    std::vector<char> separatrices1_cells_isOnBoundary;
-    std::vector<float> separatrices1_cells_separatrixFunctionMaxima;
-    std::vector<float> separatrices1_cells_separatrixFunctionMinima;
-    std::vector<float> separatrices1_cells_separatrixFunctionDiffs;
-    // segmentation
-    std::vector<int> ascendingSegmentation(ttkData.getTriangulation().getNumberOfVertices(), -1),
-        descendingSegmentation(ttkData.getTriangulation().getNumberOfVertices(), -1),
-        mscSegmentation(ttkData.getTriangulation().getNumberOfVertices(), -1);
-    morseSmaleComplex.setupTriangulation(&ttkData.getTriangulation());
-    morseSmaleComplex.setInputScalarField(simplifiedHeight.data());
-    morseSmaleComplex.setInputOffsets(simplifiedOffsets.data());
-    morseSmaleComplex.setOutputMorseComplexes(
-        ascendingSegmentation.data(), descendingSegmentation.data(), mscSegmentation.data());
-    morseSmaleComplex.setOutputCriticalPoints(
-        &criticalPoints_numberOfPoints, &criticalPoints_points,
-        &criticalPoints_points_cellDimensions, &criticalPoints_points_cellIds,
-        &criticalPoints_points_cellScalars, &criticalPoints_points_isOnBoundary,
-        &criticalPoints_points_PLVertexIdentifiers, &criticalPoints_points_manifoldSize);
-    morseSmaleComplex.setOutputSeparatrices1(
-        &separatrices1_numberOfPoints, &separatrices1_points, &separatrices1_points_smoothingMask,
-        &separatrices1_points_cellDimensions, &separatrices1_points_cellIds,
-        &separatrices1_numberOfCells, &separatrices1_cells, &separatrices1_cells_sourceIds,
-        &separatrices1_cells_destinationIds, &separatrices1_cells_separatrixIds,
-        &separatrices1_cells_separatrixTypes, &separatrices1_cells_separatrixFunctionMaxima,
-        &separatrices1_cells_separatrixFunctionMinima, &separatrices1_cells_separatrixFunctionDiffs,
-        &separatrices1_cells_isOnBoundary);
-
-    morseSmaleComplex.execute<float, int>();
-
-
 }
 
 }  // namespace inviwo

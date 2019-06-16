@@ -32,8 +32,6 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
 
 #include <inviwo/topologytoolkit/ports/triangulationdataport.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
@@ -42,20 +40,19 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
  * ![](org.inviwo.MorseSmaleComplex.png?classIdentifier=org.inviwo.MorseSmaleComplex)
- * Explanation of how to use the processor.
+ * Computes the Morse-Smale complex for a given TTK triangulation.
  *
  * ### Inports
  *   * __triangulation__   input triangulation
  *
  * ### Outports
- *   * __outport__     Mesh with critical points, separation lines, and separation surfaces
+ *   * __outport__     Morse-Smale complex
  *
  * ### Properties
  */
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ * \brief compute the Morse-Smale complex for a given TTK triangulation
  */
 class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor {
 public:
@@ -70,8 +67,6 @@ public:
 private:
     topology::TriangulationInport inport_{"triangulation"};
     topology::MorseSmaleComplexOutport outport_{"outport"};
-
-    BoolProperty separationSurfaces_;
 };
 
 }  // namespace inviwo
