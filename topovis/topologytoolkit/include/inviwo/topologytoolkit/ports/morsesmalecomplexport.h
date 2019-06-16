@@ -66,7 +66,7 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
         std::vector<char> points_smoothingMask;
         std::vector<char> points_cellDimensions;
         std::vector<ttk::SimplexId> points_cellIds;
-        int numberOfCells{};
+        ttk::SimplexId numberOfCells;
         std::vector<ttk::SimplexId> cells;
         std::vector<ttk::SimplexId> cells_sourceIds;
         std::vector<ttk::SimplexId> cells_destinationIds;
