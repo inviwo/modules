@@ -27,51 +27,28 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-
-#include <inviwo/topologytoolkit/ports/triangulationdataport.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
- * ![](org.inviwo.MorseSmaleComplex.png?classIdentifier=org.inviwo.MorseSmaleComplex)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __triangulation__   input triangulation
- *
- * ### Outports
- *   * __outport__     Mesh with critical points, separation lines, and separation surfaces
- *
- * ### Properties
- */
+namespace topology {
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor {
-public:
-    MorseSmaleComplex();
-    virtual ~MorseSmaleComplex() = default;
+void MorseSmaleComplexData::setMSCOutput(ttk::MorseSmaleComplex &msc) {
+    msc.setOutputCriticalPoints(
+        &criticalPoints.numberOfPoints, &criticalPoints.points,
+        &criticalPoints.points_cellDimensions, &criticalPoints.points_cellIds,
+        &criticalPoints.points_cellScalars, &criticalPoints.points_isOnBoundary,
+        &criticalPoints.points_PLVertexIdentifiers, &criticalPoints.points_manifoldSize);
+    msc.setOutputSeparatrices1(
+        &separatrices.numberOfPoints, &separatrices.points, &separatrices.points_smoothingMask,
+        &separatrices.points_cellDimensions, &separatrices.points_cellIds,
+        &separatrices.numberOfCells, &separatrices.cells, &separatrices.cells_sourceIds,
+        &separatrices.cells_destinationIds, &separatrices.cells_separatrixIds,
+        &separatrices.cells_separatrixTypes, &separatrices.cells_separatrixFunctionMaxima,
+        &separatrices.cells_separatrixFunctionMinima, &separatrices.cells_separatrixFunctionDiffs,
+        &separatrices.cells_isOnBoundary);
+}
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    topology::TriangulationInport inport_{"triangulation"};
-    topology::MorseSmaleComplexOutport outport_{"outport"};
-
-    BoolProperty separationSurfaces_;
-};
+}  // namespace topology
 
 }  // namespace inviwo

@@ -37,84 +37,80 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <ttk/core/base/ftmTree/FTMTree.h>
-#include <ttk/core/base/ftmTree/FTMTree_MT.h>
+#include <ttk/core/base/morseSmaleComplex/MorseSmaleComplex.h>
 #include <warn/pop>
 
-#include <ostream>
+#include <vector>
 
 namespace inviwo {
 
 namespace topology {
 
-enum class TreeType { Join = 0, Split = 1, Contour = 2, JoinAndSplit = 3 };
+struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
+        
+    // critical points
+    struct CriticalPoints {
+        int numberOfPoints;
+        std::vector<float> points;
+        std::vector<char> points_cellDimensions;
+        std::vector<int> points_cellIds;
+        std::vector<char> points_isOnBoundary;
+        std::vector<float> points_cellScalars;
+        std::vector<int> points_PLVertexIdentifiers;
+        std::vector<int> points_manifoldSize;
+    };
+    // 1-separatrices
+    struct Separatrices {
+        int numberOfPoints;
+        std::vector<float> points;
+        std::vector<char> points_smoothingMask;
+        std::vector<char> points_cellDimensions;
+        std::vector<int> points_cellIds;
+        int numberOfCells{};
+        std::vector<int> cells;
+        std::vector<int> cells_sourceIds;
+        std::vector<int> cells_destinationIds;
+        std::vector<int> cells_separatrixIds;
+        std::vector<char> cells_separatrixTypes;
+        std::vector<char> cells_isOnBoundary;
+        std::vector<float> cells_separatrixFunctionMaxima;
+        std::vector<float> cells_separatrixFunctionMinima;
+        std::vector<float> cells_separatrixFunctionDiffs;
+    };
 
-using ContourTree = ttk::ftm::FTMTree;
+    void setMSCOutput(ttk::MorseSmaleComplex &msc);
 
-struct IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeData {
-    // FIXME: Storing the tree type explicitly is necessary due to a TTK bug!
-    //
-    // FTMTree stores the type only as parameter which renders FTMTree::isJT() and FTMTree::isST()
-    // useless (the tree object is always a 'Contour tree'). Trying to call
-    // tree->getNumberOfSuperArcs() of a join tree will result in a nullptr exception as it will
-    // access the data arrays of the contour tree and not the join tree.
-    // There is also no way to access the parameters of the FTMTree.
-    TreeType type;
-    ttk::ftm::FTMTree_MT* getTree() const;
+    CriticalPoints criticalPoints;
+        Separatrices separatrices;
 
-    std::shared_ptr<ttk::ftm::FTMTree> tree;
     std::shared_ptr<const TriangulationData> triangulation;
 };
 
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, TreeType type) {
-    switch (type) {
-        case TreeType::Join:
-            ss << "Join Tree";
-            break;
-        case TreeType::Split:
-            ss << "Split Tree";
-            break;
-        case TreeType::Contour:
-            ss << "Contour Tree";
-            break;
-        case TreeType::JoinAndSplit:
-            ss << "Join and Split Tree";
-            break;
-        default:
-            ss << "Invalid";
-    }
-    return ss;
-}
-
 /**
  * \ingroup ports
  */
-using ContourTreeInport = DataInport<ContourTreeData>;
+using MorseSmaleComplexInport = DataInport<MorseSmaleComplexData>;
 /**
  * \ingroup ports
  */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
+using MorseSmaleComplexOutport = DataOutport<MorseSmaleComplexData>;
 
 }  // namespace topology
 
 template <>
-struct DataTraits<topology::ContourTreeData> {
-    static std::string classIdentifier() { return "org.inviwo.topology.contourtreedata"; }
-    static std::string dataName() { return "TTK Contour Tree"; }
+struct DataTraits<topology::MorseSmaleComplexData> {
+    static std::string classIdentifier() { return "org.inviwo.topology.morsesmalecomplexdata"; }
+    static std::string dataName() { return "TTK Morse-Smale Complex"; }
     static uvec3 colorCode() { return uvec3(94, 152, 224); }
-    static Document info(const topology::ContourTreeData& data) {
+    static Document info(const topology::MorseSmaleComplexData& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;
         Document doc;
         doc.append("b", dataName(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        if (auto tree = data.getTree()) {
-            tb(H("Arcs"), tree->getNumberOfSuperArcs());
-            tb(H("Nodes"), tree->getNumberOfNodes());
-            tb(H("Leaves"), tree->getNumberOfLeaves());
-            tb(H("Vertices"), tree->getNumberOfVertices());
-        }
+        tb(H("Critical Points"), data.criticalPoints.numberOfPoints);
+        tb(H("Separatrices No. Points"), data.separatrices.numberOfPoints);
+        tb(H("Separatrices No. Cells"), data.separatrices.numberOfCells);
         return doc;
     }
 };
