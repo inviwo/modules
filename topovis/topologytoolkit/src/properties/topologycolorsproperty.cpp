@@ -38,11 +38,11 @@ std::string TopologyColorsProperty::getClassIdentifier() const { return classIde
 
 TopologyColorsProperty::TopologyColorsProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
-    , localMaxima_("localMaximaColor", "Local Maxima", vec4(1.0f, 0.2f, 0.15f, 1.0f), vec4(0.0f),
+    , localMaxima_("localMaximaColor", "Local Maxima", vec4(0.9f, 0.5f, 0.5f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
-    , localMinima_("localMinimaColor", "Local Minima", vec4(0.3f, 1.0f, 0.0f, 1.0f), vec4(0.0f),
+    , localMinima_("localMinimaColor", "Local Minima", vec4(0.5f, 0.5f, 0.9f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
-    , saddle_("saddleColor", "Saddle Point", vec4(1.0f, 1.0f, 0.5f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , saddle_("saddleColor", "Saddle Point", vec4(1.0f, 0.95f, 0.5f, 1.0f), vec4(0.0f), vec4(1.0f))
     , arc_("arcColor", "Arc", vec4(0.2f, 0.2f, 0.2f, 1.0f), vec4(0.0f), vec4(1.0f)) {
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
