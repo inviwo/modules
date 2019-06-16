@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,31 @@
  *
  *********************************************************************************/
 
-#include <inviwo/topologytoolkit/processors/contourtreetodataframe.h>
-#include <inviwo/topologytoolkit/processors/contourtreetomesh.h>
-#include <inviwo/topologytoolkit/processors/morsesmalecomplex.h>
 #include <inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h>
-#include <inviwo/topologytoolkit/topologytoolkitmodule.h>
-#include <inviwo/topologytoolkit/processors/ttktestprocessor.h>
-#include <inviwo/topologytoolkit/processors/meshtotriangulation.h>
-#include <inviwo/topologytoolkit/processors/volumetotriangulation.h>
-#include <inviwo/topologytoolkit/processors/triangulationtomesh.h>
-#include <inviwo/topologytoolkit/processors/persistencecurve.h>
-#include <inviwo/topologytoolkit/processors/topologicalsimplification.h>
-#include <inviwo/topologytoolkit/processors/persistencediagram.h>
-#include <inviwo/topologytoolkit/processors/triangulationtovolume.h>
-#include <inviwo/topologytoolkit/processors/contourtree.h>
 
 namespace inviwo {
 
-TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
-    : InviwoModule(app, "TopologyToolKit") {
-    registerProcessor<ContourTreeToDataFrame>();
-    registerProcessor<ContourTreeToMesh>();
-    registerProcessor<MorseSmaleComplex>();
-    registerProcessor<MorseSmaleComplexToMesh>();
-    registerProcessor<TTKTestProcessor>();
-    registerProcessor<MeshToTriangulation>();
-    registerProcessor<VolumeToTriangulation>();
-    registerProcessor<TriangulationToMesh>();
-    registerProcessor<PersistenceCurve>();
-    registerProcessor<TopologicalSimplification>();
-    registerProcessor<PersistenceDiagram>();
-    registerProcessor<TriangulationToVolume>();
-    registerProcessor<ContourTree>();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MorseSmaleComplexToMesh::processorInfo_{
+    "org.inviwo.MorseSmaleComplexToMesh",      // Class identifier
+    "Morse Smale Complex To Mesh",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
+};
+const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return processorInfo_; }
+
+MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
+    : Processor()
+    , outport_("outport")
+    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+
+    addPort(outport_);
+    addProperty(position_);
+}
+
+void MorseSmaleComplexToMesh::process() {
+    // outport_.setData(myImage);
 }
 
 }  // namespace inviwo
