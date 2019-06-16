@@ -114,7 +114,7 @@ template <>
 struct DataTraits<topology::MorseSmaleComplexData> {
     static std::string classIdentifier() { return "org.inviwo.topology.morsesmalecomplexdata"; }
     static std::string dataName() { return "TTK Morse-Smale Complex"; }
-    static uvec3 colorCode() { return uvec3(94, 152, 224); }
+    static uvec3 colorCode() { return uvec3(105, 152, 188); }
     static Document info(const topology::MorseSmaleComplexData& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

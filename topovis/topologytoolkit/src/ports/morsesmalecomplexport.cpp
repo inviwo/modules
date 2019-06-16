@@ -47,13 +47,13 @@ void MorseSmaleComplexData::setMSCOutput(ttk::MorseSmaleComplex &msc, size_t num
         &separatrices.cells_separatrixTypes, &separatrices.cells_separatrixFunctionMaxima,
         &separatrices.cells_separatrixFunctionMinima, &separatrices.cells_separatrixFunctionDiffs,
         &separatrices.cells_isOnBoundary);
-    
-    segmentation.ascending = std::vector{numberOfVertices, -1};
-     segmentation.descending = std::vector{numberOfVertices, -1};
-     segmentation.msc = std::vector{numberOfVertices, -1};
+
+    segmentation.ascending = std::vector(numberOfVertices, -1);
+    segmentation.descending = std::vector(numberOfVertices, -1);
+    segmentation.msc = std::vector(numberOfVertices, -1);
 
     msc.setOutputMorseComplexes(segmentation.ascending.data(), segmentation.descending.data(),
-                                 segmentation.msc.data());
+                                segmentation.msc.data());
 }
 
 }  // namespace topology
