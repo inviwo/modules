@@ -28,11 +28,44 @@
  *********************************************************************************/
 
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/core/util/foreacharg.h>
 
 namespace inviwo {
 
-TopologyColorsProperty::TopologyColorsProperty() {
+const std::string TopologyColorsProperty::classIdentifier =
+    "org.inviwo.topology.TopologyColorsProperty";
+std::string TopologyColorsProperty::getClassIdentifier() const { return classIdentifier; }
 
+TopologyColorsProperty::TopologyColorsProperty(std::string identifier, std::string displayName)
+    : CompositeProperty(identifier, displayName)
+    , localMaxima_("localMaximaColor", "Local Maxima", vec4(1.0f, 0.2f, 0.15f, 1.0f), vec4(0.0f),
+                   vec4(1.0f))
+    , localMinima_("localMinimaColor", "Local Minima", vec4(0.3f, 1.0f, 0.0f, 1.0f), vec4(0.0f),
+                   vec4(1.0f))
+    , saddle_("saddleColor", "Saddle Point", vec4(1.0f, 1.0f, 0.5f, 1.0f), vec4(0.0f), vec4(1.0f))
+    , arc_("arcColor", "Arc", vec4(0.2f, 0.2f, 0.2f, 1.0f), vec4(0.0f), vec4(1.0f)) {
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+}
+
+TopologyColorsProperty::TopologyColorsProperty(const TopologyColorsProperty& rhs)
+    : CompositeProperty(rhs)
+    , localMaxima_(rhs.localMaxima_)
+    , localMinima_(rhs.localMinima_)
+    , saddle_(rhs.saddle_)
+    , arc_(rhs.arc_) {
+    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+}
+
+TopologyColorsProperty& TopologyColorsProperty::operator=(const TopologyColorsProperty& that) {
+    if (this != &that) {
+        CompositeProperty::operator=(that);
+        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
+    }
+    return *this;
+}
+
+TopologyColorsProperty* TopologyColorsProperty::clone() const {
+    return new TopologyColorsProperty(*this);
 }
 
 }  // namespace inviwo
