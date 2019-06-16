@@ -30,17 +30,39 @@
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
 /**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \ingroup properties
+ *  A property providing comonly used colors in topology visualization.
+ *
+ * @see CompositeProperty
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty : public CompositeProperty {
 public:
-    TopologyColorsProperty();
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+     
+    TopologyColorsProperty(std::string identifier, std::string displayName);
+
+    TopologyColorsProperty(const TopologyColorsProperty& rhs) = default;
+    TopologyColorsProperty& operator=(const TopologyColorsProperty& that) = default;
+    TopologyColorsProperty& operator=(const std::string& value);
+    virtual TopologyColorsProperty* clone() const override;
     virtual ~TopologyColorsProperty() = default;
+
+    FloatVec4Property localMaxima_;
+    FloatVec4Property localMinima_;
+    FloatVec4Property saddle_;
+    FloatVec4Property arc_;
+
+private:
+    auto props() { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
+    auto props() const { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
+
 };
 
 }  // namespace inviwo

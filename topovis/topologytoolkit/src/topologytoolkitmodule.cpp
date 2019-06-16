@@ -41,6 +41,7 @@
 #include <inviwo/topologytoolkit/processors/persistencediagram.h>
 #include <inviwo/topologytoolkit/processors/triangulationtovolume.h>
 #include <inviwo/topologytoolkit/processors/contourtree.h>
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 
 namespace inviwo {
 
@@ -59,6 +60,8 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<PersistenceDiagram>();
     registerProcessor<TriangulationToVolume>();
     registerProcessor<ContourTree>();
+
+    registerProperty<TopologyColorsProperty>();
 }
 
 }  // namespace inviwo
