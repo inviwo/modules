@@ -34,24 +34,51 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MorseSmaleComplexToMesh::processorInfo_{
     "org.inviwo.MorseSmaleComplexToMesh",      // Class identifier
-    "Morse Smale Complex To Mesh",                // Display name
-    "Undefined",              // Category
+    "Morse-Smale Complex To Mesh",                // Display name
+    "Topology",              // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "CPU, Topology, TTK, Contour Tree",               // Tags
 };
 const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return processorInfo_; }
 
 MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
-    : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
-
-    addPort(outport_);
-    addProperty(position_);
+    :Processor()
+    ,portInMSComplex("InMSComplex")
+    ,portOutMesh("OutMesh")
+{
+    addPort(portInMSComplex);
+    addPort(portOutMesh);
 }
 
-void MorseSmaleComplexToMesh::process() {
-    // outport_.setData(myImage);
+void MorseSmaleComplexToMesh::process()
+{
+    //Get Input
+    auto pMSCData = portInMSComplex.getData();
+    if (!pMSCData) return;
+    auto InTriangulation = pMSCData->triangulation;
+
+    //Prepare Memory
+    const size_t NumCP = pMSCData->criticalPoints.numberOfPoints;
+    std::vector<vec3> positions(NumCP);
+    std::vector<vec4> colors(NumCP, {1.0f, 1.0f, 1.0f, 1.0f});
+    std::vector<float> radius(NumCP, 1.0f);
+    //std::fill(radius.begin(), radius.begin() + tree->getNumberOfNodes(), sphereRadius_.get());
+
+    //Add critical points
+    for (ttk::ftm::idNode i = 0; i < NumCP; i++)
+    {
+        positions[i].x = pMSCData->criticalPoints.points[3*i];
+        positions[i].y = pMSCData->criticalPoints.points[3*i + 1];
+        positions[i].z = pMSCData->criticalPoints.points[3*i + 2];
+        //colors.push_back(up && down ? saddleColor_ : (up ? localMaximaColor_ : localMinimaColor_));
+    }
+
+    auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+    mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
+    mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
+
+    portOutMesh.setData(mesh);
 }
 
 }  // namespace inviwo
