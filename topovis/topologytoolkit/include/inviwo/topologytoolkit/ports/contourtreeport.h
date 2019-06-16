@@ -109,6 +109,9 @@ struct DataTraits<topology::ContourTreeData> {
         Document doc;
         doc.append("b", dataName(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
+        if (data.triangulation) {
+            tb(H("Dimensionality"), data.triangulation->getTriangulation().getDimensionality());
+        }
         if (auto tree = data.getTree()) {
             tb(H("Arcs"), tree->getNumberOfSuperArcs());
             tb(H("Nodes"), tree->getNumberOfNodes());

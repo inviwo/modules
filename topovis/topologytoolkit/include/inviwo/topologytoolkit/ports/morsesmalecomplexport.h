@@ -121,6 +121,9 @@ struct DataTraits<topology::MorseSmaleComplexData> {
         Document doc;
         doc.append("b", dataName(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
+        if (data.triangulation) {
+            tb(H("Dimensionality"), data.triangulation->getTriangulation().getDimensionality());
+        }
         tb(H("Critical Points"), data.criticalPoints.numberOfPoints);
         tb(H("Separatrices No. Points"), data.separatrices.numberOfPoints);
         tb(H("Separatrices No. Cells"), data.separatrices.numberOfCells);
