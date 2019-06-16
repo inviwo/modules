@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,48 @@
  *
  *********************************************************************************/
 
-#include <inviwo/topologytoolkit/processors/contourtreetodataframe.h>
-#include <inviwo/topologytoolkit/processors/contourtreetomesh.h>
-#include <inviwo/topologytoolkit/processors/morsesmalecomplex.h>
-#include <inviwo/topologytoolkit/topologytoolkitmodule.h>
-#include <inviwo/topologytoolkit/processors/ttktestprocessor.h>
-#include <inviwo/topologytoolkit/processors/meshtotriangulation.h>
-#include <inviwo/topologytoolkit/processors/volumetotriangulation.h>
-#include <inviwo/topologytoolkit/processors/triangulationtomesh.h>
-#include <inviwo/topologytoolkit/processors/persistencecurve.h>
-#include <inviwo/topologytoolkit/processors/topologicalsimplification.h>
-#include <inviwo/topologytoolkit/processors/persistencediagram.h>
-#include <inviwo/topologytoolkit/processors/triangulationtovolume.h>
-#include <inviwo/topologytoolkit/processors/contourtree.h>
+#pragma once
+
+#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
-    : InviwoModule(app, "TopologyToolKit") {
-    registerProcessor<ContourTreeToDataFrame>();
-    registerProcessor<ContourTreeToMesh>();
-    registerProcessor<MorseSmaleComplex>();
-    registerProcessor<TTKTestProcessor>();
-    registerProcessor<MeshToTriangulation>();
-    registerProcessor<VolumeToTriangulation>();
-    registerProcessor<TriangulationToMesh>();
-    registerProcessor<PersistenceCurve>();
-    registerProcessor<TopologicalSimplification>();
-    registerProcessor<PersistenceDiagram>();
-    registerProcessor<TriangulationToVolume>();
-    registerProcessor<ContourTree>();
-}
+/** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
+ * ![](org.inviwo.MorseSmaleComplex.png?classIdentifier=org.inviwo.MorseSmaleComplex)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor {
+public:
+    MorseSmaleComplex();
+    virtual ~MorseSmaleComplex() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageOutport outport_;
+    FloatVec3Property position_;
+};
 
 }  // namespace inviwo
