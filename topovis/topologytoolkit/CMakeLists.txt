@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/processors/contourtreetodataframe.h
     include/inviwo/topologytoolkit/processors/contourtreetomesh.h
     include/inviwo/topologytoolkit/processors/meshtotriangulation.h
+    include/inviwo/topologytoolkit/processors/morsesmalecomplex.h
     include/inviwo/topologytoolkit/processors/persistencecurve.h
     include/inviwo/topologytoolkit/processors/persistencediagram.h
     include/inviwo/topologytoolkit/processors/topologicalsimplification.h
@@ -45,6 +46,7 @@ set(SOURCE_FILES
     src/processors/contourtreetodataframe.cpp
     src/processors/contourtreetomesh.cpp
     src/processors/meshtotriangulation.cpp
+    src/processors/morsesmalecomplex.cpp
     src/processors/persistencecurve.cpp
     src/processors/persistencediagram.cpp
     src/processors/topologicalsimplification.cpp
