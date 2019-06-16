@@ -109,11 +109,11 @@ struct DataTraits<topology::ContourTreeData> {
         Document doc;
         doc.append("b", dataName(), {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        if (data.tree) {
-            tb(H("Arcs"), data.tree->getNumberOfSuperArcs());
-            tb(H("Nodes"), data.tree->getNumberOfNodes());
-            tb(H("Leaves"), data.tree->getNumberOfLeaves());
-            tb(H("Vertices"), data.tree->getNumberOfVertices());
+        if (auto tree = data.getTree()) {
+            tb(H("Arcs"), tree->getNumberOfSuperArcs());
+            tb(H("Nodes"), tree->getNumberOfNodes());
+            tb(H("Leaves"), tree->getNumberOfLeaves());
+            tb(H("Vertices"), tree->getNumberOfVertices());
         }
         return doc;
     }
