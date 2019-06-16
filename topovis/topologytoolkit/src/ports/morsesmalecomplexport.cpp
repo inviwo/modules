@@ -33,7 +33,7 @@ namespace inviwo {
 
 namespace topology {
 
-void MorseSmaleComplexData::setMSCOutput(ttk::MorseSmaleComplex &msc) {
+void MorseSmaleComplexData::setMSCOutput(ttk::MorseSmaleComplex &msc, size_t numberOfVertices) {
     msc.setOutputCriticalPoints(
         &criticalPoints.numberOfPoints, &criticalPoints.points,
         &criticalPoints.points_cellDimensions, &criticalPoints.points_cellIds,
@@ -47,6 +47,13 @@ void MorseSmaleComplexData::setMSCOutput(ttk::MorseSmaleComplex &msc) {
         &separatrices.cells_separatrixTypes, &separatrices.cells_separatrixFunctionMaxima,
         &separatrices.cells_separatrixFunctionMinima, &separatrices.cells_separatrixFunctionDiffs,
         &separatrices.cells_isOnBoundary);
+    
+    segmentation.ascending = std::vector{numberOfVertices, -1};
+     segmentation.descending = std::vector{numberOfVertices, -1};
+     segmentation.msc = std::vector{numberOfVertices, -1};
+
+    msc.setOutputMorseComplexes(segmentation.ascending.data(), segmentation.descending.data(),
+                                 segmentation.msc.data());
 }
 
 }  // namespace topology

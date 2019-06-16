@@ -47,17 +47,17 @@ namespace inviwo {
 namespace topology {
 
 struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
-        
+
     // critical points
     struct CriticalPoints {
         int numberOfPoints;
         std::vector<float> points;
         std::vector<char> points_cellDimensions;
-        std::vector<int> points_cellIds;
+        std::vector<ttk::SimplexId> points_cellIds;
         std::vector<char> points_isOnBoundary;
         std::vector<float> points_cellScalars;
-        std::vector<int> points_PLVertexIdentifiers;
-        std::vector<int> points_manifoldSize;
+        std::vector<ttk::SimplexId> points_PLVertexIdentifiers;
+        std::vector<ttk::SimplexId> points_manifoldSize;
     };
     // 1-separatrices
     struct Separatrices {
@@ -65,23 +65,36 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
         std::vector<float> points;
         std::vector<char> points_smoothingMask;
         std::vector<char> points_cellDimensions;
-        std::vector<int> points_cellIds;
+        std::vector<ttk::SimplexId> points_cellIds;
         int numberOfCells{};
-        std::vector<int> cells;
-        std::vector<int> cells_sourceIds;
-        std::vector<int> cells_destinationIds;
-        std::vector<int> cells_separatrixIds;
+        std::vector<ttk::SimplexId> cells;
+        std::vector<ttk::SimplexId> cells_sourceIds;
+        std::vector<ttk::SimplexId> cells_destinationIds;
+        std::vector<ttk::SimplexId> cells_separatrixIds;
         std::vector<char> cells_separatrixTypes;
         std::vector<char> cells_isOnBoundary;
         std::vector<float> cells_separatrixFunctionMaxima;
         std::vector<float> cells_separatrixFunctionMinima;
         std::vector<float> cells_separatrixFunctionDiffs;
     };
+    // segmentation
+    struct Segmentation {
+        std::vector<ttk::SimplexId> ascending;
+        std::vector<ttk::SimplexId> descending;
+        std::vector<ttk::SimplexId> msc;
+    };
 
-    void setMSCOutput(ttk::MorseSmaleComplex &msc);
+    /**
+     * set the various outputs of the ttk Morse-Smale complex \p msc to the arrays in this struct.
+     *
+     * @param msc   the ttk Morse-Smale complex object whose output is set up
+     * @param numberOfVertices     number of vertices in the triangulation
+     */
+    void setMSCOutput(ttk::MorseSmaleComplex& msc, size_t numberOfVertices);
 
     CriticalPoints criticalPoints;
-        Separatrices separatrices;
+    Separatrices separatrices;
+    Segmentation segmentation;
 
     std::shared_ptr<const TriangulationData> triangulation;
 };
