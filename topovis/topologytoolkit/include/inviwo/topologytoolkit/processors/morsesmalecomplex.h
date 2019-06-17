@@ -61,12 +61,23 @@ public:
 
     virtual void process() override;
 
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* source = nullptr) override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+
 private:
+    void updateOutport();
+
     topology::TriangulationInport inport_{"triangulation"};
     topology::MorseSmaleComplexOutport outport_{"outport"};
+
+    std::future<std::shared_ptr<const topology::MorseSmaleComplexData>> newMsc_;
+
+    bool mscDirty_ = true;
+    bool hasNewData_ = false;
 };
 
 }  // namespace inviwo

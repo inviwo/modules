@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,50 +54,90 @@ const ProcessorInfo MorseSmaleComplex::processorInfo_{
 };
 const ProcessorInfo MorseSmaleComplex::getProcessorInfo() const { return processorInfo_; }
 
-MorseSmaleComplex::MorseSmaleComplex()
-    : Processor() {
-
+MorseSmaleComplex::MorseSmaleComplex() : Processor() {
     addPort(inport_);
     addPort(outport_);
 }
 
 void MorseSmaleComplex::process() {
+    if (util::is_future_ready(newMsc_)) {
+        try {
+            auto vol = newMsc_.get();
+            outport_.setData(vol);
+            hasNewData_ = false;
+        } catch (Exception&) {
+            // Need to reset the future, VS bug:
+            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
+            newMsc_ = {};
+            outport_.setData(nullptr);
+            hasNewData_ = false;
+            throw;
+        }
+    } else if (!newMsc_.valid()) {  // We are not waiting for a calculation
+        if (inport_.isChanged() || mscDirty_) {
+            updateOutport();
+        }
+    }
+}
+
+void MorseSmaleComplex::updateOutport() {
+    auto done = [this]() {
+        dispatchFront([this]() {
+            mscDirty_ = false;
+            hasNewData_ = true;
+            invalidate(InvalidationLevel::InvalidOutput);
+        });
+    };
+
     // Save input and properties needed to calculate ttk contour tree to local variables
     const auto inportData = inport_.getData();
 
-    // construction of ttk Morse-Smale Complex
-    auto computeMsc = [this, inportData](const auto buffer) {
-        using ValueType = util::PrecisionValueType<decltype(buffer)>;
-        using PrimitiveType = typename DataFormat<ValueType>::primitive;
+    // construction of ttk contour tree
+    auto compute = [this, inportData,
+                    done]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
+        auto mscData =
+            inportData->getScalarValues()
+                ->getRepresentation<BufferRAM>()
+                ->dispatch<std::shared_ptr<topology::MorseSmaleComplexData>,
+                           dispatching::filter::Scalars>([this, inportData](const auto buffer) {
+                    using ValueType = util::PrecisionValueType<decltype(buffer)>;
+                    using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-        auto mscData = std::make_shared<topology::MorseSmaleComplexData>();
-        mscData->triangulation = inportData;
+                    auto mscData = std::make_shared<topology::MorseSmaleComplexData>();
+                    mscData->triangulation = inportData;
 
-        std::vector<int> offsets(inportData->getOffsets());
+                    std::vector<int> offsets(inportData->getOffsets());
 
-        ttk::MorseSmaleComplex morseSmaleComplex;
-        morseSmaleComplex.setupTriangulation(
-            const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
-        // FIXME: ttk::MorseSmaleComplex has some issues with correct constness
-        morseSmaleComplex.setInputScalarField(const_cast<PrimitiveType *>(buffer->getDataContainer().data()));
-        morseSmaleComplex.setInputOffsets(offsets.data());
+                    ttk::MorseSmaleComplex morseSmaleComplex;
+                    morseSmaleComplex.setupTriangulation(
+                        const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
+                    // FIXME: ttk::MorseSmaleComplex has some issues with correct constness
+                    morseSmaleComplex.setInputScalarField(
+                        const_cast<PrimitiveType*>(buffer->getDataContainer().data()));
+                    morseSmaleComplex.setInputOffsets(offsets.data());
 
-        mscData->setMSCOutput(morseSmaleComplex,
-                              inportData->getTriangulation().getNumberOfVertices());
+                    mscData->setMSCOutput(morseSmaleComplex,
+                                          inportData->getTriangulation().getNumberOfVertices());
 
-        morseSmaleComplex.execute<PrimitiveType, int>();
+                    morseSmaleComplex.execute<PrimitiveType, int>();
 
+                    return mscData;
+                });
+
+        done();
         return mscData;
     };
 
-    dispatchPool([this, inportData, computeMsc]() {
-        auto mscData = inportData->getScalarValues()
-                           ->getRepresentation<BufferRAM>()
-                           ->dispatch<std::shared_ptr<topology::MorseSmaleComplexData>,
-                                      dispatching::filter::Scalars>(computeMsc);
+    newMsc_ = dispatchPool(compute);
+}
 
-        dispatchFront([this, mscData]() { outport_.setData(mscData); });
-    });
+void MorseSmaleComplex::invalidate(InvalidationLevel invalidationLevel, Property* source) {
+    notifyObserversInvalidationBegin(this);
+    PropertyOwner::invalidate(invalidationLevel, source);
+    if (!isValid() && hasNewData_) {
+        for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
+    }
+    notifyObserversInvalidationEnd(this);
 }
 
 }  // namespace inviwo
