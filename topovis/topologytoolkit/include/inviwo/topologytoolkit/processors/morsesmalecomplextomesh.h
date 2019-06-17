@@ -32,6 +32,7 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
@@ -67,16 +68,16 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-public:
+protected:
     ///Input Morse-Smale Complex from TTK
     topology::MorseSmaleComplexInport portInMSComplex;
-
     ///Output Mesh representing critical points and separatrices of the MS Complex
     MeshOutport portOutMesh;
 
-public:
     ///Colors for the critical points and other topological elements
-    TopologyColorsProperty propColors;
+    TopologyColorsProperty propColors_;
+
+    FloatProperty sphereRadius_;
 };
 
 }  // namespace inviwo
