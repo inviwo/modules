@@ -44,7 +44,12 @@ TopologyColorsProperty::TopologyColorsProperty(std::string identifier, std::stri
                    vec4(1.0f))
     , saddle_("saddleColor", "Saddle Point", vec4(1.0f, 0.95f, 0.5f, 1.0f), vec4(0.0f), vec4(1.0f))
     , arc_("arcColor", "Arc", vec4(0.2f, 0.2f, 0.2f, 1.0f), vec4(0.0f), vec4(1.0f)) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple(
+        [&](auto& e) {
+            addProperty(e);
+            e.setSemantics(PropertySemantics::Color);
+        },
+        props());
 }
 
 TopologyColorsProperty::TopologyColorsProperty(const TopologyColorsProperty& rhs)
@@ -53,7 +58,12 @@ TopologyColorsProperty::TopologyColorsProperty(const TopologyColorsProperty& rhs
     , localMinima_(rhs.localMinima_)
     , saddle_(rhs.saddle_)
     , arc_(rhs.arc_) {
-    util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
+    util::for_each_in_tuple(
+        [&](auto& e) {
+            addProperty(e);
+            e.setSemantics(PropertySemantics::Color);
+        },
+        props());
 }
 
 TopologyColorsProperty& TopologyColorsProperty::operator=(const TopologyColorsProperty& that) {
