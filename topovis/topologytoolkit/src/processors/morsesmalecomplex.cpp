@@ -103,9 +103,6 @@ void MorseSmaleComplex::updateOutport() {
                     using ValueType = util::PrecisionValueType<decltype(buffer)>;
                     using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-                    auto mscData = std::make_shared<topology::MorseSmaleComplexData>();
-                    mscData->triangulation = inportData;
-
                     std::vector<int> offsets(inportData->getOffsets());
 
                     ttk::MorseSmaleComplex morseSmaleComplex;
@@ -116,9 +113,8 @@ void MorseSmaleComplex::updateOutport() {
                         const_cast<PrimitiveType*>(buffer->getDataContainer().data()));
                     morseSmaleComplex.setInputOffsets(offsets.data());
 
-                    mscData->setMSCOutput(morseSmaleComplex,
-                                          inportData->getTriangulation().getNumberOfVertices());
-
+                    auto mscData = std::make_shared<topology::MorseSmaleComplexData>(
+                        morseSmaleComplex, inportData);
                     morseSmaleComplex.execute<PrimitiveType, int>();
 
                     return mscData;
