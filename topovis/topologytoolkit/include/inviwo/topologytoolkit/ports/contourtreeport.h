@@ -29,63 +29,14 @@
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
+#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
 
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
-#include <inviwo/topologytoolkit/datastructures/triangulationdata.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <ttk/core/base/ftmTree/FTMTree.h>
-#include <ttk/core/base/ftmTree/FTMTree_MT.h>
-#include <warn/pop>
-
-#include <ostream>
-
 namespace inviwo {
 
 namespace topology {
-
-enum class TreeType { Join = 0, Split = 1, Contour = 2, JoinAndSplit = 3 };
-
-using ContourTree = ttk::ftm::FTMTree;
-
-struct IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeData {
-    // FIXME: Storing the tree type explicitly is necessary due to a TTK bug!
-    //
-    // FTMTree stores the type only as parameter which renders FTMTree::isJT() and FTMTree::isST()
-    // useless (the tree object is always a 'Contour tree'). Trying to call
-    // tree->getNumberOfSuperArcs() of a join tree will result in a nullptr exception as it will
-    // access the data arrays of the contour tree and not the join tree.
-    // There is also no way to access the parameters of the FTMTree.
-    TreeType type;
-    ttk::ftm::FTMTree_MT* getTree() const;
-
-    std::shared_ptr<ttk::ftm::FTMTree> tree;
-    std::shared_ptr<const TriangulationData> triangulation;
-};
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, TreeType type) {
-    switch (type) {
-        case TreeType::Join:
-            ss << "Join Tree";
-            break;
-        case TreeType::Split:
-            ss << "Split Tree";
-            break;
-        case TreeType::Contour:
-            ss << "Contour Tree";
-            break;
-        case TreeType::JoinAndSplit:
-            ss << "Join and Split Tree";
-            break;
-        default:
-            ss << "Invalid";
-    }
-    return ss;
-}
 
 /**
  * \ingroup ports
@@ -97,29 +48,5 @@ using ContourTreeInport = DataInport<ContourTreeData>;
 using ContourTreeOutport = DataOutport<ContourTreeData>;
 
 }  // namespace topology
-
-template <>
-struct DataTraits<topology::ContourTreeData> {
-    static std::string classIdentifier() { return "org.inviwo.topology.contourtreedata"; }
-    static std::string dataName() { return "TTK Contour Tree"; }
-    static uvec3 colorCode() { return uvec3(94, 152, 224); }
-    static Document info(const topology::ContourTreeData& data) {
-        using H = utildoc::TableBuilder::Header;
-        using P = Document::PathComponent;
-        Document doc;
-        doc.append("b", dataName(), {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(doc.handle(), P::end());
-        if (data.triangulation) {
-            tb(H("Dimensionality"), data.triangulation->getTriangulation().getDimensionality());
-        }
-        if (auto tree = data.getTree()) {
-            tb(H("Arcs"), tree->getNumberOfSuperArcs());
-            tb(H("Nodes"), tree->getNumberOfNodes());
-            tb(H("Leaves"), tree->getNumberOfLeaves());
-            tb(H("Vertices"), tree->getNumberOfVertices());
-        }
-        return doc;
-    }
-};
 
 }  // namespace inviwo

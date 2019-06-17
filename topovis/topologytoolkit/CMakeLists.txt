@@ -12,6 +12,8 @@ ivw_module(TopologyToolKit)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/inviwo/topologytoolkit/datastructures/contourtreedata.h
+    include/inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h
     include/inviwo/topologytoolkit/datastructures/triangulationdata.h
     include/inviwo/topologytoolkit/ports/contourtreeport.h
     include/inviwo/topologytoolkit/ports/morsesmalecomplexport.h
@@ -41,6 +43,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/contourtreedata.cpp
+    src/datastructures/morsesmalecomplexdata.cpp
     src/datastructures/triangulationdata.cpp
     src/ports/contourtreeport.cpp
     src/ports/morsesmalecomplexport.cpp

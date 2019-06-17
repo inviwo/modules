@@ -26,26 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
 
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 
 namespace topology {
 
-/**
- * \ingroup ports
- */
-using MorseSmaleComplexInport = DataInport<MorseSmaleComplexData>;
-/**
- * \ingroup ports
- */
-using MorseSmaleComplexOutport = DataOutport<MorseSmaleComplexData>;
+MorseSmaleComplexData::MorseSmaleComplexData(ttk::MorseSmaleComplex& msc,
+                          std::shared_ptr<const TriangulationData> t) : triangulation(t) {
+
+    IVW_ASSERT(triangulation, "triangulation is not valid");
+
+    const auto numVertices = t->getPoints().size();
+
+    msc.setOutputCriticalPoints(
+        &criticalPoints.numberOfPoints, &criticalPoints.points,
+        &criticalPoints.points_cellDimensions, &criticalPoints.points_cellIds,
+        &criticalPoints.points_cellScalars, &criticalPoints.points_isOnBoundary,
+        &criticalPoints.points_PLVertexIdentifiers, &criticalPoints.points_manifoldSize);
+    msc.setOutputSeparatrices1(
+        &separatrices.numberOfPoints, &separatrices.points, &separatrices.points_smoothingMask,
+        &separatrices.points_cellDimensions, &separatrices.points_cellIds,
+        &separatrices.numberOfCells, &separatrices.cells, &separatrices.cells_sourceIds,
+        &separatrices.cells_destinationIds, &separatrices.cells_separatrixIds,
+        &separatrices.cells_separatrixTypes, &separatrices.cells_separatrixFunctionMaxima,
+        &separatrices.cells_separatrixFunctionMinima, &separatrices.cells_separatrixFunctionDiffs,
+        &separatrices.cells_isOnBoundary);
+
+    segmentation.ascending = std::vector(numVertices, -1);
+    segmentation.descending = std::vector(numVertices, -1);
+    segmentation.msc = std::vector(numVertices, -1);
+
+    msc.setOutputMorseComplexes(segmentation.ascending.data(), segmentation.descending.data(),
+                                segmentation.msc.data());
+}
 
 }  // namespace topology
 
