@@ -31,6 +31,7 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/datastructures/buffer/buffer.h>
 
 #include <inviwo/topologytoolkit/datastructures/triangulationdata.h>
 
@@ -49,6 +50,7 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
 
     /**
      * set the various outputs of the ttk Morse-Smale complex \p msc to the arrays in this struct.
+     * The buffers will have the same data format as the scalar values stored in the triangulation.
      *
      * @param msc   the ttk Morse-Smale complex object whose output is set up
      * @param t     matching triangulation for which the Morse-Smale complex is computed
@@ -59,30 +61,32 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
     struct CriticalPoints {
         ttk::SimplexId numberOfPoints = 0;
         std::vector<float> points;
-        std::vector<char> points_cellDimensions;
-        std::vector<ttk::SimplexId> points_cellIds;
-        std::vector<char> points_isOnBoundary;
-        std::vector<float> points_cellScalars;
-        std::vector<ttk::SimplexId> points_PLVertexIdentifiers;
-        std::vector<ttk::SimplexId> points_manifoldSize;
+        std::vector<char> cellDimensions;
+        std::vector<ttk::SimplexId> cellIds;
+        std::vector<char> isOnBoundary;
+        std::vector<ttk::SimplexId> PLVertexIdentifiers;
+        std::vector<ttk::SimplexId> manifoldSize;
+        std::shared_ptr<BufferBase> scalars;
     };
     // 1-separatrices
-    struct Separatrices {
+    struct SeparatricesPoints {
         ttk::SimplexId numberOfPoints = 0;
         std::vector<float> points;
-        std::vector<char> points_smoothingMask;
-        std::vector<char> points_cellDimensions;
-        std::vector<ttk::SimplexId> points_cellIds;
+        std::vector<char> smoothingMask;
+        std::vector<char> cellDimensions;
+        std::vector<ttk::SimplexId> cellIds;
+    };
+    struct SeparatrixCells {
         ttk::SimplexId numberOfCells = 0;
         std::vector<ttk::SimplexId> cells;
-        std::vector<ttk::SimplexId> cells_sourceIds;
-        std::vector<ttk::SimplexId> cells_destinationIds;
-        std::vector<ttk::SimplexId> cells_separatrixIds;
-        std::vector<char> cells_separatrixTypes;
-        std::vector<char> cells_isOnBoundary;
-        std::vector<float> cells_separatrixFunctionMaxima;
-        std::vector<float> cells_separatrixFunctionMinima;
-        std::vector<float> cells_separatrixFunctionDiffs;
+        std::vector<ttk::SimplexId> sourceIds;
+        std::vector<ttk::SimplexId> destinationIds;
+        std::vector<ttk::SimplexId> separatrixIds;
+        std::vector<char> types;
+        std::vector<char> isOnBoundary;
+        std::shared_ptr<BufferBase> functionMaxima;
+        std::shared_ptr<BufferBase> functionMinima;
+        std::shared_ptr<BufferBase> functionDiffs;
     };
     // segmentation
     struct Segmentation {
@@ -92,7 +96,8 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
     };
 
     CriticalPoints criticalPoints;
-    Separatrices separatrices;
+    SeparatricesPoints separatrixPoints;
+    SeparatrixCells separatrixCells;
     Segmentation segmentation;
 
     std::shared_ptr<const TriangulationData> triangulation;
@@ -115,8 +120,8 @@ struct DataTraits<topology::MorseSmaleComplexData> {
             tb(H("Dimensionality"), data.triangulation->getTriangulation().getDimensionality());
         }
         tb(H("Critical Points"), data.criticalPoints.numberOfPoints);
-        tb(H("Separatrices No. Points"), data.separatrices.numberOfPoints);
-        tb(H("Separatrices No. Cells"), data.separatrices.numberOfCells);
+        tb(H("Separatrices No. Points"), data.separatrixPoints.numberOfPoints);
+        tb(H("Separatrices No. Cells"), data.separatrixCells.numberOfCells);
         return doc;
     }
 };

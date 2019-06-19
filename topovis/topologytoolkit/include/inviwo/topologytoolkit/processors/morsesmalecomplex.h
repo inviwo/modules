@@ -48,7 +48,6 @@ namespace inviwo {
  * ### Outports
  *   * __outport__     Morse-Smale complex
  *
- * ### Properties
  */
 
 /**
@@ -66,7 +65,6 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-
 
 private:
     void updateOutport();
