@@ -115,7 +115,7 @@ void MorseSmaleComplex::updateOutport() {
 
                     auto mscData = std::make_shared<topology::MorseSmaleComplexData>(
                         morseSmaleComplex, inportData);
-                    morseSmaleComplex.execute<PrimitiveType, int>();
+                    morseSmaleComplex.execute<PrimitiveType, ttk::SimplexId>();
 
                     return mscData;
                 });

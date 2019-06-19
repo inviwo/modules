@@ -111,7 +111,7 @@ void ContourTree::process() {
         tree->setSegmentation(segmentation);
         tree->setNormalizeIds(normalization);
 
-        tree->build<PrimitiveType, int>();
+        tree->build<PrimitiveType, ttk::SimplexId>();
         return tree;
     };
 
