@@ -6,7 +6,7 @@
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided rhs the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
@@ -53,7 +53,9 @@ TriangulationData::TriangulationData(std::vector<vec3> points, const std::vector
 }
 
 TriangulationData::TriangulationData(const TriangulationData& rhs)
-    : cells_(rhs.cells_)
+    : SpatialEntity<3>(rhs)
+    , MetaDataOwner(rhs)
+    , cells_(rhs.cells_)
     , points_(rhs.points_)
     , offsets_(rhs.offsets_)
     , scalars_(rhs.scalars_->clone())
@@ -69,7 +71,9 @@ TriangulationData::TriangulationData(const TriangulationData& rhs)
 }
 
 TriangulationData::TriangulationData(TriangulationData&& rhs)
-    : cells_(std::move(rhs.cells_))
+    : SpatialEntity<3>(rhs)
+    , MetaDataOwner(rhs)
+    , cells_(std::move(rhs.cells_))
     , points_(std::move(rhs.points_))
     , offsets_(std::move(rhs.offsets_))
     , scalars_(std::move(rhs.scalars_))
@@ -86,6 +90,9 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
 
 TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
     if (this != &rhs) {
+        SpatialEntity<3>::operator=(rhs);
+        MetaDataOwner::operator=(rhs);
+
         cells_ = rhs.cells_;
         points_ = rhs.points_;
         offsets_ = rhs.offsets_;
@@ -106,6 +113,9 @@ TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
 
 TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
     if (this != &rhs) {
+        SpatialEntity<3>::operator=(rhs);
+        MetaDataOwner::operator=(rhs);
+
         cells_ = std::move(rhs.cells_);
         points_ = std::move(rhs.points_);
         offsets_ = std::move(rhs.offsets_);
@@ -123,6 +133,8 @@ TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
     }
     return *this;
 }
+
+TriangulationData* TriangulationData::clone() const { return new TriangulationData(*this); }
 
 bool TriangulationData::isUniformGrid() const {
     // cannot use triangulation_.getGridDimensions(std::vector<int>&) here since it is not const
@@ -432,6 +444,11 @@ const ttk::Triangulation& TriangulationData::getTriangulation() const { return t
 vec3& TriangulationData::operator[](size_t i) { return points_[i]; }
 
 const vec3& TriangulationData::operator[](size_t i) const { return points_[i]; }
+
+const SpatialCameraCoordinateTransformer<3>& TriangulationData::getCoordinateTransformer(
+    const Camera& camera) const {
+    return SpatialEntity<3>::getCoordinateTransformer(camera);
+}
 
 std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<uint32_t>& indices,
                                                             Mesh::MeshInfo meshInfo) {
