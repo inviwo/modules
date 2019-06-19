@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
-
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
@@ -36,26 +36,42 @@ namespace inviwo {
 namespace topology {
 
 MorseSmaleComplexData::MorseSmaleComplexData(ttk::MorseSmaleComplex& msc,
-                          std::shared_ptr<const TriangulationData> t) : triangulation(t) {
+                                             std::shared_ptr<const TriangulationData> t)
+    : triangulation(t) {
 
     IVW_ASSERT(triangulation, "triangulation is not valid");
 
+    t->getScalarValues()
+        ->getRepresentation<BufferRAM>()
+        ->dispatch<void, dispatching::filter::Scalars>([this, &msc](const auto buffer) {
+            using ValueType = util::PrecisionValueType<decltype(buffer)>;
+
+            auto cellScalarsRAM = std::make_shared<BufferRAMPrecision<ValueType>>();
+            auto functionMaxRAM = std::make_shared<BufferRAMPrecision<ValueType>>();
+            auto functionMinRAM = std::make_shared<BufferRAMPrecision<ValueType>>();
+            auto functionDiffRAM = std::make_shared<BufferRAMPrecision<ValueType>>();
+
+            msc.setOutputCriticalPoints(
+                &criticalPoints.numberOfPoints, &criticalPoints.points,
+                &criticalPoints.cellDimensions, &criticalPoints.cellIds,
+                &cellScalarsRAM->getDataContainer(), &criticalPoints.isOnBoundary,
+                &criticalPoints.PLVertexIdentifiers, &criticalPoints.manifoldSize);
+            msc.setOutputSeparatrices1(
+                &separatrixPoints.numberOfPoints, &separatrixPoints.points,
+                &separatrixPoints.smoothingMask, &separatrixPoints.cellDimensions,
+                &separatrixPoints.cellIds, &separatrixCells.numberOfCells, &separatrixCells.cells,
+                &separatrixCells.sourceIds, &separatrixCells.destinationIds,
+                &separatrixCells.separatrixIds, &separatrixCells.types,
+                &functionMaxRAM->getDataContainer(), &functionMinRAM->getDataContainer(),
+                &functionDiffRAM->getDataContainer(), &separatrixCells.isOnBoundary);
+
+            criticalPoints.scalars = std::make_shared<Buffer<ValueType>>(cellScalarsRAM);
+            separatrixCells.functionMaxima = std::make_shared<Buffer<ValueType>>(functionMaxRAM);
+            separatrixCells.functionMinima = std::make_shared<Buffer<ValueType>>(functionMinRAM);
+            separatrixCells.functionDiffs = std::make_shared<Buffer<ValueType>>(functionDiffRAM);
+        });
+
     const auto numVertices = t->getPoints().size();
-
-    msc.setOutputCriticalPoints(
-        &criticalPoints.numberOfPoints, &criticalPoints.points,
-        &criticalPoints.points_cellDimensions, &criticalPoints.points_cellIds,
-        &criticalPoints.points_cellScalars, &criticalPoints.points_isOnBoundary,
-        &criticalPoints.points_PLVertexIdentifiers, &criticalPoints.points_manifoldSize);
-    msc.setOutputSeparatrices1(
-        &separatrices.numberOfPoints, &separatrices.points, &separatrices.points_smoothingMask,
-        &separatrices.points_cellDimensions, &separatrices.points_cellIds,
-        &separatrices.numberOfCells, &separatrices.cells, &separatrices.cells_sourceIds,
-        &separatrices.cells_destinationIds, &separatrices.cells_separatrixIds,
-        &separatrices.cells_separatrixTypes, &separatrices.cells_separatrixFunctionMaxima,
-        &separatrices.cells_separatrixFunctionMinima, &separatrices.cells_separatrixFunctionDiffs,
-        &separatrices.cells_isOnBoundary);
-
     segmentation.ascending = std::vector(numVertices, -1);
     segmentation.descending = std::vector(numVertices, -1);
     segmentation.msc = std::vector(numVertices, -1);

@@ -45,37 +45,32 @@ const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return p
 
 MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
     : Processor()
-    , portInMSComplex("InMSComplex")
-    , portOutMesh("OutMesh")
     , propColors_("colors", "Colors")
     , sphereRadius_("sphereRadius", "Radius", 0.05f, 0.0f, 10.0f)
 {
-    addPort(portInMSComplex);
-    addPort(portOutMesh);
+    addPort(mscInport_);
+    addPort(outport_);
 
     addProperties(propColors_, sphereRadius_);
 }
 
 void MorseSmaleComplexToMesh::process() {
-    // Get Input
-    auto pMSCData = portInMSComplex.getData();
+    auto pMSCData = mscInport_.getData();
     if (!pMSCData) return;
-    auto InTriangulation = pMSCData->triangulation;
-
+    
     // Prepare Memory
-    const ttk::SimplexId NumCP = pMSCData->criticalPoints.numberOfPoints;
-    std::vector<vec3> positions(NumCP);
-    std::vector<vec4> colors(NumCP, {1.0f, 1.0f, 1.0f, 1.0f});
-    std::vector<float> radius(NumCP, sphereRadius_.get());
-    // std::fill(radius.begin(), radius.begin() + tree->getNumberOfNodes(), sphereRadius_.get());
+    const ttk::SimplexId numcp = pMSCData->criticalPoints.numberOfPoints;
+    std::vector<vec3> positions(numcp);
+    std::vector<vec4> colors(numcp, {1.0f, 1.0f, 1.0f, 1.0f});
+    std::vector<float> radius(numcp, sphereRadius_.get());
 
     // Add critical points with their color
-    for (ttk::SimplexId i = 0; i < NumCP; i++) {
+    for (ttk::SimplexId i = 0; i < numcp; i++) {
         positions[i].x = pMSCData->criticalPoints.points[3 * i];
         positions[i].y = pMSCData->criticalPoints.points[3 * i + 1];
         positions[i].z = pMSCData->criticalPoints.points[3 * i + 2];
 
-        switch (pMSCData->criticalPoints.points_cellDimensions[i]) {
+        switch (pMSCData->criticalPoints.cellDimensions[i]) {
             case 0: {
                 colors[i] = propColors_.localMinima_.get();
                 // LogInfo("Min");
@@ -107,10 +102,10 @@ void MorseSmaleComplexToMesh::process() {
         }
     }
 
-    // Add the separatrices
+    // Add the separatrixCells
     const ttk::SimplexId idPrev = positions.size();
 
-    ttk::SimplexId NumSepPoints = pMSCData->separatrices.numberOfPoints;
+    ttk::SimplexId NumSepPoints = pMSCData->separatrixPoints.numberOfPoints;
     positions.reserve(positions.size() + NumSepPoints);
     colors.resize(colors.size() + NumSepPoints);
     radius.resize(radius.size() + NumSepPoints);
@@ -119,55 +114,59 @@ void MorseSmaleComplexToMesh::process() {
     std::fill(radius.begin() + idPrev, radius.end(), sphereRadius_.get());
 
     for (ttk::SimplexId i = 0; i < NumSepPoints; i++) {
-        positions.push_back({pMSCData->separatrices.points[3 * i],
-                             pMSCData->separatrices.points[3 * i + 1],
-                             pMSCData->separatrices.points[3 * i + 2]});
-        // LogInfo(pMSCData->separatrices.cells_separatrixIds[i]);
+        positions.push_back({pMSCData->separatrixPoints.points[3 * i],
+                             pMSCData->separatrixPoints.points[3 * i + 1],
+                             pMSCData->separatrixPoints.points[3 * i + 2]});
     }
 
+    // - Separatrices
+    std::vector<uint32_t> sepIndices;
+
+    ttk::SimplexId currentCellId = -1;
+    for (ttk::SimplexId i = 0; i < pMSCData->separatrixCells.numberOfCells; ++i) {
+        const ttk::SimplexId sourceId = pMSCData->separatrixCells.sourceIds[i];
+        const ttk::SimplexId destId = pMSCData->separatrixCells.destinationIds[i];
+
+        // assuming that separatrixCells.cells[x + 0] holds the dimensionality, x + 1 and x + 2 hold
+        // the from/to indices
+        // assuming consecutive indices as well.
+
+        auto from = pMSCData->separatrixCells.cells[3 * i + 1];
+        auto to = pMSCData->separatrixCells.cells[3 * i + 2];
+
+        if (currentCellId != pMSCData->separatrixCells.separatrixIds[i]) {
+            if (i > 0) {
+                sepIndices.push_back(0xffffffff);
+            }
+            currentCellId = pMSCData->separatrixCells.separatrixIds[i];
+            sepIndices.push_back(from + idPrev);
+        }
+        sepIndices.push_back(to + idPrev);
+    }
+
+    
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
-    // - CP
-    std::vector<uint32_t> CPIndices(NumCP);
-    std::iota(CPIndices.begin(), CPIndices.end(), 0);
+    // - critical points
+    std::vector<uint32_t> cpIndices(numcp);
+    std::iota(cpIndices.begin(), cpIndices.end(), 0);
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
-                      util::makeIndexBuffer(std::move(CPIndices)));
-    // - Sep
-    std::vector<uint32_t> SepIndices; //(NumSepPoints);
-    //std::iota(SepIndices.begin(), SepIndices.end(), idPrev);
-
-    ttk::SimplexId currentCellId = -1;
-    for (ttk::SimplexId i = 0; i < pMSCData->separatrices.numberOfCells; ++i) {
-        const ttk::SimplexId sourceId = pMSCData->separatrices.cells_sourceIds[i];
-        const ttk::SimplexId destId = pMSCData->separatrices.cells_destinationIds[i];
-
-        // assuming that separatrices.cells[x + 0] holds the dimensionality, x + 1 and x + 2 hold
-        // the from/to indices
-        // assuming consecutive indices as well.
-
-        auto from = pMSCData->separatrices.cells[3 * i + 1];
-        auto to = pMSCData->separatrices.cells[3 * i + 2];
-
-        if (currentCellId != pMSCData->separatrices.cells_separatrixIds[i]) {
-            if (i > 0) {
-                SepIndices.push_back(0xffffffff);
-            }
-            currentCellId = pMSCData->separatrices.cells_separatrixIds[i];
-            SepIndices.push_back(from + idPrev);
-        }
-        SepIndices.push_back(to + idPrev);
-    }
-
+                      util::makeIndexBuffer(std::move(cpIndices)));
+    // - separatrixCells
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Strip),
-                      util::makeIndexBuffer(std::move(SepIndices)));
+                      util::makeIndexBuffer(std::move(sepIndices)));
+
+    mesh->setModelMatrix(pMSCData->triangulation->getModelMatrix());
+    mesh->setWorldMatrix(pMSCData->triangulation->getWorldMatrix());
+    mesh->copyMetaDataFrom(*pMSCData->triangulation);
 
     // enable primitive restart so we need only a single index buffer for multiple lines
     glPrimitiveRestartIndex(0xffffffff);
     glEnable(GL_PRIMITIVE_RESTART);
 
-    portOutMesh.setData(mesh);
+    outport_.setData(mesh);
 }
 
 }  // namespace inviwo
