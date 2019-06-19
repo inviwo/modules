@@ -91,6 +91,10 @@ TriangulationData meshToTTKTriangulation(const Mesh& mesh) {
         }
     }
 
+    data.copyMetaDataFrom(mesh);
+    data.setModelMatrix(mesh.getModelMatrix());
+    data.setWorldMatrix(mesh.getWorldMatrix());
+
     return data;
 }
 
@@ -175,6 +179,10 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
         mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
                           util::makeIndexBuffer(std::move(indicesTriangles)));
     }
+    
+    mesh->setModelMatrix(data.getModelMatrix());
+    mesh->setWorldMatrix(data.getWorldMatrix());
+    mesh->copyMetaDataFrom(data);
 
     return mesh;
 }
@@ -202,6 +210,10 @@ TriangulationData volumeToTTKTriangulation(const Volume& volume, size_t channel)
 
     volume.getRepresentation<VolumeRAM>()->dispatch<void>(convertVolumeToBuffer, channel);
 
+    data.copyMetaDataFrom(volume);
+    data.setModelMatrix(volume.getModelMatrix());
+    data.setWorldMatrix(volume.getWorldMatrix());
+
     return data;
 }
 
@@ -217,8 +229,9 @@ std::shared_ptr<Volume> ttkTriangulationToVolume(const TriangulationData& data) 
         // create volume and set basis and offset
         auto volumeRAM = createVolumeRAM(data.getGridDimensions(), DataFloat32::get());
         auto volume = std::make_shared<Volume>(volumeRAM);
-        volume->setOffset(data.getGridOrigin());
-        volume->setBasis(glm::scale(data.getGridExtent()));
+        volume->setModelMatrix(data.getModelMatrix());
+        volume->setWorldMatrix(data.getWorldMatrix());
+        volume->copyMetaDataFrom(data);
         return volume;
     }
 
@@ -235,8 +248,9 @@ std::shared_ptr<Volume> ttkTriangulationToVolume(const TriangulationData& data) 
 
         // create volume and set basis and offset
         auto volume = std::make_shared<Volume>(volumeRep);
-        volume->setOffset(data.getGridOrigin());
-        volume->setBasis(glm::scale(data.getGridExtent()));
+        volume->setModelMatrix(data.getModelMatrix());
+        volume->setWorldMatrix(data.getWorldMatrix());
+        volume->copyMetaDataFrom(data);
         volume->dataMap_ = data.getDataMapper();
         return volume;
     };

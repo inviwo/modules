@@ -39,6 +39,8 @@
 #include <inviwo/core/datastructures/datamapper.h>
 #include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/util/document.h>
+#include <inviwo/core/metadata/metadataowner.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -62,7 +64,8 @@ namespace topology {
  * hold doubles. When accessing the point data, it is converted to float. See
  * ttk::ExplicitTriangulation::getVertexPoint().
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API TriangulationData {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TriangulationData : public SpatialEntity<3>,
+                                                         public MetaDataOwner {
 public:
     enum class InputTriangulation { Edges, Triangles, Tetrahedra };
 
@@ -89,6 +92,8 @@ public:
 
     TriangulationData& operator=(const TriangulationData& rhs);
     TriangulationData& operator=(TriangulationData&& rhs);
+        
+    virtual TriangulationData* clone() const;
 
     /**
      * query state of triangulation whether it is implicit, i.e. a uniform grid, or explicit
@@ -228,6 +233,10 @@ public:
      * @return number of cells
      */
     size_t getCellCount() const;
+    
+    virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
+        const Camera& camera) const;
+    using SpatialEntity<3>::getCoordinateTransformer;
 
 private:
     std::vector<uint32_t> convertToTriangles(const std::vector<uint32_t>& indices,
