@@ -19,3 +19,10 @@ the major/minor eigenvectors.
 1. A scalar volume is generated, values are given by |&sigma;<sub>1</sub>-&sigma;<sub>3</sub>|.
 2. Raycasting is applied.
 
+## Todo
+- [ ] Implement/improve glyph seeding
+- [ ] Arithmetic tensor field operations (combine tensor fields)
+- [ ] Add more visualizers
+- [ ] Automatic texture size for Tensor LIC (i.e. automatic aspect ratio with multiplier)
+- [ ] Make TensorField2D and TensorField3D derive from SpatialEntity
+- [ ] Investigate if it would be a good idea to use Inviwo's MetaDataOwner rather than own meta data class
