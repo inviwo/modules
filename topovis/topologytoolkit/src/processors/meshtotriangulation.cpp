@@ -31,6 +31,9 @@
 #include <inviwo/topologytoolkit/utils/ttkutils.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -69,7 +72,8 @@ MeshToTriangulation::MeshToTriangulation()
     auto updateComponents = [this]() {
         component_.setReadOnly(selectedBuffer_.getReadOnly());
         if (meshInport_.hasData()) {
-            if (selectedBuffer_.get() >= static_cast<int>(meshInport_.getData()->getNumberOfBuffers())) {
+            if (selectedBuffer_.get() >=
+                static_cast<int>(meshInport_.getData()->getNumberOfBuffers())) {
                 // invalid buffer selection
                 component_.setReadOnly(true);
                 return;
@@ -84,7 +88,7 @@ MeshToTriangulation::MeshToTriangulation()
             std::vector<OptionPropertyIntOption> options;
             const char comp[] = "xyzw";
             for (size_t i = 0; i < components; i++) {
-                options.emplace_back("component" + static_cast<char>(std::toupper(comp[i])),
+                options.emplace_back(fmt::format("component{}", std::toupper(comp[i])),
                                      std::string(1, comp[i]) + " component", static_cast<int>(i));
             }
             component_.replaceOptions(options);
@@ -99,9 +103,10 @@ MeshToTriangulation::MeshToTriangulation()
             std::vector<OptionPropertyIntOption> options;
             for (size_t i = 0; i < meshInport_.getData()->getNumberOfBuffers(); ++i) {
                 meshInport_.getData()->getBufferInfo(i);
-                std::ostringstream ss;
-                ss << meshInport_.getData()->getBufferInfo(i).type << " (" << i << ")";
-                options.emplace_back("buffer" + std::to_string(i), ss.str(), static_cast<int>(i));
+                options.emplace_back(
+                    "buffer" + std::to_string(i),
+                    fmt::format("{} ({})", meshInport_.getData()->getBufferInfo(i).type, i),
+                    static_cast<int>(i));
             }
             selectedBuffer_.replaceOptions(options);
             selectedBuffer_.setReadOnly(options.empty());
