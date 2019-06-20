@@ -180,6 +180,7 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
                           util::makeIndexBuffer(std::move(indicesTriangles)));
     }
     
+    // do not set model matrix here 
     mesh->setModelMatrix(data.getModelMatrix());
     mesh->setWorldMatrix(data.getWorldMatrix());
     mesh->copyMetaDataFrom(data);
