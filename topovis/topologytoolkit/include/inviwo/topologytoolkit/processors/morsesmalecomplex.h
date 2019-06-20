@@ -32,6 +32,7 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/activityindicator.h>
 
 #include <inviwo/topologytoolkit/ports/triangulationdataport.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
@@ -53,7 +54,8 @@ namespace inviwo {
 /**
  * \brief compute the Morse-Smale complex for a given TTK triangulation
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor,
+                                                         public ActivityIndicatorOwner {
 public:
     MorseSmaleComplex();
     virtual ~MorseSmaleComplex() = default;

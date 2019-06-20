@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/clock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -83,6 +84,10 @@ TopologicalSimplification::TopologicalSimplification()
 void TopologicalSimplification::process() {
     auto compute = [&](const auto buffer, float threshold, bool invert) {
         using ValueType = util::PrecisionValueType<decltype(buffer)>;
+
+        ScopedClockCPU clock{"TopologicalSimplification",
+                             "Topological simplification for " + std::to_string(threshold),
+                             std::chrono::milliseconds(500), LogLevel::Info};
 
         const auto &persistenceDiagram = *persistenceInport_.getData();
 
