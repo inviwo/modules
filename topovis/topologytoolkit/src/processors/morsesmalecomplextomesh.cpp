@@ -157,8 +157,8 @@ void MorseSmaleComplexToMesh::process() {
     // - separatrixCells
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Strip),
                       util::makeIndexBuffer(std::move(sepIndices)));
-
-    mesh->setModelMatrix(pMSCData->triangulation->getModelMatrix());
+    // vertex positions are already transformed
+    mesh->setModelMatrix(mat4(1.0f));
     mesh->setWorldMatrix(pMSCData->triangulation->getWorldMatrix());
     mesh->copyMetaDataFrom(*pMSCData->triangulation);
 
