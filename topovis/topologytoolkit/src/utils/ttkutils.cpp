@@ -108,8 +108,6 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
         data.getScalarValues()
             ->getRepresentation<BufferRAM>()
             ->dispatch<void, dispatching::filter::Scalars>([&vertices, component](auto bufferpr) {
-                using ValueType = util::PrecisionValueType<decltype(bufferpr)>;
-
                 auto& scalars = bufferpr->getDataContainer();
                 for (size_t i = 0; i < std::min(bufferpr->getSize(), vertices.size()); ++i) {
                     vertices[i][component] = static_cast<float>(scalars[i]);

@@ -91,10 +91,9 @@ void ContourTree::process() {
     const auto treeType = treeType_.get();
     const auto segmentation = segmentation_.get();
     const auto normalization = normalization_.get();
-    const auto dataRange = inportData->getDataMapper().dataRange;
 
     // construction of ttk contour tree
-    auto computeTree = [this, inportData, threadCount, treeType, segmentation,
+    auto computeTree = [inportData, threadCount, treeType, segmentation,
                         normalization](const auto buffer) {
         using ValueType = util::PrecisionValueType<decltype(buffer)>;
         using PrimitiveType = typename DataFormat<ValueType>::primitive;
@@ -128,7 +127,7 @@ void ContourTree::process() {
         dirty_ = false;
 
         dispatchPool(
-            [this, inportData, threadCount, treeType, segmentation, normalization, computeTree]() {
+            [this, inportData, treeType, computeTree]() {
                 auto treeData = std::make_shared<topology::ContourTreeData>();
                 treeData->type = treeType;
                 treeData->triangulation = inportData;

@@ -25,12 +25,12 @@ node {
         removeLabel: {label -> }
     ]
 
-    def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis"]
+    def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis", "${env.WORKSPACE}/modules/topovis"]
     util.wrap(state, "#jenkins-branch-pr") {
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
-            onModules: [],  
+            onModules: ["TOPOLOGYTOOLKIT"],  
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
