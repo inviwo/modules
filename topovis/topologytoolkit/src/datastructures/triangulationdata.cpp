@@ -236,21 +236,21 @@ void TriangulationData::set(std::vector<vec3>&& points, std::vector<long long in
 }
 
 void TriangulationData::addIndices(const std::vector<uint32_t>& indices, InputTriangulation type) {
-    int numCells = 0;
-    int pointsPerCell = 0;
+    size_t numCells = 0;
+    size_t pointsPerCell = 0;
     // transform indices to VTK triangulation
     switch (type) {
         case InputTriangulation::Edges:
-            numCells = static_cast<int>(indices.size() / 2);
+            numCells = indices.size() / 2;
             pointsPerCell = 2;
             break;
         case InputTriangulation::Tetrahedra:
-            numCells = static_cast<int>(indices.size() / 4);
+            numCells = indices.size() / 4;
             pointsPerCell = 4;
             break;
         case InputTriangulation::Triangles:
         default:
-            numCells = static_cast<int>(indices.size() / 3);
+            numCells = indices.size() / 3;
             pointsPerCell = 3;
             break;
     }
@@ -446,7 +446,7 @@ std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<ui
             return indices;
             break;
         case ConnectivityType::Strip: {
-            int numTris = std::max(static_cast<int>(indices.size()) - 2, 0);
+            const auto numTris = (indices.size() > 2 ? indices.size() - 2 : 0);
             ind.reserve(3 * numTris);
             for (size_t i = 0; i < indices.size() - 3u; i += 2) {
                 triangle(indices[i + 0], indices[i + 1], indices[i + 2]);
@@ -455,7 +455,7 @@ std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<ui
             break;
         }
         case ConnectivityType::Fan: {
-            int numTris = std::max(static_cast<int>(indices.size()) - 2, 0);
+            const auto numTris = (indices.size() > 2 ? indices.size() - 2 : 0);
             ind.reserve(3 * numTris);
             for (size_t i = 1; i < indices.size() - 1u; i += 1) {
                 triangle(indices[0], indices[i], indices[i + 1]);
@@ -463,7 +463,7 @@ std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<ui
             break;
         }
         case ConnectivityType::Adjacency: {
-            int numTris = static_cast<int>(indices.size() / 6);
+            const auto numTris = indices.size() / 6;
             ind.reserve(3 * numTris);
             for (size_t i = 0; i < numTris * 6; i += 6) {
                 triangle(indices[i], indices[i + 2], indices[i + 4]);
@@ -471,7 +471,7 @@ std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<ui
             break;
         }
         case ConnectivityType::StripAdjacency: {
-            int numTris = std::max(static_cast<int>((indices.size() - 4) / 2), 0);
+            const auto numTris = (indices.size() > 4 ? (indices.size() - 4) / 2 : 0);
             ind.reserve(3 * numTris);
             for (size_t i = 0; i < numTris * 2 + 4; i += 4) {
                 triangle(indices[i], indices[i + 2], indices[i + 4]);
@@ -501,7 +501,7 @@ std::vector<uint32_t> TriangulationData::convertToLines(const std::vector<uint32
         case ConnectivityType::None:
             return indices;
         case ConnectivityType::Strip: {
-            int numLines = std::max(static_cast<int>(indices.size()) - 1, 0);
+            const auto numLines = (indices.size() > 1 ? indices.size() - 1 : 0);
             ind.reserve(2 * numLines);
             for (size_t i = 0; i < numLines; ++i) {
                 line(indices[i], indices[i + 1]);
@@ -509,7 +509,7 @@ std::vector<uint32_t> TriangulationData::convertToLines(const std::vector<uint32
             break;
         }
         case ConnectivityType::Loop: {
-            int numLines = static_cast<int>(indices.size());
+            const auto numLines = indices.size();
             ind.reserve(2 * numLines);
             for (size_t i = 0; i < numLines - 1; ++i) {
                 line(indices[i], indices[i + 1]);
@@ -518,7 +518,7 @@ std::vector<uint32_t> TriangulationData::convertToLines(const std::vector<uint32
             break;
         }
         case ConnectivityType::Adjacency: {
-            int numLines = static_cast<int>(indices.size() / 4);
+            const auto numLines = indices.size() / 4;
             ind.reserve(2 * numLines);
             for (size_t i = 0; i < indices.size(); i += 4) {
                 line(indices[i + 1], indices[i + 2]);
@@ -526,7 +526,7 @@ std::vector<uint32_t> TriangulationData::convertToLines(const std::vector<uint32
             break;
         }
         case ConnectivityType::StripAdjacency: {
-            int numLines = std::max(static_cast<int>(indices.size()) - 3, 0);
+            const auto numLines = (indices.size() > 3 ? indices.size() - 3 : 0);
             ind.reserve(numLines * 2);
             for (size_t i = 1; i <= numLines; ++i) {
                 line(indices[i], indices[i + 1]);

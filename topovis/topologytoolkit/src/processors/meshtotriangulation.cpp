@@ -69,7 +69,7 @@ MeshToTriangulation::MeshToTriangulation()
     auto updateComponents = [this]() {
         component_.setReadOnly(selectedBuffer_.getReadOnly());
         if (meshInport_.hasData()) {
-            if (selectedBuffer_.get() >= meshInport_.getData()->getNumberOfBuffers()) {
+            if (selectedBuffer_.get() >= static_cast<int>(meshInport_.getData()->getNumberOfBuffers())) {
                 // invalid buffer selection
                 component_.setReadOnly(true);
                 return;
@@ -84,7 +84,7 @@ MeshToTriangulation::MeshToTriangulation()
             std::vector<OptionPropertyIntOption> options;
             const char comp[] = "xyzw";
             for (size_t i = 0; i < components; i++) {
-                options.emplace_back("component" + std::toupper(comp[i]),
+                options.emplace_back("component" + static_cast<char>(std::toupper(comp[i])),
                                      std::string(1, comp[i]) + " component", static_cast<int>(i));
             }
             component_.replaceOptions(options);
