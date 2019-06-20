@@ -59,13 +59,19 @@ TriangulationData meshToTTKTriangulation(const Mesh& mesh) {
                       "Mesh features multiple position buffer, using only first one.");
     }
 
+    const auto modelMatrix = mesh.getModelMatrix();
+
     // convert position buffer of input mesh to vec3
     auto bufferRAM = bufferIt->second->getRepresentation<BufferRAM>();
-    auto positions = bufferRAM->dispatch<std::vector<vec3>>([](auto posBuffer) {
+    auto positions = bufferRAM->dispatch<std::vector<vec3>>([modelMatrix](auto posBuffer) {
         auto data = posBuffer->getDataContainer();
         std::vector<vec3> result(data.size());
         std::transform(data.begin(), data.end(), result.begin(),
-                       [](auto& elem) { return util::glm_convert<vec3>(elem); });
+                       [modelMatrix](auto& elem) { 
+            auto v = util::glm_convert<vec3>(elem);
+            // apply model transform
+            return vec3(modelMatrix * vec4(v, 1.0f));
+        });
         return result;
     });
 
@@ -92,7 +98,7 @@ TriangulationData meshToTTKTriangulation(const Mesh& mesh) {
     }
 
     data.copyMetaDataFrom(mesh);
-    data.setModelMatrix(mesh.getModelMatrix());
+    data.setModelMatrix(mat4(1.0f));
     data.setWorldMatrix(mesh.getWorldMatrix());
 
     return data;
@@ -180,7 +186,6 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
                           util::makeIndexBuffer(std::move(indicesTriangles)));
     }
     
-    // do not set model matrix here 
     mesh->setModelMatrix(data.getModelMatrix());
     mesh->setWorldMatrix(data.getWorldMatrix());
     mesh->copyMetaDataFrom(data);
