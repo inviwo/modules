@@ -36,7 +36,7 @@ node {
         )
         util.filterfiles()
         util.format(state)
-        util.warn(state)
+        util.warn(state 'daily/modules/appleclang')
         util.unittest(state)
         util.integrationtest(state)        
         util.regression(state, modulePaths)
