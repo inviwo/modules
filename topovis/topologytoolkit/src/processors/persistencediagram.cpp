@@ -31,6 +31,7 @@
 #include <inviwo/topologytoolkit/utils/ttkutils.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/clock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -75,6 +76,9 @@ void PersistenceDiagram::process() {
         using DiagramOutput =
             std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId,
                                    ttk::CriticalType, ValueType, ttk::SimplexId>>;
+        
+        ScopedClockCPU clock{"PersistenceDiagram", "Persistence diagram computation",
+                             std::chrono::milliseconds(500), LogLevel::Info};
 
         std::vector<int> offsets(buffer->getSize());
         std::iota(offsets.begin(), offsets.end(), 0);

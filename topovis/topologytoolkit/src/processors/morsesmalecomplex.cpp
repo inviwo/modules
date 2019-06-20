@@ -34,6 +34,7 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/clock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -65,6 +66,7 @@ void MorseSmaleComplex::process() {
             auto vol = newMsc_.get();
             outport_.setData(vol);
             hasNewData_ = false;
+            getActivityIndicator().setActive(false);
         } catch (Exception&) {
             // Need to reset the future, VS bug:
             // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
@@ -75,6 +77,7 @@ void MorseSmaleComplex::process() {
         }
     } else if (!newMsc_.valid()) {  // We are not waiting for a calculation
         if (inport_.isChanged() || mscDirty_) {
+            getActivityIndicator().setActive(true);
             updateOutport();
         }
     }
@@ -95,6 +98,8 @@ void MorseSmaleComplex::updateOutport() {
     // construction of ttk contour tree
     auto compute = [this, inportData,
                     done]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
+        ScopedClockCPU clock{"MorseSmaleComplex", "Morse-Smale complex calculation",
+                             std::chrono::milliseconds(500), LogLevel::Info};
         auto mscData =
             inportData->getScalarValues()
                 ->getRepresentation<BufferRAM>()
