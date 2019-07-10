@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_GDCMVOLUMEREADER_H
-#define IVW_GDCMVOLUMEREADER_H
+#pragma once
 
 #include <inviwo/dicom/dicommoduledefine.h>
 #include <inviwo/core/common/inviwocoredefine.h>
@@ -109,26 +108,6 @@ public:
 
 private:
     /**
-     * Holds file or folder path from last call to readData
-     */
-    std::string file_;
-
-    /**
-     * Holds voxel format if single volume was read.
-     */
-    const DataFormatBase* format_;
-
-    /**
-     * Holds dimension if single volume was read.
-     */
-    size3_t dimension_;
-
-    /**
-     * Holds volumes from last call to readData
-     */
-    SharedVolumeSequence volumes_;
-
-    /**
      * Try to read all volumes contained in given path using standard DICOMDIR format
      */
     static SharedVolumeSequence tryReadDICOMDIR(const std::string& fileOrDirectory);
@@ -149,6 +128,11 @@ private:
      * Only metadata, no actual voxels are returned.
      */
     static SharedVolume getVolumeDescription(DICOMDIRSeries& series);
+
+    std::string file_;
+    const DataFormatBase* format_;
+    size3_t dimension_;
+    SharedVolumeSequence volumes_;
 };
 
 /**
@@ -175,7 +159,6 @@ public:
     virtual ~GCDMVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
 
     using type = std::shared_ptr<VolumeRAM>;
@@ -194,4 +177,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_GDCMVOLUMEREADER_H
