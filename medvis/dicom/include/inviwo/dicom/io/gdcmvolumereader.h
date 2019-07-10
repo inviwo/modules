@@ -49,6 +49,8 @@
 #include <string>
 #include <vector>
 
+#include <ostream>
+
 namespace inviwo {
 
 struct DICOMDIRImage {
@@ -59,7 +61,7 @@ struct DICOMDIRImage {
     std::string orientationPatient = "";
     std::string positionPatient = "";
     float zPos = -std::numeric_limits<float>::infinity();  // relative slice position, used to
-                                                            // sort slices in volume
+                                                           // sort slices in volume
 };
 
 struct DICOMDIRSeries {
@@ -68,6 +70,7 @@ struct DICOMDIRSeries {
     double slope = 1.0;
     double intercept = 0.0;
     std::vector<DICOMDIRImage> images;
+    size3_t dims{0};
 
     // Icon images from series: see tag (0088,0200)
 };
@@ -83,6 +86,44 @@ struct DICOMDIRPatient {
     std::string patientId;
     std::vector<DICOMDIRStudy> studies;
 };
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const DICOMDIRPatient& patient) {
+    ss << "[ DICOM Patient"
+       << "\n  Name: " << patient.patientName << "\n  ID:   " << patient.patientId
+       << "\n  No. Studies: " << patient.studies.size() << " ]";
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const DICOMDIRStudy& study) {
+    ss << "[ DICOM Study"
+       << "\n  Desc.: " << study.desc << "\n  Date: " << study.date
+       << "\n  No. Series: " << study.series.size();
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const DICOMDIRSeries& series) {
+    ss << "[ DICOM Series"
+       << "\n  Desc.: " << series.desc << "\n  Modality: " << series.modality
+       << "\n  No. Images: " << series.images.size() << "\n  Dimensions: " << series.dims << " ]";
+    return ss;
+}
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
+                                             const DICOMDIRImage& image) {
+    ss << "[ DICOM Image" ss << "\n  Path:         " << image.path
+       << "\n  Orientation: " << image.orientationPatient
+       << "\n  Position:    " << image.positionPatient
+       << "\n  Thickness:   " << image.sliceThickness << "\n  z pos:       " << image.zPos
+       << "\n  Window (center, width): " << image.windowCenter << ", " << image.windowWidth << " ]";
+    return ss;
+}
 
 using SharedVolumeSequence = std::shared_ptr<VolumeSequence>;
 using SharedVolume = std::shared_ptr<Volume>;
@@ -176,4 +217,3 @@ private:
 };
 
 }  // namespace inviwo
-

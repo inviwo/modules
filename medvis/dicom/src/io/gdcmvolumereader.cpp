@@ -39,6 +39,8 @@
 
 #include <inviwo/core/datastructures/volume/volume.h>
 
+#include <fmt/format.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <MediaStorageAndFileFormat/gdcmImage.h>
@@ -329,13 +331,13 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
     // Now map metadata to inviwo data types
 
     // The volume should have enough space for the largest image
-    const size3_t volumeDimensions(maxWidth, maxHeight, imageStack.size());
+    series.dims = size3_t(maxWidth, maxHeight, imageStack.size());
 
     const auto voxelFormat =
         DataFormatBase::get(isSignedInt ? NumericType::SignedInteger : NumericType::UnsignedInteger,
                             channelCount, channelBits);
 
-    const SharedVolume outputVolume = std::make_shared<Volume>(volumeDimensions, voxelFormat);
+    const SharedVolume outputVolume = std::make_shared<Volume>(series.dims, voxelFormat);
 
     // Compute data range from the used bits, differentiating between unsigned and 2's complement
     // or...
@@ -639,9 +641,9 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
 
     // Build volumes from images
     SharedVolumeSequence outputVolumes = std::make_shared<VolumeSequence>();
-    for (DICOMDIRPatient patient : dataPerPatient) {  // push everything in one sequence
-        for (DICOMDIRStudy study : patient.studies) {
-            for (DICOMDIRSeries series : study.series) {
+    for (DICOMDIRPatient& patient : dataPerPatient) {  // push everything in one sequence
+        for (DICOMDIRStudy& study : patient.studies) {
+            for (DICOMDIRSeries& series : study.series) {
                 if (series.images.empty()) {
                     continue;
                 }
@@ -665,6 +667,70 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
                 outputVolumes->push_back(vol);
             }
         }
+    }
+
+    // print a summary of all collected volumes
+    auto createLine = [](const std::string& tag, auto text, int indent) {
+        return fmt::format("{0:<{1}}{2:<12}{3}\n", "", indent, tag, text);
+    };
+
+    size_t volindex = 0;
+    auto printSeries = [createLine, &volindex](const DICOMDIRSeries& series, int indent) {
+        std::ostringstream ss;
+
+        ss << createLine("[ DICOM Series", "", indent);
+        if (glm::compMul(series.dims) > 0) {
+            ++volindex;
+            ss << createLine("Volume Idx:", volindex, indent + 2)
+               << createLine("Dimensions:", toString(series.dims), indent + 2);
+        }
+        if (!series.desc.empty()) {
+            ss << createLine("Desc.:", series.desc, indent + 2);
+        }
+        if (!series.modality.empty()) {
+            ss << createLine("Modality:", series.modality, indent + 2);
+        }
+        ss << createLine("No. Images:", series.images.size(), indent + 2)
+           << createLine("]", "", indent);
+
+        return ss.str();
+    };
+
+    auto printStudy = [createLine, printSeries](const DICOMDIRStudy& study, int indent) {
+        std::ostringstream ss;
+
+        ss << createLine("[ DICOM Study", "", indent);
+        if (!study.desc.empty()) {
+            ss << createLine("Desc.:", study.desc, indent + 2);
+        }
+        if (!study.date.empty()) {
+            ss << createLine("Date:", study.date, indent + 2);
+        }
+        ss << createLine("No. Series:", study.series.size(), indent + 2);
+        for (const auto& s : study.series) {
+            ss << printSeries(s, indent + 2);
+        }
+        ss << createLine("]", "", indent);
+
+        return ss.str();
+    };
+
+    auto printPatient = [createLine, printStudy](const DICOMDIRPatient& p) {
+        std::ostringstream ss;
+
+        ss << "[ DICOM Patient\n"
+           << createLine("Name:", p.patientName, 2) << createLine("ID", p.patientId, 2)
+           << createLine("No. Studies:", p.studies.size(), 2);
+        for (const auto& s : p.studies) {
+            ss << printStudy(s, 2);
+        }
+        ss << "]";
+
+        return ss.str();
+    };
+
+    for (const auto& p : dataPerPatient) {
+        LogInfoCustom("GdcmVolumeReader", printPatient(p));
     }
 
     return outputVolumes;
