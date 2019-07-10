@@ -34,3 +34,9 @@ target_include_directories(inviwo-module-dicom PUBLIC gdcm)
 # Add dependency to ext/utf 
 target_link_libraries(inviwo-module-dicom PUBLIC gdcm)
 ivw_make_package(InviwoDICOMModule inviwo-module-dicom)
+
+ivw_register_license_file(NAME "Grassroots DICOM (GDCM)" VERSION 3.0.0 MODULE DICOM
+    URL https://sourceforge.net/projects/gdcm/
+    TYPE "Copyright (c) 2006-2016 Mathieu Malaterre, BSD License"
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm/gdcm/Copyright.txt
+)
