@@ -67,7 +67,7 @@ no seeking supported!
 internal a string is used
 */
 template <LogLevel loglevel, class CharT, class Traits = std::char_traits<CharT>>
-class streambuf_lineout : public std::streambuf {
+class StreambufLineout : public std::streambuf {
 private:
     std::basic_string<CharT, Traits> buffer;
 
@@ -103,29 +103,29 @@ protected:
 
 /* @brief Gdcm log message => std::ostream => Inviwo LogCentral
 
-simple line oriented logging ostream class utilizing streambuf_lineout
-not full-featured, /see streambuf_lineout
+simple line oriented logging ostream class utilizing StreambufLineout
+not full-featured, \see StreambufLineout
 TODO: check standard conformance
 */
 template <LogLevel loglevel>
-class ivw_gdcm_log_stream : public std::ostream {
+class IvwGdcmLogStream : public std::ostream {
 public:
     // std::ios(0) constructor?
-    ivw_gdcm_log_stream() : std::ostream(&lnstreambuf) {}
+    IvwGdcmLogStream() : std::ostream(&lnstreambuf) {}
 
-    virtual ~ivw_gdcm_log_stream() {
+    virtual ~IvwGdcmLogStream() {
         // calls sync to clean things up
         lnstreambuf.pubsync();
     }
 
 private:
-    streambuf_lineout<loglevel, char, std::char_traits<char>> lnstreambuf;
+    StreambufLineout<loglevel, char, std::char_traits<char>> lnstreambuf;
 };
 
 void enableGdcmLogging(LogVerbosity verbosity) {
-    static ivw_gdcm_log_stream<LogLevel::Info> debug_log_stream;
-    static ivw_gdcm_log_stream<LogLevel::Warn> warning_log_stream;
-    static ivw_gdcm_log_stream<LogLevel::Error> error_log_stream;
+    static IvwGdcmLogStream<LogLevel::Info> debug_log_stream;
+    static IvwGdcmLogStream<LogLevel::Warn> warning_log_stream;
+    static IvwGdcmLogStream<LogLevel::Error> error_log_stream;
 
     // reset logging/tracing in gdcm
     gdcm::Trace::Trace();
@@ -156,36 +156,6 @@ void enableGdcmLogging(LogVerbosity verbosity) {
 #endif
     */
 }
-
-// =====================================================================
-// logging functionality of libtiff - using variable argument lists and snprintf
-// =====================================================================
-
-// sprintf for msvc - http://stackoverflow.com/questions/2915672/snprintf-and-visual-studio-2010
-#if defined(_MSC_VER) && _MSC_VER < 1900
-#define snprintf c99_snprintf
-#define vsnprintf c99_vsnprintf
-
-inline int c99_vsnprintf(char *outBuf, size_t size, const char *format, va_list args) {
-    int count = -1;
-
-    if (size != 0) count = _vsnprintf_s(outBuf, size, _TRUNCATE, format, args);
-    if (count == -1) count = _vscprintf(format, args);
-
-    return count;
-}
-
-inline int c99_snprintf(char *outBuf, size_t size, const char *format, ...) {
-    int count;
-    va_list args;
-
-    va_start(args, format);
-    count = c99_vsnprintf(outBuf, size, format, args);
-    va_end(args);
-
-    return count;
-}
-#endif
 
 void tiffErrorHandler(const char *module, const char *fmt, va_list args) {
     char buffer[512];
@@ -233,6 +203,7 @@ void enableTiffLogging(LogVerbosity verbosity) {
             break;
     }
 
+    // test warning and error logging
     // TIFFError("Test", "libtiff error logging available. %s %i %s", "test", 32, "test");
     // TIFFWarning("Test", "libtiff warning logging available.");
 }

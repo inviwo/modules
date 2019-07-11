@@ -56,6 +56,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/util/raiiutils.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -88,7 +89,7 @@ MevisVolumeReader::MevisVolumeReader()
     // only a (unnecessary) warning about missing pixel data will show up from the gdcm library
     addExtension(FileExtension("tif", "Mevislab DICOM/TIF file format"));
     addExtension(FileExtension("tiff", "Mevislab DICOM/TIF file format"));
-    
+
     enableGdcmLogging(LogVerbosity::Error);
     enableTiffLogging(LogVerbosity::Error);
 }
@@ -110,8 +111,8 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string &filePath)
         throw DataReaderException(formatErrorMsg(tif_file_, "invalid tif file"));
     }
 
-    tifRAII closeTiffImg([&]() {
-        if (!tiffimage) {
+    util::OnScopeExit closeTiffImg([&]() {
+        if (tiffimage) {
             TIFFClose(tiffimage);
             tiffimage = nullptr;
         }
@@ -189,8 +190,6 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string &filePath)
         }
     }
 
-    closeTiffImg.done();
-
     auto vd = std::make_shared<VolumeDisk>(tif_file_, dimension_, format);
     vd->setLoader(new MevisVolumeRAMLoader(tif_file_, dimension_, format));
     volume->addRepresentation(vd);
@@ -230,8 +229,8 @@ void MevisVolumeRAMLoader::readDataInto(void *destination) const {
         throw DataReaderException(fmt::format("cannot open TIFF: \'{}\'", tif_file_));
     }
 
-    tifRAII closeTiffImg([&]() {
-        if (nullptr != tiffimage) {
+    util::OnScopeExit closeTiffImg([&]() {
+        if (tiffimage) {
             TIFFClose(tiffimage);
             tiffimage = nullptr;
         }
@@ -290,8 +289,8 @@ void MevisVolumeRAMLoader::readDataInto(void *destination) const {
         throw DataReaderException(formatErrorMsg("could not allocate tile buffer"));
     }
 
-    tifRAII FreeTileBuf([&]() {
-        if (nullptr != tilebuf) {
+    util::OnScopeExit FreeTileBuf([&]() {
+        if (tilebuf) {
             _TIFFfree(tilebuf);
             tilebuf = nullptr;
         }
@@ -340,9 +339,6 @@ void MevisVolumeRAMLoader::readDataInto(void *destination) const {
             }
         }
     }
-
-    FreeTileBuf.done();
-    closeTiffImg.done();
 }
 
 bool MevisVolumeReader::setFilenames(std::string filePath) {

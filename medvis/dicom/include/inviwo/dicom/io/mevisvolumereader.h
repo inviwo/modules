@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_MEVISVOLUMEREADER_H
-#define IVW_MEVISVOLUMEREADER_H
+#pragma once
 
 #include <inviwo/dicom/dicommoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,15 +38,6 @@
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumerepresentation.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-
-//#include <tiff.h>
-//#include <tiffio.h>
-//#include<DataStructureAndEncodingDefinition / gdcmTag.h>
-//#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
-#include <warn/pop>
 
 #include <functional>
 
@@ -109,30 +99,4 @@ private:
     const DataFormatBase* format_;
 };
 
-/*
-@Brief A simple Resource Acquisition is Initialization (RAII) implementation.
-
-Used to wrap the tif resource managment calls to get safe behavior guaranteed
-by the compiler: destructors are always called (even if an exception occurs)
-ie: we put a tif_free call in a lambda function and create a tifRAII instance with it.
-*/
-class tifRAII {
-public:
-    void done() {
-        if (!destr) {
-            fct();
-            destr = true;
-        }
-    }
-
-    tifRAII(std::function<void()> f) : fct(f), destr(false) {}
-    ~tifRAII() { done(); }
-
-private:
-    std::function<void()> fct;
-    bool destr;
-};
-
 }  // namespace inviwo
-
-#endif

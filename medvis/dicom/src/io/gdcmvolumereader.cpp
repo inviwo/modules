@@ -69,7 +69,7 @@ GdcmVolumeReader* GdcmVolumeReader::clone() const { return new GdcmVolumeReader(
  * Creates inviwo volume handle from DICOM series on disk.
  * Only metadata.
  */
-SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
+std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series& series) {
 
     unsigned int maxWidth = 0, maxHeight = 0;  // use max image dimensions for volume
 
@@ -81,7 +81,7 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
     vec3 orientationPatientX = vec3(1, 0, 0);
     vec3 orientationPatientY = vec3(0, 1, 0);
 
-    for (DICOMDIRImage& imgInfo : series.images) {
+    for (dicomdir::Image& imgInfo : series.images) {
         gdcm::ImageReader imageReader;
         std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
 
@@ -194,8 +194,12 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
                         imgInfo.orientationPatient = strVal.str();
 
                         auto tokens = splitString(strVal.str(), '\\');
-                        IVW_ASSERT(tokens.size() == 6,
-                                   "Patient Orientation Tag has incorrect size");
+                        if (tokens.size() != 6) {
+                            throw DataReaderException(
+                                fmt::format("invalid patient orientation tag: '{}' ('{}')",
+                                            imgInfo.orientationPatient, imgInfo.path),
+                                IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
+                        }
 
                         for (size_t i = 0; i < tokens.size(); ++i) {
                             if (i < 3) {
@@ -219,7 +223,12 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
                         imgInfo.positionPatient = strVal.str();
 
                         auto tokens = splitString(strVal.str(), '\\');
-                        IVW_ASSERT(tokens.size() == 3, "Patient Position Tag has incorrect size");
+                        if (tokens.size() != 3) {
+                            throw DataReaderException(
+                                fmt::format("invalid patient position tag: '{}' ('{}')",
+                                            imgInfo.positionPatient, imgInfo.path),
+                                IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
+                        }
 
                         vec3 positionPatient{0.0f};
                         for (size_t i = 0; i < tokens.size(); ++i) {
@@ -236,13 +245,13 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
 
     // Instead of relying on file order, sort images by slice position in patient coords
     std::sort(series.images.begin(), series.images.end(),
-              [](const DICOMDIRImage& a, const DICOMDIRImage& b) { return a.zPos > b.zPos; });
+              [](const dicomdir::Image& a, const dicomdir::Image& b) { return a.zPos > b.zPos; });
 
     // Read images
 
     std::vector<gdcm::Image> imageStack;  // DICOM series == image stack == volume
 
-    for (DICOMDIRImage& imgInfo : series.images) {
+    for (dicomdir::Image& imgInfo : series.images) {
 
         gdcm::ImageReader imageReader;  // possible optimization:
                                         // dont read whole image (gdcm::ImageRegionReader)
@@ -337,7 +346,7 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
         DataFormatBase::get(isSignedInt ? NumericType::SignedInteger : NumericType::UnsignedInteger,
                             channelCount, channelBits);
 
-    const SharedVolume outputVolume = std::make_shared<Volume>(series.dims, voxelFormat);
+    const std::shared_ptr<Volume> outputVolume = std::make_shared<Volume>(series.dims, voxelFormat);
 
     // Compute data range from the used bits, differentiating between unsigned and 2's complement
     // or...
@@ -398,13 +407,14 @@ SharedVolume GdcmVolumeReader::getVolumeDescription(DICOMDIRSeries& series) {
  * Tries to read all volumes contained in given directory path, including subdirectories.
  * Looks only at all the image files and ignores possibly existing DIOCMDIR.
  */
-SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequenceRecursive(const std::string& directory) {
-    SharedVolumeSequence outputVolumes = tryReadDICOMsequence(directory);
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequenceRecursive(
+    const std::string& directory) {
+    std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMsequence(directory);
 
     const auto childDirectories =
         filesystem::getDirectoryContents(directory, filesystem::ListMode::Directories);
     for (const auto& childDir : childDirectories) {
-        SharedVolumeSequence childVolumes =
+        std::shared_ptr<VolumeSequence> childVolumes =
             tryReadDICOMsequenceRecursive(directory + '/' + childDir);
         for (const auto& childVolume : *childVolumes) {
             outputVolumes->push_back(childVolume);
@@ -417,10 +427,11 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequenceRecursive(const std::
 /**
  * Non-recursive version of tryReadDICOMsequenceRecursive
  */
-SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequence(const std::string& sequenceDirectory) {
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
+    const std::string& sequenceDirectory) {
     const auto files = filesystem::getDirectoryContents(sequenceDirectory);
-    SharedVolumeSequence outputVolumes = std::make_shared<VolumeSequence>();
-    std::map<std::string, DICOMDIRSeries> seriesByUID;
+    std::shared_ptr<VolumeSequence> outputVolumes = std::make_shared<VolumeSequence>();
+    std::map<std::string, dicomdir::Series> seriesByUID;
 
     for (const auto& f : files) {
         // try to load file as DICOM
@@ -429,13 +440,15 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequence(const std::string& s
         // add sequences to "outputVolumes"
         std::string file = sequenceDirectory + '/' + f;
         if (!filesystem::fileExists(file)) {
-            throw DataReaderException(file + " does not exist");
+            throw DataReaderException(fmt::format("file does not exist ('{}')", file),
+                                      IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
         }
 
         gdcm::ImageReader imageReader;
         std::ifstream imageInputStream(file, std::ios::binary);
         if (!imageInputStream.is_open()) {
-            throw DataReaderException(file + " could not be opened");
+            throw DataReaderException(fmt::format("file cannot be opened ('{}')", file),
+                                      IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
         }
 
         /*if (!imageReader.CanRead()) { // call this on file BrainSample 11.7T\4\pdata\1\2dseq
@@ -453,13 +466,15 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequence(const std::string& s
                 if (seriesByUID.find(suid) == seriesByUID.end()) {
                     gdcm::MediaStorage dicomMediaStorage;
                     dicomMediaStorage.SetFromFile(imageReader.GetFile());
-                    DICOMDIRSeries newSeries;
+                    dicomdir::Series newSeries;
                     newSeries.modality = dicomMediaStorage.GetModality();
                     seriesByUID[suid] = newSeries;
                 }
-                seriesByUID[suid].images.push_back(DICOMDIRImage{file});
+                seriesByUID[suid].images.push_back(dicomdir::Image{file});
             } else {
-                throw DataReaderException(file + " has no DICOM series UID");
+                throw DataReaderException(
+                    fmt::format("could not find DICOM series UID ('{}')", file),
+                    IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
             }
         } else {
             continue;  // skip non-dicom files
@@ -467,11 +482,11 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequence(const std::string& s
     }
 
     for (const auto& pair : seriesByUID) {
-        DICOMDIRSeries series = pair.second;
+        dicomdir::Series series = pair.second;
         if (series.images.empty()) {
             continue;
         }
-        SharedVolume vol = getVolumeDescription(series);
+        std::shared_ptr<Volume> vol = getVolumeDescription(series);
         // on-demand loading via loader class
         auto diskRepr = std::make_shared<VolumeDisk>(sequenceDirectory, vol->getDimensions(),
                                                      vol->getDataFormat());
@@ -485,24 +500,25 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMsequence(const std::string& s
 }
 
 /**
- * Try to read all volumes contained in given path using standard DICOMDIR format
+ * Try to read all volumes contained in given path using standard dicomdir:: format
  */
-SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOrDirectory) {
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
+    const std::string& fileOrDirectory) {
     std::string dicomdirPath = fileOrDirectory;
     std::ifstream dicomdirInputStream(dicomdirPath, std::ios::binary);
     if (!dicomdirInputStream.is_open()) {
         // Guess some file names
-        dicomdirPath += "/DICOMDIR";  // could have opened a folder
+        dicomdirPath += "/dicomdir::";  // could have opened a folder
         dicomdirInputStream.open(dicomdirPath, std::ios::binary);
         if (!dicomdirInputStream.is_open()) {
-            LogWarnCustom("GdcmVolumeReader", "DICOMDIR not found. Tested '"
+            LogWarnCustom("GdcmVolumeReader", "dicomdir:: not found. Tested '"
                                                   << dicomdirPath << "' and '" << dicomdirPath
-                                                  << "/DICOMDIR'.");
+                                                  << "/dicomdir::'.");
             return 0;  // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
         }
     }
 
-    // Analog to gdcm example "ReadAndDumpDICOMDIR"
+    // Analog to gdcm example "ReadAndDumpdicomdir::"
     gdcm::Reader reader;
     reader.SetStream(dicomdirInputStream);
     if (!reader.Read()) {
@@ -533,7 +549,7 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
     auto storageUIDstr = trim(storageUID.str());
 
     if ("1.2.840.10008.1.3.10" != storageUIDstr) {
-        // This file is not a DICOMDIR
+        // This file is not a dicomdir::
         return 0;
     }
 
@@ -566,7 +582,7 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
     int studyCount = 0;
     int seriesCount = 0;
     int imageCount = 0;
-    std::vector<DICOMDIRPatient> dataPerPatient;
+    std::vector<dicomdir::Patient> dataPerPatient;
     // for each patient: for each study: for each series: get images (in this first loop only
     // the paths!)
     for (auto dataElement : dataset.GetDES()) {
@@ -620,7 +636,7 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
                     auto& study = dataPerPatient.back().studies.back();
                     auto& series = study.series.back();
 
-                    series.images.push_back(DICOMDIRImage{imagePathStr});
+                    series.images.push_back(dicomdir::Image{imagePathStr});
                 }
 
                 imageCount++;
@@ -628,29 +644,29 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
         }
     }
 
-    LogInfoCustom("GdcmVolumeReader", "Scanned DICOMDIR ('"
+    LogInfoCustom("GdcmVolumeReader", "Scanned dicomdir:: ('"
                                           << dicomdirPath << "'):\n    PatientCount = "
                                           << patientCount << "\n    StudyCount = " << studyCount
                                           << "\n    ImageCount = " << imageCount);
 
     if (patientCount == 0 || studyCount == 0 || seriesCount == 0 || imageCount == 0) {
         LogWarnCustom("GdcmVolumeReader",
-                      "No volumes found in DICOMDIR  ('" << dicomdirPath << "')");
+                      "No volumes found in dicomdir::  ('" << dicomdirPath << "')");
         return 0;
     }
 
     // Build volumes from images
-    SharedVolumeSequence outputVolumes = std::make_shared<VolumeSequence>();
-    for (DICOMDIRPatient& patient : dataPerPatient) {  // push everything in one sequence
-        for (DICOMDIRStudy& study : patient.studies) {
-            for (DICOMDIRSeries& series : study.series) {
+    std::shared_ptr<VolumeSequence> outputVolumes = std::make_shared<VolumeSequence>();
+    for (dicomdir::Patient& patient : dataPerPatient) {  // push everything in one sequence
+        for (dicomdir::Study& study : patient.studies) {
+            for (dicomdir::Series& series : study.series) {
                 if (series.images.empty()) {
                     continue;
                 }
 
                 series.modality = dicomMediaStorage.GetModality();
 
-                SharedVolume vol = getVolumeDescription(series);
+                std::shared_ptr<Volume> vol = getVolumeDescription(series);
                 // on-demand loading via loader class
                 auto diskRepr = std::make_shared<VolumeDisk>(dicomdirPath, vol->getDimensions(),
                                                              vol->getDataFormat());
@@ -675,7 +691,7 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
     };
 
     size_t volindex = 0;
-    auto printSeries = [createLine, &volindex](const DICOMDIRSeries& series, int indent) {
+    auto printSeries = [createLine, &volindex](const dicomdir::Series& series, int indent) {
         std::ostringstream ss;
 
         ss << createLine("[ DICOM Series", "", indent);
@@ -696,7 +712,7 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
         return ss.str();
     };
 
-    auto printStudy = [createLine, printSeries](const DICOMDIRStudy& study, int indent) {
+    auto printStudy = [createLine, printSeries](const dicomdir::Study& study, int indent) {
         std::ostringstream ss;
 
         ss << createLine("[ DICOM Study", "", indent);
@@ -715,7 +731,7 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
         return ss.str();
     };
 
-    auto printPatient = [createLine, printStudy](const DICOMDIRPatient& p) {
+    auto printPatient = [createLine, printStudy](const dicomdir::Patient& p) {
         std::ostringstream ss;
 
         ss << "[ DICOM Patient\n"
@@ -739,14 +755,15 @@ SharedVolumeSequence GdcmVolumeReader::tryReadDICOMDIR(const std::string& fileOr
 /**
  * Entry point of the reader, called from VolumeSource processor
  */
-SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string& filePath) {
     auto path = filePath;
     if (!filesystem::fileExists(path)) {
         std::string newPath = filesystem::addBasePath(path);
         if (filesystem::fileExists(newPath)) {
             path = newPath;
         } else {
-            throw DataReaderException("Error could not find input file: " + path);
+            throw DataReaderException(fmt::format("could not read input file ('{}')", path),
+                                      IVW_CONTEXT);
         }
     }
 
@@ -760,7 +777,7 @@ SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
     // Try several dicom file structures
 
     {
-        SharedVolumeSequence outputVolumes = tryReadDICOMDIR(directory);
+        std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMDIR(directory);
         if (outputVolumes) {
             // Return now if reading was already successful
             this->file_ = directory;
@@ -770,7 +787,7 @@ SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
     }
 
     {
-        SharedVolumeSequence outputVolumes = tryReadDICOMsequenceRecursive(directory);
+        std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMsequenceRecursive(directory);
         if (outputVolumes) {
             this->file_ = directory;
             this->volumes_ = outputVolumes;
@@ -784,26 +801,28 @@ SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
 
     // Otherwise keep trying
     this->file_ = path;
-    SharedVolumeSequence outputVolumes = std::make_shared<VolumeSequence>();
+    std::shared_ptr<VolumeSequence> outputVolumes = std::make_shared<VolumeSequence>();
     gdcm::ImageReader reader;
     reader.SetFileName(file_.c_str());
     if (!reader.Read()) {
         MevisVolumeReader mvreader;
         if (mvreader.setFilenames(file_)) {
             LogInfo("This seems to be a MevisLab dcm/tif file - calling the appropriate reader...");
-            SharedVolume v = mvreader.readData(file_);
+            std::shared_ptr<Volume> v = mvreader.readData(file_);
             outputVolumes->push_back(v);
             return outputVolumes;
         } else {
-            throw DataReaderException("Error could not read input file.");
+            throw DataReaderException(fmt::format("could not read input file ('{}')", path),
+                                      IVW_CONTEXT);
         }
     }
 
     const gdcm::Image& image = reader.GetImage();
     const gdcm::File& file = reader.GetFile();
-    SharedVolume v = generateVolume(image, file);
+    std::shared_ptr<Volume> v = generateVolume(image, file);
     if (!v) {
-        throw DataReaderException("Error could not read input file.");
+        throw DataReaderException(fmt::format("could not read input file ('{}')", path),
+                                  IVW_CONTEXT);
     }
 
     outputVolumes->push_back(v);
@@ -815,7 +834,8 @@ SharedVolumeSequence GdcmVolumeReader::readData(const std::string& filePath) {
  * Old function that tries to read single volume from single file.
  * Apparently this can be applied to the "mevis" format.
  */
-SharedVolume GdcmVolumeReader::generateVolume(const gdcm::Image& image, const gdcm::File& file) {
+std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& image,
+                                                         const gdcm::File& file) {
     /*char* buf = new char[image.GetBufferLength()];
     bool codecFound = image.GetBuffer(buf);
     LogInfo(codecFound ? "Found codec and dumping image" : "Dumping image but no codec found");
@@ -830,7 +850,9 @@ SharedVolume GdcmVolumeReader::generateVolume(const gdcm::Image& image, const gd
     std::vector<double> origin = gdcm::ImageHelper::GetOriginValue(file);
     std::vector<unsigned int> dims = gdcm::ImageHelper::GetDimensionsValue(file);
 
-    if (dims.empty()) throw DataReaderException("Error cannot load 0 dimensional volume data!");
+    if (dims.empty()) {
+        throw DataReaderException("invalid dimensions", IVW_CONTEXT);
+    }
 
     // Add default values if missing
     while (spacings.size() < 3) {
@@ -928,7 +950,7 @@ SharedVolume GdcmVolumeReader::generateVolume(const gdcm::Image& image, const gd
 
     this->dimension_ = dimension;
     this->format_ = format;
-    SharedVolume volume = std::make_shared<Volume>(dimension, format);
+    std::shared_ptr<Volume> volume = std::make_shared<Volume>(dimension, format);
     volume->setBasis(basis);
     volume->setOffset(offset);
     volume->setWorldMatrix(wtm);
@@ -968,7 +990,7 @@ SharedVolume GdcmVolumeReader::generateVolume(const gdcm::Image& image, const gd
 
 GCDMVolumeRAMLoader::GCDMVolumeRAMLoader(std::string file, size3_t dimension,
                                          const DataFormatBase* format, bool isPartOfSequence,
-                                         DICOMDIRSeries series)
+                                         dicomdir::Series series)
     : file_(file)
     , dimension_(dimension)
     , format_(format)
@@ -985,7 +1007,7 @@ std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
  * Reads DICOM volume data from disk to RAM
  * @param series represents the volume as collection of image file paths
  */
-void GCDMVolumeRAMLoader::getVolumeData(const DICOMDIRSeries& series, void* outData) const {
+void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* outData) const {
     unsigned long totalByteCount = 0;
     for (const auto& imgInfo : series.images) {
         gdcm::ImageReader imageReader;

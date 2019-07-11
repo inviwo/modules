@@ -53,7 +53,9 @@
 
 namespace inviwo {
 
-struct DICOMDIRImage {
+namespace dicomdir {
+
+struct Image {
     std::string path = "";
     std::string windowCenter = "";
     std::string windowWidth = "";
@@ -64,32 +66,34 @@ struct DICOMDIRImage {
                                                            // sort slices in volume
 };
 
-struct DICOMDIRSeries {
+struct Series {
     std::string desc;
     std::string modality = "CT";  // e.g. "CT", "MR"...
     double slope = 1.0;
     double intercept = 0.0;
-    std::vector<DICOMDIRImage> images;
+    std::vector<Image> images;
     size3_t dims{0};
 
     // Icon images from series: see tag (0088,0200)
 };
 
-struct DICOMDIRStudy {
+struct Study {
     std::string date;
     std::string desc;
-    std::vector<DICOMDIRSeries> series;
+    std::vector<Series> series;
 };
 
-struct DICOMDIRPatient {
+struct Patient {
     std::string patientName;
     std::string patientId;
-    std::vector<DICOMDIRStudy> studies;
+    std::vector<Study> studies;
 };
+
+}  // namespace dicomdir
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const DICOMDIRPatient& patient) {
+                                             const dicomdir::Patient& patient) {
     ss << "[ DICOM Patient"
        << "\n  Name: " << patient.patientName << "\n  ID:   " << patient.patientId
        << "\n  No. Studies: " << patient.studies.size() << " ]";
@@ -98,7 +102,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const DICOMDIRStudy& study) {
+                                             const dicomdir::Study& study) {
     ss << "[ DICOM Study"
        << "\n  Desc.: " << study.desc << "\n  Date: " << study.date
        << "\n  No. Series: " << study.series.size();
@@ -107,7 +111,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const DICOMDIRSeries& series) {
+                                             const dicomdir::Series& series) {
     ss << "[ DICOM Series"
        << "\n  Desc.: " << series.desc << "\n  Modality: " << series.modality
        << "\n  No. Images: " << series.images.size() << "\n  Dimensions: " << series.dims << " ]";
@@ -116,7 +120,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const DICOMDIRImage& image) {
+                                             const dicomdir::Image& image) {
     ss << "[ DICOM Image" ss << "\n  Path:         " << image.path
        << "\n  Orientation: " << image.orientationPatient
        << "\n  Position:    " << image.positionPatient
@@ -124,9 +128,6 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
        << "\n  Window (center, width): " << image.windowCenter << ", " << image.windowWidth << " ]";
     return ss;
 }
-
-using SharedVolumeSequence = std::shared_ptr<VolumeSequence>;
-using SharedVolume = std::shared_ptr<Volume>;
 
 class IVW_MODULE_DICOM_API GdcmVolumeReader : public DataReaderType<VolumeSequence> {
 public:
@@ -138,7 +139,7 @@ public:
      * Old function that tries to read single volume from single file.
      * Apparently this can be applied to the "mevis" format.
      */
-    SharedVolume generateVolume(const gdcm::Image& image, const gdcm::File& file);
+    std::shared_ptr<Volume> generateVolume(const gdcm::Image& image, const gdcm::File& file);
     const DataFormatBase* getFormat() { return format_; }
     size3_t getDimension() { return dimension_; }
 
@@ -149,53 +150,44 @@ public:
 
 private:
     /**
-     * Try to read all volumes contained in given path using standard DICOMDIR format
+     * Try to read all volumes contained in given path using standard  format
      */
-    static SharedVolumeSequence tryReadDICOMDIR(const std::string& fileOrDirectory);
+    static std::shared_ptr<VolumeSequence> tryReadDICOMDIR(const std::string& fileOrDirectory);
 
     /**
      * Non-recursive version of tryReadDICOMsequenceRecursive
      */
-    static SharedVolumeSequence tryReadDICOMsequence(const std::string& sequenceDirectory);
+    static std::shared_ptr<VolumeSequence> tryReadDICOMsequence(
+        const std::string& sequenceDirectory);
 
     /**
      * Tries to read all volumes contained in given directory path, including subdirectories.
      * Looks only at all the image files and ignores possibly existing DIOCMDIR.
      */
-    static SharedVolumeSequence tryReadDICOMsequenceRecursive(const std::string& directory);
+    static std::shared_ptr<VolumeSequence> tryReadDICOMsequenceRecursive(
+        const std::string& directory);
 
     /**
      * Creates inviwo volume handle from DICOM series on disk.
      * Only metadata, no actual voxels are returned.
      */
-    static SharedVolume getVolumeDescription(DICOMDIRSeries& series);
+    static std::shared_ptr<Volume> getVolumeDescription(dicomdir::Series& series);
 
     std::string file_;
     const DataFormatBase* format_;
     size3_t dimension_;
-    SharedVolumeSequence volumes_;
+    std::shared_ptr<VolumeSequence> volumes_;
 };
 
 /**
  * \brief A loader for dcm files. Used to create VolumeRAM representations.
  * This class us used by the GdcmVolumeReader.
- *
- * Also when the VolumeSource processor calls volume->getRepresentation<VolumeRAM>() this class gets
- active
- * and loads the actual voxels into RAM.
-
- * Remember that when you want to read "values" (e.g. in Hounsfield units) from the volume you have
- to do that through the data mapper.
- * This is how it works assuming you have the handle to "volume" and the filled RAM representation
- "volumeRAM":
- * LogInfo("value=" << volume->dataMap_.mapFromDataToValue(volumeRAM->getAsDouble({ 119, 296, 0
- })));
  */
 class IVW_MODULE_DICOM_API GCDMVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
     GCDMVolumeRAMLoader(std::string file, size3_t dimension, const DataFormatBase* format,
-                        bool isPartOfSequence = false, DICOMDIRSeries series = {});
+                        bool isPartOfSequence = false, dicomdir::Series series = {});
     virtual GCDMVolumeRAMLoader* clone() const override;
     virtual ~GCDMVolumeRAMLoader() = default;
 
@@ -208,12 +200,12 @@ public:
     std::shared_ptr<VolumeRAM> dispatch() const;
 
 private:
-    void getVolumeData(const DICOMDIRSeries& series, void* outData) const;  // static here?
+    void getVolumeData(const dicomdir::Series& series, void* outData) const;  // static here?
     std::string file_;  // only relevant for single volumes
     size3_t dimension_;
     const DataFormatBase* format_;
     bool isPartOfSequence_;
-    DICOMDIRSeries series_;
+    dicomdir::Series series_;
 };
 
 }  // namespace inviwo
