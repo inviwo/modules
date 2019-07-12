@@ -37,97 +37,19 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-
 #include <inviwo/core/io/datareader.h>
 #include <inviwo/core/io/datareaderexception.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <MediaStorageAndFileFormat/gdcmImageReader.h>
-#include <warn/pop>
+#include <inviwo/dicom/datastructures/dicomdirtypes.h>
 
-#include <string>
-#include <vector>
-
-#include <ostream>
+namespace gdcm {
+class DataSet;
+class File;
+class Image;
+class ImageReader;
+}  // namespace gdcm
 
 namespace inviwo {
-
-namespace dicomdir {
-
-struct Image {
-    std::string path = "";
-    std::string windowCenter = "";
-    std::string windowWidth = "";
-    std::string sliceThickness = "";
-    std::string orientationPatient = "";
-    std::string positionPatient = "";
-    float zPos = -std::numeric_limits<float>::infinity();  // relative slice position, used to
-                                                           // sort slices in volume
-};
-
-struct Series {
-    std::string desc;
-    std::string modality = "CT";  // e.g. "CT", "MR"...
-    double slope = 1.0;
-    double intercept = 0.0;
-    std::vector<Image> images;
-    size3_t dims{0};
-
-    // Icon images from series: see tag (0088,0200)
-};
-
-struct Study {
-    std::string date;
-    std::string desc;
-    std::vector<Series> series;
-};
-
-struct Patient {
-    std::string patientName;
-    std::string patientId;
-    std::vector<Study> studies;
-};
-
-}  // namespace dicomdir
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const dicomdir::Patient& patient) {
-    ss << "[ DICOM Patient"
-       << "\n  Name: " << patient.patientName << "\n  ID:   " << patient.patientId
-       << "\n  No. Studies: " << patient.studies.size() << " ]";
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const dicomdir::Study& study) {
-    ss << "[ DICOM Study"
-       << "\n  Desc.: " << study.desc << "\n  Date: " << study.date
-       << "\n  No. Series: " << study.series.size();
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const dicomdir::Series& series) {
-    ss << "[ DICOM Series"
-       << "\n  Desc.: " << series.desc << "\n  Modality: " << series.modality
-       << "\n  No. Images: " << series.images.size() << "\n  Dimensions: " << series.dims << " ]";
-    return ss;
-}
-
-template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
-                                             const dicomdir::Image& image) {
-    ss << "[ DICOM Image" ss << "\n  Path:         " << image.path
-       << "\n  Orientation: " << image.orientationPatient
-       << "\n  Position:    " << image.positionPatient
-       << "\n  Thickness:   " << image.sliceThickness << "\n  z pos:       " << image.zPos
-       << "\n  Window (center, width): " << image.windowCenter << ", " << image.windowWidth << " ]";
-    return ss;
-}
 
 class IVW_MODULE_DICOM_API GdcmVolumeReader : public DataReaderType<VolumeSequence> {
 public:
@@ -171,7 +93,8 @@ private:
      * Creates inviwo volume handle from DICOM series on disk.
      * Only metadata, no actual voxels are returned.
      */
-    static std::shared_ptr<Volume> getVolumeDescription(dicomdir::Series& series);
+    static std::shared_ptr<Volume> getVolumeDescription(dicomdir::Series& series,
+                                                        const std::string& path = "");
 
     std::string file_;
     const DataFormatBase* format_;

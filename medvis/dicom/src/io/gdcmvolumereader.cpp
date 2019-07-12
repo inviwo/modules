@@ -27,16 +27,14 @@
  *
  *********************************************************************************/
 
-#include <string>
-
 #include <inviwo/dicom/io/gdcmvolumereader.h>
 #include <inviwo/dicom/io/mevisvolumereader.h>
+#include <inviwo/dicom/utils/gdcmutils.h>
 #include <inviwo/dicom/errorlogging.h>
 
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
-
 #include <inviwo/core/datastructures/volume/volume.h>
 
 #include <fmt/format.h>
@@ -50,7 +48,24 @@
 #include <DataStructureAndEncodingDefinition/gdcmMediaStorage.h>
 #include <warn/pop>
 
+#include <functional>
+#include <algorithm>
+
 namespace inviwo {
+
+// More info on DICOM format:
+//
+// Window center and window width https://www.dabsoft.ch/dicom/3/C.11.2.1.2/
+// Slice Location https://dicom.innolitics.com/ciods/mr-image/image-plane/00201041
+// Frame of Reference
+// https://dicom.innolitics.com/ciods/segmentation/frame-of-reference/00200052
+
+// Images with same series UID belong to same volume -> DiscriminateVolume.cxx example
+// (https://stackoverflow.com/questions/18529967/how-to-decide-if-a-dicom-series-is-a-3d-volume-or-a-series-of-images)
+
+// gdcminfo command line utility
+// http://gdcm.sourceforge.net/html/gdcminfo.html
+//
 
 GdcmVolumeReader::GdcmVolumeReader()
     : DataReaderType<std::vector<std::shared_ptr<Volume>>>()
@@ -69,338 +84,81 @@ GdcmVolumeReader* GdcmVolumeReader::clone() const { return new GdcmVolumeReader(
  * Creates inviwo volume handle from DICOM series on disk.
  * Only metadata.
  */
-std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series& series) {
+std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series& series,
+                                                               const std::string& path) {
 
-    unsigned int maxWidth = 0, maxHeight = 0;  // use max image dimensions for volume
-
-    // Metadata from DICOM dataset
-
-    double smallestVoxelValue = std::numeric_limits<double>::infinity();
-    double largestVoxelValue = -std::numeric_limits<double>::infinity();
-    double sliceThickness = std::numeric_limits<double>::infinity();
-    vec3 orientationPatientX = vec3(1, 0, 0);
-    vec3 orientationPatientY = vec3(0, 1, 0);
-
-    for (dicomdir::Image& imgInfo : series.images) {
-        gdcm::ImageReader imageReader;
-        std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
-
-        if (!imageInputStream.is_open()) {
-            // could not open file => skip
-            continue;
-        }
-
-        imageReader.SetStream(imageInputStream);
-        if (!imageReader.CanRead()) {
-            // not a DICOM file => skip
-            continue;
-        }
-
-        if (imageReader.Read()) {
-
-            const auto& image = imageReader.GetImage();
-            const unsigned int* dimensions = image.GetDimensions();
-            maxWidth = std::max<unsigned int>(maxWidth, dimensions[0]);
-            maxHeight = std::max<unsigned int>(maxHeight, dimensions[1]);
-
-            const auto& dataset = imageReader.GetFile().GetDataSet();
-
-            {  // read window center/level
-                const gdcm::Tag windowCenterTag(0x0028, 0x1050);
-                if (dataset.FindDataElement(windowCenterTag)) {
-                    const auto el = dataset.GetDataElement(windowCenterTag);
-                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
-                        std::stringstream windowCenterSS;
-                        el.GetValue().Print(windowCenterSS);
-                        imgInfo.windowCenter = windowCenterSS.str();
-                    }
-                }
-            }
-
-            {  // read window width
-                const gdcm::Tag windowWidthTag(0x0028, 0x1051);
-                if (dataset.FindDataElement(windowWidthTag)) {
-                    const auto el = dataset.GetDataElement(windowWidthTag);
-                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
-                        std::stringstream windowWidthSS;
-                        el.GetValue().Print(windowWidthSS);
-                        imgInfo.windowWidth = windowWidthSS.str();
-                    }
-                }
-            }
-
-            {  // read slice thickness
-                const gdcm::Tag sliceThicknessTag(0x0018, 0x0050);
-                if (dataset.FindDataElement(sliceThicknessTag)) {
-                    const auto el = dataset.GetDataElement(sliceThicknessTag);
-                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
-                        std::stringstream sliceThicknessSS;
-                        el.GetValue().Print(sliceThicknessSS);
-                        imgInfo.sliceThickness = sliceThicknessSS.str();
-
-                        bool sliceThicknessConversionSuccessful{true};
-                        try {
-                            double SliceThicknessTmp = std::stod(imgInfo.sliceThickness);
-                            sliceThickness = SliceThicknessTmp;
-                        } catch (...) {
-                            sliceThicknessConversionSuccessful = false;
-                        }
-                    }
-                }
-            }
-
-            {  // read smallest image pixel value
-                const gdcm::Tag smallestImagePixelValueTag(0x0028, 0x0106);
-                if (dataset.FindDataElement(smallestImagePixelValueTag)) {
-                    const gdcm::DataElement el = dataset.GetDataElement(smallestImagePixelValueTag);
-                    const gdcm::ByteValue* ptr = el.GetByteValue();
-                    if (el.GetVR() == gdcm::VR::SS) {  // signed short
-                        short v;
-                        ptr->GetBuffer((char*)&v, 2);
-                        smallestVoxelValue = std::min(smallestVoxelValue, static_cast<double>(v));
-                    } else if (el.GetVR() == gdcm::VR::US) {  // unsigned short
-                        unsigned short v;
-                        ptr->GetBuffer((char*)&v, 2);
-                        smallestVoxelValue = std::min(smallestVoxelValue, static_cast<double>(v));
-                    }
-                }
-            }
-
-            {  // read largest image pixel value
-                const gdcm::Tag largestImagePixelValueTag(0x0028, 0x0107);
-                if (dataset.FindDataElement(largestImagePixelValueTag)) {
-                    const gdcm::DataElement el = dataset.GetDataElement(largestImagePixelValueTag);
-                    const gdcm::ByteValue* ptr = el.GetByteValue();
-                    if (el.GetVR() == gdcm::VR::SS) {  // signed short
-                        short v;
-                        ptr->GetBuffer((char*)&v, 2);
-                        largestVoxelValue = std::max(largestVoxelValue, static_cast<double>(v));
-                    } else if (el.GetVR() == gdcm::VR::US) {  // unsigned short
-                        unsigned short v;
-                        ptr->GetBuffer((char*)&v, 2);
-                        largestVoxelValue = std::max(largestVoxelValue, static_cast<double>(v));
-                    }
-                }
-            }
-
-            {  // read ImageOrientationPatient (IOP), i.e. rotation
-                const gdcm::Tag imageOrientationPatientTag(0x0020, 0x0037);
-                if (dataset.FindDataElement(imageOrientationPatientTag)) {
-                    const gdcm::DataElement el = dataset.GetDataElement(imageOrientationPatientTag);
-                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
-
-                        std::stringstream strVal;
-                        el.GetValue().Print(strVal);
-                        imgInfo.orientationPatient = strVal.str();
-
-                        auto tokens = splitString(strVal.str(), '\\');
-                        if (tokens.size() != 6) {
-                            throw DataReaderException(
-                                fmt::format("invalid patient orientation tag: '{}' ('{}')",
-                                            imgInfo.orientationPatient, imgInfo.path),
-                                IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
-                        }
-
-                        for (size_t i = 0; i < tokens.size(); ++i) {
-                            if (i < 3) {
-                                orientationPatientX[i] = std::stof(tokens[i]);
-                            } else {
-                                orientationPatientY[i - 3] = std::stof(tokens[i]);
-                            }
-                        }
-                    }
-                }
-            }
-
-            {  // read ImagePositionPatient (IPP), i.e. translation
-                const gdcm::Tag imagePositionPatientTag(0x0020, 0x0032);
-                if (dataset.FindDataElement(imagePositionPatientTag)) {
-                    const gdcm::DataElement el = dataset.GetDataElement(imagePositionPatientTag);
-                    if (el.GetVR() == gdcm::VR::DS) {  // decimal string
-
-                        std::stringstream strVal;
-                        el.GetValue().Print(strVal);
-                        imgInfo.positionPatient = strVal.str();
-
-                        auto tokens = splitString(strVal.str(), '\\');
-                        if (tokens.size() != 3) {
-                            throw DataReaderException(
-                                fmt::format("invalid patient position tag: '{}' ('{}')",
-                                            imgInfo.positionPatient, imgInfo.path),
-                                IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
-                        }
-
-                        vec3 positionPatient{0.0f};
-                        for (size_t i = 0; i < tokens.size(); ++i) {
-                            positionPatient[i] = std::stof(tokens[i]);
-                        }
-
-                        imgInfo.zPos =
-                            dot(positionPatient, cross(orientationPatientX, orientationPatientY));
-                    }
-                }
-            }
-        }
+    series.updateImageInformation(path);
+    if (series.empty()) {
+        throw DataReaderException(
+            fmt::format("DICOM series '{}' does not contain any images ('{}')", series.desc, path),
+            IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
     }
 
-    // Instead of relying on file order, sort images by slice position in patient coords
-    std::sort(series.images.begin(), series.images.end(),
-              [](const dicomdir::Image& a, const dicomdir::Image& b) { return a.zPos > b.zPos; });
+    // sort images by slice position (z) in patient coords
+    //
+    // TODO: proper volume sorting according to
+    // https://nipy.org/nibabel/dicom/spm_dicom.html#spm-volume-sorting
+    series.sortImages();
 
-    // Read images
-
-    std::vector<gdcm::Image> imageStack;  // DICOM series == image stack == volume
-
-    for (dicomdir::Image& imgInfo : series.images) {
-
-        gdcm::ImageReader imageReader;  // possible optimization:
-                                        // dont read whole image (gdcm::ImageRegionReader)
-        std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
-
-        if (!imageInputStream.is_open()) {
-            // could not open file => skip
-            continue;
-        }
-
-        imageReader.SetStream(imageInputStream);
-        if (!imageReader.CanRead()) {
-            // not a DICOM file => skip
-            continue;
-        }
-
-        if (imageReader.Read()) {
-            gdcm::Image image = imageReader.GetImage();
-            imageStack.push_back(image);
-        }
+    // create an Inviwo Volume
+    const DataFormatBase* format = gdcmutil::getDataFormatBase(series.pixelformat);
+    if (!format) {
+        throw DataReaderException(
+            fmt::format("unsupported image format in DICOM series '{}': {} ('{}')", series.desc,
+                        series.pixelformat.GetScalarTypeAsString(), path),
+            IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
     }
 
-    // Metadata from images
+    auto volume = std::make_shared<Volume>(series.dims, format);
 
-    size_t channelCount = 0;     // e.g. 3 for RGB
-    size_t channelBits = 0;      // bit width of each channel
-    size_t usedChannelBits = 0;  // bit width of data in each channel
-    unsigned short isSignedInt = 0;
-    gdcm::PixelFormat pixelformat;
+    // set data range according to used bits, e.g. 12bits for signed and unsigned
+    volume->dataMap_.dataRange = gdcmutil::getDataRange(series.pixelformat);
 
-    // Origin can be used to transform the xy image grid into xyz world space
-    glm::dvec3 origin;
-
-    // Spacing between voxels in millimeters
-    // note that this must be reconstructed by GDCM with varying accuracy
-    // http://gdcm.sourceforge.net/wiki/index.php/Imager_Pixel_Spacing#ImagerPixelSpacing_to_PixelSpacing
-    glm::dvec3 spacing;
-
-    // Rescale describes the conversion from disk data to hounsfield value
-    // https://blog.kitware.com/dicom-rescale-intercept-rescale-slope-and-itk/
-    double rescaleIntercept, rescaleSlope;
-
-    // Photometric interpretation string
-    // e.g. MONOCHROME1 where lowest value is white or MONOCHROME2 where lowest value is black
-    // https://dicom.innolitics.com/ciods/mr-image/image-pixel/00280004
-    std::string piString;
-
-    if (imageStack.size() > 0) {
-        const gdcm::Image& image =
-            imageStack[0];  // just assume that all images have consistent values
-
-        auto colorspace = image.GetPhotometricInterpretation();
-        colorspace.GetString();
-        channelCount = colorspace.GetSamplesPerPixel();
-
-        origin.x = image.GetOrigin(0);
-        origin.y = image.GetOrigin(1);
-        origin.z = image.GetOrigin(2);
-
-        spacing.x = image.GetSpacing(0);
-        spacing.y = image.GetSpacing(1);
-
-        if (sliceThickness == std::numeric_limits<double>::infinity()) {
-            spacing.z = image.GetSpacing(2);  // fallback if no explicit slice thickness is set
-        } else {
-            spacing.z =
-                sliceThickness;  // image.GetSpacing(2); seems to be not set correctly for volumes?
-        }
-
-        pixelformat = image.GetPixelFormat();
-
-        rescaleIntercept = image.GetIntercept();
-        rescaleSlope = image.GetSlope();
-
-        channelBits = image.GetPixelFormat().GetBitsAllocated();
-        usedChannelBits = image.GetPixelFormat().GetBitsStored();
-        isSignedInt = image.GetPixelFormat().GetPixelRepresentation();
-    } else {
-        return 0;  // empty volume
+    // TODO: determine data range based on DICOMDIR tags (largest/smallest pixel value),
+    // which might not exist!
+    /*
+    if (explicitRanges) {
+        // check tags for all images
+        //  - largest image pixel value gdcm::Tag(0x0028, 0x0107)
+        //  - smallest image pixel value, gdm::Tag(0x0028, 0x0106)
+        volume->dataMap_.dataRange = ...;
     }
+    */
 
-    // Save info that is needed during GCDMVolumeRAMLoader::dispatch
-    series.slope = rescaleSlope;
-    series.intercept = rescaleIntercept;
-
-    // Now map metadata to inviwo data types
-
-    // The volume should have enough space for the largest image
-    series.dims = size3_t(maxWidth, maxHeight, imageStack.size());
-
-    const auto voxelFormat =
-        DataFormatBase::get(isSignedInt ? NumericType::SignedInteger : NumericType::UnsignedInteger,
-                            channelCount, channelBits);
-
-    const std::shared_ptr<Volume> outputVolume = std::make_shared<Volume>(series.dims, voxelFormat);
-
-    // Compute data range from the used bits, differentiating between unsigned and 2's complement
-    // or...
-    outputVolume->dataMap_.dataRange =
-        isSignedInt ? dvec2{-std::pow(2, usedChannelBits - 1), std::pow(2, usedChannelBits - 1) - 1}
-                    : dvec2{0, std::pow(2, usedChannelBits) - 1};
-
-    // ... use DICOM's explicit datarange if existing
-    bool explicitRange = false;
-    if (smallestVoxelValue < std::numeric_limits<double>::infinity()) {
-        outputVolume->dataMap_.dataRange.x = smallestVoxelValue;
-        explicitRange = true;
-    }
-    if (largestVoxelValue > -std::numeric_limits<double>::infinity()) {
-        outputVolume->dataMap_.dataRange.y = largestVoxelValue;
-        explicitRange = true;
-    }
-
-    // Convert disk data to hounsfield value using the DICOM rescale tags (this is only
-    // valid for CT scans)
-    if (explicitRange) {
-        outputVolume->dataMap_.valueRange =
-            outputVolume->dataMap_.dataRange * rescaleSlope + rescaleIntercept;
-    } else {
-        outputVolume->dataMap_.valueRange = outputVolume->dataMap_.dataRange;
-    }
+    volume->dataMap_.valueRange = volume->dataMap_.valueRange * series.slope + series.intercept;
 
     if (series.modality == "CT") {
-        outputVolume->dataMap_.valueUnit = "HU";
-    } else {
-        outputVolume->dataMap_.valueUnit = "unknown";
+        volume->dataMap_.valueUnit = "HU";
     }
 
-    // TODO use spacing for basis and origin for world
-    outputVolume->setBasis(glm::scale(vec3(1.0 / spacing)) *
-                           mat4(vec4(orientationPatientX, 0), vec4(orientationPatientY, 0),
-                                vec4(cross(orientationPatientX, orientationPatientY), 0),
-                                vec4(vec3(origin), 1.0f)));  // ModelMatrix (data -> model)
-    outputVolume->setWorldMatrix(mat4{1});                   // WorldMatrx (model -> world)
+    // basis and offset computations
 
-    return outputVolume;
+    // CHECK: can we use origin and direction cosines of refImage instead?
+    const auto& dicomImg = series.images.front();
+    dvec3 spacing{series.pixelSpacing};
+    if (series.pixelSpacing.z == 0.0) {
+        if (dicomImg.sliceThickness == 0.0) {
+            LogWarnCustom("GdcmVolumeReader::getVolumeDescription",
+                          fmt::format("DICOM series '{}' does not define pixel spacing in z or "
+                                      "slice thickness, using 1.0 for z ('{}')",
+                                      series.desc, path));
+            spacing.z = 1.0;
+        } else {
+            spacing.z = dicomImg.sliceThickness;
+        }
+    }
 
-    // More info:
+    dvec3 extent{spacing * dvec3{series.dims}};
 
-    // Window center and window width https://www.dabsoft.ch/dicom/3/C.11.2.1.2/
-    // Slice Location https://dicom.innolitics.com/ciods/mr-image/image-plane/00201041
-    // Frame of Reference
-    // https://dicom.innolitics.com/ciods/segmentation/frame-of-reference/00200052
+    mat3 basis{dicomImg.orientationX * extent.x, dicomImg.orientationY * extent.y,
+               glm::cross(dicomImg.orientationX, dicomImg.orientationY) * extent.z};
 
-    // Images with same series UID belong to same volume -> DiscriminateVolume.cxx example
-    // (https://stackoverflow.com/questions/18529967/how-to-decide-if-a-dicom-series-is-a-3d-volume-or-a-series-of-images)
+    // TODO: do we need to consider the pixel spacing and slice thickness?
 
-    // gdcminfo command line utility
-    // http://gdcm.sourceforge.net/html/gdcminfo.html
+    volume->setBasis(basis);
+    volume->setOffset(dicomImg.origin);
+
+    return volume;
 }
 
 /**
@@ -486,7 +244,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
         if (series.images.empty()) {
             continue;
         }
-        std::shared_ptr<Volume> vol = getVolumeDescription(series);
+        std::shared_ptr<Volume> vol = getVolumeDescription(series, sequenceDirectory);
         // on-demand loading via loader class
         auto diskRepr = std::make_shared<VolumeDisk>(sequenceDirectory, vol->getDimensions(),
                                                      vol->getDataFormat());
@@ -613,16 +371,19 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
 
                 patientCount++;
             } else if (recType == "STUDY") {
+                // study UID gdcm::Tag (0x0020, 0x000d)
                 const auto date = getString(record, studyDateTag);
                 const auto desc = getString(record, studyDescTag);
                 dataPerPatient.back().studies.push_back({date, desc, {}});
                 studyCount++;
             } else if (recType == "SERIES") {
-                dataPerPatient.back().studies.back().series.push_back({});
-                dataPerPatient.back().studies.back().series.back().desc =
-                    getString(record, seriesDescTag);
+                // series UID gdcm::Tag (0x0020, 0x000e)
+                dataPerPatient.back().studies.back().series.emplace_back(
+                    getString(record, seriesDescTag));
                 seriesCount++;
             } else if (recType == "IMAGE") {
+                // image UID gdcm::Tag (0x0004, 0x1511))
+
                 // save referenced image path to be able to read it later if it's in the volume
                 if (record.FindDataElement(referencedFileID)) {
                     std::stringstream imagePath;
@@ -666,7 +427,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
 
                 series.modality = dicomMediaStorage.GetModality();
 
-                std::shared_ptr<Volume> vol = getVolumeDescription(series);
+                std::shared_ptr<Volume> vol = getVolumeDescription(series, dicomdirPath);
                 // on-demand loading via loader class
                 auto diskRepr = std::make_shared<VolumeDisk>(dicomdirPath, vol->getDimensions(),
                                                              vol->getDataFormat());
@@ -774,18 +535,6 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string& fi
     }
     gdcm::Trace::DebugOff();  // prevent gdcm from spamming inviwo console
 
-    // Try several dicom file structures
-
-    {
-        std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMDIR(directory);
-        if (outputVolumes) {
-            // Return now if reading was already successful
-            this->file_ = directory;
-            this->volumes_ = outputVolumes;
-            return outputVolumes;
-        }
-    }
-
     {
         std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMsequenceRecursive(directory);
         if (outputVolumes) {
@@ -831,16 +580,10 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string& fi
 }
 
 /**
- * Old function that tries to read single volume from single file.
- * Apparently this can be applied to the "mevis" format.
+ * TODO: refactor! outdated function but used by mevis reader and volume source
  */
 std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& image,
                                                          const gdcm::File& file) {
-    /*char* buf = new char[image.GetBufferLength()];
-    bool codecFound = image.GetBuffer(buf);
-    LogInfo(codecFound ? "Found codec and dumping image" : "Dumping image but no codec found");
-    std::ofstream("C:\\Users\\mk\\Desktop\\im1.raw").write(buf, image.GetBufferLength());;
-    delete[] buf;*/
     const gdcm::PixelFormat& pixelformat = image.GetPixelFormat();
 
     // Do not use attributes from reader.GetImage() since they might be incorrect
@@ -849,10 +592,6 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     std::vector<double> spacings = gdcm::ImageHelper::GetSpacingValue(file);
     std::vector<double> origin = gdcm::ImageHelper::GetOriginValue(file);
     std::vector<unsigned int> dims = gdcm::ImageHelper::GetDimensionsValue(file);
-
-    if (dims.empty()) {
-        throw DataReaderException("invalid dimensions", IVW_CONTEXT);
-    }
 
     // Add default values if missing
     while (spacings.size() < 3) {
@@ -882,34 +621,29 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
         basis[i][i] = static_cast<float>(dimension[i]) * spacing[i];
     }
 
-    std::size_t components = pixelformat.GetSamplesPerPixel();
-    std::size_t precision = (pixelformat.GetPixelSize() * 8) / components;
-
-    const inviwo::DataFormatBase* tmp = DataFormatBase::get(pixelformat.GetScalarTypeAsString());
-    if (nullptr == tmp)
-        throw DataReaderException("Error: cant find corresponding voxel format in inviwo: " +
-                                  std::string(pixelformat.GetScalarTypeAsString()));
-
-    auto format = DataFormatBase::get(tmp->getNumericType(), components, precision);
-    if (nullptr == format)
-        throw DataReaderException("Error: cant find corresponding voxel format in inviwo");
+    // create an Inviwo Volume
+    const DataFormatBase* format = gdcmutil::getDataFormatBase(image);
+    if (!format) {
+        throw DataReaderException(fmt::format("unsupported image format in DICOM image: {} ('{}')",
+                                              image.GetPixelFormat().GetScalarTypeAsString(),
+                                              file.GetHeader().GetMediaStorageAsString()),
+                                  IVW_CONTEXT);
+    }
 
     std::size_t voxelsz = (format->getSize()) * (format->getComponents());
-    std::size_t size = dimension.x * dimension.y * dimension.z * voxelsz;
+    std::size_t size = glm::compMul(dimension) * voxelsz;
 
     // sanity check
     std::size_t len = image.GetBufferLength();
 
     // if gdcm says the volume size is LARGER than we compute - inviwo may crash because
     // the allocated buffer can be too small for image.GetBuffer(destination)
-    if (size < len) {
-        throw DataReaderException(std::string("Error: propably read inconsistent information:\n") +
-                                  std::string("computed volume size is ") + std::to_string(size) +
-                                  std::string(", but stored is a volume of size ") +
-                                  std::to_string(len));
-    } else if (size > len) {
-        LogError("computed volume size is " << size << ", but stored is a volume of size " << len
-                                            << "!");
+    if (size != len) {
+        throw DataReaderException(
+            fmt::format(
+                "inconsistent format size information: {} byte (Inviwo), {} byte (gdcm) ('{}')",
+                size, len, file.GetHeader().GetMediaStorageAsString()),
+            IVW_CONTEXT);
     }
 
     gdcm::MediaStorage ms = gdcm::MediaStorage();
@@ -1014,7 +748,8 @@ void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* ou
 
         std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
         if (!imageInputStream.is_open()) {
-            throw DataReaderException(std::string("Could not open file: ") + imgInfo.path);
+            throw DataReaderException(fmt::format("file cannot be opened ('{}')", imgInfo.path),
+                                      IVW_CONTEXT);
         }
 
         imageReader.SetStream(imageInputStream);
@@ -1027,7 +762,8 @@ void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* ou
             gdcm::Image image = imageReader.GetImage();
             // Get RAW image (gdcm does the decoding for us)
             if (!image.GetBuffer(reinterpret_cast<char*>(outData) + totalByteCount)) {
-                throw DataReaderException(std::string("Could not decode image: ") + imgInfo.path);
+                throw DataReaderException(
+                    fmt::format("could not read image data ('{}')", imgInfo.path), IVW_CONTEXT);
             }
 
             totalByteCount += image.GetBufferLength();
@@ -1045,7 +781,10 @@ std::shared_ptr<VolumeRAM> GCDMVolumeRAMLoader::dispatch() const {
     if (!isPartOfSequence_) {
         gdcm::ImageReader reader;
         reader.SetFileName(file_.c_str());
-        if (false == reader.Read()) throw DataReaderException("Error could not read input file.");
+        if (!reader.Read()) {
+            throw DataReaderException(fmt::format("could not read file ('{}')", file_),
+                                      IVW_CONTEXT);
+        }
 
         const gdcm::Image& image = reader.GetImage();
         image.GetBuffer(reinterpret_cast<char*>(data.get()));
@@ -1057,15 +796,6 @@ std::shared_ptr<VolumeRAM> GCDMVolumeRAMLoader::dispatch() const {
         getVolumeData(series_, (void*)data.get());
 
         auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimension_);
-
-        // Remember that when you want to read "values" (e.g. in Hounsfield units) from the
-        // volume you have to do that through the data mapper.
-
-        // This is how it works assuming you have the
-        // handle to "volume" and the filled RAM representation "volumeRAM":
-        // LogInfo("value=" << volume->dataMap_.mapFromDataToValue(volumeRAM->getAsDouble({ 119,
-        // 296, 0 })));
-
         data.release();
 
         return repr;
@@ -1076,7 +806,10 @@ void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
     if (!isPartOfSequence_) {
         gdcm::ImageReader reader;
         reader.SetFileName(file_.c_str());
-        if (false == reader.Read()) throw DataReaderException("Error could not read input file.");
+        if (!reader.Read()) {
+            throw DataReaderException(fmt::format("could not read file ('{}')", file_),
+                                      IVW_CONTEXT);
+        }
 
         const gdcm::Image& image = reader.GetImage();
         const std::size_t size = dimension_[0] * dimension_[1] * dimension_[2];

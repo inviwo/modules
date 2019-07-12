@@ -7,21 +7,25 @@ ivw_module(DICOM)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/inviwo/dicom/datastructures/dicomdirtypes.h
     include/inviwo/dicom/dicommodule.h
     include/inviwo/dicom/dicommoduledefine.h
     include/inviwo/dicom/errorlogging.h
     include/inviwo/dicom/io/gdcmvolumereader.h
     include/inviwo/dicom/io/mevisvolumereader.h
+    include/inviwo/dicom/utils/gdcmutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/dicomdirtypes.cpp
     src/dicommodule.cpp
     src/errorlogging.cpp
     src/io/gdcmvolumereader.cpp
     src/io/mevisvolumereader.cpp
+    src/utils/gdcmutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
