@@ -265,15 +265,8 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
     std::string dicomdirPath = fileOrDirectory;
     std::ifstream dicomdirInputStream(dicomdirPath, std::ios::binary);
     if (!dicomdirInputStream.is_open()) {
-        // Guess some file names
-        dicomdirPath += "/dicomdir::";  // could have opened a folder
-        dicomdirInputStream.open(dicomdirPath, std::ios::binary);
-        if (!dicomdirInputStream.is_open()) {
-            LogWarnCustom("GdcmVolumeReader", "dicomdir:: not found. Tested '"
-                                                  << dicomdirPath << "' and '" << dicomdirPath
-                                                  << "/dicomdir::'.");
-            return 0;  // http://www.cplusplus.com/reference/memory/shared_ptr/operator%20bool/
-        }
+        throw DataReaderException(fmt::format("could not open DICOM file ('{}')", dicomdirPath),
+                                  IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
     // Analog to gdcm example "ReadAndDumpdicomdir::"
@@ -696,24 +689,17 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     auto intercept = is[0];
     auto slope = is[1];
     const std::string modality(ms.GetModality());
-    auto maxValue = static_cast<double>(pixelformat.GetMax());
 
     // TODO: check this heuristics!!!
     if (modality == "CT") {
         // Computed Tomography
         volume->dataMap_.valueUnit = "HU";  // Hounsfield Unit
         if (format->getPrecision() == 16) {
-            // Only show a subset (12-bit) of the data range
-            // Should be valid for scans of the human body
-            // where the range is [-1000 3095]
             volume->dataMap_.dataRange = {0.0, 4095};
-            // Linearly map data into [-1024 3071] HU, assuming intercept = -1024
-            maxValue = volume->dataMap_.dataRange.y;
         }
     }
 
-    volume->dataMap_.valueRange.x = slope * static_cast<double>(pixelformat.GetMin()) + intercept;
-    volume->dataMap_.valueRange.y = slope * maxValue + intercept;
+    volume->dataMap_.valueRange = volume->dataMap_.dataRange * slope + intercept;
 
     auto vd = std::make_shared<VolumeDisk>(file_, dimension, format);
     vd->setLoader(new GCDMVolumeRAMLoader(file_, dimension, format));
