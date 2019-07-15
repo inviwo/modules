@@ -36,6 +36,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
@@ -62,23 +63,34 @@ namespace inviwo {
  * \class TopologicalSimplification
  * \brief removes critical points with a persistence below the given threshold
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologicalSimplification : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologicalSimplification : public Processor,
+                                                                 public ActivityIndicatorOwner {
 public:
     TopologicalSimplification();
     virtual ~TopologicalSimplification() = default;
 
     virtual void process() override;
 
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* source = nullptr) override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
+    void updateOutport();
+
     topology::TriangulationInport inport_;
     topology::PersistenceDiagramInport persistenceInport_;
     topology::TriangulationOutport outport_;
 
     FloatProperty threshold_;
     BoolProperty invert_;
+
+    std::future<std::shared_ptr<const topology::TriangulationData>> newTriangulation_;
+
+    bool simplificationDirty_ = true;
+    bool hasNewData_ = false;
 };
 
 }  // namespace inviwo
