@@ -55,7 +55,10 @@ const ProcessorInfo MorseSmaleComplex::processorInfo_{
 };
 const ProcessorInfo MorseSmaleComplex::getProcessorInfo() const { return processorInfo_; }
 
-MorseSmaleComplex::MorseSmaleComplex() : Processor() {
+MorseSmaleComplex::MorseSmaleComplex()
+    : Processor()
+    , inport_{"triangulation"}
+    , outport_{"outport"} {
     addPort(inport_);
     addPort(outport_);
 }

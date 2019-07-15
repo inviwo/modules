@@ -71,8 +71,8 @@ public:
 private:
     void updateOutport();
 
-    topology::TriangulationInport inport_{"triangulation"};
-    topology::MorseSmaleComplexOutport outport_{"outport"};
+    topology::TriangulationInport inport_;
+    topology::MorseSmaleComplexOutport outport_;
 
     std::future<std::shared_ptr<const topology::MorseSmaleComplexData>> newMsc_;
 
