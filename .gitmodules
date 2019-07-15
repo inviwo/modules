@@ -4,3 +4,6 @@
 [submodule "topovis/topologytoolkit/ext/ttk/ttk"]
 	path = topovis/topologytoolkit/ext/ttk/ttk
 	url = https://github.com/inviwo/ttk
+[submodule "medvis/dicom/ext/gdcm/gdcm"]
+	path = medvis/dicom/ext/gdcm/gdcm
+	url = https://git.code.sf.net/p/gdcm/gdcm
