@@ -124,8 +124,8 @@ void MorseSmaleComplexToMesh::process() {
 
     ttk::SimplexId currentCellId = -1;
     for (ttk::SimplexId i = 0; i < pMSCData->separatrixCells.numberOfCells; ++i) {
-        const ttk::SimplexId sourceId = pMSCData->separatrixCells.sourceIds[i];
-        const ttk::SimplexId destId = pMSCData->separatrixCells.destinationIds[i];
+        //const ttk::SimplexId sourceId = pMSCData->separatrixCells.sourceIds[i];
+        //const ttk::SimplexId destId = pMSCData->separatrixCells.destinationIds[i];
 
         // assuming that separatrixCells.cells[x + 0] holds the dimensionality, x + 1 and x + 2 hold
         // the from/to indices
