@@ -2,9 +2,6 @@
 # Inviwo TensorVisIO Module
 ivw_module(TensorVisIO)
 
-find_package(VTK REQUIRED)
-include(${VTK_USE_FILE})
-
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
@@ -81,21 +78,6 @@ SET(PREFIX "")
 if(NOT WIN32)
     SET(PREFIX "lib")
 endif()
-
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonExecutionModel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonDataModel-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonMisc-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonSystem-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonTransforms-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonMath-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkCommonCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkIOEnSight-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkIOLegacy-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtksys-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkFiltersCore-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkIOXML-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkFiltersGeneral-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
-target_link_libraries(${${mod}_target} PUBLIC ${VTK_DIR}/../../${PREFIX}vtkverdict-${VTK_MAJOR_VERSION}.${VTK_MINOR_VERSION}${SUFFIX})
 
 #--------------------------------------------------------------------
 # Add shader directory to pack
