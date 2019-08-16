@@ -66,14 +66,6 @@ TopologyColorsProperty::TopologyColorsProperty(const TopologyColorsProperty& rhs
         props());
 }
 
-TopologyColorsProperty& TopologyColorsProperty::operator=(const TopologyColorsProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
-}
-
 TopologyColorsProperty* TopologyColorsProperty::clone() const {
     return new TopologyColorsProperty(*this);
 }

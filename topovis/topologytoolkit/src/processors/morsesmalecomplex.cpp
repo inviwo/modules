@@ -107,7 +107,7 @@ void MorseSmaleComplex::updateOutport() {
             inportData->getScalarValues()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<std::shared_ptr<topology::MorseSmaleComplexData>,
-                           dispatching::filter::Scalars>([this, inportData](const auto buffer) {
+                           dispatching::filter::Scalars>([inportData](const auto buffer) {
                     using ValueType = util::PrecisionValueType<decltype(buffer)>;
                     using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
