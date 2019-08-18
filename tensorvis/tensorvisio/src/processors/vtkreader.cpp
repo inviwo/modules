@@ -31,7 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/clock.h>
-#include <modules/vtk/util/lambda2func.h>
+#include <inviwo/vtk/util/lambda2func.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <modules/vtk/util/lambda2func.h>
+#include <inviwo/vtk/util/lambda2func.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
