@@ -24,7 +24,6 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/flowguifilereader.h
     include/modules/tensorvisio/tensorvisiomodule.h
     include/modules/tensorvisio/tensorvisiomoduledefine.h
-    include/modules/tensorvisio/util/vtkoutputlogger.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -46,7 +45,6 @@ set(SOURCE_FILES
     src/processors/vtkwriter.cpp
     src/processors/flowguifilereader.cpp
     src/tensorvisiomodule.cpp
-    src/util/vtkoutputlogger.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

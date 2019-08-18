@@ -32,6 +32,8 @@
 
 #include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/vtk/util/vtkoutputlogger.h>
+
 
 namespace inviwo {
 
@@ -40,6 +42,8 @@ public:
     VTKModule(InviwoApplication* app);
     virtual ~VTKModule() = default;
 
+    private:
+    std::unique_ptr<VtkOutputLogger> vtkoutput_;
 };
 
 } // namespace

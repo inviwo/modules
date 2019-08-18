@@ -26,30 +26,53 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/vtk/util/vtkoutputlogger.h>
+
+#include <inviwo/core/util/logcentral.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
+#include <vtkOutputWindow.h>
+#include <vtkObjectFactory.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-class InviwoVtkOutputWindow;
-
-/** \class VtkOutputLogger
- * \brief mapping VTK logging output to Inviwo's logcentral instead of the regular VTK output window
- */
-class IVW_MODULE_TENSORVISIO_API VtkOutputLogger {
+class InviwoVtkOutputWindow : public vtkOutputWindow {
 public:
-    VtkOutputLogger();
-    virtual ~VtkOutputLogger() = default;
+    InviwoVtkOutputWindow() = default;
+    virtual ~InviwoVtkOutputWindow() = default;
 
-private:
-    vtkSmartPointer<InviwoVtkOutputWindow> outputWindow_;
+    static InviwoVtkOutputWindow* New();
+
+    virtual void DisplayText(const char*) override;
+
+    virtual void DisplayErrorText(const char*) override;
+
+    virtual void DisplayWarningText(const char*) override;
+
+    virtual void DisplayGenericWarningText(const char*) override;
+
+    virtual void DisplayDebugText(const char*) override;
 };
+
+vtkStandardNewMacro(InviwoVtkOutputWindow);
+
+void InviwoVtkOutputWindow::DisplayText(const char* msg) { LogInfoCustom("VTK", msg); }
+
+void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) { LogErrorCustom("VTK (error)", msg); }
+
+void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) { LogWarnCustom("VTK (warn)", msg); }
+
+void InviwoVtkOutputWindow::DisplayGenericWarningText(const char* msg) {
+    LogWarnCustom("VTK (generic)", msg);
+}
+
+void InviwoVtkOutputWindow::DisplayDebugText(const char* msg) { LogInfoCustom("VTK (debug)", msg); }
+
+VtkOutputLogger::VtkOutputLogger() : outputWindow_{vtkSmartPointer<InviwoVtkOutputWindow>::New()} {
+    vtkOutputWindow::SetInstance(outputWindow_);
+}
 
 }  // namespace inviwo

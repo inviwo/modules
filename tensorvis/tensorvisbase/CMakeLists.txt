@@ -101,7 +101,6 @@ set(SOURCE_FILES
     src/properties/eigenvalueproperty.cpp
     src/properties/tensorglyphproperty.cpp
     src/tensorvisbasemodule.cpp
-    src/tensorvisbasemodule.cpp
     src/util/tensorfieldutil.cpp
     src/util/tensorutil.cpp
 )

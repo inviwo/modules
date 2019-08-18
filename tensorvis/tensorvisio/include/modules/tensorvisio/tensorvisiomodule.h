@@ -45,9 +45,6 @@ public:
     TensorVisIOModule& operator=(const TensorVisIOModule&) = delete;
     TensorVisIOModule& operator=(TensorVisIOModule&&) = delete;
     virtual ~TensorVisIOModule();
-
-private:
-    std::unique_ptr<VtkOutputLogger> vtkoutput_;
 };
 
 }  // namespace inviwo

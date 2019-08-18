@@ -7,6 +7,7 @@ find_package(VTK REQUIRED)
 # Add header files
 set(HEADER_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/include/inviwo/vtk/util/lambda2func.h
+	${CMAKE_CURRENT_SOURCE_DIR}/include/inviwo/vtk/util/vtkoutputlogger.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -14,6 +15,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/src/vtkmodule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vtkoutputlogger.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

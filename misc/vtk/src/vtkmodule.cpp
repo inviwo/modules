@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #include <inviwo/vtk/vtkmodule.h>
@@ -36,10 +36,11 @@
 
 namespace inviwo {
 
-VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK") {
-    	
+VTKModule::VTKModule(InviwoApplication* app)
+    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+
     LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
     LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
 }
 
-} // namespace
+}  // namespace inviwo
