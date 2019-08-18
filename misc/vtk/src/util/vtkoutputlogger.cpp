@@ -61,9 +61,13 @@ vtkStandardNewMacro(InviwoVtkOutputWindow);
 
 void InviwoVtkOutputWindow::DisplayText(const char* msg) { LogInfoCustom("VTK", msg); }
 
-void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) { LogErrorCustom("VTK (error)", msg); }
+void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) {
+    LogErrorCustom("VTK (error)", msg);
+}
 
-void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) { LogWarnCustom("VTK (warn)", msg); }
+void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) {
+    LogWarnCustom("VTK (warn)", msg);
+}
 
 void InviwoVtkOutputWindow::DisplayGenericWarningText(const char* msg) {
     LogWarnCustom("VTK (generic)", msg);
