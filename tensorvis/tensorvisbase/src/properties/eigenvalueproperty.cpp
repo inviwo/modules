@@ -54,14 +54,6 @@ EigenValueProperty::EigenValueProperty(const EigenValueProperty& rhs)
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
-EigenValueProperty& EigenValueProperty::operator=(const EigenValueProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
-}
-
 EigenValueProperty* EigenValueProperty::clone() const { return new EigenValueProperty(*this); }
 
 EigenValueProperty::~EigenValueProperty() = default;

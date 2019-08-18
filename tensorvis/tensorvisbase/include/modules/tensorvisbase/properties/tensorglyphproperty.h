@@ -63,7 +63,6 @@ public:
     TensorGlyphProperty(std::string identifier = std::string("tensorGlyphProperty"),
                         std::string displayName = std::string("Glyph properties"));
     TensorGlyphProperty(const TensorGlyphProperty& rhs);
-    TensorGlyphProperty& operator=(const TensorGlyphProperty& that);
     virtual TensorGlyphProperty* clone() const override;
     virtual ~TensorGlyphProperty();
 

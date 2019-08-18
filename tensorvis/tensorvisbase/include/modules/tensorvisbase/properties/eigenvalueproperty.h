@@ -50,7 +50,6 @@ public:
     EigenValueProperty(std::string identifier = std::string("eigenValueProperty"),
                        std::string displayName = std::string("Eigenvalues"));
     EigenValueProperty(const EigenValueProperty& rhs);
-    EigenValueProperty& operator=(const EigenValueProperty& that);
     virtual EigenValueProperty* clone() const override;
     virtual ~EigenValueProperty();
 
