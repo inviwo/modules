@@ -33,47 +33,32 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkOutputWindow.h>
 #include <vtkObjectFactory.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-class InviwoVtkOutputWindow : public vtkOutputWindow {
-public:
-    InviwoVtkOutputWindow() = default;
-    virtual ~InviwoVtkOutputWindow() = default;
+vtkStandardNewMacro(VtkOutputLogger::InviwoVtkOutputWindow);
 
-    static InviwoVtkOutputWindow* New();
+void VtkOutputLogger::InviwoVtkOutputWindow::DisplayText(const char* msg) {
+    LogInfoCustom("VTK", msg);
+}
 
-    virtual void DisplayText(const char*) override;
-
-    virtual void DisplayErrorText(const char*) override;
-
-    virtual void DisplayWarningText(const char*) override;
-
-    virtual void DisplayGenericWarningText(const char*) override;
-
-    virtual void DisplayDebugText(const char*) override;
-};
-
-vtkStandardNewMacro(InviwoVtkOutputWindow);
-
-void InviwoVtkOutputWindow::DisplayText(const char* msg) { LogInfoCustom("VTK", msg); }
-
-void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) {
+void VtkOutputLogger::InviwoVtkOutputWindow::DisplayErrorText(const char* msg) {
     LogErrorCustom("VTK (error)", msg);
 }
 
-void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) {
+void VtkOutputLogger::InviwoVtkOutputWindow::DisplayWarningText(const char* msg) {
     LogWarnCustom("VTK (warn)", msg);
 }
 
-void InviwoVtkOutputWindow::DisplayGenericWarningText(const char* msg) {
+void VtkOutputLogger::InviwoVtkOutputWindow::DisplayGenericWarningText(const char* msg) {
     LogWarnCustom("VTK (generic)", msg);
 }
 
-void InviwoVtkOutputWindow::DisplayDebugText(const char* msg) { LogInfoCustom("VTK (debug)", msg); }
+void VtkOutputLogger::InviwoVtkOutputWindow::DisplayDebugText(const char* msg) {
+    LogInfoCustom("VTK (debug)", msg);
+}
 
 VtkOutputLogger::VtkOutputLogger() : outputWindow_{vtkSmartPointer<InviwoVtkOutputWindow>::New()} {
     vtkOutputWindow::SetInstance(outputWindow_);

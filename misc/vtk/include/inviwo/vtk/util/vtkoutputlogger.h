@@ -34,16 +34,30 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkSmartPointer.h>
+#include <vtkOutputWindow.h>
 #include <warn/pop>
 
 namespace inviwo {
-
-class InviwoVtkOutputWindow;
 
 /** \class VtkOutputLogger
  * \brief mapping VTK logging output to Inviwo's logcentral instead of the regular VTK output window
  */
 class IVW_MODULE_VTK_API VtkOutputLogger {
+
+    class InviwoVtkOutputWindow : public vtkOutputWindow {
+    public:
+        InviwoVtkOutputWindow() = default;
+        virtual ~InviwoVtkOutputWindow() = default;
+
+        static InviwoVtkOutputWindow* New();
+
+        virtual void DisplayText(const char*) override;
+        virtual void DisplayErrorText(const char*) override;
+        virtual void DisplayWarningText(const char*) override;
+        virtual void DisplayGenericWarningText(const char*) override;
+        virtual void DisplayDebugText(const char*) override;
+    };
+
 public:
     VtkOutputLogger();
     virtual ~VtkOutputLogger() = default;
