@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,55 +24,28 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * 
  *********************************************************************************/
 
-#include <modules/tensorvisio/util/vtkoutputlogger.h>
+#ifndef IVW_VTKMODULE_H
+#define IVW_VTKMODULE_H
 
-#include <inviwo/core/util/logcentral.h>
+#include <inviwo/vtk/vtkmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/vtk/util/vtkoutputlogger.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkOutputWindow.h>
-#include <vtkObjectFactory.h>
-#include <warn/pop>
 
 namespace inviwo {
 
-class InviwoVtkOutputWindow : public vtkOutputWindow {
+class IVW_MODULE_VTK_API VTKModule : public InviwoModule {
 public:
-    InviwoVtkOutputWindow() = default;
-    virtual ~InviwoVtkOutputWindow() = default;
+    VTKModule(InviwoApplication* app);
+    virtual ~VTKModule() = default;
 
-    static InviwoVtkOutputWindow* New();
-
-    virtual void DisplayText(const char*) override;
-
-    virtual void DisplayErrorText(const char*) override;
-
-    virtual void DisplayWarningText(const char*) override;
-
-    virtual void DisplayGenericWarningText(const char*) override;
-
-    virtual void DisplayDebugText(const char*) override;
+    private:
+    std::unique_ptr<VtkOutputLogger> vtkoutput_;
 };
 
-vtkStandardNewMacro(InviwoVtkOutputWindow);
+} // namespace
 
-void InviwoVtkOutputWindow::DisplayText(const char* msg) { LogInfoCustom("VTK", msg); }
-
-void InviwoVtkOutputWindow::DisplayErrorText(const char* msg) { LogErrorCustom("VTK (error)", msg); }
-
-void InviwoVtkOutputWindow::DisplayWarningText(const char* msg) { LogWarnCustom("VTK (warn)", msg); }
-
-void InviwoVtkOutputWindow::DisplayGenericWarningText(const char* msg) {
-    LogWarnCustom("VTK (generic)", msg);
-}
-
-void InviwoVtkOutputWindow::DisplayDebugText(const char* msg) { LogInfoCustom("VTK (debug)", msg); }
-
-VtkOutputLogger::VtkOutputLogger() : outputWindow_{vtkSmartPointer<InviwoVtkOutputWindow>::New()} {
-    vtkOutputWindow::SetInstance(outputWindow_);
-}
-
-}  // namespace inviwo
+#endif // IVW_VTKMODULE_H

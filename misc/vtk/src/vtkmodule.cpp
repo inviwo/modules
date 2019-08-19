@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2014-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,30 +26,21 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/vtk/vtkmodule.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkSmartPointer.h>
+#include <vtkVersion.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-class InviwoVtkOutputWindow;
+VTKModule::VTKModule(InviwoApplication* app)
+    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
 
-/** \class VtkOutputLogger
- * \brief mapping VTK logging output to Inviwo's logcentral instead of the regular VTK output window
- */
-class IVW_MODULE_TENSORVISIO_API VtkOutputLogger {
-public:
-    VtkOutputLogger();
-    virtual ~VtkOutputLogger() = default;
-
-private:
-    vtkSmartPointer<InviwoVtkOutputWindow> outputWindow_;
-};
+    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
+    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+}
 
 }  // namespace inviwo

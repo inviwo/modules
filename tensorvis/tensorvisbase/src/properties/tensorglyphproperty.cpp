@@ -91,14 +91,6 @@ TensorGlyphProperty::TensorGlyphProperty(const TensorGlyphProperty& rhs)
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
-TensorGlyphProperty& TensorGlyphProperty::operator=(const TensorGlyphProperty& that) {
-    if (this != &that) {
-        CompositeProperty::operator=(that);
-        util::for_each_in_tuple([](auto& dst, auto& src) { dst = src; }, props(), that.props());
-    }
-    return *this;
-}
-
 TensorGlyphProperty* TensorGlyphProperty::clone() const { return new TensorGlyphProperty(*this); }
 
 TensorGlyphProperty::~TensorGlyphProperty() = default;
