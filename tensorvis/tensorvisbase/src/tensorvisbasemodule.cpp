@@ -31,6 +31,7 @@
 
 #include <modules/opengl/shader/shadermanager.h>
 
+#include <modules/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h>
 #include <modules/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h>
 #include <modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
 
@@ -106,6 +107,7 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProperty<EigenValueProperty>();
     registerProperty<TensorGlyphProperty>();
 
+    registerDataVisualizer(std::make_unique<HyperLICVisualizer2D>(app));
     registerDataVisualizer(std::make_unique<HyperLICVisualizer3D>(app));
     registerDataVisualizer(std::make_unique<AnisotropyRaycastingVisualizer>(app));
 }

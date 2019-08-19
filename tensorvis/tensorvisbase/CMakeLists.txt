@@ -16,6 +16,7 @@ set(HEADER_FILES
     include/modules/tensorvisbase/datastructures/tensorfieldmetadataimpl.h
     include/modules/tensorvisbase/datastructures/tensorfieldmetadataspecializations.h
     include/modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h
+    include/modules/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h
     include/modules/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h
     include/modules/tensorvisbase/ports/tensorfieldport.h
     include/modules/tensorvisbase/processors/eigenvaluefieldtoimage.h
@@ -68,6 +69,7 @@ set(SOURCE_FILES
     src/datastructures/tensorfield2d.cpp
     src/datastructures/tensorfield3d.cpp
     src/datavisualizer/anisotropyraycastingvisualizer.cpp
+    src/datavisualizer/hyperlicvisualizer2d.cpp
     src/datavisualizer/hyperlicvisualizer3d.cpp
     src/processors/eigenvaluefieldtoimage.cpp
     src/processors/hyperstreamlines.cpp
