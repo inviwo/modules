@@ -21,6 +21,7 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/flowguifilereader.h
     include/modules/tensorvisio/tensorvisiomodule.h
     include/modules/tensorvisio/tensorvisiomoduledefine.h
+	include/modules/tensorvisio/util/vtkutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

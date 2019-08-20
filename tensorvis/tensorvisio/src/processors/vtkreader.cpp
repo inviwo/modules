@@ -39,6 +39,7 @@
 #include <warn/pop>
 
 #include <fstream>
+#include <modules/tensorvisio/util/vtkutil.h>
 
 namespace inviwo {
 
@@ -141,24 +142,9 @@ void VTKReader::readLegacy() {
     dispatchPool([this]() {
         dispatchFront([this]() { getActivityIndicator().setActive(true); });
 
-        const auto progressUpdate = [this](float f) {
-            dispatchFront([this, f]() {
-                f < 1.0 ? progressBar_.show() : progressBar_.hide();
-                progressBar_.updateProgress(f);
-            });
-        };
-
-        auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-            [progressUpdate](vtkObject* caller, long unsigned int /*eventId*/, void* /*clientData*/,
-                             void* /*callData*/) -> void {
-                auto reader = dynamic_cast<vtkGenericDataObjectReader*>(caller);
-                if (reader->GetProgress() > 0.0) {
-                    progressUpdate(float(reader->GetProgress()));
-                }
-            });
-
         auto progressCallback = vtkSmartPointer<vtkCallbackCommand>::New();
-        progressCallback->SetCallback(fn);
+        progressCallback->SetCallback(vtkProgressBarCallback);
+        progressCallback->SetClientData(&progressBar_);
 
         if (!legacyreader_) {
             legacyreader_ = vtkSmartPointer<vtkGenericDataObjectReader>::New();
@@ -182,24 +168,9 @@ void VTKReader::readXML() {
     dispatchPool([this]() {
         dispatchFront([this]() { getActivityIndicator().setActive(true); });
 
-        const auto progressUpdate = [this](float f) {
-            dispatchFront([this, f]() {
-                f < 1.0 ? progressBar_.show() : progressBar_.hide();
-                progressBar_.updateProgress(f);
-            });
-        };
-
-        auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-            [progressUpdate](vtkObject* caller, long unsigned int /*eventId*/, void* /*clientData*/,
-                             void* /*callData*/) -> void {
-                auto reader = dynamic_cast<vtkXMLGenericDataObjectReader*>(caller);
-                if (reader->GetProgress() > 0.0) {
-                    progressUpdate(float(reader->GetProgress()));
-                }
-            });
-
         auto progressCallback = vtkSmartPointer<vtkCallbackCommand>::New();
-        progressCallback->SetCallback(fn);
+        progressCallback->SetCallback(vtkProgressBarCallback);
+        progressCallback->SetClientData(&progressBar_);
 
         if (!xmlreader_) {
             xmlreader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
