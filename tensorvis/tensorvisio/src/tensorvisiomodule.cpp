@@ -33,6 +33,7 @@
 #include <modules/tensorvisio/processors/nrrdreader.h>
 #include <modules/tensorvisio/processors/tensorfield2dexport.h>
 #include <modules/tensorvisio/processors/tensorfield2dimport.h>
+#include <modules/tensorvisio/processors/tensorfield2dtovtk.h>
 #include <modules/tensorvisio/processors/tensorfield3dexport.h>
 #include <modules/tensorvisio/processors/tensorfield3dimport.h>
 #include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
@@ -51,6 +52,7 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app)
     registerProcessor<NRRDReader>();
     registerProcessor<TensorField2DExport>();
     registerProcessor<TensorField2DImport>();
+    registerProcessor<TensorField2DToVTK>();
     registerProcessor<TensorField3DExport>();
     registerProcessor<TensorField3DImport>();
     registerProcessor<VTKDataSetToTensorField3D>();
