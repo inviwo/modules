@@ -29,11 +29,18 @@
 
 #include <inviwo/devtools/devtoolsmodule.h>
 #include <inviwo/devtools/processors/eventlogger.h>
+#include <inviwo/devtools/processors/inviwostatsplot.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
 DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
+    // Add a directory to the search path of the Shadermanager
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+
+    // Processors
     registerProcessor<ImageEventLogger>();
+    registerProcessor<InviwoStatsPlot>();
     registerProcessor<VolumeEventLogger>();
     registerProcessor<MeshEventLogger>();
     registerProcessor<BrushingAndLinkingEventLogger>();

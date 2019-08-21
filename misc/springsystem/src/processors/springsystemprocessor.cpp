@@ -36,6 +36,8 @@
 #include <inviwo/springsystem/datastructures/springsystem.h>
 #include <inviwo/springsystem/utils/springsystemutils.h>
 
+#include <inviwo/core/algorithm/boundingbox.h>
+
 #include <chrono>
 
 namespace inviwo {
@@ -75,7 +77,7 @@ SpringSystemProcessor::SpringSystemProcessor()
     , startButton_("startBtn", "Start Solver")
     , stopButton_("stopBtn", "Stop Solver")
     , logStatusButton_("logStatusBtn", "Log Status")
-    , camera_("camera", "Camera")
+    , camera_("camera", "Camera", util::boundingBox(nodeOutport_))
     , advance_(false)
     , meshDirty_(false)
     , updateTimer_(std::chrono::milliseconds(20),
