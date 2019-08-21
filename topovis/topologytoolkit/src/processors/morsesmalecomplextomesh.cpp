@@ -31,6 +31,8 @@
 
 #include <modules/opengl/inviwoopengl.h>
 
+#include <algorithm>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -46,8 +48,7 @@ const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return p
 MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
     : Processor()
     , propColors_("colors", "Colors")
-    , sphereRadius_("sphereRadius", "Radius", 0.05f, 0.0f, 10.0f)
-{
+    , sphereRadius_("sphereRadius", "Radius", 0.05f, 0.0f, 10.0f) {
     addPort(mscInport_);
     addPort(outport_);
 
@@ -57,7 +58,7 @@ MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
 void MorseSmaleComplexToMesh::process() {
     auto pMSCData = mscInport_.getData();
     if (!pMSCData) return;
-    
+
     // Prepare Memory
     const ttk::SimplexId numcp = pMSCData->criticalPoints.numberOfPoints;
     std::vector<vec3> positions(numcp);
@@ -69,37 +70,16 @@ void MorseSmaleComplexToMesh::process() {
         positions[i].x = pMSCData->criticalPoints.points[3 * i];
         positions[i].y = pMSCData->criticalPoints.points[3 * i + 1];
         positions[i].z = pMSCData->criticalPoints.points[3 * i + 2];
+    }
 
-        switch (pMSCData->criticalPoints.cellDimensions[i]) {
-            case 0: {
-                colors[i] = propColors_.localMinima_.get();
-                // LogInfo("Min");
-                break;
-            }
-            case 1: {
-                colors[i] = propColors_.saddle_.get();
-                // LogInfo("Saddle");
-                break;
-            }
-            case 2: {
-                if (pMSCData->triangulation->getTriangulation().getDimensionality() == 2) {
-                    colors[i] = propColors_.localMaxima_.get();
-                    // LogInfo("Max");
-                } else {
-                    colors[i] = propColors_.saddle_.get();
-                    // LogInfo("Saddle");
-                }
-
-                break;
-            }
-            case 3: {
-                ivwAssert(pMSCData->triangulation->getTriangulation().getDimensionality() == 3,
-                          "A critical point from a cell type of 3 can only appear in 3D or higher "
-                          "dimensional spaces.");
-                colors[i] = propColors_.localMaxima_.get();
-                break;
-            }
-        }
+    if (pMSCData->triangulation->getTriangulation().getDimensionality() == 2) {
+        std::transform(pMSCData->criticalPoints.cellDimensions.begin(),
+                       pMSCData->criticalPoints.cellDimensions.end(), colors.begin(),
+                       [this](char c) { return propColors_.getColor2D(c); });
+    } else {
+        std::transform(pMSCData->criticalPoints.cellDimensions.begin(),
+                       pMSCData->criticalPoints.cellDimensions.end(), colors.begin(),
+                       [this](char c) { return propColors_.getColor3D(c); });
     }
 
     // Add the separatrixCells
@@ -124,8 +104,8 @@ void MorseSmaleComplexToMesh::process() {
 
     ttk::SimplexId currentCellId = -1;
     for (ttk::SimplexId i = 0; i < pMSCData->separatrixCells.numberOfCells; ++i) {
-        //const ttk::SimplexId sourceId = pMSCData->separatrixCells.sourceIds[i];
-        //const ttk::SimplexId destId = pMSCData->separatrixCells.destinationIds[i];
+        // const ttk::SimplexId sourceId = pMSCData->separatrixCells.sourceIds[i];
+        // const ttk::SimplexId destId = pMSCData->separatrixCells.destinationIds[i];
 
         // assuming that separatrixCells.cells[x + 0] holds the dimensionality, x + 1 and x + 2 hold
         // the from/to indices
@@ -144,7 +124,6 @@ void MorseSmaleComplexToMesh::process() {
         sepIndices.push_back(to + idPrev);
     }
 
-    
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
@@ -162,7 +141,9 @@ void MorseSmaleComplexToMesh::process() {
     mesh->setWorldMatrix(pMSCData->triangulation->getWorldMatrix());
     mesh->copyMetaDataFrom(*pMSCData->triangulation);
 
-    // enable primitive restart so we need only a single index buffer for multiple lines
+    // Hack: enable primitive restart so we need only a single index buffer for multiple lines
+    // The available mesh renderers do no support primitive restart, yet. This will work unless some
+    // other processor disables it or uses a different primitive restart ID.
     glPrimitiveRestartIndex(0xffffffff);
     glEnable(GL_PRIMITIVE_RESTART);
 
