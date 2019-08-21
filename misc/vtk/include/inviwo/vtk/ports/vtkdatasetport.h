@@ -33,7 +33,7 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/datatraits.h>
-#include <modules/tensorvisio/datastructures/vtkdataset.h>
+#include <inviwo/vtk/datastructures/vtkdataset.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

@@ -28,45 +28,59 @@
  *********************************************************************************/
 
 #pragma once
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
 
+#include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <utility>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <vtkXMLDataSetWriter.h>
 #include <vtkSmartPointer.h>
-#include <vtkDataSet.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/**
- * \brief Wrapper class for vtkDataSet pointer
- * Wrapper class for vtkDataSet pointer so we don't have to explicitly take care of memory handling
- * etc.
+/** \docpage{org.inviwo.VTKWriter, VTKWriter}
+ * ![](org.inviwo.VTKWriter.png?classIdentifier=org.inviwo.VTKWriter)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_TENSORVISIO_API VTKDataSet {
+
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_VTK_API VTKWriter : public Processor {
 public:
-    VTKDataSet() = delete;
-    explicit VTKDataSet(vtkSmartPointer<vtkDataSet> dataSet) : dataSet_(dataSet) {}
-    virtual ~VTKDataSet() {}
+    VTKWriter();
+    virtual ~VTKWriter() = default;
 
-    vtkSmartPointer<vtkDataSet> operator->() const { return dataSet_; }
-    vtkSmartPointer<vtkDataSet> operator*() const { return dataSet_; }
+    virtual void process() override;
 
-    std::string getDataInfo() const;
-
-    /** Attempts to get the dimensions of the data set. This will only work if the data set
-     * is of type rectiliniar grid, structured grid or structured points. Otherwise [0,0,0] will be
-     * returned. The method is here because the GetDimensions() method is not declared const in VTK
-     * so if you have a VTKDataSet on the inport you will not be able to determine its
-     * dimensions unless you clone it...
-     * */
-    size3_t getDimensions() const;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
 private:
-    vtkSmartPointer<vtkDataSet> dataSet_;
+    VTKDataSetInport inport_;
+    vtkSmartPointer<vtkXMLDataSetWriter> writer_;
+
+    FileProperty file_;
+    ButtonProperty button_;
+
+    void export_isacppkeyword();
 };
 
 }  // namespace inviwo

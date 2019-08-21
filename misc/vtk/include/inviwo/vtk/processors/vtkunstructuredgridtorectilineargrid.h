@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,75 +29,68 @@
 
 #pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
+#include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/processors/activityindicator.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
+
+#include <atomic>
 
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
 #include <vtkDataSet.h>
-#include <vtkDataObject.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKReader, VTKReader}
- * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+/** \docpage{org.inviwo.VTKUnstructuredGridToRectilinearGrid, VTK Unstructured Grid To Rectilinear
+ * Grid}
+ * ![](org.inviwo.VTKUnstructuredGridReader.png?classIdentifier=org.inviwo.VTKUnstructuredGridToRectilinearGrid)
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API VTKReader : public Processor,
-                                             public ProgressBarOwner,
-                                             public ActivityIndicatorOwner {
+class IVW_MODULE_VTK_API VTKUnstructuredGridToRectilinearGrid
+    : public Processor,
+      public ActivityIndicatorOwner,
+      public ProgressBarOwner {
 public:
-    VTKReader();
-    virtual ~VTKReader() = default;
+    VTKUnstructuredGridToRectilinearGrid();
+    virtual ~VTKUnstructuredGridToRectilinearGrid();
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-private:
-    enum class VTKFileType { XML, Legacy, Unknown };
+protected:
+    enum class State { NotStarted, Working, Abort, Done, Invalid };
 
-    FileProperty file_;
-    ButtonProperty reloadButton_;
+    struct WorkerState {
+        std::atomic<State> state = State::NotStarted;
+        std::atomic<bool> abortConversion_ = false;
+        std::atomic<bool> processorExists_ = true;
+
+        ivec3 dims_ = ivec3(1);
+    };
+
+    void loadData();
+
+    IntProperty maxDimension_;
+
+    ButtonProperty button_;
+    ButtonProperty abortButton_;
+
+    VTKDataSetInport inport_;
     VTKDataSetOutport outport_;
-
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
 
     std::shared_ptr<VTKDataSet> data_;
     vtkSmartPointer<vtkDataSet> dataSet_;
-
-    VTKFileType determineFileType(const std::string& fileName) const;
-    bool read(const VTKFileType fileType);
-    void readLegacy();
-    void readXML();
+    std::shared_ptr<WorkerState> state_;
 };
 
 }  // namespace inviwo

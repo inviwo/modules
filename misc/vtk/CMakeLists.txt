@@ -6,16 +6,30 @@ find_package(VTK REQUIRED)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-	${CMAKE_CURRENT_SOURCE_DIR}/include/inviwo/vtk/util/lambda2func.h
-	${CMAKE_CURRENT_SOURCE_DIR}/include/inviwo/vtk/util/vtkoutputlogger.h
+    include/inviwo/vtk/datastructures/vtkdataset.h
+    include/inviwo/vtk/ports/vtkdatasetport.h
+	include/inviwo/vtk/util/vtkoutputlogger.h
+    include/inviwo/vtk/processors/vtkdatasetinformation.h
+    include/inviwo/vtk/processors/vtkreader.h
+    include/inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h
+    include/inviwo/vtk/processors/vtkwriter.h
+    include/inviwo/vtk/util/vtkutil.h
+    include/inviwo/vtk/vtkmodule.h
+    include/inviwo/vtk/vtkmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/vtkmodule.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vtkoutputlogger.cpp
+    src/datastructures/vtkdataset.cpp
+    src/ports/vtkdatasetport.cpp
+    src/vtkmodule.cpp
+    src/util/vtkoutputlogger.cpp
+    src/processors/vtkdatasetinformation.cpp
+    src/processors/vtkreader.cpp
+    src/processors/vtkunstructuredgridtorectilineargrid.cpp
+    src/processors/vtkwriter.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -134,7 +134,13 @@ void VTKDataSetToTensorField3D::generate() {
 
         if (!tensorArray) return;
 
-        const auto dimensions = dataSet.getDimensions();
+        size3_t dimensions{0};
+
+        if (const auto dimensionsOpt = dataSet.getDimensions()) {
+            dimensions = *dimensionsOpt;
+        } else {
+            throw inviwo::Exception("Dimensions were not available.", IVW_CONTEXT);
+        }
 
         LogProcessorInfo("Attempting to generate tensor field from array \""
                          << std::string{tensorArray->GetName()} << "\"");

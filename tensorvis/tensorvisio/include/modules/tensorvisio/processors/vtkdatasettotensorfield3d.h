@@ -37,7 +37,7 @@
 #include <inviwo/core/processors/activityindicator.h>
 
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 

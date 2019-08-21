@@ -27,11 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtkreader.h>
+#include <inviwo/vtk/processors/vtkreader.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/clock.h>
-#include <inviwo/vtk/util/lambda2func.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,7 +38,7 @@
 #include <warn/pop>
 
 #include <fstream>
-#include <modules/tensorvisio/util/vtkutil.h>
+#include <inviwo/vtk/util/vtkutil.h>
 
 namespace inviwo {
 

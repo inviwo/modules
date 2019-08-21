@@ -33,7 +33,7 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
 
 namespace inviwo {
 

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtkwriter.h>
+#include <inviwo/vtk/processors/vtkwriter.h>
 #include <inviwo/core/util/filesystem.h>
 
 namespace inviwo {

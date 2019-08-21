@@ -27,12 +27,12 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/util/lambda2func.h>
+#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/util/clock.h>
+#include <inviwo/vtk/util/vtkutil.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -144,17 +144,6 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
     auto dispatch = [this, done, abort, unstructuredGrid, pb = &progressBar_,
                      activityIndicator = &getActivityIndicator(),
                      state = state_]() mutable -> void {
-        auto log = [](const std::string& message) { LogInfoCustom("VTK conversion", message); };
-
-        const auto progressUpdate = [pb, state](float f) {
-            if (state->processorExists_) {
-                dispatchFront([f, pb]() {
-                    f < 1.0 ? pb->show() : pb->hide();
-                    pb->updateProgress(f);
-                });
-            }
-        };
-
         auto updateActivity = [activityIndicator, state](bool active) {
             if (state->processorExists_) {
                 dispatchFront([active](ActivityIndicator* i) { i->setActive(active); },
@@ -167,9 +156,6 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
 
         Clock globalClock;
         globalClock.start();
-        const float progressIncr = 1.0f / 6.0f;
-        float progress = 0.0f;
-        progressUpdate(progress);
 
         if (this->state_->abortConversion_) {
             abort();
@@ -180,26 +166,11 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         const auto gridSize = this->state_->dims_;
         const auto gridBounds = dvec3(gridSize - ivec3(1));
 
-        auto fn = fnptr<void(vtkObject*, long unsigned int, void*, void*)>(
-            [log, &progress, progressIncr, progressUpdate](
-                vtkObject* caller, long unsigned int /*eventId*/, void* /*clientData*/,
-                void* /*callData*/) -> void {
-                vtkProbeFilter* testFilter = static_cast<vtkProbeFilter*>(caller);
-                if (testFilter->GetProgress() > 0.0) {
-                    std::ostringstream os;
-                    os << std::fixed << std::setprecision(1) << testFilter->GetProgress() * 100.0
-                       << "%";
-                    log(os.str());
-                    progress += testFilter->GetProgress() * progressIncr;
-                    progressUpdate(progress);
-                }
-            });
-
         vtkSmartPointer<vtkCallbackCommand> progressCallback =
             vtkSmartPointer<vtkCallbackCommand>::New();
-        progressCallback->SetCallback(fn);
+        progressCallback->SetCallback(vtkProgressBarCallback);
+        progressCallback->SetClientData(&progressBar_);
 
-        log("Generating grid...");
         auto pointSet = vtkSmartPointer<vtkRectilinearGrid>::New();
         pointSet->SetDimensions(glm::value_ptr(gridSize));
 
@@ -230,9 +201,6 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         pointSet->SetXCoordinates(xCoordinates);
         pointSet->SetYCoordinates(yCoordinates);
         pointSet->SetZCoordinates(zCoordinates);
-        progress += progressIncr;
-        progressUpdate(progress);
-        log("Done.");
 
         if (this->state_->abortConversion_) {
             abort();
@@ -242,18 +210,13 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         vtkSmartPointer<vtkCellTreeLocator> cellLocator =
             vtkSmartPointer<vtkCellTreeLocator>::New();
         cellLocator->SetDataSet(pointSet);
-        log("Building Cell Tree Locator...");
         cellLocator->BuildLocator();
-        progress += progressIncr;
-        progressUpdate(progress);
-        log("Done.");
 
         if (this->state_->abortConversion_) {
             abort();
             return;
         }
 
-        log("Probing...");
         auto probeFilter = vtkSmartPointer<vtkProbeFilter>::New();
         probeFilter->SetSourceData(unstructuredGrid);
         probeFilter->SetCellLocatorPrototype(cellLocator);
@@ -261,7 +224,6 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         probeFilter->AddObserver(vtkCommand::ProgressEvent, progressCallback);
 
         probeFilter->Update();
-        log("Done.");
 
         if (this->state_->abortConversion_) {
             abort();
@@ -269,17 +231,14 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         }
 
         dataSet_ = probeFilter->GetRectilinearGridOutput();
-        progress += progressIncr;
-        progressUpdate(progress);
 
         globalClock.stop();
 
         const int min = static_cast<int>(globalClock.getElapsedSeconds() / 60.0);
         const double sec = static_cast<int>(globalClock.getElapsedSeconds() - min * 60.0);
-        log("Converting Unstructured Grid to Rectilinear (VTK): " + std::to_string(min) + "min " +
-            std::to_string(sec) + "s");
 
         done();
+        updateActivity(false);
         this->state_->state = State::Done;
 
         dispatchFront([this]() {
