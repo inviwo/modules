@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/nrrdreader.h
     include/modules/tensorvisio/processors/tensorfield2dexport.h
     include/modules/tensorvisio/processors/tensorfield2dimport.h
+    include/modules/tensorvisio/processors/tensorfield2dtovtk.h
     include/modules/tensorvisio/processors/tensorfield3dexport.h
     include/modules/tensorvisio/processors/tensorfield3dimport.h
     include/modules/tensorvisio/processors/vtkdatasettotensorfield3d.h
@@ -34,6 +35,7 @@ set(SOURCE_FILES
     src/processors/nrrdreader.cpp
     src/processors/tensorfield2dexport.cpp
     src/processors/tensorfield2dimport.cpp
+    src/processors/tensorfield2dtovtk.cpp
     src/processors/tensorfield3dexport.cpp
     src/processors/tensorfield3dimport.cpp
     src/processors/vtkdatasettotensorfield3d.cpp
