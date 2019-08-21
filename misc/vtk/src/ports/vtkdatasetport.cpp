@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
 
 namespace inviwo {
 

@@ -37,11 +37,7 @@
 #include <modules/tensorvisio/processors/tensorfield3dexport.h>
 #include <modules/tensorvisio/processors/tensorfield3dimport.h>
 #include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
-#include <modules/tensorvisio/processors/vtkdatasetinformation.h>
-#include <modules/tensorvisio/processors/vtkreader.h>
-#include <modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h>
 #include <modules/tensorvisio/processors/flowguifilereader.h>
-#include <modules/tensorvisio/processors/vtkwriter.h>
 
 namespace inviwo {
 
@@ -56,11 +52,7 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app)
     registerProcessor<TensorField3DExport>();
     registerProcessor<TensorField3DImport>();
     registerProcessor<VTKDataSetToTensorField3D>();
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
     registerProcessor<FlowGUIFileReader>();
-    registerProcessor<VTKWriter>();
 }
 
 TensorVisIOModule::~TensorVisIOModule() = default;

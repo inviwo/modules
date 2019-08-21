@@ -34,6 +34,12 @@
 #include <vtkVersion.h>
 #include <warn/pop>
 
+#include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <inviwo/vtk/processors/vtkdatasetinformation.h>
+#include <inviwo/vtk/processors/vtkreader.h>
+#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
+#include <inviwo/vtk/processors/vtkwriter.h>
+
 namespace inviwo {
 
 VTKModule::VTKModule(InviwoApplication* app)
@@ -41,6 +47,14 @@ VTKModule::VTKModule(InviwoApplication* app)
 
     LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
     LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+
+    registerProcessor<VTKDataSetInformation>();
+    registerProcessor<VTKReader>();
+    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
+    registerProcessor<VTKWriter>();
+
+    registerPort<VTKDataSetInport>();
+    registerPort<VTKDataSetOutport>();
 }
 
 }  // namespace inviwo

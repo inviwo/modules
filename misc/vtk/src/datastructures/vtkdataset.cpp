@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/datastructures/vtkdataset.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/vtk/datastructures/vtkdataset.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -42,7 +41,7 @@
 
 namespace inviwo {
 
-size3_t VTKDataSet::getDimensions() const {
+std::optional<size3_t> VTKDataSet::getDimensions() const {
     ivec3 dims{0};
 
     switch (dataSet_->GetDataObjectType()) {
@@ -59,7 +58,7 @@ size3_t VTKDataSet::getDimensions() const {
                 ->GetDimensions(glm::value_ptr(dims));
             break;
         default:
-            break;
+            return std::nullopt;
     }
 
     return size3_t{dims};
@@ -95,16 +94,16 @@ std::string VTKDataSet::getDataInfo() const {
     std::stringstream ss;
     ss << "<table border='0' cellspacing='0' cellpadding='0' "
           "style='border-color:white;white-space:pre;'>/n"
-       << tensorutil::getHTMLTableRowString("Type", "VTK data set")
-       << tensorutil::getHTMLTableRowString("Class name", std::string{dataSet_->GetClassName()});
+       << getHTMLTableRowString("Type", "VTK data set")
+       << getHTMLTableRowString("Class name", std::string{dataSet_->GetClassName()});
 
     if (!cellNames.empty()) {
         ss << "</br>";
         ss << "</br>";
 
-        ss << tensorutil::getHTMLTableIntermediateHeaderString("Cell data arrays");
+        ss << getHTMLTableIntermediateHeaderString("Cell data arrays");
         for (size_t j{0}; j < cellNames.size(); ++j) {
-            ss << tensorutil::getHTMLTableRowString(cellNames[j], cellTypes[j]);
+            ss << getHTMLTableRowString(cellNames[j], cellTypes[j]);
         }
     }
 
@@ -112,9 +111,9 @@ std::string VTKDataSet::getDataInfo() const {
         ss << "</br>";
         ss << "</br>";
 
-        ss << tensorutil::getHTMLTableIntermediateHeaderString("Point data arrays");
+        ss << getHTMLTableIntermediateHeaderString("Point data arrays");
         for (size_t j{0}; j < pointNames.size(); ++j) {
-            ss << tensorutil::getHTMLTableRowString(pointNames[j], pointTypes[j]);
+            ss << getHTMLTableRowString(pointNames[j], pointTypes[j]);
         }
     }
 

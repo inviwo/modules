@@ -29,13 +29,13 @@
 
 #pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
+#include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -63,7 +63,7 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKDataSetInformation : public Processor {
+class IVW_MODULE_VTK_API VTKDataSetInformation : public Processor {
 public:
     VTKDataSetInformation();
     virtual ~VTKDataSetInformation() = default;
