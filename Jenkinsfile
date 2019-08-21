@@ -30,7 +30,7 @@ node {
         util.buildStandard(
             state: state,
             modulePaths: modulePaths, 
-            onModules: ["TOPOLOGYTOOLKIT"],  
+            onModules: ["TOPOLOGYTOOLKIT","VTK"],  
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
