@@ -37,7 +37,7 @@ namespace inviwo {
 
 /**
  * \ingroup properties
- *  A property providing comonly used colors in topology visualization.
+ *  A property providing comonly-used colors in topology visualization.
  *
  * @see CompositeProperty
  */
@@ -51,6 +51,21 @@ public:
     TopologyColorsProperty(const TopologyColorsProperty& rhs);
     virtual TopologyColorsProperty* clone() const override;
     virtual ~TopologyColorsProperty() = default;
+
+    /**
+     * \brief return the color for a critical 2D point based on the cell dimension \p cellDim
+     *
+     * @param cellDim   cell dimensions of the critical point
+     * @return color matching the given cell dimension
+     */
+    vec4 getColor2D(char cellDim) const;
+    /**
+     * \brief return the color for a critical 3D point based on the cell dimension \p cellDim
+     *
+     * @param cellDim   cell dimensions of the critical point
+     * @return color matching the given cell dimension
+     */
+    vec4 getColor3D(char cellDim) const;
 
     FloatVec4Property localMaxima_;
     FloatVec4Property localMinima_;

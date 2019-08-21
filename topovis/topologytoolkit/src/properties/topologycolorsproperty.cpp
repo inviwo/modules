@@ -29,6 +29,9 @@
 
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 #include <inviwo/core/util/foreacharg.h>
+#include <inviwo/core/util/exception.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -68,6 +71,39 @@ TopologyColorsProperty::TopologyColorsProperty(const TopologyColorsProperty& rhs
 
 TopologyColorsProperty* TopologyColorsProperty::clone() const {
     return new TopologyColorsProperty(*this);
+}
+
+vec4 TopologyColorsProperty::getColor2D(char cellDimension) const {
+    switch (cellDimension) {
+        case 0:
+            return localMinima_.get();
+        case 1:
+            return saddle_.get();
+        case 2:
+            return localMaxima_.get();
+        default:
+            throw Exception(
+                fmt::format("A critical point from a cell type of {0} can only appear in {0}D or "
+                            "higher dimensional spaces",
+                            cellDimension));
+    }
+}
+
+vec4 TopologyColorsProperty::getColor3D(char cellDimension) const {
+    switch (cellDimension) {
+        case 0:
+            return localMinima_.get();
+        case 1:
+        case 2:
+            return saddle_.get();
+        case 3:
+            return localMaxima_.get();
+        default:
+            throw Exception(
+                fmt::format("A critical point from a cell type of {0} can only appear in {0}D or "
+                            "higher dimensional spaces",
+                            cellDimension));
+    }
 }
 
 }  // namespace inviwo
