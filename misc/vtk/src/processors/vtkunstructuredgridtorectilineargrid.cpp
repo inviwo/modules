@@ -109,7 +109,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
             });
         }
     };
-    const auto abort = [this, state = state_, done]() {
+    const auto abort = [state = state_, done]() {
         state->state = State::Abort;
         LogWarnCustom("VTK conversion", "Conversion aborted.");
         done();
@@ -141,7 +141,7 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
 
     state_->dims_ = {xDim, yDim, zDim};
 
-    auto dispatch = [this, done, abort, unstructuredGrid, pb = &progressBar_,
+    auto dispatch = [this, done, abort, unstructuredGrid,
                      activityIndicator = &getActivityIndicator(),
                      state = state_]() mutable -> void {
         auto updateActivity = [activityIndicator, state](bool active) {
@@ -153,9 +153,6 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
 
         updateActivity(true);
         this->state_->state = State::Working;
-
-        Clock globalClock;
-        globalClock.start();
 
         if (this->state_->abortConversion_) {
             abort();
@@ -231,11 +228,6 @@ void VTKUnstructuredGridToRectilinearGrid::loadData() {
         }
 
         dataSet_ = probeFilter->GetRectilinearGridOutput();
-
-        globalClock.stop();
-
-        const int min = static_cast<int>(globalClock.getElapsedSeconds() / 60.0);
-        const double sec = static_cast<int>(globalClock.getElapsedSeconds() - min * 60.0);
 
         done();
         updateActivity(false);
