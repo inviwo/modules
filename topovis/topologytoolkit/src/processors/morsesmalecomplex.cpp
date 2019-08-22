@@ -56,9 +56,7 @@ const ProcessorInfo MorseSmaleComplex::processorInfo_{
 const ProcessorInfo MorseSmaleComplex::getProcessorInfo() const { return processorInfo_; }
 
 MorseSmaleComplex::MorseSmaleComplex()
-    : Processor()
-    , inport_{"triangulation"}
-    , outport_{"outport"} {
+    : Processor(), inport_{"triangulation"}, outport_{"outport"} {
     addPort(inport_);
     addPort(outport_);
 }
@@ -99,8 +97,7 @@ void MorseSmaleComplex::updateOutport() {
     const auto inportData = inport_.getData();
 
     // construction of ttk contour tree
-    auto compute = [this, inportData,
-                    done]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
+    auto compute = [inportData, done]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
         ScopedClockCPU clock{"MorseSmaleComplex", "Morse-Smale complex calculation",
                              std::chrono::milliseconds(500), LogLevel::Info};
         auto mscData =
