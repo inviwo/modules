@@ -29,23 +29,29 @@
 
 #pragma once
 
-#include <modules/tensorvisio/tensorvisiomoduledefine.h>
+#include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <modules/tensorvisio/ports/vtkdatasetport.h>
+#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/processors/progressbarowner.h>
+#include <inviwo/core/processors/activityindicator.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkXMLDataSetWriter.h>
 #include <vtkSmartPointer.h>
+#include <vtkXMLGenericDataObjectReader.h>
+#include <vtkGenericDataObjectReader.h>
+#include <vtkDataSet.h>
+#include <vtkDataObject.h>
 #include <warn/pop>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKWriter, VTKWriter}
- * ![](org.inviwo.VTKWriter.png?classIdentifier=org.inviwo.VTKWriter)
+/** \docpage{org.inviwo.VTKReader, VTKReader}
+ * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -63,10 +69,12 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKWriter : public Processor {
+class IVW_MODULE_VTK_API VTKReader : public Processor,
+                                             public ProgressBarOwner,
+                                             public ActivityIndicatorOwner {
 public:
-    VTKWriter();
-    virtual ~VTKWriter() = default;
+    VTKReader();
+    virtual ~VTKReader() = default;
 
     virtual void process() override;
 
@@ -74,13 +82,22 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    VTKDataSetInport inport_;
-    vtkSmartPointer<vtkXMLDataSetWriter> writer_;
+    enum class VTKFileType { XML, Legacy, Unknown };
 
     FileProperty file_;
-    ButtonProperty button_;
+    ButtonProperty reloadButton_;
+    VTKDataSetOutport outport_;
 
-    void export_isacppkeyword();
+    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
+    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
+
+    std::shared_ptr<VTKDataSet> data_;
+    vtkSmartPointer<vtkDataSet> dataSet_;
+
+    VTKFileType determineFileType(const std::string& fileName) const;
+    bool read(const VTKFileType fileType);
+    void readLegacy();
+    void readXML();
 };
 
 }  // namespace inviwo

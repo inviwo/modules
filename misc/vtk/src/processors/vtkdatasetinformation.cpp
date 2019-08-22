@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtkdatasetinformation.h>
+#include <inviwo/vtk/processors/vtkdatasetinformation.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/stringconversion.h>
 

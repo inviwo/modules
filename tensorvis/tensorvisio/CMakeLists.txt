@@ -5,8 +5,6 @@ ivw_module(TensorVisIO)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/tensorvisio/datastructures/vtkdataset.h
-    include/modules/tensorvisio/ports/vtkdatasetport.h
     include/modules/tensorvisio/processors/amiratensorreader.h
     include/modules/tensorvisio/processors/nrrdreader.h
     include/modules/tensorvisio/processors/tensorfield2dexport.h
@@ -15,22 +13,15 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/tensorfield3dexport.h
     include/modules/tensorvisio/processors/tensorfield3dimport.h
     include/modules/tensorvisio/processors/vtkdatasettotensorfield3d.h
-    include/modules/tensorvisio/processors/vtkdatasetinformation.h
-    include/modules/tensorvisio/processors/vtkreader.h
-    include/modules/tensorvisio/processors/vtkunstructuredgridtorectilineargrid.h
-    include/modules/tensorvisio/processors/vtkwriter.h
     include/modules/tensorvisio/processors/flowguifilereader.h
     include/modules/tensorvisio/tensorvisiomodule.h
     include/modules/tensorvisio/tensorvisiomoduledefine.h
-	include/modules/tensorvisio/util/vtkutil.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
-    src/datastructures/vtkdataset.cpp
-    src/ports/vtkdatasetport.cpp
     src/processors/amiratensorreader.cpp
     src/processors/nrrdreader.cpp
     src/processors/tensorfield2dexport.cpp
@@ -39,10 +30,6 @@ set(SOURCE_FILES
     src/processors/tensorfield3dexport.cpp
     src/processors/tensorfield3dimport.cpp
     src/processors/vtkdatasettotensorfield3d.cpp
-    src/processors/vtkdatasetinformation.cpp
-    src/processors/vtkreader.cpp
-    src/processors/vtkunstructuredgridtorectilineargrid.cpp
-    src/processors/vtkwriter.cpp
     src/processors/flowguifilereader.cpp
     src/tensorvisiomodule.cpp
 )
