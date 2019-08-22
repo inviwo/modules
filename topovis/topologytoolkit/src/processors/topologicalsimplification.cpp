@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/clock.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -81,60 +82,120 @@ TopologicalSimplification::TopologicalSimplification()
 }
 
 void TopologicalSimplification::process() {
-    auto compute = [&](const auto buffer, float threshold, bool invert) {
-        using ValueType = util::PrecisionValueType<decltype(buffer)>;
-
-        const auto &persistenceDiagram = *persistenceInport_.getData();
-
-        // select most/least persistent critical point pairs
-        std::vector<int> authorizedCriticalPoints;
-        for (int i = 0; i < (int)persistenceDiagram.size(); i++) {
-            auto persistence = std::get<4>(persistenceDiagram[i]);
-            if ((persistence >= threshold) != invert) {
-                authorizedCriticalPoints.push_back(std::get<0>(persistenceDiagram[i]));
-                authorizedCriticalPoints.push_back(std::get<2>(persistenceDiagram[i]));
-            }
+    if (util::is_future_ready(newTriangulation_)) {
+        try {
+            auto triangulation = newTriangulation_.get();
+            outport_.setData(triangulation);
+            hasNewData_ = false;
+            getActivityIndicator().setActive(false);
+        } catch (Exception &) {
+            // Need to reset the future, VS bug:
+            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
+            newTriangulation_ = {};
+            outport_.setData(nullptr);
+            hasNewData_ = false;
+            throw;
         }
-
-        // create a copy of the data values, nth component will be overwritten by simplification
-        auto simplifiedDataValues = buffer->getDataContainer();
-        auto input = inport_.getData();
-
-        std::vector<int> offsets(input->getOffsets());
-        if (!authorizedCriticalPoints.empty()) {
-            // perform topological simplification
-            ttk::TopologicalSimplification simplification;
-            simplification.setupTriangulation(
-                const_cast<ttk::Triangulation *>(&input->getTriangulation()));
-            simplification.setInputScalarFieldPointer(buffer->getDataContainer().data());
-            simplification.setInputOffsetScalarFieldPointer(offsets.data());
-            simplification.setOutputScalarFieldPointer(simplifiedDataValues.data());
-            simplification.setOutputOffsetScalarFieldPointer(offsets.data());
-            simplification.setConstraintNumber(static_cast<int>(authorizedCriticalPoints.size()));
-            simplification.setVertexIdentifierScalarFieldPointer(authorizedCriticalPoints.data());
-
-            int retVal = simplification.execute<typename DataFormat<ValueType>::primitive, int>();
-            if (retVal < 0) {
-                throw TTKException("Error computing ttk::TopologicalSimplification");
-            }
+    } else if (!newTriangulation_.valid()) {  // We are not waiting for a calculation
+        if (inport_.isChanged() || persistenceInport_.isChanged() || threshold_.isModified() ||
+            invert_.isModified() || simplificationDirty_) {
+            getActivityIndicator().setActive(true);
+            updateOutport();
         }
+    }
+}
 
-        // create a new triangulation based on the old one, but with new scalar values
-        auto result = std::make_shared<topology::TriangulationData>(*inport_.getData().get());
-        result->setScalarValues(util::makeBuffer(std::move(simplifiedDataValues)));
-        result->setOffsets(std::move(offsets));
-
-        return result;
+void TopologicalSimplification::updateOutport() {
+    auto done = [this]() {
+        dispatchFront([this]() {
+            simplificationDirty_ = false;
+            hasNewData_ = true;
+            invalidate(InvalidationLevel::InvalidOutput);
+        });
     };
 
-    auto data =
-        inport_.getData()
-            ->getScalarValues()
-            ->getEditableRepresentation<BufferRAM>()
-            ->dispatch<std::shared_ptr<topology::TriangulationData>, dispatching::filter::Scalars>(
-                compute, threshold_.get(), invert_.get());
+    // Save input and properties needed to calculate ttk contour tree to local variables
+    const auto inportData = inport_.getData();
+    const auto persistenceDiagram = persistenceInport_.getData();
 
-    outport_.setData(data);
+    auto compute = [this, inportData, persistenceDiagram, done, threshold = threshold_.get(),
+                    invert =
+                        invert_.get()]() -> std::shared_ptr<const topology::TriangulationData> {
+        ScopedClockCPU clock{"TopologicalSimplification",
+                             "Topological simplification for " + std::to_string(threshold_.get()),
+                             std::chrono::milliseconds(500), LogLevel::Info};
+
+        auto triangulation =
+            inportData->getScalarValues()
+                ->getEditableRepresentation<BufferRAM>()
+                ->dispatch<std::shared_ptr<topology::TriangulationData>,
+                           dispatching::filter::Scalars>([inportData,
+                                                          &diagramData = *persistenceDiagram,
+                                                          threshold, invert](const auto buffer) {
+                    using ValueType = util::PrecisionValueType<decltype(buffer)>;
+
+                    // select most/least persistent critical point pairs
+                    std::vector<int> authorizedCriticalPoints;
+                    for (int i = 0; i < (int)diagramData.size(); i++) {
+                        auto persistence = std::get<4>(diagramData[i]);
+                        if ((persistence >= threshold) != invert) {
+                            authorizedCriticalPoints.push_back(
+                                std::get<0>(diagramData[i]));
+                            authorizedCriticalPoints.push_back(
+                                std::get<2>(diagramData[i]));
+                        }
+                    }
+
+                    // create a copy of the data values, nth component will be overwritten by
+                    // simplification
+                    auto simplifiedDataValues = buffer->getDataContainer();
+
+                    std::vector<int> offsets(inportData->getOffsets());
+                    if (!authorizedCriticalPoints.empty()) {
+                        // perform topological simplification
+                        ttk::TopologicalSimplification simplification;
+                        simplification.setupTriangulation(
+                            const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
+                        simplification.setInputScalarFieldPointer(
+                            buffer->getDataContainer().data());
+                        simplification.setInputOffsetScalarFieldPointer(offsets.data());
+                        simplification.setOutputScalarFieldPointer(simplifiedDataValues.data());
+                        simplification.setOutputOffsetScalarFieldPointer(offsets.data());
+                        simplification.setConstraintNumber(
+                            static_cast<int>(authorizedCriticalPoints.size()));
+                        simplification.setVertexIdentifierScalarFieldPointer(
+                            authorizedCriticalPoints.data());
+
+                        int retVal = simplification
+                                         .execute<typename DataFormat<ValueType>::primitive, int>();
+                        if (retVal < 0) {
+                            throw TTKException("Error computing ttk::TopologicalSimplification");
+                        }
+                    }
+
+                    // create a new triangulation based on the old one, but with new scalar values
+                    auto result =
+                        std::make_shared<topology::TriangulationData>(*inportData);
+                    result->setScalarValues(util::makeBuffer(std::move(simplifiedDataValues)));
+                    result->setOffsets(std::move(offsets));
+
+                    return result;
+                });
+
+        done();
+        return triangulation;
+    };
+
+    newTriangulation_ = dispatchPool(compute);
+}
+
+void TopologicalSimplification::invalidate(InvalidationLevel invalidationLevel, Property *source) {
+    notifyObserversInvalidationBegin(this);
+    PropertyOwner::invalidate(invalidationLevel, source);
+    if (!isValid() && hasNewData_) {
+        for (auto &port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
+    }
+    notifyObserversInvalidationEnd(this);
 }
 
 }  // namespace inviwo

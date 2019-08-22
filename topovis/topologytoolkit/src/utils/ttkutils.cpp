@@ -59,13 +59,19 @@ TriangulationData meshToTTKTriangulation(const Mesh& mesh) {
                       "Mesh features multiple position buffer, using only first one.");
     }
 
+    const auto modelMatrix = mesh.getModelMatrix();
+
     // convert position buffer of input mesh to vec3
     auto bufferRAM = bufferIt->second->getRepresentation<BufferRAM>();
-    auto positions = bufferRAM->dispatch<std::vector<vec3>>([](auto posBuffer) {
+    auto positions = bufferRAM->dispatch<std::vector<vec3>>([modelMatrix](auto posBuffer) {
         auto data = posBuffer->getDataContainer();
         std::vector<vec3> result(data.size());
         std::transform(data.begin(), data.end(), result.begin(),
-                       [](auto& elem) { return util::glm_convert<vec3>(elem); });
+                       [modelMatrix](auto& elem) { 
+            auto v = util::glm_convert<vec3>(elem);
+            // apply model transform
+            return vec3(modelMatrix * vec4(v, 1.0f));
+        });
         return result;
     });
 
@@ -90,6 +96,10 @@ TriangulationData meshToTTKTriangulation(const Mesh& mesh) {
                             indexElem.first);
         }
     }
+
+    data.copyMetaDataFrom(mesh);
+    data.setModelMatrix(mat4(1.0f));
+    data.setWorldMatrix(mesh.getWorldMatrix());
 
     return data;
 }
@@ -175,6 +185,10 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
         mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
                           util::makeIndexBuffer(std::move(indicesTriangles)));
     }
+    
+    mesh->setModelMatrix(data.getModelMatrix());
+    mesh->setWorldMatrix(data.getWorldMatrix());
+    mesh->copyMetaDataFrom(data);
 
     return mesh;
 }
@@ -202,6 +216,10 @@ TriangulationData volumeToTTKTriangulation(const Volume& volume, size_t channel)
 
     volume.getRepresentation<VolumeRAM>()->dispatch<void>(convertVolumeToBuffer, channel);
 
+    data.copyMetaDataFrom(volume);
+    data.setModelMatrix(volume.getModelMatrix());
+    data.setWorldMatrix(volume.getWorldMatrix());
+
     return data;
 }
 
@@ -217,8 +235,9 @@ std::shared_ptr<Volume> ttkTriangulationToVolume(const TriangulationData& data) 
         // create volume and set basis and offset
         auto volumeRAM = createVolumeRAM(data.getGridDimensions(), DataFloat32::get());
         auto volume = std::make_shared<Volume>(volumeRAM);
-        volume->setOffset(data.getGridOrigin());
-        volume->setBasis(glm::scale(data.getGridExtent()));
+        volume->setModelMatrix(data.getModelMatrix());
+        volume->setWorldMatrix(data.getWorldMatrix());
+        volume->copyMetaDataFrom(data);
         return volume;
     }
 
@@ -235,8 +254,9 @@ std::shared_ptr<Volume> ttkTriangulationToVolume(const TriangulationData& data) 
 
         // create volume and set basis and offset
         auto volume = std::make_shared<Volume>(volumeRep);
-        volume->setOffset(data.getGridOrigin());
-        volume->setBasis(glm::scale(data.getGridExtent()));
+        volume->setModelMatrix(data.getModelMatrix());
+        volume->setWorldMatrix(data.getWorldMatrix());
+        volume->copyMetaDataFrom(data);
         volume->dataMap_ = data.getDataMapper();
         return volume;
     };

@@ -26,27 +26,58 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/activityindicator.h>
 
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/topologytoolkit/ports/triangulationdataport.h>
+#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 
 namespace inviwo {
 
-namespace topology {
+/** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
+ * ![](org.inviwo.MorseSmaleComplex.png?classIdentifier=org.inviwo.MorseSmaleComplex)
+ * Computes the Morse-Smale complex for a given TTK triangulation.
+ *
+ * ### Inports
+ *   * __triangulation__   input triangulation
+ *
+ * ### Outports
+ *   * __outport__     Morse-Smale complex
+ *
+ */
 
 /**
- * \ingroup ports
+ * \brief compute the Morse-Smale complex for a given TTK triangulation
  */
-using ContourTreeInport = DataInport<ContourTreeData>;
-/**
- * \ingroup ports
- */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
+class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplex : public Processor,
+                                                         public ActivityIndicatorOwner {
+public:
+    MorseSmaleComplex();
+    virtual ~MorseSmaleComplex() = default;
 
-}  // namespace topology
+    virtual void process() override;
+
+    virtual void invalidate(InvalidationLevel invalidationLevel,
+                            Property* source = nullptr) override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    void updateOutport();
+
+    topology::TriangulationInport inport_;
+    topology::MorseSmaleComplexOutport outport_;
+
+    std::future<std::shared_ptr<const topology::MorseSmaleComplexData>> newMsc_;
+
+    bool mscDirty_ = true;
+    bool hasNewData_ = false;
+};
 
 }  // namespace inviwo

@@ -26,27 +26,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
-
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 
 namespace inviwo {
-
-namespace topology {
-
-/**
- * \ingroup ports
- */
-using ContourTreeInport = DataInport<ContourTreeData>;
-/**
- * \ingroup ports
- */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
-
-}  // namespace topology
 
 }  // namespace inviwo

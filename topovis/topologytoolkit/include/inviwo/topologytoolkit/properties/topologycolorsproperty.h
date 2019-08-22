@@ -29,24 +29,53 @@
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
-
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-namespace topology {
-
 /**
- * \ingroup ports
+ * \ingroup properties
+ *  A property providing comonly-used colors in topology visualization.
+ *
+ * @see CompositeProperty
  */
-using ContourTreeInport = DataInport<ContourTreeData>;
-/**
- * \ingroup ports
- */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty : public CompositeProperty {
+public:
+    virtual std::string getClassIdentifier() const override;
+    static const std::string classIdentifier;
+     
+    TopologyColorsProperty(std::string identifier, std::string displayName);
 
-}  // namespace topology
+    TopologyColorsProperty(const TopologyColorsProperty& rhs);
+    virtual TopologyColorsProperty* clone() const override;
+    virtual ~TopologyColorsProperty() = default;
+
+    /**
+     * \brief return the color for a critical 2D point based on the cell dimension \p cellDim
+     *
+     * @param cellDim   cell dimensions of the critical point
+     * @return color matching the given cell dimension
+     */
+    vec4 getColor2D(char cellDim) const;
+    /**
+     * \brief return the color for a critical 3D point based on the cell dimension \p cellDim
+     *
+     * @param cellDim   cell dimensions of the critical point
+     * @return color matching the given cell dimension
+     */
+    vec4 getColor3D(char cellDim) const;
+
+    FloatVec4Property localMaxima_;
+    FloatVec4Property localMinima_;
+    FloatVec4Property saddle_;
+    FloatVec4Property arc_;
+
+private:
+    auto props() { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
+    auto props() const { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
+
+};
 
 }  // namespace inviwo

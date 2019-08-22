@@ -37,21 +37,4 @@
 
 namespace inviwo {
 
-namespace topology {
-
-ttk::ftm::FTMTree_MT* ContourTreeData::getTree() const {
-    switch (type) {
-        case TreeType::Join:
-            return tree->getTree(ttk::ftm::TreeType::Join);
-        case TreeType::Split:
-            return tree->getTree(ttk::ftm::TreeType::Split);
-        case TreeType::Contour:
-        case TreeType::JoinAndSplit:
-        default:
-            return tree.get();
-    }
-}
-
-}  // namespace topology
-
 }  // namespace inviwo

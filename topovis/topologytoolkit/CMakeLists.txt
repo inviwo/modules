@@ -12,14 +12,19 @@ ivw_module(TopologyToolKit)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/inviwo/topologytoolkit/datastructures/contourtreedata.h
+    include/inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h
     include/inviwo/topologytoolkit/datastructures/triangulationdata.h
     include/inviwo/topologytoolkit/ports/contourtreeport.h
+    include/inviwo/topologytoolkit/ports/morsesmalecomplexport.h
     include/inviwo/topologytoolkit/ports/persistencediagramport.h
     include/inviwo/topologytoolkit/ports/triangulationdataport.h
     include/inviwo/topologytoolkit/processors/contourtree.h
     include/inviwo/topologytoolkit/processors/contourtreetodataframe.h
     include/inviwo/topologytoolkit/processors/contourtreetomesh.h
     include/inviwo/topologytoolkit/processors/meshtotriangulation.h
+    include/inviwo/topologytoolkit/processors/morsesmalecomplex.h
+    include/inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h
     include/inviwo/topologytoolkit/processors/persistencecurve.h
     include/inviwo/topologytoolkit/processors/persistencediagram.h
     include/inviwo/topologytoolkit/processors/topologicalsimplification.h
@@ -27,6 +32,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/processors/triangulationtovolume.h
     include/inviwo/topologytoolkit/processors/ttktestprocessor.h
     include/inviwo/topologytoolkit/processors/volumetotriangulation.h
+    include/inviwo/topologytoolkit/properties/topologycolorsproperty.h
     include/inviwo/topologytoolkit/topologytoolkitmodule.h
     include/inviwo/topologytoolkit/topologytoolkitmoduledefine.h
     include/inviwo/topologytoolkit/utils/ttkexception.h
@@ -37,14 +43,19 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datastructures/contourtreedata.cpp
+    src/datastructures/morsesmalecomplexdata.cpp
     src/datastructures/triangulationdata.cpp
     src/ports/contourtreeport.cpp
+    src/ports/morsesmalecomplexport.cpp
     src/ports/persistencediagramport.cpp
     src/ports/triangulationdataport.cpp
     src/processors/contourtree.cpp
     src/processors/contourtreetodataframe.cpp
     src/processors/contourtreetomesh.cpp
     src/processors/meshtotriangulation.cpp
+    src/processors/morsesmalecomplex.cpp
+    src/processors/morsesmalecomplextomesh.cpp
     src/processors/persistencecurve.cpp
     src/processors/persistencediagram.cpp
     src/processors/topologicalsimplification.cpp
@@ -52,6 +63,7 @@ set(SOURCE_FILES
     src/processors/triangulationtovolume.cpp
     src/processors/ttktestprocessor.cpp
     src/processors/volumetotriangulation.cpp
+    src/properties/topologycolorsproperty.cpp
     src/topologytoolkitmodule.cpp
     src/utils/ttkexception.cpp
     src/utils/ttkutils.cpp

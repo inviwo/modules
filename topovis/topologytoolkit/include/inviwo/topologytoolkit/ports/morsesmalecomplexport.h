@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
+#include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
 
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
@@ -41,11 +41,11 @@ namespace topology {
 /**
  * \ingroup ports
  */
-using ContourTreeInport = DataInport<ContourTreeData>;
+using MorseSmaleComplexInport = DataInport<MorseSmaleComplexData>;
 /**
  * \ingroup ports
  */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
+using MorseSmaleComplexOutport = DataOutport<MorseSmaleComplexData>;
 
 }  // namespace topology
 

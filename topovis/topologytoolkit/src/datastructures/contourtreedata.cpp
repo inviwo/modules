@@ -26,26 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
-
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
 
 namespace topology {
 
-/**
- * \ingroup ports
- */
-using ContourTreeInport = DataInport<ContourTreeData>;
-/**
- * \ingroup ports
- */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
+ttk::ftm::FTMTree_MT* ContourTreeData::getTree() const {
+    switch (type) {
+        case TreeType::Join:
+            return tree->getTree(ttk::ftm::TreeType::Join);
+        case TreeType::Split:
+            return tree->getTree(ttk::ftm::TreeType::Split);
+        case TreeType::Contour:
+        case TreeType::JoinAndSplit:
+        default:
+            return tree.get();
+    }
+}
 
 }  // namespace topology
 

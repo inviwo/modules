@@ -29,6 +29,8 @@
 
 #include <inviwo/topologytoolkit/processors/contourtreetodataframe.h>
 #include <inviwo/topologytoolkit/processors/contourtreetomesh.h>
+#include <inviwo/topologytoolkit/processors/morsesmalecomplex.h>
+#include <inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h>
 #include <inviwo/topologytoolkit/topologytoolkitmodule.h>
 #include <inviwo/topologytoolkit/processors/ttktestprocessor.h>
 #include <inviwo/topologytoolkit/processors/meshtotriangulation.h>
@@ -39,6 +41,7 @@
 #include <inviwo/topologytoolkit/processors/persistencediagram.h>
 #include <inviwo/topologytoolkit/processors/triangulationtovolume.h>
 #include <inviwo/topologytoolkit/processors/contourtree.h>
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 
 namespace inviwo {
 
@@ -46,6 +49,8 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     : InviwoModule(app, "TopologyToolKit") {
     registerProcessor<ContourTreeToDataFrame>();
     registerProcessor<ContourTreeToMesh>();
+    registerProcessor<MorseSmaleComplex>();
+    registerProcessor<MorseSmaleComplexToMesh>();
     registerProcessor<TTKTestProcessor>();
     registerProcessor<MeshToTriangulation>();
     registerProcessor<VolumeToTriangulation>();
@@ -55,6 +60,8 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<PersistenceDiagram>();
     registerProcessor<TriangulationToVolume>();
     registerProcessor<ContourTree>();
+
+    registerProperty<TopologyColorsProperty>();
 }
 
 }  // namespace inviwo

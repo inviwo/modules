@@ -26,27 +26,54 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
-
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
 
-namespace topology {
+/** \docpage{org.inviwo.MorseSmaleComplexToMesh, Morse Smale Complex To Mesh}
+ * ![](org.inviwo.MorseSmaleComplexToMesh.png?classIdentifier=org.inviwo.MorseSmaleComplexToMesh)
+ * Converts TTK Morse-Smale complex data into a mesh. Critical points are encoded as point mesh with the
+ * specified radius. Separatrices are stored as lines.
+ *
+ * ### Inports
+ *   * __mscomplex__   TTK Morse-Smale Complex input data
+ *
+ * ### Outports
+ *   * __mesh__        Output mesh
+ */
 
 /**
- * \ingroup ports
+ * \brief convert a TTK Morse-Smale complex into a Mesh.
  */
-using ContourTreeInport = DataInport<ContourTreeData>;
-/**
- * \ingroup ports
- */
-using ContourTreeOutport = DataOutport<ContourTreeData>;
+class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexToMesh : public Processor {
+public:
+    MorseSmaleComplexToMesh();
+    virtual ~MorseSmaleComplexToMesh() = default;
 
-}  // namespace topology
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+protected:
+    /// Input Morse-Smale Complex from TTK
+    topology::MorseSmaleComplexInport mscInport_{"mscomplex"};
+    /// Output Mesh representing critical points and separatrices of the MS Complex
+    MeshOutport outport_{"mesh"};
+
+    /// Colors for the critical points and other topological elements
+    TopologyColorsProperty propColors_;
+
+    FloatProperty sphereRadius_;
+};
 
 }  // namespace inviwo
