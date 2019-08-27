@@ -184,18 +184,14 @@ std::vector<T> union_set(const std::vector<T>& vec1, const std::vector<T>& vec2)
     std::set_union(vec1.begin(), vec1.end(), vec2.begin(), vec2.end(), std::back_inserter(ret));
     return ret;
 }
-/**
- * \brief Returns concatenation of two vectors. vec2 is appended to vec1.
- * \param[in] vec1: Vector 1
- * \param[in] vec2: Vector 2
- * \returns Concatenation of the entries of the input vectors
- */
-template <typename T>
-std::vector<T> concatenate(const std::vector<T>& vec1, const std::vector<T>& vec2) {
-    std::vector<T> ret(vec1);
-    ret.reserve(ret.size() + vec2.size());
-    ret.insert(ret.end(), vec2.begin(), vec2.end());
-    return ret;
+
+template <typename Container, typename... Containers>
+auto concatenate(Container first, Containers... vectorsToAppend) {
+    (first.insert(std::end(first), std::begin(vectorsToAppend),
+                             std::end(vectorsToAppend)),
+            ...);
+
+	return std::move(first);
 }
 
 template <typename T>
@@ -203,21 +199,6 @@ std::vector<T> unique(const std::vector<T>& vector) {
     std::vector<T> ret(vector);
     auto last = std::unique(ret.begin(), ret.end());
     ret.erase(last, ret.end());
-    return ret;
-}
-
-template <typename T>
-std::vector<T> concatenate(const std::vector<std::vector<T>>& vecs) {
-    if (vecs.empty()) return std::vector<T>{};
-    std::vector<T> ret(vecs[0]);
-
-    size_t size{0};
-    for (const auto& vec : vecs) size += vec.size();
-    ret.reserve(size);
-
-    for (int i{1}; i < vecs.size(); ++i) {
-        ret.insert(ret.end(), vecs[i].begin(), vecs[i].end());
-    }
     return ret;
 }
 
