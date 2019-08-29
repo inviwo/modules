@@ -6,7 +6,7 @@
 #include <modules/tensorvisbase/util/misc.h>
 
 namespace inviwo {
-TEST(TensorUtilTests, concatenateSuccess) {
+TEST(TensorUtilTests, concatenateVectorSuccess) {
     std::vector<int> vec1;
     std::vector<int> vec2;
     std::vector<int> vec3;
@@ -20,6 +20,22 @@ TEST(TensorUtilTests, concatenateSuccess) {
 
     EXPECT_EQ(vec3, tensorutil::concatenate(vec1, vec2));
     EXPECT_EQ(vec4, tensorutil::concatenate(vec2, vec1));
+}
+
+TEST(TensorUtilTests, concatenateListSuccess) {
+    std::list<int> list1;
+    std::list<int> list2;
+    std::list<int> list3;
+    std::list<int> list4{3, 4, 5, 0, 1, 2};
+    list1.resize(3);
+    list2.resize(3);
+    list3.resize(6);
+    std::iota(list1.begin(), list1.end(), 0);
+    std::iota(list2.begin(), list2.end(), 3);
+    std::iota(list3.begin(), list3.end(), 0);
+
+    EXPECT_EQ(list3, tensorutil::concatenate(list1, list2));
+    EXPECT_EQ(list4, tensorutil::concatenate(list2, list1));
 }
 
 TEST(TensorUtilTests, unionSuccess) {
