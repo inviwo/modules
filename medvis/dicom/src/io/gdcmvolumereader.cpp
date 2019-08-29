@@ -260,21 +260,24 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
 /**
  * Try to read all volumes contained in given path using standard dicomdir:: format
  */
-std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
-    const std::string& fileOrDirectory) {
-    std::string dicomdirPath = fileOrDirectory;
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(const std::string& directory) {
+
+	// According to standard, a DICOM dataset has DICOMDIR file in its root directory
+    std::string dicomdirPath = directory + "/DICOMDIR";
+
     std::ifstream dicomdirInputStream(dicomdirPath, std::ios::binary);
     if (!dicomdirInputStream.is_open()) {
-        throw DataReaderException(fmt::format("could not open DICOM file ('{}')", dicomdirPath),
+        throw DataReaderException(fmt::format("Could not open file ('{}')", dicomdirPath),
                                   IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
-    // Analog to gdcm example "ReadAndDumpdicomdir::"
+    // All of the following is analog to gdcm example ReadAndDumpDICOMDIR
+
     gdcm::Reader reader;
     reader.SetStream(dicomdirInputStream);
     if (!reader.Read()) {
-        // LogInfo(dicomdirPath + " is no DICOM file");
-        return 0;
+		throw DataReaderException(fmt::format("No DICOM file ('{}')", dicomdirPath),
+			IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
     gdcm::File& file = reader.GetFile();
@@ -284,7 +287,8 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
     gdcm::MediaStorage dicomMediaStorage;
     dicomMediaStorage.SetFromFile(file);
     if (dicomMediaStorage != gdcm::MediaStorage::MediaStorageDirectoryStorage) {
-        return 0;
+		throw DataReaderException(fmt::format("No DICOMDIR file ('{}')", dicomdirPath),
+			IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
     std::stringstream storageUID;
@@ -293,15 +297,16 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
         metainfo.GetDataElement(gdcm::Tag(0x0002, 0x0002)).GetValue().Print(storageUID);
     } else {
         // Media Storage Sop Class UID not present
-        return 0;
+		throw DataReaderException(fmt::format("No DICOMDIR file ('{}')", dicomdirPath),
+			IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
     // Trim string because DICOM allows padding with spaces
     auto storageUIDstr = trim(storageUID.str());
 
     if ("1.2.840.10008.1.3.10" != storageUIDstr) {
-        // This file is not a dicomdir::
-        return 0;
+		throw DataReaderException(fmt::format("No DICOMDIR file ('{}')", dicomdirPath),
+			IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
     // Now read actual dataset
@@ -398,14 +403,14 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
         }
     }
 
-    LogInfoCustom("GdcmVolumeReader", "Scanned dicomdir:: ('"
+    LogInfoCustom("GdcmVolumeReader", "Scanned DICOMDIR ('"
                                           << dicomdirPath << "'):\n    PatientCount = "
                                           << patientCount << "\n    StudyCount = " << studyCount
                                           << "\n    ImageCount = " << imageCount);
 
     if (patientCount == 0 || studyCount == 0 || seriesCount == 0 || imageCount == 0) {
         LogWarnCustom("GdcmVolumeReader",
-                      "No volumes found in dicomdir::  ('" << dicomdirPath << "')");
+                      "No volumes found in DICOMDIR ('" << dicomdirPath << "')");
         return 0;
     }
 
@@ -527,6 +532,18 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string& fi
         return this->volumes_;  // doesnt work
     }
     gdcm::Trace::DebugOff();  // prevent gdcm from spamming inviwo console
+
+	try {
+		std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMDIR(directory);
+		if (outputVolumes) {
+			// Return now if reading was already successful	
+			this->file_ = directory;
+			this->volumes_ = outputVolumes;
+			return outputVolumes;
+		}
+	} catch (const Exception&) {
+		// ignore, as this only means that DICOMDIR isnt there, but we keep trying
+	}
 
     {
         std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMsequenceRecursive(directory);
