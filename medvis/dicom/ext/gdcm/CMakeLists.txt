@@ -35,9 +35,10 @@ target_include_directories(gdcm INTERFACE
    ${GDCM_BINARY_DIR}/Source/Common/
 )
 
+find_package(TIFF REQUIRED)
 # we need the libtiff4 sources, so add it as dependency
 target_link_libraries(gdcm INTERFACE 
-    inviwo::tiff
+    TIFF::TIFF
     gdcmCommon
     gdcmDICT
     gdcmDSED
