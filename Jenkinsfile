@@ -13,34 +13,23 @@ node {
     }
 
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"          
-    if(!env.disabledProperties) properties(util.defaultProperties())
-    util.printMap("Environment", env.getEnvironment())
-
-    Map state = [
-        env: env,
-        build: currentBuild, 
-        errors: [],
-        display: 0,
-        addLabel: {label -> },
-        removeLabel: {label -> }
-    ]
+    util.config(this)
 
     def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis", "${env.WORKSPACE}/modules/topovis"]
-    util.wrap(state, "#jenkins-branch-pr") {
+    util.wrap(this, "#jenkins-branch-pr") {
         util.buildStandard(
-            state: state,
+            state: this,
             modulePaths: modulePaths, 
             onModules: ["TOPOLOGYTOOLKIT","VTK"],  
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
-        util.filterfiles()
-        util.format(state)
-        util.warn(state, 'daily/modules/appleclang')
-        util.unittest(state)
-        util.integrationtest(state)        
-        util.regression(state, modulePaths)
-        util.copyright(state)    
-        util.doxygen(state)
+        util.format(this, ["${env.WORKSPACE}/modules"])
+        util.warn(this, 'daily/modules/appleclang')
+        util.unittest(this)
+        util.integrationtest(this)        
+        util.regression(this, modulePaths)
+        util.copyright(this)    
+        util.doxygen(this)
     }
 }
