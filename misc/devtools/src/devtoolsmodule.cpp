@@ -69,8 +69,8 @@ DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevT
     // registerSettings(util::make_unique<DevToolsSettings>());
     // registerMetaData(util::make_unique<DevToolsMetaData>());
     // registerPortInspector("DevToolsOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<DevToolsDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<DevToolsDrawer>());
 }
 
 }  // namespace inviwo

@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_NRRDREADER_H
@@ -48,12 +48,11 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 
 /**
  * \class NRRDReader
@@ -64,11 +63,12 @@ class IVW_MODULE_TENSORVISIO_API NRRDReader : public Processor {
 public:
     NRRDReader();
     virtual ~NRRDReader() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     FileProperty inFile_;
 
@@ -76,7 +76,6 @@ private:
     VolumeOutport volumeOutport_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_NRRDREADER_H
-
+#endif  // IVW_NRRDREADER_H

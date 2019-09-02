@@ -32,8 +32,7 @@
 
 namespace inviwo {
 
-SpringSystemModule::SpringSystemModule(InviwoApplication* app)
-    : InviwoModule(app, "SpringSystem") {
+SpringSystemModule::SpringSystemModule(InviwoApplication* app) : InviwoModule(app, "SpringSystem") {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 

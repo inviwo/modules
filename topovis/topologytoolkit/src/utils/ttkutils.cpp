@@ -66,8 +66,7 @@ TriangulationData meshToTTKTriangulation(const Mesh& mesh) {
     auto positions = bufferRAM->dispatch<std::vector<vec3>>([modelMatrix](auto posBuffer) {
         auto data = posBuffer->getDataContainer();
         std::vector<vec3> result(data.size());
-        std::transform(data.begin(), data.end(), result.begin(),
-                       [modelMatrix](auto& elem) { 
+        std::transform(data.begin(), data.end(), result.begin(), [modelMatrix](auto& elem) {
             auto v = util::glm_convert<vec3>(elem);
             // apply model transform
             return vec3(modelMatrix * vec4(v, 1.0f));
@@ -185,7 +184,7 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
         mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
                           util::makeIndexBuffer(std::move(indicesTriangles)));
     }
-    
+
     mesh->setModelMatrix(data.getModelMatrix());
     mesh->setWorldMatrix(data.getWorldMatrix());
     mesh->copyMetaDataFrom(data);

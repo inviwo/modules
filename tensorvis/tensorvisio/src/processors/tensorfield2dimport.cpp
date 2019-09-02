@@ -34,8 +34,8 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DImport::processorInfo_{
     "org.inviwo.TensorField2DImport",  // Class identifier
-    "Tensor Field 2D Import",            // Display name
-    "Tensor Field IO",                       // Category
+    "Tensor Field 2D Import",          // Display name
+    "Tensor Field IO",                 // Category
     CodeState::Experimental,           // Code state
     Tags::None,                        // Tags
 };
@@ -54,9 +54,9 @@ TensorField2DImport::TensorField2DImport()
     addProperty(extents_);
 }
 
-void TensorField2DImport::buildTensors(const std::vector<double>& data, std::vector<dmat2>& tensors) const
-{
-    for (size_t i{ 0 }; i < data.size() / 3; i++) {
+void TensorField2DImport::buildTensors(const std::vector<double>& data,
+                                       std::vector<dmat2>& tensors) const {
+    for (size_t i{0}; i < data.size() / 3; i++) {
         size_t offset = i * 3;
         tensors.emplace_back(dvec2(data[offset], data[offset + 2]),
                              dvec2(data[offset + 2], data[offset + 1]));

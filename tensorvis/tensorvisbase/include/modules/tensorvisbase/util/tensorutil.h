@@ -30,7 +30,6 @@
 #ifndef IVW_TENSORUTIL_H
 #define IVW_TENSORUTIL_H
 
-
 #include <warn/push>
 #include <warn/ignore/all>
 #include <Eigen/Dense>
@@ -45,10 +44,10 @@ namespace tensorutil {
 enum class InterpolationMethod { Linear, Nearest, Barycentric };
 
 enum class Anisotropy {
-  abs_lamda1_minus_lamda2,
-  abs_lamda1_minus_lamda3,
-  barycentric,
-  abs_lamda1_minus_abs_lamda2
+    abs_lamda1_minus_lamda2,
+    abs_lamda1_minus_lamda3,
+    barycentric,
+    abs_lamda1_minus_abs_lamda2
 };
 
 /*
@@ -56,59 +55,58 @@ enum class Anisotropy {
  * See: https://diglib.eg.org/handle/10.1111/v32i1pp049-074
  */
 enum class Decomposition {
-  Symmetric_Antisymmetric,
-  Stretch_Rotation,
-  Shape_Orientation,
-  Isotropic_Anisotropic
+    Symmetric_Antisymmetric,
+    Stretch_Rotation,
+    Shape_Orientation,
+    Isotropic_Anisotropic
 };
 
 enum class YieldCriterion {
-  William_Warnke,
-  Von_Mises,
-  Mohr_Coulomb,
-  Tresca,
-  Drucker_Prager,
-  Matrix_Constituent_Failure_Criterion,
-  MohrCoulomb_InvariantBased,
-  Tsai_Hill,
-  Tsai_Wu
+    William_Warnke,
+    Von_Mises,
+    Mohr_Coulomb,
+    Tresca,
+    Drucker_Prager,
+    Matrix_Constituent_Failure_Criterion,
+    MohrCoulomb_InvariantBased,
+    Tsai_Hill,
+    Tsai_Wu
 };
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &
-operator<<(std::basic_ostream<Elem, Traits> &os,
-           YieldCriterion yieldCriterion) {
-  switch (yieldCriterion) {
-  case YieldCriterion::William_Warnke:
-    os << "William-Warnke";
-    break;
-  case YieldCriterion::Von_Mises:
-    os << "von Mises";
-    break;
-  case YieldCriterion::Mohr_Coulomb:
-    os << "Mohr-Coulomb";
-    break;
-  case YieldCriterion::Tresca:
-    os << "Tresca";
-    break;
-  case YieldCriterion::Drucker_Prager:
-    os << "Drucker-Prager";
-    break;
-  case YieldCriterion::Matrix_Constituent_Failure_Criterion:
-    os << "Matrix constituent";
-    break;
-  case YieldCriterion::MohrCoulomb_InvariantBased:
-    os << "Mohr-Coulomb invariant based";
-    break;
-  case YieldCriterion::Tsai_Hill:
-    os << "Tsai-Hill";
-    break;
-  case YieldCriterion::Tsai_Wu:
-    os << "Tsai-Wu";
-    break;
-  }
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             YieldCriterion yieldCriterion) {
+    switch (yieldCriterion) {
+        case YieldCriterion::William_Warnke:
+            os << "William-Warnke";
+            break;
+        case YieldCriterion::Von_Mises:
+            os << "von Mises";
+            break;
+        case YieldCriterion::Mohr_Coulomb:
+            os << "Mohr-Coulomb";
+            break;
+        case YieldCriterion::Tresca:
+            os << "Tresca";
+            break;
+        case YieldCriterion::Drucker_Prager:
+            os << "Drucker-Prager";
+            break;
+        case YieldCriterion::Matrix_Constituent_Failure_Criterion:
+            os << "Matrix constituent";
+            break;
+        case YieldCriterion::MohrCoulomb_InvariantBased:
+            os << "Mohr-Coulomb invariant based";
+            break;
+        case YieldCriterion::Tsai_Hill:
+            os << "Tsai-Hill";
+            break;
+        case YieldCriterion::Tsai_Wu:
+            os << "Tsai-Wu";
+            break;
+    }
 
-  return os;
+    return os;
 }
 
 /*
@@ -129,8 +127,8 @@ operator<<(std::basic_ostream<Elem, Traits> &os,
  * [y,z] we get the projected tensor T_p = |           |
  *                                         | Tyz   Tzz |
  */
-dmat2 IVW_MODULE_TENSORVISBASE_API
-getProjectedTensor(const dmat3 tensor, const CartesianCoordinateAxis axis);
+dmat2 IVW_MODULE_TENSORVISBASE_API getProjectedTensor(const dmat3 tensor,
+                                                      const CartesianCoordinateAxis axis);
 
 /*
  * Decomposes the tensor into the specified components. The method returns a
@@ -139,8 +137,8 @@ getProjectedTensor(const dmat3 tensor, const CartesianCoordinateAxis axis);
  * is the symmetric part and pair.second the antisymmetric part. See:
  * https://diglib.eg.org/handle/10.1111/v32i1pp049-074
  */
-std::pair<dmat2, dmat2> IVW_MODULE_TENSORVISBASE_API
-decompose(const dmat2 &tensor, Decomposition decomposition);
+std::pair<dmat2, dmat2> IVW_MODULE_TENSORVISBASE_API decompose(const dmat2 &tensor,
+                                                               Decomposition decomposition);
 
 /*
  * Decomposes the tensor into the specified components. The method returns a
@@ -149,12 +147,11 @@ decompose(const dmat2 &tensor, Decomposition decomposition);
  * is the symmetric part and pair.second the antisymmetric part. See:
  * https://diglib.eg.org/handle/10.1111/v32i1pp049-074
  */
-std::pair<dmat3, dmat3> IVW_MODULE_TENSORVISBASE_API
-decompose(const dmat3 &tensor, Decomposition decomposition);
+std::pair<dmat3, dmat3> IVW_MODULE_TENSORVISBASE_API decompose(const dmat3 &tensor,
+                                                               Decomposition decomposition);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API
-reconstruct(const std::array<double, 3> &eigenvalues,
-            const std::array<dvec3, 3> &eigenvectors);
+dmat3 IVW_MODULE_TENSORVISBASE_API reconstruct(const std::array<double, 3> &eigenvalues,
+                                               const std::array<dvec3, 3> &eigenvectors);
 
 vec4 IVW_MODULE_TENSORVISBASE_API tensor2DToDvec4(const dmat2 &tensor);
 
@@ -174,19 +171,16 @@ double IVW_MODULE_TENSORVISBASE_API calculateLodeAngle(const dmat3 &tensor);
 
 dmat3 IVW_MODULE_TENSORVISBASE_API stressDeviatorTensor(const dmat3 &tensor);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API
-meanNormalStressTensor(const dmat3 &tensor);
-dmat3 IVW_MODULE_TENSORVISBASE_API
-meanHydrostaticStressTensor(const dmat3 &tensor);
-dmat3 IVW_MODULE_TENSORVISBASE_API
-volumetricStressTensor(const dmat3 &tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API meanNormalStressTensor(const dmat3 &tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API meanHydrostaticStressTensor(const dmat3 &tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API volumetricStressTensor(const dmat3 &tensor);
 
 std::array<std::pair<double, dvec3>, 3> IVW_MODULE_TENSORVISBASE_API
 calculateEigenValuesAndEigenVectors(const dmat3 &tensor);
 
 std::array<double, 3> IVW_MODULE_TENSORVISBASE_API calculateEigenValues(const dmat3 &tensor);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3& tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3 &tensor);
 
 static const std::string lamda_str{u8"λ"};
 
@@ -224,10 +218,8 @@ static const std::string j2_str{u8"J₂"};
 static const std::string j3_str{u8"J₃"};
 
 static const std::string tau_str{u8"τ"};
-} // namespace tensorutil
+}  // namespace tensorutil
 
+}  // namespace inviwo
 
-
-} // namespace inviwo
-
-#endif // IVW_TENSORUTIL_H
+#endif  // IVW_TENSORUTIL_H

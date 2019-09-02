@@ -29,7 +29,4 @@
 
 #include <inviwo/springsystem/datastructures/zerospringsystem.h>
 
-namespace inviwo {
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

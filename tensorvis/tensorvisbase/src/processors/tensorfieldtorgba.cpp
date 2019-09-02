@@ -66,7 +66,7 @@ void TensorFieldToRGBA::process() {
     TextureUnitContainer units;
     std::shared_ptr<Image> tensorFieldTexture;
     tensorutil::bindTensorFieldAsColorTexture(tensorFieldTexture, inport_.getData(), shader_,
-                                                 units);
+                                              units);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();

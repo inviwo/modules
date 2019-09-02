@@ -68,12 +68,9 @@ TensorField3DSubset::TensorField3DSubset()
 
         auto maxOffset = offset_.getMaxValue();
 
-        if (offset.x > maxOffset.x)
-            newOffset.x = maxOffset.x;
-        if (offset.y > maxOffset.y)
-            newOffset.y = maxOffset.y;
-        if (offset.z > maxOffset.z)
-            newOffset.z = maxOffset.z;
+        if (offset.x > maxOffset.x) newOffset.x = maxOffset.x;
+        if (offset.y > maxOffset.y) newOffset.y = maxOffset.y;
+        if (offset.z > maxOffset.z) newOffset.z = maxOffset.z;
 
         offset_.set(newOffset);
     });
@@ -103,8 +100,9 @@ void TensorField3DSubset::process() {
         }
     }
 
-    auto outField = std::make_shared<TensorField3D>(dimensions, rawData, spacing * dvec3(dimensions));
-    outField->setOffset(tensorField->getOffset() + dvec3(origin_.get())*spacing);
+    auto outField =
+        std::make_shared<TensorField3D>(dimensions, rawData, spacing * dvec3(dimensions));
+    outField->setOffset(tensorField->getOffset() + dvec3(origin_.get()) * spacing);
 
     outport_.setData(outField);
 }

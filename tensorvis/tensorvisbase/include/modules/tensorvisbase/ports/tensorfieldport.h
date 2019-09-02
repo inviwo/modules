@@ -87,6 +87,6 @@ struct DataTraits<TensorField3D> {
     }
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TENSORFIELD3DPORT_H

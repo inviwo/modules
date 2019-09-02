@@ -50,9 +50,9 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &,
-                                    Shader *, TextureUnitContainer &) {
-    //auto volumes = tensorField->getVolumeRepresentation();
+void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &, Shader *,
+                                    TextureUnitContainer &) {
+    // auto volumes = tensorField->getVolumeRepresentation();
 }
 
 std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> inTensorField,

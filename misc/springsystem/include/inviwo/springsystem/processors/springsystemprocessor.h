@@ -71,9 +71,9 @@ class PickingEvent;
  *   * __Advance__
  *   * __Reset__
  *   * __Start Solver__
- *   * __Stop Solver__ 
- *   * __Log Status__ 
- *   * __Camera__ 
+ *   * __Stop Solver__
+ *   * __Log Status__
+ *   * __Camera__
  *
  */
 class IVW_MODULE_SPRINGSYSTEM_API SpringSystemProcessor : public Processor,

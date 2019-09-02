@@ -37,32 +37,30 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DAnisotropy::processorInfo_{
-    "org.inviwo.TensorField2DAnisotropy",      // Class identifier
-    "Tensor Field 2D Anisotropy",                // Display name
-    "Tensor visualization",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.TensorField2DAnisotropy",  // Class identifier
+    "Tensor Field 2D Anisotropy",          // Display name
+    "Tensor visualization",                // Category
+    CodeState::Experimental,               // Code state
+    Tags::None,                            // Tags
 };
-const ProcessorInfo TensorField2DAnisotropy::getProcessorInfo() const {
-    return processorInfo_;
-}
+const ProcessorInfo TensorField2DAnisotropy::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DAnisotropy::TensorField2DAnisotropy()
     : Processor()
     , tensorFieldInport_("inport")
-    , outport_("outport",false)
+    , outport_("outport", false)
     , anisotropy_("anisotropy", "Anisotropy",
-    { { "1", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda2_str + "|",
-        tensorutil::Anisotropy::abs_lamda1_minus_lamda2 },
-        { "4", "|" + tensorutil::lamda1_str + "| - |" + tensorutil::lamda2_str + "|",
-        tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2 } },
-        0) {
-    
+                  {{"1", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda2_str + "|",
+                    tensorutil::Anisotropy::abs_lamda1_minus_lamda2},
+                   {"4", "|" + tensorutil::lamda1_str + "| - |" + tensorutil::lamda2_str + "|",
+                    tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2}},
+                  0) {
+
     addPort(tensorFieldInport_);
     addPort(outport_);
     addProperty(anisotropy_);
 }
-    
+
 void TensorField2DAnisotropy::process() {
     auto tensorField = tensorFieldInport_.getData();
     std::shared_ptr<Image> outputImage;
@@ -75,47 +73,50 @@ void TensorField2DAnisotropy::process() {
     auto max = std::numeric_limits<double>::lowest();
 
     switch (anisotropy_.get()) {
-    case tensorutil::Anisotropy::abs_lamda1_minus_lamda2:
-        outputImage = std::make_shared<Image>(dimensions, DataFloat32::get());
-        {
-            auto data = static_cast<glm::f32*>(
-                outputImage->getEditableRepresentation<ImageRAM>()->getColorLayerRAM()->getData());
+        case tensorutil::Anisotropy::abs_lamda1_minus_lamda2:
+            outputImage = std::make_shared<Image>(dimensions, DataFloat32::get());
+            {
+                auto data =
+                    static_cast<glm::f32*>(outputImage->getEditableRepresentation<ImageRAM>()
+                                               ->getColorLayerRAM()
+                                               ->getData());
 
-            tensorutil::forEachFixelParallel(
-                *(tensorField.get()), [&](const size2_t& pos) -> void {
-                const auto index = indexMapper(pos);
-                const auto val =
-                    glm::abs(majorEigenValues[index] - minorEigenValues[index]);
-                max = std::max(max, val);
-                min = std::min(min, val);
-                data[index] = static_cast<glm::f32>(val);
-            });
-        }
-        break;
-    case tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2:
-        outputImage = std::make_shared<Image>(dimensions, DataFloat32::get());
-        {
-            auto data = static_cast<glm::f32*>(
-                outputImage->getEditableRepresentation<ImageRAM>()->getColorLayerRAM()->getData());
+                tensorutil::forEachFixelParallel(
+                    *(tensorField.get()), [&](const size2_t& pos) -> void {
+                        const auto index = indexMapper(pos);
+                        const auto val =
+                            glm::abs(majorEigenValues[index] - minorEigenValues[index]);
+                        max = std::max(max, val);
+                        min = std::min(min, val);
+                        data[index] = static_cast<glm::f32>(val);
+                    });
+            }
+            break;
+        case tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2:
+            outputImage = std::make_shared<Image>(dimensions, DataFloat32::get());
+            {
+                auto data =
+                    static_cast<glm::f32*>(outputImage->getEditableRepresentation<ImageRAM>()
+                                               ->getColorLayerRAM()
+                                               ->getData());
 
-            tensorutil::forEachFixelParallel(
-                *(tensorField.get()), [&](const size2_t& pos) -> void {
-                const auto index = indexMapper(pos);
-                const auto val =
-                    glm::abs(majorEigenValues[index]) - glm::abs(minorEigenValues[index]);
+                tensorutil::forEachFixelParallel(
+                    *(tensorField.get()), [&](const size2_t& pos) -> void {
+                        const auto index = indexMapper(pos);
+                        const auto val =
+                            glm::abs(majorEigenValues[index]) - glm::abs(minorEigenValues[index]);
 
-                max = std::max(max, val);
-                min = std::min(min, val);
-                data[index] = static_cast<glm::f32>(val);
-            });
-        }
-        break;
-    default:
-        break;
+                        max = std::max(max, val);
+                        min = std::min(min, val);
+                        data[index] = static_cast<glm::f32>(val);
+                    });
+            }
+            break;
+        default:
+            break;
     }
-    
+
     outport_.setData(outputImage);
 }
 
-} // namespace
-
+}  // namespace inviwo

@@ -78,6 +78,6 @@ private:
     TensorGlyphProperty glyphParameters_;
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TENSORGLYPHPROCESSOR_H

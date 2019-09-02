@@ -76,7 +76,7 @@ void PersistenceDiagram::process() {
         using DiagramOutput =
             std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId,
                                    ttk::CriticalType, ValueType, ttk::SimplexId>>;
-        
+
         ScopedClockCPU clock{"PersistenceDiagram", "Persistence diagram computation",
                              std::chrono::milliseconds(500), LogLevel::Info};
 

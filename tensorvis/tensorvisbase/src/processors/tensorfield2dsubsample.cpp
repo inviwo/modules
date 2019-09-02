@@ -51,7 +51,7 @@ TensorField2DSubsample::TensorField2DSubsample()
     , interpolationMethod_(
           "interpolationMethod", "Interpolation method",
           {{"linear", "Linear", tensorutil::InterpolationMethod::Linear},
-          { "nearest", "Nearest neighbour", tensorutil::InterpolationMethod::Nearest},
+           {"nearest", "Nearest neighbour", tensorutil::InterpolationMethod::Nearest},
            {"barycentric", "Barycentric", tensorutil::InterpolationMethod::Barycentric}},
           0) {
     addPort(inport_);

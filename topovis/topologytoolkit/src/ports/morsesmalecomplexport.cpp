@@ -29,6 +29,4 @@
 
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -247,7 +247,6 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
 
     auto basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
-
     auto mesh = createSuperquadric(eigenValues, pos, size, color);
     mesh->setBasis(basis);
 
@@ -533,14 +532,14 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
             auto s_max = signedExponentiation(glm::sin(phi), beta);
 
             v.x = static_cast<float>(signedExponentiation(glm::cos(theta), alpha) *
-                  signedExponentiation(glm::sin(phi), beta));
+                                     signedExponentiation(glm::sin(phi), beta));
             v.y = static_cast<float>(y_beta * s_beta_prim / s_max);
             v.z = static_cast<float>(z);
         } else {
             v.x = static_cast<float>(signedExponentiation(glm::cos(theta), alpha) *
-                  signedExponentiation(glm::sin(phi), beta));
+                                     signedExponentiation(glm::sin(phi), beta));
             v.y = static_cast<float>(signedExponentiation(glm::sin(theta), alpha) *
-                  signedExponentiation(glm::sin(phi), beta));
+                                     signedExponentiation(glm::sin(phi), beta));
             v.z = static_cast<float>(signedExponentiation(glm::cos(phi), beta));
         }
 

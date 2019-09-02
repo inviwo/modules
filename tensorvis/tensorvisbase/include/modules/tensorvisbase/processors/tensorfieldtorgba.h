@@ -84,6 +84,6 @@ private:
     void hoverAction(Event *e);
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_TENSORFIELDTORGBA_H

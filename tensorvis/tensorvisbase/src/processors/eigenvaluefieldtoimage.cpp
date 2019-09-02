@@ -121,8 +121,8 @@ void EigenvalueFieldToImage::process() {
 }
 
 void EigenvalueFieldToImage::updateEigenValues() {
-    auto subsampled = tensorutil::subsample2D(
-        inport_.getData(), inport_.getData()->getDimensions() * size2_t(2, 2));
+    auto subsampled = tensorutil::subsample2D(inport_.getData(),
+                                              inport_.getData()->getDimensions() * size2_t(2, 2));
 
     std::vector<double> eigenValues;
     if (majorMinor_.get()) {
@@ -149,8 +149,8 @@ void EigenvalueFieldToImage::updateEigenValues() {
 }
 
 void EigenvalueFieldToImage::updateAnisotropy() {
-    auto subsampled = tensorutil::subsample2D(
-        inport_.getData(), inport_.getData()->getDimensions() * size2_t(2, 2));
+    auto subsampled = tensorutil::subsample2D(inport_.getData(),
+                                              inport_.getData()->getDimensions() * size2_t(2, 2));
 
     std::vector<double> minorEigenValues;
     std::vector<double> majorEigenValues;
@@ -172,14 +172,16 @@ void EigenvalueFieldToImage::updateAnisotropy() {
         // Delete zero entries to find actual minimum
         anisotropyValues.erase(
             std::remove_if(anisotropyValues.begin(), anisotropyValues.end(),
-                [](double x) { return x < std::numeric_limits<double>::epsilon(); }),
+                           [](double x) { return x < std::numeric_limits<double>::epsilon(); }),
             anisotropyValues.end());
 
-        anisotropyMinVal_ = static_cast<float>(*std::min_element(anisotropyValues.begin(), anisotropyValues.end()));
-        anisotropyMaxVal_ = static_cast<float>(*std::max_element(anisotropyValues.begin(), anisotropyValues.end()));
+        anisotropyMinVal_ =
+            static_cast<float>(*std::min_element(anisotropyValues.begin(), anisotropyValues.end()));
+        anisotropyMaxVal_ =
+            static_cast<float>(*std::max_element(anisotropyValues.begin(), anisotropyValues.end()));
     }
 
     anisotropyValueRange_ = glm::abs(anisotropyMinVal_ - anisotropyMaxVal_);
 }
 
-}  // namespace
+}  // namespace inviwo

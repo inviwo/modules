@@ -126,24 +126,23 @@ void ContourTree::process() {
         inportChanged_ = false;
         dirty_ = false;
 
-        dispatchPool(
-            [this, inportData, treeType, computeTree]() {
-                auto treeData = std::make_shared<topology::ContourTreeData>();
-                treeData->type = treeType;
-                treeData->triangulation = inportData;
+        dispatchPool([this, inportData, treeType, computeTree]() {
+            auto treeData = std::make_shared<topology::ContourTreeData>();
+            treeData->type = treeType;
+            treeData->triangulation = inportData;
 
-                treeData->tree = inportData->getScalarValues()
-                                     ->getRepresentation<BufferRAM>()
-                                     ->dispatch<std::shared_ptr<topology::ContourTree>,
-                                                dispatching::filter::Scalars>(computeTree);
+            treeData->tree = inportData->getScalarValues()
+                                 ->getRepresentation<BufferRAM>()
+                                 ->dispatch<std::shared_ptr<topology::ContourTree>,
+                                            dispatching::filter::Scalars>(computeTree);
 
-                dispatchFront([this, treeData]() {
-                    treeData_ = treeData;
-                    invalidate(InvalidationLevel::InvalidOutput);
-                });
-
-                treeIsFinished_ = true;
+            dispatchFront([this, treeData]() {
+                treeData_ = treeData;
+                invalidate(InvalidationLevel::InvalidOutput);
             });
+
+            treeIsFinished_ = true;
+        });
     }
 
     outport_.setData(treeData_);

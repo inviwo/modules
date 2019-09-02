@@ -48,9 +48,10 @@ void IVW_MODULE_TENSORVISBASE_API bindTensorFieldAsColorTexture(
     std::shared_ptr<Image> &texture, std::shared_ptr<const TensorField2D> tensorField,
     Shader &shader, TextureUnitContainer &textureUnits);
 
-void IVW_MODULE_TENSORVISBASE_API
-bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2DInport &inport,
-                              Shader &shader, TextureUnitContainer &textureUnits);
+void IVW_MODULE_TENSORVISBASE_API bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
+                                                                TensorField2DInport &inport,
+                                                                Shader &shader,
+                                                                TextureUnitContainer &textureUnits);
 
 void IVW_MODULE_TENSORVISBASE_API
 bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &tensorField, Shader *shader,
@@ -77,11 +78,11 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
             const InterpolationMethod method, std::function<void(float)> fun);
 
 std::shared_ptr<PosTexColorMesh> IVW_MODULE_TENSORVISBASE_API
-generateBoundingBoxAdjacencyForTensorField(
-    std::shared_ptr<const TensorField3D> tensorField, const vec4 color);
+generateBoundingBoxAdjacencyForTensorField(std::shared_ptr<const TensorField3D> tensorField,
+                                           const vec4 color);
 
 std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateBoundingBoxForTensorField(
-	std::shared_ptr<const TensorField3D> tensorField, const vec4 color);
+    std::shared_ptr<const TensorField3D> tensorField, const vec4 color);
 
 std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateSliceLevelGeometryForTensorField(
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
@@ -91,9 +92,11 @@ std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateSlicePlaneGeomet
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
     const CartesianCoordinateAxis axis, const size_t sliceNr);
 
-namespace detail{
-std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
-                                                 const CartesianCoordinateAxis axis, const size_t sliceNr);
+namespace detail {
+std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorField3D> tensorField,
+                                                 const vec4 color,
+                                                 const CartesianCoordinateAxis axis,
+                                                 const size_t sliceNr);
 }
 
 template <typename C>
@@ -182,7 +185,6 @@ void forEachFixelParallel(const TensorField2D &v, C callback, size_t jobs = 0) {
                     callback(pos);
                 }
             }
-
         }));
     }
 
@@ -191,5 +193,5 @@ void forEachFixelParallel(const TensorField2D &v, C callback, size_t jobs = 0) {
     }
 }
 
-}  // namespace tensorvisutil
+}  // namespace tensorutil
 }  // namespace inviwo

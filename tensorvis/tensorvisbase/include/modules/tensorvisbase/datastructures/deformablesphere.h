@@ -61,6 +61,6 @@ private:
     void calculateNormals();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_DEFORMABLESPHERE_H

@@ -50,11 +50,10 @@ public:
                   const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
 
     // The pointer that is handed in should point to the data that will be copied.
-    TensorField3D(size3_t dimensions, const double *data,
-                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
-    TensorField3D(size3_t dimensions, const float *data,
-                  const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
-
+    TensorField3D(size3_t dimensions, const double *data, const dvec3 &extent = dvec3(1.0),
+                  double sliceCoord = 0.0);
+    TensorField3D(size3_t dimensions, const float *data, const dvec3 &extent = dvec3(1.0),
+                  double sliceCoord = 0.0);
 
     TensorField3D(size3_t dimensions, const std::vector<double> &data,
                   const std::vector<double> &majorEigenvalues,

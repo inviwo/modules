@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TENSORINFORMATION_H
@@ -46,12 +46,11 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 
 /**
  * \class TensorInformation
@@ -62,12 +61,13 @@ class IVW_MODULE_TENSORVISBASE_API TensorInformation : public Processor {
 public:
     TensorInformation();
     virtual ~TensorInformation() = default;
-     
+
     virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     TensorField3DInport inport_;
 
@@ -78,7 +78,6 @@ private:
     FloatVec3Property eigenValues_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TENSORINFORMATION_H
-
+#endif  // IVW_TENSORINFORMATION_H

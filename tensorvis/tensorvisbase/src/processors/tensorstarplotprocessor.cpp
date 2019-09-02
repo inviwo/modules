@@ -118,7 +118,7 @@ TensorStarPlotProcessor::TensorStarPlotProcessor()
                       PropertySemantics::Color)
     , margin_("margin", "Margin", 40.0, 0.0, 500.0, 0.1)
     , rotate_("rotate_", "Rotate", false)
-    , showControlPoints_("showControlPoints","Show control points",false)
+    , showControlPoints_("showControlPoints", "Show control points", false)
     , eventPorperty_("position", "Position",
                      [this](Event* e) {
                          if (auto ev = e->getAs<MouseEvent>()) {
@@ -584,7 +584,7 @@ void TensorStarPlotProcessor::drawDots3D(size_t offset) const {
     nvgContext_->fill();
     nvgContext_->stroke();
 
-    if(showControlPoints_.get()) {
+    if (showControlPoints_.get()) {
         nvgContext_->beginPath();
 
         const auto p1 = center + axis1_3d_ * length * 0.7;
@@ -594,10 +594,10 @@ void TensorStarPlotProcessor::drawDots3D(size_t offset) const {
         const auto p5 = center + axis3_3d_ * length * 0.6;
         const auto p6 = center + axis2_3d_ * length * 0.15;
 
-        auto controlPoints =
-                tensorutil::getCubicBezierCurveControlPoints({p5, p6, p1, p2, p3, p4, p5, p6, p1, p2, p3});
-        const auto &firstControlPoints = controlPoints.first;
-        const auto &secondControlPoints = controlPoints.second;
+        auto controlPoints = tensorutil::getCubicBezierCurveControlPoints(
+            {p5, p6, p1, p2, p3, p4, p5, p6, p1, p2, p3});
+        const auto& firstControlPoints = controlPoints.first;
+        const auto& secondControlPoints = controlPoints.second;
 
         nvgContext_->moveTo(p1);
         nvgContext_->bezierCurveTo(firstControlPoints[2], secondControlPoints[2], p2);
@@ -909,7 +909,8 @@ void TensorStarPlotProcessor::process() {
 
     RenderBufferObject stencilBufferObject;
     stencilBufferObject.activate();
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<GLsizei>(dimensions.x), static_cast<GLsizei>(dimensions.y));
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, static_cast<GLsizei>(dimensions.x),
+                          static_cast<GLsizei>(dimensions.y));
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER,
                               stencilBufferObject.getID());
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER,

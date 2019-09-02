@@ -139,10 +139,8 @@ void TopologicalSimplification::updateOutport() {
                     for (int i = 0; i < (int)diagramData.size(); i++) {
                         auto persistence = std::get<4>(diagramData[i]);
                         if ((persistence >= threshold) != invert) {
-                            authorizedCriticalPoints.push_back(
-                                std::get<0>(diagramData[i]));
-                            authorizedCriticalPoints.push_back(
-                                std::get<2>(diagramData[i]));
+                            authorizedCriticalPoints.push_back(std::get<0>(diagramData[i]));
+                            authorizedCriticalPoints.push_back(std::get<2>(diagramData[i]));
                         }
                     }
 
@@ -174,8 +172,7 @@ void TopologicalSimplification::updateOutport() {
                     }
 
                     // create a new triangulation based on the old one, but with new scalar values
-                    auto result =
-                        std::make_shared<topology::TriangulationData>(*inportData);
+                    auto result = std::make_shared<topology::TriangulationData>(*inportData);
                     result->setScalarValues(util::makeBuffer(std::move(simplifiedDataValues)));
                     result->setOffsets(std::move(offsets));
 

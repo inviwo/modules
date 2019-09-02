@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo ImageToSphereField::processorInfo_{
     "org.inviwo.ImageToSphereField",  // Class identifier
     "Image To Sphere Field",          // Display name
-    "Mesh Creation",                // Category
+    "Mesh Creation",                  // Category
     CodeState::Experimental,          // Code state
     Tags::None,                       // Tags
 };

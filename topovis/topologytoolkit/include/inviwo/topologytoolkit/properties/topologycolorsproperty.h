@@ -45,7 +45,7 @@ class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty : public CompositePr
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
-     
+
     TopologyColorsProperty(std::string identifier, std::string displayName);
 
     TopologyColorsProperty(const TopologyColorsProperty& rhs);
@@ -75,7 +75,6 @@ public:
 private:
     auto props() { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
     auto props() const { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
-
 };
 
 }  // namespace inviwo

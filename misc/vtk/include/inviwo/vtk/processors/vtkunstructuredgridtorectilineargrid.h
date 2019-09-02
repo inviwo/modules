@@ -54,10 +54,9 @@ namespace inviwo {
  * ![](org.inviwo.VTKUnstructuredGridReader.png?classIdentifier=org.inviwo.VTKUnstructuredGridToRectilinearGrid)
  */
 
-class IVW_MODULE_VTK_API VTKUnstructuredGridToRectilinearGrid
-    : public Processor,
-      public ActivityIndicatorOwner,
-      public ProgressBarOwner {
+class IVW_MODULE_VTK_API VTKUnstructuredGridToRectilinearGrid : public Processor,
+                                                                public ActivityIndicatorOwner,
+                                                                public ProgressBarOwner {
 public:
     VTKUnstructuredGridToRectilinearGrid();
     virtual ~VTKUnstructuredGridToRectilinearGrid();
