@@ -20,7 +20,6 @@ int main(int argc, char** argv) {
 
     inviwo::LogCentral::init();
 
-
     InviwoApplication app(argc, argv, "Inviwo-Unittests-TensorVisBase");
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;

@@ -187,11 +187,9 @@ std::vector<T> union_set(const std::vector<T>& vec1, const std::vector<T>& vec2)
 
 template <typename Container, typename... Containers>
 auto concatenate(Container first, Containers... vectorsToAppend) {
-    (first.insert(std::end(first), std::begin(vectorsToAppend),
-                             std::end(vectorsToAppend)),
-            ...);
+    (first.insert(std::end(first), std::begin(vectorsToAppend), std::end(vectorsToAppend)), ...);
 
-	return std::move(first);
+    return std::move(first);
 }
 
 template <typename T>

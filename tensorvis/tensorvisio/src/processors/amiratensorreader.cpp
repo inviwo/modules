@@ -9,18 +9,19 @@ namespace inviwo {
 const ProcessorInfo AmiraTensorReader::processorInfo_{
     "org.inviwo.AmiraTensorReader",  // Class identifier
     "Amira Tensor Reader",           // Display name
-    "Tensor Field IO",                   // Category
-    CodeState::Experimental,       // Code state
-    Tags::CPU,                    // Tags
+    "Tensor Field IO",               // Category
+    CodeState::Experimental,         // Code state
+    Tags::CPU,                       // Tags
 };
 const ProcessorInfo AmiraTensorReader::getProcessorInfo() const { return processorInfo_; }
 
 AmiraTensorReader::AmiraTensorReader()
-    : Processor(), inFile_("inFile", "File", "")
+    : Processor()
+    , inFile_("inFile", "File", "")
     //, outport3D_("outport3D")
-    , outport_("outportRaw"){
+    , outport_("outportRaw") {
     addProperty(inFile_);
-    //addPort(outport3D_);
+    // addPort(outport3D_);
     addPort(outport_);
 }
 
@@ -40,7 +41,7 @@ void AmiraTensorReader::process() {
     // We read the first 2k bytes into memory to parse the header.
     // The fixed buffer size looks a bit like a hack, and it is one, but it gets the job done.
     char buffer[2048];
-    if(fread(buffer, sizeof(char), 2047, fp)!=2047) return;
+    if (fread(buffer, sizeof(char), 2047, fp) != 2047) return;
     buffer[2047] = '\0';  // The following string routines prefer null-terminated strings
 
     if (!strstr(buffer, "# AmiraMesh BINARY-LITTLE-ENDIAN 2.1")) {
@@ -82,9 +83,9 @@ void AmiraTensorReader::process() {
         // Set the file pointer to the beginning of "# Data section follows"
         fseek(fp, idxStartData, SEEK_SET);
         // Consume this line, which is "# Data section follows"
-        if(!fgets(buffer, 2047, fp))return;
+        if (!fgets(buffer, 2047, fp)) return;
         // Consume the next line, which is "@1"
-        if(!fgets(buffer, 2047, fp))return;
+        if (!fgets(buffer, 2047, fp)) return;
 
         // Read the data
         // - how much to read
@@ -146,7 +147,7 @@ void AmiraTensorReader::process() {
             }
 
             delete[] pData;
-            
+
             outport_.setData(std::make_shared<TensorField3D>(xDim, yDim, zDim, rawData_, extents));
         }
     }
@@ -154,4 +155,4 @@ void AmiraTensorReader::process() {
     fclose(fp);
 }
 
-}  // namespace
+}  // namespace inviwo

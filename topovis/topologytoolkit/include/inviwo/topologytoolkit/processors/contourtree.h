@@ -65,7 +65,7 @@ namespace inviwo {
  *
  * ### Outports
  *   * __outport__     DataFrame with critical points
- *   * __meshOutport__ Mesh containing the critical points and associated scalar values 
+ *   * __meshOutport__ Mesh containing the critical points and associated scalar values
  *                     as spheres and the connecting arcs as lines
  *
  * ### Properties

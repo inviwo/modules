@@ -18,10 +18,11 @@ P seedTransform(const M &m, const P &pIn) {
 
 template <typename SpatialVector, typename DataVector, typename Sampler, typename F,
           typename DataMatrix>
-std::tuple<SpatialVector, DataVector, bool> hyperstep(
-    const SpatialVector &oldPos, IntegralLineProperties::IntegrationScheme,
-    F stepSize, const DataMatrix &invBasis, bool normalizeSamples, const Sampler &sampler,
-    const bool prevFlipped) {
+std::tuple<SpatialVector, DataVector, bool> hyperstep(const SpatialVector &oldPos,
+                                                      IntegralLineProperties::IntegrationScheme,
+                                                      F stepSize, const DataMatrix &invBasis,
+                                                      bool normalizeSamples, const Sampler &sampler,
+                                                      const bool prevFlipped) {
 
     auto normalize = [](auto v) {
         auto l = glm::length(v);

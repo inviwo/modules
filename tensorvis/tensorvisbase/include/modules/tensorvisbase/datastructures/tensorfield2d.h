@@ -54,7 +54,7 @@ public:
     TensorField2D(size2_t dimensions, const std::vector<dmat2> &data,
                   const dvec2 &extends = dvec2(1.0));
     TensorField2D(size_t x, size_t y, const std::vector<dmat2> &data,
-        const dvec2 &extends = dvec2(1.0));
+                  const dvec2 &extends = dvec2(1.0));
     TensorField2D(size2_t dimensions, const std::vector<dmat2> &data,
                   const std::vector<double> &majorEigenvalues,
                   const std::vector<double> &minorEigenvalues,
@@ -72,15 +72,15 @@ public:
     TensorField2D(size_t x, size_t y, const std::vector<double> &data,
                   const dvec2 &extends = dvec2(1.0));
     TensorField2D(size2_t dimensions, const std::vector<double> &data,
-        const std::vector<double> &majorEigenvalues,
-        const std::vector<double> &minorEigenvalues,
-        const std::vector<dvec2> &majorEigenvectors,
-        const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
+                  const std::vector<double> &majorEigenvalues,
+                  const std::vector<double> &minorEigenvalues,
+                  const std::vector<dvec2> &majorEigenvectors,
+                  const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
     TensorField2D(size_t x, size_t y, const std::vector<double> &data,
-        const std::vector<double> &majorEigenvalues,
-        const std::vector<double> &minorEigenvalues,
-        const std::vector<dvec2> &majorEigenvectors,
-        const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
+                  const std::vector<double> &majorEigenvalues,
+                  const std::vector<double> &minorEigenvalues,
+                  const std::vector<dvec2> &majorEigenvectors,
+                  const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
 
     // Destructors
     virtual ~TensorField2D() = default;
@@ -124,16 +124,16 @@ public:
     dmat2 sample(const dvec2 &position, tensorutil::InterpolationMethod method =
                                             tensorutil::InterpolationMethod::Barycentric) const;
 
-    dmat2 getBasis()const;
+    dmat2 getBasis() const;
     dmat3 getBasisAndOffset() const;
-    dvec2 getOffset()const { return offset_; };
-    void setOffset(const dvec2& offset) { offset_ = offset; };
+    dvec2 getOffset() const { return offset_; };
+    void setOffset(const dvec2 &offset) { offset_ = offset; };
 
     const dvec2 &getNormalizedImagePosition(size_t index) const;
     const dvec2 &getMinorEigenVector(size_t index) const;
-    const dvec2 &getMinorEigenVector(const size2_t& position) const;
+    const dvec2 &getMinorEigenVector(const size2_t &position) const;
     const dvec2 &getMajorEigenVector(size_t index) const;
-    const dvec2 &getMajorEigenVector(const size2_t& position) const;
+    const dvec2 &getMajorEigenVector(const size2_t &position) const;
 
     const std::vector<dvec2> &minorEigenVectors() const;
     const std::vector<dvec2> &majorEigenVectors() const;
@@ -145,11 +145,11 @@ public:
     std::array<std::pair<double, dvec2>, 2> getSortedEigenValuesAndEigenVectorsForTensor(
         size_t index) const;
     std::array<std::pair<double, dvec2>, 2> getSortedEigenValuesAndEigenVectorsForTensor(
-        const size2_t& pos) const;
+        const size2_t &pos) const;
     std::array<double, 2> getSortedEigenValuesForTensor(size_t index) const;
-    std::array<double, 2> getSortedEigenValuesForTensor(const size2_t& pos) const;
+    std::array<double, 2> getSortedEigenValuesForTensor(const size2_t &pos) const;
     std::array<dvec2, 2> getSortedEigenVectorsForTensor(size_t index) const;
-    std::array<dvec2, 2> getSortedEigenVectorsForTensor(const size2_t& pos) const;
+    std::array<dvec2, 2> getSortedEigenVectorsForTensor(const size2_t &pos) const;
 
 private:
     void computeEigenValuesAndEigenVectors();

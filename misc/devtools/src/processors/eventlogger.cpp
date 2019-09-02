@@ -29,6 +29,4 @@
 
 #include <inviwo/devtools/processors/eventlogger.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -101,6 +101,6 @@ private:
     void updateAnisotropy();
 };
 
-}  // namespace
+}  // namespace inviwo
 
 #endif  // IVW_EIGENVALUEFIELDTOIMAGE_H

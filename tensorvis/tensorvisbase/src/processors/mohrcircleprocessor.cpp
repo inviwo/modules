@@ -12,7 +12,7 @@ const ProcessorInfo MohrCircleProcessor::processorInfo_{
     "Mohr Circle Processor",           // Display name
     "Tensor Visualization",            // Category
     CodeState::Experimental,           // Code state
-    "NanoVG",                        // Tags
+    "NanoVG",                          // Tags
 };
 const ProcessorInfo MohrCircleProcessor::getProcessorInfo() const { return processorInfo_; }
 
@@ -166,14 +166,14 @@ void MohrCircleProcessor::draw3D() {
         dvec2(centerC1.x - radiusC1 + radiusC3, static_cast<double>(dimensions.y) / 2.0);
 
     drawCircle(centerC1, radiusC1, majorPrincipalStressFillColor_.get(),
-        majorPrincipalStressStrokeColor_.get(), majorPrincipalStressStrokeWidth_.get());
+               majorPrincipalStressStrokeColor_.get(), majorPrincipalStressStrokeWidth_.get());
 
     drawCircle(centerC2, radiusC2, intermediatePrincipalStressFillColor_.get(),
-        intermediatePrincipalStressStrokeColor_.get(),
-        intermediatePrincipalStressStrokeWidth_.get());
+               intermediatePrincipalStressStrokeColor_.get(),
+               intermediatePrincipalStressStrokeWidth_.get());
 
     drawCircle(centerC3, radiusC3, minorPrincipalStressFillColor_.get(),
-        minorPrincipalStressStrokeColor_.get(), minorPrincipalStressStrokeWidth_.get());
+               minorPrincipalStressStrokeColor_.get(), minorPrincipalStressStrokeWidth_.get());
 }
 
 void MohrCircleProcessor::drawEigenvalues() const {

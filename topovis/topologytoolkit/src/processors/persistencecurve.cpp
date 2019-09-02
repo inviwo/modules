@@ -99,11 +99,10 @@ void PersistenceCurve::process() {
         return dataFrame;
     };
 
-    auto data =
-        inport_.getData()
-            ->getScalarValues()
-            ->getEditableRepresentation<BufferRAM>()
-            ->dispatch<std::shared_ptr<DataFrame>, dispatching::filter::Scalars>(compute);
+    auto data = inport_.getData()
+                    ->getScalarValues()
+                    ->getEditableRepresentation<BufferRAM>()
+                    ->dispatch<std::shared_ptr<DataFrame>, dispatching::filter::Scalars>(compute);
 
     outport_.setData(data);
 }

@@ -75,33 +75,32 @@ void TensorField3DSubsample::process() {
 void TensorField3DSubsample::subsample() {
     if (inport_.hasData()) {
         if (!isRunning_) {
-            dispatchPool(
-                [ this, &bar = progressBar_ ]() {
-                    auto on_progress = [&bar](float progress) { bar.updateProgress(progress); };
-                    isRunning_ = true;
+            dispatchPool([this, &bar = progressBar_]() {
+                auto on_progress = [&bar](float progress) { bar.updateProgress(progress); };
+                isRunning_ = true;
 
-                    const auto resolutionMultiplier = resolutionMultiplier_.get();
-                    const auto interpolationMethod = interpolationMethod_.get();
-                    
-                    do {
-                        bar.show();
-                        bar.updateProgress(0.f);
+                const auto resolutionMultiplier = resolutionMultiplier_.get();
+                const auto interpolationMethod = interpolationMethod_.get();
 
-                        tf_ = tensorutil::subsample3D(
-                            inport_.getData(),
-                            size3_t(glm::round(vec3(inport_.getData()->getDimensions()) *
-                                resolutionMultiplier)),
-                            interpolationMethod, on_progress);
+                do {
+                    bar.show();
+                    bar.updateProgress(0.f);
 
-                        on_progress(1.f);
+                    tf_ = tensorutil::subsample3D(
+                        inport_.getData(),
+                        size3_t(glm::round(vec3(inport_.getData()->getDimensions()) *
+                                           resolutionMultiplier)),
+                        interpolationMethod, on_progress);
 
-                        bar.hide();
-                    } while (resolutionMultiplier != resolutionMultiplier_.get() ||
-                        interpolationMethod != interpolationMethod_.get());
+                    on_progress(1.f);
 
-                    dispatchFront([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+                    bar.hide();
+                } while (resolutionMultiplier != resolutionMultiplier_.get() ||
+                         interpolationMethod != interpolationMethod_.get());
 
-                    isRunning_ = false;
+                dispatchFront([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+
+                isRunning_ = false;
             });
         }
     }

@@ -36,10 +36,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DBoundingBox::processorInfo_{
     "org.inviwo.TensorField3DBoundingBox",  // Class identifier
-    "Tensor Field Bounding Box",          // Display name
-    "Mesh Creation",                      // Category
-    CodeState::Stable,                    // Code state
-    Tags::None,                           // Tags
+    "Tensor Field Bounding Box",            // Display name
+    "Mesh Creation",                        // Category
+    CodeState::Stable,                      // Code state
+    Tags::None,                             // Tags
 };
 const ProcessorInfo TensorField3DBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
@@ -47,19 +47,21 @@ TensorField3DBoundingBox::TensorField3DBoundingBox()
     : Processor()
     , volume_("volume")
     , linemesh_("linemesh")
-	, boxmesh_("boxmesh")
+    , boxmesh_("boxmesh")
     , color_("color", "Color", vec4(1.0f), vec4(0.0f), vec4(1.0f)) {
     addPort(volume_);
     addPort(linemesh_);
-	addPort(boxmesh_);
+    addPort(boxmesh_);
 
     color_.setSemantics(PropertySemantics::Color);
     addProperty(color_);
 }
 
 void TensorField3DBoundingBox::process() {
-    linemesh_.setData(tensorutil::generateBoundingBoxAdjacencyForTensorField(volume_.getData(), color_.get()));
-	boxmesh_.setData(tensorutil::generateBoundingBoxForTensorField(volume_.getData(), color_.get()));
+    linemesh_.setData(
+        tensorutil::generateBoundingBoxAdjacencyForTensorField(volume_.getData(), color_.get()));
+    boxmesh_.setData(
+        tensorutil::generateBoundingBoxForTensorField(volume_.getData(), color_.get()));
 }
 
 }  // namespace inviwo

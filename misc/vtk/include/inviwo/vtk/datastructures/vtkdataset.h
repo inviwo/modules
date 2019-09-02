@@ -64,7 +64,7 @@ public:
      * so if you have a VTKDataSet on the inport you will not be able to determine its
      * dimensions unless you clone it...
      * */
-	std::optional<size3_t> getDimensions() const;
+    std::optional<size3_t> getDimensions() const;
 
 private:
     vtkSmartPointer<vtkDataSet> dataSet_;

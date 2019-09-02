@@ -66,7 +66,8 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor, public ActivityIndicatorOwner {
+class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor,
+                                                             public ActivityIndicatorOwner {
 public:
     VTKDataSetToTensorField3D();
     virtual ~VTKDataSetToTensorField3D() = default;

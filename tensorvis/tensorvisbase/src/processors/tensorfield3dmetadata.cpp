@@ -392,7 +392,8 @@ void TensorField3DMetaData::addMetaData() {
         const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
-            isotropicScaling.emplace_back((majorEigenValues[i] + intermediateEigenValues[i] + minorEigenValues[i]) / 3.0);
+            isotropicScaling.emplace_back(
+                (majorEigenValues[i] + intermediateEigenValues[i] + minorEigenValues[i]) / 3.0);
         }
 
         tensorFieldOut_->addMetaData<IsotropicScaling>(isotropicScaling,

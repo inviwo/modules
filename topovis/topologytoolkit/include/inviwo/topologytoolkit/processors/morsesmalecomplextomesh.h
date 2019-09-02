@@ -41,8 +41,8 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.MorseSmaleComplexToMesh, Morse Smale Complex To Mesh}
  * ![](org.inviwo.MorseSmaleComplexToMesh.png?classIdentifier=org.inviwo.MorseSmaleComplexToMesh)
- * Converts TTK Morse-Smale complex data into a mesh. Critical points are encoded as point mesh with the
- * specified radius. Separatrices are stored as lines.
+ * Converts TTK Morse-Smale complex data into a mesh. Critical points are encoded as point mesh with
+ * the specified radius. Separatrices are stored as lines.
  *
  * ### Inports
  *   * __mscomplex__   TTK Morse-Smale Complex input data

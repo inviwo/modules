@@ -32,7 +32,7 @@ const std::vector<T> &MetaDataType<T>::getData() const {
 
 template <typename T>
 MetaDataType<T>::MetaDataType(std::vector<T> data, const TensorFeature type)
-        : data_(std::move(data)), type_(type) {}
+    : data_(std::move(data)), type_(type) {}
 
 template <typename T>
 const void *MetaDataType<T>::getDataPtr() const {

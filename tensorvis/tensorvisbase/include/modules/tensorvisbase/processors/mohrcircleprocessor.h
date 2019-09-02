@@ -66,10 +66,10 @@ private:
     NanoVGContext* nvgContext_;
 
     void draw3D();
-    void drawEigenvalues()const;
+    void drawEigenvalues() const;
 
     void drawCircle(const dvec2& position, const double radius, const vec4& fillColor,
-                    const vec4& strokeColor, const double strokeWidth)const;
+                    const vec4& strokeColor, const double strokeWidth) const;
     void drawCoordinateSystem() const;
     void drawArrowHead(const dvec2& position, const dvec2& direction, double size) const;
 };

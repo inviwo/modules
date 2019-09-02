@@ -73,7 +73,7 @@ struct VertexFraction {
  * Utility function to reduce the number of triangles in a mesh.
  * Stops when either the Vertex- or the Face decimation ratio is reach.
  *
- * Example: 
+ * Example:
  * \snippet modules/misc/openmesh/src/processors/meshdecimationprocessor.cpp OpenMesh Decimation
  *
  * @param mesh An OpenMesh mesh (see fromInviwo(...) and ::toInviwo(...))

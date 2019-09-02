@@ -29,6 +29,4 @@
 
 #include <inviwo/vtk/ports/vtkdatasetport.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

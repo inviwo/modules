@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TENSORFIELD3DBOUNDINGBOX_H
@@ -49,36 +49,35 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
 
-
 /**
  * \class TensorField3DBoundingBox
- * \brief <brief description> 
+ * \brief <brief description>
  * <Detailed description from a developer prespective>
  */
 class IVW_MODULE_TENSORVISBASE_API TensorField3DBoundingBox : public Processor {
 public:
     TensorField3DBoundingBox();
     virtual ~TensorField3DBoundingBox() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
 private:
     TensorField3DInport volume_;
     MeshOutport linemesh_;
-	MeshOutport boxmesh_;
+    MeshOutport boxmesh_;
     FloatVec4Property color_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TENSORFIELD3DBOUNDINGBOX_H
-
+#endif  // IVW_TENSORFIELD3DBOUNDINGBOX_H

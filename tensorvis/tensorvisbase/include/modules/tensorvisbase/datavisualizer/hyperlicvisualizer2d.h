@@ -35,27 +35,27 @@
 
 namespace inviwo {
 
-    class IVW_MODULE_TENSORVISBASE_API HyperLICVisualizer2D : public DataVisualizer {
-    public:
-        HyperLICVisualizer2D (InviwoApplication* app);
-        virtual ~HyperLICVisualizer2D () = default;
-        virtual std::string getName() const override;
-        virtual Document getDescription() const override;
-        virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
-        virtual bool isOutportSupported(const Outport* port) const override;
+class IVW_MODULE_TENSORVISBASE_API HyperLICVisualizer2D : public DataVisualizer {
+public:
+    HyperLICVisualizer2D(InviwoApplication* app);
+    virtual ~HyperLICVisualizer2D() = default;
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
 
-        virtual bool hasSourceProcessor() const override;
-        virtual bool hasVisualizerNetwork() const override;
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
 
-        virtual std::pair<Processor*, Outport*> addSourceProcessor(
-                const std::string& filename, ProcessorNetwork* network) const override;
-        virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
-                                                             ProcessorNetwork* network) const override;
-        virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-                const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
-    private:
-        InviwoApplication* app_;
-    };
+private:
+    InviwoApplication* app_;
+};
 
 }  // namespace inviwo

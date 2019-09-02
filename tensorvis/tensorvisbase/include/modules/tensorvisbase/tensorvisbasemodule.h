@@ -41,6 +41,6 @@ public:
     virtual ~TensorVisBaseModule() = default;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TENSORVISBASEMODULE_H
+#endif  // IVW_TENSORVISBASEMODULE_H

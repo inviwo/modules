@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_AMIRATENSORREADERR_H
@@ -48,12 +48,11 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 
 /**
  * \class AmiraTensorReader
@@ -64,11 +63,12 @@ class IVW_MODULE_TENSORVISIO_API AmiraTensorReader : public Processor {
 public:
     AmiraTensorReader();
     virtual ~AmiraTensorReader() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     FileProperty inFile_;
 
@@ -79,14 +79,13 @@ private:
     If not found, return the buffer. A subsequent sscanf()
     will fail then, but at least we return a decent pointer.
     */
-    const char* FindAndJump(const char* buffer, const char* SearchString){
+    const char* FindAndJump(const char* buffer, const char* SearchString) {
         const char* FoundLoc = strstr(buffer, SearchString);
         if (FoundLoc) return FoundLoc + strlen(SearchString);
         return buffer;
     }
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_AMIRATENSORREADERR_H
-
+#endif  // IVW_AMIRATENSORREADERR_H

@@ -68,11 +68,9 @@ TensorField2DSubset::TensorField2DSubset()
 
         auto maxOffset = offset_.getMaxValue();
 
-        if (offset.x > maxOffset.x)
-            newOffset.x = maxOffset.x;
-        if (offset.y > maxOffset.y)
-            newOffset.y = maxOffset.y;
-        
+        if (offset.x > maxOffset.x) newOffset.x = maxOffset.x;
+        if (offset.y > maxOffset.y) newOffset.y = maxOffset.y;
+
         offset_.set(newOffset);
     });
 

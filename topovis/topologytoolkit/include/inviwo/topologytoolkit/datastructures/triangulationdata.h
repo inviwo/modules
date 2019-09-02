@@ -92,7 +92,7 @@ public:
 
     TriangulationData& operator=(const TriangulationData& rhs);
     TriangulationData& operator=(TriangulationData&& rhs);
-        
+
     virtual TriangulationData* clone() const;
 
     /**
@@ -233,7 +233,7 @@ public:
      * @return number of cells
      */
     size_t getCellCount() const;
-    
+
     virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
         const Camera& camera) const;
     using SpatialEntity<3>::getCoordinateTransformer;

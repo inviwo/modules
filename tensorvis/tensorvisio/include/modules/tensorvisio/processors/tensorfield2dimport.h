@@ -24,7 +24,7 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  *********************************************************************************/
 
 #ifndef IVW_TENSORFIELD2DIMPORT_H
@@ -47,38 +47,37 @@ namespace inviwo {
  *
  * ### Outports
  *   * __<Outport1>__ <description>.
- * 
+ *
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 
 /**
  * \class TensorField2DImport
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor { 
+class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor {
 public:
     TensorField2DImport();
     virtual ~TensorField2DImport() = default;
-     
+
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
 private:
     FileProperty inFile_;
 
     TensorField2DOutport outport_;
 
-    void buildTensors(const std::vector<double>& data, std::vector<dmat2> & tensors) const;
+    void buildTensors(const std::vector<double>& data, std::vector<dmat2>& tensors) const;
 
     FloatVec2Property extents_;
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_TENSORFIELD2DIMPORT_H
-
+#endif  // IVW_TENSORFIELD2DIMPORT_H

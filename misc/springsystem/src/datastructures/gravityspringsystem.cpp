@@ -29,6 +29,4 @@
 
 #include <inviwo/springsystem/datastructures/gravityspringsystem.h>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

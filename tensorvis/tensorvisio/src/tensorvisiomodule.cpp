@@ -41,8 +41,7 @@
 
 namespace inviwo {
 
-TensorVisIOModule::TensorVisIOModule(InviwoApplication* app)
-    : InviwoModule{app, "TensorVisIO"}{
+TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule{app, "TensorVisIO"} {
 
     registerProcessor<AmiraTensorReader>();
     registerProcessor<NRRDReader>();

@@ -34,8 +34,7 @@
 
 namespace inviwo {
 
-IVW_MODULE_DICOM_API void enableTiffLogging(
-    LogVerbosity verbosity = LogVerbosity::Error);
+IVW_MODULE_DICOM_API void enableTiffLogging(LogVerbosity verbosity = LogVerbosity::Error);
 
 IVW_MODULE_DICOM_API void enableGdcmLogging(LogVerbosity verbosity = LogVerbosity::Error);
 

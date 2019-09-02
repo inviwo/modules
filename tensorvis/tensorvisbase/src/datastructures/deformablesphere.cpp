@@ -30,13 +30,15 @@
 #include <modules/tensorvisbase/datastructures/deformablesphere.h>
 
 namespace inviwo {
-DeformableSphere::DeformableSphere(const size_t& numTheta, const size_t& numPhi, const vec4& color) {
+DeformableSphere::DeformableSphere(const size_t& numTheta, const size_t& numPhi,
+                                   const vec4& color) {
     createSphere(numTheta, numPhi, color);
 
     calculateNormals();
 }
 
-void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi, const vec4& color) {
+void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi,
+                                    const vec4& color) {
     mesh_ = std::make_shared<BasicMesh>();
 
     auto nFaces = (numPhi - 3) * (numTheta - 1) * 2 + (numPhi - 3) * 2 + 2 * ((numTheta - 1) + 1);
@@ -65,7 +67,7 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
     faces_.reserve(nFaces);
 
     auto calcVert = [](vec3 & vertex, const float& cosphi, const float& sinphi,
-        const float& costheta, const float& sintheta) -> auto {
+                       const float& costheta, const float& sintheta) -> auto {
         auto sgnsinphi = int(glm::sign(sinphi));
         auto sgncosphi = int(glm::sign(cosphi));
         auto sgnsintheta = int(glm::sign(sintheta));
@@ -76,7 +78,7 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
         vertex.z = sgncosphi * std::abs(cosphi);
     };
     auto addVertex = [&](const vec3& vertex, const vec3& texCoord, const vec3& normal,
-        const vec4& color) -> auto {
+                         const vec4& color) -> auto {
         vertices.emplace_back(vertex);
         normals.emplace_back(normal);
         texCoords.emplace_back(texCoord);
@@ -88,9 +90,9 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
     for (size_t j = 1; j < numPhi - 1; j++) {
         for (size_t i = 0; i < numTheta; i++) {
             auto theta = static_cast<float>(i) * 2.f * static_cast<float>(M_PI) /
-                (static_cast<float>(numTheta));
+                         (static_cast<float>(numTheta));
             auto phi = static_cast<float>(j) * static_cast<float>(M_PI) /
-                (static_cast<float>(numPhi) - 1.f);
+                       (static_cast<float>(numPhi) - 1.f);
 
             auto sinphi = std::sin(phi);
             auto cosphi = std::cos(phi);
@@ -113,9 +115,9 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
 
     // Generate second extreme point
     auto theta = (static_cast<float>(numTheta) - 1.f) * 2.f * static_cast<float>(M_PI) /
-        (static_cast<float>(numTheta) - 1.f);
+                 (static_cast<float>(numTheta) - 1.f);
     auto phi = (static_cast<float>(numPhi) - 1.f) * static_cast<float>(M_PI) /
-        (static_cast<float>(numPhi) - 1);
+               (static_cast<float>(numPhi) - 1);
 
     auto sinphi = std::sin(phi);
     auto cosphi = std::cos(phi);
@@ -146,12 +148,12 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
             indexBuffer->add(addedIndices.at(idx2));
             indexBuffer->add(addedIndices.at(idx3));
             faces_.emplace_back(addedIndices.at(idx1), addedIndices.at(idx2),
-                addedIndices.at(idx3));
+                                addedIndices.at(idx3));
             indexBuffer->add(addedIndices.at(idx4));
             indexBuffer->add(addedIndices.at(idx5));
             indexBuffer->add(addedIndices.at(idx6));
             faces_.emplace_back(addedIndices.at(idx4), addedIndices.at(idx5),
-                addedIndices.at(idx6));
+                                addedIndices.at(idx6));
         }
     }
 
@@ -165,15 +167,15 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
         indexBuffer->add(addedIndices.at(firstItemInFirstRow));
         indexBuffer->add(addedIndices.at(lastItemInFirstRow));
         faces_.emplace_back(addedIndices.at(lastItemInSecondRow),
-            addedIndices.at(firstItemInFirstRow),
-            addedIndices.at(lastItemInFirstRow));
+                            addedIndices.at(firstItemInFirstRow),
+                            addedIndices.at(lastItemInFirstRow));
 
         indexBuffer->add(addedIndices.at(firstItemInFirstRow));
         indexBuffer->add(addedIndices.at(lastItemInSecondRow));
         indexBuffer->add(addedIndices.at(firstItemInSecondRow));
         faces_.emplace_back(addedIndices.at(firstItemInFirstRow),
-            addedIndices.at(lastItemInSecondRow),
-            addedIndices.at(firstItemInSecondRow));
+                            addedIndices.at(lastItemInSecondRow),
+                            addedIndices.at(firstItemInSecondRow));
     }
 
     // Tesselate first extreme point
@@ -201,7 +203,7 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
         indexBuffer->add(addedIndices.at((i + 1) + numTheta * (numPhi - 3)));
         indexBuffer->add(addedIndices.at(i + numTheta * (numPhi - 3)));
         faces_.emplace_back(extremePoint2, addedIndices.at((i + 1) + numTheta * (numPhi - 3)),
-            addedIndices.at(i + numTheta * (numPhi - 3)));
+                            addedIndices.at(i + numTheta * (numPhi - 3)));
     }
 
     indexBuffer->add(extremePoint2);
@@ -210,7 +212,7 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
     indexBuffer->add(addedIndices.at(numTheta * (numPhi - 2) - 1));
 
     faces_.emplace_back(extremePoint2, addedIndices.at(numTheta * (numPhi - 2) - numTheta),
-        addedIndices.at(numTheta * (numPhi - 2) - 1));
+                        addedIndices.at(numTheta * (numPhi - 2) - 1));
 }
 
 void DeformableSphere::deform(const std::function<void(vec3& vertex)>& lambda,
@@ -264,7 +266,7 @@ void DeformableSphere::deform(const std::function<void(vec3& vertex, vec4& color
     calculateNormals();
 }
 
-void DeformableSphere::transform(const vec3 & pos, const vec3 & scale) {
+void DeformableSphere::transform(const vec3& pos, const vec3& scale) {
     auto translation = glm::translate(pos);
     auto scaling = glm::scale(vec3(scale));
 
@@ -298,16 +300,16 @@ void DeformableSphere::calculateNormals() {
         normals[face.y] += faceNormal;
         normals[face.z] += faceNormal;
     }
-    
+
     size_t i = 0;
     for (auto& normal : normals) {
         normal = glm::normalize(normal);
         auto cosAlpha = glm::dot(normal, glm::normalize(vertices[i]));
-        
+
         if (cosAlpha < 0.f) {
             normal = -normal;
         }
         i++;
     }
 }
-}  // namespace
+}  // namespace inviwo

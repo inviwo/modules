@@ -66,7 +66,7 @@ private:
     DoubleProperty lambda1_;
     DoubleProperty lambda2_;
     DoubleProperty lambda3_;
-    
+
     auto props() { return std::tie(lambda1_, lambda2_, lambda3_); }
     auto props() const { return std::tie(lambda1_, lambda2_, lambda3_); }
 };

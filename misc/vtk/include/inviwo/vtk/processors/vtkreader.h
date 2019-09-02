@@ -70,8 +70,8 @@ namespace inviwo {
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_VTK_API VTKReader : public Processor,
-                                             public ProgressBarOwner,
-                                             public ActivityIndicatorOwner {
+                                     public ProgressBarOwner,
+                                     public ActivityIndicatorOwner {
 public:
     VTKReader();
     virtual ~VTKReader() = default;

@@ -35,6 +35,4 @@
 #include <ttk/core/base/ftmTree/FTMTree_CT.h>
 #include <warn/pop>
 
-namespace inviwo {
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo
