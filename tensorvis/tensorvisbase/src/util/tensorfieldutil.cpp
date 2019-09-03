@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -330,52 +330,51 @@ std::shared_ptr<BasicMesh> generateSlicePlaneGeometryForTensorField(
 
 namespace detail {
 std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorField3D> tensorField,
-                                                 const vec4 color,
-                                                 const CartesianCoordinateAxis axis,
+                                                 const vec4 c, const CartesianCoordinateAxis axis,
                                                  const size_t sliceNr) {
     auto bounds = tensorField->getBounds<float>();
     auto bounds_t = tensorField->getBounds<size_t>();
-    auto extends = tensorField->getExtents<float>();
+    auto e = tensorField->getExtents<float>();
     auto offset = tensorField->getOffset<float>();
 
     auto mesh = std::make_shared<BasicMesh>();
 
     switch (axis) {
         case CartesianCoordinateAxis::X: {
-            auto xFrac = extends.x / bounds.x;
+            auto xFrac = e.x / bounds.x;
 
             auto slice = float(std::min(sliceNr, bounds_t.x));
 
             xFrac *= slice;
 
-            mesh->addVertex(offset + vec3(xFrac, 0.0f, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(xFrac, extends.y, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(xFrac, extends.y, extends.z), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(xFrac, 0.0f, extends.z), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(xFrac, 0.0f, 0.0f), vec3(1), vec3(0.0f), c);
+            mesh->addVertex(offset + vec3(xFrac, e.y, 0.0f), vec3(1), vec3(0.0f, 1.0f, 0.0f), c);
+            mesh->addVertex(offset + vec3(xFrac, e.y, e.z), vec3(1), vec3(1.0f), c);
+            mesh->addVertex(offset + vec3(xFrac, 0.0f, e.z), vec3(1), vec3(1.0f, 0.0f, 0.0f), c);
         } break;
         case CartesianCoordinateAxis::Y: {
-            auto yFrac = extends.y / bounds.y;
+            auto yFrac = e.y / bounds.y;
 
             auto slice = float(std::min(sliceNr, bounds_t.y));
 
             yFrac *= slice;
 
-            mesh->addVertex(offset + vec3(0.0f, yFrac, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(extends.x, yFrac, 0.0f), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(extends.x, yFrac, extends.z), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(0.0f, yFrac, extends.z), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(0.0f, yFrac, 0.0f), vec3(1), vec3(0.0f), c);
+            mesh->addVertex(offset + vec3(e.x, yFrac, 0.0f), vec3(1), vec3(0.0f, 1.0f, 0.0f), c);
+            mesh->addVertex(offset + vec3(e.x, yFrac, e.z), vec3(1), vec3(1.0f), c);
+            mesh->addVertex(offset + vec3(0.0f, yFrac, e.z), vec3(1), vec3(1.0f, 0.0f, 0.0f), c);
         } break;
         case CartesianCoordinateAxis::Z: {
-            auto zFrac = extends.z / bounds.z;
+            auto zFrac = e.z / bounds.z;
 
             auto slice = float(std::min(sliceNr, bounds_t.z));
 
             zFrac *= slice;
 
-            mesh->addVertex(offset + vec3(0.0f, 0.0f, zFrac), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(extends.x, 0.0f, zFrac), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(extends.x, extends.y, zFrac), vec3(1), vec3(), color);
-            mesh->addVertex(offset + vec3(0.0f, extends.y, zFrac), vec3(1), vec3(), color);
+            mesh->addVertex(offset + vec3(0.0f, 0.0f, zFrac), vec3(1), vec3(0.0f), c);
+            mesh->addVertex(offset + vec3(e.x, 0.0f, zFrac), vec3(1), vec3(0.0f, 1.0f, 0.0f), c);
+            mesh->addVertex(offset + vec3(e.x, e.y, zFrac), vec3(1), vec3(1.0f), c);
+            mesh->addVertex(offset + vec3(0.0f, e.y, zFrac), vec3(1), vec3(1.0f, 0.0f, 0.0f), c);
         } break;
     }
 
