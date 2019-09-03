@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <glm/gtx/component_wise.hpp>
 #include <modules/tensorvisbase/util/misc.h>
 
 namespace inviwo {
@@ -32,6 +33,6 @@ TEST(TensorUtilTests, divideFunctionSuccess) {
 
 TEST(TensorUtilTests, numberOfElements) {
     size3_t dimensions{128, 32, 64};
-    EXPECT_EQ(262144, tensorutil::numberOfElements(dimensions));
+    EXPECT_EQ(262144, glm::compMul(dimensions));
 }
 }  // namespace inviwo
