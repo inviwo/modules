@@ -102,7 +102,10 @@ void VTKReader::process() {
 
 VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName) const {
     std::string line{};
-    std::ifstream infile(fileName);
+    std::ifstream infile = filesystem::ifstream(fileName);
+    if (!infile.is_open()) {
+        throw inviwo::Exception("Could not open file.", IVW_CONTEXT);
+	}
 
     // VTK file header is always ASCII so we can just read the first line.
     std::getline(infile, line);
