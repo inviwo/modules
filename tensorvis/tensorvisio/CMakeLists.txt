@@ -6,6 +6,7 @@ ivw_module(TensorVisIO)
 # Add header files
 set(HEADER_FILES
     include/modules/tensorvisio/processors/amiratensorreader.h
+    include/modules/tensorvisio/processors/flowguifilereader.h
     include/modules/tensorvisio/processors/nrrdreader.h
     include/modules/tensorvisio/processors/tensorfield2dexport.h
     include/modules/tensorvisio/processors/tensorfield2dimport.h
@@ -13,7 +14,7 @@ set(HEADER_FILES
     include/modules/tensorvisio/processors/tensorfield3dexport.h
     include/modules/tensorvisio/processors/tensorfield3dimport.h
     include/modules/tensorvisio/processors/vtkdatasettotensorfield3d.h
-    include/modules/tensorvisio/processors/flowguifilereader.h
+    include/modules/tensorvisio/processors/vtktotensorfield2d.h
     include/modules/tensorvisio/tensorvisiomodule.h
     include/modules/tensorvisio/tensorvisiomoduledefine.h
 )
@@ -23,6 +24,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/processors/amiratensorreader.cpp
+    src/processors/flowguifilereader.cpp
     src/processors/nrrdreader.cpp
     src/processors/tensorfield2dexport.cpp
     src/processors/tensorfield2dimport.cpp
@@ -30,11 +32,10 @@ set(SOURCE_FILES
     src/processors/tensorfield3dexport.cpp
     src/processors/tensorfield3dimport.cpp
     src/processors/vtkdatasettotensorfield3d.cpp
-    src/processors/flowguifilereader.cpp
+    src/processors/vtktotensorfield2d.cpp
     src/tensorvisiomodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
-
 
 #--------------------------------------------------------------------
 # Add shaders
@@ -42,7 +43,6 @@ set(SHADER_FILES
     #${CMAKE_CURRENT_SOURCE_DIR}/glsl/tensorfieldioprocessor.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
-
 
 #--------------------------------------------------------------------
 # Add Unittests

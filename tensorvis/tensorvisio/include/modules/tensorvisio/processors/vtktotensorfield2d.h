@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,49 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/tensorvisiomodule.h>
+#pragma once
 
-#include <modules/tensorvisio/processors/amiratensorreader.h>
-#include <modules/tensorvisio/processors/nrrdreader.h>
-#include <modules/tensorvisio/processors/tensorfield2dexport.h>
-#include <modules/tensorvisio/processors/tensorfield2dimport.h>
-#include <modules/tensorvisio/processors/tensorfield2dtovtk.h>
-#include <modules/tensorvisio/processors/tensorfield3dexport.h>
-#include <modules/tensorvisio/processors/tensorfield3dimport.h>
-#include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
-#include <modules/tensorvisio/processors/flowguifilereader.h>
-#include <modules/tensorvisio/processors/vtktotensorfield2d.h>
+#include <modules/tensorvisio/tensorvisiomoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <modules/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule{app, "TensorVisIO"} {
+/** \docpage{org.inviwo.VTKToTensorField2D, VTKTo Tensor Field2D}
+ * ![](org.inviwo.VTKToTensorField2D.png?classIdentifier=org.inviwo.VTKToTensorField2D)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
 
-    registerProcessor<AmiraTensorReader>();
-    registerProcessor<NRRDReader>();
-    registerProcessor<TensorField2DExport>();
-    registerProcessor<TensorField2DImport>();
-    registerProcessor<TensorField2DToVTK>();
-    registerProcessor<TensorField3DExport>();
-    registerProcessor<TensorField3DImport>();
-    registerProcessor<VTKDataSetToTensorField3D>();
-    registerProcessor<FlowGUIFileReader>();
-    registerProcessor<VTKToTensorField2D>();
-}
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISIO_API VTKToTensorField2D : public Processor {
+public:
+    VTKToTensorField2D();
+    virtual ~VTKToTensorField2D() = default;
 
-TensorVisIOModule::~TensorVisIOModule() = default;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VTKDataSetInport vtkDataSetInport_;
+    TensorField2DOutport tensorField2DOutport_;
+
+};
 
 }  // namespace inviwo
