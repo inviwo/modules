@@ -83,8 +83,6 @@ inline std::string getHTMLTableIntermediateHeaderString(const std::string& heade
     return "<tr>" + detail::getHTMLTableColumnSpanString(header, numberOfColumnsToSpan) + "</tr>";
 }
 
-inline size_t numberOfElements(const size3_t& vec) { return vec.x * vec.y * vec.z; }
-
 template <typename T>
 T normalizeValue(const T& val, const T& minVal, const T& maxVal) {
     if (val >= maxVal) return T(1);
