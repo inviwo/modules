@@ -39,6 +39,7 @@
 
 #include <fstream>
 #include <inviwo/vtk/util/vtkutil.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -104,8 +105,8 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
     std::string line{};
     std::ifstream infile = filesystem::ifstream(fileName);
     if (!infile.is_open()) {
-        throw inviwo::Exception("Could not open file.", IVW_CONTEXT);
-	}
+        throw inviwo::Exception(fmt::format("Could not open file '{}'", fileName), IVW_CONTEXT);
+    }
 
     // VTK file header is always ASCII so we can just read the first line.
     std::getline(infile, line);
