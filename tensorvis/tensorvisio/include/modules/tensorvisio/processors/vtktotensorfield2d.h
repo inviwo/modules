@@ -37,19 +37,21 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKToTensorField2D, VTKTo Tensor Field2D}
+/** \docpage{org.inviwo.VTKToTensorField2D, VTK To Tensor Field 2D}
  * ![](org.inviwo.VTKToTensorField2D.png?classIdentifier=org.inviwo.VTKToTensorField2D)
- * Explanation of how to use the processor.
+ *
+ * Converts a VTK data set to a 2D tensor field.
+ * This requires that one of the dimensions of the VTK data set is 1.
+ * Additionally, the data type must be either float or double.
+ * Lastly, unstructured grids are not supported.
+ *
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __vtkDataSetInport__ VTK data set inport.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __tensorField2DOutport__ Outputs a 2D tensor field.
  *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
 class IVW_MODULE_TENSORVISIO_API VTKToTensorField2D : public Processor {
@@ -65,7 +67,6 @@ public:
 private:
     VTKDataSetInport vtkDataSetInport_;
     TensorField2DOutport tensorField2DOutport_;
-
 };
 
 }  // namespace inviwo
