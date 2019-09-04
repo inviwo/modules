@@ -36,6 +36,8 @@
 
 #include <modules/tensorvisbase/datastructures/tensorfield2d.h>
 #include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/vtk/util/vtkutil.h>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -59,23 +61,24 @@ VTKToTensorField2D::VTKToTensorField2D()
 
 void VTKToTensorField2D::process() {
     const auto inviwoDataSet = vtkDataSetInport_.getData();
-    const auto& vtkDataSet = *vtkDataSetInport_.getData();
 
     size3_t dimensions{};
     if (auto d = inviwoDataSet->getDimensions())
         dimensions = *d;
     else {
-        LogError("VTK data set type not supported.");
+        inviwo::Exception(
+            fmt::format("VTK data set type '{}' not supported.", (*inviwoDataSet)->GetClassName()),
+            IVW_CONTEXT);
         return;
     }
-    if (dimensions.z != 1) {
-        LogError("Z dimension != 1. Aborting.");
+    if (dimensions.x != 1 && dimensions.y != 1 && dimensions.z != 1) {
+        inviwo::Exception("Data set is not 2D. Aborting.", IVW_CONTEXT);
         return;
     }
 
     const auto numberOfElements = glm::compMul(dimensions);
 
-    const auto pointData = vtkDataSet->GetPointData();
+    const auto pointData = (*inviwoDataSet)->GetPointData();
     const auto tensors = pointData->GetTensors();
 
     if (tensors->GetDataType() != VTK_FLOAT && tensors->GetDataType() != VTK_DOUBLE) {
@@ -87,8 +90,13 @@ void VTKToTensorField2D::process() {
     tensorVector2D.resize(numberOfElements);
 
     // Check to see if we need to project the tensor
-    // Assume that we project along Z axis
     if (tensors->GetNumberOfComponents() == 9) {
+        // If so, find out onto which plane to project
+        CartesianCoordinateAxis axis =
+            dimensions.z == 1
+                ? CartesianCoordinateAxis::Z
+                : dimensions.y == 1 ? CartesianCoordinateAxis::Y : CartesianCoordinateAxis::X;
+
         std::vector<dmat3> tensorVector3D;
         tensorVector3D.resize(numberOfElements);
         auto tensorVector3DRawData = reinterpret_cast<double*>(tensorVector3D.data());
@@ -103,11 +111,9 @@ void VTKToTensorField2D::process() {
             }
         }
 
-        std::transform(tensorVector3D.begin(), tensorVector3D.end(), tensorVector2D.begin(),
-                       [](const dmat3& tensor) {
-                           return tensorutil::getProjectedTensor(tensor,
-                                                                 CartesianCoordinateAxis::Z);
-                       });
+        std::transform(
+            tensorVector3D.begin(), tensorVector3D.end(), tensorVector2D.begin(),
+            [&](const dmat3& tensor) { return tensorutil::getProjectedTensor(tensor, axis); });
     } else {
         auto tensorVector2DRawData = reinterpret_cast<double*>(tensorVector2D.data());
         if (tensors->GetDataType() == VTK_DOUBLE) {
