@@ -89,7 +89,7 @@ void TensorField2DToVTK::process() {
 
     std::memcpy(tensorArray->GetPointer(0), tensors.data(), sizeof(double) * 4 * tensors.size());
 
-    pointData->AddArray(tensorArray);
+    pointData->SetTensors(tensorArray);
 
     vtkDataSetOutport_.setData(std::make_shared<VTKDataSet>(structuredGrid));
 }
