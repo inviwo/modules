@@ -90,6 +90,8 @@ protected:
     void updateForces();
     void verletIntegration();
 
+    ComponentType forceMagnitude(size_t i, ComponentType displacement) const;
+
     ComponentType timeStep_;
     std::vector<Vector> positions_;
     std::vector<Vector> velocities_;
@@ -154,6 +156,13 @@ void SpringSystem<Components, ComponentType, Derived>::verletIntegration() {
 }
 
 template <size_t Components, typename ComponentType, typename Derived>
+ComponentType SpringSystem<Components, ComponentType, Derived>::forceMagnitude(
+    size_t i, ComponentType displacement) const {
+
+    return displacement * derived().springConstant(i);
+}
+
+template <size_t Components, typename ComponentType, typename Derived>
 void SpringSystem<Components, ComponentType, Derived>::updateForces() {
     for (std::size_t i = 0; i < forces_.size(); ++i) {
         forces_[i] = derived().externalForce(i);
@@ -173,8 +182,7 @@ void SpringSystem<Components, ComponentType, Derived>::updateForces() {
         }
 
         const auto displacement = dist - derived().springLength(i);
-        const auto forceMagnitude = displacement * derived().springConstant(i);
-        const auto force = -forceMagnitude * dir;
+        const auto force = -derived().forceMagnitude(i, displacement) * dir;
         const auto dampning = derived().springDampning(i);
 
         // add force to both nodes

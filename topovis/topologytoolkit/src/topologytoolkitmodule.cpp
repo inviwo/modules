@@ -31,6 +31,7 @@
 #include <inviwo/topologytoolkit/processors/contourtreetomesh.h>
 #include <inviwo/topologytoolkit/processors/morsesmalecomplex.h>
 #include <inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h>
+#include <inviwo/topologytoolkit/processors/separatrixrefiner.h>
 #include <inviwo/topologytoolkit/topologytoolkitmodule.h>
 #include <inviwo/topologytoolkit/processors/ttktestprocessor.h>
 #include <inviwo/topologytoolkit/processors/meshtotriangulation.h>
@@ -53,6 +54,7 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<MorseSmaleComplexToMesh>();
     registerProcessor<TTKTestProcessor>();
     registerProcessor<MeshToTriangulation>();
+    registerProcessor<SeparatrixRefiner>();
     registerProcessor<VolumeToTriangulation>();
     registerProcessor<TriangulationToMesh>();
     registerProcessor<PersistenceCurve>();

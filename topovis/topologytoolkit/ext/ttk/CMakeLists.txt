@@ -32,7 +32,7 @@ else()
 	endif()
 endif()
 
-add_subdirectory(ttk)
+add_subdirectory(ttk ${IVW_BINARY_DIR}/ext/ttk)
 
 get_target_property(libs baseAll INTERFACE_LINK_LIBRARIES)
 foreach(item in ${libs})

@@ -27,6 +27,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h
     include/inviwo/topologytoolkit/processors/persistencecurve.h
     include/inviwo/topologytoolkit/processors/persistencediagram.h
+    include/inviwo/topologytoolkit/processors/separatrixrefiner.h
     include/inviwo/topologytoolkit/processors/topologicalsimplification.h
     include/inviwo/topologytoolkit/processors/triangulationtomesh.h
     include/inviwo/topologytoolkit/processors/triangulationtovolume.h
@@ -58,6 +59,7 @@ set(SOURCE_FILES
     src/processors/morsesmalecomplextomesh.cpp
     src/processors/persistencecurve.cpp
     src/processors/persistencediagram.cpp
+    src/processors/separatrixrefiner.cpp
     src/processors/topologicalsimplification.cpp
     src/processors/triangulationtomesh.cpp
     src/processors/triangulationtovolume.cpp
