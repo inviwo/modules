@@ -17,6 +17,7 @@ node {
 
     def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis", "${env.WORKSPACE}/modules/topovis"]
     util.wrap(this, "#jenkins-branch-pr") {
+        util.format(this, "${env.WORKSPACE}/modules")
         util.buildStandard(
             state: this,
             modulePaths: modulePaths, 
@@ -24,7 +25,6 @@ node {
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
-        util.format(this, ["${env.WORKSPACE}/modules"])
         util.warn(this, 'daily/modules/appleclang')
         util.unittest(this)
         util.integrationtest(this)        
