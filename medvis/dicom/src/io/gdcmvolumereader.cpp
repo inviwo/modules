@@ -125,7 +125,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
     }
     */
 
-    volume->dataMap_.valueRange = volume->dataMap_.valueRange * series.slope + series.intercept;
+    volume->dataMap_.valueRange = volume->dataMap_.dataRange * series.slope + series.intercept;
 
     if (series.modality == "CT") {
         volume->dataMap_.valueUnit = "HU";
