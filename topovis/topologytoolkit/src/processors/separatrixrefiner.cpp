@@ -60,11 +60,29 @@ public:
         , globalSpringDampning{springDampning} {}
 
     bool isLocked(size_t i) const {
-        return types[i] == Type::minimum || types[i] == Type::maximum || types[i] == Type::sadle;
+        // return types[i] == Type::minimum || types[i] == Type::maximum || types[i] == Type::sadle;
+        return types[i] == Type::sadle;
     }
 
     Vector externalForce(size_t i) {
-        const float factor = types[i] == Type::maxSeperatrix ? 1.0f : -1.0f;
+        const float factor = [&]() {
+            switch (types[i]) {
+                case Type::maximum:
+                    return 1.0f;
+                case Type::maxSeperatrix:
+                    return 1.0f;
+                case Type::minimum:
+                    return -1.0f;
+                case Type::minSeperatrix:
+                    return -1.0f;
+                case Type::sadle:
+                    return 0.0f;
+                case Type::unkown:
+                    return 0.0f;
+                default:
+                    return 0.0f;
+            }
+        }();
         return factor * gradientScale *
                static_cast<Vector>(sampler->sample(this->positions_[i], CoordinateSpace::Model));
     }
@@ -227,6 +245,15 @@ void SeparatrixRefiner::process() {
     sys.integrate(timesteps_);
 
     auto res = std::make_shared<topology::MorseSmaleComplexData>(*msc);
+
+    for (ttk::SimplexId i = 0; i < ncp; i++) {
+        const auto index = cellIdToPosIndex.find(id(res->criticalPoints, i));
+        IVW_ASSERT(index != cellIdToPosIndex.end(), "Should always find a index");
+        const auto refinedPos = sys.position(index->second);
+        res->criticalPoints.points[3 * i + 0] = refinedPos[0];
+        res->criticalPoints.points[3 * i + 1] = refinedPos[1];
+        res->criticalPoints.points[3 * i + 2] = refinedPos[2];
+    }
 
     for (ttk::SimplexId i = 0; i < nsp; i++) {
         const auto index = cellIdToPosIndex.find(id(res->separatrixPoints, i));
