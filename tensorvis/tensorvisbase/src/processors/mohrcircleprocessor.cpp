@@ -1,7 +1,7 @@
 #include <modules/tensorvisbase/processors/mohrcircleprocessor.h>
-#include <modules/nanovgutils/nanovgutilsmodule.h>
+#include <inviwo/nanovgutils/nanovgutilsmodule.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/vgfontrendering/vgfontrenderingmodule.h>
+#include <inviwo/vgfontrendering/vgfontrenderingmodule.h>
 #include <modules/tensorvisbase/util/tensorutil.h>
 
 namespace inviwo {

@@ -35,7 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/eventproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <modules/nanovgutils/nanovgutils.h>
+#include <inviwo/nanovgutils/nanovgutils.h>
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
 #include <modules/tensorvisbase/properties/eigenvalueproperty.h>
 #include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
