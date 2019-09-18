@@ -80,8 +80,6 @@ TensorGlyphRenderer::TensorGlyphRenderer()
     addPort(selectedMeshOutport_);
     addPort(indexOutport_);
 
-    outport_.addResizeEventListener(&camera_);
-
     addProperty(selectMode_);
     addProperty(glyphType_);
 
@@ -212,11 +210,6 @@ void TensorGlyphRenderer::process() {
         selectedMeshOutport_.setData(
             glyphType_.generateQuadric(dmat3(1), dvec3(0), glyphType_.size(), dvec4(1)));
     }
-}
-
-void TensorGlyphRenderer::propagateEvent(Event* event, Outport* source) {
-    if (source != &outport_) return;
-    Processor::propagateEvent(event, source);
 }
 
 }  // namespace inviwo
