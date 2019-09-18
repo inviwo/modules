@@ -40,6 +40,6 @@ public:
     VGFontRenderingModule(InviwoApplication* app);
 };
 
-} // namespace
+}  // namespace inviwo
 
-#endif // IVW_DATAPLOTTINGMODULE_H
+#endif  // IVW_DATAPLOTTINGMODULE_H

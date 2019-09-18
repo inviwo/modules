@@ -32,8 +32,9 @@
 
 namespace inviwo {
 
-VGFontRenderingModule::VGFontRenderingModule(InviwoApplication* app) : InviwoModule(app, "VGFontRendering") {
-	registerProcessor<VGTextOverlayProcessor>();
+VGFontRenderingModule::VGFontRenderingModule(InviwoApplication* app)
+    : InviwoModule(app, "VGFontRendering") {
+    registerProcessor<VGTextOverlayProcessor>();
 }
 
-}  // namespace
+}  // namespace inviwo

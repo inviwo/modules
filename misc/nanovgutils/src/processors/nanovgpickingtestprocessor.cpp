@@ -47,15 +47,14 @@ const ProcessorInfo NanoVGPickingTestProcessor::getProcessorInfo() const { retur
 NanoVGPickingTestProcessor::NanoVGPickingTestProcessor()
     : Processor()
     , outport_("outport")
-    , eventPorperty_(
-          "posiiotn", "Position",
-          [this](Event* e) {
-              if (auto ev = e->getAs<MouseEvent>()) {
-                  mousePos_ = ev->pos();
-                  invalidate(InvalidationLevel::InvalidOutput);
-              }
-          },
-          MouseButton::None, MouseState::Move)
+    , eventPorperty_("posiiotn", "Position",
+                     [this](Event* e) {
+                         if (auto ev = e->getAs<MouseEvent>()) {
+                             mousePos_ = ev->pos();
+                             invalidate(InvalidationLevel::InvalidOutput);
+                         }
+                     },
+                     MouseButton::None, MouseState::Move)
     , nvgContext_(
           InviwoApplication::getPtr()->getModuleByType<NanoVGUtilsModule>()->getNanoVGContext()) {
 
