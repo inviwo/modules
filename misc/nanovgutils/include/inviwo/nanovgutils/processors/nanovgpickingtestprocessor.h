@@ -71,13 +71,13 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-	ImageOutport outport_;
+    ImageOutport outport_;
 
-	EventProperty eventPorperty_;
+    EventProperty eventPorperty_;
 
-	NanoVGContext * nvgContext_;
+    NanoVGContext* nvgContext_;
 
-	vec2 mousePos_;
+    vec2 mousePos_;
 };
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2019 Inviwo Foundation
+ * Copyright (c) 2017 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,11 +24,6 @@
  * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- **********************************************************************************
- *
- * Author: Jochen Jankowai
- * Contact: jochen.jankowai@liu.se
  *
  *********************************************************************************/
 
@@ -299,11 +294,12 @@ public:
                bool normalize = true);
 
     // Get quadratic Bezier Spline Control Point.
-    vec2 getQuadraticBezierCurveControlPoint(
-            const vec2& p0, const vec2& p1,const vec2& p2, float t = 0.5f);
+    vec2 getQuadraticBezierCurveControlPoint(const vec2 &p0, const vec2 &p1, const vec2 &p2,
+                                             float t = 0.5f);
 
     // Get quadratic Bezier Spline Control Points.
-    std::vector<vec2> getQuadraticBezierCurveControlPoints(const std::vector<vec2> &startAndEndPoints, const std::vector<vec2>& intermediatePoints);
+    std::vector<vec2> getQuadraticBezierCurveControlPoints(
+        const std::vector<vec2> &startAndEndPoints, const std::vector<vec2> &intermediatePoints);
 
     // Get cubic Bezier Spline Control Points.
     // https://www.codeproject.com/Articles/31859/Draw-a-Smooth-Curve-through-a-Set-of-2D-Points-wit

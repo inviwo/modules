@@ -47,20 +47,21 @@ const ProcessorInfo NanoVGPickingTestProcessor::getProcessorInfo() const { retur
 NanoVGPickingTestProcessor::NanoVGPickingTestProcessor()
     : Processor()
     , outport_("outport")
-    , eventPorperty_("posiiotn", "Position",
-                     [this](Event* e) {
-                         if (auto ev = e->getAs<MouseEvent>()) {
-                             mousePos_ = ev->pos();
-							 invalidate(InvalidationLevel::InvalidOutput);
-                         }
-                     },
-                     MouseButton::None, MouseState::Move)
+    , eventPorperty_(
+          "posiiotn", "Position",
+          [this](Event* e) {
+              if (auto ev = e->getAs<MouseEvent>()) {
+                  mousePos_ = ev->pos();
+                  invalidate(InvalidationLevel::InvalidOutput);
+              }
+          },
+          MouseButton::None, MouseState::Move)
     , nvgContext_(
           InviwoApplication::getPtr()->getModuleByType<NanoVGUtilsModule>()->getNanoVGContext()) {
 
     addPort(outport_);
 
-	addProperty(eventPorperty_);
+    addProperty(eventPorperty_);
 }
 
 void NanoVGPickingTestProcessor::process() {
@@ -74,9 +75,9 @@ void NanoVGPickingTestProcessor::process() {
 
     nvgContext_->circle(vec2(dimensions / size2_t(2)), 100.f);
 
-	nvgContext_->fillColor(vec4(1.f));
-	nvgContext_->fillHitRegion(5);
-	nvgContext_->fill();
+    nvgContext_->fillColor(vec4(1.f));
+    nvgContext_->fillHitRegion(5);
+    nvgContext_->fill();
 
     auto id = nvgContext_->hitTest(mousePos_.x, mousePos_.y, NanoVGContext::HitTestRegion::All);
 
