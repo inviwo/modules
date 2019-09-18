@@ -22,3 +22,15 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+
+ivw_register_license_file(NAME "Roboto Typeface" VERSION 2.0 MODULE VGFontRendering
+    URL https://fonts.google.com/specimen/Roboto
+    TYPE "Apache License"
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/fonts/LICENSE-2.0.txt
+)
+
+ivw_register_license_file(NAME "Open Sans Typeface" VERSION 2.0 MODULE VGFontRendering
+    URL https://fonts.google.com/specimen/Open+Sans
+    TYPE "Apache License"
+    FILES ${CMAKE_CURRENT_SOURCE_DIR}/fonts/LICENSE-2.0.txt
+)
