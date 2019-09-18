@@ -1,0 +1,5 @@
+#--------------------------------------------------------------------
+# Dependencies
+set(dependencies	
+    InviwoOpenGLModule
+)

@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/nanovgutils/nanovgutilsmodule.h>
+#include <inviwo/nanovgutils/nanovgutilsmodule.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/tensorvisbase/processors/tensorstarplotprocessor.h>
-#include <modules/vgfontrendering/vgfontrenderingmodule.h>
+#include <inviwo/vgfontrendering/vgfontrenderingmodule.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <modules/opengl/buffer/renderbufferobject.h>
 #include <modules/opengl/texture/texture2d.h>
