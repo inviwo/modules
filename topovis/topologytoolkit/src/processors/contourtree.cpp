@@ -146,8 +146,7 @@ void ContourTree::process() {
                 std::vector<int> segmentationIds(inportData->getPoints().size());
 
 				for (int i = 0; i < tree->getNumberOfVertices(); i++) {
-					segmentationIds[i] =
-						glm::abs<int>(tree->getCorrespondingNodeId(i));
+					segmentationIds[i] = glm::abs<int>(tree->getCorrespondingSuperArcId(i));
                 }
                 segmentedInportData->setSegments(segmentationIds);
 								

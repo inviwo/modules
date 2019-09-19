@@ -49,6 +49,7 @@
 
 
 #include <inviwo/topologytoolkit/ports/contourtreeport.h>
+#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/topologytoolkit/utils/ttkutils.h>
@@ -88,6 +89,7 @@ private:
     MeshInport meshInport_;
     topology::TriangulationInport triangulationInport;
     topology::ContourTreeInport contourtreeInport;
+    topology::MorseSmaleComplexInport morseSmaleComplexInport;
     MeshOutport outport_;
 
 	TransferFunctionProperty transferFunction_;

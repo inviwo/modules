@@ -75,6 +75,7 @@ private:
     topology::MorseSmaleComplexOutport outport_;
 
     std::future<std::shared_ptr<const topology::MorseSmaleComplexData>> newMsc_;
+    std::shared_ptr<topology::TriangulationData> inportDataCopy_;
 
     bool mscDirty_ = true;
     bool hasNewData_ = false;

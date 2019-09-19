@@ -101,6 +101,7 @@ ContourTreeColorMapper::ContourTreeColorMapper()
     : Processor()
     , triangulationInport("triangulation")
     , contourtreeInport("contourtree")
+    , morseSmaleComplexInport("morsesmalecomplex")
     , meshInport_("mesh")
     , outport_("outport")
     , transferFunction_("transferFunction", "TranferFunction") {
@@ -108,12 +109,14 @@ ContourTreeColorMapper::ContourTreeColorMapper()
     addPort(meshInport_);
     addPort(triangulationInport);
     addPort(contourtreeInport);
+    addPort(morseSmaleComplexInport);
     addPort(outport_);
 
     addProperty(transferFunction_);
 
 	triangulationInport.setOptional(true);
     contourtreeInport.setOptional(true);
+    morseSmaleComplexInport.setOptional(true);
 }
 
 void ContourTreeColorMapper::process() {
@@ -125,8 +128,9 @@ void ContourTreeColorMapper::process() {
 
 		// set output mesh
         outport_.setData(mesh);
+        return;
 	}
-
+	
 	if (contourtreeInport.getData()) {
         auto mesh = topology::mapMeshToContourTree(transferFunction_.get(),
                                                     *meshInport_.getData().get(),
@@ -134,7 +138,22 @@ void ContourTreeColorMapper::process() {
 
         // set output mesh
         outport_.setData(mesh);
-    }
+        return;
+    } 
+
+	if (morseSmaleComplexInport.getData()) {
+        auto mesh =
+            topology::mapMeshToContourTree(transferFunction_.get(), *meshInport_.getData().get(),
+                *morseSmaleComplexInport.getData()->triangulation.get());
+
+        // set output mesh
+        outport_.setData(mesh);
+        return;
+    } 
+
+
+	//default original mesh
+    outport_.setData(meshInport_.getData());
 
     
 }

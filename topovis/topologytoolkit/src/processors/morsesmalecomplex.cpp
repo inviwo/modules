@@ -65,6 +65,7 @@ void MorseSmaleComplex::process() {
     if (util::is_future_ready(newMsc_)) {
         try {
             auto vol = newMsc_.get();
+            inportDataCopy_->setSegments(vol->segmentation.msc);
             outport_.setData(vol);
             hasNewData_ = false;
             getActivityIndicator().setActive(false);
@@ -95,37 +96,46 @@ void MorseSmaleComplex::updateOutport() {
 
     // Save input and properties needed to calculate ttk contour tree to local variables
     const auto inportData = inport_.getData();
+    auto inportDataCopy = std::make_shared<topology::TriangulationData>(*inportData.get());
 
-    // construction of ttk contour tree
-    auto compute = [inportData, done]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
+	inportDataCopy_ = inportDataCopy;
+
+	auto& mscSeg = inportDataCopy->getSegments();
+
+	// construction of ttk contour tree
+    auto compute = [inportDataCopy, done, mscSeg]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
         ScopedClockCPU clock{"MorseSmaleComplex", "Morse-Smale complex calculation",
                              std::chrono::milliseconds(500), LogLevel::Info};
         auto mscData =
-            inportData->getScalarValues()
+            inportDataCopy->getScalarValues()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<std::shared_ptr<topology::MorseSmaleComplexData>,
-                           dispatching::filter::Scalars>([inportData](const auto buffer) {
+                           dispatching::filter::Scalars>([inportDataCopy, mscSeg](const auto buffer) {
                     using ValueType = util::PrecisionValueType<decltype(buffer)>;
                     using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-                    std::vector<int> offsets(inportData->getOffsets());
+                    std::vector<int> offsets(inportDataCopy->getOffsets());
+
+					// segmentation
+					auto triangulation = inportDataCopy->getTriangulation();
 
                     ttk::MorseSmaleComplex morseSmaleComplex;
                     morseSmaleComplex.setupTriangulation(
-                        const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
+                        const_cast<ttk::Triangulation*>(&inportDataCopy->getTriangulation()));
                     // FIXME: ttk::MorseSmaleComplex has some issues with correct constness
                     morseSmaleComplex.setInputScalarField(
                         const_cast<PrimitiveType*>(buffer->getDataContainer().data()));
                     morseSmaleComplex.setInputOffsets(offsets.data());
 
                     auto mscData = std::make_shared<topology::MorseSmaleComplexData>(
-                        morseSmaleComplex, inportData);
+                        morseSmaleComplex, inportDataCopy);
                     morseSmaleComplex.execute<PrimitiveType, ttk::SimplexId>();
-
+					
                     return mscData;
                 });
 
         done();
+
         return mscData;
     };
 
