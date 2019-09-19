@@ -40,6 +40,8 @@
 #include <warn/ignore/all>
 #include <ttk/core/base/topologicalSimplification/TopologicalSimplification.h>
 #include <ttk/core/base/ftmTree/FTMTree_MT.h>
+#include <ttk/core/base/contourTree/ContourTree.h>
+
 #include <warn/pop>
 
 #include <tuple>
@@ -130,12 +132,50 @@ void ContourTree::process() {
             [this, inportData, treeType, computeTree]() {
                 auto treeData = std::make_shared<topology::ContourTreeData>();
                 treeData->type = treeType;
-                treeData->triangulation = inportData;
 
-                treeData->tree = inportData->getScalarValues()
+				auto segmentedInportData = std::make_shared<topology::TriangulationData>(*inportData.get());
+
+                treeData->triangulation = segmentedInportData;
+
+                auto tree = segmentedInportData->getScalarValues()
                                      ->getRepresentation<BufferRAM>()
                                      ->dispatch<std::shared_ptr<topology::ContourTree>,
                                                 dispatching::filter::Scalars>(computeTree);
+
+
+				int regularCount = 0;
+                std::vector<int> segmentationIds(inportData->getPoints().size());
+                std::vector<int> vertexIds(inportData->getPoints().size());
+
+				LogInfo("Number of vertices in tree are: " << tree->getNumberOfVertices());
+
+				for (int i = 0; i < tree->getNumberOfVertices(); i++) {
+                    vertexIds[i] = glm::abs<int>(tree->getCorrespondingNodeId(i));
+                }
+                segmentedInportData->setSegments(vertexIds);
+
+				/*for (int i = 0; i < tree->getNumberOfSuperArcs(); i++) {
+                    const ttk::ftm::SuperArc *a = tree->getSuperArc(i);
+					
+                    for (auto &r : a->getRegions()) {
+                        for (auto rit = r.segmentBegin;; rit++) {
+                            auto node = tree->getNode(*rit);
+                            auto vertexId = (int)(node->getVertexId());
+                            auto vit = std::find(vertexIds.begin(), vertexIds.end(), vertexId);
+							if (vit == vertexIds.end()) {
+								LogWarn("Duplicated VertexId not expected.");
+							}                            
+                            segmentationIds[std::distance(vertexIds.begin(), vit)] = *rit;
+                            regularCount++;
+                            if (rit == r.segmentEnd) break;
+                        }
+						
+                    }
+				}*/
+				
+				treeData->tree = tree;
+
+				LogInfo("Number of segmented region count : " << regularCount);
 
                 dispatchFront([this, treeData]() {
                     treeData_ = treeData;
