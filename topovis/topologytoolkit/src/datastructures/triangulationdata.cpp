@@ -59,7 +59,6 @@ TriangulationData::TriangulationData(const TriangulationData& rhs)
     , points_(rhs.points_)
     , offsets_(rhs.offsets_)
     , scalars_(rhs.scalars_->clone())
-    , segments_(rhs.segments_)
     , gridDims_(rhs.gridDims_)
     , gridOrigin_(rhs.gridOrigin_)
     , gridExtent_(rhs.gridExtent_) {
@@ -78,7 +77,6 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
     , points_(std::move(rhs.points_))
     , offsets_(std::move(rhs.offsets_))
     , scalars_(std::move(rhs.scalars_))
-    , segments_(rhs.segments_)
     , gridDims_(std::move(rhs.gridDims_))
     , gridOrigin_(std::move(rhs.gridOrigin_))
     , gridExtent_(std::move(rhs.gridExtent_)) {
@@ -99,7 +97,6 @@ TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
         points_ = rhs.points_;
         offsets_ = rhs.offsets_;
         scalars_.reset(rhs.scalars_->clone());
-        segments_ = rhs.segments_;
         gridOrigin_ = rhs.gridOrigin_;
         gridExtent_ = rhs.gridExtent_;
 
@@ -122,7 +119,6 @@ TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
         points_ = std::move(rhs.points_);
         offsets_ = std::move(rhs.offsets_);
         scalars_ = std::move(rhs.scalars_);
-        segments_ = rhs.segments_;
         gridDims_ = std::move(rhs.gridDims_);
         gridOrigin_ = std::move(rhs.gridOrigin_);
         gridExtent_ = std::move(rhs.gridExtent_);
@@ -160,7 +156,6 @@ void TriangulationData::set(const size3_t& dims, const vec3& origin, const vec3&
                             const DataMapper& dataMapper) {
     points_.clear();
     cells_.clear();
-    segments_.clear();
     const vec3 spacing(extent / vec3(dims));
     triangulation_.setInputGrid(origin.x, origin.y, origin.z, spacing.x, spacing.y, spacing.z,
                                 static_cast<int>(dims.x), static_cast<int>(dims.y),
@@ -180,11 +175,6 @@ void TriangulationData::set(std::vector<vec3>&& points, const std::vector<uint32
                             InputTriangulation type) {
     points_ = std::move(points);
     cells_.clear();
-    segments_.clear();
-
-	segments_.resize(points_.size());
-    std::iota(segments_.begin(), segments_.end(), 0);
-
 
     // init ttk::Triangulation
     triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
@@ -429,37 +419,6 @@ const std::vector<int>& TriangulationData::getOffsets() const {
     return offsets_;
 }
 
-
-void TriangulationData::setSegments(const std::vector<int>& segments) {
-    setSegments(std::vector<int>(segments));
-}
-
-void TriangulationData::setSegments(std::vector<int>&& segments) {
-    const auto numelems = isUniformGrid() ? glm::compMul(gridDims_) : points_.size();
-    if (segments.size() != numelems) {
-        throw TTKException("Mismatch in range (" + std::to_string(segments.size()) + " segments, " +
-                           std::to_string(numelems) + " vertices)");
-    }
-    segments_ = std::move(segments);
-}
-
-std::vector<int>& TriangulationData::getSegments() {
-    const auto numelems = isUniformGrid() ? glm::compMul(gridDims_) : points_.size();
-    if (segments_.size() != numelems) {
-        segments_.resize(numelems);
-        std::iota(segments_.begin(), segments_.end(), 0);
-    }
-    return segments_;
-}
-
-const std::vector<int>& TriangulationData::getSegments() const {
-    const auto numelems = isUniformGrid() ? glm::compMul(gridDims_) : points_.size();
-    if (segments_.size() != numelems) {
-        segments_.resize(numelems);
-        std::iota(segments_.begin(), segments_.end(), 0);
-    }
-    return segments_;
-}
 
 const std::vector<long long int>& TriangulationData::getCells() const { return cells_; }
 

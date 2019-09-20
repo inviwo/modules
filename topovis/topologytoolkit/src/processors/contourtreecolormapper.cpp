@@ -34,6 +34,7 @@ namespace inviwo {
 namespace topology {
 
 std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mesh& mesh,
+										   const std::vector<int> &segments,
                                            const TriangulationData& triangulationData,
                                            MeshColorOption colorOption) {
 
@@ -55,10 +56,10 @@ std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mes
 
     auto colorBuffer = std::dynamic_pointer_cast<Buffer<vec4>>(bufferIt->second);
     std::vector<vec4>& colors = colorBuffer->getEditableRAMRepresentation()->getDataContainer();
-    //auto minmax = std::minmax_element(colors.begin(), colors.end());
+    // auto minmax = std::minmax_element(colors.begin(), colors.end());
 
-	if (colorOption == MeshColorOption::SEGMENT_COLORMAP) {
-        auto& segments = triangulationData.getSegments();
+    if (colorOption == MeshColorOption::SEGMENT_COLORMAP) {
+        //auto& segments = triangulationData.getSegments();
 
         auto minmax = std::minmax_element(segments.begin(), segments.end());
         auto div = (float)(*minmax.second - *minmax.first);
@@ -66,8 +67,8 @@ std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mes
         for (size_t i = 0; i < std::min(segments.size(), colors.size()); ++i) {
             colors[i] = tf.sample(static_cast<float>((segments[i] - *minmax.first) / div));
         }
-	} else {
-        
+    } else {
+
         triangulationData.getScalarValues()
             ->getRepresentation<BufferRAM>()
             ->dispatch<void, dispatching::filter::Scalars>([&](auto bufferpr) {
@@ -80,7 +81,7 @@ std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mes
                     colors[i] = tf.sample(static_cast<float>((scalars[i] - *minmax.first) / div));
                 }
             });
-	}
+    }
 
     return newMesh;
 }
@@ -99,7 +100,6 @@ const ProcessorInfo ContourTreeColorMapper::getProcessorInfo() const { return pr
 
 ContourTreeColorMapper::ContourTreeColorMapper()
     : Processor()
-    , triangulationInport("triangulation")
     , contourtreeInport("contourtree")
     , morseSmaleComplexInport("morsesmalecomplex")
     , meshInport_("mesh")
@@ -107,44 +107,34 @@ ContourTreeColorMapper::ContourTreeColorMapper()
     , transferFunction_("transferFunction", "TranferFunction") {
 
     addPort(meshInport_);
-    addPort(triangulationInport);
     addPort(contourtreeInport);
     addPort(morseSmaleComplexInport);
     addPort(outport_);
 
     addProperty(transferFunction_);
 
-	triangulationInport.setOptional(true);
     contourtreeInport.setOptional(true);
     morseSmaleComplexInport.setOptional(true);
 }
 
 void ContourTreeColorMapper::process() {
-
-	if (triangulationInport.getData()) {    
-		auto mesh =
-			topology::mapMeshToContourTree(transferFunction_.get(), *meshInport_.getData().get(),
-										   *triangulationInport.getData().get());
-
-		// set output mesh
-        outport_.setData(mesh);
-        return;
-	}
 	
 	if (contourtreeInport.getData()) {
-        auto mesh = topology::mapMeshToContourTree(transferFunction_.get(),
-                                                    *meshInport_.getData().get(),
-                                                    *contourtreeInport.getData()->triangulation.get());
+        auto mesh =
+            topology::mapMeshToContourTree(transferFunction_.get(), *meshInport_.getData().get(),
+											contourtreeInport.getData()->getSegments(),
+                                           *contourtreeInport.getData()->triangulation.get());
 
         // set output mesh
         outport_.setData(mesh);
         return;
-    } 
+    }
 
-	if (morseSmaleComplexInport.getData()) {
+    if (morseSmaleComplexInport.getData()) {
         auto mesh =
             topology::mapMeshToContourTree(transferFunction_.get(), *meshInport_.getData().get(),
-                *morseSmaleComplexInport.getData()->triangulation.get());
+                                           morseSmaleComplexInport.getData()->segmentation.msc,
+                                           *morseSmaleComplexInport.getData()->triangulation.get());
 
         // set output mesh
         outport_.setData(mesh);

@@ -62,8 +62,26 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeData {
     TreeType type;
     ttk::ftm::FTMTree_MT* getTree() const;
 
+	/**
+     * \brief set segment index values used in connection with ttk triangulation data
+     *
+     * @throw TTKException if number of segments is different from number of vertices
+     */
+    void setSegments(const std::vector<int>& segments);
+    void setSegments(std::vector<int>&& segments);
+    /**
+     * \brief return segment index value used in connection with ttk triangulation data
+     *
+     * If unset, a sequence from 0 to n-1 is returned with n = number of vertices
+     *
+     * @return offsets used by TTK functions
+     */
+    std::vector<int>& getSegments();
+    const std::vector<int>& getSegments() const;
+
     std::shared_ptr<ttk::ftm::FTMTree> tree;
     std::shared_ptr<const TriangulationData> triangulation;
+    mutable std::vector<int> segments_;
 };
 
 template <class Elem, class Traits>

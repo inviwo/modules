@@ -197,23 +197,7 @@ public:
     void setScalarValues(const BufferBase& buffer, size_t component);
 
     std::shared_ptr<BufferBase> getScalarValues() const;
-
-    /**
-     * \brief set segment index values used in connection with ttk triangulation data
-     *
-     * @throw TTKException if number of segments is different from number of vertices
-     */
-    void setSegments(const std::vector<int>& segments);
-    void setSegments(std::vector<int>&& segments);
-    /**
-     * \brief return segment index value used in connection with ttk triangulation data
-     *
-     * If unset, a sequence from 0 to n-1 is returned with n = number of vertices
-     *
-     * @return offsets used by TTK functions
-     */
-    std::vector<int>& getSegments();
-    const std::vector<int>& getSegments() const;
+	   
 
 	/**
      * \brief set position/scalar value offsets used in connection with ttk triangulation data
@@ -278,11 +262,7 @@ private:
     std::shared_ptr<BufferBase> scalars_;  //!< scalars associated with vertices of triangulation
     DataMapper volumeDataMapper_;  //!< Data mapper associated with volume scalar values, only used
                                    //!< for implicit grids
-
-    mutable std::vector<int> segments_;
-
-
-    size3_t gridDims_;
+	size3_t gridDims_;
     vec3 gridOrigin_;
     vec3 gridExtent_;
 };
@@ -332,7 +312,6 @@ struct DataTraits<topology::TriangulationData> {
         } else {
             tb(H("Type of Scalars"), "<none>");
         }
-        tb(H("Number of Segments"), data.getSegments().size());
         return doc;
     }
 };

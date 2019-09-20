@@ -133,11 +133,9 @@ void ContourTree::process() {
                 auto treeData = std::make_shared<topology::ContourTreeData>();
                 treeData->type = treeType;
 
-				auto segmentedInportData = std::make_shared<topology::TriangulationData>(*inportData.get());
+                treeData->triangulation = inportData;
 
-                treeData->triangulation = segmentedInportData;
-
-                auto tree = segmentedInportData->getScalarValues()
+                auto tree = inportData->getScalarValues()
                                      ->getRepresentation<BufferRAM>()
                                      ->dispatch<std::shared_ptr<topology::ContourTree>,
                                                 dispatching::filter::Scalars>(computeTree);
@@ -148,7 +146,7 @@ void ContourTree::process() {
 				for (int i = 0; i < tree->getNumberOfVertices(); i++) {
 					segmentationIds[i] = glm::abs<int>(tree->getCorrespondingSuperArcId(i));
                 }
-                segmentedInportData->setSegments(segmentationIds);
+                treeData->setSegments(segmentationIds);
 								
 				treeData->tree = tree;
 

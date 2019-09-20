@@ -46,6 +46,43 @@ ttk::ftm::FTMTree_MT* ContourTreeData::getTree() const {
     }
 }
 
+
+void ContourTreeData::setSegments(const std::vector<int>& segments) {
+    setSegments(std::vector<int>(segments));
+}
+
+void ContourTreeData::setSegments(std::vector<int>&& segments) {
+    const auto numelems =
+        triangulation->isUniformGrid() ? glm::compMul(triangulation->getGridDimensions()) : triangulation->getPoints().size();
+    if (segments.size() != numelems) {
+        throw TTKException("Mismatch in range (" + std::to_string(segments.size()) + " segments, " +
+                           std::to_string(numelems) + " vertices)");
+    }
+    segments_ = std::move(segments);
+}
+
+std::vector<int>& ContourTreeData::getSegments() {
+    const auto numelems = triangulation->isUniformGrid()
+                              ? glm::compMul(triangulation->getGridDimensions())
+                              : triangulation->getPoints().size();
+    if (segments_.size() != numelems) {
+        segments_.resize(numelems);
+        std::iota(segments_.begin(), segments_.end(), 0);
+    }
+    return segments_;
+}
+
+const std::vector<int>& ContourTreeData::getSegments() const {
+    const auto numelems = triangulation->isUniformGrid()
+                              ? glm::compMul(triangulation->getGridDimensions())
+                              : triangulation->getPoints().size();
+    if (segments_.size() != numelems) {
+        segments_.resize(numelems);
+        std::iota(segments_.begin(), segments_.end(), 0);
+    }
+    return segments_;
+}
+
 }  // namespace topology
 
 }  // namespace inviwo

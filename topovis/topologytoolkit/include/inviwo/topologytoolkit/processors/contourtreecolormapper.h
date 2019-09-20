@@ -70,9 +70,9 @@ enum MeshColorOption {
 	SEGMENT_COLORMAP
 };
 
-std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mesh& mesh,
-                                           const TriangulationData& triangulationData,
-											MeshColorOption coloroption = MeshColorOption::SEGMENT_COLORMAP);
+std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mesh& mesh, const std::vector<int>& segments,
+                                           const TriangulationData& triangulationData, 
+	                                       MeshColorOption coloroption = MeshColorOption::SEGMENT_COLORMAP);
 
 }
 class IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeColorMapper : public Processor {
@@ -87,7 +87,6 @@ public:
 
 private:
     MeshInport meshInport_;
-    topology::TriangulationInport triangulationInport;
     topology::ContourTreeInport contourtreeInport;
     topology::MorseSmaleComplexInport morseSmaleComplexInport;
     MeshOutport outport_;
