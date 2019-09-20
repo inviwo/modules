@@ -91,7 +91,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
             os << "Lode angle";
             break;
         case TensorFeature::Anisotropy:
-            os << "Anisotropy";
+            os << "von Mises";
             break;
         case TensorFeature::LinearAnisotropy:
             os << "Linear Anisotropy";
@@ -115,7 +115,7 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
             os << "Shape Factor";
             break;
         case TensorFeature::IsotropicScaling:
-            os << "IsotropicScaling";
+            os << "Uniform pressure";
             break;
         case TensorFeature::Rotation:
             os << "Rotation";

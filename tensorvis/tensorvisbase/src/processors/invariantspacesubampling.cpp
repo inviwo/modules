@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,48 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/imagetospherefield.h>
+#include <modules/tensorvisbase/processors/invariantspacesubampling.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageToSphereField::processorInfo_{
-    "org.inviwo.ImageToSphereField",  // Class identifier
-    "Image To Sphere Field",          // Display name
-    "Mesh Creation",                  // Category
-    CodeState::Experimental,          // Code state
-    Tags::CPU,                        // Tags
+const ProcessorInfo InvariantSpaceSubampling::processorInfo_{
+    "org.inviwo.InvariantSpaceSubampling",  // Class identifier
+    "Invariant Space Subampling",           // Display name
+    "Undefined",                            // Category
+    CodeState::Experimental,                // Code state
+    Tags::None,                             // Tags
 };
-const ProcessorInfo ImageToSphereField::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo InvariantSpaceSubampling::getProcessorInfo() const { return processorInfo_; }
 
-ImageToSphereField::ImageToSphereField() : Processor() {}
+InvariantSpaceSubampling::InvariantSpaceSubampling()
+    : Processor()
+    , invariantSpaceInport_("invariantSpaceInport")
+    , invariantSpaceOutport_("invariantSpaceOutport")
+    , percentage_("percentage", "Percentage", 1, 1, 10, 1) {
 
-void ImageToSphereField::process() {}
+    addPort(invariantSpaceInport_);
+    addPort(invariantSpaceOutport_);
+
+    addProperty(percentage_);
+}
+
+void InvariantSpaceSubampling::process() {
+    auto invariantSpace = invariantSpaceInport_.getData();
+
+    const auto percentage = percentage_.get();
+
+    auto iv = std::make_shared<InvariantSpace>(invariantSpace->getNumberOfDimensions(),
+                                               invariantSpace->getIdentifiers(),
+                                               invariantSpace->getMetaDataTypes());
+
+    const auto numberOfElements = invariantSpace->getNumElements();
+
+    for (size_t i{0}; i < numberOfElements; i += percentage) {
+        iv->addPoint(invariantSpace->getPoint(i));
+    }
+
+    invariantSpaceOutport_.setData(iv);
+}
 
 }  // namespace inviwo

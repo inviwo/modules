@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,22 +27,50 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/imagetospherefield.h>
+#pragma once
+
+#include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/tensorvisbase/datastructures/invariantspace.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageToSphereField::processorInfo_{
-    "org.inviwo.ImageToSphereField",  // Class identifier
-    "Image To Sphere Field",          // Display name
-    "Mesh Creation",                  // Category
-    CodeState::Experimental,          // Code state
-    Tags::CPU,                        // Tags
+/** \docpage{org.inviwo.InvariantSpaceSubampling, Invariant Space Subampling}
+ * ![](org.inviwo.InvariantSpaceSubampling.png?classIdentifier=org.inviwo.InvariantSpaceSubampling)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+
+/**
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISBASE_API InvariantSpaceSubampling : public Processor {
+public:
+    InvariantSpaceSubampling();
+    virtual ~InvariantSpaceSubampling() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    InvariantSpaceInport invariantSpaceInport_;
+    InvariantSpaceOutport invariantSpaceOutport_;
+
+    OrdinalProperty<size_t> percentage_;
 };
-const ProcessorInfo ImageToSphereField::getProcessorInfo() const { return processorInfo_; }
-
-ImageToSphereField::ImageToSphereField() : Processor() {}
-
-void ImageToSphereField::process() {}
 
 }  // namespace inviwo

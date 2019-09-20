@@ -29,6 +29,7 @@
 
 #include <modules/tensorvisbase/processors/tensorfield3dangle.h>
 #include <glm/gtx/vector_angle.hpp>
+#include <math.h>
 
 namespace inviwo {
 
@@ -58,26 +59,30 @@ void TensorField3DAngle::process() {
     auto tf1 = tensorField3DInport1_.getData();
     auto tf2 = tensorField3DInport2_.getData();
 
-    const auto& maev1 = tf1->majorEigenVectors();
-    const auto& maev2 = tf2->majorEigenVectors();
+    const auto& stress_major = tf1->majorEigenVectors();
+    const auto& stress_intermediate = tf1->middleEigenVectors();
+    const auto& stress_minor = tf1->minorEigenVectors();
 
-    const auto& inev1 = tf1->middleEigenVectors();
-    const auto& inev2 = tf2->middleEigenVectors();
+    const auto& fiber_major = tf2->majorEigenVectors();
 
-    const auto& miev1 = tf1->minorEigenVectors();
-    const auto& miev2 = tf2->minorEigenVectors();
-
-    const auto numberOfElements = maev1.size();
+    const auto numberOfElements = fiber_major.size();
 
     auto iv = std::make_shared<InvariantSpace>(
         3, std::vector<std::string>{"phi1", "phi2", "phi3"},
-        std::vector<TensorFeature>{TensorFeature::Unspecified,
-                                   TensorFeature::Unspecified,
+        std::vector<TensorFeature>{TensorFeature::Unspecified, TensorFeature::Unspecified,
                                    TensorFeature::Unspecified});
 
     for (size_t i = 0; i < numberOfElements; ++i) {
-        iv->addPoint({glm::angle(maev1[i], maev2[i]), glm::angle(inev1[i], inev2[i]),
-                      glm::angle(miev1[i], miev2[i])});
+        auto angle1 = glm::angle(stress_major[i], fiber_major[i]);
+        if (angle1 > M_PI / 2.0) angle1 = M_PI - angle1;
+
+        auto angle2 = glm::angle(stress_intermediate[i], fiber_major[i]);
+        if (angle2 > M_PI / 2.0) angle2 = M_PI - angle2;
+
+        auto angle3 = glm::angle(stress_minor[i], fiber_major[i]);
+        if (angle3 > M_PI / 2.0) angle3 = M_PI - angle3;
+
+        iv->addPoint({angle1, angle2, angle3});
     }
 
     invariantSpaceOutport_.setData(iv);

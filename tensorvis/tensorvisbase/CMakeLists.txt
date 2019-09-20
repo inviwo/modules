@@ -24,6 +24,7 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/invariantspacecombine.h
     include/modules/tensorvisbase/processors/invariantspacefilter.h
     include/modules/tensorvisbase/processors/invariantspaceselection.h
+    include/modules/tensorvisbase/processors/invariantspacesubampling.h
     include/modules/tensorvisbase/processors/invariantspacetodataframe.h
     include/modules/tensorvisbase/processors/mohrcircleprocessor.h
     include/modules/tensorvisbase/processors/tensorfield2danisotropy.h
@@ -75,6 +76,7 @@ set(SOURCE_FILES
     src/processors/invariantspacecombine.cpp
     src/processors/invariantspacefilter.cpp
     src/processors/invariantspaceselection.cpp
+    src/processors/invariantspacesubampling.cpp
     src/processors/invariantspacetodataframe.cpp
     src/processors/mohrcircleprocessor.cpp
     src/processors/tensorfield2danisotropy.cpp

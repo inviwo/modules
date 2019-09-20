@@ -71,7 +71,7 @@ TensorField3DMetaData::TensorField3DMetaData()
     , isotropicScaling_("isotropicScaling", "Isotropic scaling", true)
     , rotation_("rotation", "Rotation", true)
     , frobeniusNorm_("frobeniusNorm", "Frobenius Norm", true)
-//    , hillYieldCriterion_("hillYieldCriterion", "Hill yield criterion", true)
+    //    , hillYieldCriterion_("hillYieldCriterion", "Hill yield criterion", true)
     , selectAll_("selectAll", "Select all")
     , deselectAll_("deselectAll", "Deselect all")
     , tensorFieldOut_(nullptr) {
@@ -103,7 +103,7 @@ TensorField3DMetaData::TensorField3DMetaData()
     addProperty(isotropicScaling_);
     addProperty(rotation_);
     addProperty(frobeniusNorm_);
-//    addProperty(hillYieldCriterion_);
+    //    addProperty(hillYieldCriterion_);
 
     addProperty(selectAll_);
     addProperty(deselectAll_);
@@ -156,7 +156,7 @@ void TensorField3DMetaData::initializeResources() {
         isotropicScaling_.set(tensorFieldOut_->hasMetaData<IsotropicScaling>());
         rotation_.set(tensorFieldOut_->hasMetaData<Rotation>());
         frobeniusNorm_.set(tensorFieldOut_->hasMetaData<FrobeniusNorm>());
-//        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<HillYieldCriterion>());
+        //        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<HillYieldCriterion>());
     }
 }
 
@@ -385,9 +385,20 @@ void TensorField3DMetaData::addMetaData() {
         tensorFieldOut_->addMetaData<ShapeFactor>(shapeFactor, TensorFeature::ShapeFactor);
     }
     if (isotropicScaling_.get() && !tensorFieldOut_->hasMetaData<IsotropicScaling>()) {
-        std::vector<double> isotropicScaling;
+        std::vector<double> isotropicScaling{};
 
-        isotropicScaling.resize(tensors.size(), 0.0);
+//        const auto& tensors = tensorFieldOut_->tensors();
+
+        /*const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& intermediateEigenValues =
+            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();*/
+
+        for (size_t i = 0; i < tensors.size(); i++) {
+            isotropicScaling.emplace_back(tensorutil::trace(tensors[i]) / 3.0);
+            //                (majorEigenValues[i] + intermediateEigenValues[i] +
+            //                minorEigenValues[i]) / 3.0);
+        }
 
         tensorFieldOut_->addMetaData<IsotropicScaling>(isotropicScaling,
                                                        TensorFeature::IsotropicScaling);
