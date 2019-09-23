@@ -37,6 +37,9 @@
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+
 #include <vector>
 
 namespace inviwo {
@@ -102,6 +105,17 @@ IVW_MODULE_TOPOLOGYTOOLKIT_API TriangulationData volumeToTTKTriangulation(const 
  */
 IVW_MODULE_TOPOLOGYTOOLKIT_API
 std::shared_ptr<Volume> ttkTriangulationToVolume(const TriangulationData& data);
+
+
+
+enum IVW_MODULE_TOPOLOGYTOOLKIT_API MeshColorOption { SCALAR_COLORMAP = 0, SEGMENT_COLORMAP };
+
+IVW_MODULE_TOPOLOGYTOOLKIT_API
+std::shared_ptr<Mesh> applyColorMapToMesh(
+    const TransferFunction& tf, const Mesh& sourceMesh, const std::vector<int>& segments,
+    const TriangulationData& triangulationData,
+    MeshColorOption coloroption = MeshColorOption::SEGMENT_COLORMAP);
+
 
 }  // namespace topology
 

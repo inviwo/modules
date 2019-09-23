@@ -33,58 +33,6 @@ namespace inviwo {
 
 namespace topology {
 
-std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mesh& mesh,
-										   const std::vector<int> &segments,
-                                           const TriangulationData& triangulationData,
-                                           MeshColorOption colorOption) {
-
-    auto newMesh = std::make_shared<Mesh>(mesh);
-
-    auto buffers = newMesh->getBuffers();
-    auto isColorBuffer =
-        [](const std::pair<Mesh::BufferInfo, std::shared_ptr<BufferBase>>& buffer) -> bool {
-        return buffer.first.type == BufferType::ColorAttrib;
-    };
-
-    auto bufferIt = std::find_if(buffers.begin(), buffers.end(), isColorBuffer);
-    if (bufferIt == buffers.end()) {
-        throw TTKConversionException("Mesh does not contain a color buffer");
-    } else if (std::find_if(bufferIt + 1, buffers.end(), isColorBuffer) != buffers.end()) {
-        LogWarnCustom("topology::mapMeshToContourTree",
-                      "Mesh features multiple color buffer, using only first one.");
-    }
-
-    auto colorBuffer = std::dynamic_pointer_cast<Buffer<vec4>>(bufferIt->second);
-    std::vector<vec4>& colors = colorBuffer->getEditableRAMRepresentation()->getDataContainer();
-    // auto minmax = std::minmax_element(colors.begin(), colors.end());
-
-    if (colorOption == MeshColorOption::SEGMENT_COLORMAP) {
-        //auto& segments = triangulationData.getSegments();
-
-        auto minmax = std::minmax_element(segments.begin(), segments.end());
-        auto div = (float)(*minmax.second - *minmax.first);
-
-        for (size_t i = 0; i < std::min(segments.size(), colors.size()); ++i) {
-            colors[i] = tf.sample(static_cast<float>((segments[i] - *minmax.first) / div));
-        }
-    } else {
-
-        triangulationData.getScalarValues()
-            ->getRepresentation<BufferRAM>()
-            ->dispatch<void, dispatching::filter::Scalars>([&](auto bufferpr) {
-                auto& scalars = bufferpr->getDataContainer();
-
-                auto minmax = std::minmax_element(scalars.begin(), scalars.end());
-                auto div = (float)(*minmax.second - *minmax.first);
-
-                for (size_t i = 0; i < std::min(bufferpr->getSize(), colors.size()); ++i) {
-                    colors[i] = tf.sample(static_cast<float>((scalars[i] - *minmax.first) / div));
-                }
-            });
-    }
-
-    return newMesh;
-}
 
 }  // namespace topology
 
@@ -121,7 +69,7 @@ void ContourTreeColorMapper::process() {
 	
 	if (contourtreeInport.getData()) {
         auto mesh =
-            topology::mapMeshToContourTree(transferFunction_.get(), *meshInport_.getData().get(),
+            topology::applyColorMapToMesh(transferFunction_.get(), *meshInport_.getData().get(),
 											contourtreeInport.getData()->getSegments(),
                                            *contourtreeInport.getData()->triangulation.get());
 
@@ -132,7 +80,7 @@ void ContourTreeColorMapper::process() {
 
     if (morseSmaleComplexInport.getData()) {
         auto mesh =
-            topology::mapMeshToContourTree(transferFunction_.get(), *meshInport_.getData().get(),
+            topology::applyColorMapToMesh(transferFunction_.get(), *meshInport_.getData().get(),
                                            morseSmaleComplexInport.getData()->segmentation.msc,
                                            *morseSmaleComplexInport.getData()->triangulation.get());
 

@@ -63,18 +63,6 @@
 
 namespace inviwo {
 
-namespace topology {
-
-enum MeshColorOption {
-	SCALAR_COLORMAP = 0,
-	SEGMENT_COLORMAP
-};
-
-std::shared_ptr<Mesh> mapMeshToContourTree(const TransferFunction& tf, const Mesh& mesh, const std::vector<int>& segments,
-                                           const TriangulationData& triangulationData, 
-	                                       MeshColorOption coloroption = MeshColorOption::SEGMENT_COLORMAP);
-
-}
 class IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeColorMapper : public Processor {
 public:
     ContourTreeColorMapper();
