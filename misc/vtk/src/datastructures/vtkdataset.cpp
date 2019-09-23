@@ -59,8 +59,7 @@ std::optional<size3_t> VTKDataSet::getDimensions() const {
                 ->GetDimensions(glm::value_ptr(dims));
             break;
         case VTK_IMAGE_DATA:
-            vtkImageData::SafeDownCast(dataSet_.GetPointer())
-                ->GetDimensions(glm::value_ptr(dims));
+            vtkImageData::SafeDownCast(dataSet_.GetPointer())->GetDimensions(glm::value_ptr(dims));
             break;
         default:
             return std::nullopt;
