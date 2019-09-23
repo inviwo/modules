@@ -63,10 +63,10 @@
 
 namespace inviwo {
 
-class IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeColorMapper : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API MeshTopologyColorMapper : public Processor {
 public:
-    ContourTreeColorMapper();
-    virtual ~ContourTreeColorMapper() = default;
+    MeshTopologyColorMapper();
+    virtual ~MeshTopologyColorMapper() = default;
 
     virtual void process() override;
 

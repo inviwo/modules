@@ -20,7 +20,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/ports/persistencediagramport.h
     include/inviwo/topologytoolkit/ports/triangulationdataport.h
     include/inviwo/topologytoolkit/processors/contourtree.h
-    include/inviwo/topologytoolkit/processors/contourtreecolormapper.h
+    include/inviwo/topologytoolkit/processors/meshtopologycolormapper.h
     include/inviwo/topologytoolkit/processors/contourtreetodataframe.h
     include/inviwo/topologytoolkit/processors/contourtreetomesh.h
     include/inviwo/topologytoolkit/processors/meshtotriangulation.h
@@ -52,7 +52,7 @@ set(SOURCE_FILES
     src/ports/persistencediagramport.cpp
     src/ports/triangulationdataport.cpp
     src/processors/contourtree.cpp
-    src/processors/contourtreecolormapper.cpp
+    src/processors/meshtopologycolormapper.cpp
     src/processors/contourtreetodataframe.cpp
     src/processors/contourtreetomesh.cpp
     src/processors/meshtotriangulation.cpp

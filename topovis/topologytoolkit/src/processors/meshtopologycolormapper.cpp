@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/topologytoolkit/processors/contourtreecolormapper.h>
+#include <inviwo/topologytoolkit/processors/meshtopologycolormapper.h>
 
 namespace inviwo {
 
@@ -37,16 +37,16 @@ namespace topology {
 }  // namespace topology
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ContourTreeColorMapper::processorInfo_{
-    "org.inviwo.ContourTreeColorMapper",  // Class identifier
-    "Contour Tree Color Mapper",          // Display name
-    "Undefined",                          // Category
+const ProcessorInfo MeshTopologyColorMapper::processorInfo_{
+    "org.inviwo.MeshTopologyColorMapper",  // Class identifier
+    "Mesh Topology Color Mapper",          // Display name
+    "Topology",                          // Category
     CodeState::Experimental,              // Code state
-    Tags::None,                           // Tags
+    "CPU, Topology, TTK, Triangulation",   // Tags
 };
-const ProcessorInfo ContourTreeColorMapper::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo MeshTopologyColorMapper::getProcessorInfo() const { return processorInfo_; }
 
-ContourTreeColorMapper::ContourTreeColorMapper()
+MeshTopologyColorMapper::MeshTopologyColorMapper()
     : Processor()
     , contourtreeInport("contourtree")
     , morseSmaleComplexInport("morsesmalecomplex")
@@ -65,7 +65,7 @@ ContourTreeColorMapper::ContourTreeColorMapper()
     morseSmaleComplexInport.setOptional(true);
 }
 
-void ContourTreeColorMapper::process() {
+void MeshTopologyColorMapper::process() {
 	
 	if (contourtreeInport.getData()) {
         auto mesh =
@@ -89,11 +89,8 @@ void ContourTreeColorMapper::process() {
         return;
     } 
 
-
 	//default original mesh
     outport_.setData(meshInport_.getData());
-
-    
 }
 
 }  // namespace inviwo
