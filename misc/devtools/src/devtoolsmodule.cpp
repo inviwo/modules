@@ -33,44 +33,10 @@
 namespace inviwo {
 
 DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    // registerProcessor<DevToolsProcessor>();
     registerProcessor<ImageEventLogger>();
     registerProcessor<VolumeEventLogger>();
     registerProcessor<MeshEventLogger>();
-
-    // Properties
-    // registerProperty<DevToolsProperty>();
-
-    // Readers and writes
-    // registerDataReader(util::make_unique<DevToolsReader>());
-    // registerDataWriter(util::make_unique<DevToolsWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(util::make_unique<DevToolsDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<DevToolsOutport>();
-    // registerPort<DevToolsInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<DevToolsPropertyWidget, DevToolsProperty>("Default");
-
-    // Dialogs
-    // registerDialog<DevToolsDialog>(DevToolsOutport);
-
-    // Other things
-    // registerCapabilities(util::make_unique<DevToolsCapabilities>());
-    // registerSettings(util::make_unique<DevToolsSettings>());
-    // registerMetaData(util::make_unique<DevToolsMetaData>());
-    // registerPortInspector("DevToolsOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<DevToolsDrawer>());
+    registerProcessor<BrushingAndLinkingEventLogger>();
 }
 
 }  // namespace inviwo
