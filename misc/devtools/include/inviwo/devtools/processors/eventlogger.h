@@ -86,10 +86,13 @@ private:
 
     static constexpr size_t eventCount = 8;
     static constexpr std::array<const char*, eventCount> events_ = {
-        "Keyboard", "Mouse", "Wheel", "Gesture", "Touch", "Resize", "Picking", "BrushingAndLinking" };
+        "Keyboard", "Mouse",  "Wheel",   "Gesture",
+        "Touch",    "Resize", "Picking", "BrushingAndLinking"};
     static constexpr std::array<uint64_t, eventCount> eventHash_ = {
-        KeyboardEvent::chash(), MouseEvent::chash(),  WheelEvent::chash(),  GestureEvent::chash(),
-        TouchEvent::chash(),    ResizeEvent::chash(), PickingEvent::chash(), BrushingAndLinkingEvent::chash()};
+        KeyboardEvent::chash(), MouseEvent::chash(),
+        WheelEvent::chash(),    GestureEvent::chash(),
+        TouchEvent::chash(),    ResizeEvent::chash(),
+        PickingEvent::chash(),  BrushingAndLinkingEvent::chash()};
     std::array<BoolProperty, eventCount> enableEvents_;
     const std::unordered_map<uint64_t, std::reference_wrapper<BoolProperty>> eventMap_;
 
