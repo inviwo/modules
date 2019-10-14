@@ -47,6 +47,12 @@ private:
     NanoVGContext context_;
 };
 
+namespace util {
+IVW_MODULE_NANOVGUTILS_API NanoVGContext& getNanoVGContext(InviwoApplication* app);
+
+IVW_MODULE_NANOVGUTILS_API NanoVGContext& getNanoVGContext();
+}  // namespace util
+
 }  // namespace inviwo
 
 #endif  // IVW_NANOVGUTILSMODULE_H

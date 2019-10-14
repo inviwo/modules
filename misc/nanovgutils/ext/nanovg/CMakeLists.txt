@@ -25,14 +25,11 @@ target_include_directories(nanovg PUBLIC
     ${OPENGL_INCLUDE_DIR}
 )
 
-# InViWo Macros
 ivw_folder(nanovg ext)
 
 target_compile_definitions(nanovg PUBLIC NANOVG_GL3_IMPLEMENTATION)
 
-target_link_libraries(nanovg PUBLIC 
-    ${OPENGL_LIBRARIES} GLEW inviwo-module-opengl
-)
+target_link_libraries(nanovg PUBLIC  ${OPENGL_LIBRARIES} GLEW)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
