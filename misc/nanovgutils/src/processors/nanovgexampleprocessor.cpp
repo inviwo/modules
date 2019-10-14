@@ -27,28 +27,46 @@
  *
  *********************************************************************************/
 
-#include <inviwo/nanovgutils/nanovgutilsmodule.h>
-#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/nanovgutils/processors/nanovgexampleprocessor.h>
-#include <inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h>
+#include <inviwo/nanovgutils/nanovgutilsmodule.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
-NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app, "NanoVGUtils") {
-    registerProcessor<NanoVGExampleProcessor>();
-    registerProcessor<NanoVGPickingExampleProcessor>();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo NanoVGExampleProcessor::processorInfo_{
+    "org.inviwo.NanoVGExampleProcessor",  // Class identifier
+    "NanoVG Example",                     // Display name
+    "Example",                            // Category
+    CodeState::Experimental,              // Code state
+    Tags::None,                           // Tags
+};
+const ProcessorInfo NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
+
+NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outport") {
+
+    addPort(outport_);
 }
 
-NanoVGUtilsModule::~NanoVGUtilsModule() = default;
+void NanoVGExampleProcessor::process() {
 
-NanoVGContext& NanoVGUtilsModule::getNanoVGContext() { return context_; }
+    auto& nvg = util::getNanoVGContext();
 
-namespace util {
-NanoVGContext& getNanoVGContext(InviwoApplication* app) {
-    return app->getModuleByType<NanoVGUtilsModule>()->getNanoVGContext();
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
+
+    // Activate NVG for drawing using "pixel coordinates" i.e. Coordinates used for defining shapes
+    // are in the range of [0 canvassize]
+    nvg.activate(outport_.getDimensions());
+
+    // Draw a circle with of raidus 50 and x-y coordinates 150,150
+    nvg.arc(vec2(150, 150), 50, 0, glm::two_pi<float>(), NVG_CW);
+
+    // Set fill color to red
+    nvg.fillColor(vec4(1, 0, 0, 1));
+    nvg.fill();  // tell NVG to draw current shape
+
+    nvg.deactivate();
+    utilgl::deactivateCurrentTarget();
 }
-
-NanoVGContext& getNanoVGContext() { return getNanoVGContext(util::getInviwoApplication()); }
-}  // namespace util
 
 }  // namespace inviwo
