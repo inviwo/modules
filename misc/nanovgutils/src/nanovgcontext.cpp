@@ -27,18 +27,27 @@
  *
  *********************************************************************************/
 
-#include <inviwo/nanovgutils/nanovgutils.h>
+#include <inviwo/nanovgutils/nanovgcontext.h>
+
+#include <warn/push>
+#include <warn/ignore/all>
+#include <nanovg.h>
+#include <nanovg_gl.h>
+#include <warn/pop>
 
 namespace inviwo {
 
-NanoVGContext::NanoVGContext(int flags) { activeNanoVGContext_ = nvgCreateGL3(flags); }
+NanoVGContext::NanoVGContext() {
+    activeNanoVGContext_ = nvgCreateGL3(NVG_ANTIALIAS | NVG_STENCIL_STROKES);
+}
 
 NanoVGContext::~NanoVGContext() { nvgDeleteGL3(activeNanoVGContext_); }
 
 const NVGcontext* NanoVGContext::getContext() const { return activeNanoVGContext_; }
 
 void NanoVGContext::activate(int windowWidth, int windowHeight, float pixelRatio) {
-    nvgBeginFrame(activeNanoVGContext_, static_cast<float>(windowWidth), static_cast<float>(windowHeight), pixelRatio);
+    nvgBeginFrame(activeNanoVGContext_, static_cast<float>(windowWidth),
+                  static_cast<float>(windowHeight), pixelRatio);
 }
 
 void NanoVGContext::activate(const size2_t& dimensions, float pixelRatio) {
@@ -332,7 +341,7 @@ std::pair<std::vector<vec2>, std::vector<vec2>> NanoVGContext::getCubicBezierCur
         firstControlPoints[0].y = (2.0f * knots[0].y + knots[1].y) / 3.0f;
 
         secondControlPoints.emplace_back();
-        // P2 = 2P1 â€“ P0
+        // P2 = 2P1 – P0
         secondControlPoints[0].x = 2.0f * firstControlPoints[0].x - knots[0].x;
         secondControlPoints[0].y = 2.0f * firstControlPoints[0].y - knots[0].y;
         return controlPoints;

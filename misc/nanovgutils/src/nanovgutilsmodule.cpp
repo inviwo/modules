@@ -29,7 +29,6 @@
 
 #include <inviwo/nanovgutils/nanovgutilsmodule.h>
 #include <inviwo/core/util/rendercontext.h>
-#include <inviwo/nanovgutils/nanovgutils.h>
 
 namespace inviwo {
 
@@ -38,12 +37,8 @@ NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app,
 
 NanoVGUtilsModule::~NanoVGUtilsModule() = default;
 
-NanoVGContext* NanoVGUtilsModule::getNanoVGContext() {
-    if (!context_) {
-        RenderContext::getPtr()->activateDefaultRenderContext();
-        context_ = std::make_unique<NanoVGContext>();
-    }
-    return context_.get();
+NanoVGContext& NanoVGUtilsModule::getNanoVGContext() {
+    return context_;
 }
 
 }  // namespace inviwo
