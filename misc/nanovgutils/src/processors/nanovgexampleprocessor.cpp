@@ -59,7 +59,7 @@ void NanoVGExampleProcessor::process() {
     nvg.activate(outport_.getDimensions());
 
     // Draw a circle with of raidus 50 and x-y coordinates 150,150
-    nvg.arc(vec2(150, 150), 50, 0, glm::two_pi<float>(), NVG_CW);
+    nvg.circle(vec2(150, 150), 50);
 
     // Set fill color to red
     nvg.fillColor(vec4(1, 0, 0, 1));

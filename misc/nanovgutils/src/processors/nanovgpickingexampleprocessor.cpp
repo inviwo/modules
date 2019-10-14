@@ -75,7 +75,7 @@ void NanoVGPickingExampleProcessor::draw(bool picking) {
     for (auto [pos, r, color] : objects) {
         auto id = i++;
         nvg.beginPath();
-        nvg.arc(pos, r, 0, glm::two_pi<float>(), NVG_CW);
+        nvg.circle(pos, r);
         if (picking) {
             nvg.fillColor(vec4(picking_.getColor(id), 1.0f));
         } else {
