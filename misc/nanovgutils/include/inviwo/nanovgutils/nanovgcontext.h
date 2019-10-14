@@ -149,6 +149,8 @@ public:
     void ellipse(const vec2 &coordinates, float radius1, float radius2);
     // Creates new rectangle shaped sub-path.
     void rect(const vec2 &coordinates, const vec2 &dim);
+    // Creates new rectangle with rounded corners sub-path.
+    void roundedRect(const vec2 &coordinates, const vec2 &dim, float radius);
     // Creates new circle arc shaped sub-path. The arc center is at cx,cy, the arc radius is r,
     // and the arc is drawn from angle a0 to a1, and swept in direction dir (NVG_CCW, or NVG_CW).
     // Angles are specified in radians.
