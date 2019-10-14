@@ -4,6 +4,7 @@ add_subdirectory(ext/nanovg)
 
 set(HEADER_FILES
     include/inviwo/nanovgutils/nanovgcontext.h
+    include/inviwo/nanovgutils/nanovgutils.h
     include/inviwo/nanovgutils/nanovgutilsmodule.h
     include/inviwo/nanovgutils/nanovgutilsmoduledefine.h
     include/inviwo/nanovgutils/processors/nanovgexampleprocessor.h
@@ -13,6 +14,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/nanovgcontext.cpp
+    src/nanovgutils.cpp
     src/nanovgutilsmodule.cpp
     src/processors/nanovgexampleprocessor.cpp
     src/processors/nanovgpickingexampleprocessor.cpp

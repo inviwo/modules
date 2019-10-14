@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h>
-#include <inviwo/nanovgutils/nanovgutilsmodule.h>
+#include <inviwo/nanovgutils/nanovgutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
@@ -68,7 +68,7 @@ void NanoVGPickingExampleProcessor::draw(bool picking) {
         std::make_tuple(vec2{50, 250}, 30.f, vec4(0, 0, 1, 1)),
         std::make_tuple(vec2{200, 220}, 75.f, vec4(1, 0, 1, 1))};
 
-    auto& nvg = util::getNanoVGContext();
+    auto& nvg = nanovgutil::getContext();
     nvg.activate(outport_.getDimensions());
 
     size_t i = 0;
