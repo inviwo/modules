@@ -283,36 +283,7 @@ public:
     // Skews the current coordinate system along Y axis. Angle is specified in radians.
     void skewY(float ky);
 
-    /**********************************************************************************************
-     * NanoVG shape utilities
-     **********************************************************************************************/
-
-    void arrow(const vec2 &from, const vec2 &to, float width = 30, float headSize = 30,
-               bool normalize = true);
-
-    // Get quadratic Bezier Spline Control Point.
-    vec2 getQuadraticBezierCurveControlPoint(const vec2 &p0, const vec2 &p1, const vec2 &p2,
-                                             float t = 0.5f);
-
-    // Get quadratic Bezier Spline Control Points.
-    std::vector<vec2> getQuadraticBezierCurveControlPoints(
-        const std::vector<vec2> &startAndEndPoints, const std::vector<vec2> &intermediatePoints);
-
-    // Get cubic Bezier Spline Control Points.
-    // https://www.codeproject.com/Articles/31859/Draw-a-Smooth-Curve-through-a-Set-of-2D-Points-wit
-    std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints(
-        const std::vector<vec2> &knots);
-
-    // Solves a tridiagonal system for one of coordinates (x or y) of first Bezier control points.
-    std::vector<float> GetFirstControlPoints(const std::vector<float> &rhs);
-
-    /**********************************************************************************************
-     * NanoVG converters
-     **********************************************************************************************/
-    vec4 nanovg2glm(const NVGcolor &col);
-    NVGcolor glm2nanovg(const vec4 &col);
-
-    static vec2 screen2nanovg(const vec2 &coord, const size2_t &dimensions);
+   
 
 private:
     NVGcontext *activeNanoVGContext_;
