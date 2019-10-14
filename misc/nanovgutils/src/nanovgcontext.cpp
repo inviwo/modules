@@ -91,6 +91,12 @@ void NanoVGContext::rect(const vec2& coordinates, const vec2& dim) {
     nvgRect(activeNanoVGContext_, coordinates.x, coordinates.y, dim.x, dim.y);
 }
 
+void NanoVGContext::roundedRect(const vec2& coordinates, const vec2& dim, float r) {
+    nvgRoundedRect(activeNanoVGContext_, coordinates.x, coordinates.y, dim.x, dim.y, r);
+}
+
+
+
 void NanoVGContext::beginPath() { nvgBeginPath(activeNanoVGContext_); }
 
 void NanoVGContext::closePath() { nvgClosePath(activeNanoVGContext_); }
