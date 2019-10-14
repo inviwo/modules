@@ -1,7 +1,7 @@
 # Medical visualization modules for Inviwo
 
 ## DICOM module
-Inviwo module providing functionality for loading and writing DICOM files using the Grassroots DICOM (GDCM)[https://sourceforge.net/projects/gdcm/] library.
+Inviwo module providing functionality for loading and writing DICOM files using the Grassroots DICOM [GDCM](https://sourceforge.net/projects/gdcm/) library.
 
 ### Setup
 1. checkout Inviwo https://github.com/inviwo/inviwo.git
