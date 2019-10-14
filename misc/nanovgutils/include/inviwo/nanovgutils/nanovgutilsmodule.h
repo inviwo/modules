@@ -32,7 +32,7 @@
 
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/nanovgutils/nanovgutils.h>
+#include <inviwo/nanovgutils/nanovgcontext.h>
 
 namespace inviwo {
 
@@ -41,10 +41,10 @@ public:
     NanoVGUtilsModule(InviwoApplication* app);
     virtual ~NanoVGUtilsModule();
 
-    NanoVGContext* getNanoVGContext();
+    NanoVGContext& getNanoVGContext();
 
 private:
-    std::unique_ptr<NanoVGContext> context_;
+    NanoVGContext context_;
 };
 
 }  // namespace inviwo

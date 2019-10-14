@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NANOVGUTILS_H
-#define IVW_NANOVGUTILS_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
@@ -38,14 +37,13 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <nanovg.h>
-#include <nanovg_gl.h>
 #include <warn/pop>
 
 namespace inviwo {
-
 class IVW_MODULE_NANOVGUTILS_API NanoVGContext {
+    friend class NanoVGUtilsModule;
+    explicit NanoVGContext();
 public:
-    explicit NanoVGContext(int flags = NVG_ANTIALIAS | NVG_STENCIL_STROKES);
     NanoVGContext(const NanoVGContext &) = delete;
     NanoVGContext(NanoVGContext &&) = delete;
     NanoVGContext &operator=(const NanoVGContext &) = delete;
@@ -322,5 +320,3 @@ private:
 };  // NVG
 
 }  // namespace inviwo
-
-#endif  // IVW_NANOVGUTILS_H
