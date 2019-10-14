@@ -27,28 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/nanovgutils/nanovgutilsmodule.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/nanovgutils/processors/nanovgexampleprocessor.h>
-#include <inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h>
+#pragma once
+
+#include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app, "NanoVGUtils") {
-    registerProcessor<NanoVGExampleProcessor>();
-    registerProcessor<NanoVGPickingExampleProcessor>();
-}
+/** \docpage{org.inviwo.NanoVGExampleProcessor, Nano VGExample Processor}
+ * ![](org.inviwo.NanoVGExampleProcessor.png?classIdentifier=org.inviwo.NanoVGExampleProcessor)
+ *
+ * A processors that demos how to render using NanoVG together with Inviwos picking
+ *
+ *
+ * ### Outports
+ *   * __outport__ Image rendered with picking using NanoVG.
+ *
+ */
+class IVW_MODULE_NANOVGUTILS_API NanoVGExampleProcessor : public Processor {
+public:
+    NanoVGExampleProcessor();
+    virtual ~NanoVGExampleProcessor() = default;
 
-NanoVGUtilsModule::~NanoVGUtilsModule() = default;
+    virtual void process() override;
 
-NanoVGContext& NanoVGUtilsModule::getNanoVGContext() { return context_; }
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-namespace util {
-NanoVGContext& getNanoVGContext(InviwoApplication* app) {
-    return app->getModuleByType<NanoVGUtilsModule>()->getNanoVGContext();
-}
-
-NanoVGContext& getNanoVGContext() { return getNanoVGContext(util::getInviwoApplication()); }
-}  // namespace util
+private:
+    ImageOutport outport_;
+};
 
 }  // namespace inviwo
