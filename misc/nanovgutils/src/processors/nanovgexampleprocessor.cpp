@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/nanovgutils/processors/nanovgexampleprocessor.h>
-#include <inviwo/nanovgutils/nanovgutilsmodule.h>
+#include <inviwo/nanovgutils/nanovgutils.h>
 #include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
@@ -50,7 +50,7 @@ NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outpor
 
 void NanoVGExampleProcessor::process() {
 
-    auto& nvg = util::getNanoVGContext();
+    auto& nvg = nanovgutil::getContext();
 
     utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
 

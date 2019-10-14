@@ -26,28 +26,43 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
-#ifndef IVW_NANOVGUTILSMODULE_H
-#define IVW_NANOVGUTILSMODULE_H
+#pragma once
 
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/nanovgutils/nanovgcontext.h>
 
-namespace inviwo {
+namespace inviwo::nanovgutil {
 
-class IVW_MODULE_NANOVGUTILS_API NanoVGUtilsModule : public InviwoModule {
-public:
-    NanoVGUtilsModule(InviwoApplication* app);
-    virtual ~NanoVGUtilsModule();
+IVW_MODULE_NANOVGUTILS_API NanoVGContext& getContext(InviwoApplication* app);
 
-    NanoVGContext& getNanoVGContext();
+IVW_MODULE_NANOVGUTILS_API NanoVGContext& getContext();
 
-private:
-    NanoVGContext context_;
-};
+IVW_MODULE_NANOVGUTILS_API void arrow(NanoVGContext& ctx, const vec2& from, const vec2& to,
+                                      float width = 30, float headSize = 30, bool normalize = true);
 
+inline vec4 nanovg2glm(const NVGcolor& col) { return {col.r, col.g, col.b, col.a}; }
+inline NVGcolor glm2nanovg(const vec4& col) { return {col.r, col.g, col.b, col.a}; }
 
-}  // namespace inviwo
+inline vec2 screen2nanovg(const vec2& coord, const size2_t& dims) {
+    return {coord.x, static_cast<float>(dims.y) - coord.y};
+}
 
-#endif  // IVW_NANOVGUTILSMODULE_H
+// Get quadratic Bezier Spline Control Point.
+vec2 getQuadraticBezierCurveControlPoint(const vec2& p0, const vec2& p1, const vec2& p2,
+                                         float t = 0.5f);
+
+// Get quadratic Bezier Spline Control Points.
+std::vector<vec2> getQuadraticBezierCurveControlPoints(const std::vector<vec2>& startAndEndPoints,
+                                                       const std::vector<vec2>& intermediatePoints);
+
+// Get cubic Bezier Spline Control Points.
+// https://www.codeproject.com/Articles/31859/Draw-a-Smooth-Curve-through-a-Set-of-2D-Points-wit
+std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints(
+    const std::vector<vec2>& knots);
+
+// Solves a tridiagonal system for one of coordinates (x or y) of first Bezier control points.
+std::vector<float> getFirstControlPoints(const std::vector<float>& rhs);
+
+}  // namespace inviwo::nanovgutils

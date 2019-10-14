@@ -43,12 +43,5 @@ NanoVGUtilsModule::~NanoVGUtilsModule() = default;
 
 NanoVGContext& NanoVGUtilsModule::getNanoVGContext() { return context_; }
 
-namespace util {
-NanoVGContext& getNanoVGContext(InviwoApplication* app) {
-    return app->getModuleByType<NanoVGUtilsModule>()->getNanoVGContext();
-}
-
-NanoVGContext& getNanoVGContext() { return getNanoVGContext(util::getInviwoApplication()); }
-}  // namespace util
 
 }  // namespace inviwo
