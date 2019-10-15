@@ -47,7 +47,6 @@ private:
     NanoVGContext context_;
 };
 
-
 }  // namespace inviwo
 
 #endif  // IVW_NANOVGUTILSMODULE_H

@@ -177,4 +177,4 @@ std::vector<float> getFirstControlPoints(const std::vector<float>& rhs) {
     return solution;
 }
 
-}  // namespace inviwo::nanovgutils
+}  // namespace inviwo::nanovgutil

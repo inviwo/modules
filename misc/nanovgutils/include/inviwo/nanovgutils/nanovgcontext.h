@@ -43,6 +43,7 @@ namespace inviwo {
 class IVW_MODULE_NANOVGUTILS_API NanoVGContext {
     friend class NanoVGUtilsModule;
     explicit NanoVGContext();
+
 public:
     NanoVGContext(const NanoVGContext &) = delete;
     NanoVGContext(NanoVGContext &&) = delete;
@@ -284,8 +285,6 @@ public:
     void skewX(float kx);
     // Skews the current coordinate system along Y axis. Angle is specified in radians.
     void skewY(float ky);
-
-   
 
 private:
     NVGcontext *activeNanoVGContext_;

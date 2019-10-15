@@ -65,4 +65,4 @@ std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints
 // Solves a tridiagonal system for one of coordinates (x or y) of first Bezier control points.
 std::vector<float> getFirstControlPoints(const std::vector<float>& rhs);
 
-}  // namespace inviwo::nanovgutils
+}  // namespace inviwo::nanovgutil

@@ -95,8 +95,6 @@ void NanoVGContext::roundedRect(const vec2& coordinates, const vec2& dim, float 
     nvgRoundedRect(activeNanoVGContext_, coordinates.x, coordinates.y, dim.x, dim.y, r);
 }
 
-
-
 void NanoVGContext::beginPath() { nvgBeginPath(activeNanoVGContext_); }
 
 void NanoVGContext::closePath() { nvgClosePath(activeNanoVGContext_); }
@@ -172,7 +170,7 @@ void NanoVGContext::textBox(const ivec2& coordinates, float textBoxWidth, const 
 int NanoVGContext::createFont(const std::string& name, std::string filename) {
     auto res = nvgCreateFont(activeNanoVGContext_, name.c_str(), filename.c_str());
     if (res == -1) {
-        std::cout << "Font " << name << " not found at " << filename << std::endl;
+        LogWarn("Failed to load font " << name << " from file: " << filename);
     }
     return res;
 }
