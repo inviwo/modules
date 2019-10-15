@@ -110,7 +110,7 @@ std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints
         firstControlPoints[0].y = (2.0f * knots[0].y + knots[1].y) / 3.0f;
 
         secondControlPoints.emplace_back();
-        // P2 = 2P1 – P0
+        // P2 = 2P1 - P0
         secondControlPoints[0].x = 2.0f * firstControlPoints[0].x - knots[0].x;
         secondControlPoints[0].y = 2.0f * firstControlPoints[0].y - knots[0].y;
         return controlPoints;
