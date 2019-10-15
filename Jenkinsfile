@@ -21,7 +21,7 @@ node {
         util.buildStandard(
             state: this,
             modulePaths: modulePaths, 
-            onModules: ["TOPOLOGYTOOLKIT","VTK"],  
+            onModules: ["TOPOLOGYTOOLKIT", "VTK", "VASP"],  
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
