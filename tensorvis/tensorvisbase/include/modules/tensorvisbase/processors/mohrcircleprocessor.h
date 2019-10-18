@@ -4,7 +4,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 
-#include <modules/nanovgutils/nanovgutils.h>
+#include <inviwo/nanovgutils/nanovgutils.h>
 #include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <modules/tensorvisbase/ports/tensorfieldport.h>
 #include <modules/tensorvisbase/ports/tensorfieldport.h>

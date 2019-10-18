@@ -11,6 +11,7 @@ Additional Inviwo modules grouped into different categories. To enable the modul
 ## misc - Miscellaneous
 
 * DevTools: useful tools for developing and testing Inviwo networks
+* NanoVGUtils: A module integrating the Vector Graphics rendering library [NanoVG](https://github.com/memononen/nanovg)
 * OpenMesh: interface to the [OpenMesh](https://www.openmesh.org) library
 * SpringSystem: implementation of a 3D spring mass system
 * VTK: basic interface with the Visualization Toolkit [VTK](https://vtk.org)
