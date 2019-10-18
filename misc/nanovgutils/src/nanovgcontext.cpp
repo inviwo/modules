@@ -171,12 +171,8 @@ void NanoVGContext::textBox(const ivec2& coordinates, float textBoxWidth, const 
     }
 }
 
-int NanoVGContext::createFont(const std::string& name, std::string filename) {
-    auto res = nvgCreateFont(activeNanoVGContext_, name.c_str(), filename.c_str());
-    if (res == -1) {
-        LogWarn("Failed to load font " << name << " from file: " << filename);
-    }
-    return res;
+int NanoVGContext::createFont(const std::string& name, const std::string& filename) {
+    return nvgCreateFont(activeNanoVGContext_, name.c_str(), filename.c_str());
 }
 
 void NanoVGContext::strokeWidth(float width) { nvgStrokeWidth(activeNanoVGContext_, width); }
@@ -184,8 +180,7 @@ void NanoVGContext::strokeWidth(float width) { nvgStrokeWidth(activeNanoVGContex
 vec4 NanoVGContext::textBounds(const ivec2& position, const std::string& string) {
     float bounds[4];
     nvgTextBounds(activeNanoVGContext_, static_cast<float>(position.x),
-                  static_cast<float>(position.y), string.c_str(),
-                  nullptr, bounds);
+                  static_cast<float>(position.y), string.c_str(), nullptr, bounds);
     return vec4(bounds[0], bounds[1], bounds[2], bounds[3]);
 }
 
@@ -196,6 +191,16 @@ vec4 NanoVGContext::textBoxBounds(const ivec2& position, float textBoxWidth,
                      static_cast<float>(position.y), textBoxWidth, string.c_str(), nullptr, bounds);
     return vec4(bounds[0], bounds[1], bounds[2], bounds[3]);
 }
+
+vec3 NanoVGContext::textMetrics() {
+    vec3 res;
+    nvgTextMetrics(activeNanoVGContext_, &res.x, &res.y, &res.z);
+    return res;
+}
+
+float NanoVGContext::textMetricsAscender() { return textMetrics().x; }
+float NanoVGContext::textMetricsDescender() { return textMetrics().y; }
+float NanoVGContext::textMetricsLineHeight() { return textMetrics().z; }
 
 void NanoVGContext::arc(const vec2& center, float radius, float angle1, float angle2,
                         int direction) {

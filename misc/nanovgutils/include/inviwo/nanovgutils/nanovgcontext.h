@@ -124,9 +124,7 @@ public:
     // Resets current render state to default values. Does not affect the render state stack.
     void reset();
 
-
     void shapeAntiAlias(bool enabled);
-
 
     /**********************************************************************************************
      * NanoVG paths
@@ -223,7 +221,7 @@ public:
                  size_t text_cutoff = 0);
     // Creates font by loading it from the disk from specified file name.
     // Returns handle to the font.
-    int createFont(const std::string &name, std::string filename);
+    int createFont(const std::string &name, const std::string &filename);
     // Measures the specified text string. Parameter bounds should be a pointer to float[4],
     // if the bounding box of the text should be returned. The bounds value are [xmin,ymin,
     // xmax,ymax] Returns the horizontal advance of the measured text (i.e. where the next character
@@ -235,6 +233,19 @@ public:
     vec4 textBoxBounds(const ivec2 &position, float textBoxWidth, const std::string &text);
     // Finds a loaded font of specified name, and returns handle to it, or -1 if the font is not
     // found.
+
+    // Returns the vertical metrics based on the current text style.
+    // Returns a vec3 of (ascender height, descender height, line height)
+    // Measured values are returned in local coordinate space.
+    vec3 textMetrics();
+
+    // Returns the ascender height of current font and font size
+    float textMetricsAscender();
+    // Returns the descender height of current font and font size
+    float textMetricsDescender();
+    // Returns line height of current font and font size
+    float textMetricsLineHeight();
+
     int findFont(const std::string &name);
 
     /**********************************************************************************************
