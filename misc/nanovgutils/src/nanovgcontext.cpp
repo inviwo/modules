@@ -77,6 +77,10 @@ void NanoVGContext::restore() { nvgRestore(activeNanoVGContext_); }
 
 void NanoVGContext::reset() { nvgReset(activeNanoVGContext_); }
 
+void NanoVGContext::shapeAntiAlias(bool enabled) {
+    nvgShapeAntiAlias(activeNanoVGContext_, enabled);
+}
+
 void NanoVGContext::fill() { nvgFill(activeNanoVGContext_); }
 
 void NanoVGContext::circle(const vec2& coordinates, float radius) {
@@ -181,7 +185,7 @@ vec4 NanoVGContext::textBounds(const ivec2& position, const std::string& string)
     float bounds[4];
     nvgTextBounds(activeNanoVGContext_, static_cast<float>(position.x),
                   static_cast<float>(position.y), string.c_str(),
-                  &string.c_str()[string.size() - 1], bounds);
+                  nullptr, bounds);
     return vec4(bounds[0], bounds[1], bounds[2], bounds[3]);
 }
 
@@ -189,8 +193,7 @@ vec4 NanoVGContext::textBoxBounds(const ivec2& position, float textBoxWidth,
                                   const std::string& string) {
     float bounds[4];
     nvgTextBoxBounds(activeNanoVGContext_, static_cast<float>(position.x),
-                     static_cast<float>(position.y), textBoxWidth, string.c_str(),
-                     &string.c_str()[string.size() - 1], bounds);
+                     static_cast<float>(position.y), textBoxWidth, string.c_str(), nullptr, bounds);
     return vec4(bounds[0], bounds[1], bounds[2], bounds[3]);
 }
 

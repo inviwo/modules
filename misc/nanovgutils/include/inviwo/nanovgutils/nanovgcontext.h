@@ -124,6 +124,10 @@ public:
     // Resets current render state to default values. Does not affect the render state stack.
     void reset();
 
+
+    void shapeAntiAlias(bool enabled);
+
+
     /**********************************************************************************************
      * NanoVG paths
      **********************************************************************************************/
