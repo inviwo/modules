@@ -8,6 +8,8 @@ Additional Inviwo modules grouped into different categories. To enable the modul
 
 * DICOM: functionality for loading and writing DICOM files using the Grassroots DICOM ([GDCM](https://sourceforge.net/projects/gdcm/))
 
+See [readme](medvis/readme.md) for detailed instructions.
+
 ## misc - Miscellaneous
 
 * DevTools: useful tools for developing and testing Inviwo networks
