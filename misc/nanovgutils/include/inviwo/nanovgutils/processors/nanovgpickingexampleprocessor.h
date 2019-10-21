@@ -27,16 +27,45 @@
  *
  *********************************************************************************/
 
-#include <inviwo/devtools/devtoolsmodule.h>
-#include <inviwo/devtools/processors/eventlogger.h>
+#pragma once
+
+#include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 namespace inviwo {
 
-DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
-    registerProcessor<ImageEventLogger>();
-    registerProcessor<VolumeEventLogger>();
-    registerProcessor<MeshEventLogger>();
-    registerProcessor<BrushingAndLinkingEventLogger>();
-}
+/** \docpage{org.inviwo.NanoVGPickingExampleProcessor, Nano VGPicking Example Processor}
+ * ![](org.inviwo.NanoVGPickingExampleProcessor.png?classIdentifier=org.inviwo.NanoVGPickingExampleProcessor)
+ *
+ * A processors that demos how to render using NanoVG
+ *
+ *
+ * ### Outports
+ *   * __outport__ Image rendered using NanoVG.
+ *
+ */
+class IVW_MODULE_NANOVGUTILS_API NanoVGPickingExampleProcessor : public Processor {
+public:
+    NanoVGPickingExampleProcessor();
+    virtual ~NanoVGPickingExampleProcessor() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageOutport outport_;
+
+    PickingMapper picking_;
+
+    void draw(bool picking);
+
+    void onItemPicked(PickingEvent *pe);
+};
 
 }  // namespace inviwo

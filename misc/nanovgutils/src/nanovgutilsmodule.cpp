@@ -27,16 +27,29 @@
  *
  *********************************************************************************/
 
-#include <inviwo/devtools/devtoolsmodule.h>
-#include <inviwo/devtools/processors/eventlogger.h>
+#include <inviwo/nanovgutils/nanovgutilsmodule.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <inviwo/nanovgutils/processors/nanovgexampleprocessor.h>
+#include <inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h>
+
+#include <modules/fontrendering/util/fontutils.h>
 
 namespace inviwo {
 
-DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
-    registerProcessor<ImageEventLogger>();
-    registerProcessor<VolumeEventLogger>();
-    registerProcessor<MeshEventLogger>();
-    registerProcessor<BrushingAndLinkingEventLogger>();
+NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app, "NanoVGUtils") {
+    registerProcessor<NanoVGExampleProcessor>();
+    registerProcessor<NanoVGPickingExampleProcessor>();
+
+    auto fonts = util::getAvailableFonts();
+    for (auto font : fonts) {
+        if (context_.createFont(font.first, font.second) != -1) {
+            LogInfo("Loaded font " << font.first);
+        }
+    }
 }
+
+NanoVGUtilsModule::~NanoVGUtilsModule() = default;
+
+NanoVGContext& NanoVGUtilsModule::getNanoVGContext() { return context_; }
 
 }  // namespace inviwo

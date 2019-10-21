@@ -27,16 +27,26 @@
  *
  *********************************************************************************/
 
-#include <inviwo/devtools/devtoolsmodule.h>
-#include <inviwo/devtools/processors/eventlogger.h>
+#ifndef IVW_NANOVGUTILSMODULE_H
+#define IVW_NANOVGUTILSMODULE_H
+
+#include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/nanovgutils/nanovgcontext.h>
 
 namespace inviwo {
 
-DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
-    registerProcessor<ImageEventLogger>();
-    registerProcessor<VolumeEventLogger>();
-    registerProcessor<MeshEventLogger>();
-    registerProcessor<BrushingAndLinkingEventLogger>();
-}
+class IVW_MODULE_NANOVGUTILS_API NanoVGUtilsModule : public InviwoModule {
+public:
+    NanoVGUtilsModule(InviwoApplication* app);
+    virtual ~NanoVGUtilsModule();
+
+    NanoVGContext& getNanoVGContext();
+
+private:
+    NanoVGContext context_;
+};
 
 }  // namespace inviwo
+
+#endif  // IVW_NANOVGUTILSMODULE_H

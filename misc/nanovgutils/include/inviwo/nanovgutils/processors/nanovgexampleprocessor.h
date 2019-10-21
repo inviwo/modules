@@ -27,16 +27,38 @@
  *
  *********************************************************************************/
 
-#include <inviwo/devtools/devtoolsmodule.h>
-#include <inviwo/devtools/processors/eventlogger.h>
+#pragma once
+
+#include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
-    registerProcessor<ImageEventLogger>();
-    registerProcessor<VolumeEventLogger>();
-    registerProcessor<MeshEventLogger>();
-    registerProcessor<BrushingAndLinkingEventLogger>();
-}
+/** \docpage{org.inviwo.NanoVGExampleProcessor, Nano VGExample Processor}
+ * ![](org.inviwo.NanoVGExampleProcessor.png?classIdentifier=org.inviwo.NanoVGExampleProcessor)
+ *
+ * A processors that demos how to render using NanoVG together with Inviwos picking
+ *
+ *
+ * ### Outports
+ *   * __outport__ Image rendered with picking using NanoVG.
+ *
+ */
+class IVW_MODULE_NANOVGUTILS_API NanoVGExampleProcessor : public Processor {
+public:
+    NanoVGExampleProcessor();
+    virtual ~NanoVGExampleProcessor() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageOutport outport_;
+};
 
 }  // namespace inviwo

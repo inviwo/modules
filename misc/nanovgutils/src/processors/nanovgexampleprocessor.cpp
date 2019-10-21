@@ -27,16 +27,48 @@
  *
  *********************************************************************************/
 
-#include <inviwo/devtools/devtoolsmodule.h>
-#include <inviwo/devtools/processors/eventlogger.h>
+#include <inviwo/nanovgutils/processors/nanovgexampleprocessor.h>
+#include <inviwo/nanovgutils/nanovgutils.h>
+#include <modules/opengl/texture/textureutils.h>
 
 namespace inviwo {
 
-DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
-    registerProcessor<ImageEventLogger>();
-    registerProcessor<VolumeEventLogger>();
-    registerProcessor<MeshEventLogger>();
-    registerProcessor<BrushingAndLinkingEventLogger>();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo NanoVGExampleProcessor::processorInfo_{
+    "org.inviwo.NanoVGExampleProcessor",  // Class identifier
+    "NanoVG Example",                     // Display name
+    "Example",                            // Category
+    CodeState::Experimental,              // Code state
+    Tags::None,                           // Tags
+};
+const ProcessorInfo NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
+
+NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outport") {
+
+    addPort(outport_);
+}
+
+void NanoVGExampleProcessor::process() {
+
+    auto& nvg = nanovgutil::getContext();
+
+    utilgl::activateAndClearTarget(outport_, ImageType::ColorOnly);
+
+    // Activate NVG for drawing using "pixel coordinates" i.e. Coordinates used for defining shapes
+    // are in the range of [0 canvassize]
+    nvg.activate(outport_.getDimensions());
+
+    nvg.beginPath();
+    // Draw a circle with of radius 50 and x-y coordinates 150,150
+    nvg.circle(vec2(150, 150), 50);
+    nvg.closePath();
+
+    // Set fill color to red
+    nvg.fillColor(vec4(1, 0, 0, 1));
+    nvg.fill();  // tell NVG to draw current shape
+
+    nvg.deactivate();
+    utilgl::deactivateCurrentTarget();
 }
 
 }  // namespace inviwo
