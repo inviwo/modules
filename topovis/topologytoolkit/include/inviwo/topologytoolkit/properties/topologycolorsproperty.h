@@ -67,6 +67,13 @@ public:
      */
     vec4 getColor3D(char cellDim) const;
 
+    /**
+     * \brief return the color for a critical point based on the cell dimension \p cellDim and dim
+     * \see getColor2D
+     * \see getColor3D
+     */
+    vec4 getColor(int dim, char cellDim) const;
+
     FloatVec4Property localMaxima_;
     FloatVec4Property localMinima_;
     FloatVec4Property saddle_;
