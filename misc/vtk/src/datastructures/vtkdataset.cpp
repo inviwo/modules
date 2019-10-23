@@ -37,6 +37,7 @@
 #include <vtkCellData.h>
 #include <vtkPointData.h>
 #include <vtkArray.h>
+#include <vtkImageData.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -56,6 +57,9 @@ std::optional<size3_t> VTKDataSet::getDimensions() const {
         case VTK_STRUCTURED_POINTS:
             vtkStructuredPoints::SafeDownCast(dataSet_.GetPointer())
                 ->GetDimensions(glm::value_ptr(dims));
+            break;
+        case VTK_IMAGE_DATA:
+            vtkImageData::SafeDownCast(dataSet_.GetPointer())->GetDimensions(glm::value_ptr(dims));
             break;
         default:
             return std::nullopt;
