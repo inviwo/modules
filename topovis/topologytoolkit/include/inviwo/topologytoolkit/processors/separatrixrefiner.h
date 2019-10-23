@@ -34,25 +34,18 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
+#include <inviwo/core/ports/meshport.h>
 
 #include <inviwo/springsystem/datastructures/springsystem.h>
 #include <inviwo/core/util/spatialsampler.h>
+
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/topologytoolkit/properties/topologyfilterproperty.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.SeparatrixRefiner, Separatrix Refiner}
  * ![](org.inviwo.SeparatrixRefiner.png?classIdentifier=org.inviwo.SeparatrixRefiner)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
 class IVW_MODULE_TOPOLOGYTOOLKIT_API SeparatrixRefiner : public Processor {
@@ -67,11 +60,17 @@ public:
 
     topology::MorseSmaleComplexInport inport_;
     DataInport<SpatialSampler<3, 3, double>> sampler_;
-    topology::MorseSmaleComplexOutport outport_;
-
-    enum class Type {unkown, minimum, sadle, maximum, minSeperatrix, maxSeperatrix};
+    MeshOutport outport_;
 
 private:
+    TopologyColorsProperty colors_;
+    TopologyFilterProperty filters_;
+    FloatProperty sphereRadius_;
+    FloatProperty lineThickness_;
+    BoolProperty fillPBC_;
+
+
+    CompositeProperty springSys_;
     IntSizeTProperty timesteps_;
     FloatProperty timestep_;
     FloatProperty springLength_;
