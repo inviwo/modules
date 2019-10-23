@@ -43,7 +43,6 @@
 #include <modules/tensorvisbase/processors/invariantspacefilter.h>
 #include <modules/tensorvisbase/processors/invariantspaceselection.h>
 #include <modules/tensorvisbase/processors/invariantspacetodataframe.h>
-#include <modules/tensorvisbase/processors/mohrcircleprocessor.h>
 #include <modules/tensorvisbase/processors/tensorfield2danisotropy.h>
 #include <modules/tensorvisbase/processors/tensorfield2dsubsample.h>
 #include <modules/tensorvisbase/processors/tensorfield2dsubset.h>
@@ -63,7 +62,6 @@
 #include <modules/tensorvisbase/processors/tensorglyphprocessor.h>
 #include <modules/tensorvisbase/processors/tensorglyphrenderer.h>
 #include <modules/tensorvisbase/processors/tensorinformation.h>
-#include <modules/tensorvisbase/processors/tensorstarplotprocessor.h>
 #include <modules/tensorvisbase/processors/volumeactualdataandvaluerange.h>
 #include <modules/tensorvisbase/properties/eigenvalueproperty.h>
 #include <modules/tensorvisbase/properties/tensorglyphproperty.h>
@@ -79,7 +77,6 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<ImageToSphereField>();
     registerProcessor<InvariantSpaceCombine>();
     registerProcessor<InvariantSpaceFilter>();
-    registerProcessor<MohrCircleProcessor>();
     registerProcessor<TensorField2DAnisotropy>();
     registerProcessor<TensorField2DSubsample>();
     registerProcessor<TensorField2DSubset>();
@@ -99,7 +96,6 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorGlyphProcessor>();
     registerProcessor<TensorGlyphRenderer>();
     registerProcessor<TensorInformation>();
-    registerProcessor<TensorStarPlotProcessor>();
     registerProcessor<VolumeActualDataAndValueRange>();
     registerProcessor<InvariantSpaceToDataFrame>();
     registerProcessor<InvariantSpaceSelection>();
