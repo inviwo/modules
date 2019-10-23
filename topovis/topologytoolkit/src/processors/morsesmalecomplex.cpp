@@ -1,4 +1,4 @@
-/*********************************************************************************
+﻿/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -43,7 +43,10 @@
 #include <ttk/core/base/ftmTree/FTMTree_MT.h>
 #include <warn/pop>
 
+
+
 namespace inviwo {
+
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MorseSmaleComplex::processorInfo_{
@@ -56,9 +59,19 @@ const ProcessorInfo MorseSmaleComplex::processorInfo_{
 const ProcessorInfo MorseSmaleComplex::getProcessorInfo() const { return processorInfo_; }
 
 MorseSmaleComplex::MorseSmaleComplex()
-    : Processor(), inport_{"triangulation"}, outport_{"outport"} {
+    : Processor()
+    , inport_{"triangulation"}
+    , outport_{"outport"}
+    , returnSaddleConnectors_{"returnSaddleConnectors", "Return Saddle Connectors", false}
+    , computeSaddleConnectors_{"computeSaddleConnectors", "Compute Saddle Connectors", false}
+    , saddleConnectorsPersistenceThreshold_{"saddleConnectorsPersistenceThreshold_",
+                                            "Saddle Connectors Persistence Threshold", 0.0f, 0.0f,
+                                            100.0f} {
     addPort(inport_);
     addPort(outport_);
+
+    addProperties(returnSaddleConnectors_, computeSaddleConnectors_,
+                  saddleConnectorsPersistenceThreshold_);
 }
 
 void MorseSmaleComplex::process() {
@@ -69,15 +82,14 @@ void MorseSmaleComplex::process() {
             hasNewData_ = false;
             getActivityIndicator().setActive(false);
         } catch (Exception&) {
-            // Need to reset the future, VS bug:
-            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
-            newMsc_ = {};
             outport_.setData(nullptr);
             hasNewData_ = false;
             throw;
         }
-    } else if (!newMsc_.valid()) {  // We are not waiting for a calculation
-        if (inport_.isChanged() || mscDirty_) {
+    } else {
+        if (inport_.isChanged() || mscDirty_ || returnSaddleConnectors_.isModified() ||
+            computeSaddleConnectors_.isModified() ||
+            saddleConnectorsPersistenceThreshold_.isModified()) {
             getActivityIndicator().setActive(true);
             updateOutport();
         }
@@ -93,37 +105,44 @@ void MorseSmaleComplex::updateOutport() {
         });
     };
 
-    // Save input and properties needed to calculate ttk contour tree to local variables
     const auto inportData = inport_.getData();
 
-    // construction of ttk contour tree
-    auto compute = [inportData, done]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
+    const auto rsc = *returnSaddleConnectors_;
+    const auto csc = *computeSaddleConnectors_;
+    const auto scpt = *saddleConnectorsPersistenceThreshold_;
+
+    auto compute = [inportData, done, rsc, csc,
+                    scpt]() -> std::shared_ptr<const topology::MorseSmaleComplexData> {
         ScopedClockCPU clock{"MorseSmaleComplex", "Morse-Smale complex calculation",
                              std::chrono::milliseconds(500), LogLevel::Info};
         auto mscData =
             inportData->getScalarValues()
                 ->getRepresentation<BufferRAM>()
                 ->dispatch<std::shared_ptr<topology::MorseSmaleComplexData>,
-                           dispatching::filter::Scalars>([inportData](const auto buffer) {
-                    using ValueType = util::PrecisionValueType<decltype(buffer)>;
-                    using PrimitiveType = typename DataFormat<ValueType>::primitive;
+                           dispatching::filter::Scalars>(
+                    [inportData, rsc, csc, scpt](const auto buffer) {
+                        using ValueType = util::PrecisionValueType<decltype(buffer)>;
+                        using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-                    std::vector<int> offsets(inportData->getOffsets());
+                        std::vector<int> offsets(inportData->getOffsets());
 
-                    ttk::MorseSmaleComplex morseSmaleComplex;
-                    morseSmaleComplex.setupTriangulation(
-                        const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
-                    // FIXME: ttk::MorseSmaleComplex has some issues with correct constness
-                    morseSmaleComplex.setInputScalarField(
-                        const_cast<PrimitiveType*>(buffer->getDataContainer().data()));
-                    morseSmaleComplex.setInputOffsets(offsets.data());
+                        ttk::MorseSmaleComplex morseSmaleComplex;
+                        morseSmaleComplex.setupTriangulation(
+                            const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
+                        morseSmaleComplex.setInputScalarField(buffer->getDataContainer().data());
+                        morseSmaleComplex.setInputOffsets(offsets.data());
 
-                    auto mscData = std::make_shared<topology::MorseSmaleComplexData>(
-                        morseSmaleComplex, inportData);
-                    morseSmaleComplex.execute<PrimitiveType, ttk::SimplexId>();
+                        auto mscData = std::make_shared<topology::MorseSmaleComplexData>(
+                            morseSmaleComplex, inportData);
 
-                    return mscData;
-                });
+                        morseSmaleComplex.setReturnSaddleConnectors(rsc);
+                        morseSmaleComplex.setComputeSaddleConnectors(csc);
+                        morseSmaleComplex.setSaddleConnectorsPersistenceThreshold(scpt);
+
+                        morseSmaleComplex.execute<PrimitiveType, ttk::SimplexId>();
+
+                        return mscData;
+                    });
 
         done();
         return mscData;
