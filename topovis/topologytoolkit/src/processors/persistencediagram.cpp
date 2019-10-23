@@ -53,11 +53,16 @@ const ProcessorInfo PersistenceDiagram::processorInfo_{
 const ProcessorInfo PersistenceDiagram::getProcessorInfo() const { return processorInfo_; }
 
 PersistenceDiagram::PersistenceDiagram()
-    : Processor(), inport_("triangulation"), outport_("outport"), dataFrameOutport_("dataframe") {
+    : Processor()
+    , inport_("triangulation")
+    , outport_("outport")
+    , dataFrameOutport_("dataframe")
+    , computeSaddleConnectors_{"computeSaddleConnectors", "Compute Saddle Connectors", false} {
 
     addPort(inport_);
     addPort(outport_);
     addPort(dataFrameOutport_);
+    addProperties(computeSaddleConnectors_);
 }
 
 void PersistenceDiagram::process() {
@@ -65,9 +70,11 @@ void PersistenceDiagram::process() {
     auto diagramOutput = std::make_shared<topology::PersistenceDiagramData>();
 
     ttk::PersistenceDiagram diagram;
+
+    diagram.setComputeSaddleConnectors(computeSaddleConnectors_);
+
     diagram.setupTriangulation(
         const_cast<ttk::Triangulation*>(&inport_.getData()->getTriangulation()));
-    // diagram.setOutputCTDiagram(diagramOutput.get());
 
     auto dataFrame = std::make_shared<DataFrame>();
 
