@@ -30,6 +30,8 @@
 #include <inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h>
 #include <inviwo/nanovgutils/nanovgutils.h>
 #include <modules/opengl/texture/textureutils.h>
+#include <inviwo/core/interaction/pickingstate.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 
 namespace inviwo {
 
