@@ -8,6 +8,5 @@ set(dependencies
     InviwoEigenUtilsModule
     InviwoVectorFieldVisualizationModule
 	InviwoNanoVGUtilsModule
-	InviwoVGFontRenderingModule
 	InviwoPlottingModule
 )

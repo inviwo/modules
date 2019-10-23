@@ -26,7 +26,6 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/invariantspacefilter.h
     include/modules/tensorvisbase/processors/invariantspaceselection.h
     include/modules/tensorvisbase/processors/invariantspacetodataframe.h
-    include/modules/tensorvisbase/processors/mohrcircleprocessor.h
     include/modules/tensorvisbase/processors/tensorfield2danisotropy.h
     include/modules/tensorvisbase/processors/tensorfield2dsubsample.h
     include/modules/tensorvisbase/processors/tensorfield2dsubset.h
@@ -46,7 +45,6 @@ set(HEADER_FILES
     include/modules/tensorvisbase/processors/tensorglyphprocessor.h
     include/modules/tensorvisbase/processors/tensorglyphrenderer.h
     include/modules/tensorvisbase/processors/tensorinformation.h
-    include/modules/tensorvisbase/processors/tensorstarplotprocessor.h
     include/modules/tensorvisbase/processors/volumeactualdataandvaluerange.h
     include/modules/tensorvisbase/properties/eigenvalueproperty.h
     include/modules/tensorvisbase/properties/tensorglyphproperty.h
@@ -78,7 +76,6 @@ set(SOURCE_FILES
     src/processors/invariantspacefilter.cpp
     src/processors/invariantspaceselection.cpp
     src/processors/invariantspacetodataframe.cpp
-    src/processors/mohrcircleprocessor.cpp
     src/processors/tensorfield2danisotropy.cpp
     src/processors/tensorfield2dsubsample.cpp
     src/processors/tensorfield2dsubset.cpp
@@ -98,7 +95,6 @@ set(SOURCE_FILES
     src/processors/tensorglyphprocessor.cpp
     src/processors/tensorglyphrenderer.cpp
     src/processors/tensorinformation.cpp
-    src/processors/tensorstarplotprocessor.cpp
     src/processors/volumeactualdataandvaluerange.cpp
     src/properties/eigenvalueproperty.cpp
     src/properties/tensorglyphproperty.cpp
