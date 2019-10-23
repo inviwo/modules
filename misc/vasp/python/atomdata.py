@@ -2,7 +2,7 @@ import inviwopy as ivw
 
 default = {'rgb': [0, 0, 0], 'radius': 3.00}
 
-atomcolors = {
+atomColors = {
     "Xx": default,
     "H": {'rgb': [255, 255, 255], 'radius': 1.10},
     "He": {'rgb': [217, 255, 255], 'radius': 1.40},
@@ -117,10 +117,10 @@ atomcolors = {
 
 
 def color(name):
-    rgb = atomcolors.get(name, default)['rgb']
+    rgb = atomColors.get(name, default)['rgb']
     rgb.append(255)
     return [rgb[0]/255.0, rgb[1]/255.0, rgb[2]/255.0, rgb[3]/255.0]
 
 
 def radius(name):
-    return atomcolors.get(name, default)["radius"]
+    return atomColors.get(name, default)["radius"]

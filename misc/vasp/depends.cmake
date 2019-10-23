@@ -2,6 +2,7 @@
 # List modules on the format "Inviwo<ModuleName>Module"
 set(dependencies
     InviwoPython3Module
+    InviwoDataFramePythonModule
 )
 
 # Add an alias for this module. Several modules can share an alias. 

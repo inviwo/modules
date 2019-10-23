@@ -1,3 +1,3 @@
 # VASP Module
 
-Description of the VASP module
+Various tools to handle VASP data
