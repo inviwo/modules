@@ -21,7 +21,7 @@ node {
         util.buildStandard(
             state: this,
             modulePaths: modulePaths, 
-            onModules: ["TOPOLOGYTOOLKIT", "VTK", "OPENMESH", "SPRINGSYSTEM"],  
+            onModules: ["TOPOLOGYTOOLKIT", "VTK", "OPENMESH", "SPRINGSYSTEM", "NANOVGUTILS", "TENSORVISBASE", "TENSORVISIO"],  
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
