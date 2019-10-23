@@ -46,6 +46,12 @@ namespace inviwo {
 
 namespace topology {
 
+enum class CellType { unkown, minima, saddle, maxima, minSaddle, maxSaddle, saddleSaddle };
+
+IVW_MODULE_TOPOLOGYTOOLKIT_API CellType extremaDimToType(int dimensionality, char cellDim);
+
+IVW_MODULE_TOPOLOGYTOOLKIT_API CellType seperatrixTypeToType(int dimensionality, char type);
+
 struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
 
     /**

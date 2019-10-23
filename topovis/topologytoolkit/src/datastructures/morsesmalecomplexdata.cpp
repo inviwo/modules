@@ -80,6 +80,58 @@ MorseSmaleComplexData::MorseSmaleComplexData(ttk::MorseSmaleComplex& msc,
                                 segmentation.msc.data());
 }
 
+CellType extremaDimToType(int dimensionality, char cellDim) {
+    if (dimensionality == 3) {
+        switch (cellDim) {
+            case 0:
+                return CellType::minima;
+            case 1:
+                return CellType::saddle;
+            case 2:
+                return CellType::saddle;
+            case 3:
+                return CellType::maxima;
+            default:
+                return CellType::unkown;
+        }
+    } else {
+        switch (cellDim) {
+            case 0:
+                return CellType::minima;
+            case 1:
+                return CellType::saddle;
+            case 2:
+                return CellType::maxima;
+            default:
+                return CellType::unkown;
+        }
+    }
+}
+
+CellType seperatrixTypeToType(int dimensionality, char type) {
+    if (dimensionality == 3) {
+        switch (type) {
+            case 0:
+                return CellType::minSaddle;
+            case 1:
+                return CellType::saddleSaddle;
+            case 2:
+                return CellType::maxSaddle;
+            default:
+                return CellType::unkown;
+        }
+    } else {
+        switch (type) {
+            case 0:
+                return CellType::minSaddle;
+            case 1:
+                return CellType::maxSaddle;
+            default:
+                return CellType::unkown;
+        }
+    }
+}
+
 }  // namespace topology
 
 }  // namespace inviwo
