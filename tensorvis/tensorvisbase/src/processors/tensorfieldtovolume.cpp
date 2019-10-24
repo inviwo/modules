@@ -51,8 +51,7 @@ TensorFieldToVolume::TensorFieldToVolume()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , feature_(
-          "feature", "Feature",
+    , feature_("feature", "Feature",
                {{"majorEigenVector", "Major eigenvector", TensorFeature::MajorEigenVector},
                 {"intermediateEigenVector", "Intermediate eigenvector",
                  TensorFeature::IntermediateEigenVector},
@@ -64,8 +63,6 @@ TensorFieldToVolume::TensorFieldToVolume()
     , normalizeVectors_("normalize", "Normalize eigenvectors") {
     addPort(inport_);
     addPort(outport_);
-
-    
 
     addProperty(feature_);
     addProperty(normalizeVectors_);

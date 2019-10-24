@@ -274,7 +274,7 @@ public:
 
     // Returns a reference to the actual data
     template <typename T>
-    const typename T::DataType& getMetaData() const {
+    const typename T::DataType &getMetaData() const {
         const auto it = metaData_.find(T::id());
         if (it == metaData_.end()) {
             throw Exception("Could not locate metadata for ID " + std::to_string(T::id()));

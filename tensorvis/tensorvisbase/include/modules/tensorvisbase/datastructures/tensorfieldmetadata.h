@@ -162,7 +162,7 @@ struct MetaDataBase {
 template <typename T>
 struct MetaDataType : MetaDataBase {
     using TType = T;
-	using DataType = std::vector<T>;
+    using DataType = std::vector<T>;
 
     MetaDataType() = default;
 
