@@ -51,19 +51,21 @@ TensorFieldToVolume::TensorFieldToVolume()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , feature_("feature", "Feature")
+    , feature_(
+          "feature", "Feature",
+               {{"majorEigenVector", "Major eigenvector", TensorFeature::MajorEigenVector},
+                {"intermediateEigenVector", "Intermediate eigenvector",
+                 TensorFeature::IntermediateEigenVector},
+                {"minorEigenVector", "Minor eigenvector", TensorFeature::MinorEigenVector},
+                {"majorEigenValue", "Major eigenvalue", TensorFeature::Sigma1},
+                {"intermediateEigenValue", "Intermediate eigenvalue", TensorFeature::Sigma2},
+                {"minorEigenValue", "Minor eigenvalue", TensorFeature::Sigma3},
+                {"hill", "Hill", TensorFeature::HillYieldCriterion}})
     , normalizeVectors_("normalize", "Normalize eigenvectors") {
     addPort(inport_);
     addPort(outport_);
 
-    feature_.addOption("majorEigenVector", "Major eigenvector", TensorFeature::MajorEigenVector);
-    feature_.addOption("intermediateEigenVector", "Intermediate eigenvector",
-                       TensorFeature::IntermediateEigenVector);
-    feature_.addOption("minorEigenVector", "Minor eigenvector", TensorFeature::MinorEigenVector);
-    feature_.addOption("majorEigenValue", "Major eigenvalue", TensorFeature::Sigma1);
-    feature_.addOption("intermediateEigenValue", "Intermediate eigenvalue", TensorFeature::Sigma2);
-    feature_.addOption("minorEigenValue", "Minor eigenvalue", TensorFeature::Sigma3);
-    feature_.addOption("hill", "Hill", TensorFeature::HillYieldCriterion);
+    
 
     addProperty(feature_);
     addProperty(normalizeVectors_);
