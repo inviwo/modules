@@ -161,7 +161,8 @@ struct MetaDataBase {
 
 template <typename T>
 struct MetaDataType : MetaDataBase {
-    using DataType = T;
+    using TType = T;
+	using DataType = std::vector<T>;
 
     MetaDataType() = default;
 
@@ -172,7 +173,7 @@ struct MetaDataType : MetaDataBase {
     std::unique_ptr<MetaDataBase> clone() const override = 0;
 
     // Getters
-    std::pair<DataType, DataType> getMinMax() const;
+    std::pair<TType, TType> getMinMax() const;
 
     std::string getDisplayName() const override {
         std::stringstream ss;
@@ -193,11 +194,56 @@ struct MetaDataType : MetaDataBase {
 
     void deserialize(std::ifstream &inFile, size_t numElements) override;
 
-    std::vector<T> data_;
+    DataType data_;
+
     TensorFeature type_ = TensorFeature::NumberOfTensorFeatures;
 };
 
-#include "tensorfieldmetadataimpl.h"
+template <typename T>
+void MetaDataType<T>::serialize(std::ofstream &outFile) const {
+    auto id = getId();
+    const auto dataPtr = static_cast<const T *>(data_.data());
+
+    outFile.write(reinterpret_cast<const char *>(&id), sizeof(uint64_t));
+    outFile.write(reinterpret_cast<const char *>(&type_), sizeof(uint64_t));
+    outFile.write(reinterpret_cast<const char *>(dataPtr), sizeof(T) * data_.size());
+}
+
+template <typename T>
+void MetaDataType<T>::deserialize(std::ifstream &inFile, const size_t numElements) {
+    data_.resize(numElements);
+    auto data = data_.data();
+
+    inFile.read(reinterpret_cast<char *>(&type_), sizeof(uint64_t));
+    inFile.read(reinterpret_cast<char *>(data), sizeof(MetaDataType<T>::TType) * numElements);
+}
+
+template <typename T>
+std::pair<typename MetaDataType<T>::TType, typename MetaDataType<T>::TType>
+MetaDataType<T>::getMinMax() const {
+    auto minmax = util::dataMinMax(data_.data(), data_.size());
+    return std::make_pair(util::glm_convert<MetaDataType<T>::TType>(minmax.first),
+                          util::glm_convert<MetaDataType<T>::TType>(minmax.second));
+}
+
+template <typename T>
+const std::vector<T> &MetaDataType<T>::getData() const {
+    return data_;
+}
+
+template <typename T>
+MetaDataType<T>::MetaDataType(std::vector<T> data, const TensorFeature type)
+    : data_(std::move(data)), type_(type) {}
+
+template <typename T>
+const void *MetaDataType<T>::getDataPtr() const {
+    return data_.data();
+}
+
+template <typename T>
+size_t MetaDataType<T>::getNumberOfComponents() const {
+    return util::extent<MetaDataType<T>::TType>::value;
+}
 
 #include "tensorfieldmetadataspecializations.h"
 
