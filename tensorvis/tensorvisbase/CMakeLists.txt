@@ -13,7 +13,6 @@ set(HEADER_FILES
     include/modules/tensorvisbase/datastructures/tensorfield2d.h
     include/modules/tensorvisbase/datastructures/tensorfield3d.h
     include/modules/tensorvisbase/datastructures/tensorfieldmetadata.h
-    include/modules/tensorvisbase/datastructures/tensorfieldmetadataimpl.h
     include/modules/tensorvisbase/datastructures/tensorfieldmetadataspecializations.h
     include/modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h
     include/modules/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h
