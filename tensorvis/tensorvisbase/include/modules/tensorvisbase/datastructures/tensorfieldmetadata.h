@@ -47,6 +47,11 @@ enum class TensorFeature : uint64_t {
     NumberOfTensorFeatures = util::constexpr_hash("NumberOfTensorFeatures")
 };
 
+template <>
+struct EnumTraits<TensorFeature> {
+    static std::string name() { return "TensorFeature"; }
+};
+
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
                                              TensorFeature feature) {
