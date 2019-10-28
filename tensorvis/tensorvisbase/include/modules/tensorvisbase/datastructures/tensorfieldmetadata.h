@@ -12,7 +12,7 @@
 
 namespace inviwo {
 
-enum class TensorFeature : uint64_t {
+enum class TensorFeature : size_t {
     I1 = util::constexpr_hash("I1"),
     I2 = util::constexpr_hash("I2"),
     I3 = util::constexpr_hash("I3"),
