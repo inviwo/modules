@@ -136,7 +136,7 @@ vec4 eigenValueToColor(float eigenValue, float eigenValueRange, float minEigenVa
                        float maxEigenValue, sampler2D tf) {
     float d = eigenValueToNormalized(eigenValue, eigenValueRange, minEigenValue, maxEigenValue);
 
-    return texture2D(tf, vec2(d, 0.5));
+    return texture(tf, vec2(d, 0.5));
 }
 
 float anisotropyToNormalized(vec2 eigenValues, float anisotropyValueRange, float anisotropyMinVal,
@@ -165,5 +165,5 @@ vec4 anisotropyToColor(vec2 eigenValues, float anisotropyValueRange, float aniso
     float d = anisotropyToNormalized(eigenValues, anisotropyValueRange, anisotropyMinVal,
                                      anisotropyMaxVal);
 
-    return texture2D(tf, vec2(d, 0.5));
+    return texture(tf, vec2(d, 0.5));
 }
