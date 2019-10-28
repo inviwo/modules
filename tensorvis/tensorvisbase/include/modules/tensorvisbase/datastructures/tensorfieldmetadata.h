@@ -247,8 +247,3 @@ size_t MetaDataType<T>::getNumberOfComponents() const {
 #include "tensorfieldmetadataspecializations.h"
 
 }  //  namespace inviwo
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC pop_options
-#endif
