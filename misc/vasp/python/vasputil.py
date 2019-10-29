@@ -19,10 +19,6 @@ def parseFile(file):
         import bz2
         with bz2.open(file, mode='rt') as f:
             lines = f.readlines()
-    elif file.suffix == ".zip":
-        import zipfile
-        with zipfile.open(file, mode='r') as f:
-            lines = f.readlines()
     elif file.suffix == ".gz":
         import gzip
         with gzip.open(file, mode='rt') as f:
