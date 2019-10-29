@@ -29,11 +29,14 @@
 
 #include <modules/tensorvisio/processors/tensorfield2dtovtk.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <vtkStructuredGrid.h>
 #include <vtkSmartPointer.h>
 #include <vtkPoints.h>
 #include <vtkPointData.h>
 #include <vtkDoubleArray.h>
+#include <warn/pop>
 
 #include <modules/tensorvisbase/util/misc.h>
 
