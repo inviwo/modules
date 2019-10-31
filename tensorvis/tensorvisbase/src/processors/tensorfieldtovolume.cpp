@@ -94,9 +94,6 @@ void TensorFieldToVolume::process() {
         std::make_shared<Volume>(tensorField->getDimensions(),
                                  DataFormatBase::get(NumericType::Float, numberOfComponents, 32));
 
-    using P = typename util::same_extent<vec2, double>::type;
-    P a{2.0};
-
     DataMapper map =
         vol->getEditableRepresentation<VolumeRAM>()
             ->dispatch<DataMapper, dispatching::filter::Floats>([metaData](auto repr) {
