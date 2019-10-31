@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,40 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <vld.h>
+#endif
+#endif
 
-#include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
-namespace inviwo {
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-class IVW_MODULE_TENSORVISBASE_API HyperLICVisualizer3D : public DataVisualizer {
-public:
-    HyperLICVisualizer3D(InviwoApplication* app);
-    virtual ~HyperLICVisualizer3D() = default;
-    virtual std::string getName() const override;
-    virtual Document getDescription() const override;
-    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
-    virtual bool isOutportSupported(const Outport* port) const override;
+int main(int argc, char** argv) {
+    using namespace inviwo;
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->registerLogger(logger);
 
-    virtual bool hasSourceProcessor() const override;
-    virtual bool hasVisualizerNetwork() const override;
-
-    virtual std::pair<Processor*, Outport*> addSourceProcessor(
-        const std::string& filename, ProcessorNetwork* network) const override;
-    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
-                                                         ProcessorNetwork* network) const override;
-    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-        const std::string& filename, ProcessorNetwork* network) const override;
-
-private:
-    [[maybe_unused]] InviwoApplication* app_;
-};
-
-}  // namespace inviwo
+    int ret = -1;
+    {
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+        VLDDisable();
+        ::testing::InitGoogleTest(&argc, argv);
+        VLDEnable();
+#else
+        ::testing::InitGoogleTest(&argc, argv);
+#endif
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}

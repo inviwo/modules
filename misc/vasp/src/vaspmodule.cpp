@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2019 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,13 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <modules/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/rendering/datavisualizer.h>
+#include <inviwo/vasp/vaspmodule.h>
 
 namespace inviwo {
 
-class IVW_MODULE_TENSORVISBASE_API HyperLICVisualizer3D : public DataVisualizer {
-public:
-    HyperLICVisualizer3D(InviwoApplication* app);
-    virtual ~HyperLICVisualizer3D() = default;
-    virtual std::string getName() const override;
-    virtual Document getDescription() const override;
-    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
-    virtual bool isOutportSupported(const Outport* port) const override;
-
-    virtual bool hasSourceProcessor() const override;
-    virtual bool hasVisualizerNetwork() const override;
-
-    virtual std::pair<Processor*, Outport*> addSourceProcessor(
-        const std::string& filename, ProcessorNetwork* network) const override;
-    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
-                                                         ProcessorNetwork* network) const override;
-    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
-        const std::string& filename, ProcessorNetwork* network) const override;
-
-private:
-    [[maybe_unused]] InviwoApplication* app_;
-};
+VASPModule::VASPModule(InviwoApplication* app)
+    : InviwoModule(app, "VASP")
+    , scripts_{getPath() + "/python"}
+    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {}
 
 }  // namespace inviwo

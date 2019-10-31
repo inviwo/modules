@@ -65,7 +65,6 @@ void InvariantSpaceFilter::process() {
     size_t numberOfFilteredTensors{0};
     const auto numberOfElements = invariantSpace->getNumElements();
     const auto epsilon{std::numeric_limits<double>::epsilon()};
-    const dmat3 zero{0.0};
 
     auto lessThanEpsilon = [&](const double* tensor) -> bool {
         if (glm::abs(tensor[0]) < epsilon && glm::abs(tensor[1]) < epsilon &&

@@ -95,7 +95,7 @@ TensorGlyphRenderer::TensorGlyphRenderer()
 
         for (const auto& mesh : *meshInport_.getData()) {
             meshDrawers_.emplace_back(
-                std::move(InviwoApplication::getPtr()->getMeshDrawerFactory()->create(mesh.get())));
+                InviwoApplication::getPtr()->getMeshDrawerFactory()->create(mesh.get()));
         }
 
         picking_.resize(meshInport_.getData()->size());
