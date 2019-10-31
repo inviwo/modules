@@ -96,11 +96,10 @@ void TensorFieldToVolume::process() {
 
     using P = typename util::same_extent<vec2, double>::type;
     P a{2.0};
-    auto v = vec2(a);
 
     DataMapper map =
         vol->getEditableRepresentation<VolumeRAM>()
-            ->dispatch<DataMapper, dispatching::filter::Floats>([this, metaData](auto repr) {
+            ->dispatch<DataMapper, dispatching::filter::Floats>([metaData](auto repr) {
                 auto ptr = repr->getDataTyped();
                 using ValueType = util::PrecisionValueType<decltype(repr)>;
                 // TODO: use type of metadata instead of assuming double!

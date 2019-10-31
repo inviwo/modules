@@ -57,6 +57,7 @@ public:
     double lambda2() const { return lambda2_.get(); }
     double lambda3() const { return lambda3_.get(); }
 
+    using CompositeProperty::set;
     void set(double lambda1, double lambda2, double lambda3);
     void set(double lambda, glm::uint8 index);
 

@@ -55,7 +55,7 @@ public:
         const std::string& filename, ProcessorNetwork* network) const override;
 
 private:
-    InviwoApplication* app_;
+    [[maybe_unused]] InviwoApplication* app_;
 };
 
 }  // namespace inviwo
