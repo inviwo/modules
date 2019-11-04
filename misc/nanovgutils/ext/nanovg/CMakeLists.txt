@@ -1,6 +1,7 @@
 project(nanovg)
 
 find_package(OpenGL QUIET REQUIRED)
+find_package(freetype REQUIRED)
 
 set(nanovg_HEADERS  
     ${CMAKE_CURRENT_SOURCE_DIR}/nanovg/src/fontstash.h
@@ -27,9 +28,13 @@ target_include_directories(nanovg PUBLIC
 
 ivw_folder(nanovg ext)
 
-target_compile_definitions(nanovg PUBLIC NANOVG_GL3_IMPLEMENTATION)
+target_compile_definitions(nanovg PUBLIC 
+	NANOVG_GL3_IMPLEMENTATION
+	FONS_USE_FREETYPE
+)
 
-target_link_libraries(nanovg PUBLIC  ${OPENGL_LIBRARIES} GLEW)
+target_link_libraries(nanovg PUBLIC ${OPENGL_LIBRARIES} GLEW)
+target_link_libraries(nanovg PUBLIC freetype)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)
