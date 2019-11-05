@@ -69,7 +69,8 @@ TriangulationData::TriangulationData(const TriangulationData& rhs)
     } else {
         triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
         triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
-        triangulation_.setPeriodicBoundaryConditions(rhs.triangulation_.usesPeriodicBoundaryConditions());
+        triangulation_.setPeriodicBoundaryConditions(
+            rhs.triangulation_.usesPeriodicBoundaryConditions());
     }
 }
 
@@ -89,7 +90,8 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
     } else {
         triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
         triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
-        triangulation_.setPeriodicBoundaryConditions(rhs.triangulation_.usesPeriodicBoundaryConditions());
+        triangulation_.setPeriodicBoundaryConditions(
+            rhs.triangulation_.usesPeriodicBoundaryConditions());
     }
 }
 
@@ -112,7 +114,8 @@ TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
         } else {
             triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
             triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
-            triangulation_.setPeriodicBoundaryConditions(rhs.triangulation_.usesPeriodicBoundaryConditions());
+            triangulation_.setPeriodicBoundaryConditions(
+                rhs.triangulation_.usesPeriodicBoundaryConditions());
         }
     }
     return *this;
@@ -137,7 +140,8 @@ TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
         } else {
             triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
             triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
-            triangulation_.setPeriodicBoundaryConditions(rhs.triangulation_.usesPeriodicBoundaryConditions());
+            triangulation_.setPeriodicBoundaryConditions(
+                rhs.triangulation_.usesPeriodicBoundaryConditions());
         }
     }
     return *this;

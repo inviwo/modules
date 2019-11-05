@@ -45,7 +45,6 @@
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 #include <inviwo/topologytoolkit/properties/topologyfilterproperty.h>
 
-
 #include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
 #include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
 #include <inviwo/topologytoolkit/datastructures/triangulationdata.h>

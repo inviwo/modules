@@ -44,7 +44,6 @@ public:
     TTKSettings(InviwoApplication* app);
     virtual ~TTKSettings() = default;
 
-
     IntProperty globalLoglevel;
 };
 

@@ -34,7 +34,6 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 
-
 #include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
 
 namespace inviwo {
@@ -66,9 +65,10 @@ public:
     bool showSeperatrix(topology::CellType type) const;
 
 private:
-
     auto props() { return std::tie(maxima, minima, saddle, maxSaddle, minSaddle, saddleSaddle); }
-    auto props() const { return std::tie(maxima, minima, saddle, maxSaddle, minSaddle, saddleSaddle); }
+    auto props() const {
+        return std::tie(maxima, minima, saddle, maxSaddle, minSaddle, saddleSaddle);
+    }
 };
 
 }  // namespace inviwo

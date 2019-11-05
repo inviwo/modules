@@ -78,7 +78,6 @@ private:
     DataFrameOutport dataFrameOutport_;
 
     BoolProperty computeSaddleConnectors_;
-
 };
 
 }  // namespace inviwo

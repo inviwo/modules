@@ -69,7 +69,6 @@ private:
     FloatProperty lineThickness_;
     BoolProperty fillPBC_;
 
-
     CompositeProperty springSys_;
     IntSizeTProperty timesteps_;
     FloatProperty timestep_;

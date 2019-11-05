@@ -81,7 +81,6 @@ private:
     BoolProperty computeSaddleConnectors_;
     FloatProperty saddleConnectorsPersistenceThreshold_;
 
-
     std::future<std::shared_ptr<const topology::MorseSmaleComplexData>> newMsc_;
 
     bool mscDirty_ = true;

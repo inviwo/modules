@@ -43,10 +43,7 @@
 #include <ttk/core/base/ftmTree/FTMTree_MT.h>
 #include <warn/pop>
 
-
-
 namespace inviwo {
-
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MorseSmaleComplex::processorInfo_{
