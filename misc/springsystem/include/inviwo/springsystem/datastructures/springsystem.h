@@ -81,10 +81,10 @@ template <typename I1, typename I2, typename F>
 auto for_each_parallel(I1&& begin, I2&& end, F&& fun) {
 
 #if __has_include(<execution>)
-    return std::for_each(std::execution::par_unseq, std::farward<I1>(begin), std::forward<I2>(end),
-                         std::farward<F>(fun));
+    return std::for_each(std::execution::par_unseq, std::forward<I1>(begin), std::forward<I2>(end),
+                         std::forward<F>(fun));
 #else
-    return std::for_each(std::farward<I1>(begin), std::forward<I2>(end), std::farward<F>(fun));
+    return std::for_each(std::forward<I1>(begin), std::forward<I2>(end), std::forward<F>(fun));
 #endif
 }
 
