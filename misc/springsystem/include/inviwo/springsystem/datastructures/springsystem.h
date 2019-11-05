@@ -32,14 +32,17 @@
 #include <inviwo/springsystem/springsystemmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/util/zip.h>
+#include <glm/gtc/epsilon.hpp>
 
 #include <vector>
-#include <glm/gtc/epsilon.hpp>
 #include <sstream>
 #include <iomanip>
 #include <utility>
-#include <execution>
 #include <algorithm>
+
+#if __has_include(<execution>)
+#include <execution>
+#endif
 
 namespace inviwo {
 
@@ -69,9 +72,21 @@ struct fill_integer_sequence<val, std::index_sequence<Inds...>> {
     using type = std::integer_sequence<decltype(val), map<Inds, val>::value...>;
 };
 }  // namespace detail
+
 template <size_t N, auto val>
 using fill_integer_sequence =
     typename detail::fill_integer_sequence<val, std::make_integer_sequence<std::size_t, N>>::type;
+
+template <typename I1, typename I2, typename F>
+auto for_each_parallel(I1&& begin, I2&& end, F&& fun) {
+
+#if __has_include(<execution>)
+    return std::for_each(std::execution::par_unseq, std::farward<I1>(begin), std::forward<I2>(end),
+                         std::farward<F>(fun));
+#else
+    return std::for_each(std::farward<I1>(begin), std::forward<I2>(end), std::farward<F>(fun));
+#endif
+}
 
 }  // namespace util
 
@@ -169,7 +184,8 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::verletIntegration() 
     // 1) calculate pos(t + timeStep_) and first part of v(t + timeStep_) based on current forces
 
     const auto seq = util::make_sequence(size_t{0}, numNodes, size_t{1});
-    std::for_each(std::execution::par_unseq, seq.begin(), seq.end(), [&](size_t i) {
+
+    util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
         // for (std::size_t i = 0; i < numNodes; ++i) {
         if (derived().isLocked(i)) return;
 
@@ -200,7 +216,7 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::verletIntegration() 
     derived().updateForces();
 
     // 3) adding 0.5 * v based on new forces
-    std::for_each(std::execution::par_unseq, seq.begin(), seq.end(), [&](size_t i) {
+    util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
         // for (std::size_t i = 0; i < numNodes; ++i) {
         if (derived().isLocked(i)) return;
 
@@ -224,7 +240,7 @@ template <size_t Components, typename ComponentType, typename Derived, typename 
 void SpringSystem<Components, ComponentType, Derived, PBC>::updateForces() {
 
     const auto fseq = util::make_sequence(size_t{0}, forces_.size(), size_t{1});
-    std::for_each(std::execution::par_unseq, fseq.begin(), fseq.end(), [&](size_t i) {
+    util::for_each_parallel(fseq.begin(), fseq.end(), [&](size_t i) {
         // for (std::size_t i = 0; i < forces_.size(); ++i) {
         forces_[i] = derived().externalForce(i);
     });
@@ -232,7 +248,7 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::updateForces() {
     const auto& positions = getPositions();
 
     const auto seq = util::make_sequence(size_t{0}, springs_.size(), size_t{1});
-    std::for_each(std::execution::par_unseq, seq.begin(), seq.end(), [&](size_t i) {
+    util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
         // for (size_t i = 0; i < springs_.size(); ++i) {
         const auto& spring = springs_[i];
 
