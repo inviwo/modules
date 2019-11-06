@@ -1,10 +1,3 @@
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-#endif
-
 #pragma once
 
 #include <inviwo/core/common/inviwo.h>
@@ -197,9 +190,3 @@ struct DataTraits<InvariantSpace> {
     }
 };
 }  // namespace inviwo
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC pop_options
-#endif
