@@ -26,8 +26,7 @@
  *    someFilter->AddObserver(vtkCommand::ProgressEvent, progressCallback);
  *
  */
-inline void vtkProgressBarCallback(vtkObject* caller, long unsigned int, void* clientData,
-                                   void*) {
+inline void vtkProgressBarCallback(vtkObject* caller, long unsigned int, void* clientData, void*) {
 
     if (auto algorithm = dynamic_cast<vtkAlgorithm*>(caller)) {
 
