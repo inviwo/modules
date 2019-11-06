@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/tensorfield2dtovtk.h>
+#include <inviwo/tensorvisio/processors/tensorfield2dtovtk.h>
 
 #include <vtkStructuredGrid.h>
 #include <vtkSmartPointer.h>
@@ -35,7 +35,7 @@
 #include <vtkPointData.h>
 #include <vtkDoubleArray.h>
 
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 

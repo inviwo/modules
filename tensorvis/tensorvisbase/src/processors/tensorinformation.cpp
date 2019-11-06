@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorinformation.h>
-#include <modules/tensorvisbase/util/tensorutil.h>
-#include <modules/tensorvisbase/datastructures/tensorfieldmetadata.h>
+#include <inviwo/tensorvisbase/processors/tensorinformation.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 
 namespace inviwo {
 

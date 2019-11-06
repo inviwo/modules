@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 TEST(TensorUtilTests, euclideanDistanceThrow) {

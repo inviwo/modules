@@ -5,12 +5,12 @@
 //#pragma GCC optimize("O0")
 #endif
 
-#include <modules/tensorvisbase/datastructures/tensorfield3d.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/stdextensions.h>
 
 #include <modules/eigenutils/eigenutils.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 #include <inviwo/core/util/exception.h>
 

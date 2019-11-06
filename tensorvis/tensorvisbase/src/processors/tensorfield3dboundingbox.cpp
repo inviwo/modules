@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfield3dboundingbox.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <modules/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 

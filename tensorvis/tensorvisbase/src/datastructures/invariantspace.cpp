@@ -1,5 +1,5 @@
-#include <modules/tensorvisbase/datastructures/invariantspace.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 InvariantSpace::InvariantSpace(size_t numberOfDimensions,

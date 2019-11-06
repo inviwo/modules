@@ -30,8 +30,8 @@
 #include <fstream>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <ios>
-#include <modules/tensorvisbase/datastructures/tensorfieldmetadata.h>
-#include <modules/tensorvisio/processors/tensorfield3dimport.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
+#include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
 #include <unordered_map>
 
 namespace inviwo {

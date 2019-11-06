@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtkdatasettotensorfield3d.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisio/processors/vtkdatasettotensorfield3d.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/imagetospherefield.h>
+#include <inviwo/tensorvisbase/processors/imagetospherefield.h>
 
 namespace inviwo {
 

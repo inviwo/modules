@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/tensorfield3dexport.h>
-#include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <modules/tensorvisbase/datastructures/tensorfieldmetadata.h>
+#include <inviwo/tensorvisio/processors/tensorfield3dexport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 
 namespace inviwo {
 

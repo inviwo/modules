@@ -27,44 +27,44 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 #include <modules/opengl/shader/shadermanager.h>
 
-#include <modules/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h>
-#include <modules/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h>
-#include <modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
+#include <inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h>
+#include <inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h>
+#include <inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
 
-#include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <modules/tensorvisbase/processors/eigenvaluefieldtoimage.h>
-#include <modules/tensorvisbase/processors/hyperstreamlines.h>
-#include <modules/tensorvisbase/processors/imagetospherefield.h>
-#include <modules/tensorvisbase/processors/invariantspacecombine.h>
-#include <modules/tensorvisbase/processors/invariantspacefilter.h>
-#include <modules/tensorvisbase/processors/invariantspaceselection.h>
-#include <modules/tensorvisbase/processors/invariantspacetodataframe.h>
-#include <modules/tensorvisbase/processors/tensorfield2danisotropy.h>
-#include <modules/tensorvisbase/processors/tensorfield2dsubsample.h>
-#include <modules/tensorvisbase/processors/tensorfield2dsubset.h>
-#include <modules/tensorvisbase/processors/tensorfield3dangle.h>
-#include <modules/tensorvisbase/processors/tensorfield3danisotropy.h>
-#include <modules/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
-#include <modules/tensorvisbase/processors/tensorfield3dboundingbox.h>
-#include <modules/tensorvisbase/processors/tensorfield3dmasktovolume.h>
-#include <modules/tensorvisbase/processors/tensorfield3dmetadata.h>
-#include <modules/tensorvisbase/processors/tensorfield3dsubsample.h>
-#include <modules/tensorvisbase/processors/tensorfield3dsubset.h>
-#include <modules/tensorvisbase/processors/tensorfieldgenerator.h>
-#include <modules/tensorvisbase/processors/tensorfieldlic.h>
-#include <modules/tensorvisbase/processors/tensorfieldslice.h>
-#include <modules/tensorvisbase/processors/tensorfieldtorgba.h>
-#include <modules/tensorvisbase/processors/tensorfieldtovolume.h>
-#include <modules/tensorvisbase/processors/tensorglyphprocessor.h>
-#include <modules/tensorvisbase/processors/tensorglyphrenderer.h>
-#include <modules/tensorvisbase/processors/tensorinformation.h>
-#include <modules/tensorvisbase/processors/volumeactualdataandvaluerange.h>
-#include <modules/tensorvisbase/properties/eigenvalueproperty.h>
-#include <modules/tensorvisbase/properties/tensorglyphproperty.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/tensorvisbase/processors/eigenvaluefieldtoimage.h>
+#include <inviwo/tensorvisbase/processors/hyperstreamlines.h>
+#include <inviwo/tensorvisbase/processors/imagetospherefield.h>
+#include <inviwo/tensorvisbase/processors/invariantspacecombine.h>
+#include <inviwo/tensorvisbase/processors/invariantspacefilter.h>
+#include <inviwo/tensorvisbase/processors/invariantspaceselection.h>
+#include <inviwo/tensorvisbase/processors/invariantspacetodataframe.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dsubsample.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dsubset.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dangle.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dmasktovolume.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dmetadata.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dsubsample.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dsubset.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldgenerator.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldtovolume.h>
+#include <inviwo/tensorvisbase/processors/tensorglyphprocessor.h>
+#include <inviwo/tensorvisbase/processors/tensorglyphrenderer.h>
+#include <inviwo/tensorvisbase/processors/tensorinformation.h>
+#include <inviwo/tensorvisbase/processors/volumeactualdataandvaluerange.h>
+#include <inviwo/tensorvisbase/properties/eigenvalueproperty.h>
+#include <inviwo/tensorvisbase/properties/tensorglyphproperty.h>
 
 namespace inviwo {
 

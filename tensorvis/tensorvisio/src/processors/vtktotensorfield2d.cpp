@@ -27,15 +27,15 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtktotensorfield2d.h>
+#include <inviwo/tensorvisio/processors/vtktotensorfield2d.h>
 
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
 #include <vtkDoubleArray.h>
 #include <vtkFloatArray.h>
 
-#include <modules/tensorvisbase/datastructures/tensorfield2d.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 #include <inviwo/vtk/util/vtkutil.h>
 #include <fmt/format.h>
 

@@ -34,8 +34,8 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/invariantspacecombine.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/processors/invariantspacecombine.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 

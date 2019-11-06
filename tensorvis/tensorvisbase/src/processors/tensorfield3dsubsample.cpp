@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfield3dsubsample.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dsubsample.h>
 
 namespace inviwo {
 

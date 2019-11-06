@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorglyphrenderer.h>
+#include <inviwo/tensorvisbase/processors/tensorglyphrenderer.h>
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/datastructures/tensorfield2d.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 
 namespace inviwo {

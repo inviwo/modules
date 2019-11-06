@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfieldslice.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
 
 namespace inviwo {
 
