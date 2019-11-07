@@ -84,24 +84,24 @@ CellType extremaDimToType(int dimensionality, char cellDim) {
     if (dimensionality == 3) {
         switch (cellDim) {
             case 0:
-                return CellType::minima;
+                return CellType::minimum;
             case 1:
                 return CellType::saddle;
             case 2:
                 return CellType::saddle;
             case 3:
-                return CellType::maxima;
+                return CellType::maximum;
             default:
                 return CellType::unkown;
         }
     } else {
         switch (cellDim) {
             case 0:
-                return CellType::minima;
+                return CellType::minimum;
             case 1:
                 return CellType::saddle;
             case 2:
-                return CellType::maxima;
+                return CellType::maximum;
             default:
                 return CellType::unkown;
         }

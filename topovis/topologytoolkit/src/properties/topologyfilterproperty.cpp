@@ -38,12 +38,12 @@ std::string TopologyFilterProperty::getClassIdentifier() const { return classIde
 
 TopologyFilterProperty::TopologyFilterProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
-    , maxima{"maxima", "Show maximas", true}
-    , minima{"minima", "Show minimas", true}
-    , saddle{"saddle", "Show saddles", true}
-    , maxSaddle{"maxSaddle", "Show Maxima Saddle Connectors", true}
-    , minSaddle{"minSaddle", "Show Minima Saddle Connectors", true}
-    , saddleSaddle{"saddleSaddle", "Show Saddle Saddle Connectors", true} {
+    , maxima{"maxima", "Show Maxima", true}
+    , minima{"minima", "Show Minima", true}
+    , saddle{"saddle", "Show Saddles", true}
+    , maxSaddle{"maxSaddle", "Show Maxima Saddle Separatrices", true}
+    , minSaddle{"minSaddle", "Show Minima Saddle Separatrices", true}
+    , saddleSaddle{"saddleSaddle", "Show Saddle Saddle Separatrices", true} {
 
     util::for_each_in_tuple([&](auto& e) { addProperty(e); }, props());
 }
@@ -68,11 +68,11 @@ bool TopologyFilterProperty::showExtrema(int dimensionality, char cellDim) const
     switch (topology::extremaDimToType(dimensionality, cellDim)) {
         case topology::CellType::unkown:
             return false;
-        case topology::CellType::minima:
+        case topology::CellType::minimum:
             return *minima;
         case topology::CellType::saddle:
             return *saddle;
-        case topology::CellType::maxima:
+        case topology::CellType::maximum:
             return *maxima;
         case topology::CellType::minSaddle:
             return false;
@@ -93,11 +93,11 @@ bool TopologyFilterProperty::showSeperatrix(topology::CellType type) const {
     switch (type) {
         case topology::CellType::unkown:
             return false;
-        case topology::CellType::minima:
+        case topology::CellType::minimum:
             return *minSaddle;
         case topology::CellType::saddle:
             return *minSaddle || *maxSaddle || *saddleSaddle;
-        case topology::CellType::maxima:
+        case topology::CellType::maximum:
             return *maxSaddle;
         case topology::CellType::minSaddle:
             return *minSaddle;

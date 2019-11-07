@@ -58,8 +58,6 @@ public:
         , globalSpringDampning{springDampning} {}
 
     bool isLocked(size_t i) const {
-        // return types[i] == CellType::minimum || types[i] == Type::maximum || types[i] ==
-        // Type::sadle;
         return types[i] == topology::CellType::saddle;
     }
 
@@ -67,11 +65,11 @@ public:
 
         const float factor = [&]() {
             switch (types[i]) {
-                case topology::CellType::minima:
+                case topology::CellType::minimum:
                     return 1.0f;
                 case topology::CellType::maxSaddle:
                     return 1.0f;
-                case topology::CellType::maxima:
+                case topology::CellType::maximum:
                     return -1.0f;
                 case topology::CellType::minSaddle:
                     return -1.0f;
@@ -171,7 +169,7 @@ std::shared_ptr<Mesh> refine(const topology::MorseSmaleComplexData& msc,
 
     std::vector<vec3> positions;
     std::vector<topology::CellType> types;
-    std::vector<Sys::SpringIndices> springs;
+    std::vector<typename Sys::SpringIndices> springs;
 
     const auto id = [](const auto& item, auto i) {
         return std::make_tuple(item.cellDimensions[i], item.cellIds[i]);

@@ -46,7 +46,7 @@ namespace inviwo {
 
 namespace topology {
 
-enum class CellType { unkown, minima, saddle, maxima, minSaddle, maxSaddle, saddleSaddle };
+enum class CellType { unkown, minimum, saddle, maximum, minSaddle, maxSaddle, saddleSaddle };
 
 IVW_MODULE_TOPOLOGYTOOLKIT_API CellType extremaDimToType(int dimensionality, char cellDim);
 

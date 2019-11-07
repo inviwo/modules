@@ -71,11 +71,27 @@ struct fill_integer_sequence<val, std::index_sequence<Inds...>> {
 
     using type = std::integer_sequence<decltype(val), map<Inds, val>::value...>;
 };
+
+template <size_t N>
+struct wrap {
+    static constexpr size_t value = N;
+};
+
+template <typename F, size_t... Is>
+constexpr auto for_each_index_impl(F&& f, std::index_sequence<Is...>) {
+    return (void)std::initializer_list<int>{0, (f(wrap<Is>{}), 0)...}, std::forward<F>(f);
+}
+
 }  // namespace detail
 
 template <size_t N, auto val>
 using fill_integer_sequence =
     typename detail::fill_integer_sequence<val, std::make_integer_sequence<std::size_t, N>>::type;
+
+template <size_t N, typename F>
+constexpr void for_each_index(F&& f) {
+    detail::for_each_index_impl(std::forward<F>(f), std::make_index_sequence<N>{});
+}
 
 template <typename I1, typename I2, typename F>
 auto for_each_parallel(I1&& begin, I2&& end, F&& fun) {
@@ -182,11 +198,8 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::verletIntegration() 
     // Verlet integration see <https://en.wikipedia.org/wiki/Verlet_integration>
 
     // 1) calculate pos(t + timeStep_) and first part of v(t + timeStep_) based on current forces
-
     const auto seq = util::make_sequence(size_t{0}, numNodes, size_t{1});
-
     util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
-        // for (std::size_t i = 0; i < numNodes; ++i) {
         if (derived().isLocked(i)) return;
 
         const auto a = forces_[i] / derived().nodeMass(i);  // acceleration
@@ -195,14 +208,15 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::verletIntegration() 
 
         auto newPos = positions_[i] + posOffset;
 
-        for (size_t d = 0; d < Components; ++d) {
-            if (hasPBC(d)) {
+        util::for_each_index<Components>([&](auto wd) {
+            constexpr auto d = decltype(wd)::value;
+            if constexpr (hasPBC(d)) {
                 if (newPos[d] < origin_[d])
                     newPos[d] += extent_[d];
                 else if (newPos[d] >= origin_[d] + extent_[d])
                     newPos[d] -= extent_[d];
             }
-        }
+        });
 
         derived().constrainPosition(i, newPos);
         positions_[i] = newPos;
@@ -217,11 +231,10 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::verletIntegration() 
 
     // 3) adding 0.5 * v based on new forces
     util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
-        // for (std::size_t i = 0; i < numNodes; ++i) {
         if (derived().isLocked(i)) return;
 
-        const auto a = forces_[i] / derived().nodeMass(i);  // acceleration
-        const auto deltaV = ComponentType{0.5} * a * timeStep_;
+        const auto acceleration = forces_[i] / derived().nodeMass(i);
+        const auto deltaV = ComponentType{0.5} * acceleration * timeStep_;
 
         auto newVel = velocities_[i] + deltaV;
         derived().constrainVelocity(i, newVel);
@@ -240,35 +253,28 @@ template <size_t Components, typename ComponentType, typename Derived, typename 
 void SpringSystem<Components, ComponentType, Derived, PBC>::updateForces() {
 
     const auto fseq = util::make_sequence(size_t{0}, forces_.size(), size_t{1});
-    util::for_each_parallel(fseq.begin(), fseq.end(), [&](size_t i) {
-        // for (std::size_t i = 0; i < forces_.size(); ++i) {
-        forces_[i] = derived().externalForce(i);
-    });
+    util::for_each_parallel(fseq.begin(), fseq.end(),
+                            [&](size_t i) { forces_[i] = derived().externalForce(i); });
 
     const auto& positions = getPositions();
 
     const auto seq = util::make_sequence(size_t{0}, springs_.size(), size_t{1});
     util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
-        // for (size_t i = 0; i < springs_.size(); ++i) {
         const auto& spring = springs_[i];
 
         auto pos1 = positions[spring.first];
         auto pos2 = positions[spring.second];
-
-        for (size_t d = 0; d < Components; ++d) {
-            if (hasPBC(d)) {
+        util::for_each_index<Components>([&](auto wd) {
+            constexpr auto d = decltype(wd)::value;
+            if constexpr (hasPBC(d)) {
                 pos1[d] += int{pos1[d] - pos2[d] < -0.5f * extent_[d]} * extent_[d];
                 pos2[d] += int{pos1[d] - pos2[d] > 0.5f * extent_[d]} * extent_[d];
             }
-        }
+        });
 
         auto dir(pos2 - pos1);
-        ComponentType dist = glm::length(dir);
-        if (std::abs(dist) < glm::epsilon<ComponentType>()) {
-            // positions are identical, choose "random" direction
-            dir = Vector(0);
-            // dir.x = 1;
-        } else {
+        const auto dist = glm::length(dir);
+        if (std::abs(dist) != ComponentType{0}) {
             dir /= dist;
         }
 

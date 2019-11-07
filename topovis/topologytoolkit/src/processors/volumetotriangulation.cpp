@@ -39,7 +39,7 @@ const ProcessorInfo VolumeToTriangulation::processorInfo_{
     "org.inviwo.ttk.VolumeToTriangulation",  // Class identifier
     "Volume To Triangulation",               // Display name
     "Topology",                              // Category
-    CodeState::Experimental,                 // Code state
+    CodeState::Stable,                       // Code state
     "CPU, Topology, TTK, Triangulation",     // Tags
 };
 const ProcessorInfo VolumeToTriangulation::getProcessorInfo() const { return processorInfo_; }
@@ -48,7 +48,7 @@ VolumeToTriangulation::VolumeToTriangulation()
     : Processor()
     , volumeInport_("volume")
     , outport_("outport")
-    , usePBC_{"pbc", "Use periodic boundary conditions", false}
+    , usePBC_{"pbc", "Periodic Boundary Conditions", false}
     , channel_("channel", "Channel") {
 
     addPort(volumeInport_);
