@@ -57,9 +57,7 @@ public:
         , globalSpringLength{springLength}
         , globalSpringDampning{springDampning} {}
 
-    bool isLocked(size_t i) const {
-        return types[i] == topology::CellType::saddle;
-    }
+    bool isLocked(size_t i) const { return types[i] == topology::CellType::saddle; }
 
     Vector externalForce(size_t i) {
 
