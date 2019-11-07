@@ -29,10 +29,13 @@
 
 #include <inviwo/tensorvisio/processors/vtktotensorfield2d.h>
 
+#include <warn/push>
+#include <warn/ignore/all>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
 #include <vtkDoubleArray.h>
 #include <vtkFloatArray.h>
+#include <warn/pop>
 
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/util/misc.h>

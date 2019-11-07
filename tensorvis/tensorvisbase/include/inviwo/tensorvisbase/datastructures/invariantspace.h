@@ -4,10 +4,11 @@
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 
 namespace inviwo {
 using InvariantSpaceAxis = std::vector<glm::f64>;
-struct InvariantSpace {
+struct IVW_MODULE_TENSORVISBASE_API InvariantSpace {
     InvariantSpace() = default;
     InvariantSpace(size_t numberOfDimensions, const std::vector<std::string>& identifiers,
                    const std::vector<TensorFeature>& metaDataTypes);

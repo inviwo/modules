@@ -78,7 +78,7 @@ void AmiraTensorReader::process() {
     LogInfo("Number of Components: " << NumComponents);
 
     // Find the beginning of the data section
-    const long idxStartData = strstr(buffer, "# Data section follows") - buffer;
+    const long idxStartData = long(strstr(buffer, "# Data section follows") - buffer);
     if (idxStartData > 0) {
         // Set the file pointer to the beginning of "# Data section follows"
         fseek(fp, idxStartData, SEEK_SET);
