@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/topologytoolkit/processors/separatrixrefiner.h>
-#include <ttk/core/base/discretegradient/DiscreteGradient.h>
+#include <ttk/core/base/discreteGradient/DiscreteGradient.h>
 
 namespace inviwo {
 
@@ -158,7 +158,6 @@ std::shared_ptr<Mesh> refine(const topology::MorseSmaleComplexData& msc,
     const auto& sc = msc.separatrixCells;
 
     const auto ncp = cp.numberOfPoints;
-    const auto nsp = sp.numberOfPoints;
     const auto nsc = sc.numberOfCells;
     const auto dimensionality = msc.triangulation->getTriangulation().getDimensionality();
 
