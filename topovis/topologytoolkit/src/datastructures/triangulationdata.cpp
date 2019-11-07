@@ -58,15 +58,19 @@ TriangulationData::TriangulationData(const TriangulationData& rhs)
     , cells_(rhs.cells_)
     , points_(rhs.points_)
     , offsets_(rhs.offsets_)
+    , triangulation_{rhs.triangulation_}
     , scalars_(rhs.scalars_->clone())
     , gridDims_(rhs.gridDims_)
     , gridOrigin_(rhs.gridOrigin_)
     , gridExtent_(rhs.gridExtent_) {
+
     if (rhs.isUniformGrid()) {
         set(gridDims_, gridOrigin_, gridExtent_, rhs.getDataMapper());
     } else {
         triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
         triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
+        triangulation_.setPeriodicBoundaryConditions(
+            rhs.triangulation_.usesPeriodicBoundaryConditions());
     }
 }
 
@@ -76,6 +80,7 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
     , cells_(std::move(rhs.cells_))
     , points_(std::move(rhs.points_))
     , offsets_(std::move(rhs.offsets_))
+    , triangulation_{std::move(rhs.triangulation_)}
     , scalars_(std::move(rhs.scalars_))
     , gridDims_(std::move(rhs.gridDims_))
     , gridOrigin_(std::move(rhs.gridOrigin_))
@@ -85,6 +90,8 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
     } else {
         triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
         triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
+        triangulation_.setPeriodicBoundaryConditions(
+            rhs.triangulation_.usesPeriodicBoundaryConditions());
     }
 }
 
@@ -96,6 +103,7 @@ TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
         cells_ = rhs.cells_;
         points_ = rhs.points_;
         offsets_ = rhs.offsets_;
+        triangulation_ = rhs.triangulation_;
         scalars_.reset(rhs.scalars_->clone());
         gridDims_ = rhs.gridDims_;
         gridOrigin_ = rhs.gridOrigin_;
@@ -106,6 +114,8 @@ TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
         } else {
             triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
             triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
+            triangulation_.setPeriodicBoundaryConditions(
+                rhs.triangulation_.usesPeriodicBoundaryConditions());
         }
     }
     return *this;
@@ -119,6 +129,7 @@ TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
         cells_ = std::move(rhs.cells_);
         points_ = std::move(rhs.points_);
         offsets_ = std::move(rhs.offsets_);
+        triangulation_ = std::move(rhs.triangulation_);
         scalars_ = std::move(rhs.scalars_);
         gridDims_ = std::move(rhs.gridDims_);
         gridOrigin_ = std::move(rhs.gridOrigin_);
@@ -129,6 +140,8 @@ TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
         } else {
             triangulation_.setInputPoints(static_cast<int>(points_.size()), points_.data(), false);
             triangulation_.setInputCells(static_cast<int>(getCellCount()), cells_.data());
+            triangulation_.setPeriodicBoundaryConditions(
+                rhs.triangulation_.usesPeriodicBoundaryConditions());
         }
     }
     return *this;

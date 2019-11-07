@@ -31,13 +31,80 @@
 
 #include <inviwo/springsystem/springsystemmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/zip.h>
+#include <glm/gtc/epsilon.hpp>
 
 #include <vector>
-#include <glm/gtc/epsilon.hpp>
 #include <sstream>
 #include <iomanip>
+#include <utility>
+#include <algorithm>
+
+#if __has_include(<execution>)
+#include <execution>
+#endif
 
 namespace inviwo {
+
+namespace util {
+template <class T, T... Ints>
+constexpr T get(std::integer_sequence<T, Ints...>, std::size_t i) {
+    constexpr T arr[] = {Ints...};
+    return arr[i];
+}
+
+template <class Seq>
+constexpr auto get(size_t i) {
+    return get(Seq{}, i);
+}
+
+namespace detail {
+template <auto val, typename T>
+struct fill_integer_sequence;
+
+template <auto val, size_t... Inds>
+struct fill_integer_sequence<val, std::index_sequence<Inds...>> {
+    template <size_t N, auto T>
+    struct map {
+        static constexpr decltype(T) value = T;
+    };
+
+    using type = std::integer_sequence<decltype(val), map<Inds, val>::value...>;
+};
+
+template <size_t N>
+struct wrap {
+    static constexpr size_t value = N;
+};
+
+template <typename F, size_t... Is>
+constexpr auto for_each_index_impl(F&& f, std::index_sequence<Is...>) {
+    return (void)std::initializer_list<int>{0, (f(wrap<Is>{}), 0)...}, std::forward<F>(f);
+}
+
+}  // namespace detail
+
+template <size_t N, auto val>
+using fill_integer_sequence =
+    typename detail::fill_integer_sequence<val, std::make_integer_sequence<std::size_t, N>>::type;
+
+template <size_t N, typename F>
+constexpr void for_each_index(F&& f) {
+    detail::for_each_index_impl(std::forward<F>(f), std::make_index_sequence<N>{});
+}
+
+template <typename I1, typename I2, typename F>
+auto for_each_parallel(I1&& begin, I2&& end, F&& fun) {
+
+#if __has_include(<execution>)
+    return std::for_each(std::execution::par_unseq, std::forward<I1>(begin), std::forward<I2>(end),
+                         std::forward<F>(fun));
+#else
+    return std::for_each(std::forward<I1>(begin), std::forward<I2>(end), std::forward<F>(fun));
+#endif
+}
+
+}  // namespace util
 
 /**
  * \class SpringSystem
@@ -48,14 +115,16 @@ namespace inviwo {
  * @see SpringMassConfig
  * @see ConstGravityConfig
  */
-template <size_t Components, typename ComponentType, typename Derived>
+template <size_t Components, typename ComponentType, typename Derived,
+          typename PBC = util::fill_integer_sequence<Components, false>>
 class SpringSystem {
 public:
     using SpringIndices = std::pair<std::size_t, std::size_t>;
     using Vector = glm::vec<Components, ComponentType>;
 
     SpringSystem(ComponentType timeStep, std::vector<Vector> positions,
-                 std::vector<SpringIndices> springs);
+                 std::vector<SpringIndices> springs, Vector origin = Vector{1},
+                 Vector extent = Vector{1});
     ~SpringSystem() = default;
 
     ComponentType getTimeStep() const;
@@ -83,6 +152,8 @@ public:
     template <class Elem, class Traits>
     void print(std::basic_ostream<Elem, Traits>& ss) const;
 
+    static constexpr bool hasPBC(size_t dim) noexcept { return util::get<PBC>(dim); }
+
 protected:
     inline Derived& derived() { return *static_cast<Derived*>(this); }
     inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
@@ -90,170 +161,206 @@ protected:
     void updateForces();
     void verletIntegration();
 
+    ComponentType forceMagnitude(size_t i, ComponentType displacement) const;
+
     ComponentType timeStep_;
     std::vector<Vector> positions_;
     std::vector<Vector> velocities_;
     std::vector<Vector> forces_;
     std::vector<SpringIndices> springs_;
+    Vector origin_;
+    Vector extent_;
 };
 
-template <size_t Components, typename ComponentType, typename Derived>
-SpringSystem<Components, ComponentType, Derived>::SpringSystem(ComponentType timeStep,
-                                                               std::vector<Vector> positions,
-                                                               std::vector<SpringIndices> springs)
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+SpringSystem<Components, ComponentType, Derived, PBC>::SpringSystem(
+    ComponentType timeStep, std::vector<Vector> positions, std::vector<SpringIndices> springs,
+    Vector origin, Vector extent)
     : timeStep_{timeStep}
     , positions_{std::move(positions)}
     , velocities_(positions_.size(), Vector{0})
     , forces_(positions_.size(), Vector{0})
-    , springs_{std::move(springs)} {}
+    , springs_{std::move(springs)}
+    , origin_{origin}
+    , extent_{extent} {}
 
-template <size_t Components, typename ComponentType, typename Derived>
-void SpringSystem<Components, ComponentType, Derived>::integrate(size_t steps) {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+void SpringSystem<Components, ComponentType, Derived, PBC>::integrate(size_t steps) {
     for (size_t i = 0; i < steps; ++i) {
         verletIntegration();
     }
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-void SpringSystem<Components, ComponentType, Derived>::verletIntegration() {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+void SpringSystem<Components, ComponentType, Derived, PBC>::verletIntegration() {
     const std::size_t numNodes = positions_.size();
 
     // Verlet integration see <https://en.wikipedia.org/wiki/Verlet_integration>
 
     // 1) calculate pos(t + timeStep_) and first part of v(t + timeStep_) based on current forces
-    for (std::size_t i = 0; i < numNodes; ++i) {
-        if (derived().isLocked(i)) continue;
+    const auto seq = util::make_sequence(size_t{0}, numNodes, size_t{1});
+    util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
+        if (derived().isLocked(i)) return;
 
         const auto a = forces_[i] / derived().nodeMass(i);  // acceleration
         const auto deltaV = ComponentType{0.5} * a * timeStep_;
         const auto posOffset = velocities_[i] * timeStep_ + deltaV * timeStep_;
 
         auto newPos = positions_[i] + posOffset;
+
+        util::for_each_index<Components>([&](auto wd) {
+            constexpr auto d = decltype(wd)::value;
+            if constexpr (hasPBC(d)) {
+                if (newPos[d] < origin_[d])
+                    newPos[d] += extent_[d];
+                else if (newPos[d] >= origin_[d] + extent_[d])
+                    newPos[d] -= extent_[d];
+            }
+        });
+
         derived().constrainPosition(i, newPos);
         positions_[i] = newPos;
 
         auto newVel = velocities_[i] + deltaV;
         derived().constrainVelocity(i, newVel);
         velocities_[i] = newVel;
-    }
+    });
 
     // 2) update forces of all nodes by iterating all springs
-    updateForces();
+    derived().updateForces();
 
     // 3) adding 0.5 * v based on new forces
-    for (std::size_t i = 0; i < numNodes; ++i) {
-        if (derived().isLocked(i)) continue;
+    util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
+        if (derived().isLocked(i)) return;
 
-        const auto a = forces_[i] / derived().nodeMass(i);  // acceleration
-        const auto deltaV = ComponentType{0.5} * a * timeStep_;
+        const auto acceleration = forces_[i] / derived().nodeMass(i);
+        const auto deltaV = ComponentType{0.5} * acceleration * timeStep_;
 
         auto newVel = velocities_[i] + deltaV;
         derived().constrainVelocity(i, newVel);
         velocities_[i] = newVel;
-    }
+    });
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-void SpringSystem<Components, ComponentType, Derived>::updateForces() {
-    for (std::size_t i = 0; i < forces_.size(); ++i) {
-        forces_[i] = derived().externalForce(i);
-    }
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+ComponentType SpringSystem<Components, ComponentType, Derived, PBC>::forceMagnitude(
+    size_t i, ComponentType displacement) const {
+
+    return displacement * derived().springConstant(i);
+}
+
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+void SpringSystem<Components, ComponentType, Derived, PBC>::updateForces() {
+
+    const auto fseq = util::make_sequence(size_t{0}, forces_.size(), size_t{1});
+    util::for_each_parallel(fseq.begin(), fseq.end(),
+                            [&](size_t i) { forces_[i] = derived().externalForce(i); });
 
     const auto& positions = getPositions();
-    for (std::size_t i = 0; i < springs_.size(); ++i) {
+
+    const auto seq = util::make_sequence(size_t{0}, springs_.size(), size_t{1});
+    util::for_each_parallel(seq.begin(), seq.end(), [&](size_t i) {
         const auto& spring = springs_[i];
-        auto dir(positions[spring.second] - positions[spring.first]);
-        ComponentType dist = glm::length(dir);
-        if (std::abs(dist) < glm::epsilon<ComponentType>()) {
-            // positions are identical, choose "random" direction
-            dir = Vector(0);
-            // dir.x = 1;
-        } else {
+
+        auto pos1 = positions[spring.first];
+        auto pos2 = positions[spring.second];
+        util::for_each_index<Components>([&](auto wd) {
+            constexpr auto d = decltype(wd)::value;
+            if constexpr (hasPBC(d)) {
+                pos1[d] += int{pos1[d] - pos2[d] < -0.5f * extent_[d]} * extent_[d];
+                pos2[d] += int{pos1[d] - pos2[d] > 0.5f * extent_[d]} * extent_[d];
+            }
+        });
+
+        auto dir(pos2 - pos1);
+        const auto dist = glm::length(dir);
+        if (std::abs(dist) != ComponentType{0}) {
             dir /= dist;
         }
 
         const auto displacement = dist - derived().springLength(i);
-        const auto forceMagnitude = displacement * derived().springConstant(i);
-        const auto force = -forceMagnitude * dir;
+        const auto force = -derived().forceMagnitude(i, displacement) * dir;
         const auto dampning = derived().springDampning(i);
 
         // add force to both nodes
         forces_[spring.first] += -force - dampning * velocities_[spring.first];
         forces_[spring.second] += force - dampning * velocities_[spring.second];
-    }
+    });
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getNumberOfNodes() const -> size_t {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getNumberOfNodes() const -> size_t {
     return positions_.size();
 }
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getNumberOfSprings() const -> size_t {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getNumberOfSprings() const -> size_t {
     return springs_.size();
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getTimeStep() const -> ComponentType {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getTimeStep() const -> ComponentType {
     return timeStep_;
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-void SpringSystem<Components, ComponentType, Derived>::setTimeStep(ComponentType timestep) {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+void SpringSystem<Components, ComponentType, Derived, PBC>::setTimeStep(ComponentType timestep) {
     timeStep_ = timestep;
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getPositions() const
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getPositions() const
     -> const std::vector<Vector>& {
     return positions_;
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getVelocities() const
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getVelocities() const
     -> const std::vector<Vector>& {
     return velocities_;
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getForces() const
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getForces() const
     -> const std::vector<Vector>& {
     return forces_;
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::position(size_t i) const -> const Vector& {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::position(size_t i) const
+    -> const Vector& {
     return positions_[i];
 }
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::velocity(size_t i) const -> const Vector& {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::velocity(size_t i) const
+    -> const Vector& {
     return velocities_[i];
 }
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::force(size_t i) const -> const Vector& {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::force(size_t i) const -> const Vector& {
     return forces_[i];
 }
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::position(size_t i) -> Vector& {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::position(size_t i) -> Vector& {
     return positions_[i];
 }
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::velocity(size_t i) -> Vector& {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::velocity(size_t i) -> Vector& {
     return velocities_[i];
 }
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::force(size_t i) -> Vector& {
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::force(size_t i) -> Vector& {
     return forces_[i];
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
-auto SpringSystem<Components, ComponentType, Derived>::getSprings() const
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::getSprings() const
     -> const std::vector<SpringIndices>& {
     return springs_;
 }
 
-template <size_t Components, typename ComponentType, typename Derived>
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
 template <class Elem, class Traits>
-void SpringSystem<Components, ComponentType, Derived>::print(
+void SpringSystem<Components, ComponentType, Derived, PBC>::print(
     std::basic_ostream<Elem, Traits>& ss) const {
     ss << "Nodes:";
     for (std::size_t i = 0; i < positions_.size(); ++i) {
@@ -276,10 +383,11 @@ void SpringSystem<Components, ComponentType, Derived>::print(
     ss << "\n-----------------------------";
 }
 
-template <class Elem, class Traits, size_t Components, typename ComponentType, typename Derived>
+template <class Elem, class Traits, size_t Components, typename ComponentType, typename Derived,
+          typename PBC>
 std::basic_ostream<Elem, Traits>& operator<<(
     std::basic_ostream<Elem, Traits>& ss,
-    const SpringSystem<Components, ComponentType, Derived>& sms) {
+    const SpringSystem<Components, ComponentType, Derived, PBC>& sms) {
     sms.print(ss);
     return ss;
 }

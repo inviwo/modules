@@ -2,6 +2,7 @@
 # List modules on the format "Inviwo<ModuleName>Module"
 set(dependencies
     InviwoPlottingModule
+    InviwoSpringSystemModule
     #InviwoEigenUtilsModule
 )
 

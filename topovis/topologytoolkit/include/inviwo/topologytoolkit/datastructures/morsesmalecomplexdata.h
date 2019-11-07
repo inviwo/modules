@@ -46,6 +46,12 @@ namespace inviwo {
 
 namespace topology {
 
+enum class CellType { unkown, minimum, saddle, maximum, minSaddle, maxSaddle, saddleSaddle };
+
+IVW_MODULE_TOPOLOGYTOOLKIT_API CellType extremaDimToType(int dimensionality, char cellDim);
+
+IVW_MODULE_TOPOLOGYTOOLKIT_API CellType seperatrixTypeToType(int dimensionality, char type);
+
 struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
 
     /**
@@ -60,6 +66,10 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
     // critical points
     struct CriticalPoints {
         ttk::SimplexId numberOfPoints = 0;
+        /**
+         * Stores points linearly, i.e. in 3D the first 3 values is point 1
+         * Size is should be dimension times numberOfPoints
+         */
         std::vector<float> points;
         std::vector<char> cellDimensions;
         std::vector<ttk::SimplexId> cellIds;

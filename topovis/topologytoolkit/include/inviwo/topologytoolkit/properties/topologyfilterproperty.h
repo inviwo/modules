@@ -30,58 +30,45 @@
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
 
 namespace inviwo {
 
 /**
  * \ingroup properties
- *  A property providing comonly-used colors in topology visualization.
- *
- * @see CompositeProperty
+ *  A property providing comonly-used filters in topology visualization.
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty : public CompositeProperty {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyFilterProperty : public CompositeProperty {
 public:
     virtual std::string getClassIdentifier() const override;
     static const std::string classIdentifier;
 
-    TopologyColorsProperty(std::string identifier, std::string displayName);
+    TopologyFilterProperty(std::string identifier, std::string displayName);
 
-    TopologyColorsProperty(const TopologyColorsProperty& rhs);
-    virtual TopologyColorsProperty* clone() const override;
-    virtual ~TopologyColorsProperty() = default;
+    TopologyFilterProperty(const TopologyFilterProperty& rhs);
+    virtual TopologyFilterProperty* clone() const override;
+    virtual ~TopologyFilterProperty() = default;
 
-    /**
-     * \brief return the color for a critical 2D point based on the cell dimension \p cellDim
-     *
-     * @param cellDim   cell dimensions of the critical point
-     * @return color matching the given cell dimension
-     */
-    vec4 getColor2D(char cellDim) const;
-    /**
-     * \brief return the color for a critical 3D point based on the cell dimension \p cellDim
-     *
-     * @param cellDim   cell dimensions of the critical point
-     * @return color matching the given cell dimension
-     */
-    vec4 getColor3D(char cellDim) const;
+    BoolProperty maxima;
+    BoolProperty minima;
+    BoolProperty saddle;
+    BoolProperty maxSaddle;
+    BoolProperty minSaddle;
+    BoolProperty saddleSaddle;
 
-    /**
-     * \brief return the color for a critical point based on the cell dimension \p cellDim and dim
-     * \see getColor2D
-     * \see getColor3D
-     */
-    vec4 getColor(int dim, char cellDim) const;
-
-    FloatVec4Property localMaxima_;
-    FloatVec4Property localMinima_;
-    FloatVec4Property saddle_;
-    FloatVec4Property arc_;
+    bool showExtrema(int dim, char cellDim) const;
+    bool showSeperatrix(int dim, char type) const;
+    bool showSeperatrix(topology::CellType type) const;
 
 private:
-    auto props() { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
-    auto props() const { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
+    auto props() { return std::tie(maxima, minima, saddle, maxSaddle, minSaddle, saddleSaddle); }
+    auto props() const {
+        return std::tie(maxima, minima, saddle, maxSaddle, minSaddle, saddleSaddle);
+    }
 };
 
 }  // namespace inviwo

@@ -31,6 +31,7 @@
 #include <inviwo/topologytoolkit/processors/contourtreetomesh.h>
 #include <inviwo/topologytoolkit/processors/morsesmalecomplex.h>
 #include <inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h>
+#include <inviwo/topologytoolkit/processors/separatrixrefiner.h>
 #include <inviwo/topologytoolkit/topologytoolkitmodule.h>
 #include <inviwo/topologytoolkit/processors/ttktestprocessor.h>
 #include <inviwo/topologytoolkit/processors/meshtotriangulation.h>
@@ -42,6 +43,14 @@
 #include <inviwo/topologytoolkit/processors/triangulationtovolume.h>
 #include <inviwo/topologytoolkit/processors/contourtree.h>
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/topologytoolkit/properties/topologyfilterproperty.h>
+
+#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
+#include <inviwo/topologytoolkit/datastructures/morsesmalecomplexdata.h>
+#include <inviwo/topologytoolkit/datastructures/triangulationdata.h>
+#include <inviwo/topologytoolkit/ports/persistencediagramport.h>
+
+#include <inviwo/topologytoolkit/utils/settings.h>
 
 namespace inviwo {
 
@@ -53,6 +62,7 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<MorseSmaleComplexToMesh>();
     registerProcessor<TTKTestProcessor>();
     registerProcessor<MeshToTriangulation>();
+    registerProcessor<SeparatrixRefiner>();
     registerProcessor<VolumeToTriangulation>();
     registerProcessor<TriangulationToMesh>();
     registerProcessor<PersistenceCurve>();
@@ -62,6 +72,14 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<ContourTree>();
 
     registerProperty<TopologyColorsProperty>();
+    registerProperty<TopologyFilterProperty>();
+
+    registerDefaultsForDataType<topology::ContourTreeData>();
+    registerDefaultsForDataType<topology::MorseSmaleComplexData>();
+    registerDefaultsForDataType<topology::TriangulationData>();
+    registerDefaultsForDataType<topology::PersistenceDiagramData>();
+
+    registerSettings(std::make_unique<topology::TTKSettings>(app));
 }
 
 }  // namespace inviwo

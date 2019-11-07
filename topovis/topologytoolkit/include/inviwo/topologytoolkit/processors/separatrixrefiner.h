@@ -26,62 +26,57 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
+#include <inviwo/core/ports/meshport.h>
+
+#include <inviwo/springsystem/datastructures/springsystem.h>
+#include <inviwo/core/util/spatialsampler.h>
+
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/topologytoolkit/properties/topologyfilterproperty.h>
 
 namespace inviwo {
 
-/**
- * \ingroup properties
- *  A property providing comonly-used colors in topology visualization.
- *
- * @see CompositeProperty
+/** \docpage{org.inviwo.SeparatrixRefiner, Separatrix Refiner}
+ * ![](org.inviwo.SeparatrixRefiner.png?classIdentifier=org.inviwo.SeparatrixRefiner)
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API TopologyColorsProperty : public CompositeProperty {
+
+class IVW_MODULE_TOPOLOGYTOOLKIT_API SeparatrixRefiner : public Processor {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    SeparatrixRefiner();
+    virtual ~SeparatrixRefiner() = default;
 
-    TopologyColorsProperty(std::string identifier, std::string displayName);
+    virtual void process() override;
 
-    TopologyColorsProperty(const TopologyColorsProperty& rhs);
-    virtual TopologyColorsProperty* clone() const override;
-    virtual ~TopologyColorsProperty() = default;
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    /**
-     * \brief return the color for a critical 2D point based on the cell dimension \p cellDim
-     *
-     * @param cellDim   cell dimensions of the critical point
-     * @return color matching the given cell dimension
-     */
-    vec4 getColor2D(char cellDim) const;
-    /**
-     * \brief return the color for a critical 3D point based on the cell dimension \p cellDim
-     *
-     * @param cellDim   cell dimensions of the critical point
-     * @return color matching the given cell dimension
-     */
-    vec4 getColor3D(char cellDim) const;
-
-    /**
-     * \brief return the color for a critical point based on the cell dimension \p cellDim and dim
-     * \see getColor2D
-     * \see getColor3D
-     */
-    vec4 getColor(int dim, char cellDim) const;
-
-    FloatVec4Property localMaxima_;
-    FloatVec4Property localMinima_;
-    FloatVec4Property saddle_;
-    FloatVec4Property arc_;
+    topology::MorseSmaleComplexInport inport_;
+    DataInport<SpatialSampler<3, 3, double>> sampler_;
+    MeshOutport outport_;
 
 private:
-    auto props() { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
-    auto props() const { return std::tie(localMaxima_, localMinima_, saddle_, arc_); }
+    TopologyColorsProperty colors_;
+    TopologyFilterProperty filters_;
+    FloatProperty sphereRadius_;
+    FloatProperty lineThickness_;
+    BoolProperty fillPBC_;
+
+    CompositeProperty springSys_;
+    IntSizeTProperty timesteps_;
+    FloatProperty timestep_;
+    FloatProperty springLength_;
+    FloatProperty springLinearConstant_;
+    FloatProperty springSquareConstant_;
+    FloatProperty springDamping_;
+    FloatProperty gradientScale_;
 };
 
 }  // namespace inviwo

@@ -39,13 +39,17 @@ const ProcessorInfo VolumeToTriangulation::processorInfo_{
     "org.inviwo.ttk.VolumeToTriangulation",  // Class identifier
     "Volume To Triangulation",               // Display name
     "Topology",                              // Category
-    CodeState::Experimental,                 // Code state
+    CodeState::Stable,                       // Code state
     "CPU, Topology, TTK, Triangulation",     // Tags
 };
 const ProcessorInfo VolumeToTriangulation::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToTriangulation::VolumeToTriangulation()
-    : Processor(), volumeInport_("volume"), outport_("outport"), channel_("channel", "Channel") {
+    : Processor()
+    , volumeInport_("volume")
+    , outport_("outport")
+    , usePBC_{"pbc", "Periodic Boundary Conditions", false}
+    , channel_("channel", "Channel") {
 
     addPort(volumeInport_);
     addPort(outport_);
@@ -54,7 +58,7 @@ VolumeToTriangulation::VolumeToTriangulation()
     channel_.setSerializationMode(PropertySerializationMode::All);
     channel_.setCurrentStateAsDefault();
 
-    addProperty(channel_);
+    addProperties(usePBC_, channel_);
 
     volumeInport_.onChange([this]() {
         if (volumeInport_.hasData()) {
@@ -76,6 +80,9 @@ VolumeToTriangulation::VolumeToTriangulation()
 void VolumeToTriangulation::process() {
     auto data = std::make_shared<topology::TriangulationData>(topology::volumeToTTKTriangulation(
         *volumeInport_.getData().get(), static_cast<size_t>(channel_.get())));
+
+    data->getTriangulation().setPeriodicBoundaryConditions(*usePBC_);
+
     outport_.setData(data);
 }
 

@@ -27,14 +27,17 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h
     include/inviwo/topologytoolkit/processors/persistencecurve.h
     include/inviwo/topologytoolkit/processors/persistencediagram.h
+    include/inviwo/topologytoolkit/processors/separatrixrefiner.h
     include/inviwo/topologytoolkit/processors/topologicalsimplification.h
     include/inviwo/topologytoolkit/processors/triangulationtomesh.h
     include/inviwo/topologytoolkit/processors/triangulationtovolume.h
     include/inviwo/topologytoolkit/processors/ttktestprocessor.h
     include/inviwo/topologytoolkit/processors/volumetotriangulation.h
     include/inviwo/topologytoolkit/properties/topologycolorsproperty.h
+    include/inviwo/topologytoolkit/properties/topologyfilterproperty.h
     include/inviwo/topologytoolkit/topologytoolkitmodule.h
     include/inviwo/topologytoolkit/topologytoolkitmoduledefine.h
+    include/inviwo/topologytoolkit/utils/settings.h
     include/inviwo/topologytoolkit/utils/ttkexception.h
     include/inviwo/topologytoolkit/utils/ttkutils.h
 )
@@ -58,13 +61,16 @@ set(SOURCE_FILES
     src/processors/morsesmalecomplextomesh.cpp
     src/processors/persistencecurve.cpp
     src/processors/persistencediagram.cpp
+    src/processors/separatrixrefiner.cpp
     src/processors/topologicalsimplification.cpp
     src/processors/triangulationtomesh.cpp
     src/processors/triangulationtovolume.cpp
     src/processors/ttktestprocessor.cpp
     src/processors/volumetotriangulation.cpp
     src/properties/topologycolorsproperty.cpp
+    src/properties/topologyfilterproperty.cpp
     src/topologytoolkitmodule.cpp
+    src/utils/settings.cpp
     src/utils/ttkexception.cpp
     src/utils/ttkutils.cpp
 )

@@ -37,6 +37,9 @@
 #include <inviwo/topologytoolkit/ports/triangulationdataport.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
@@ -73,6 +76,10 @@ private:
 
     topology::TriangulationInport inport_;
     topology::MorseSmaleComplexOutport outport_;
+
+    BoolProperty returnSaddleConnectors_;
+    BoolProperty computeSaddleConnectors_;
+    FloatProperty saddleConnectorsPersistenceThreshold_;
 
     std::future<std::shared_ptr<const topology::MorseSmaleComplexData>> newMsc_;
 

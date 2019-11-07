@@ -36,6 +36,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
@@ -74,8 +75,9 @@ public:
 private:
     topology::TriangulationInport inport_;
     topology::PersistenceDiagramOutport outport_;
-
     DataFrameOutport dataFrameOutport_;
+
+    BoolProperty computeSaddleConnectors_;
 };
 
 }  // namespace inviwo

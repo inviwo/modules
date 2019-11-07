@@ -85,7 +85,8 @@ vec4 TopologyColorsProperty::getColor2D(char cellDimension) const {
             throw Exception(
                 fmt::format("A critical point from a cell type of {0} can only appear in {0}D or "
                             "higher dimensional spaces",
-                            cellDimension));
+                            cellDimension),
+                IVW_CONTEXT);
     }
 }
 
@@ -102,7 +103,16 @@ vec4 TopologyColorsProperty::getColor3D(char cellDimension) const {
             throw Exception(
                 fmt::format("A critical point from a cell type of {0} can only appear in {0}D or "
                             "higher dimensional spaces",
-                            cellDimension));
+                            cellDimension),
+                IVW_CONTEXT);
+    }
+}
+
+vec4 TopologyColorsProperty::getColor(int dim, char cellDim) const {
+    if (dim == 2) {
+        return getColor2D(cellDim);
+    } else {
+        return getColor3D(cellDim);
     }
 }
 

@@ -30,10 +30,104 @@
 #include <inviwo/topologytoolkit/processors/morsesmalecomplextomesh.h>
 
 #include <modules/opengl/inviwoopengl.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/document.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
 
 #include <algorithm>
+#include <fmt/format.h>
 
 namespace inviwo {
+
+namespace {
+
+template <bool PBC>
+std::shared_ptr<Mesh> MSCToMesh(const topology::MorseSmaleComplexData& msc,
+                                const TopologyColorsProperty& colorProp,
+                                const TopologyFilterProperty& filterProp, float sphereRadius,
+                                float lineThickness, PickingMapper& pickingExtrema,
+                                PickingMapper& pickingSeperatrix) {
+    // Prepare Memory
+    std::vector<vec3> positions;
+    std::vector<vec4> colors;
+    std::vector<float> radius;
+    std::vector<uint32_t> picking;
+
+    const auto& trig = msc.triangulation->getTriangulation();
+    const auto numcp = msc.criticalPoints.numberOfPoints;
+    const auto dimensionality = trig.getDimensionality();
+    const auto ext = msc.triangulation->getGridExtent();
+
+    std::unordered_map<ttk::SimplexId, char> idToDims;
+
+    // Add critical points with their color
+    pickingExtrema.resize(numcp);
+    const auto& cpoints = msc.criticalPoints.points;
+    std::vector<uint32_t> cpIndices;
+    for (ttk::SimplexId i = 0; i < numcp; i++) {
+        const auto cellDim = msc.criticalPoints.cellDimensions[i];
+        idToDims[msc.criticalPoints.cellIds[i]] = cellDim;
+
+        if (!filterProp.showExtrema(dimensionality, cellDim)) continue;
+
+        positions.emplace_back(cpoints[i * 3 + 0], cpoints[i * 3 + 1], cpoints[i * 3 + 2]);
+        colors.emplace_back(colorProp.getColor(dimensionality, cellDim));
+        radius.emplace_back(sphereRadius);
+        picking.emplace_back(pickingExtrema.getPickingId(i));
+        cpIndices.emplace_back(positions.size() - 1);
+    }
+
+    // Add the separatrixCells
+    pickingSeperatrix.resize(msc.separatrixCells.numberOfCells);
+    const auto& spoints = msc.separatrixPoints.points;
+    std::vector<uint32_t> sepIndices;
+
+    for (ttk::SimplexId i = 0; i < msc.separatrixCells.numberOfCells; ++i) {
+        if (!filterProp.showSeperatrix(dimensionality, msc.separatrixCells.types[i])) continue;
+
+        const auto src = msc.separatrixCells.cells[3 * i + 1];
+        const auto dst = msc.separatrixCells.cells[3 * i + 2];
+
+        std::array<vec3, 2> points{
+            {{spoints[3 * src + 0], spoints[3 * src + 1], spoints[3 * src + 2]},
+             {spoints[3 * dst + 0], spoints[3 * dst + 1], spoints[3 * dst + 2]}}};
+
+        if constexpr (PBC) {
+            points[0] += vec3{glm::lessThan(points[0] - points[1], -0.5f * ext)} * ext;
+            points[1] += vec3{glm::greaterThan(points[0] - points[1], 0.5f * ext)} * ext;
+        }
+
+        for (const auto& point : points) {
+            positions.emplace_back(point);
+            colors.emplace_back(*colorProp.arc_);
+            radius.emplace_back(lineThickness);
+            picking.emplace_back(pickingSeperatrix.getPickingId(i));
+            sepIndices.emplace_back(positions.size() - 1);
+        }
+    }
+
+    auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+    mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
+    mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
+    mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
+
+    mesh->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
+                      util::makeIndexBuffer(std::move(cpIndices)));
+    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                      util::makeIndexBuffer(std::move(sepIndices)));
+
+    // vertex positions are already transformed
+    mesh->setModelMatrix(mat4(1.0f));
+    mesh->setWorldMatrix(msc.triangulation->getWorldMatrix());
+    mesh->copyMetaDataFrom(*msc.triangulation);
+
+    return mesh;
+}
+
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MorseSmaleComplexToMesh::processorInfo_{
@@ -47,107 +141,126 @@ const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return p
 
 MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
     : Processor()
-    , propColors_("colors", "Colors")
-    , sphereRadius_("sphereRadius", "Radius", 0.05f, 0.0f, 10.0f) {
+    , colors_("colors", "Colors")
+    , filters_("filters", "Filters")
+    , sphereRadius_("sphereRadius", "Extrema Radius", 0.05f, 0.0f, 10.0f)
+    , lineThickness_("lineThickness", "Seperatrix Thickness", 0.025f, 0.0f, 10.0f)
+    , pickingExtrema_{this, 1, [this](PickingEvent* e) { handleExtremaPicking(e); }}
+    , pickingSeperatrix_{this, 1, [this](PickingEvent* e) { handleSeperatrixPicking(e); }} {
+
     addPort(mscInport_);
     addPort(outport_);
 
-    addProperties(propColors_, sphereRadius_);
+    addProperties(colors_, sphereRadius_, lineThickness_, filters_);
 }
 
 void MorseSmaleComplexToMesh::process() {
-    auto pMSCData = mscInport_.getData();
-    if (!pMSCData) return;
+    auto msc = mscInport_.getData();
 
-    // Prepare Memory
-    const ttk::SimplexId numcp = pMSCData->criticalPoints.numberOfPoints;
-    std::vector<vec3> positions(numcp);
-    std::vector<vec4> colors(numcp, {1.0f, 1.0f, 1.0f, 1.0f});
-    std::vector<float> radius(numcp, sphereRadius_.get());
-
-    // Add critical points with their color
-    for (ttk::SimplexId i = 0; i < numcp; i++) {
-        positions[i].x = pMSCData->criticalPoints.points[3 * i];
-        positions[i].y = pMSCData->criticalPoints.points[3 * i + 1];
-        positions[i].z = pMSCData->criticalPoints.points[3 * i + 2];
-    }
-
-    if (pMSCData->triangulation->getTriangulation().getDimensionality() == 2) {
-        std::transform(pMSCData->criticalPoints.cellDimensions.begin(),
-                       pMSCData->criticalPoints.cellDimensions.end(), colors.begin(),
-                       [this](char c) { return propColors_.getColor2D(c); });
+    if (msc->triangulation->getTriangulation().usesPeriodicBoundaryConditions()) {
+        outport_.setData(MSCToMesh<true>(*msc, colors_, filters_, *sphereRadius_, *lineThickness_,
+                                         pickingExtrema_, pickingSeperatrix_));
     } else {
-        std::transform(pMSCData->criticalPoints.cellDimensions.begin(),
-                       pMSCData->criticalPoints.cellDimensions.end(), colors.begin(),
-                       [this](char c) { return propColors_.getColor3D(c); });
+        outport_.setData(MSCToMesh<false>(*msc, colors_, filters_, *sphereRadius_, *lineThickness_,
+                                          pickingExtrema_, pickingSeperatrix_));
     }
+}
 
-    // Add the separatrixCells
-    const ttk::SimplexId idPrev = positions.size();
+void MorseSmaleComplexToMesh::handleExtremaPicking(PickingEvent* p) {
+    if (p->getHoverState() == PickingHoverState::Move && p->getPressItems().empty()) {
 
-    ttk::SimplexId NumSepPoints = pMSCData->separatrixPoints.numberOfPoints;
-    positions.reserve(positions.size() + NumSepPoints);
-    colors.resize(colors.size() + NumSepPoints);
-    radius.resize(radius.size() + NumSepPoints);
+        if (auto msc = mscInport_.getData()) {
+            const auto id = p->getPickedId();
+            const auto& cp = msc->criticalPoints;
 
-    std::fill(colors.begin() + idPrev, colors.end(), propColors_.arc_.get());
-    std::fill(radius.begin() + idPrev, radius.end(), sphereRadius_.get());
+            Document doc;
+            using P = Document::PathComponent;
+            auto b = doc.append("html").append("body");
 
-    for (ttk::SimplexId i = 0; i < NumSepPoints; i++) {
-        positions.push_back({pMSCData->separatrixPoints.points[3 * i],
-                             pMSCData->separatrixPoints.points[3 * i + 1],
-                             pMSCData->separatrixPoints.points[3 * i + 2]});
-    }
+            b.append("b", "Extrema", {{"style", "color:white;"}});
+            using H = utildoc::TableBuilder::Header;
 
-    // - Separatrices
-    std::vector<uint32_t> sepIndices;
+            utildoc::TableBuilder tb(b, P::end());
+            tb(H("Id"), id);
+            tb(H("Value"), cp.scalars->getRepresentation<BufferRAM>()->getAsDouble(id));
+            tb(H("Position"),
+               vec3{cp.points[3 * id + 0], cp.points[3 * id + 1], cp.points[3 * id + 2]});
+            tb(H("Cell Dim"), int{cp.cellDimensions[id]});
+            tb(H("Cell Id"), cp.cellIds[id]);
+            tb(H("On Boundary"), cp.isOnBoundary[id] ? "True" : "False");
 
-    ttk::SimplexId currentCellId = -1;
-    for (ttk::SimplexId i = 0; i < pMSCData->separatrixCells.numberOfCells; ++i) {
-        // const ttk::SimplexId sourceId = pMSCData->separatrixCells.sourceIds[i];
-        // const ttk::SimplexId destId = pMSCData->separatrixCells.destinationIds[i];
+            p->setToolTip(doc);
 
-        // assuming that separatrixCells.cells[x + 0] holds the dimensionality, x + 1 and x + 2 hold
-        // the from/to indices
-        // assuming consecutive indices as well.
-
-        auto from = pMSCData->separatrixCells.cells[3 * i + 1];
-        auto to = pMSCData->separatrixCells.cells[3 * i + 2];
-
-        if (currentCellId != pMSCData->separatrixCells.separatrixIds[i]) {
-            if (i > 0) {
-                sepIndices.push_back(0xffffffff);
-            }
-            currentCellId = pMSCData->separatrixCells.separatrixIds[i];
-            sepIndices.push_back(from + idPrev);
+        } else {
+            p->setToolTip(fmt::format("Extrema: {}", p->getPickedId()));
         }
-        sepIndices.push_back(to + idPrev);
+    } else if (p->getHoverState() == PickingHoverState::Exit) {
+        p->setToolTip("");
     }
+}
 
-    auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
-    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
-    mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
-    mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
-    // - critical points
-    std::vector<uint32_t> cpIndices(numcp);
-    std::iota(cpIndices.begin(), cpIndices.end(), 0);
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
-                      util::makeIndexBuffer(std::move(cpIndices)));
-    // - separatrixCells
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::Strip),
-                      util::makeIndexBuffer(std::move(sepIndices)));
-    // vertex positions are already transformed
-    mesh->setModelMatrix(mat4(1.0f));
-    mesh->setWorldMatrix(pMSCData->triangulation->getWorldMatrix());
-    mesh->copyMetaDataFrom(*pMSCData->triangulation);
+void MorseSmaleComplexToMesh::handleSeperatrixPicking(PickingEvent* p) {
+    if (p->getHoverState() == PickingHoverState::Move && p->getPressItems().empty()) {
 
-    // Hack: enable primitive restart so we need only a single index buffer for multiple lines
-    // The available mesh renderers do no support primitive restart, yet. This will work unless some
-    // other processor disables it or uses a different primitive restart ID.
-    glPrimitiveRestartIndex(0xffffffff);
-    glEnable(GL_PRIMITIVE_RESTART);
+        if (auto msc = mscInport_.getData()) {
 
-    outport_.setData(mesh);
+            const auto i = p->getPickedId();
+
+            const auto id = msc->separatrixCells.separatrixIds[i];
+            const auto srcInd = msc->separatrixCells.cells[3 * i + 1];
+            const auto dstInd = msc->separatrixCells.cells[3 * i + 2];
+
+            const int srcDim = msc->separatrixPoints.cellDimensions[srcInd];
+            const int srcId = msc->separatrixPoints.cellIds[srcInd];
+
+            const int dstDim = msc->separatrixPoints.cellDimensions[dstInd];
+            const int dstId = msc->separatrixPoints.cellIds[dstInd];
+
+            const int srcCpCellId = msc->separatrixCells.sourceIds[i];
+            const int dstCpCellId = msc->separatrixCells.destinationIds[i];
+
+            const auto cbegin = msc->criticalPoints.cellIds.begin();
+            const auto cend = msc->criticalPoints.cellIds.end();
+            const auto& cpdims = msc->criticalPoints.cellDimensions;
+            const auto srcIt = std::find(cbegin, cend, srcCpCellId);
+            const auto dstIt = std::find(cbegin, cend, dstCpCellId);
+
+            Document doc;
+            using P = Document::PathComponent;
+            auto b = doc.append("html").append("body");
+            b.append("b", "Seperatrix", {{"style", "color:white;"}});
+            using H = utildoc::TableBuilder::Header;
+            utildoc::TableBuilder tb(b, P::end());
+
+            tb(H("Id"), id, "");
+            tb(H("Type"), int{msc->separatrixCells.types[i]}, "");
+            tb(H("On Boundary"), msc->separatrixCells.isOnBoundary[i] ? "True" : "False", "");
+
+            tb("", H("Source"), H("Destination"));
+            tb(H("Id"), srcId, dstId);
+            tb(H("Dim"), srcDim, dstDim);
+            tb(H("CP Cell"), srcCpCellId, dstCpCellId);
+            tb(H("CP Id"), srcIt != cend ? std::distance(cbegin, srcIt) : -1,
+               dstIt != cend ? std::distance(cbegin, dstIt) : -1);
+            tb(H("CP Dim"), srcIt != cend ? int{cpdims[std::distance(cbegin, srcIt)]} : -1,
+               dstIt != cend ? int{cpdims[std::distance(cbegin, dstIt)]} : -1);
+
+            tb(H("x"), msc->separatrixPoints.points[3 * srcInd + 0],
+               msc->separatrixPoints.points[3 * dstInd + 0]);
+            tb(H("y"), msc->separatrixPoints.points[3 * srcInd + 1],
+               msc->separatrixPoints.points[3 * dstInd + 1]);
+            tb(H("z"), msc->separatrixPoints.points[3 * srcInd + 2],
+               msc->separatrixPoints.points[3 * dstInd + 2]);
+
+            p->setToolTip(doc);
+
+        } else {
+            p->setToolTip("Seperatrix: " + toString(p->getPickedId()));
+        }
+
+    } else if (p->getHoverState() == PickingHoverState::Exit) {
+        p->setToolTip("");
+    }
 }
 
 }  // namespace inviwo

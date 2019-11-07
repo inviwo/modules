@@ -32,12 +32,16 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
+#include <inviwo/topologytoolkit/properties/topologyfilterproperty.h>
+
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 namespace inviwo {
+class PickingEvent;
 
 /** \docpage{org.inviwo.MorseSmaleComplexToMesh, Morse Smale Complex To Mesh}
  * ![](org.inviwo.MorseSmaleComplexToMesh.png?classIdentifier=org.inviwo.MorseSmaleComplexToMesh)
@@ -65,15 +69,22 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
+    void handleExtremaPicking(PickingEvent*);
+    void handleSeperatrixPicking(PickingEvent*);
+
     /// Input Morse-Smale Complex from TTK
     topology::MorseSmaleComplexInport mscInport_{"mscomplex"};
     /// Output Mesh representing critical points and separatrices of the MS Complex
     MeshOutport outport_{"mesh"};
 
     /// Colors for the critical points and other topological elements
-    TopologyColorsProperty propColors_;
-
+    TopologyColorsProperty colors_;
+    TopologyFilterProperty filters_;
     FloatProperty sphereRadius_;
+    FloatProperty lineThickness_;
+
+    PickingMapper pickingExtrema_;
+    PickingMapper pickingSeperatrix_;
 };
 
 }  // namespace inviwo
