@@ -4,7 +4,7 @@
 #include <warn/pop>
 
 #include <glm/gtx/component_wise.hpp>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 TEST(TensorUtilTests, divideOperatorSuccess) {
