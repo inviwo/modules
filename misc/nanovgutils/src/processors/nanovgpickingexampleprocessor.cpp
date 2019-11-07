@@ -72,6 +72,9 @@ void NanoVGPickingExampleProcessor::draw(bool picking) {
 
     auto& nvg = nanovgutil::getContext();
     nvg.activate(outport_.getDimensions());
+    if (picking) {
+        nvg.shapeAntiAlias(false);
+    }
 
     size_t i = 0;
     for (auto [pos, r, color] : objects) {
@@ -85,6 +88,9 @@ void NanoVGPickingExampleProcessor::draw(bool picking) {
         }
         nvg.fill();
         nvg.closePath();
+    }
+    if (picking) {
+        nvg.shapeAntiAlias(true);
     }
     nvg.deactivate();
 }

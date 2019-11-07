@@ -42,9 +42,7 @@ NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app,
 
     auto fonts = util::getAvailableFonts();
     for (auto font : fonts) {
-        if (context_.createFont(font.first, font.second) != -1) {
-            LogInfo("Loaded font " << font.first);
-        }
+        context_.createFont(font.first, font.second);
     }
 }
 
