@@ -27,13 +27,13 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfieldtovolume.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldtovolume.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 #include <inviwo/core/util/volumeramutils.h>
 #include <modules/base/algorithm/dataminmax.h>
-#include <modules/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
 
 namespace inviwo {
 

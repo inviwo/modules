@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorglyphprocessor.h>
-#include <modules/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/processors/tensorglyphprocessor.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
 
 namespace inviwo {
 

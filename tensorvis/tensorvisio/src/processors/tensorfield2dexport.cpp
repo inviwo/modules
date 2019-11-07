@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/tensorfield2dexport.h>
+#include <inviwo/tensorvisio/processors/tensorfield2dexport.h>
 
 namespace inviwo {
 

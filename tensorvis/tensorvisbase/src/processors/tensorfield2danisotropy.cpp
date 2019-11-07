@@ -27,11 +27,11 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfield2danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2danisotropy.h>
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/util/indexmapper.h>
-#include <modules/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 

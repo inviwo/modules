@@ -1,4 +1,4 @@
-#include <modules/tensorvisbase/processors/volumeactualdataandvaluerange.h>
+#include <inviwo/tensorvisbase/processors/volumeactualdataandvaluerange.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {

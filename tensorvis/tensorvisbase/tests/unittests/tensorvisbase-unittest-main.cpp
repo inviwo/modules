@@ -6,8 +6,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>
-#include <modules/tensorvisbase/tensorvisbasemodule.h>
-#include <modules/tensorvisbase/tensorvisbasemodulesharedlibrary.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodulesharedlibrary.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

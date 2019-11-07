@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfieldtorgba.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
 
 namespace inviwo {
 

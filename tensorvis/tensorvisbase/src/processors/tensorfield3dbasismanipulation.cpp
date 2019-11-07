@@ -1,4 +1,4 @@
-#include <modules/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
 
 namespace inviwo {
 

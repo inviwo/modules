@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfieldgenerator.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldgenerator.h>
 
 namespace inviwo {
 

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/datastructures/deformablecube.h>
+#include <inviwo/tensorvisbase/datastructures/deformablecube.h>
 
 namespace inviwo {
 DeformableCube::DeformableCube(const vec4& color) {

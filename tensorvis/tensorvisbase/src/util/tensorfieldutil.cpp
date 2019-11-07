@@ -29,7 +29,7 @@
 
 #include <modules/base/algorithm/meshutils.h>
 #include <modules/opengl/texture/textureutils.h>
-#include <modules/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 namespace tensorutil {

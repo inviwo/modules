@@ -1,4 +1,4 @@
-#include <modules/tensorvisio/processors/amiratensorreader.h>
+#include <inviwo/tensorvisio/processors/amiratensorreader.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/vtktotensorfield2d.h>
+#include <inviwo/tensorvisio/processors/vtktotensorfield2d.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -37,8 +37,8 @@
 #include <vtkFloatArray.h>
 #include <warn/pop>
 
-#include <modules/tensorvisbase/datastructures/tensorfield2d.h>
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 #include <inviwo/vtk/util/vtkutil.h>
 #include <fmt/format.h>
 

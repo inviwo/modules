@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/properties/eigenvalueproperty.h>
-#include <modules/tensorvisbase/util/tensorutil.h>
-#include <modules/tensorvisbase/properties/eigenvalueproperty.h>
+#include <inviwo/tensorvisbase/properties/eigenvalueproperty.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/properties/eigenvalueproperty.h>
 
 namespace inviwo {
 

@@ -27,10 +27,10 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/properties/tensorglyphproperty.h>
-#include <modules/tensorvisbase/datastructures/deformablesphere.h>
-#include <modules/tensorvisbase/datastructures/deformablecube.h>
-#include <modules/tensorvisbase/datastructures/deformablecylinder.h>
+#include <inviwo/tensorvisbase/properties/tensorglyphproperty.h>
+#include <inviwo/tensorvisbase/datastructures/deformablesphere.h>
+#include <inviwo/tensorvisbase/datastructures/deformablecube.h>
+#include <inviwo/tensorvisbase/datastructures/deformablecylinder.h>
 
 namespace inviwo {
 const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};

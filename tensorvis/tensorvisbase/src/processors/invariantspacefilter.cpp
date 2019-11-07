@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/invariantspacefilter.h>
+#include <inviwo/tensorvisbase/processors/invariantspacefilter.h>
 #include <glm/gtc/epsilon.hpp>
 
 namespace inviwo {

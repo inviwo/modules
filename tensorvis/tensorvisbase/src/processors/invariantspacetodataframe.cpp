@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/invariantspacetodataframe.h>
+#include <inviwo/tensorvisbase/processors/invariantspacetodataframe.h>
 
 namespace inviwo {
 

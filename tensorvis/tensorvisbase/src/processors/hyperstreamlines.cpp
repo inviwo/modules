@@ -1,4 +1,4 @@
-#include <modules/tensorvisbase/processors/hyperstreamlines.h>
+#include <inviwo/tensorvisbase/processors/hyperstreamlines.h>
 
 namespace inviwo {
 

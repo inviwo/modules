@@ -1,4 +1,4 @@
-#include <modules/tensorvisbase/processors/tensorfield3dmasktovolume.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dmasktovolume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {

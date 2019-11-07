@@ -5,18 +5,18 @@ ivw_module(TensorVisIO)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-    include/modules/tensorvisio/processors/amiratensorreader.h
-    include/modules/tensorvisio/processors/flowguifilereader.h
-    include/modules/tensorvisio/processors/nrrdreader.h
-    include/modules/tensorvisio/processors/tensorfield2dexport.h
-    include/modules/tensorvisio/processors/tensorfield2dimport.h
-    include/modules/tensorvisio/processors/tensorfield2dtovtk.h
-    include/modules/tensorvisio/processors/tensorfield3dexport.h
-    include/modules/tensorvisio/processors/tensorfield3dimport.h
-    include/modules/tensorvisio/processors/vtkdatasettotensorfield3d.h
-    include/modules/tensorvisio/processors/vtktotensorfield2d.h
-    include/modules/tensorvisio/tensorvisiomodule.h
-    include/modules/tensorvisio/tensorvisiomoduledefine.h
+    include/inviwo/tensorvisio/processors/amiratensorreader.h
+    include/inviwo/tensorvisio/processors/flowguifilereader.h
+    include/inviwo/tensorvisio/processors/nrrdreader.h
+    include/inviwo/tensorvisio/processors/tensorfield2dexport.h
+    include/inviwo/tensorvisio/processors/tensorfield2dimport.h
+    include/inviwo/tensorvisio/processors/tensorfield2dtovtk.h
+    include/inviwo/tensorvisio/processors/tensorfield3dexport.h
+    include/inviwo/tensorvisio/processors/tensorfield3dimport.h
+    include/inviwo/tensorvisio/processors/vtkdatasettotensorfield3d.h
+    include/inviwo/tensorvisio/processors/vtktotensorfield2d.h
+    include/inviwo/tensorvisio/tensorvisiomodule.h
+    include/inviwo/tensorvisio/tensorvisiomoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

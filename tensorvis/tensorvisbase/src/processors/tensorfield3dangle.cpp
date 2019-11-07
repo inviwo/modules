@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfield3dangle.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dangle.h>
 #include <glm/gtx/vector_angle.hpp>
 
 namespace inviwo {

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/datastructures/deformablecylinder.h>
+#include <inviwo/tensorvisbase/datastructures/deformablecylinder.h>
 
 namespace inviwo {
 DeformableCylinder::DeformableCylinder(const size_t& numTheta, const vec4& color) {

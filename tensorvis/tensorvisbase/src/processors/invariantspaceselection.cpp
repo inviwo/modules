@@ -1,8 +1,4 @@
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#endif
-
-#include <modules/tensorvisbase/processors/invariantspaceselection.h>
+#include <inviwo/tensorvisbase/processors/invariantspaceselection.h>
 
 namespace inviwo {
 
@@ -312,7 +308,3 @@ void InvariantSpaceSelection::process() {
 }
 
 }  // namespace inviwo
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#endif

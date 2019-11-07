@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
 
 #include <inviwo/core/util/exception.h>
 

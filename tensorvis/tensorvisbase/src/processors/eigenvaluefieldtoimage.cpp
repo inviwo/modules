@@ -27,8 +27,8 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/eigenvaluefieldtoimage.h>
-#include <modules/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/processors/eigenvaluefieldtoimage.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 

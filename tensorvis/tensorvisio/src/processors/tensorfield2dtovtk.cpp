@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisio/processors/tensorfield2dtovtk.h>
+#include <inviwo/tensorvisio/processors/tensorfield2dtovtk.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -38,7 +38,7 @@
 #include <vtkDoubleArray.h>
 #include <warn/pop>
 
-#include <modules/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/util/misc.h>
 
 namespace inviwo {
 

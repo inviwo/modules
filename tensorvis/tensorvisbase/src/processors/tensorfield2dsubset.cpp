@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfield2dsubset.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dsubset.h>
 
 namespace inviwo {
 

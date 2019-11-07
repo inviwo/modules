@@ -1,4 +1,4 @@
-#include <modules/tensorvisio/processors/flowguifilereader.h>
+#include <inviwo/tensorvisio/processors/flowguifilereader.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
 namespace inviwo {

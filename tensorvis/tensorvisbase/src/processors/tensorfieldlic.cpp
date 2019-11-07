@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfieldlic.h>
+#include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
 #include <algorithm>
 
 namespace inviwo {

@@ -30,9 +30,9 @@
 #include <inviwo/core/io/datareaderfactory.h>
 #include <inviwo/core/processors/processorutils.h>
 
-#include <modules/tensorvisbase/ports/tensorfieldport.h>
-#include <modules/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
-#include <modules/tensorvisbase/processors/tensorfield3danisotropy.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3danisotropy.h>
 
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>

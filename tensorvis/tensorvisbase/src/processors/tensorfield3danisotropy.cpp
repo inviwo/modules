@@ -27,9 +27,9 @@
  *
  *********************************************************************************/
 
-#include <modules/tensorvisbase/processors/tensorfield3danisotropy.h>
-#include <modules/tensorvisbase/util/tensorfieldutil.h>
-#include <modules/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3danisotropy.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/indexmapper.h>
