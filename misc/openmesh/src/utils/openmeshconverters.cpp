@@ -50,7 +50,8 @@ void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordi
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (const auto &[pos, normal, texCoord, color] : util::zip(vertices, normals, texCoords, colors)) {
+    for (const auto &[pos, normal, texCoord, color] :
+         util::zip(vertices, normals, texCoords, colors)) {
         auto i = [&]() {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
