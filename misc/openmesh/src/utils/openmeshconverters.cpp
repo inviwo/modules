@@ -50,11 +50,7 @@ void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordi
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (auto &&vert : util::zip(vertices, normals, texCoords, colors)) {
-        auto &pos = get<0>(vert);
-        auto &normal = get<1>(vert);
-        auto &texCoord = get<2>(vert);
-        auto &color = get<3>(vert);
+    for (const auto &[pos, normal, texCoord, color] : util::zip(vertices, normals, texCoords, colors)) {
         auto i = [&]() {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
@@ -83,10 +79,7 @@ void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoord
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (auto &&vert : util::zip(vertices, texCoords, colors)) {
-        auto &pos = get<0>(vert);
-        auto &texCoord = get<1>(vert);
-        auto &color = get<2>(vert);
+    for (const auto &[pos, texCoord, color] : util::zip(vertices, texCoords, colors)) {
         auto i = [&]() {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
