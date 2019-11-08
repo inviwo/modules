@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,51 @@
  *
  *********************************************************************************/
 
-#include <inviwo/openmesh/openmeshmodule.h>
+#pragma once
 
-#include <inviwo/openmesh/openmeshreader.h>
-#include <inviwo/openmesh/openmeshwriter.h>
-
-#include <inviwo/openmesh/processors/meshdecimationprocessor.h>
-
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES_WAS_DEFINED
-#define _USE_MATH_DEFINES
-#endif
-
-#include <inviwo/openmesh/processors/meshsequencedecimationprocessor.h>
-#include <inviwo/openmesh/processors/vertexnormals.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <OpenMesh/Core/System/config.h>
-#include <warn/pop>
-
-#ifdef _USE_MATH_DEFINES_WAS_DEFINED
-#undef _USE_MATH_DEFINES
-#endif
+#include <inviwo/openmesh/openmeshmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-OpenMeshModule::OpenMeshModule(InviwoApplication* app) : InviwoModule(app, "OpenMesh") {
-    registerProcessor<MeshDecimationProcessor>();
-    registerProcessor<MeshSequenceDecimationProcessor>();
-    registerProcessor<VertexNormals>();
+/** \docpage{org.inviwo.MeshDecimationProcessor, Mesh Decimation}
+ * ![](org.inviwo.MeshDecimationProcessor.png?classIdentifier=org.inviwo.MeshDecimationProcessor)
+ *
+ * Reduces the number of triangles in all input meshes.
+ * Stops when either the Vertex- or the Face decimation ratio is reached.
+ *
+ *
+ * ### Inports
+ *   * __inmeshes__ Input meshes.
+ *
+ * ### Outports
+ *   * __outmeshes__ Decimated meshes.
+ *
+ * ### Properties
+ *   * __Vertex Decimation ratio__ Percentage of vertices to keep.
+ *   * __Face Decimation ratio__ Percentage of faces to keep.
+ */
 
-    // Readers and writes
-    registerDataReader(util::make_unique<OpenMeshReader>());
-    registerDataWriter(util::make_unique<OpenMeshWriter>());
+class IVW_MODULE_OPENMESH_API MeshSequenceDecimationProcessor : public Processor {
+public:
+    MeshSequenceDecimationProcessor();
+    virtual ~MeshSequenceDecimationProcessor() = default;
 
-    LogInfo("OpenMesh version: " << OM_GET_VER << "." << OM_GET_MAJ << "." << OM_GET_MIN);
-}
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    MeshFlatMultiInport inmesh_{"inmeshes"};
+    DataOutport<std::vector<std::shared_ptr<Mesh>>> outmesh_{"outmeshes"};
+
+    FloatProperty vertDecimation_{
+        "vertDecimation", "Vertex Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
+    FloatProperty faceDecimation_{"faceDecimation", "Face Decimation ratio", 0.5f, 0.f, 1.f, 0.01f};
+};
 
 }  // namespace inviwo

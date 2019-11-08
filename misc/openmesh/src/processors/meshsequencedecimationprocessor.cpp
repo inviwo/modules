@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,41 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/openmesh/openmeshmodule.h>
-
-#include <inviwo/openmesh/openmeshreader.h>
-#include <inviwo/openmesh/openmeshwriter.h>
-
-#include <inviwo/openmesh/processors/meshdecimationprocessor.h>
-
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES_WAS_DEFINED
-#define _USE_MATH_DEFINES
-#endif
-
 #include <inviwo/openmesh/processors/meshsequencedecimationprocessor.h>
-#include <inviwo/openmesh/processors/vertexnormals.h>
-#include <warn/push>
-#include <warn/ignore/all>
-#include <OpenMesh/Core/System/config.h>
-#include <warn/pop>
-
-#ifdef _USE_MATH_DEFINES_WAS_DEFINED
-#undef _USE_MATH_DEFINES
-#endif
+#include <inviwo/openmesh/utils/meshdecimation.h>
+#include <inviwo/openmesh/utils/openmeshconverters.h>
 
 namespace inviwo {
 
-OpenMeshModule::OpenMeshModule(InviwoApplication* app) : InviwoModule(app, "OpenMesh") {
-    registerProcessor<MeshDecimationProcessor>();
-    registerProcessor<MeshSequenceDecimationProcessor>();
-    registerProcessor<VertexNormals>();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MeshSequenceDecimationProcessor::processorInfo_{
+    "org.inviwo.MeshSequenceDecimationProcessor",  // Class identifier
+    "Mesh Sequence Decimation",                    // Display name
+    "Mesh Processing",                             // Category
+    CodeState::Experimental,                       // Code state
+    Tags::None,                                    // Tags
+};
+const ProcessorInfo MeshSequenceDecimationProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
 
-    // Readers and writes
-    registerDataReader(util::make_unique<OpenMeshReader>());
-    registerDataWriter(util::make_unique<OpenMeshWriter>());
+MeshSequenceDecimationProcessor::MeshSequenceDecimationProcessor() : Processor() {
+    addPort(inmesh_);
+    addPort(outmesh_);
 
-    LogInfo("OpenMesh version: " << OM_GET_VER << "." << OM_GET_MAJ << "." << OM_GET_MIN);
+    addProperty(vertDecimation_);
+    addProperty(faceDecimation_);
+}
+
+void MeshSequenceDecimationProcessor::process() {
+    using namespace openmeshutil;
+    auto meshes = std::make_shared<decltype(outmesh_)::type>();
+
+    for (auto inMesh : inmesh_) {
+        auto mesh = fromInviwo(*inMesh, TransformCoordinates::NoTransform);
+        decimate(mesh, vertDecimation_.get(), faceDecimation_.get());
+        auto newMesh = toInviwo(mesh);
+        newMesh->copyMetaDataFrom(*inmesh_.getData());
+        newMesh->setModelMatrix(inmesh_.getData()->getModelMatrix());
+        newMesh->setWorldMatrix(inmesh_.getData()->getWorldMatrix());
+        meshes->push_back(newMesh);
+    }
+
+    outmesh_.setData(meshes);
 }
 
 }  // namespace inviwo
