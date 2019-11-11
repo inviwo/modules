@@ -33,6 +33,7 @@ set(HEADER_FILES
     include/inviwo/openmesh/openmeshreader.h
     include/inviwo/openmesh/openmeshwriter.h
     include/inviwo/openmesh/processors/meshdecimationprocessor.h
+    include/inviwo/openmesh/processors/meshsequencedecimationprocessor.h
     include/inviwo/openmesh/processors/vertexnormals.h
     include/inviwo/openmesh/utils/meshdecimation.h
     include/inviwo/openmesh/utils/openmeshconverters.h
@@ -46,6 +47,7 @@ set(SOURCE_FILES
     src/openmeshreader.cpp
     src/openmeshwriter.cpp
     src/processors/meshdecimationprocessor.cpp
+    src/processors/meshsequencedecimationprocessor.cpp
     src/processors/vertexnormals.cpp
     src/utils/meshdecimation.cpp
     src/utils/openmeshconverters.cpp
