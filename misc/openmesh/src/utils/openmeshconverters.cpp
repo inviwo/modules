@@ -52,14 +52,14 @@ void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordi
 
     for (const auto &[pos, normal, texCoord, color] :
          util::zip(vertices, normals, texCoords, colors)) {
-        auto i = [&]() {
+        auto i = [&](const auto &pos) {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
             } else {
                 auto pos4 = m * vec4{pos, 1};
                 return mesh.add_vertex({pos4.x / pos4.w, pos4.y / pos4.w, pos4.z / pos4.w});
             }
-        }();
+        }(pos);
 
         mesh.set_normal(i, {normal.x, normal.y, normal.z});
         mesh.set_texcoord3D(i, {texCoord.x, texCoord.y, texCoord.z});
@@ -81,14 +81,14 @@ void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoord
     }
 
     for (const auto &[pos, texCoord, color] : util::zip(vertices, texCoords, colors)) {
-        auto i = [&]() {
+        auto i = [&](const auto &pos) {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
             } else {
                 auto pos4 = m * vec4{pos, 1};
                 return mesh.add_vertex({pos4.x / pos4.w, pos4.y / pos4.w, pos4.z / pos4.w});
             }
-        }();
+        }(pos);
         mesh.set_texcoord3D(i, {texCoord.x, texCoord.y, texCoord.z});
         mesh.set_color(i, {color.r, color.g, color.b, color.a});
     }

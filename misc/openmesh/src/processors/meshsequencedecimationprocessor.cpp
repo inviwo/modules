@@ -39,7 +39,7 @@ const ProcessorInfo MeshSequenceDecimationProcessor::processorInfo_{
     "Mesh Sequence Decimation",                    // Display name
     "Mesh Processing",                             // Category
     CodeState::Experimental,                       // Code state
-    Tags::None,                                    // Tags
+    "Mesh, Geometry, OpenMesh",                    // Tags
 };
 const ProcessorInfo MeshSequenceDecimationProcessor::getProcessorInfo() const {
     return processorInfo_;
