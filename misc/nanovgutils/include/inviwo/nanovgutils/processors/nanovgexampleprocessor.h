@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/nanovgutils/properties/nanovgfontproperty.h>
 
 namespace inviwo {
 
@@ -59,6 +60,7 @@ public:
 
 private:
     ImageOutport outport_;
+    NanoVGFontProperty fontProperty_;
 };
 
 }  // namespace inviwo

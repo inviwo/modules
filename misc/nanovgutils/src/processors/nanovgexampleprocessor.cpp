@@ -39,12 +39,13 @@ const ProcessorInfo NanoVGExampleProcessor::processorInfo_{
     "NanoVG Example",                     // Display name
     "Example",                            // Category
     CodeState::Experimental,              // Code state
-    Tags::None,                           // Tags
+    "NanoVG,Example",                     // Tags
 };
 const ProcessorInfo NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
 
-NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outport") {
-
+NanoVGExampleProcessor::NanoVGExampleProcessor()
+    : Processor(), outport_("outport"), fontProperty_("fontProperty", "Font settings") {
+    addProperty(fontProperty_);
     addPort(outport_);
 }
 
@@ -58,14 +59,25 @@ void NanoVGExampleProcessor::process() {
     // are in the range of [0 canvassize]
     nvg.activate(outport_.getDimensions());
 
-    nvg.beginPath();
-    // Draw a circle with of radius 50 and x-y coordinates 150,150
-    nvg.circle(vec2(150, 150), 50);
-    nvg.closePath();
+    const static std::array<std::pair<vec2, vec4>, 4> circles{
+        std::pair{vec2{150, 150}, vec4{1.0f, 0.0f, 0.0f, 0.6f}},
+        std::pair{vec2{200, 150}, vec4{0.0f, 1.0f, 0.0f, 0.6f}},
+        std::pair{vec2{175, 100}, vec4{0.0f, 0.0f, 1.0f, 0.6f}},
+        std::pair{vec2{175, 175}, vec4{0.5f, 0.5f, 0.5f, 0.2f}}};
 
-    // Set fill color to red
-    nvg.fillColor(vec4(1, 0, 0, 1));
-    nvg.fill();  // tell NVG to draw current shape
+    for (int i{0}; i < 4; ++i) {
+        nvg.beginPath();
+        // Draw a circle
+        nvg.circle(circles[i].first, float((5 - i) * 30));
+        nvg.closePath();
+
+        // Set fill color to red
+        nvg.fillColor(circles[i].second);
+        nvg.fill();  // tell NVG to fill current shape
+    }
+
+    nanovgutil::setFontProperties(nvg, fontProperty_);
+    nvg.text({175, 150}, "Testing", 4);
 
     nvg.deactivate();
     utilgl::deactivateCurrentTarget();

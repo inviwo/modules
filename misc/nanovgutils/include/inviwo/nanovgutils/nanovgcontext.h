@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
+#include <inviwo/core/util/enumtraits.h>
 
 #include <GL/glew.h>
 
@@ -80,7 +81,7 @@ public:
         Right_Top = (1 << 2 | 1 << 3),
         Right_Middle = (1 << 2 | 1 << 4),
         Right_Bottom = (1 << 2 | 1 << 5),
-        Right_Baselin = (1 << 2 | 1 << 6)
+        Right_Baseline = (1 << 2 | 1 << 6)
     };
 
     /**********************************************************************************************
@@ -305,5 +306,10 @@ private:
     NVGcontext *activeNanoVGContext_;
 
 };  // NVG
+
+template <>
+struct EnumTraits<NanoVGContext::Alignment> {
+    static std::string name() { return "Text Alignment"; }
+};
 
 }  // namespace inviwo
