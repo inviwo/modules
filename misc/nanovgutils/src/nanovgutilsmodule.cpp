@@ -44,6 +44,11 @@ NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app,
     for (auto font : fonts) {
         context_.createFont(font.first, font.second);
     }
+
+    // If available, set a default font
+    if (fonts.size() > 0) {
+        context_.fontFace(fonts[0].first);
+    }
 }
 
 NanoVGUtilsModule::~NanoVGUtilsModule() = default;
