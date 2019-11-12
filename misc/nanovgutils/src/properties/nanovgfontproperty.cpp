@@ -9,7 +9,7 @@ std::string NanoVGFontProperty::getClassIdentifier() const { return classIdentif
 NanoVGFontProperty::NanoVGFontProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
     , fontSize_("fontSize", "Font size", 24.0f, 8.0f, 128.0f, 2.0f)
-    , fontColor_("fontColor", "Font color", vec4{1.0f }, vec4{0.0f }, vec4{1.0f }, vec4{0.01f},
+    , fontColor_("fontColor", "Font color", vec4{1.0f}, vec4{0.0f}, vec4{1.0f}, vec4{0.01f},
                  InvalidationLevel::InvalidOutput, PropertySemantics::Color)
     , fontFace_("fontFace", "Font face")
     , fontAlignment_("fontAlignment", "Align",
@@ -44,8 +44,9 @@ NanoVGFontProperty::NanoVGFontProperty(const NanoVGFontProperty& rhs)
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
 }
 
-void NanoVGFontProperty::set(const float fontSize, const vec4& fontColor, const std::string& fontFace,
-    const NanoVGContext::Alignment fontAlignment) {
+void NanoVGFontProperty::set(const float fontSize, const vec4& fontColor,
+                             const std::string& fontFace,
+                             const NanoVGContext::Alignment fontAlignment) {
     fontSize_.set(fontSize);
     fontColor_.set(fontColor);
     fontFace_.set(fontFace);
