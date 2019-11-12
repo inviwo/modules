@@ -164,7 +164,8 @@ public:
 
     template <typename T = size_t>
     glm::tvec3<T> getBounds() const {
-        return glm::tvec3<T>(dimensions_ - size3_t(1));
+        const size3_t b = dimensions_ - size3_t(1);
+        return glm::tvec3<T>(std::max(b.x, size_t(1)), std::max(b.y, size_t(1)), std::max(b.z, size_t(1)));
     }
     template <typename T = double>
     glm::tvec3<T> getSpacing() const {

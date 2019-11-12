@@ -69,7 +69,7 @@ void TensorGlyphProcessor::process() {
 
     auto meshes = new std::vector<std::shared_ptr<Mesh>>();
 
-    const vec3 voxelDist{tensorField->getExtents() / dvec3(dimensions)};
+    const vec3 voxelDist{tensorField->getSpacing()};
     const vec3 offset{tensorField->getOffset()};
 
     for (size_t z = 0; z < dimensions.z; z++) {
