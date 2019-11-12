@@ -51,21 +51,22 @@ inline vec2 screen2nanovg(const vec2& coord, const size2_t& dims) {
 }
 
 // Get quadratic Bezier Spline Control Point.
-IVW_MODULE_NANOVGUTILS_API vec2 getQuadraticBezierCurveControlPoint(const vec2& p0, const vec2& p1, const vec2& p2,
-                                         float t = 0.5f);
+IVW_MODULE_NANOVGUTILS_API vec2 getQuadraticBezierCurveControlPoint(const vec2& p0, const vec2& p1,
+                                                                    const vec2& p2, float t = 0.5f);
 
 // Get quadratic Bezier Spline Control Points.
-IVW_MODULE_NANOVGUTILS_API std::vector<vec2> getQuadraticBezierCurveControlPoints(const std::vector<vec2>& startAndEndPoints,
-                                                       const std::vector<vec2>& intermediatePoints);
+IVW_MODULE_NANOVGUTILS_API std::vector<vec2> getQuadraticBezierCurveControlPoints(
+    const std::vector<vec2>& startAndEndPoints, const std::vector<vec2>& intermediatePoints);
 
 // Get cubic Bezier Spline Control Points.
 // https://www.codeproject.com/Articles/31859/Draw-a-Smooth-Curve-through-a-Set-of-2D-Points-wit
-IVW_MODULE_NANOVGUTILS_API std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints(
-    const std::vector<vec2>& knots);
+IVW_MODULE_NANOVGUTILS_API std::pair<std::vector<vec2>, std::vector<vec2>>
+getCubicBezierCurveControlPoints(const std::vector<vec2>& knots);
 
 // Solves a tridiagonal system for one of coordinates (x or y) of first Bezier control points.
 IVW_MODULE_NANOVGUTILS_API std::vector<float> getFirstControlPoints(const std::vector<float>& rhs);
 
-IVW_MODULE_NANOVGUTILS_API void setFontProperties(NanoVGContext& nvg, const NanoVGFontProperty& properties);
+IVW_MODULE_NANOVGUTILS_API void setFontProperties(NanoVGContext& nvg,
+                                                  const NanoVGFontProperty& properties);
 
 }  // namespace inviwo::nanovgutil
