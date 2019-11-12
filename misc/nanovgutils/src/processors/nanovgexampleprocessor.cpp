@@ -43,8 +43,8 @@ const ProcessorInfo NanoVGExampleProcessor::processorInfo_{
 };
 const ProcessorInfo NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
 
-NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outport") {
-
+NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outport"), fontProperty_("fontProperty", "Font settings") {
+    addProperty(fontProperty_);
     addPort(outport_);
 }
 
@@ -75,9 +75,10 @@ void NanoVGExampleProcessor::process() {
         nvg.fill();  // tell NVG to fill current shape
     }
 
-    nvg.fillColor(vec4(0.5f, 1.5f, 0.5f, 1.5f));
-    nvg.fontSize(24.0f);
-    nvg.textAlign(NanoVGContext::Alignment::Center_Middle);
+    nvg.fillColor(fontProperty_.getFontColor());
+    nvg.fontSize(fontProperty_.getFontSize());
+    nvg.fontFace(fontProperty_.getFontFace());
+    nvg.textAlign(fontProperty_.getFontAligntment());
     nvg.text({175, 150}, "Testing", 4);
 
     nvg.deactivate();

@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/inviwo/nanovgutils/nanovgutilsmoduledefine.h
     include/inviwo/nanovgutils/processors/nanovgexampleprocessor.h
     include/inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h
+    include/inviwo/nanovgutils/properties/nanovgfontproperty.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -18,6 +19,7 @@ set(SOURCE_FILES
     src/nanovgutilsmodule.cpp
     src/processors/nanovgexampleprocessor.cpp
     src/processors/nanovgpickingexampleprocessor.cpp
+    src/properties/nanovgfontproperty.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

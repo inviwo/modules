@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
+#include <inviwo/core/util/enumtraits.h>
 
 #include <GL/glew.h>
 
@@ -305,5 +306,10 @@ private:
     NVGcontext *activeNanoVGContext_;
 
 };  // NVG
+
+template <>
+struct EnumTraits<NanoVGContext::Alignment> {
+    static std::string name() { return "Text Alignment"; }
+};
 
 }  // namespace inviwo
