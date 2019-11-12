@@ -45,7 +45,7 @@ NanoVGFontProperty::NanoVGFontProperty(const NanoVGFontProperty& rhs)
 }
 
 void NanoVGFontProperty::set(const int fontSize, const vec4& fontColor, const std::string& fontFace,
-    const NanoVGContext::Alignment fontAlignment) {
+                             const NanoVGContext::Alignment fontAlignment) {
     fontSize_.set(fontSize);
     fontColor_.set(fontColor);
     fontFace_.set(fontFace);

@@ -43,7 +43,8 @@ const ProcessorInfo NanoVGExampleProcessor::processorInfo_{
 };
 const ProcessorInfo NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
 
-NanoVGExampleProcessor::NanoVGExampleProcessor() : Processor(), outport_("outport"), fontProperty_("fontProperty", "Font settings") {
+NanoVGExampleProcessor::NanoVGExampleProcessor()
+    : Processor(), outport_("outport"), fontProperty_("fontProperty", "Font settings") {
     addProperty(fontProperty_);
     addPort(outport_);
 }
