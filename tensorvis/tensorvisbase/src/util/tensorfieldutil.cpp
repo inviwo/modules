@@ -142,7 +142,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
 
     std::vector<dmat3> sliceData{};
     sliceData.resize(dimensions.x * dimensions.y * dimensions.z);
-    vec3 offset{ 0 };
+    vec3 offset{0};
 
     switch (axis) {
         case CartesianCoordinateAxis::X:
@@ -150,7 +150,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                 for (size_t z = 0; z < dimensions.z; z++) {
                     auto x = sliceNumber;
                     sliceData[indexMapper(size3_t(0, y, z))] = inTensorField->at(x, y, z).second;
-                    offset.x =  frac;
+                    offset.x = frac;
                 }
             }
             break;
@@ -159,7 +159,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                 for (size_t z = 0; z < dimensions.z; z++) {
                     auto y = sliceNumber;
                     sliceData[indexMapper(size3_t(x, 0, z))] = inTensorField->at(x, y, z).second;
-                    offset.y =  frac;
+                    offset.y = frac;
                 }
             }
             break;
@@ -168,7 +168,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                 for (size_t y = 0; y < dimensions.y; y++) {
                     auto z = sliceNumber;
                     sliceData[indexMapper(size3_t(x, y, 0))] = inTensorField->at(x, y, z).second;
-                    offset.z =  frac;
+                    offset.z = frac;
                 }
             }
             break;
