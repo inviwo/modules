@@ -177,4 +177,11 @@ std::vector<float> getFirstControlPoints(const std::vector<float>& rhs) {
     return solution;
 }
 
+void setFontProperties(NanoVGContext& nvg, const NanoVGFontProperty& properties) {
+    nvg.fillColor(properties.getFontColor());
+    nvg.fontSize(properties.getFontSize());
+    nvg.fontFace(properties.getFontFace());
+    nvg.textAlign(properties.getFontAligntment());
+}
+
 }  // namespace inviwo::nanovgutil

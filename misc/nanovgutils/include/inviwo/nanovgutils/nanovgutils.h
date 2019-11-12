@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/nanovgutils/nanovgcontext.h>
+#include <inviwo/nanovgutils/properties/nanovgfontproperty.h>
 
 namespace inviwo::nanovgutil {
 
@@ -64,5 +65,7 @@ std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints
 
 // Solves a tridiagonal system for one of coordinates (x or y) of first Bezier control points.
 std::vector<float> getFirstControlPoints(const std::vector<float>& rhs);
+
+void setFontProperties(NanoVGContext& nvg, const NanoVGFontProperty& properties);
 
 }  // namespace inviwo::nanovgutil

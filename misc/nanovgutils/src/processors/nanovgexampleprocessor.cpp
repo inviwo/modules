@@ -59,7 +59,7 @@ void NanoVGExampleProcessor::process() {
     // are in the range of [0 canvassize]
     nvg.activate(outport_.getDimensions());
 
-    std::array<std::pair<vec2, vec4>, 4> circles{
+    const static std::array<std::pair<vec2, vec4>, 4> circles{
         std::pair{vec2{150, 150}, vec4{1.0f, 0.0f, 0.0f, 0.6f}},
         std::pair{vec2{200, 150}, vec4{0.0f, 1.0f, 0.0f, 0.6f}},
         std::pair{vec2{175, 100}, vec4{0.0f, 0.0f, 1.0f, 0.6f}},
@@ -68,7 +68,7 @@ void NanoVGExampleProcessor::process() {
     for (int i{0}; i < 4; ++i) {
         nvg.beginPath();
         // Draw a circle
-        nvg.circle(circles[i].first, (5 - i) * 30);
+        nvg.circle(circles[i].first, float((5 - i) * 30));
         nvg.closePath();
 
         // Set fill color to red
@@ -76,10 +76,7 @@ void NanoVGExampleProcessor::process() {
         nvg.fill();  // tell NVG to fill current shape
     }
 
-    nvg.fillColor(fontProperty_.getFontColor());
-    nvg.fontSize(fontProperty_.getFontSize());
-    nvg.fontFace(fontProperty_.getFontFace());
-    nvg.textAlign(fontProperty_.getFontAligntment());
+    nanovgutil::setFontProperties(nvg, fontProperty_);
     nvg.text({175, 150}, "Testing", 4);
 
     nvg.deactivate();
