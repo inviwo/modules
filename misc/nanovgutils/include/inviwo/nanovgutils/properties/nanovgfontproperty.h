@@ -5,7 +5,9 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/nanovgutils/nanovgcontext.h>
+#include <optional>
 
 namespace inviwo {
 class IVW_MODULE_NANOVGUTILS_API NanoVGFontProperty : public CompositeProperty {
@@ -20,28 +22,30 @@ public:
 
     using CompositeProperty::set;
     void set(float fontSize, const vec4& fontColor, const std::string& fontFace,
-             NanoVGContext::Alignment fontAlignment);
+             NanoVGContext::Alignment fontAlignment, bool enableFontBlur,
+             float fontBlurIntensity = 0.0f);
     void set(const float fontSize) { fontSize_.set(fontSize); }
     void set(const vec4& fontColor) { fontColor_.set(fontColor); }
     void set(const std::string& fontFace) { fontFace_.set(fontFace); }
     void set(const NanoVGContext::Alignment fontAlignment) { fontAlignment_.set(fontAlignment); }
+    void set(bool enableFontBlur, float fontBlurIntensity = 0.0f);
 
     float getFontSize() const { return fontSize_.get(); }
     vec4 getFontColor() const { return fontColor_.get(); }
     std::string getFontFace() const { return fontFace_.get(); }
     NanoVGContext::Alignment getFontAligntment() const { return fontAlignment_.get(); }
-    auto get() const {
-        return std::make_tuple(fontSize_.get(), fontColor_.get(), fontFace_.get(),
-                               fontAlignment_.get());
-    }
+    std::optional<float> getFontBlur() const;
+    auto get() const;
 
 private:
     FloatProperty fontSize_;
     FloatVec4Property fontColor_;
     OptionPropertyString fontFace_;
     TemplateOptionProperty<NanoVGContext::Alignment> fontAlignment_;
+    BoolProperty enableFontBlur_;
+    FloatProperty fontBlurIntensity_;
 
-    auto props() { return std::tie(fontSize_, fontColor_, fontFace_, fontAlignment_); }
-    auto props() const { return std::tie(fontSize_, fontColor_, fontFace_, fontAlignment_); }
+    auto props();
+    auto props() const;
 };
 }  // namespace inviwo
