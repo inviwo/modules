@@ -182,6 +182,19 @@ void setFontProperties(NanoVGContext& nvg, const NanoVGFontProperty& properties)
     nvg.fontSize(properties.getFontSize());
     nvg.fontFace(properties.getFontFace());
     nvg.textAlign(properties.getFontAligntment());
+    if (const auto fb = properties.getFontBlur()) {
+        nvg.fontBlur(*fb);
+    }
+}
+
+void setFontProperties(NanoVGContext& nvg, const float fontSize, const vec4& fontColor,
+                       const std::string& fontFace, NanoVGContext::Alignment fontAlignment,
+                       const float fontBlurIntensity) {
+    nvg.fillColor(fontColor);
+    nvg.fontSize(fontSize);
+    nvg.fontFace(fontFace);
+    nvg.textAlign(fontAlignment);
+    nvg.fontBlur(fontBlurIntensity);
 }
 
 }  // namespace inviwo::nanovgutil

@@ -69,4 +69,8 @@ IVW_MODULE_NANOVGUTILS_API std::vector<float> getFirstControlPoints(const std::v
 IVW_MODULE_NANOVGUTILS_API void setFontProperties(NanoVGContext& nvg,
                                                   const NanoVGFontProperty& properties);
 
+IVW_MODULE_NANOVGUTILS_API void setFontProperties(
+    NanoVGContext& nvg, float fontSize, const vec4& fontColor, const std::string& fontFace,
+    NanoVGContext::Alignment fontAlignment, float fontBlurIntensity = 0.0f);
+
 }  // namespace inviwo::nanovgutil
