@@ -121,7 +121,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
     size3_t dimensions{0};
     double frac;
 
-    auto stepSize = inTensorField->getSpacing();
+    auto stepSize = inTensorField->getSpacing<double>();
 
     switch (axis) {
         case CartesianCoordinateAxis::X:
