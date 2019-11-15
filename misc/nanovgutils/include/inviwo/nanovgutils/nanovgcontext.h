@@ -80,7 +80,7 @@ public:
         Right_Top = (1 << 2 | 1 << 3),
         Right_Middle = (1 << 2 | 1 << 4),
         Right_Bottom = (1 << 2 | 1 << 5),
-        Right_Baselin = (1 << 2 | 1 << 6)
+        Right_Baseline = (1 << 2 | 1 << 6)
     };
 
     /**********************************************************************************************
@@ -125,6 +125,8 @@ public:
     void reset();
 
     void shapeAntiAlias(bool enabled);
+    inline void enableAntiAlias() { shapeAntiAlias(true); }
+    inline void disableAntiAlias() { shapeAntiAlias(true); }
 
     /**********************************************************************************************
      * NanoVG paths
