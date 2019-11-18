@@ -14,6 +14,7 @@ See [readme](medvis/readme.md) for detailed instructions.
 
 * DevTools: useful tools for developing and testing Inviwo networks
 * NanoVGUtils: A module integrating the Vector Graphics rendering library [NanoVG](https://github.com/memononen/nanovg)
+* NanoVGPY: Python bindings for the `NanoVGUtils` module
 * OpenMesh: interface to the [OpenMesh](https://www.openmesh.org) library
 * SpringSystem: implementation of a 3D spring mass system
 * VTK: basic interface with the Visualization Toolkit [VTK](https://vtk.org)

@@ -126,6 +126,8 @@ public:
     void reset();
 
     void shapeAntiAlias(bool enabled);
+    inline void enableAntiAlias() { shapeAntiAlias(true); }
+    inline void disableAntiAlias() { shapeAntiAlias(true); }
 
     /**********************************************************************************************
      * NanoVG paths
