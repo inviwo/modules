@@ -79,9 +79,6 @@ void TensorGlyphProcessor::process() {
                 if (tensor == comp) continue;
                 const auto index = indexMapper(size3_t(x, y, z));
 
-                // const auto dpos = tensorField->getNormalizedVolumePosition(index);
-                // const auto pos = vec3(dpos);
-
                 const vec3 pos{voxelDist * vec3{x, y, z} + offset};
 
                 meshes->emplace_back(glyphParameters_.generateGlyph(tensorField, index, pos));
