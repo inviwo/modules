@@ -99,7 +99,7 @@ void TensorFieldToVolume::process() {
             ->dispatch<DataMapper, dispatching::filter::Floats>([metaData](auto repr) {
                 auto ptr = repr->getDataTyped();
                 using ValueType = util::PrecisionValueType<decltype(repr)>;
-                // TODO: use type of metadata instead of assuming double!
+
                 using P = typename util::same_extent<ValueType, double>::type;
 
                 const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
