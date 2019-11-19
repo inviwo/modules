@@ -79,7 +79,7 @@ class ChgcarSource(ivw.Processor):
 
         self.mesh = vasputil.createMesh(self.atomPos, self.elemtype,
                                         self.volume.basis, self.volume.offset, self.pm, self.margin.value)
-
+        
         self.dataframe = vasputil.createDataFrame(self.atomPos, self.elemtype,
                                                   self.volume.modelMatrix)
 

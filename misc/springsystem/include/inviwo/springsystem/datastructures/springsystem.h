@@ -31,14 +31,13 @@
 
 #include <inviwo/springsystem/springsystemmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+
 #include <inviwo/core/util/zip.h>
-#include <glm/gtc/epsilon.hpp>
 
 #include <vector>
+#include <glm/gtc/epsilon.hpp>
 #include <sstream>
 #include <iomanip>
-#include <utility>
-#include <algorithm>
 
 #if __has_include(<execution>)
 #include <execution>

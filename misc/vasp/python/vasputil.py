@@ -40,11 +40,13 @@ def parseFile(file):
     for line in lines[8:8+ntot]:
         pos.append(list(map(float, line.strip().split())))
     pos = numpy.array(pos).astype(numpy.float32)
-
+    
+    
     factor = scale if scale >= 0.0 else np.power(
         -scale / np.dot(a3, np.cross(a2, a1)), 1/3)
+    #basis =numpy.array([[1,0,0], [0,1,0], [0,0,1]])    
     basis = numpy.array([a1, a2, a3]) * factor
-    offset = -0.5 * (basis[0] + basis[1] + basis[2])
+    offset = 0.0#-0.5 * (basis[0] + basis[1] + basis[2])
     if not direct:
         inv = numpy.linalg.inv(basis)
         pos = numpy.array([numpy.dot(inv, p) for p in pos])
@@ -122,14 +124,16 @@ def createMesh(pos, elemtype, basis, offset, pm, margin):
 def createDataFrame(pos, elemtype, modelMat):
     dataframe = df.DataFrame()
     ct = dataframe.addCategoricalColumn("type")
+    
     cx = dataframe.addFloatColumn("x")
     cy = dataframe.addFloatColumn("y")
     cz = dataframe.addFloatColumn("z")
-
+    
     for et, p in zip(elemtype, pos):
         mp = modelMat * ivw.glm.vec4(p[0], p[1], p[2], 1.0)
 
         ct.add(et)
+        
         cx.add(mp[0])
         cy.add(mp[1])
         cz.add(mp[2])
