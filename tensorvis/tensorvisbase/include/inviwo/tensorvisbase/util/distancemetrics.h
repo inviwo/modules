@@ -12,8 +12,8 @@ T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b, const T or
     if (a.size() != b.size())
         throw std::domain_error("Minkowski distance requires equal length vectors");
     return std::pow(std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
-                                       [](T x, T y) { return (y - x) * (y - x); }),
-                    order);
+                                       [order](T x, T y) { return std::pow(y - x, order); }),
+                    T(1) / order);
 }
 
 // Input: Two vectors, each of which represent one point in an n-dimensional space
@@ -27,7 +27,7 @@ T squaredDistance(const std::vector<T>& a, const std::vector<T>& b) {
 // Output: Euclidean distance between the two points
 template <typename T>
 T euclideanDistance(const std::vector<T>& a, const std::vector<T>& b) {
-    return minkowskiDistance(a, b, T(0.5));
+    return minkowskiDistance(a, b, T(2));
 }
 }  // namespace tensorutil
 template <>
