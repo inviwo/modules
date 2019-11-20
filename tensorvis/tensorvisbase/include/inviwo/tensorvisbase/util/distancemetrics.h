@@ -8,15 +8,15 @@ namespace tensorutil {
 enum class DistanceMetric { Euclidean, Manhattan, Minkowski, SquaredSum };
 
 /**
-* \brief Calculates Minkowski distance of order n
-*        Input: Two vectors, each of which represent one point in an n-dimensional space
-*        Output: Minkowski distance of order n between the two points
-*
-* \param a Point a
-* \param b Point b
-* \param order Order of the Minkowski distance
-* \return Minkowski distance of order n between points a and b
-*/
+ * \brief Calculates Minkowski distance of order n
+ *        Input: Two vectors, each of which represent one point in an n-dimensional space
+ *        Output: Minkowski distance of order n between the two points
+ *
+ * \param a Point a
+ * \param b Point b
+ * \param order Order of the Minkowski distance
+ * \return Minkowski distance of order n between points a and b
+ */
 template <typename T>
 T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b, const T order) {
     if (a.size() != b.size())
@@ -26,43 +26,43 @@ T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b, const T or
                     T(1) / order);
 }
 
-/** 
-* \brief Calculates Manhattan distance
-*        Input: Two vectors, each of which represent one point in an n-dimensional space
-*        Output: Manhattan distance between the two points
-*
-* \param a Point a
-* \param b Point b
-* \return Manhattan distance between points a and b
-*/
+/**
+ * \brief Calculates Manhattan distance
+ *        Input: Two vectors, each of which represent one point in an n-dimensional space
+ *        Output: Manhattan distance between the two points
+ *
+ * \param a Point a
+ * \param b Point b
+ * \return Manhattan distance between points a and b
+ */
 template <typename T>
 T manhattanDistance(const std::vector<T>& a, const std::vector<T>& b) {
     return minkowskiDistance(a, b, T(1));
 }
 
 /**
-* \brief Calculates Euclidean distance
-*        Input: Two vectors, each of which represent one point in an n-dimensional space
-*        Output: Euclidean distance between the two points
-*
-* \param a Point a
-* \param b Point b
-* \return Euclidean distance between points a and b
-*/
+ * \brief Calculates Euclidean distance
+ *        Input: Two vectors, each of which represent one point in an n-dimensional space
+ *        Output: Euclidean distance between the two points
+ *
+ * \param a Point a
+ * \param b Point b
+ * \return Euclidean distance between points a and b
+ */
 template <typename T>
 T euclideanDistance(const std::vector<T>& a, const std::vector<T>& b) {
     return minkowskiDistance(a, b, T(2));
 }
 
 /**
-* \brief Calculates squared sum distance
-*        Input: Two vectors, each of which represent one point in an n-dimensional space
-*        Output: Squared sum distance between the two points
-*
-* \param a Point a
-* \param b Point b
-* \return Squared sum distance between points a and b
-*/
+ * \brief Calculates squared sum distance
+ *        Input: Two vectors, each of which represent one point in an n-dimensional space
+ *        Output: Squared sum distance between the two points
+ *
+ * \param a Point a
+ * \param b Point b
+ * \return Squared sum distance between points a and b
+ */
 template <typename T>
 T squaredSumDistance(const std::vector<T>& a, const std::vector<T>& b) {
     if (a.size() != b.size())
