@@ -122,26 +122,6 @@ T nthRoot(T value, T n) {
     return std::pow(value, T(1) / n);
 }
 
-// Input: Two vectors, each of which represent one point in an n-dimensional space
-// Output: Squared distance between the two points
-template <typename T>
-T squaredDistance(const std::vector<T>& a, const std::vector<T>& b) {
-    if (a.size() != b.size())
-        throw std::domain_error("squared distance requires equal length vectors");
-    return std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
-                              [](T x, T y) { return (y - x) * (y - x); });
-}
-
-// Input: Two vectors, each of which represent one point in an n-dimensional space
-// Output: Euclidean distance between the two points
-template <typename T>
-T euclideanDistance(const std::vector<T>& a, const std::vector<T>& b) {
-    if (a.size() != b.size())
-        throw std::domain_error("euclidean distance requires equal length vectors");
-    return std::sqrt(std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
-                                        [](T x, T y) { return (y - x) * (y - x); }));
-}
-
 // Input: A collection of vectors
 // Output: Intersection set of the entries of the input vectors
 template <typename T>

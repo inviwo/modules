@@ -3,7 +3,7 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/util/distancemetrics.h>
 
 namespace inviwo {
 TEST(TensorUtilTests, euclideanDistanceThrow) {
@@ -17,7 +17,7 @@ TEST(TensorUtilTests, euclideanDistanceThrow) {
             try {
                 tensorutil::euclideanDistance(vec1, vec2);
             } catch (const std::domain_error& e) {
-                EXPECT_STREQ("euclidean distance requires equal length vectors", e.what());
+                EXPECT_STREQ("Minkowski distance requires equal length vectors", e.what());
                 throw;
             }
         },
@@ -46,7 +46,7 @@ TEST(TensorUtilTests, squaredDistanceThrow) {
             try {
                 tensorutil::squaredDistance(vec1, vec2);
             } catch (const std::domain_error& e) {
-                EXPECT_STREQ("squared distance requires equal length vectors", e.what());
+                EXPECT_STREQ("Minkowski distance requires equal length vectors", e.what());
                 throw;
             }
         },
