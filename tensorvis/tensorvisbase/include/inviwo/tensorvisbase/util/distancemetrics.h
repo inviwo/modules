@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <inviwo/core/util/enumtraits.h>
+#include <inviwo/core/util/assertion.h>
 
 namespace inviwo {
 namespace tensorutil {
@@ -19,8 +20,7 @@ enum class DistanceMetric { Euclidean, Manhattan, Minkowski, SquaredSum };
  */
 template <typename T>
 T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b, const T order) {
-    if (a.size() != b.size())
-        throw std::domain_error("Minkowski distance requires equal length vectors");
+    IVW_ASSERT(a.size() == b.size(), "Minkowski distance requires equal length vectors");
     return std::pow(std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
                                        [order](T x, T y) { return std::pow(y - x, order); }),
                     T(1) / order);
@@ -65,8 +65,7 @@ T euclideanDistance(const std::vector<T>& a, const std::vector<T>& b) {
  */
 template <typename T>
 T squaredSumDistance(const std::vector<T>& a, const std::vector<T>& b) {
-    if (a.size() != b.size())
-        throw std::domain_error("Squared sum distance requires equal length vectors");
+    IVW_ASSERT(a.size() == b.size(), "Squared sum distance requires equal length vectors");
     return std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
                               [](T x, T y) { return std::pow(y - x, T(2)); });
 }
