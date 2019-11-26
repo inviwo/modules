@@ -190,7 +190,7 @@ std::array<double, 3> calculateEigenValues(const dmat3 &tensor) {
     return sortable;
 }
 
-dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3 &tensor) {
+dmat3 calculateEigenSystem(const dmat3 &tensor) {
     if (tensor == dmat3(0.0)) {
         return dmat3(0.0);
     }
