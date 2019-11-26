@@ -97,7 +97,7 @@ enum class InterpolationMethod { Linear, Nearest, Barycentric };
 
 dmat2 IVW_MODULE_TENSORVISBASE_API sample(std::shared_ptr<const TensorField2D> tensorField,
 	const dvec2& position,
-	const tensorutil::InterpolationMethod method=tensorutil::InterpolationMethod::Barycentric);
+	const tensorutil::InterpolationMethod method);
 
 /**
  * Returns a pair of a glm::uint8 and dmat3.
