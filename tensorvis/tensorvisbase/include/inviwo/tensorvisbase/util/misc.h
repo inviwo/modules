@@ -419,6 +419,5 @@ inline std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveContro
     return controlPoints;
 }
 
-
 }  // namespace tensorutil
 }  // namespace inviwo
