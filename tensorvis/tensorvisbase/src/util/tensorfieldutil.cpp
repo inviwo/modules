@@ -30,6 +30,7 @@
 #include <modules/base/algorithm/meshutils.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
 
 namespace inviwo {
 namespace tensorutil {
@@ -119,7 +120,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                                           const size_t sliceNumber) {
     auto fieldDimensions = inTensorField->getDimensions();
     size3_t dimensions{0};
-    double frac;
+	double frac{ 0 };
 
     auto stepSize = inTensorField->getSpacing();
 
@@ -203,7 +204,7 @@ std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> 
                             static_cast<double>(tensorField->getDimensions().y - 1));
 
             // Sample old tensor field at position
-            auto tensor = tensorField->sample(posNormalized, method);
+            auto tensor = sample(tensorField, posNormalized, method);
 
             // Assign tensor at x,y
             dataNew[indexMapperNew(size2_t(x, y))] = tensor;
@@ -233,7 +234,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
                                  zFrac * static_cast<double>(z));
 
                 // Sample old tensor field at position
-                auto tensor = tensorField->sample(pos, method);
+                auto tensor = sample(tensorField, pos, method);
 
                 // Assign tensor at x,y
                 dataNew[indexMapperNew(size3_t(x, y, z))] = tensor.second;
@@ -269,7 +270,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
                                  zFrac * static_cast<double>(z));
 
                 // Sample old tensor field at position
-                auto tensor = tensorField->sample(pos, method);
+                auto tensor = sample(tensorField, pos, method);
 
                 // Assign tensor at x,y
                 dataNew[indexMapperNew(size3_t(x, y, z))] = tensor.second;

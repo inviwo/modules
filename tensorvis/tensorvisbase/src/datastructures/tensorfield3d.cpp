@@ -454,57 +454,9 @@ const dvec3 &TensorField3D::getNormalizedVolumePosition(const size_t index) cons
 
 const dvec3 &TensorField3D::getCoordinate(const size_t index) const { return coordinates_[index]; }
 
-std::pair<glm::uint8, dmat3> TensorField3D::sample(
-    const dvec3 &position, const tensorutil::InterpolationMethod method) const {
-    // Position is in texture space [0,1], translate to index space
-    const auto bounds = getBounds<double>();
-    const auto indexPosition = position * bounds;
-
-    glm::uint8 maskValue = 0;
-
-    dmat3 val{0.0};
-
-    if (method == tensorutil::InterpolationMethod::Linear) {
-        const auto xm = glm::floor(indexPosition.x);
-        const auto ym = glm::floor(indexPosition.y);
-        const auto zm = glm::floor(indexPosition.z);
-
-        const auto xp = glm::ceil(indexPosition.x);
-        const auto yp = glm::ceil(indexPosition.y);
-        const auto zp = glm::ceil(indexPosition.z);
-
-        const auto xFrac = glm::fract(position.x * bounds.x);
-        const auto yFrac = glm::fract(position.y * bounds.y);
-        const auto zFrac = glm::fract(position.z * bounds.z);
-
-        // Upper layer
-        const auto &tensor010 = at(size3_t(xm, yp, zm)).second;
-        const auto &tensor011 = at(size3_t(xm, yp, zp)).second;
-        const auto tensorUpperLeft = glm::mix(tensor010, tensor011, zFrac);
-
-        const auto &tensor111 = at(size3_t(xp, yp, zp)).second;
-        const auto &tensor110 = at(size3_t(xp, yp, zm)).second;
-        const auto tensorUpperRight = glm::mix(tensor110, tensor111, zFrac);
-
-        const auto tensorUpper = glm::mix(tensorUpperLeft, tensorUpperRight, xFrac);
-
-        // Lower layer
-        const auto &tensor000 = at(size3_t(xm, ym, zm)).second;
-        const auto &tensor001 = at(size3_t(xm, ym, zp)).second;
-        const auto tensorLowerLeft = glm::mix(tensor000, tensor001, zFrac);
-
-        const auto &tensor100 = at(size3_t(xp, ym, zm)).second;
-        const auto &tensor101 = at(size3_t(xp, ym, zp)).second;
-        const auto tensorLowerRight = glm::mix(tensor100, tensor101, zFrac);
-
-        const auto tensorLower = glm::mix(tensorLowerLeft, tensorLowerRight, xFrac);
-
-        val = glm::mix(tensorLower, tensorUpper, yFrac);
-    } else if (method == tensorutil::InterpolationMethod::Nearest) {
-        val = at(size3_t(glm::round(indexPosition))).second;
-    }
-
-    return std::pair<glm::uint8, dmat3>(maskValue, val);
+dmat3 TensorField3D::getBasis() const {
+    return dmat3(dvec3(extent_.x, 0.0, 0.0), dvec3(0.0, extent_.y, 0.0),
+                 dvec3(0.0, 0.0, extent_.z));
 }
 
 dmat4 TensorField3D::getBasisAndOffset() const {
