@@ -17,7 +17,6 @@ namespace inviwo {
  * \class TensorField3D
  * \brief Data structure for 3D tensorfields.
  */
-class IVW_MODULE_TENSORVISBASE_API TensorField3D {
 class IVW_MODULE_TENSORVISBASE_API TensorField3D : public StructuredGridEntity<3> {
 public:
     TensorField3D() = delete;
@@ -120,6 +119,8 @@ public:
     std::pair<glm::uint8, dmat3 &> at(size_t index);
 
     Vector<3, size_t> getDimensions() const override { return Vector<3, size_t>(dimensions_); }
+
+	/**
      * Returns a pair of a glm::uint8 and dmat3.
      * The dmat3 is the tensor. Since the field stores tensors at every position
      * it has a mask defining where it is actually defined and where not. It is 1
@@ -146,8 +147,6 @@ public:
      * the mask value return will always be 0.
      */
     std::pair<glm::uint8, const dmat3 &> at(size_t index) const;
-
-    }
 
     template <typename T = double>
     glm::tvec3<T> getExtents() const {
@@ -319,7 +318,7 @@ public:
         return metaData_;
     }
 
-    std::shared_ptr<TensorField3D> clone() const;
+    SpatialEntity<3>* clone() const override;
 
 protected:
     void computeEigenValuesAndEigenVectors();
