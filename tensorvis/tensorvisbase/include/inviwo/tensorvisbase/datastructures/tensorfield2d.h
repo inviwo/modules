@@ -121,9 +121,6 @@ public:
         return T(majorEigenValues_[index]);
     }
 
-    dmat2 sample(const dvec2 &position, tensorutil::InterpolationMethod method =
-                                            tensorutil::InterpolationMethod::Barycentric) const;
-
     dmat2 getBasis() const;
     dmat3 getBasisAndOffset() const;
     dvec2 getOffset() const { return offset_; };

@@ -33,6 +33,7 @@
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
+#include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <Eigen/Dense>
 #include <modules/eigenutils/eigenutils.h>

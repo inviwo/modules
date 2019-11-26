@@ -195,18 +195,6 @@ public:
         return T(getMetaData<MinorEigenValues>()[index]);
     }
 
-    /*
-     * Returns a pair of a glm::uint8 and dmat3.
-     * The dmat3 is the tensor. Since the field stores tensors at every position
-     * it has a mask defining where it is actually defined and where not. It is 1
-     * if there is data at this position and 0 if not. If the mask value is zero,
-     * the tensor will be a 0 tensor. If the mask is not set for the tensor field,
-     * the mask value return will always be 0.
-     */
-    std::pair<glm::uint8, dmat3> sample(
-        const dvec3 &position,
-        tensorutil::InterpolationMethod method = tensorutil::InterpolationMethod::Linear) const;
-
     dmat3 getBasis() const;
     void setBasis(const dmat3 &basis) {
         extent_.x = basis[0][0];
