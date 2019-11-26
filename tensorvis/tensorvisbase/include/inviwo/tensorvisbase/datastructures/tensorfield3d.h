@@ -10,6 +10,7 @@
 #include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <Eigen/Dense>
 #include <unordered_map>
+#include <inviwo/core/datastructures/spatialdata.h>
 
 namespace inviwo {
 /**
@@ -17,6 +18,7 @@ namespace inviwo {
  * \brief Data structure for 3D tensorfields.
  */
 class IVW_MODULE_TENSORVISBASE_API TensorField3D {
+class IVW_MODULE_TENSORVISBASE_API TensorField3D : public StructuredGridEntity<3> {
 public:
     TensorField3D() = delete;
 
@@ -117,7 +119,7 @@ public:
      */
     std::pair<glm::uint8, dmat3 &> at(size_t index);
 
-    /*
+    Vector<3, size_t> getDimensions() const override { return Vector<3, size_t>(dimensions_); }
      * Returns a pair of a glm::uint8 and dmat3.
      * The dmat3 is the tensor. Since the field stores tensors at every position
      * it has a mask defining where it is actually defined and where not. It is 1
@@ -145,9 +147,6 @@ public:
      */
     std::pair<glm::uint8, const dmat3 &> at(size_t index) const;
 
-    template <typename T = size_t>
-    glm::tvec3<T> getDimensions() const {
-        return glm::tvec3<T>(dimensions_);
     }
 
     template <typename T = double>
@@ -155,10 +154,7 @@ public:
         return glm::tvec3<T>(extent_);
     }
 
-    template <typename T = double>
-    glm::tvec3<T> getOffset() const {
-        return glm::tvec3<T>(offset_);
-    }
+    void setExtents(const dvec3& extent) { extent_ = extent; }
 
     void setExtents(const dvec3 &extent) { extent_ = extent; }
 
@@ -207,23 +203,10 @@ public:
         const dvec3 &position,
         tensorutil::InterpolationMethod method = tensorutil::InterpolationMethod::Linear) const;
 
-    dmat3 getBasis() const;
-    void setBasis(const dmat3 &basis) {
-        extent_.x = basis[0][0];
-        extent_.y = basis[1][1];
-        extent_.z = basis[2][2];
-    };
-
-    void setBasis(const mat3 &basis) {
-        extent_.x = double(basis[0][0]);
-        extent_.y = double(basis[1][1]);
-        extent_.z = double(basis[2][2]);
-    };
 
     dmat4 getBasisAndOffset() const;
 
     // dvec3 getOffset() const { return offset_; };
-    void setOffset(const dvec3 &offset) { offset_ = offset; };
 
     std::array<std::pair<double, dvec3>, 3> getSortedEigenValuesAndEigenVectorsForTensor(
         size_t index) const;
@@ -350,7 +333,6 @@ protected:
     size_t size_;
     glm::u8 rank_;
     glm::u8 dimensionality_;
-    dvec3 offset_;
     std::vector<dvec3> normalizedVolumePositions_;
     std::vector<dvec3> coordinates_;
     std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> metaData_;
