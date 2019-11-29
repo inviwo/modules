@@ -30,16 +30,14 @@
 #ifndef IVW_TENSORFIELDSLICE_H
 #define IVW_TENSORFIELDSLICE_H
 
-#include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
+
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 

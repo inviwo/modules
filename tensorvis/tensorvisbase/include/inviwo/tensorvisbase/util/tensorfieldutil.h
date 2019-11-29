@@ -58,14 +58,6 @@ bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &tensorField
                                TextureUnitContainer &textureUnits);
 
 std::shared_ptr<TensorField2D> IVW_MODULE_TENSORVISBASE_API
-getSlice2D(std::shared_ptr<const TensorField3D> inTensorField, const CartesianCoordinateAxis axis,
-           const size_t sliceNumber);
-
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-getSlice3D(std::shared_ptr<const TensorField3D> inTensorField, const CartesianCoordinateAxis axis,
-           const size_t sliceNumber);
-
-std::shared_ptr<TensorField2D> IVW_MODULE_TENSORVISBASE_API
 subsample2D(std::shared_ptr<const TensorField2D> tensorField, size2_t newDimensions,
             const InterpolationMethod method = InterpolationMethod::Barycentric);
 

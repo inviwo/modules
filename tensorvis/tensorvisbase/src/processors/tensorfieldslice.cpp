@@ -28,6 +28,9 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
+#include <inviwo/tensorvisbase/algorithm/tensorfieldslicing.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 
@@ -160,9 +163,9 @@ void TensorFieldSlice::process() {
     offsetOutport_.setData(std::make_shared<size_t>(offset));
 
     outport2D_.setData(
-        tensorutil::getSlice2D(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
+        slice<2>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
     outport3D_.setData(
-        tensorutil::getSlice3D(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
+        slice<3>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
     sliceOutport_.setData(tensorutil::generateSliceLevelGeometryForTensorField(
         inport_.getData(), sliceColor_.get(), sliceAlongAxis_.get(), sliceNr_.get()));
     planeOutport_.setData(tensorutil::generateSlicePlaneGeometryForTensorField(
