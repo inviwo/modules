@@ -120,7 +120,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                                           const size_t sliceNumber) {
     auto fieldDimensions = inTensorField->getDimensions();
     size3_t dimensions{0};
-	double frac{ 0 };
+    double frac{0};
 
     auto stepSize = inTensorField->getSpacing();
 

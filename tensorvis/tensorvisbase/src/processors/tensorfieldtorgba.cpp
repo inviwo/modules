@@ -48,9 +48,8 @@ TensorFieldToRGBA::TensorFieldToRGBA()
     , inport_("inport")
     , outport_("outport", DataVec4Float32::get())
     , shader_("tensorfieldtorgba.frag")
-    , hover_(
-          "hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
-          MouseState::Move)
+    , hover_("hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
+             MouseState::Move)
     , tensor_("tensor", "Tensor") {
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
@@ -80,7 +79,7 @@ void TensorFieldToRGBA::hoverAction(Event* e) {
         if (auto mouseEvent = dynamic_cast<MouseEvent*>(e)) {
             auto tensorField = inport_.getData();
             auto p = mouseEvent->posNormalized();
-			auto tensor = sample(tensorField, p, tensorutil::InterpolationMethod::Barycentric);
+            auto tensor = sample(tensorField, p, tensorutil::InterpolationMethod::Barycentric);
             tensor_.set(tensor);
         }
     }

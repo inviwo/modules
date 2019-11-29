@@ -96,8 +96,8 @@ dmat2 IVW_MODULE_TENSORVISBASE_API sample(std::shared_ptr<const TensorField2D> t
 }
 
 dmat2 IVW_MODULE_TENSORVISBASE_API sample(std::shared_ptr<const TensorField2D> tensorField,
-	const dvec2& position,
-	const tensorutil::InterpolationMethod method);
+                                          const dvec2& position,
+                                          const tensorutil::InterpolationMethod method);
 
 /**
  * Returns a pair of a glm::uint8 and dmat3.
@@ -170,5 +170,5 @@ sample(std::shared_ptr<const TensorField3D> tensorField, const dvec3& position) 
  */
 std::pair<glm::uint8, dmat3> IVW_MODULE_TENSORVISBASE_API
 sample(std::shared_ptr<const TensorField3D> tensorField, const dvec3& position,
-	const tensorutil::InterpolationMethod method);
+       const tensorutil::InterpolationMethod method);
 }  // namespace inviwo
