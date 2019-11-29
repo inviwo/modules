@@ -3,85 +3,85 @@
 namespace inviwo {
 dmat2 sample(std::shared_ptr<const TensorField2D> tensorField, const dvec2& position,
              const tensorutil::InterpolationMethod method) {
-    //const auto fBounds = tensorField->getBounds<double>();
+    const auto fBounds = tensorField->getBounds<double>();
 
-    //if (method == tensorutil::InterpolationMethod::Nearest) {
-    //    return tensorField->at(size2_t(glm::round(position * dvec2(fBounds))));
-    //}
+    if (method == tensorutil::InterpolationMethod::Nearest) {
+        return tensorField->at(size2_t(glm::round(position * dvec2(fBounds))));
+    }
 
-    //const auto uBounds = tensorField->getBounds();
-    //const auto indexPosition = size2_t(glm::floor(position * dvec2(fBounds)));
+    const auto uBounds = tensorField->getBounds();
+    const auto indexPosition = size2_t(glm::floor(position * dvec2(fBounds)));
 
-    //const auto pos00 = size2_t(indexPosition);
-    //const auto pos11 = pos00 + size2_t(1);
-    //const auto pos10 = pos00 + size2_t(1, 0);
-    //const auto pos01 = pos00 + size2_t(0, 1);
+    const auto pos00 = size2_t(indexPosition);
+    const auto pos11 = pos00 + size2_t(1);
+    const auto pos10 = pos00 + size2_t(1, 0);
+    const auto pos01 = pos00 + size2_t(0, 1);
 
-    //const auto xFrac = glm::fract(position.x * fBounds.x);
-    //const auto yFrac = glm::fract(position.y * fBounds.y);
+    const auto xFrac = glm::fract(position.x * fBounds.x);
+    const auto yFrac = glm::fract(position.y * fBounds.y);
 
-    //if (pos00 == uBounds) {
-    //    return tensorField->at(uBounds);
-    //}
-    //if (pos00.x == uBounds.x) {
-    //    return glm::mix(tensorField->at(pos00), tensorField->at(pos01), yFrac);
-    //}
-    //if (pos00.y == uBounds.y) {
-    //    return glm::mix(tensorField->at(pos00), tensorField->at(pos10), xFrac);
-    //}
+    if (pos00 == uBounds) {
+        return tensorField->at(uBounds);
+    }
+    if (pos00.x == uBounds.x) {
+        return glm::mix(tensorField->at(pos00), tensorField->at(pos01), yFrac);
+    }
+    if (pos00.y == uBounds.y) {
+        return glm::mix(tensorField->at(pos00), tensorField->at(pos10), xFrac);
+    }
 
-    //if (method == tensorutil::InterpolationMethod::Linear) {
-    //    const auto& tensor00 = tensorField->at(pos00);
-    //    const auto& tensor11 = tensorField->at(pos11);
-    //    const auto& tensor10 = tensorField->at(pos10);
-    //    const auto& tensor01 = tensorField->at(pos01);
+    if (method == tensorutil::InterpolationMethod::Linear) {
+        const auto& tensor00 = tensorField->at(pos00);
+        const auto& tensor11 = tensorField->at(pos11);
+        const auto& tensor10 = tensorField->at(pos10);
+        const auto& tensor01 = tensorField->at(pos01);
 
-    //    const auto botRow = glm::mix(tensor00, tensor10, xFrac);
-    //    const auto topRow = glm::mix(tensor01, tensor11, xFrac);
+        const auto botRow = glm::mix(tensor00, tensor10, xFrac);
+        const auto topRow = glm::mix(tensor01, tensor11, xFrac);
 
-    //    return glm::mix(botRow, topRow, yFrac);
-    //}
-    //if (method == tensorutil::InterpolationMethod::Barycentric) {
-    //    // Find out which triangle we need to use
-    //    auto a = dvec2(pos00) / fBounds;
-    //    auto b = dvec2(pos11) / fBounds;
-    //    auto c = position;
+        return glm::mix(botRow, topRow, yFrac);
+    }
+    if (method == tensorutil::InterpolationMethod::Barycentric) {
+        // Find out which triangle we need to use
+        auto a = dvec2(pos00) / fBounds;
+        auto b = dvec2(pos11) / fBounds;
+        auto c = position;
 
-    //    dmat2 tensorAtA;
-    //    dmat2 tensorAtB;
-    //    dmat2 tensorAtC;
+        dmat2 tensorAtA;
+        dmat2 tensorAtB;
+        dmat2 tensorAtC;
 
-    //    auto sys = dmat2(a.x - c.x, a.y - c.y, b.x - c.x, b.y - c.y);
-    //    // lower
-    //    if (glm::determinant(sys) <= 0.) {
-    //        a = dvec2(pos00) / fBounds;
-    //        tensorAtA = tensorField->at(pos00);
-    //        b = dvec2(pos10) / fBounds;
-    //        tensorAtB = tensorField->at(pos10);
-    //        c = dvec2(pos11) / fBounds;
-    //        tensorAtC = tensorField->at(pos11);
-    //    }
-    //    // upper
-    //    else {
-    //        a = dvec2(pos00) / fBounds;
-    //        tensorAtA = tensorField->at(pos00);
-    //        b = dvec2(pos11) / fBounds;
-    //        tensorAtB = tensorField->at(pos11);
-    //        c = dvec2(pos01) / fBounds;
-    //        tensorAtC = tensorField->at(pos01);
-    //    }
+        auto sys = dmat2(a.x - c.x, a.y - c.y, b.x - c.x, b.y - c.y);
+        // lower
+        if (glm::determinant(sys) <= 0.) {
+            a = dvec2(pos00) / fBounds;
+            tensorAtA = tensorField->at(pos00);
+            b = dvec2(pos10) / fBounds;
+            tensorAtB = tensorField->at(pos10);
+            c = dvec2(pos11) / fBounds;
+            tensorAtC = tensorField->at(pos11);
+        }
+        // upper
+        else {
+            a = dvec2(pos00) / fBounds;
+            tensorAtA = tensorField->at(pos00);
+            b = dvec2(pos11) / fBounds;
+            tensorAtB = tensorField->at(pos11);
+            c = dvec2(pos01) / fBounds;
+            tensorAtC = tensorField->at(pos01);
+        }
 
-    //    // barycentric coords
-    //    const auto v0 = b - a;
-    //    const auto v1 = c - a;
-    //    const auto v2 = position - a;
-    //    const auto den = v0.x * v1.y - v1.x * v0.y;
-    //    const auto v = (v2.x * v1.y - v1.x * v2.y) / den;
-    //    const auto w = (v0.x * v2.y - v2.x * v0.y) / den;
-    //    const auto u = 1.0f - v - w;
+        // barycentric coords
+        const auto v0 = b - a;
+        const auto v1 = c - a;
+        const auto v2 = position - a;
+        const auto den = v0.x * v1.y - v1.x * v0.y;
+        const auto v = (v2.x * v1.y - v1.x * v2.y) / den;
+        const auto w = (v0.x * v2.y - v2.x * v0.y) / den;
+        const auto u = 1.0f - v - w;
 
-    //    return dmat2(u * tensorAtA + v * tensorAtB + w * tensorAtC);
-    //}
+        return dmat2(u * tensorAtA + v * tensorAtB + w * tensorAtC);
+    }
     return dmat2();
 }
 
@@ -89,52 +89,52 @@ std::pair<glm::uint8, dmat3> sample(std::shared_ptr<const TensorField3D> tensorF
                                     const dvec3& position,
                                     const tensorutil::InterpolationMethod method) {
     // Position is in texture space [0,1], translate to index space
-    //const auto bounds = tensorField->getBounds<double>();
-    //const auto indexPosition = position * bounds;
+    const auto bounds = tensorField->getBounds<double>();
+    const auto indexPosition = position * bounds;
 
-    //dmat3 val{0.0};
+    dmat3 val{0.0};
 
-    //if (method == tensorutil::InterpolationMethod::Linear) {
-    //    const auto xm = glm::floor(indexPosition.x);
-    //    const auto ym = glm::floor(indexPosition.y);
-    //    const auto zm = glm::floor(indexPosition.z);
+    if (method == tensorutil::InterpolationMethod::Linear) {
+        const auto xm = glm::floor(indexPosition.x);
+        const auto ym = glm::floor(indexPosition.y);
+        const auto zm = glm::floor(indexPosition.z);
 
-    //    const auto xp = glm::ceil(indexPosition.x);
-    //    const auto yp = glm::ceil(indexPosition.y);
-    //    const auto zp = glm::ceil(indexPosition.z);
+        const auto xp = glm::ceil(indexPosition.x);
+        const auto yp = glm::ceil(indexPosition.y);
+        const auto zp = glm::ceil(indexPosition.z);
 
-    //    const auto xFrac = glm::fract(position.x * bounds.x);
-    //    const auto yFrac = glm::fract(position.y * bounds.y);
-    //    const auto zFrac = glm::fract(position.z * bounds.z);
+        const auto xFrac = glm::fract(position.x * bounds.x);
+        const auto yFrac = glm::fract(position.y * bounds.y);
+        const auto zFrac = glm::fract(position.z * bounds.z);
 
-    //    // Upper layer
-    //    const auto& tensor010 = tensorField->at(size3_t(xm, yp, zm)).second;
-    //    const auto& tensor011 = tensorField->at(size3_t(xm, yp, zp)).second;
-    //    const auto tensorUpperLeft = glm::mix(tensor010, tensor011, zFrac);
+        // Upper layer
+        const auto& tensor010 = tensorField->at(size3_t(xm, yp, zm)).second;
+        const auto& tensor011 = tensorField->at(size3_t(xm, yp, zp)).second;
+        const auto tensorUpperLeft = glm::mix(tensor010, tensor011, zFrac);
 
-    //    const auto& tensor111 = tensorField->at(size3_t(xp, yp, zp)).second;
-    //    const auto& tensor110 = tensorField->at(size3_t(xp, yp, zm)).second;
-    //    const auto tensorUpperRight = glm::mix(tensor110, tensor111, zFrac);
+        const auto& tensor111 = tensorField->at(size3_t(xp, yp, zp)).second;
+        const auto& tensor110 = tensorField->at(size3_t(xp, yp, zm)).second;
+        const auto tensorUpperRight = glm::mix(tensor110, tensor111, zFrac);
 
-    //    const auto tensorUpper = glm::mix(tensorUpperLeft, tensorUpperRight, xFrac);
+        const auto tensorUpper = glm::mix(tensorUpperLeft, tensorUpperRight, xFrac);
 
-    //    // Lower layer
-    //    const auto& tensor000 = tensorField->at(size3_t(xm, ym, zm)).second;
-    //    const auto& tensor001 = tensorField->at(size3_t(xm, ym, zp)).second;
-    //    const auto tensorLowerLeft = glm::mix(tensor000, tensor001, zFrac);
+        // Lower layer
+        const auto& tensor000 = tensorField->at(size3_t(xm, ym, zm)).second;
+        const auto& tensor001 = tensorField->at(size3_t(xm, ym, zp)).second;
+        const auto tensorLowerLeft = glm::mix(tensor000, tensor001, zFrac);
 
-    //    const auto& tensor100 = tensorField->at(size3_t(xp, ym, zm)).second;
-    //    const auto& tensor101 = tensorField->at(size3_t(xp, ym, zp)).second;
-    //    const auto tensorLowerRight = glm::mix(tensor100, tensor101, zFrac);
+        const auto& tensor100 = tensorField->at(size3_t(xp, ym, zm)).second;
+        const auto& tensor101 = tensorField->at(size3_t(xp, ym, zp)).second;
+        const auto tensorLowerRight = glm::mix(tensor100, tensor101, zFrac);
 
-    //    const auto tensorLower = glm::mix(tensorLowerLeft, tensorLowerRight, xFrac);
+        const auto tensorLower = glm::mix(tensorLowerLeft, tensorLowerRight, xFrac);
 
-    //    val = glm::mix(tensorLower, tensorUpper, yFrac);
-    //} else {
-    //    if (method == tensorutil::InterpolationMethod::Nearest) {
-    //        val = tensorField->at(size3_t(glm::round(indexPosition))).second;
-    //    }
-    //}
+        val = glm::mix(tensorLower, tensorUpper, yFrac);
+    } else {
+        if (method == tensorutil::InterpolationMethod::Nearest) {
+            val = tensorField->at(size3_t(glm::round(indexPosition))).second;
+        }
+    }
     return std::pair<glm::uint8, dmat3>(glm::uint8{1}, dmat3());
 }
 }  // namespace inviwo
