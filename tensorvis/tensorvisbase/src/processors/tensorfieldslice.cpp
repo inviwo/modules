@@ -162,10 +162,8 @@ void TensorFieldSlice::process() {
     auto offset = offsetDimensions.x * offsetDimensions.y * (sliceNr_.get());
     offsetOutport_.setData(std::make_shared<size_t>(offset));
 
-    outport2D_.setData(
-        slice<2>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
-    outport3D_.setData(
-        slice<3>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
+    outport2D_.setData(slice<2>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
+    outport3D_.setData(slice<3>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
     sliceOutport_.setData(tensorutil::generateSliceLevelGeometryForTensorField(
         inport_.getData(), sliceColor_.get(), sliceAlongAxis_.get(), sliceNr_.get()));
     planeOutport_.setData(tensorutil::generateSlicePlaneGeometryForTensorField(
