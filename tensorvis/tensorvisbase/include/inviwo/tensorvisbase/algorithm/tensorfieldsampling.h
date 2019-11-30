@@ -154,7 +154,7 @@ sample(std::shared_ptr<const TensorField3D> tensorField, const dvec3& position) 
         val = glm::mix(tensorLower, tensorUpper, yFrac);
     } else {
         if constexpr (method == tensorutil::InterpolationMethod::Nearest) {
-            val = at(size3_t(glm::round(indexPosition))).second;
+            val = tensorField->at(size3_t(glm::round(indexPosition))).second;
         }
     }
     return std::pair<glm::uint8, dmat3>(glm::uint8{1}, val);
