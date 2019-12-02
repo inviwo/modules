@@ -34,7 +34,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo electrostatics::processorInfo_{
     "org.inviwo.electrostatics",  // Class identifier
-    "electrostatics",             // Display name
+    "electrostatics PBC ONLY",             // Display name
     "Undefined",                  // Category
     CodeState::Experimental,      // Code state
     Tags::None,                   // Tags
@@ -45,7 +45,7 @@ electrostatics::electrostatics()
     : Processor()
     , inport_{"inport"}
     , volumePort_("volume")
-    , volumeOUTPort_("test")
+    , meshOUT_("arrows")
     , dataPort_("data")
    
     , index_("Segnment","Segment",8,0,200) {
@@ -53,7 +53,7 @@ electrostatics::electrostatics()
     addProperty(index_);
     addPort(inport_);
     addPort(volumePort_);
-    addPort(volumeOUTPort_);
+    addPort(meshOUT_);
 
     addPort(dataPort_);
 }
@@ -62,6 +62,7 @@ void electrostatics::process() {
 
     auto msc = inport_.getData();
     auto dat = dataPort_.getData();
+    auto mesh = std::make_shared<BasicMesh>();
 
     const auto loadedVolume = volumePort_.getData();
     const auto volumeRAM = loadedVolume->getRepresentation<VolumeRAM>();
@@ -73,17 +74,21 @@ void electrostatics::process() {
     auto& cp = msc->criticalPoints.points;  // all critical points
 
     auto& seg =
-        msc->segmentation.ascending;  // gives the index of the Morse-Smale complex for index
+        msc->segmentation.descending;  // gives the index of the Morse-Smale complex for index
                                       // i (Use this manifold with default CHGCAR reader)
 
     util::IndexMapper3D im(volumeDims);
     std::vector<std::vector<double>> fnValsByIndex;
+    std::vector<std::vector<vec3>> fnPosByIndex;
+
     std::vector<std::string> A_NAME;
     std::vector<vec3> A_POS;
     std::vector<vec3> MaxPoints;
+
     int MAX_SEG = *std::max_element(seg.begin(), seg.end());
     index_.setMaxValue(MAX_SEG);
     fnValsByIndex.resize(MAX_SEG + 1);
+    fnPosByIndex.resize(MAX_SEG + 1);
 
     LogInfo("Input Atoms from the CHGCAR");
 
@@ -102,39 +107,22 @@ void electrostatics::process() {
                         << A_POSZ);
     }
 
-    for (int i = (msc->criticalPoints.numberOfPoints) - (MAX_SEG + 1);
-         i < (msc->criticalPoints.numberOfPoints); i++) {
+   for (int i = 0; i < MAX_SEG; i++) {
         MaxPoints.push_back(vec3(cp[3 * i], cp[3 * i + 1], cp[3 * i + 2]));
     }
 
-    /*for (size_t i = 0; i < totVox; i++) {
-         fnValsByIndex[seg[i]].push_back(volumeRAM->getAsDouble(im(i)));
-     }
-     */
+    for (size_t i = 0; i < totVox; i++) {
+        fnValsByIndex[seg[i]].push_back(volumeRAM->getAsDouble(im(i)));
+        fnPosByIndex[seg[i]].push_back(im(i));
+    }
 
-    auto volOUT = volumeRAM->dispatch<std::shared_ptr<Volume>,dispatching::filter::Scalars>([&](auto inRam) {
-        auto ram = std::make_shared<VolumeRAMPrecision<util::PrecisionValueType<decltype(inRam)>>>(
-            loadedVolume->getDimensions());
-        auto outdata = ram->getDataTyped();
-        auto indata = inRam->getDataTyped();
-        for (size_t i = 0; i < totVox; i++) {
-            fnValsByIndex[seg[i]].push_back(static_cast<double>(indata[i]));
-            if (seg[i] == index_.get()) {
-                outdata[i] = indata[i];
-            }
-        }
-        return std::make_shared<Volume>(ram);
-    });
-    volOUT->setModelMatrix(loadedVolume->getModelMatrix());
-    volOUT->setWorldMatrix(loadedVolume->getWorldMatrix());
-    volOUT->copyMetaDataFrom(*loadedVolume);
-
-    volumeOUTPort_.setData(volOUT);
+    
 
     LogInfo("Analysis results");
     int c = 0;
     for (auto i : A_POS) {
         vec3 tmppos;
+        vec3 tmpmax;
         double distance = INFINITY;
         for (auto j : MaxPoints) {
 
@@ -152,34 +140,58 @@ void electrostatics::process() {
             if (dist < distance) {
                 distance = dist;
                 tmppos = s1;
+                tmpmax = s2;
             }
         }
 
         double Nelec = 0.0;
-        // WILL cause problems if you start changing coordinate-systems.
-        for (auto k : fnValsByIndex[seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
-                                           (tmppos.z) * (volumeDims.z))]]) {
+        vec3 dip = vec3(0, 0, 0);
+        // WILL cause problems if you start changing coordinate-systems. for loop is written with
+        // grid coordinates in mind.
+        for (int k = 0;
+             k < fnValsByIndex[seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
+                                      (tmppos.z) * (volumeDims.z))]]
+                     .size();
+             k++) {
+            double tmpq =
+                fnValsByIndex[seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
+                                     (tmppos.z) * (volumeDims.z))]][k];
+            vec3 tmpr =
+                fnPosByIndex[seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
+                                    (tmppos.z) * (volumeDims.z))]][k];
 
-            Nelec += k;
+            tmpr.x /= volumeDims.x;
+            tmpr.y /= volumeDims.y;
+            tmpr.z /= volumeDims.z;
+
+            vec3 rdip = tmpr - tmppos;
+            // Apply pbc for dipole calculations
+            if (rdip.x >= 0.5) rdip.x -= 1.0;
+            if (rdip.x < -0.5) rdip.x += 1.0;
+            if (rdip.y >= 0.5) rdip.y -= 1.0;
+            if (rdip.y < -0.5) rdip.y += 1.0;
+            if (rdip.z >= 0.5) rdip.z -= 1.0;
+            if (rdip.z < -0.5) rdip.z += 1.0;
+
+            rdip = basis * rdip;
+            dip.x += tmpq * rdip.x;
+            dip.y += tmpq * rdip.y;
+            dip.z += tmpq * rdip.z;
+            Nelec += tmpq;
         }
+
         LogInfo("Atom " << A_NAME[c] << " seg "
                         << seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
                                   (tmppos.z) * (volumeDims.z))]
                         << "   " << i << "  " << tmppos << "  Number of electrons "
-                        << Nelec / static_cast<double>(totVox));
+                        << Nelec / totVox << " Dipole eA " << dip / totVox);
+
+        mesh->append(meshutil::arrow(i - 0.5 * (dip / totVox), i + 0.5 * (dip / totVox),
+                                     vec4(1.0, 1.0, 0.0, 1.0), 0.05, 0.5, 0.1, 16)
+                         .get());
         c++;
     }
-
-    LogInfo("");
-    /*  for (auto fnVals : fnValsByIndex) {
-          double Nelec = 0.0;
-          for (auto fnVal : fnVals) {
-              Nelec += fnVal;
-          }
-          LogInfo("Number of electrons " << Nelec / double(totVox));
-      }*/
-
-    // outport_.setData(myImage);
+    meshOUT_.setData(mesh);
 }
 
 }  // namespace inviwo

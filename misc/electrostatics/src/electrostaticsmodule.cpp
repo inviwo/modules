@@ -29,6 +29,8 @@
 
 #include <inviwo/electrostatics/electrostaticsmodule.h>
 #include <inviwo/electrostatics/processors/electrostatics.h>
+#include <inviwo/electrostatics/processors/electrostatics_test.h>
+#include <inviwo/electrostatics/processors/segmentation.h>
 
 namespace inviwo {
 
@@ -41,6 +43,8 @@ electrostaticsModule::electrostaticsModule(InviwoApplication* app) : InviwoModul
     // Processors
     registerProcessor<electrostatics>();
     // registerProcessor<electrostaticsProcessor>();
+    registerProcessor<electrostatics_test>();
+    registerProcessor<segmentation>();
 
     // Properties
     // registerProperty<electrostaticsProperty>();

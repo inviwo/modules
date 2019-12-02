@@ -31,24 +31,20 @@
 
 #include <inviwo/electrostatics/electrostaticsmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/base/algorithm/meshutils.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
-#include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
+
+
 namespace inviwo {
 
-/** \docpage{org.inviwo.electrostatics, electrostatics}
- * ![](org.inviwo.electrostatics.png?classIdentifier=org.inviwo.electrostatics)
+/** \docpage{org.inviwo.segmentation, segmentation}
+ * ![](org.inviwo.segmentation.png?classIdentifier=org.inviwo.segmentation)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -61,25 +57,23 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_ELECTROSTATICS_API electrostatics : public Processor {
+class IVW_MODULE_ELECTROSTATICS_API segmentation : public Processor {
 public:
-    electrostatics();
-    virtual ~electrostatics() = default;
+    segmentation();
+    virtual ~segmentation() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
-   
-    
 
-private:
-   // ImageOutport outport_;
-    IntProperty index_;
-    topology::MorseSmaleComplexInport inport_;
+	
+
+    private:
+       
+	topology::MorseSmaleComplexInport inport_;
     VolumeInport volumePort_;
-    MeshOutport meshOUT_;
-    DataInport<DataFrame> dataPort_;
+    VolumeSequenceOutport volumeAllPort_;
 };
 
 }  // namespace inviwo

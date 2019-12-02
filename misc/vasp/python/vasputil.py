@@ -9,7 +9,8 @@ import numpy
 
 from pathlib import Path
 
-def parseFile(file):
+def parseFile(file, changeSign):
+    
     file = Path(file)
     if file.suffix == ".xz":
         import lzma
@@ -59,7 +60,10 @@ def parseFile(file):
     chg = []
     for line in lines[10+ntot:10+ntot+rows]:
         for c in line.strip().split():
-            chg.append(float(c))
+            if changeSign:
+                chg.append(-1*float(c))
+            else:
+                chg.append(float(c))
 
     chgdata = numpy.array(chg).astype(numpy.float32)
     chgdata.shape = [dims[0], dims[1], dims[2]]

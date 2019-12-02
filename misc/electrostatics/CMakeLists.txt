@@ -8,6 +8,8 @@ set(HEADER_FILES
     include/inviwo/electrostatics/electrostaticsmodule.h
     include/inviwo/electrostatics/electrostaticsmoduledefine.h
     include/inviwo/electrostatics/processors/electrostatics.h
+    include/inviwo/electrostatics/processors/electrostatics_test.h
+    include/inviwo/electrostatics/processors/segmentation.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -16,6 +18,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/electrostaticsmodule.cpp
     src/processors/electrostatics.cpp
+    src/processors/electrostatics_test.cpp
+    src/processors/segmentation.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

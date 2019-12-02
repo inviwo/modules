@@ -36,6 +36,10 @@ class ChgcarSource(ivw.Processor):
         self.useCustomRange = ivw.properties.BoolProperty(
             "useCustomRange", "Overwrite Data Range", False)
         self.addProperty(self.useCustomRange)
+        
+        self.changeSign = ivw.properties.BoolProperty(
+            "changeSign", "Change the sign of the data", False)
+        self.addProperty(self.changeSign)
 
         self.customDataRange = ivw.properties.DoubleMinMaxProperty(
             "customDataRange", "Custom Data Range", 0.0, 1.0, -1.70e308, 1.79e308)
@@ -69,9 +73,9 @@ class ChgcarSource(ivw.Processor):
     def process(self):
         if len(self.chgcar.value) == 0 or not Path(self.chgcar.value).exists():
             return
-
+       
         self.volume, self.atomPos, self.elem, self.nelem, self.elemtype = vasputil.parseFile(
-            self.chgcar.value)
+            self.chgcar.value, self.changeSign.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
