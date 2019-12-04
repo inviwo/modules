@@ -293,6 +293,5 @@ inline dvec3 vtk_ExtentFromBounds(const double* bounds) {
 inline dvec3 vtk_OffsetFromBounds(const double* bounds) {
     return dvec3{bounds[0], bounds[2], bounds[4]};
 }
-
 }  // namespace tensorutil
 }  // namespace inviwo
