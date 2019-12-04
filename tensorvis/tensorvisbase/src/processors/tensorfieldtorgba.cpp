@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
+#include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
 
 namespace inviwo {
 
@@ -78,7 +79,7 @@ void TensorFieldToRGBA::hoverAction(Event* e) {
         if (auto mouseEvent = dynamic_cast<MouseEvent*>(e)) {
             auto tensorField = inport_.getData();
             auto p = mouseEvent->posNormalized();
-            auto tensor = tensorField->sample(p);
+            auto tensor = sample(tensorField, p, tensorutil::InterpolationMethod::Barycentric);
             tensor_.set(tensor);
         }
     }

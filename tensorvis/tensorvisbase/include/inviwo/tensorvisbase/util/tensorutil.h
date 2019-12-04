@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORUTIL_H
-#define IVW_TENSORUTIL_H
+#pragma once
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -41,7 +40,6 @@
 
 namespace inviwo {
 namespace tensorutil {
-enum class InterpolationMethod { Linear, Nearest, Barycentric };
 
 enum class Anisotropy {
     abs_lamda1_minus_lamda2,
@@ -221,5 +219,3 @@ static const std::string tau_str{u8"τ"};
 }  // namespace tensorutil
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORUTIL_H
