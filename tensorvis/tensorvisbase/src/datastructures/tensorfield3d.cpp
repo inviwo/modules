@@ -456,7 +456,7 @@ void TensorField3D::setExtents(const vec3 &extents) {
     setBasis(basis);
 }
 
-const dvec3 &TensorField3D::getNormalizedVolumePosition(const size_t index) const {
+vec3 TensorField3D::getNormalizedVolumePosition(const size_t index) const {
     return normalizedVolumePositions_[index];
 }
 

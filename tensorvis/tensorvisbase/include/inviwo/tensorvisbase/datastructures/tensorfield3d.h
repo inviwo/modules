@@ -173,7 +173,7 @@ public:
     glm::u8 rank() const { return 2; }
     glm::u8 dimensionality() const { return 3; }
 
-    dvec3 getNormalizedVolumePosition(size_t index) const;
+    vec3 getNormalizedVolumePosition(size_t index) const;
 
     template <typename T = double>
     T getMajorEigenValue(const size_t index) const {
