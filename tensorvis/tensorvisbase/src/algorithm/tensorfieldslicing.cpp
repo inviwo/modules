@@ -97,22 +97,22 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                                           const size_t sliceNumber) {
     auto fieldDimensions = inTensorField->getDimensions();
     size3_t dimensions{0};
-    float frac{0};
+    float frac{0.0f};
 
-    auto stepSize = inTensorField->getSpacing();
+    auto stepSize = inTensorField->getSpacing<float>();
 
     switch (axis) {
         case CartesianCoordinateAxis::X:
             dimensions = size3_t(1, fieldDimensions.y, fieldDimensions.z);
-            frac = static_cast<double>(sliceNumber) * stepSize.x;
+            frac = static_cast<float>(sliceNumber) * stepSize.x;
             break;
         case CartesianCoordinateAxis::Y:
             dimensions = size3_t(fieldDimensions.x, 1, fieldDimensions.z);
-            frac = static_cast<double>(sliceNumber) * stepSize.y;
+            frac = static_cast<float>(sliceNumber) * stepSize.y;
             break;
         case CartesianCoordinateAxis::Z:
             dimensions = size3_t(fieldDimensions.x, fieldDimensions.y, 1);
-            frac = static_cast<double>(sliceNumber) * stepSize.z;
+            frac = static_cast<float>(sliceNumber) * stepSize.z;
             break;
     }
 

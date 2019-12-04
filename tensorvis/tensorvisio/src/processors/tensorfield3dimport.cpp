@@ -333,7 +333,7 @@ void TensorField3DImport::process() {
 
     extents_.set(vec3(extents));
 
-    tensorFieldOut_->setExtents(extents);
+    tensorFieldOut_->setExtents(vec3(extents));
 
     outport_.setData(tensorFieldOut_);
 }

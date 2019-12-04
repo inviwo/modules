@@ -7,11 +7,11 @@ struct I1 : public MetaDataType<glm::f64> {
 
     explicit I1(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<I1>(data_, type_);
+    I1* clone() const final {
+        return new I1(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("I1"); }
 };
@@ -21,11 +21,11 @@ struct I2 : MetaDataType<glm::f64> {
 
     explicit I2(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<I2>(data_, type_);
+    I2* clone() const final {
+        return new I2(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("I2"); }
 };
@@ -35,11 +35,11 @@ struct I3 : MetaDataType<glm::f64> {
 
     explicit I3(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<I3>(data_, type_);
+    I3* clone() const final {
+        return new I3(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("I3"); }
 };
@@ -49,11 +49,11 @@ struct J1 : MetaDataType<glm::f64> {
 
     explicit J1(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<J1>(data_, type_);
+    J1* clone() const final {
+        return new J1(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("J1"); }
 };
@@ -63,11 +63,11 @@ struct J2 : MetaDataType<glm::f64> {
 
     explicit J2(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<J2>(data_, type_);
+    J2* clone() const final {
+        return new J2(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("J2"); }
 };
@@ -77,11 +77,11 @@ struct J3 : MetaDataType<glm::f64> {
 
     explicit J3(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<J3>(data_, type_);
+    J3* clone() const final {
+        return new J3(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("J3"); }
 };
@@ -92,11 +92,11 @@ struct MajorEigenVectors : MetaDataType<dvec3> {
     explicit MajorEigenVectors(const std::vector<dvec3> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<MajorEigenVectors>(data_, type_);
+    MajorEigenVectors* clone() const final {
+        return new MajorEigenVectors(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("MajorEigenVector"); }
 };
@@ -107,11 +107,11 @@ struct IntermediateEigenVectors : MetaDataType<dvec3> {
     explicit IntermediateEigenVectors(const std::vector<dvec3> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<IntermediateEigenVectors>(data_, type_);
+    IntermediateEigenVectors* clone() const final {
+        return new IntermediateEigenVectors(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("IntermediateEigenVector"); }
 };
@@ -122,11 +122,11 @@ struct MinorEigenVectors : MetaDataType<dvec3> {
     explicit MinorEigenVectors(const std::vector<dvec3> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<MinorEigenVectors>(data_, type_);
+    MinorEigenVectors* clone() const final {
+        return new MinorEigenVectors(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("MinorEigenVector"); }
 };
@@ -137,11 +137,11 @@ struct MajorEigenValues : MetaDataType<glm::f64> {
     explicit MajorEigenValues(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<MajorEigenValues>(data_, type_);
+    MajorEigenValues* clone() const final {
+        return new MajorEigenValues(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("Sigma1"); }
 };
@@ -152,11 +152,11 @@ struct IntermediateEigenValues : MetaDataType<glm::f64> {
     explicit IntermediateEigenValues(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<IntermediateEigenValues>(data_, type_);
+    IntermediateEigenValues* clone() const final {
+        return new IntermediateEigenValues(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("Sigma2"); }
 };
@@ -167,11 +167,11 @@ struct MinorEigenValues : MetaDataType<glm::f64> {
     explicit MinorEigenValues(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<MinorEigenValues>(data_, type_);
+    MinorEigenValues* clone() const final {
+        return new MinorEigenValues(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("Sigma3"); }
 };
@@ -182,11 +182,11 @@ struct LodeAngle : MetaDataType<glm::f64> {
     explicit LodeAngle(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<LodeAngle>(data_, type_);
+    LodeAngle* clone() const final {
+        return new LodeAngle(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("LodeAngle"); }
 };
@@ -197,11 +197,11 @@ struct Anisotropy : MetaDataType<glm::f64> {
     explicit Anisotropy(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<Anisotropy>(data_, type_);
+    Anisotropy* clone() const final {
+        return new Anisotropy(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("Anisotropy"); }
 };
@@ -212,11 +212,11 @@ struct LinearAnisotropy : MetaDataType<glm::f64> {
     explicit LinearAnisotropy(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<LinearAnisotropy>(data_, type_);
+    LinearAnisotropy* clone() const final {
+        return new LinearAnisotropy(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("LinearAnisotropy"); }
 };
@@ -227,11 +227,11 @@ struct PlanarAnisotropy : MetaDataType<glm::f64> {
     explicit PlanarAnisotropy(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<PlanarAnisotropy>(data_, type_);
+    PlanarAnisotropy* clone() const final {
+        return new PlanarAnisotropy(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("PlanarAnisotropy"); }
 };
@@ -242,11 +242,11 @@ struct SphericalAnisotropy : MetaDataType<glm::f64> {
     explicit SphericalAnisotropy(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<SphericalAnisotropy>(data_, type_);
+    SphericalAnisotropy* clone() const final {
+        return new SphericalAnisotropy(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("SphericalAnisotropy"); }
 };
@@ -257,11 +257,11 @@ struct Diffusivity : MetaDataType<glm::f64> {
     explicit Diffusivity(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<Diffusivity>(data_, type_);
+    Diffusivity* clone() const final {
+        return new Diffusivity(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("Diffusivity"); }
 };
@@ -272,11 +272,11 @@ struct ShearStress : MetaDataType<glm::f64> {
     explicit ShearStress(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<ShearStress>(data_, type_);
+    ShearStress* clone() const final {
+        return new ShearStress(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("ShearStress"); }
 };
@@ -287,11 +287,11 @@ struct PureShear : MetaDataType<glm::f64> {
     explicit PureShear(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<PureShear>(data_, type_);
+    PureShear* clone() const final {
+        return new PureShear(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("PureShear"); }
 };
@@ -302,11 +302,11 @@ struct ShapeFactor : MetaDataType<glm::f64> {
     explicit ShapeFactor(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<ShapeFactor>(data_, type_);
+    ShapeFactor* clone() const final {
+        return new ShapeFactor(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("ShapeFactor"); }
 };
@@ -317,11 +317,11 @@ struct IsotropicScaling : MetaDataType<glm::f64> {
     explicit IsotropicScaling(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<IsotropicScaling>(data_, type_);
+    IsotropicScaling* clone() const final {
+        return new IsotropicScaling(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("IsotropicScaling"); }
 };
@@ -332,11 +332,11 @@ struct Rotation : MetaDataType<glm::f64> {
     explicit Rotation(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<Rotation>(data_, type_);
+    Rotation* clone() const final {
+        return new Rotation(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("Rotation"); }
 };
@@ -347,11 +347,11 @@ struct FrobeniusNorm : MetaDataType<glm::f64> {
     explicit FrobeniusNorm(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<FrobeniusNorm>(data_, type_);
+    FrobeniusNorm* clone() const final {
+        return new FrobeniusNorm(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("FrobeniusNorm"); }
 };
@@ -362,11 +362,11 @@ struct HillYieldCriterion : MetaDataType<glm::f64> {
     explicit HillYieldCriterion(const std::vector<double> &data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    std::unique_ptr<MetaDataBase> clone() const override {
-        return std::make_unique<HillYieldCriterion>(data_, type_);
+    HillYieldCriterion* clone() const final {
+        return new HillYieldCriterion(data_, type_);
     }
 
-    uint64_t getId() const override { return id(); }
+    uint64_t getId() const final { return id(); }
 
     static constexpr uint64_t id() { return util::constexpr_hash("HillYieldCriterion"); }
 };
