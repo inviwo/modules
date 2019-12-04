@@ -340,7 +340,7 @@ std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorFie
     auto bounds = tensorField->getBounds<float>();
     auto bounds_t = tensorField->getBounds<size_t>();
     auto e = tensorField->getExtents<float>();
-    auto offset = tensorField->getOffset<float>();
+    auto offset = tensorField->getOffset();
 
     auto mesh = std::make_shared<BasicMesh>();
 

@@ -124,7 +124,7 @@ void TensorField3DMetaData::initializeResources() {
     if (inport_.hasData()) {
         auto tensorField = inport_.getData();
 
-        tensorFieldOut_ = tensorField->clone();
+        tensorFieldOut_ = std::shared_ptr<TensorField3D>(tensorField->clone());
 
         sigma1_.set(tensorFieldOut_->hasMetaData<MajorEigenValues>());
         sigma2_.set(tensorFieldOut_->hasMetaData<IntermediateEigenValues>());

@@ -24,8 +24,7 @@ TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, 
     , tensors_(std::move(data))
     , size_(glm::compMul(dimensions))
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     if (size_ != tensors_.size()) {
         throw Exception("Data/dimensions mismatch in TensorField3D constructor.", IVW_CONTEXT);
     }
@@ -42,8 +41,7 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
     , indexMapper_(dimensions)
     , size_(glm::compMul(dimensions))
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     for (size_t i = 0; i < data.size(); i += 9) {
         dmat3 tensor;
         tensor[0][0] = data[i];
@@ -77,8 +75,7 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
     , indexMapper_(dimensions)
     , size_(glm::compMul(dimensions))
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     for (size_t i = 0; i < data.size(); i += 9) {
         dmat3 tensor;
         tensor[0][0] = data[i];
@@ -118,8 +115,7 @@ TensorField3D::TensorField3D(
     , tensors_(std::move(data))
     , size_(glm::compMul(dimensions))
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
     addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
@@ -141,8 +137,7 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
     , tensors_(std::move(data))
     , size_(x * y * z)
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     computeEigenValuesAndEigenVectors();
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
@@ -156,8 +151,7 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
     , indexMapper_(size3_t(x, y, z))
     , size_(x * y * z)
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     for (size_t i = 0; i < data.size(); i += 9) {
         dmat3 tensor;
         tensor[0][0] = data[i];
@@ -185,8 +179,7 @@ TensorField3D::TensorField3D(size3_t dimensions, const double *data, const dvec3
     , indexMapper_(dimensions)
     , size_(dimensions.x * dimensions.y * dimensions.z)
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     tensors_.resize(size_);
     for (size_t i = 0; i < size_; ++i) {
         std::copy(data + i * 9, data + (i + 1) * 9, glm::value_ptr(tensors_[i]));
@@ -204,8 +197,7 @@ TensorField3D::TensorField3D(size3_t dimensions, const float *data, const dvec3 
     , indexMapper_(dimensions)
     , size_(dimensions.x * dimensions.y * dimensions.z)
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
 
     tensors_.resize(size_);
     for (size_t i = 0; i < size_; ++i) {
@@ -228,8 +220,7 @@ TensorField3D::TensorField3D(
     , indexMapper_(size3_t(x, y, z))
     , size_(x * y * z)
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     for (size_t i = 0; i < data.size(); i += 9) {
         dmat3 tensor;
         tensor[0][0] = data[i];
@@ -272,8 +263,7 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
     , tensors_(std::move(data))
     , size_(x * y * z)
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
     addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
     addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
@@ -297,14 +287,36 @@ TensorField3D::TensorField3D(
     , tensors_(std::move(data))
     , size_(glm::compMul(dimensions))
     , rank_(2)
-    , dimensionality_(3)
-    , offset_(dvec3(0.0)) {
+    , dimensionality_(3) {
     for (auto &dataItem : metaData) {
         metaData_.insert(std::make_pair(dataItem.first, dataItem.second->clone()));
     }
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
+}
+
+TensorField3D::TensorField3D(const TensorField3D &tf)
+    : StructuredGridEntity<3>()
+    , dimensions_(tf.dimensions_)
+    , extent_(tf.extent_)
+    , indexMapper_(util::IndexMapper3D(dimensions_))
+    , tensors_(tf.tensors_)
+    , size_(tf.size_)
+    , rank_(tf.rank_)
+    , dimensionality_(tf.dimensionality_)
+    , dataMapEigenValues_(tf.dataMapEigenValues_)
+    , dataMapEigenVectors_(tf.dataMapEigenVectors_)
+    , normalizedVolumePositions_(tf.normalizedVolumePositions_)
+    , coordinates_(tf.coordinates_)
+    , binaryMask_(tf.binaryMask_) {
+
+    setOffset(tf.getOffset());
+    setBasis(tf.getBasis());
+
+    for (const auto &m : tf.metaData_) {
+        metaData_.insert(std::make_pair(m.first, m.second->clone()));
+    }
 }
 
 std::string TensorField3D::getDataInfo() const {
@@ -448,8 +460,8 @@ dmat3 TensorField3D::getBasis() const {
 }
 
 dmat4 TensorField3D::getBasisAndOffset() const {
-    auto basis =
-        dmat3(dvec3(extent_.x, 0.0, 0.0), dvec3(0.0, extent_.y, 0.0), dvec3(0.0, 0.0, extent_.z));
+    auto basis = getBasis();
+    auto offset = getOffset();
 
     dmat4 modelMatrix;
 
@@ -465,9 +477,9 @@ dmat4 TensorField3D::getBasisAndOffset() const {
     modelMatrix[2][1] = basis[2][1];
     modelMatrix[2][2] = basis[2][2];
 
-    modelMatrix[3][0] = offset_[0];
-    modelMatrix[3][1] = offset_[1];
-    modelMatrix[3][2] = offset_[2];
+    modelMatrix[3][0] = offset[0];
+    modelMatrix[3][1] = offset[1];
+    modelMatrix[3][2] = offset[2];
 
     modelMatrix[0][3] = 0.0;
     modelMatrix[1][3] = 0.0;
@@ -680,14 +692,7 @@ bool TensorField3D::hasMetaData(const uint64_t id) const {
     return metaData_.find(id) != metaData_.end();
 }
 
-std::shared_ptr<TensorField3D> TensorField3D::clone() const {
-    auto tensorField = std::make_shared<TensorField3D>(dimensions_, tensors_, metaData_, extent_);
-    tensorField->setOffset(getOffset());
-
-    if (hasMask()) tensorField->setMask(binaryMask_);
-
-    return tensorField;
-}
+TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
 
 void TensorField3D::computeEigenValuesAndEigenVectors() {
     auto func = [](const dmat3 &tensor) -> std::array<std::pair<double, dvec3>, 3> {
