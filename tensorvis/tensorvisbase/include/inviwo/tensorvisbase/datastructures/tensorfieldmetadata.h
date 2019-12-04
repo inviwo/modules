@@ -142,7 +142,7 @@ struct MetaDataBase {
 
     virtual ~MetaDataBase() = default;
 
-    virtual MetaDataBase *clone() const = 0;
+    virtual MetaDataBase* clone() const = 0;
 
     // Getters
     virtual uint64_t getId() const = 0;
@@ -170,7 +170,7 @@ struct MetaDataType : MetaDataBase {
 
     ~MetaDataType() override = default;
 
-    virtual MetaDataType<T> *clone() const override = 0;
+    virtual MetaDataType<T>* clone() const override = 0;
 
     // Getters
     std::pair<TType, TType> getMinMax() const;

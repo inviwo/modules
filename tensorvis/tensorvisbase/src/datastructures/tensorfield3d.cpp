@@ -298,8 +298,6 @@ TensorField3D::TensorField3D(
 
 TensorField3D::TensorField3D(const TensorField3D &tf)
     : StructuredGridEntity<3>()
-    , dataMapEigenValues_(tf.dataMapEigenValues_)
-    , dataMapEigenVectors_(tf.dataMapEigenVectors_)
     , dimensions_(tf.dimensions_)
     , extent_(tf.extent_)
     , indexMapper_(util::IndexMapper3D(dimensions_))
@@ -307,6 +305,8 @@ TensorField3D::TensorField3D(const TensorField3D &tf)
     , size_(tf.size_)
     , rank_(tf.rank_)
     , dimensionality_(tf.dimensionality_)
+    , dataMapEigenValues_(tf.dataMapEigenValues_)
+    , dataMapEigenVectors_(tf.dataMapEigenVectors_)
     , normalizedVolumePositions_(tf.normalizedVolumePositions_)
     , coordinates_(tf.coordinates_)
     , binaryMask_(tf.binaryMask_) {
