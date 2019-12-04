@@ -56,7 +56,7 @@ TensorField3DSubset::TensorField3DSubset()
     addProperty(offset_);
 
     inport_.onChange([&]() {
-        auto dimensions = inport_.getData()->getDimensions<size_t>();
+        auto dimensions = inport_.getData()->getDimensions();
         origin_.setMaxValue(dimensions - size3_t(1));
         origin_.setMinValue(ivec3(0));
 
@@ -79,7 +79,7 @@ TensorField3DSubset::TensorField3DSubset()
         if (!inport_.hasData()) return;
         auto origin = origin_.get();
 
-        offset_.setMaxValue(inport_.getData()->getDimensions<size_t>() - origin - size3_t(1));
+        offset_.setMaxValue(inport_.getData()->getDimensions() - origin - size3_t(1));
     });
 }
 
@@ -88,7 +88,7 @@ void TensorField3DSubset::process() {
 
     auto dimensions = size3_t(offset_.get() + size3_t(1));
 
-    auto spacing = tensorField->getSpacing();
+    auto spacing = tensorField->getSpacing<float>();
 
     std::vector<dmat3> rawData;
 
@@ -101,8 +101,8 @@ void TensorField3DSubset::process() {
     }
 
     auto outField =
-        std::make_shared<TensorField3D>(dimensions, rawData, spacing * dvec3(dimensions));
-    outField->setOffset(tensorField->getOffset() + dvec3(origin_.get()) * spacing);
+        std::make_shared<TensorField3D>(dimensions, rawData, spacing * vec3(dimensions));
+    outField->setOffset(tensorField->getOffset() + vec3(origin_.get()) * spacing);
 
     outport_.setData(outField);
 }

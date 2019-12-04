@@ -77,11 +77,15 @@ public:
                   const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> &metaData,
                   const dvec3 &extent = dvec3(1.0), double sliceCoord = 0.0);
 
-    TensorField3D(const TensorField3D &) = delete;
+    
     TensorField3D &operator=(const TensorField3D &) = delete;
 
     // Destructors
     virtual ~TensorField3D() = default;
+
+    // Copying and Cloning
+    TensorField3D(const TensorField3D& tf);
+    TensorField3D* clone() const override;
 
     std::string getDataInfo() const;
     std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> getVolumeRepresentation() const;
@@ -155,11 +159,9 @@ public:
 
     void setExtents(const dvec3& extent) { extent_ = extent; }
 
-    void setExtents(const dvec3 &extent) { extent_ = extent; }
-
     template <typename T = size_t>
     glm::tvec3<T> getBounds() const {
-        const auto b = dimensions_ - size3_t(1);
+        const auto b = getDimensions() - size3_t(1);
         return glm::tvec3<T>(glm::max(b, size3_t(1)));
     }
     template <typename T = double>
@@ -170,6 +172,7 @@ public:
 
         return extent / bounds;
     }
+
     size_t getSize() const { return size_; }
     glm::u8 rank() const { return 2; }
     glm::u8 dimensionality() const { return 3; }
@@ -317,8 +320,6 @@ public:
     const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> &metaData() const {
         return metaData_;
     }
-
-    SpatialEntity<3>* clone() const override;
 
 protected:
     void computeEigenValuesAndEigenVectors();
