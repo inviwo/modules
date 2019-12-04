@@ -5,11 +5,9 @@
 struct I1 : public MetaDataType<glm::f64> {
     I1() = default;
 
-    explicit I1(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
+    explicit I1(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
-    I1* clone() const final {
-        return new I1(data_, type_);
-    }
+    I1* clone() const final { return new I1(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -19,11 +17,9 @@ struct I1 : public MetaDataType<glm::f64> {
 struct I2 : MetaDataType<glm::f64> {
     I2() = default;
 
-    explicit I2(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
+    explicit I2(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
-    I2* clone() const final {
-        return new I2(data_, type_);
-    }
+    I2* clone() const final { return new I2(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -33,11 +29,9 @@ struct I2 : MetaDataType<glm::f64> {
 struct I3 : MetaDataType<glm::f64> {
     I3() = default;
 
-    explicit I3(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
+    explicit I3(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
-    I3* clone() const final {
-        return new I3(data_, type_);
-    }
+    I3* clone() const final { return new I3(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -47,11 +41,9 @@ struct I3 : MetaDataType<glm::f64> {
 struct J1 : MetaDataType<glm::f64> {
     J1() = default;
 
-    explicit J1(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
+    explicit J1(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
-    J1* clone() const final {
-        return new J1(data_, type_);
-    }
+    J1* clone() const final { return new J1(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -61,11 +53,9 @@ struct J1 : MetaDataType<glm::f64> {
 struct J2 : MetaDataType<glm::f64> {
     J2() = default;
 
-    explicit J2(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
+    explicit J2(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
-    J2* clone() const final {
-        return new J2(data_, type_);
-    }
+    J2* clone() const final { return new J2(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -75,11 +65,9 @@ struct J2 : MetaDataType<glm::f64> {
 struct J3 : MetaDataType<glm::f64> {
     J3() = default;
 
-    explicit J3(const std::vector<double> &data, TensorFeature type) : MetaDataType(data, type){};
+    explicit J3(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
-    J3* clone() const final {
-        return new J3(data_, type_);
-    }
+    J3* clone() const final { return new J3(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -89,12 +77,10 @@ struct J3 : MetaDataType<glm::f64> {
 struct MajorEigenVectors : MetaDataType<dvec3> {
     MajorEigenVectors() = default;
 
-    explicit MajorEigenVectors(const std::vector<dvec3> &data, TensorFeature type)
+    explicit MajorEigenVectors(const std::vector<dvec3>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    MajorEigenVectors* clone() const final {
-        return new MajorEigenVectors(data_, type_);
-    }
+    MajorEigenVectors* clone() const final { return new MajorEigenVectors(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -104,7 +90,7 @@ struct MajorEigenVectors : MetaDataType<dvec3> {
 struct IntermediateEigenVectors : MetaDataType<dvec3> {
     IntermediateEigenVectors() = default;
 
-    explicit IntermediateEigenVectors(const std::vector<dvec3> &data, TensorFeature type)
+    explicit IntermediateEigenVectors(const std::vector<dvec3>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
     IntermediateEigenVectors* clone() const final {
@@ -119,12 +105,10 @@ struct IntermediateEigenVectors : MetaDataType<dvec3> {
 struct MinorEigenVectors : MetaDataType<dvec3> {
     MinorEigenVectors() = default;
 
-    explicit MinorEigenVectors(const std::vector<dvec3> &data, TensorFeature type)
+    explicit MinorEigenVectors(const std::vector<dvec3>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    MinorEigenVectors* clone() const final {
-        return new MinorEigenVectors(data_, type_);
-    }
+    MinorEigenVectors* clone() const final { return new MinorEigenVectors(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -134,12 +118,10 @@ struct MinorEigenVectors : MetaDataType<dvec3> {
 struct MajorEigenValues : MetaDataType<glm::f64> {
     MajorEigenValues() = default;
 
-    explicit MajorEigenValues(const std::vector<double> &data, TensorFeature type)
+    explicit MajorEigenValues(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    MajorEigenValues* clone() const final {
-        return new MajorEigenValues(data_, type_);
-    }
+    MajorEigenValues* clone() const final { return new MajorEigenValues(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -149,7 +131,7 @@ struct MajorEigenValues : MetaDataType<glm::f64> {
 struct IntermediateEigenValues : MetaDataType<glm::f64> {
     IntermediateEigenValues() = default;
 
-    explicit IntermediateEigenValues(const std::vector<double> &data, TensorFeature type)
+    explicit IntermediateEigenValues(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
     IntermediateEigenValues* clone() const final {
@@ -164,12 +146,10 @@ struct IntermediateEigenValues : MetaDataType<glm::f64> {
 struct MinorEigenValues : MetaDataType<glm::f64> {
     MinorEigenValues() = default;
 
-    explicit MinorEigenValues(const std::vector<double> &data, TensorFeature type)
+    explicit MinorEigenValues(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    MinorEigenValues* clone() const final {
-        return new MinorEigenValues(data_, type_);
-    }
+    MinorEigenValues* clone() const final { return new MinorEigenValues(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -179,12 +159,10 @@ struct MinorEigenValues : MetaDataType<glm::f64> {
 struct LodeAngle : MetaDataType<glm::f64> {
     LodeAngle() = default;
 
-    explicit LodeAngle(const std::vector<double> &data, TensorFeature type)
+    explicit LodeAngle(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    LodeAngle* clone() const final {
-        return new LodeAngle(data_, type_);
-    }
+    LodeAngle* clone() const final { return new LodeAngle(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -194,12 +172,10 @@ struct LodeAngle : MetaDataType<glm::f64> {
 struct Anisotropy : MetaDataType<glm::f64> {
     Anisotropy() = default;
 
-    explicit Anisotropy(const std::vector<double> &data, TensorFeature type)
+    explicit Anisotropy(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    Anisotropy* clone() const final {
-        return new Anisotropy(data_, type_);
-    }
+    Anisotropy* clone() const final { return new Anisotropy(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -209,12 +185,10 @@ struct Anisotropy : MetaDataType<glm::f64> {
 struct LinearAnisotropy : MetaDataType<glm::f64> {
     LinearAnisotropy() = default;
 
-    explicit LinearAnisotropy(const std::vector<double> &data, TensorFeature type)
+    explicit LinearAnisotropy(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    LinearAnisotropy* clone() const final {
-        return new LinearAnisotropy(data_, type_);
-    }
+    LinearAnisotropy* clone() const final { return new LinearAnisotropy(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -224,12 +198,10 @@ struct LinearAnisotropy : MetaDataType<glm::f64> {
 struct PlanarAnisotropy : MetaDataType<glm::f64> {
     PlanarAnisotropy() = default;
 
-    explicit PlanarAnisotropy(const std::vector<double> &data, TensorFeature type)
+    explicit PlanarAnisotropy(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    PlanarAnisotropy* clone() const final {
-        return new PlanarAnisotropy(data_, type_);
-    }
+    PlanarAnisotropy* clone() const final { return new PlanarAnisotropy(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -239,12 +211,10 @@ struct PlanarAnisotropy : MetaDataType<glm::f64> {
 struct SphericalAnisotropy : MetaDataType<glm::f64> {
     SphericalAnisotropy() = default;
 
-    explicit SphericalAnisotropy(const std::vector<double> &data, TensorFeature type)
+    explicit SphericalAnisotropy(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    SphericalAnisotropy* clone() const final {
-        return new SphericalAnisotropy(data_, type_);
-    }
+    SphericalAnisotropy* clone() const final { return new SphericalAnisotropy(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -254,12 +224,10 @@ struct SphericalAnisotropy : MetaDataType<glm::f64> {
 struct Diffusivity : MetaDataType<glm::f64> {
     Diffusivity() = default;
 
-    explicit Diffusivity(const std::vector<double> &data, TensorFeature type)
+    explicit Diffusivity(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    Diffusivity* clone() const final {
-        return new Diffusivity(data_, type_);
-    }
+    Diffusivity* clone() const final { return new Diffusivity(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -269,12 +237,10 @@ struct Diffusivity : MetaDataType<glm::f64> {
 struct ShearStress : MetaDataType<glm::f64> {
     ShearStress() = default;
 
-    explicit ShearStress(const std::vector<double> &data, TensorFeature type)
+    explicit ShearStress(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    ShearStress* clone() const final {
-        return new ShearStress(data_, type_);
-    }
+    ShearStress* clone() const final { return new ShearStress(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -284,12 +250,10 @@ struct ShearStress : MetaDataType<glm::f64> {
 struct PureShear : MetaDataType<glm::f64> {
     PureShear() = default;
 
-    explicit PureShear(const std::vector<double> &data, TensorFeature type)
+    explicit PureShear(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    PureShear* clone() const final {
-        return new PureShear(data_, type_);
-    }
+    PureShear* clone() const final { return new PureShear(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -299,12 +263,10 @@ struct PureShear : MetaDataType<glm::f64> {
 struct ShapeFactor : MetaDataType<glm::f64> {
     ShapeFactor() = default;
 
-    explicit ShapeFactor(const std::vector<double> &data, TensorFeature type)
+    explicit ShapeFactor(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    ShapeFactor* clone() const final {
-        return new ShapeFactor(data_, type_);
-    }
+    ShapeFactor* clone() const final { return new ShapeFactor(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -314,12 +276,10 @@ struct ShapeFactor : MetaDataType<glm::f64> {
 struct IsotropicScaling : MetaDataType<glm::f64> {
     IsotropicScaling() = default;
 
-    explicit IsotropicScaling(const std::vector<double> &data, TensorFeature type)
+    explicit IsotropicScaling(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    IsotropicScaling* clone() const final {
-        return new IsotropicScaling(data_, type_);
-    }
+    IsotropicScaling* clone() const final { return new IsotropicScaling(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -329,12 +289,10 @@ struct IsotropicScaling : MetaDataType<glm::f64> {
 struct Rotation : MetaDataType<glm::f64> {
     Rotation() = default;
 
-    explicit Rotation(const std::vector<double> &data, TensorFeature type)
+    explicit Rotation(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    Rotation* clone() const final {
-        return new Rotation(data_, type_);
-    }
+    Rotation* clone() const final { return new Rotation(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -344,12 +302,10 @@ struct Rotation : MetaDataType<glm::f64> {
 struct FrobeniusNorm : MetaDataType<glm::f64> {
     FrobeniusNorm() = default;
 
-    explicit FrobeniusNorm(const std::vector<double> &data, TensorFeature type)
+    explicit FrobeniusNorm(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    FrobeniusNorm* clone() const final {
-        return new FrobeniusNorm(data_, type_);
-    }
+    FrobeniusNorm* clone() const final { return new FrobeniusNorm(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
@@ -359,12 +315,10 @@ struct FrobeniusNorm : MetaDataType<glm::f64> {
 struct HillYieldCriterion : MetaDataType<glm::f64> {
     HillYieldCriterion() = default;
 
-    explicit HillYieldCriterion(const std::vector<double> &data, TensorFeature type)
+    explicit HillYieldCriterion(const std::vector<double>& data, TensorFeature type)
         : MetaDataType(data, type){};
 
-    HillYieldCriterion* clone() const final {
-        return new HillYieldCriterion(data_, type_);
-    }
+    HillYieldCriterion* clone() const final { return new HillYieldCriterion(data_, type_); }
 
     uint64_t getId() const final { return id(); }
 
