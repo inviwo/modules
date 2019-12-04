@@ -33,6 +33,7 @@
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
+#include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <Eigen/Dense>
 #include <modules/eigenutils/eigenutils.h>
@@ -44,43 +45,43 @@
 namespace inviwo {
 namespace tensorutil {
 
-void IVW_MODULE_TENSORVISBASE_API bindTensorFieldAsColorTexture(
+IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(
     std::shared_ptr<Image> &texture, std::shared_ptr<const TensorField2D> tensorField,
     Shader &shader, TextureUnitContainer &textureUnits);
 
-void IVW_MODULE_TENSORVISBASE_API bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
+IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
                                                                 TensorField2DInport &inport,
                                                                 Shader &shader,
                                                                 TextureUnitContainer &textureUnits);
 
-void IVW_MODULE_TENSORVISBASE_API
-bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &tensorField, Shader *shader,
-                               TextureUnitContainer &textureUnits);
+IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTextures(
+    std::shared_ptr<const TensorField3D> &tensorField, Shader *shader,
+    TextureUnitContainer &textureUnits);
 
 std::shared_ptr<TensorField2D> IVW_MODULE_TENSORVISBASE_API
 subsample2D(std::shared_ptr<const TensorField2D> tensorField, size2_t newDimensions,
             const InterpolationMethod method = InterpolationMethod::Barycentric);
 
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
-            const InterpolationMethod method = InterpolationMethod::Linear);
+IVW_MODULE_TENSORVISBASE_API std::shared_ptr<TensorField3D> subsample3D(
+    std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
+    const InterpolationMethod method = InterpolationMethod::Linear);
 
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
-            const InterpolationMethod method, std::function<void(float)> fun);
+IVW_MODULE_TENSORVISBASE_API std::shared_ptr<TensorField3D> subsample3D(
+    std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
+    const InterpolationMethod method, std::function<void(float)> fun);
 
-std::shared_ptr<PosTexColorMesh> IVW_MODULE_TENSORVISBASE_API
+IVW_MODULE_TENSORVISBASE_API std::shared_ptr<PosTexColorMesh>
 generateBoundingBoxAdjacencyForTensorField(std::shared_ptr<const TensorField3D> tensorField,
                                            const vec4 color);
 
-std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateBoundingBoxForTensorField(
+IVW_MODULE_TENSORVISBASE_API std::shared_ptr<BasicMesh> generateBoundingBoxForTensorField(
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color);
 
-std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateSliceLevelGeometryForTensorField(
+IVW_MODULE_TENSORVISBASE_API std::shared_ptr<BasicMesh> generateSliceLevelGeometryForTensorField(
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
     const CartesianCoordinateAxis axis, const size_t sliceNr);
 
-std::shared_ptr<BasicMesh> IVW_MODULE_TENSORVISBASE_API generateSlicePlaneGeometryForTensorField(
+IVW_MODULE_TENSORVISBASE_API std::shared_ptr<BasicMesh> generateSlicePlaneGeometryForTensorField(
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
     const CartesianCoordinateAxis axis, const size_t sliceNr);
 

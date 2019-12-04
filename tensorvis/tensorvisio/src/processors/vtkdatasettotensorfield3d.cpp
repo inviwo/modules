@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisio/processors/vtkdatasettotensorfield3d.h>
-#include <inviwo/tensorvisbase/util/misc.h>
+#include <inviwo/vtk/util/vtkutil.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 
@@ -146,8 +146,8 @@ void VTKDataSetToTensorField3D::generate() {
                          << std::string{tensorArray->GetName()} << "\"");
 
         const auto bounds = dataSet->GetBounds();
-        auto extent = tensorutil::vtk_ExtentFromBounds(bounds);
-        const auto offset = tensorutil::vtk_OffsetFromBounds(bounds);
+        auto extent = vtkutil::extentFromBounds(bounds);
+        const auto offset = vtkutil::offsetFromBounds(bounds);
 
         if (normalizeExtents_.get()) {
             extent /= std::max(std::max(extent.x, extent.y), extent.z);
