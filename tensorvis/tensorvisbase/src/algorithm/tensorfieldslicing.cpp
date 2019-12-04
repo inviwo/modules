@@ -29,8 +29,8 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
 
     switch (axis) {
         case CartesianCoordinateAxis::X:
-            for (size_t y = 0; y < dimensions.x; y++) {
-                for (size_t z = 0; z < dimensions.y; z++) {
+            for (size_t z = 0; z < dimensions.y; z++) {
+                for (size_t y = 0; y < dimensions.x; y++) {
                     auto x = sliceNumber;
                     sliceData[indexMapper(size2_t(y, z))] =
                         tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
@@ -38,8 +38,8 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
             }
             break;
         case CartesianCoordinateAxis::Y:
-            for (size_t x = 0; x < dimensions.x; x++) {
-                for (size_t z = 0; z < dimensions.y; z++) {
+            for (size_t z = 0; z < dimensions.y; z++) {
+                for (size_t x = 0; x < dimensions.x; x++) {
                     auto y = sliceNumber;
                     sliceData[indexMapper(size2_t(x, z))] =
                         tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
@@ -47,8 +47,8 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
             }
             break;
         case CartesianCoordinateAxis::Z:
-            for (size_t x = 0; x < dimensions.x; x++) {
-                for (size_t y = 0; y < dimensions.y; y++) {
+            for (size_t y = 0; y < dimensions.y; y++) {
+                for (size_t x = 0; x < dimensions.x; x++) {
                     auto z = sliceNumber;
                     sliceData[indexMapper(size2_t(x, y))] =
                         tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
@@ -68,7 +68,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                                           const size_t sliceNumber) {
     auto fieldDimensions = inTensorField->getDimensions();
     size3_t dimensions{0};
-    double frac{0};
+    float frac{0};
 
     auto stepSize = inTensorField->getSpacing();
 
@@ -95,8 +95,8 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
 
     switch (axis) {
         case CartesianCoordinateAxis::X:
-            for (size_t y = 0; y < dimensions.y; y++) {
-                for (size_t z = 0; z < dimensions.z; z++) {
+            for (size_t z = 0; z < dimensions.z; z++) {
+                for (size_t y = 0; y < dimensions.y; y++) {
                     auto x = sliceNumber;
                     sliceData[indexMapper(size3_t(0, y, z))] = inTensorField->at(x, y, z).second;
                     offset.x = frac;
@@ -104,8 +104,8 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
             }
             break;
         case CartesianCoordinateAxis::Y:
-            for (size_t x = 0; x < dimensions.x; x++) {
-                for (size_t z = 0; z < dimensions.z; z++) {
+            for (size_t z = 0; z < dimensions.z; z++) {
+                for (size_t x = 0; x < dimensions.x; x++) {
                     auto y = sliceNumber;
                     sliceData[indexMapper(size3_t(x, 0, z))] = inTensorField->at(x, y, z).second;
                     offset.y = frac;
@@ -113,8 +113,8 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
             }
             break;
         case CartesianCoordinateAxis::Z:
-            for (size_t x = 0; x < dimensions.x; x++) {
-                for (size_t y = 0; y < dimensions.y; y++) {
+            for (size_t y = 0; y < dimensions.y; y++) {
+                for (size_t x = 0; x < dimensions.x; x++) {
                     auto z = sliceNumber;
                     sliceData[indexMapper(size3_t(x, y, 0))] = inTensorField->at(x, y, z).second;
                     offset.z = frac;
