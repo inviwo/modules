@@ -1,10 +1,3 @@
-#ifdef _MSC_VER
-//#pragma optimize("", off)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-//#pragma GCC push_options
-//#pragma GCC optimize("O0")
-#endif
-
 #include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -878,7 +871,3 @@ void TensorField3D::computeDataMaps() {
 }
 
 }  // namespace inviwo
-
-#if ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC pop_options
-#endif
