@@ -83,7 +83,7 @@ public:
 
     // Copying and Cloning
     TensorField3D(const TensorField3D &tf);
-    TensorField3D *clone() const override;
+    virtual TensorField3D *clone() const final;
 
     std::string getDataInfo() const;
     std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> getVolumeRepresentation() const;
