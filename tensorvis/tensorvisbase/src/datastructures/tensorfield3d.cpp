@@ -453,7 +453,7 @@ void TensorField3D::setExtents(const vec3 &extents) {
     basis[0] = glm::normalize(basis[0]) * extents[0];
     basis[1] = glm::normalize(basis[1]) * extents[1];
     basis[2] = glm::normalize(basis[2]) * extents[2];
-	setBasis(basis);
+    setBasis(basis);
 }
 
 const dvec3 &TensorField3D::getNormalizedVolumePosition(const size_t index) const {

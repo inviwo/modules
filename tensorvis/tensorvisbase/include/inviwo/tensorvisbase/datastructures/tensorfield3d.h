@@ -153,7 +153,7 @@ public:
         return glm::tvec3<T>(glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2]));
     }
 
-	void setExtents(const vec3& extents);
+    void setExtents(const vec3 &extents);
 
     template <typename T = size_t>
     glm::tvec3<T> getBounds() const {
