@@ -5,6 +5,7 @@ ivw_module(TensorVisBase)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+	  include/inviwo/tensorvisbase/algorithm/tensorfieldslicing.h
     include/inviwo/tensorvisbase/algorithm/tensorfieldsampling.h
     include/inviwo/tensorvisbase/datastructures/deformablecube.h
     include/inviwo/tensorvisbase/datastructures/deformablecylinder.h
@@ -60,6 +61,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/tensorfieldslicing.cpp
     src/algorithm/tensorfieldsampling.cpp
     src/datastructures/deformablecube.cpp
     src/datastructures/deformablecylinder.cpp
