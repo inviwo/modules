@@ -41,8 +41,6 @@
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
-
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.ttk.PersistenceDiagram, Persistence Diagram}
