@@ -53,7 +53,7 @@ const ProcessorInfo TopologicalSimplification::processorInfo_{
 const ProcessorInfo TopologicalSimplification::getProcessorInfo() const { return processorInfo_; }
 
 TopologicalSimplification::TopologicalSimplification()
-    : Processor()
+    : PoolProcessor()
     , inport_("triangulation")
     , persistenceInport_("persistence")
     , outport_("outport")
@@ -82,57 +82,23 @@ TopologicalSimplification::TopologicalSimplification()
 }
 
 void TopologicalSimplification::process() {
-    if (util::is_future_ready(newTriangulation_)) {
-        try {
-            auto triangulation = newTriangulation_.get();
-            outport_.setData(triangulation);
-            hasNewData_ = false;
-            getActivityIndicator().setActive(false);
-        } catch (Exception &) {
-            // Need to reset the future, VS bug:
-            // http://stackoverflow.com/questions/33899615/stdfuture-still-valid-after-calling-get-which-throws-an-exception
-            newTriangulation_ = {};
-            outport_.setData(nullptr);
-            hasNewData_ = false;
-            throw;
-        }
-    } else if (!newTriangulation_.valid()) {  // We are not waiting for a calculation
-        if (inport_.isChanged() || persistenceInport_.isChanged() || threshold_.isModified() ||
-            invert_.isModified() || simplificationDirty_) {
-            getActivityIndicator().setActive(true);
-            updateOutport();
-        }
-    }
-}
-
-void TopologicalSimplification::updateOutport() {
-    auto done = [this]() {
-        dispatchFront([this]() {
-            simplificationDirty_ = false;
-            hasNewData_ = true;
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    };
-
     // Save input and properties needed to calculate ttk contour tree to local variables
     const auto inportData = inport_.getData();
     const auto persistenceDiagram = persistenceInport_.getData();
 
-    auto compute = [this, inportData, persistenceDiagram, done, threshold = threshold_.get(),
-                    invert =
-                        invert_.get()]() -> std::shared_ptr<const topology::TriangulationData> {
-        ScopedClockCPU clock{"TopologicalSimplification",
-                             "Topological simplification for " + std::to_string(threshold_.get()),
-                             std::chrono::milliseconds(500), LogLevel::Info};
+    using Result = std::shared_ptr<topology::TriangulationData>;
 
-        auto triangulation =
-            inportData->getScalarValues()
-                ->getEditableRepresentation<BufferRAM>()
-                ->dispatch<std::shared_ptr<topology::TriangulationData>,
-                           dispatching::filter::Scalars>([inportData,
-                                                          &diagramData = *persistenceDiagram,
-                                                          threshold, invert](const auto buffer) {
+    auto compute = [inportData, persistenceDiagram, threshold = threshold_.get(),
+                    invert = invert_.get()](pool::Stop stop, pool::Progress progress) -> Result {
+        return inportData->getScalarValues()
+            ->getEditableRepresentation<BufferRAM>()
+            ->dispatch<std::shared_ptr<topology::TriangulationData>, dispatching::filter::Scalars>(
+                [inportData, &diagramData = *persistenceDiagram, threshold, invert, stop,
+                 progress](const auto buffer) -> Result {
+                    if (stop) return nullptr;
                     using ValueType = util::PrecisionValueType<decltype(buffer)>;
+
+                    progress(0.1f);
 
                     // select most/least persistent critical point pairs
                     std::vector<int> authorizedCriticalPoints;
@@ -143,6 +109,9 @@ void TopologicalSimplification::updateOutport() {
                             authorizedCriticalPoints.push_back(std::get<2>(diagramData[i]));
                         }
                     }
+                    if (stop) return nullptr;
+
+                    progress(0.2f);
 
                     // create a copy of the data values, nth component will be overwritten by
                     // simplification
@@ -167,32 +136,29 @@ void TopologicalSimplification::updateOutport() {
                         int retVal = simplification
                                          .execute<typename DataFormat<ValueType>::primitive, int>();
                         if (retVal < 0) {
-                            throw TTKException("Error computing ttk::TopologicalSimplification");
+                            throw TTKException("Error computing ttk::TopologicalSimplification",
+                                               IVW_CONTEXT_CUSTOM("TopologicalSimplification"));
                         }
                     }
+
+                    progress(0.8f);
 
                     // create a new triangulation based on the old one, but with new scalar values
                     auto result = std::make_shared<topology::TriangulationData>(*inportData);
                     result->setScalarValues(util::makeBuffer(std::move(simplifiedDataValues)));
                     result->setOffsets(std::move(offsets));
 
+                    progress(0.99f);
+
                     return result;
                 });
-
-        done();
-        return triangulation;
     };
 
-    newTriangulation_ = dispatchPool(compute);
-}
-
-void TopologicalSimplification::invalidate(InvalidationLevel invalidationLevel, Property *source) {
-    notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, source);
-    if (!isValid() && hasNewData_) {
-        for (auto &port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
-    }
-    notifyObserversInvalidationEnd(this);
+    outport_.clear();
+    dispatchOne(compute, [this](Result result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

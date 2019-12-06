@@ -31,7 +31,7 @@
 #include <inviwo/topologytoolkit/utils/ttkutils.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/stdextensions.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -53,7 +53,7 @@ const ProcessorInfo PersistenceDiagram::processorInfo_{
 const ProcessorInfo PersistenceDiagram::getProcessorInfo() const { return processorInfo_; }
 
 PersistenceDiagram::PersistenceDiagram()
-    : Processor()
+    : PoolProcessor()
     , inport_("triangulation")
     , outport_("outport")
     , dataFrameOutport_("dataframe")
@@ -67,77 +67,78 @@ PersistenceDiagram::PersistenceDiagram()
 
 void PersistenceDiagram::process() {
     // Compute persistence diagram
-    auto diagramOutput = std::make_shared<topology::PersistenceDiagramData>();
 
-    ttk::PersistenceDiagram diagram;
+    using Result =
+        std::pair<std::shared_ptr<topology::PersistenceDiagramData>, std::shared_ptr<DataFrame>>;
 
-    diagram.setComputeSaddleConnectors(computeSaddleConnectors_);
+    auto compute = [data = inport_.getData(), css = computeSaddleConnectors_.get()]() {
+        return data->getScalarValues()
+            ->getEditableRepresentation<BufferRAM>()
+            ->dispatch<Result, dispatching::filter::Scalars>([&](const auto buffer) -> Result {
+                using ValueType = util::PrecisionValueType<decltype(buffer)>;
+                using DiagramOutput =
+                    std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId,
+                                           ttk::CriticalType, ValueType, ttk::SimplexId>>;
 
-    diagram.setupTriangulation(
-        const_cast<ttk::Triangulation*>(&inport_.getData()->getTriangulation()));
+                std::vector<int> offsets(buffer->getSize());
+                std::iota(offsets.begin(), offsets.end(), 0);
 
-    auto dataFrame = std::make_shared<DataFrame>();
+                DiagramOutput output;
+                ttk::PersistenceDiagram diagram;
+                diagram.setComputeSaddleConnectors(css);
+                diagram.setupTriangulation(
+                    const_cast<ttk::Triangulation*>(&data->getTriangulation()));
+                diagram.setOutputCTDiagram(&output);
+                diagram.setInputScalars(buffer->getDataContainer().data());
+                diagram.setInputOffsets(offsets.data());
 
-    auto compute = [&](const auto buffer) {
-        using ValueType = util::PrecisionValueType<decltype(buffer)>;
-        using DiagramOutput =
-            std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId,
-                                   ttk::CriticalType, ValueType, ttk::SimplexId>>;
+                int retVal = diagram.execute<typename DataFormat<ValueType>::primitive, int>();
+                if (retVal != 0) {
+                    throw TTKException("Error computing ttk::PersistenceDiagram");
+                }
 
-        ScopedClockCPU clock{"PersistenceDiagram", "Persistence diagram computation",
-                             std::chrono::milliseconds(500), LogLevel::Info};
+                // convert result of ttk::PersistenceDiagram into a DataFrame
+                std::vector<ValueType> birth;
+                std::vector<ValueType> death;
 
-        std::vector<int> offsets(buffer->getSize());
-        std::iota(offsets.begin(), offsets.end(), 0);
+                const auto& scalars = buffer->getDataContainer();
+                birth.reserve(output.size());
+                death.reserve(output.size());
+                for (const auto& extremumPair : output) {
+                    birth.push_back(scalars[std::get<0>(extremumPair)]);
+                    death.push_back(scalars[std::get<2>(extremumPair)]);
+                }
 
-        DiagramOutput output;
-        diagram.setOutputCTDiagram(&output);
+                auto dataFrame = std::make_shared<DataFrame>();
+                dataFrame->addColumnFromBuffer("Birth",
+                                               util::makeBuffer<ValueType>(std::move(birth)));
+                dataFrame->addColumnFromBuffer("Death",
+                                               util::makeBuffer<ValueType>(std::move(death)));
+                dataFrame->updateIndexBuffer();
 
-        diagram.setInputScalars(buffer->getDataContainer().data());
-        diagram.setInputOffsets(offsets.data());
+                // TODO: use proper data structure with a Buffer<ValueType> instead of conversion,
+                // needs to match type of scalar buffer!
 
-        int retVal = diagram.execute<typename DataFormat<ValueType>::primitive, int>();
+                // convert diagram output to topology::PersistenceDiagramData, i.e. float
+                auto diagramOutput = std::make_shared<topology::PersistenceDiagramData>();
+                diagramOutput->reserve(output.size());
+                for (auto& elem : output) {
+                    diagramOutput->emplace_back(std::make_tuple(
+                        std::get<0>(elem), std::get<1>(elem), std::get<2>(elem), std::get<3>(elem),
+                        static_cast<float>(std::get<4>(elem)), std::get<5>(elem)));
+                }
 
-        // convert result of ttk::PersistenceDiagram into a DataFrame
-        std::vector<ValueType> birth;
-        std::vector<ValueType> death;
-
-        const auto& scalars = buffer->getDataContainer();
-        birth.reserve(output.size());
-        death.reserve(output.size());
-        for (const auto& extremumPair : output) {
-            birth.push_back(scalars[std::get<0>(extremumPair)]);
-            death.push_back(scalars[std::get<2>(extremumPair)]);
-        }
-
-        dataFrame->addColumnFromBuffer("Birth", util::makeBuffer<ValueType>(std::move(birth)));
-        dataFrame->addColumnFromBuffer("Death", util::makeBuffer<ValueType>(std::move(death)));
-        dataFrame->updateIndexBuffer();
-
-        // TODO: use proper data structure with a Buffer<ValueType> instead of conversion, needs
-        // to match type of scalar buffer!
-
-        // convert diagram output to topology::PersistenceDiagramData, i.e. float
-        diagramOutput->reserve(output.size());
-        for (auto& elem : output) {
-            diagramOutput->emplace_back(std::make_tuple(
-                std::get<0>(elem), std::get<1>(elem), std::get<2>(elem), std::get<3>(elem),
-                static_cast<float>(std::get<4>(elem)), std::get<5>(elem)));
-        }
-
-        return retVal;
+                return std::make_pair(diagramOutput, dataFrame);
+            });
     };
 
-    int retVal = inport_.getData()
-                     ->getScalarValues()
-                     ->getEditableRepresentation<BufferRAM>()
-                     ->dispatch<int, dispatching::filter::Scalars>(compute);
-    if (retVal < 0) {
-        throw TTKException("Error computing ttk::PersistenceDiagram");
-    }
-
-    outport_.setData(diagramOutput);
-    dataFrameOutport_.setData(dataFrame);
+    outport_.setData(nullptr);
+    dataFrameOutport_.setData(nullptr);
+    dispatchOne(compute, [this](Result result) {
+        outport_.setData(result.first);
+        dataFrameOutport_.setData(result.second);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

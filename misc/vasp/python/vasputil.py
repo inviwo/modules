@@ -83,6 +83,7 @@ def createMesh(pos, elemtype, basis, offset, pm, margin):
     color = []
     radius = []
     picking = []
+    index = []
 
     pm.resize(len(elemtype))
 
@@ -96,6 +97,7 @@ def createMesh(pos, elemtype, basis, offset, pm, margin):
             color.append(c)
             radius.append(r)
             picking.append(pi)
+            index.append(i)
 
         if margin > 0.0:
             for shift in itertools.product([-1, 0, 1], repeat=3):
@@ -116,6 +118,8 @@ def createMesh(pos, elemtype, basis, offset, pm, margin):
         numpy.array(radius).astype(numpy.float32)))
     mesh.addBuffer(ivw.data.BufferType.PickingAttrib, ivw.data.Buffer(
         numpy.array(picking).astype(numpy.uint32)))
+    mesh.addBuffer(ivw.data.BufferType.IndexAttrib, ivw.data.Buffer(
+        numpy.array(index).astype(numpy.uint32)))
     return mesh
 
 

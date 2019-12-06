@@ -34,7 +34,7 @@
 #include <inviwo/topologytoolkit/ports/triangulationdataport.h>
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
@@ -58,7 +58,7 @@ namespace inviwo {
  * \class PersistenceCurve
  * \brief computes the persistence curve for a given TTK triangulation
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API PersistenceCurve : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API PersistenceCurve : public PoolProcessor {
 public:
     PersistenceCurve();
     virtual ~PersistenceCurve() = default;

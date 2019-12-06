@@ -51,60 +51,65 @@ const ProcessorInfo PersistenceCurve::processorInfo_{
 };
 const ProcessorInfo PersistenceCurve::getProcessorInfo() const { return processorInfo_; }
 
-PersistenceCurve::PersistenceCurve() : Processor(), inport_("triangulation"), outport_("outport") {
+PersistenceCurve::PersistenceCurve()
+    : PoolProcessor(), inport_("triangulation"), outport_("outport") {
 
     addPort(inport_);
     addPort(outport_);
 }
 
 void PersistenceCurve::process() {
-    auto compute = [&](const auto buffer) {
-        using ValueType = util::PrecisionValueType<decltype(buffer)>;
-        using PrimitiveType = typename DataFormat<ValueType>::primitive;
+    using Result = std::shared_ptr<DataFrame>;
+    auto compute = [data = inport_.getData()]() {
+        return data->getScalarValues()
+            ->getEditableRepresentation<BufferRAM>()
+            ->dispatch<Result, dispatching::filter::Scalars>([&](const auto buffer) {
+                using ValueType = util::PrecisionValueType<decltype(buffer)>;
+                using PrimitiveType = typename DataFormat<ValueType>::primitive;
 
-        std::vector<int> offsets(inport_.getData()->getOffsets());
+                std::vector<int> offsets(data->getOffsets());
 
-        // Computing the persistence curve
-        ttk::PersistenceCurve curve;
-        std::vector<std::pair<PrimitiveType, ttk::SimplexId>> outputCurve;
-        curve.setupTriangulation(
-            const_cast<ttk::Triangulation*>(&inport_.getData()->getTriangulation()));
-        curve.setInputScalars(buffer->getDataContainer().data());
-        curve.setInputOffsets(offsets.data());
-        curve.setOutputCTPlot(&outputCurve);
+                // Computing the persistence curve
+                ttk::PersistenceCurve curve;
+                std::vector<std::pair<PrimitiveType, ttk::SimplexId>> outputCurve;
+                curve.setupTriangulation(
+                    const_cast<ttk::Triangulation*>(&data->getTriangulation()));
+                curve.setInputScalars(buffer->getDataContainer().data());
+                curve.setInputOffsets(offsets.data());
+                curve.setOutputCTPlot(&outputCurve);
 
-        int retVal = curve.execute<PrimitiveType, int>();
-        if (retVal < 0) {
-            throw TTKException("Error computing ttk::PersistenceCurve");
-        }
+                int retVal = curve.execute<PrimitiveType, int>();
+                if (retVal < 0) {
+                    throw TTKException("Error computing ttk::PersistenceCurve");
+                }
 
-        // convert result of ttk::PersistenceCurve into a DataFrame
-        auto dataFrame = std::make_shared<DataFrame>();
+                // convert result of ttk::PersistenceCurve into a DataFrame
+                auto dataFrame = std::make_shared<DataFrame>();
 
-        std::vector<PrimitiveType> persistence;
-        std::vector<unsigned int> count;
-        persistence.reserve(outputCurve.size());
-        count.reserve(outputCurve.size());
-        for (const auto& p : outputCurve) {
-            persistence.emplace_back(p.first);
-            count.emplace_back(static_cast<unsigned int>(p.second));
-        }
+                std::vector<PrimitiveType> persistence;
+                std::vector<unsigned int> count;
+                persistence.reserve(outputCurve.size());
+                count.reserve(outputCurve.size());
+                for (const auto& p : outputCurve) {
+                    persistence.emplace_back(p.first);
+                    count.emplace_back(static_cast<unsigned int>(p.second));
+                }
 
-        dataFrame->addColumnFromBuffer("Persistence",
-                                       util::makeBuffer<PrimitiveType>(std::move(persistence)));
-        dataFrame->addColumnFromBuffer("Number of Points",
-                                       util::makeBuffer<unsigned int>(std::move(count)));
-        dataFrame->updateIndexBuffer();
+                dataFrame->addColumnFromBuffer(
+                    "Persistence", util::makeBuffer<PrimitiveType>(std::move(persistence)));
+                dataFrame->addColumnFromBuffer("Number of Points",
+                                               util::makeBuffer<unsigned int>(std::move(count)));
+                dataFrame->updateIndexBuffer();
 
-        return dataFrame;
+                return dataFrame;
+            });
     };
 
-    auto data = inport_.getData()
-                    ->getScalarValues()
-                    ->getEditableRepresentation<BufferRAM>()
-                    ->dispatch<std::shared_ptr<DataFrame>, dispatching::filter::Scalars>(compute);
-
-    outport_.setData(data);
+    outport_.setData(nullptr);
+    dispatchOne(compute, [this](Result result) {
+        outport_.setData(std::move(result));
+        newResults();
+    });
 }
 
 }  // namespace inviwo

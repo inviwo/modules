@@ -33,9 +33,10 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/ports/persistencediagramport.h>
 #include <inviwo/topologytoolkit/ports/triangulationdataport.h>
+#include <inviwo/core/processors/activityindicator.h>
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/boolproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
@@ -62,7 +63,7 @@ namespace inviwo {
  * \class PersistenceDiagram
  * \brief computes the persistence diagram for a given TTK triangulation
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API PersistenceDiagram : public Processor {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API PersistenceDiagram : public PoolProcessor {
 public:
     PersistenceDiagram();
     virtual ~PersistenceDiagram() = default;
@@ -76,7 +77,6 @@ private:
     topology::TriangulationInport inport_;
     topology::PersistenceDiagramOutport outport_;
     DataFrameOutport dataFrameOutport_;
-
     BoolProperty computeSaddleConnectors_;
 };
 

@@ -143,7 +143,7 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
     auto indicesRam = std::make_shared<IndexBufferRAM>();
     auto indices = std::make_shared<IndexBuffer>(indicesRam);
     auto &indVec = indicesRam->getDataContainer();
-    newmesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None), indices);
+    newmesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None), indices);
     size_t skipped = 0;
     for (auto f_it : mesh.faces()) {
         if (mesh.valence(f_it) != 3) {
