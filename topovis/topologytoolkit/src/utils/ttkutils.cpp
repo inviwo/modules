@@ -177,12 +177,12 @@ std::shared_ptr<Mesh> ttkTriangulationToMesh(const TriangulationData& data, cons
     }
 
     if (!indicesLines.empty()) {
-        mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-                          util::makeIndexBuffer(std::move(indicesLines)));
+        mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                         util::makeIndexBuffer(std::move(indicesLines)));
     }
     if (!indicesTriangles.empty()) {
-        mesh->addIndicies(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
-                          util::makeIndexBuffer(std::move(indicesTriangles)));
+        mesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None),
+                         util::makeIndexBuffer(std::move(indicesTriangles)));
     }
 
     mesh->setModelMatrix(data.getModelMatrix());

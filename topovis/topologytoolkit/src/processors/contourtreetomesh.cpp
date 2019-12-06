@@ -140,13 +140,13 @@ void ContourTreeToMesh::process() {
     // critical points
     std::vector<uint32_t> indices(tree->getNumberOfNodes());
     std::iota(indices.begin(), indices.end(), 0);
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
-                      util::makeIndexBuffer(std::move(indices)));
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
+                     util::makeIndexBuffer(std::move(indices)));
     // arcs
     std::vector<uint32_t> arcIndices(tree->getNumberOfSuperArcs() * 2);
     std::iota(arcIndices.begin(), arcIndices.end(), tree->getNumberOfNodes());
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-                      util::makeIndexBuffer(std::move(arcIndices)));
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                     util::makeIndexBuffer(std::move(arcIndices)));
 
     outport_.setData(mesh);
 }

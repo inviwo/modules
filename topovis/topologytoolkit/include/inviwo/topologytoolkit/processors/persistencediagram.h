@@ -36,10 +36,12 @@
 #include <inviwo/core/processors/activityindicator.h>
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/boolproperty.h>
 
 #include <inviwo/dataframe/datastructures/dataframe.h>
+
+
 
 namespace inviwo {
 
@@ -63,8 +65,7 @@ namespace inviwo {
  * \class PersistenceDiagram
  * \brief computes the persistence diagram for a given TTK triangulation
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API PersistenceDiagram : public Processor,
-                                                          public ActivityIndicatorOwner {
+class IVW_MODULE_TOPOLOGYTOOLKIT_API PersistenceDiagram : public PoolProcessor {
 public:
     PersistenceDiagram();
     virtual ~PersistenceDiagram() = default;
@@ -74,23 +75,11 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void invalidate(InvalidationLevel invalidationLevel,
-                            Property* source = nullptr) override;
-
 private:
-    void compute();
-
     topology::TriangulationInport inport_;
     topology::PersistenceDiagramOutport outport_;
     DataFrameOutport dataFrameOutport_;
-
     BoolProperty computeSaddleConnectors_;
-
-    std::future<
-        std::pair<std::shared_ptr<topology::PersistenceDiagramData>, std::shared_ptr<DataFrame>>>
-        newData_;
-
-    bool hasNewData_ = false;
 };
 
 }  // namespace inviwo

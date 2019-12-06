@@ -53,7 +53,7 @@ const ProcessorInfo PersistenceDiagram::processorInfo_{
 const ProcessorInfo PersistenceDiagram::getProcessorInfo() const { return processorInfo_; }
 
 PersistenceDiagram::PersistenceDiagram()
-    : Processor()
+    : PoolProcessor()
     , inport_("triangulation")
     , outport_("outport")
     , dataFrameOutport_("dataframe")
@@ -66,43 +66,15 @@ PersistenceDiagram::PersistenceDiagram()
 }
 
 void PersistenceDiagram::process() {
-    if (util::is_future_ready(newData_)) {
-        try {
-            auto data = newData_.get();
-            outport_.setData(data.first);
-            dataFrameOutport_.setData(data.second);
-
-            hasNewData_ = false;
-            getActivityIndicator().setActive(false);
-        } catch (Exception&) {
-            outport_.setData(nullptr);
-            hasNewData_ = false;
-            throw;
-        }
-    } else {
-        if (inport_.isChanged() || computeSaddleConnectors_.isModified()) {
-            getActivityIndicator().setActive(true);
-            compute();
-        }
-    }
-}
-
-void PersistenceDiagram::compute() {
     // Compute persistence diagram
 
-    auto done = [this]() {
-        dispatchFront([this]() {
-            hasNewData_ = true;
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    };
+    using Result =
+        std::pair<std::shared_ptr<topology::PersistenceDiagramData>, std::shared_ptr<DataFrame>>;
 
-    auto compute = [done, data = inport_.getData(), css = computeSaddleConnectors_.get()]() {
+    auto compute = [data = inport_.getData(), css = computeSaddleConnectors_.get()]() {
         return data->getScalarValues()
             ->getEditableRepresentation<BufferRAM>()
-            ->dispatch<std::pair<std::shared_ptr<topology::PersistenceDiagramData>,
-                                 std::shared_ptr<DataFrame>>,
-                       dispatching::filter::Scalars>([&](const auto buffer) {
+            ->dispatch<Result, dispatching::filter::Scalars>([&](const auto buffer) -> Result {
                 using ValueType = util::PrecisionValueType<decltype(buffer)>;
                 using DiagramOutput =
                     std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId,
@@ -156,21 +128,17 @@ void PersistenceDiagram::compute() {
                         static_cast<float>(std::get<4>(elem)), std::get<5>(elem)));
                 }
 
-                done();
                 return std::make_pair(diagramOutput, dataFrame);
             });
     };
 
-    newData_ = dispatchPool(compute);
-}
-
-void PersistenceDiagram::invalidate(InvalidationLevel invalidationLevel, Property* source) {
-    notifyObserversInvalidationBegin(this);
-    PropertyOwner::invalidate(invalidationLevel, source);
-    if (!isValid() && hasNewData_) {
-        for (auto& port : getOutports()) port->invalidate(InvalidationLevel::InvalidOutput);
-    }
-    notifyObserversInvalidationEnd(this);
+    outport_.setData(nullptr);
+    dataFrameOutport_.setData(nullptr);
+    dispatchOne(compute, [this](Result result) {
+        outport_.setData(result.first);
+        dataFrameOutport_.setData(result.second);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

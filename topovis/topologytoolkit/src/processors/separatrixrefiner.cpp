@@ -330,10 +330,10 @@ std::shared_ptr<Mesh> refine(const topology::MorseSmaleComplexData& msc,
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radii)));
     // mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
 
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
-                      util::makeIndexBuffer(std::move(cpIndices)));
-    mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
-                      util::makeIndexBuffer(std::move(sepIndices)));
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
+                     util::makeIndexBuffer(std::move(cpIndices)));
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                     util::makeIndexBuffer(std::move(sepIndices)));
 
     // vertex positions are already transformed
     mesh->setModelMatrix(mat4(1.0f));
