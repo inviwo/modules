@@ -7,306 +7,25 @@
 
 namespace inviwo {
 
-TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, const vec3 &extent,
-                             float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , tensors_(std::move(data))
-    , size_(glm::compMul(dimensions))
-    , rank_(2)
-    , dimensionality_(3) {
-    if (size_ != tensors_.size()) {
-        throw Exception("Data/dimensions mismatch in TensorField3D constructor.", IVW_CONTEXT);
-    }
+TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
+    : dimensions_(dimensions)
+    , tensors_(std::make_shared<std::vector<mat3>>(tensors))
+    , indexMapper_(util::IndexMapper3D(dimensions)) {}
 
-    computeEigenValuesAndEigenVectors();
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
+TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors,
+                             const DataFrame &metaData)
+    : dimensions_(dimensions)
+    , indexMapper_(util::IndexMapper3D(dimensions))
+    , tensors_(std::make_shared<std::vector<mat3>>(tensors))
+    , metaData_(std::make_shared<DataFrame>(metaData)) {}
 
-TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double> &data,
-                             const vec3 &extent, float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , size_(glm::compMul(dimensions))
-    , rank_(2)
-    , dimensionality_(3) {
-    for (size_t i = 0; i < data.size(); i += 9) {
-        dmat3 tensor;
-        tensor[0][0] = data[i];
-        tensor[1][0] = data[i + 1];
-        tensor[2][0] = data[i + 2];
-        tensor[0][1] = data[i + 3];
-        tensor[1][1] = data[i + 4];
-        tensor[2][1] = data[i + 5];
-        tensor[0][2] = data[i + 6];
-        tensor[1][2] = data[i + 7];
-        tensor[2][2] = data[i + 8];
-
-        tensors_.push_back(tensor);
-    }
-
-    computeEigenValuesAndEigenVectors();
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double> &data,
-                             const std::vector<double> &majorEigenValues,
-                             const std::vector<double> &middleEigenValues,
-                             const std::vector<double> &minorEigenValues,
-                             const std::vector<dvec3> &majorEigenVectors,
-                             const std::vector<dvec3> &middleEigenVectors,
-                             const std::vector<dvec3> &minorEigenVectors, const vec3 &extent,
-                             float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , size_(glm::compMul(dimensions))
-    , rank_(2)
-    , dimensionality_(3) {
-    for (size_t i = 0; i < data.size(); i += 9) {
-        dmat3 tensor;
-        tensor[0][0] = data[i];
-        tensor[1][0] = data[i + 1];
-        tensor[2][0] = data[i + 2];
-        tensor[0][1] = data[i + 3];
-        tensor[1][1] = data[i + 4];
-        tensor[2][1] = data[i + 5];
-        tensor[0][2] = data[i + 6];
-        tensor[1][2] = data[i + 7];
-        tensor[2][2] = data[i + 8];
-
-        tensors_.push_back(tensor);
-    }
-
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
-
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
-
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(
-    const size3_t dimensions, std::vector<dmat3> data, const std::vector<double> &majorEigenValues,
-    const std::vector<double> &middleEigenValues, const std::vector<double> &minorEigenValues,
-    const std::vector<dvec3> &majorEigenVectors, const std::vector<dvec3> &middleEigenVectors,
-    const std::vector<dvec3> &minorEigenVectors, const vec3 &extent, float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , tensors_(std::move(data))
-    , size_(glm::compMul(dimensions))
-    , rank_(2)
-    , dimensionality_(3) {
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
-
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
-
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             std::vector<dmat3> data, const vec3 &extent, float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(size3_t(x, y, z))
-    , indexMapper_(size3_t(x, y, z))
-    , tensors_(std::move(data))
-    , size_(x * y * z)
-    , rank_(2)
-    , dimensionality_(3) {
-    computeEigenValuesAndEigenVectors();
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             const std::vector<double> &data, const vec3 &extent, float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(size3_t(x, y, z))
-    , indexMapper_(size3_t(x, y, z))
-    , size_(x * y * z)
-    , rank_(2)
-    , dimensionality_(3) {
-    for (size_t i = 0; i < data.size(); i += 9) {
-        dmat3 tensor;
-        tensor[0][0] = data[i];
-        tensor[1][0] = data[i + 1];
-        tensor[2][0] = data[i + 2];
-        tensor[0][1] = data[i + 3];
-        tensor[1][1] = data[i + 4];
-        tensor[2][1] = data[i + 5];
-        tensor[0][2] = data[i + 6];
-        tensor[1][2] = data[i + 7];
-        tensor[2][2] = data[i + 8];
-
-        tensors_.push_back(tensor);
-    }
-
-    computeEigenValuesAndEigenVectors();
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(size3_t dimensions, const double *data, const vec3 &extent,
-                             float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
-    , rank_(2)
-    , dimensionality_(3) {
-    tensors_.resize(size_);
-    for (size_t i = 0; i < size_; ++i) {
-        std::copy(data + i * 9, data + (i + 1) * 9, glm::value_ptr(tensors_[i]));
-    }
-
-    computeEigenValuesAndEigenVectors();
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(size3_t dimensions, const float *data, const vec3 &extent,
-                             float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , size_(dimensions.x * dimensions.y * dimensions.z)
-    , rank_(2)
-    , dimensionality_(3) {
-
-    tensors_.resize(size_);
-    for (size_t i = 0; i < size_; ++i) {
-        std::copy(data + i * 9, data + (i + 1) * 9, glm::value_ptr(tensors_[i]));
-    }
-
-    computeEigenValuesAndEigenVectors();
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(
-    const size_t x, const size_t y, const size_t z, const std::vector<double> &data,
-    const std::vector<double> &majorEigenValues, const std::vector<double> &middleEigenValues,
-    const std::vector<double> &minorEigenValues, const std::vector<dvec3> &majorEigenVectors,
-    const std::vector<dvec3> &middleEigenVectors, const std::vector<dvec3> &minorEigenVectors,
-    const vec3 &extent, float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(size3_t(x, y, z))
-    , indexMapper_(size3_t(x, y, z))
-    , size_(x * y * z)
-    , rank_(2)
-    , dimensionality_(3) {
-    for (size_t i = 0; i < data.size(); i += 9) {
-        dmat3 tensor;
-        tensor[0][0] = data[i];
-        tensor[1][0] = data[i + 1];
-        tensor[2][0] = data[i + 2];
-        tensor[0][1] = data[i + 3];
-        tensor[1][1] = data[i + 4];
-        tensor[2][1] = data[i + 5];
-        tensor[0][2] = data[i + 6];
-        tensor[1][2] = data[i + 7];
-        tensor[2][2] = data[i + 8];
-
-        tensors_.push_back(tensor);
-    }
-
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
-
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
-
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             std::vector<dmat3> data, const std::vector<double> &majorEigenValues,
-                             const std::vector<double> &middleEigenValues,
-                             const std::vector<double> &minorEigenValues,
-                             const std::vector<dvec3> &majorEigenVectors,
-                             const std::vector<dvec3> &middleEigenVectors,
-                             const std::vector<dvec3> &minorEigenVectors, const vec3 &extent,
-                             float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(size3_t(x, y, z))
-    , indexMapper_(size3_t(x, y, z))
-    , tensors_(std::move(data))
-    , size_(x * y * z)
-    , rank_(2)
-    , dimensionality_(3) {
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
-
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
-
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
-
-TensorField3D::TensorField3D(
-    const size3_t dimensions, std::vector<dmat3> data,
-    const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> &metaData, const vec3 &extent,
-    float sliceCoord)
-    : StructuredGridEntity<3>()
-    , dimensions_(dimensions)
-    , indexMapper_(dimensions)
-    , tensors_(std::move(data))
-    , size_(glm::compMul(dimensions))
-    , rank_(2)
-    , dimensionality_(3) {
-    for (auto &dataItem : metaData) {
-        metaData_.insert(std::make_pair(dataItem.first, dataItem.second->clone()));
-    }
-
-    computeNormalizedScreenCoordinates(sliceCoord);
-    computeDataMaps();
-    setBasis(
-        {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
-}
+TensorField3D::TensorField3D(const size3_t &dimensions,
+                             std::shared_ptr<const std::vector<mat3>> tensors,
+                             std::shared_ptr<const DataFrame> metaData)
+    : dimensions_(dimensions)
+    , indexMapper_(util::IndexMapper3D(dimensions))
+    , tensors_(tensors)
+    , metaData_(metaData) {}
 
 TensorField3D::TensorField3D(const TensorField3D &tf)
     : StructuredGridEntity<3>()
@@ -318,15 +37,9 @@ TensorField3D::TensorField3D(const TensorField3D &tf)
     , size_(tf.size_)
     , rank_(tf.rank_)
     , dimensionality_(tf.dimensionality_)
-    , normalizedVolumePositions_(tf.normalizedVolumePositions_)
     , binaryMask_(tf.binaryMask_) {
-
     setOffset(tf.getOffset());
     setBasis(tf.getBasis());
-
-    for (const auto &m : tf.metaData_) {
-        metaData_.insert(std::make_pair(m.first, m.second->clone()));
-    }
 }
 
 std::string TensorField3D::getDataInfo() const {
@@ -334,7 +47,7 @@ std::string TensorField3D::getDataInfo() const {
     ss << "<table border='0' cellspacing='0' cellpadding='0' "
           "style='border-color:white;white-space:pre;'>/n"
        << tensorutil::getHTMLTableRowString("Type", "3D tensor field")
-       << tensorutil::getHTMLTableRowString("Number of tensors", tensors_.size())
+       << tensorutil::getHTMLTableRowString("Number of tensors", tensors_->size())
        << tensorutil::getHTMLTableRowString("Dimensions", dimensions_)
        << tensorutil::getHTMLTableRowString("Max major field eigenvalue",
                                             dataMapEigenValues_[0].valueRange.y)
@@ -386,7 +99,7 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> TensorField3D::getVo
     for (size_t z = 0; z < dimensions_.z; z++) {
         for (size_t x = 0; x < dimensions_.x; x++) {
             for (size_t y = 0; y < dimensions_.y; y++) {
-                auto tensor = at(size3_t(x, y, z)).second;
+                auto tensor = at(size3_t(x, y, z));
                 XXYYZZ->setFromDVec3(size3_t(x, y, z),
                                      dvec3(tensor[0][0], tensor[1][1], tensor[2][2]));
 
@@ -399,65 +112,12 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> TensorField3D::getVo
     return ret;
 }
 
-std::pair<glm::uint8, dmat3 &> TensorField3D::at(const size3_t position) {
-    glm::uint8 maskVal = 0;
-
-    if (hasMask()) maskVal = binaryMask_[indexMapper_(position)];
-
-    return std::pair<glm::uint8, dmat3 &>(maskVal, tensors_[indexMapper_(position)]);
-}
-
-std::pair<glm::uint8, dmat3 &> TensorField3D::at(const size_t x, const size_t y, const size_t z) {
-    glm::uint8 maskVal = 0;
-
-    if (hasMask()) maskVal = binaryMask_[indexMapper_(size3_t(x, y, z))];
-
-    return std::pair<glm::uint8, dmat3 &>(maskVal, tensors_[indexMapper_(size3_t(x, y, z))]);
-}
-
-std::pair<glm::uint8, dmat3 &> TensorField3D::at(const size_t index) {
-    glm::uint8 maskVal = 0;
-
-    if (hasMask()) maskVal = binaryMask_[index];
-
-    return std::pair<glm::uint8, dmat3 &>(maskVal, tensors_[index]);
-}
-
-std::pair<glm::uint8, const dmat3 &> TensorField3D::at(const size3_t position) const {
-    glm::uint8 maskVal = 0;
-
-    if (hasMask()) maskVal = binaryMask_[indexMapper_(position)];
-
-    return std::pair<glm::uint8, const dmat3 &>(maskVal, tensors_[indexMapper_(position)]);
-}
-
-std::pair<glm::uint8, const dmat3 &> TensorField3D::at(const size_t x, const size_t y,
-                                                       const size_t z) const {
-    glm::uint8 maskVal = 0;
-
-    if (hasMask()) maskVal = binaryMask_[indexMapper_(size3_t(x, y, z))];
-
-    return std::pair<glm::uint8, const dmat3 &>(maskVal, tensors_[indexMapper_(size3_t(x, y, z))]);
-}
-
-std::pair<glm::uint8, const dmat3 &> TensorField3D::at(const size_t index) const {
-    glm::uint8 maskVal = 0;
-
-    if (hasMask()) maskVal = binaryMask_[index];
-
-    return std::pair<glm::uint8, const dmat3 &>(maskVal, tensors_[index]);
-}
-
 void TensorField3D::setExtents(const vec3 &extents) {
     auto basis = getBasis();
     basis[0] = glm::normalize(basis[0]) * extents[0];
     basis[1] = glm::normalize(basis[1]) * extents[1];
     basis[2] = glm::normalize(basis[2]) * extents[2];
     setBasis(basis);
-}
-
-vec3 TensorField3D::getNormalizedVolumePosition(const size_t index) const {
-    return normalizedVolumePositions_[index];
 }
 
 mat4 TensorField3D::getBasisAndOffset() const {
@@ -624,73 +284,10 @@ const std::vector<double> &TensorField3D::minorEigenValues() const {
     return getMetaData<MinorEigenValues>();
 }
 
-const std::vector<dmat3> &TensorField3D::tensors() const { return tensors_; }
+std::shared_ptr<std::vector<mat3>> TensorField3D::tensors() const { return tensors_; }
 
 int TensorField3D::getNumDefinedEntries() const {
     return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
-}
-
-bool TensorField3D::hasMetaData(const TensorFeature feature) const {
-    switch (feature) {
-        case TensorFeature::I1:
-            return hasMetaData<I1>();
-        case TensorFeature::I2:
-            return hasMetaData<I2>();
-        case TensorFeature::I3:
-            return hasMetaData<I3>();
-        case TensorFeature::J1:
-            return hasMetaData<J1>();
-        case TensorFeature::J2:
-            return hasMetaData<J2>();
-        case TensorFeature::J3:
-            return hasMetaData<J3>();
-        case TensorFeature::Sigma1:
-            return hasMetaData<MajorEigenValues>();
-        case TensorFeature::Sigma2:
-            return hasMetaData<IntermediateEigenValues>();
-        case TensorFeature::Sigma3:
-            return hasMetaData<MinorEigenValues>();
-        case TensorFeature::MajorEigenVector:
-            return hasMetaData<MajorEigenVectors>();
-        case TensorFeature::IntermediateEigenVector:
-            return hasMetaData<IntermediateEigenVectors>();
-        case TensorFeature::MinorEigenVector:
-            return hasMetaData<MinorEigenVectors>();
-        case TensorFeature::LodeAngle:
-            return hasMetaData<LodeAngle>();
-        case TensorFeature::Anisotropy:
-            return hasMetaData<Anisotropy>();
-        case TensorFeature::LinearAnisotropy:
-            return hasMetaData<LinearAnisotropy>();
-        case TensorFeature::PlanarAnisotropy:
-            return hasMetaData<PlanarAnisotropy>();
-        case TensorFeature::SphericalAnisotropy:
-            return hasMetaData<SphericalAnisotropy>();
-        case TensorFeature::Diffusivity:
-            return hasMetaData<Diffusivity>();
-        case TensorFeature::ShearStress:
-            return hasMetaData<ShearStress>();
-        case TensorFeature::PureShear:
-            return hasMetaData<PureShear>();
-        case TensorFeature::ShapeFactor:
-            return hasMetaData<ShapeFactor>();
-        case TensorFeature::IsotropicScaling:
-            return hasMetaData<IsotropicScaling>();
-        case TensorFeature::Rotation:
-            return hasMetaData<Rotation>();
-        case TensorFeature::FrobeniusNorm:
-            return hasMetaData<FrobeniusNorm>();
-        case TensorFeature::HillYieldCriterion:
-            return hasMetaData<HillYieldCriterion>();
-        default:
-            break;
-    }
-
-    return false;
-}
-
-bool TensorField3D::hasMetaData(const uint64_t id) const {
-    return metaData_.find(id) != metaData_.end();
 }
 
 TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
@@ -736,7 +333,7 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
     minorEigenVectors.resize(size_);
 
 #pragma omp parallel for
-    for (int i = 0; i < static_cast<int>(tensors_.size()); i++) {
+    for (int i = 0; i < static_cast<int>(tensors_->size()); i++) {
         auto tensor = tensors_[i];
         auto eigenValuesAndEigenVectors = func(tensor);
 
@@ -759,8 +356,17 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
     addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 }
 
-void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
-    normalizedVolumePositions_.resize(size_);
+vec3 TensorField3D::getNormalizedVolumePosition(const size_t index, const double sliceCoord) const {
+    auto stepSize = getSpacing();
+    const auto pos = indexMapper_(index);
+    return vec3(dimensions_.x < 2 ? sliceCoord : pos.x * stepSize.x,
+                dimensions_.y < 2 ? sliceCoord : pos.y * stepSize.y,
+                dimensions_.z < 2 ? sliceCoord : pos.z * stepSize.z);
+}
+
+std::vector<vec3> TensorField3D::getNormalizedScreenCoordinates(double sliceCoord) {
+    std::vector<vec3> normalizedVolumePositions;
+    normalizedVolumePositions.resize(size_);
 
     auto stepSize = getSpacing();
 
@@ -772,13 +378,13 @@ void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
     for (size_t z = 0; z < dimensions_.z; z++) {
         for (size_t y = 0; y < dimensions_.y; y++) {
             for (size_t x = 0; x < dimensions_.x; x++) {
-                normalizedVolumePositions_[indexMapper_(size3_t(x, y, z))] =
-                    dvec3(dimensions_.x < 2 ? sliceCoord : x * stepSize.x,
-                          dimensions_.y < 2 ? sliceCoord : y * stepSize.y,
-                          dimensions_.z < 2 ? sliceCoord : z * stepSize.z);
+                const auto index = indexMapper_(size3_t(x, y, z));
+                normalizedVolumePositions[index] = getNormalizedVolumePosition(index, sliceCoord);
             }
         }
     }
+
+    return normalizedVolumePositions;
 }
 
 void TensorField3D::computeDataMaps() {
