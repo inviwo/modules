@@ -15,7 +15,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/pbcmodule.cpp
-    src/processors/pbcutils.cpp
+    
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
