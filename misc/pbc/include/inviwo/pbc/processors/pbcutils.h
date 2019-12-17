@@ -29,58 +29,42 @@
 
 #pragma once
 
-#include <inviwo/electrostatics/electrostaticsmoduledefine.h>
+#include <inviwo/pbc/pbcmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <modules/base/algorithm/meshutils.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
-#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/util/indexmapper.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
-#include <inviwo/dataframe/properties/dataframeproperty.h>
-#include <inviwo/pbc/processors/pbcutils.h>
+#include <warn/push>
+#include <warn/ignore/all>
+
 namespace inviwo {
 
-/** \docpage{org.inviwo.electrostatics, electrostatics}
- * ![](org.inviwo.electrostatics.png?classIdentifier=org.inviwo.electrostatics)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-class IVW_MODULE_ELECTROSTATICS_API electrostatics : public Processor {
-public:
-    electrostatics();
-    virtual ~electrostatics() = default;
+namespace pbcutil {
 
-    virtual void process() override;
+template <glm::length_t L, typename T>
+T distance(glm::mat<L, L, T> basis, glm::mat<L, L, T> inv, glm::vec<L, T> a, glm::vec<L, T> b) {
+    auto s21 = inv * (b - a);
+    for (glm::length_t i = 0; i < L; i++) {
+        s21[i] -= rint(s21[i]);
+    }
+    return glm::length(basis * s21);
+}
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-   
-    
+template <glm::length_t L, typename T>
+T distance(glm::mat<L, L, T> basis, glm::vec<L, T> a, glm::vec<L, T> b) {
+    return distance(basis, glm::inverse(basis), a, b);
+}
 
-private:
-   // ImageOutport outport_;
-    IntProperty index_;
-    topology::MorseSmaleComplexInport inport_;
-    VolumeInport volumePort_;
-    MeshOutport meshOUT_;
-    DataInport<DataFrame> dataPort_;
-};
+template <glm::length_t L, typename T>
+glm::vec<L, T> NearestN(glm::vec<L, T> a) {
+    for (glm::length_t i = 0; i < L; i++) {
+        if (a[i] >= 0.5) a[i] -= 1.0;
+        if (a[i] < -0.5) a[i] += 1.0;
+    }
+    return a;
+}
 
+
+
+}  // namespace pbcutil
 }  // namespace inviwo

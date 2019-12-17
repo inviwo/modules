@@ -122,25 +122,16 @@ void electrostatics::process() {
     int c = 0;
     for (auto i : A_POS) {
         vec3 tmppos;
-        vec3 tmpmax;
         double distance = INFINITY;
         for (auto j : MaxPoints) {
 
-            // PERIODIC boundary conditions for distances
-            vec3 s1 = inv * i;
-            vec3 s2 = inv * j;
-            vec3 s21 = s2 - s1;
-            s21.x -= rint(s21.x);
-            s21.y -= rint(s21.y);
-            s21.z -= rint(s21.z);
-            vec3 d21 = basis * s21;
-            double dist = sqrt(glm::dot(d21, d21));
-            // Ends here
+           // PERIODIC boundary conditions for distances  
+           double dist = pbcutil::distance(basis, inv, i, j);
+			// Ends here
 
             if (dist < distance) {
                 distance = dist;
-                tmppos = s1;
-                tmpmax = s2;
+                tmppos = inv*i;    
             }
         }
 
@@ -153,27 +144,30 @@ void electrostatics::process() {
                                       (tmppos.z) * (volumeDims.z))]]
                      .size();
              k++) {
-            double tmpq =
+            //Make a tmp variable for q and r of the voxel in seg[A_POS][k] 
+			double tmpq =
                 fnValsByIndex[seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
                                      (tmppos.z) * (volumeDims.z))]][k];
-            vec3 tmpr =
+            //Tmpr is in voxel coordiantes 
+			vec3 tmpr =
                 fnPosByIndex[seg[im((tmppos.x) * (volumeDims.x), (tmppos.y) * (volumeDims.y),
                                     (tmppos.z) * (volumeDims.z))]][k];
+
+			//Convert to grid coordinates 
 
             tmpr.x /= volumeDims.x;
             tmpr.y /= volumeDims.y;
             tmpr.z /= volumeDims.z;
 
+			
+			//Computre the vector from the A_POS to the voxel
             vec3 rdip = tmpr - tmppos;
             // Apply pbc for dipole calculations
-            if (rdip.x >= 0.5) rdip.x -= 1.0;
-            if (rdip.x < -0.5) rdip.x += 1.0;
-            if (rdip.y >= 0.5) rdip.y -= 1.0;
-            if (rdip.y < -0.5) rdip.y += 1.0;
-            if (rdip.z >= 0.5) rdip.z -= 1.0;
-            if (rdip.z < -0.5) rdip.z += 1.0;
+            rdip = pbcutil::NearestN(rdip);
 
+            // Convert to real coordinates
             rdip = basis * rdip;
+			//Compute electrostatics
             dip.x += tmpq * rdip.x;
             dip.y += tmpq * rdip.y;
             dip.z += tmpq * rdip.z;

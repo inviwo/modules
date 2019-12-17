@@ -75,7 +75,7 @@ void segmentation::process() {
                 for (size_t i = 0; i < totVox; i++) {
           
                     if (seg[i] == j) {
-                        //outdata[i] = -1 * indata[i]; 
+                        //outdata[i] = -1 * indata[i]; //May be useful keep as a coment just in case.
                         outdata[i] = indata[i];
                     }
                 }
