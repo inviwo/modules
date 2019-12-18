@@ -10,7 +10,9 @@ namespace inviwo {
 TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
     : dimensions_(dimensions)
     , tensors_(std::make_shared<std::vector<mat3>>(tensors))
-    , indexMapper_(util::IndexMapper3D(dimensions)) {}
+    , indexMapper_(util::IndexMapper3D(dimensions)) {
+    initializeDefaultMetaData();
+}
 
 TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors,
                              const DataFrame &metaData)
@@ -150,141 +152,31 @@ mat4 TensorField3D::getBasisAndOffset() const {
     return modelMatrix;
 }
 
-std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEigenVectorsForTensor(
-    const size_t index) const {
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
-
-    const auto &majorEigenValue = majorEigenValues[index];
-    const auto &middleEigenValue = middleEigenValues[index];
-    const auto &minorEigenValue = minorEigenValues[index];
-
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
-
-    const auto &majorEigenVector = majorEigenVectors[index];
-    const auto &middleEigenVector = middleEigenVectors[index];
-    const auto &minorEigenVector = minorEigenVectors[index];
-
-    std::array<std::pair<double, dvec3>, 3> ret;
-    ret[0] = {majorEigenValue, majorEigenVector};
-    ret[1] = {middleEigenValue, middleEigenVector};
-    ret[2] = {minorEigenValue, minorEigenVector};
-
-    return ret;
+const std::vector<vec3> &TensorField3D::majorEigenVectors() const {
+    return this->getMetaDataContainer<attributes::MajorEigenVector>();
 }
 
-std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEigenVectorsForTensor(
-    const size3_t pos) const {
-    auto index = indexMapper_(pos);
-
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
-
-    const auto &majorEigenValue = majorEigenValues[index];
-    const auto &middleEigenValue = middleEigenValues[index];
-    const auto &minorEigenValue = minorEigenValues[index];
-
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
-
-    const auto &majorEigenVector = majorEigenVectors[index];
-    const auto &middleEigenVector = middleEigenVectors[index];
-    const auto &minorEigenVector = minorEigenVectors[index];
-
-    std::array<std::pair<double, dvec3>, 3> ret;
-    ret[0] = {majorEigenValue, majorEigenVector};
-    ret[1] = {middleEigenValue, middleEigenVector};
-    ret[2] = {minorEigenValue, minorEigenVector};
-
-    return ret;
+const std::vector<vec3> &TensorField3D::middleEigenVectors() const {
+    return this->getMetaDataContainer<attributes::IntermediateEigenVector>();
 }
 
-std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size_t index) const {
-    auto ret = std::array<double, 3>();
-
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
-
-    ret[0] = majorEigenValues[index];
-    ret[1] = middleEigenValues[index];
-    ret[2] = minorEigenValues[index];
-    return ret;
+const std::vector<vec3> &TensorField3D::minorEigenVectors() const {
+    return this->getMetaDataContainer<attributes::MinorEigenVector>();
 }
 
-std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size3_t &pos) const {
-    auto index = indexMapper_(pos);
-    auto ret = std::array<double, 3>();
-
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
-
-    ret[0] = majorEigenValues[index];
-    ret[1] = middleEigenValues[index];
-    ret[2] = minorEigenValues[index];
-
-    return ret;
+const std::vector<float> &TensorField3D::majorEigenValues() const {
+    return this->getMetaDataContainer<attributes::Lambda1>();
 }
 
-std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size_t index) const {
-    auto ret = std::array<dvec3, 3>();
-
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
-
-    ret[0] = majorEigenVectors[index];
-    ret[1] = middleEigenVectors[index];
-    ret[2] = minorEigenVectors[index];
-
-    return ret;
+const std::vector<float> &TensorField3D::middleEigenValues() const {
+    return this->getMetaDataContainer<attributes::Lambda2>();
 }
 
-std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size3_t &pos) const {
-    auto index = indexMapper_(pos);
-    auto ret = std::array<dvec3, 3>();
-
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
-
-    ret[0] = majorEigenVectors[index];
-    ret[1] = middleEigenVectors[index];
-    ret[2] = minorEigenVectors[index];
-    return ret;
+const std::vector<float> &TensorField3D::minorEigenValues() const {
+    return this->getMetaDataContainer<attributes::Lambda3>();
 }
 
-const std::vector<dvec3> &TensorField3D::majorEigenVectors() const {
-    return getMetaData<MajorEigenVectors>();
-}
-
-const std::vector<dvec3> &TensorField3D::middleEigenVectors() const {
-    return getMetaData<IntermediateEigenVectors>();
-}
-
-const std::vector<dvec3> &TensorField3D::minorEigenVectors() const {
-    return getMetaData<MinorEigenVectors>();
-}
-
-const std::vector<double> &TensorField3D::majorEigenValues() const {
-    return getMetaData<MajorEigenValues>();
-}
-
-const std::vector<double> &TensorField3D::middleEigenValues() const {
-    return getMetaData<IntermediateEigenValues>();
-}
-
-const std::vector<double> &TensorField3D::minorEigenValues() const {
-    return getMetaData<MinorEigenValues>();
-}
-
-std::shared_ptr<std::vector<mat3>> TensorField3D::tensors() const { return tensors_; }
+std::shared_ptr<const std::vector<mat3>> TensorField3D::tensors() const { return tensors_; }
 
 int TensorField3D::getNumDefinedEntries() const {
     return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
@@ -292,49 +184,51 @@ int TensorField3D::getNumDefinedEntries() const {
 
 TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
 
-void TensorField3D::computeEigenValuesAndEigenVectors() {
-    auto func = [](const dmat3 &tensor) -> std::array<std::pair<double, dvec3>, 3> {
-        if (tensor == dmat3(0.0)) {
-            return {{std::make_pair(0, dvec3{0}), std::make_pair(0, dvec3{0}),
-                     std::make_pair(0, dvec3{0})}};
-            return std::array<std::pair<double, dvec3>, 3>{std::pair<double, dvec3>{0, dvec3(0)},
-                                                           std::pair<double, dvec3>{0, dvec3(0)},
-                                                           std::pair<double, dvec3>{0, dvec3(0)}};
+void TensorField3D::initializeDefaultMetaData() {
+    auto func = [](const mat3 &tensor) -> std::array<std::pair<float, vec3>, 3> {
+        if (tensor == mat3(0.0f)) {
+            return {{std::make_pair(0, vec3{0}), std::make_pair(0, vec3{0}),
+                     std::make_pair(0, vec3{0})}};
+            return std::array<std::pair<float, vec3>, 3>{std::make_pair(0, dvec3(0)),
+                                                         std::make_pair(0, dvec3(0)),
+                                                         std::make_pair(0, dvec3(0))};
         }
 
         Eigen::EigenSolver<Eigen::Matrix3d> solver(util::glm2eigen(tensor));
-        const auto eigenValues = util::eigen2glm<double, 3, 1>(solver.eigenvalues().real());
-        const auto eigenVectors = util::eigen2glm<double, 3, 3>(solver.eigenvectors().real());
+        const auto eigenValues = util::eigen2glm<float, 3, 1>(solver.eigenvalues().real());
+        const auto eigenVectors = util::eigen2glm<float, 3, 3>(solver.eigenvectors().real());
 
         const auto range =
             util::as_range(glm::value_ptr(eigenValues), glm::value_ptr(eigenValues) + 3);
 
-        const auto ordering = util::ordering(range, std::greater<double>());
+        const auto ordering = util::ordering(range, std::greater<float>());
 
         return {{std::make_pair(eigenValues[ordering[0]], eigenVectors[ordering[0]]),
                  std::make_pair(eigenValues[ordering[1]], eigenVectors[ordering[1]]),
                  std::make_pair(eigenValues[ordering[2]], eigenVectors[ordering[2]])}};
     };
 
-    std::vector<double> majorEigenValues;
-    std::vector<double> middleEigenValues;
-    std::vector<double> minorEigenValues;
+    std::vector<float> majorEigenValues;
+    std::vector<float> middleEigenValues;
+    std::vector<float> minorEigenValues;
 
-    std::vector<dvec3> majorEigenVectors;
-    std::vector<dvec3> middleEigenVectors;
-    std::vector<dvec3> minorEigenVectors;
+    std::vector<vec3> majorEigenVectors;
+    std::vector<vec3> middleEigenVectors;
+    std::vector<vec3> minorEigenVectors;
 
-    majorEigenValues.resize(size_);
-    middleEigenValues.resize(size_);
-    minorEigenValues.resize(size_);
+    majorEigenValues.reserve(size_);
+    middleEigenValues.reserve(size_);
+    minorEigenValues.reserve(size_);
 
-    majorEigenVectors.resize(size_);
-    middleEigenVectors.resize(size_);
-    minorEigenVectors.resize(size_);
+    majorEigenVectors.reserve(size_);
+    middleEigenVectors.reserve(size_);
+    minorEigenVectors.reserve(size_);
+
+    const auto &t_ref = *tensors_;
 
 #pragma omp parallel for
     for (int i = 0; i < static_cast<int>(tensors_->size()); i++) {
-        auto tensor = tensors_[i];
+        auto tensor = t_ref[i];
         auto eigenValuesAndEigenVectors = func(tensor);
 
         majorEigenVectors[i] = eigenValuesAndEigenVectors[0].second;
@@ -346,14 +240,24 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
         minorEigenValues[i] = eigenValuesAndEigenVectors[2].first;
     }
 
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
-
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
+    if (!this->hasMetaData<attributes::Lambda1>()) {
+        this->addMetaData<attributes::Lambda1>(majorEigenValues);
+    }
+    if (!this->hasMetaData<attributes::Lambda2>()) {
+        addMetaData<attributes::Lambda2>(middleEigenValues);
+    }
+    if (!this->hasMetaData<attributes::Lambda3>()) {
+        addMetaData<attributes::Lambda3>(minorEigenValues);
+    }
+    if (!this->hasMetaData<attributes::MajorEigenVector>()) {
+        addMetaData<MajorEigenVectors>(majorEigenVectors);
+    }
+    if (!this->hasMetaData<attributes::IntermediateEigenVector>()) {
+        addMetaData<IntermediateEigenVectors>(middleEigenVectors);
+    }
+    if (!this->hasMetaData<attributes::MinorEigenVector>()) {
+        addMetaData<MinorEigenVectors>(minorEigenVectors);
+    }
 }
 
 vec3 TensorField3D::getNormalizedVolumePosition(const size_t index, const double sliceCoord) const {
@@ -388,9 +292,9 @@ std::vector<vec3> TensorField3D::getNormalizedScreenCoordinates(double sliceCoor
 }
 
 void TensorField3D::computeDataMaps() {
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto &majorEigenValues = getMetaDataContainer<attributes::Lambda1>();
+    const auto &middleEigenValues = getMetaDataContainer<attributes::Lambda2>();
+    const auto &minorEigenValues = getMetaDataContainer<attributes::Lambda3>();
 
     dataMapEigenValues_[0].dataRange.x = dataMapEigenValues_[0].valueRange.x =
         *std::min_element(majorEigenValues.begin(), majorEigenValues.end());
@@ -410,7 +314,7 @@ void TensorField3D::computeDataMaps() {
 
     auto min = std::numeric_limits<double>::max();
     auto max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaData<MajorEigenVectors>()) {
+    for (const auto &v : getMetaDataContainer<attributes::MajorEigenVector>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -419,7 +323,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaData<IntermediateEigenVectors>()) {
+    for (const auto &v : getMetaDataContainer<attributes::IntermediateEigenVector>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -428,7 +332,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaData<MinorEigenVectors>()) {
+    for (const auto &v : getMetaDataContainer<attributes::MinorEigenVector>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }

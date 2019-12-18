@@ -15,8 +15,6 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/datastructures/invariantspace.h
     include/inviwo/tensorvisbase/datastructures/tensorfield2d.h
     include/inviwo/tensorvisbase/datastructures/tensorfield3d.h
-    include/inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h
-    include/inviwo/tensorvisbase/datastructures/tensorfieldmetadataspecializations.h
     include/inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h
     include/inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h
     include/inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <string_view>
 
@@ -19,48 +19,72 @@ struct VectorBase : AttributeBase {
     using value_type = glm::vec3;
 };
 
+struct Lambda1 : ScalarBase {
+    static constexpr inline std::string_view identifier{ u8"λ1" };
+};
+
+struct Lambda2 : ScalarBase {
+    static constexpr inline std::string_view identifier{ u8"λ2" };
+};
+
+struct Lambda3 : ScalarBase {
+    static constexpr inline std::string_view identifier{ u8"λ3" };
+};
+
 struct I1 : ScalarBase {
-    static constexpr inline std::string_view identifier_{"I1"};
+    static constexpr inline std::string_view identifier{"I1"};
 };
 
 struct I2 : ScalarBase {
-    static constexpr inline std::string_view identifier_{"I2"};
+    static constexpr inline std::string_view identifier{"I2"};
 };
 
 struct I3 : ScalarBase {
-    static constexpr inline std::string_view identifier_{"I3"};
+    static constexpr inline std::string_view identifier{"I3"};
 };
 
 struct J1 : ScalarBase {
-    static constexpr inline std::string_view identifier_{"J1"};
+    static constexpr inline std::string_view identifier{"J1"};
 };
 
 struct J2 : ScalarBase {
-    static constexpr inline std::string_view identifier_{"J2"};
+    static constexpr inline std::string_view identifier{"J2"};
 };
 
 struct J3 : ScalarBase {
-    static constexpr inline std::string_view identifier_{"J3"};
+    static constexpr inline std::string_view identifier{"J3"};
 };
 
 struct LodeAngle : ScalarBase {
-    static constexpr inline std::string_view identifier_{"Lode angle"};
+    static constexpr inline std::string_view identifier{"Lode angle"};
 };
 
 struct Anisotropy : ScalarBase {
-    static constexpr inline std::string_view identifier_{"Anisotropy"};
+    static constexpr inline std::string_view identifier{"Anisotropy"};
 };
 
 struct LinearAnisotropy : ScalarBase {
-    static constexpr inline std::string_view identifier_{"Linear anisotropy"};
+    static constexpr inline std::string_view identifier{"Linear anisotropy"};
 };
 
 struct PlanarAnisotropy : ScalarBase {
-    static constexpr inline std::string_view identifier_{"Planar anisotropy"};
+    static constexpr inline std::string_view identifier{"Planar anisotropy"};
+};
+
+struct SphericalAnisotropy : ScalarBase {
+    static constexpr inline std::string_view identifier{ "Spherical anisotropy" };
+};
+
+struct MinorEigenVector : VectorBase {
+    static constexpr inline std::string_view identifier{ "Minor Eigenvector" };
+};
+
+struct IntermediateEigenVector : VectorBase {
+    static constexpr inline std::string_view identifier{ "Intermediate Eigenvector" };
 };
 
 struct MajorEigenVector : VectorBase {
-    static constexpr inline std::string_view identifier_{"Major Eigenvector"};
+    static constexpr inline std::string_view identifier{"Major Eigenvector"};
 };
 
 }  // namespace attributes
