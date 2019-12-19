@@ -91,21 +91,21 @@ std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> 
 std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
 subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
             const InterpolationMethod method) {
-    std::vector<dmat3> dataNew;
+    std::vector<mat3> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y * newDimensions.z);
 
     util::IndexMapper3D indexMapperNew(newDimensions);
 
-    auto xFrac = 1. / static_cast<double>(newDimensions.x - 1);
-    auto yFrac = 1. / static_cast<double>(newDimensions.y - 1);
-    auto zFrac = 1. / static_cast<double>(newDimensions.z - 1);
+    auto xFrac = 1.0f / static_cast<float>(newDimensions.x - 1);
+    auto yFrac = 1.0f / static_cast<float>(newDimensions.y - 1);
+    auto zFrac = 1.0f / static_cast<float>(newDimensions.z - 1);
 
     for (size_t x = 0; x < newDimensions.x; x++) {
         for (size_t y = 0; y < newDimensions.y; y++) {
             for (size_t z = 0; z < newDimensions.z; z++) {
                 // Find position in old tensor field
-                auto pos = dvec3(xFrac * static_cast<double>(x), yFrac * static_cast<double>(y),
-                                 zFrac * static_cast<double>(z));
+                auto pos = dvec3(xFrac * static_cast<float>(x), yFrac * static_cast<float>(y),
+                                 zFrac * static_cast<float>(z));
 
                 // Sample old tensor field at position
                 auto tensor = sample(tensorField, pos, method);
@@ -116,20 +116,22 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
         }
     }
 
-    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtents());
+    auto outField = std::make_shared<TensorField3D>(newDimensions, dataNew);
+    outField->setExtents(tensorField->getExtents());
+    return outField;
 }
 
 std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
 subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
             const InterpolationMethod method, std::function<void(float)> fun) {
-    std::vector<dmat3> dataNew;
+    std::vector<mat3> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y * newDimensions.z);
 
     util::IndexMapper3D indexMapperNew(newDimensions);
 
-    auto xFrac = 1. / static_cast<double>(newDimensions.x - 1);
-    auto yFrac = 1. / static_cast<double>(newDimensions.y - 1);
-    auto zFrac = 1. / static_cast<double>(newDimensions.z - 1);
+    auto xFrac = 1.0f / static_cast<float>(newDimensions.x - 1);
+    auto yFrac = 1.0f / static_cast<float>(newDimensions.y - 1);
+    auto zFrac = 1.0f / static_cast<float>(newDimensions.z - 1);
 
     const auto numElements =
         static_cast<float>(newDimensions.x * newDimensions.y * newDimensions.z);
@@ -140,8 +142,8 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
             for (size_t z = 0; z < newDimensions.z; z++) {
                 fun(std::min(0.99f, i++ / numElements));
                 // Find position in old tensor field
-                auto pos = dvec3(xFrac * static_cast<double>(x), yFrac * static_cast<double>(y),
-                                 zFrac * static_cast<double>(z));
+                auto pos = vec3(xFrac * static_cast<float>(x), yFrac * static_cast<float>(y),
+                                 zFrac * static_cast<float>(z));
 
                 // Sample old tensor field at position
                 auto tensor = sample(tensorField, pos, method);
@@ -151,8 +153,9 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
             }
         }
     }
-
-    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtents());
+    auto outField = std::make_shared<TensorField3D>(newDimensions, dataNew);
+    outField->setExtents(tensorField->getExtents());
+    return outField;
 }
 
 std::shared_ptr<PosTexColorMesh> generateBoundingBoxAdjacencyForTensorField(

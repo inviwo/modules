@@ -90,7 +90,7 @@ void TensorField3DSubset::process() {
 
     auto spacing = tensorField->getSpacing<float>();
 
-    std::vector<dmat3> rawData;
+    std::vector<mat3> rawData;
 
     for (size_t z = origin_.get().z; z <= origin_.get().z + offset_.get().z; ++z) {
         for (size_t y = origin_.get().y; y <= origin_.get().y + offset_.get().y; ++y) {
@@ -100,8 +100,8 @@ void TensorField3DSubset::process() {
         }
     }
 
-    auto outField =
-        std::make_shared<TensorField3D>(dimensions, rawData, spacing * vec3(dimensions));
+    auto outField = std::make_shared<TensorField3D>(dimensions, rawData);
+    outField->setExtents(spacing * vec3(dimensions));
     outField->setOffset(tensorField->getOffset() + vec3(origin_.get()) * spacing);
 
     outport_.setData(outField);
