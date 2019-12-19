@@ -34,16 +34,16 @@
 
 namespace inviwo {
 namespace tensorutil {
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
-                                   std::shared_ptr<const TensorField2D> tensorField, Shader &shader,
-                                   TextureUnitContainer &textureUnits) {
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
+                                   std::shared_ptr<const TensorField2D> tensorField, Shader& shader,
+                                   TextureUnitContainer& textureUnits) {
     texture = tensorField->getImageRepresentation();
 
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2DInport &inport,
-                                   Shader &shader, TextureUnitContainer &textureUnits) {
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture, TensorField2DInport& inport,
+                                   Shader& shader, TextureUnitContainer& textureUnits) {
     auto tensorField = inport.getData();
 
     texture = tensorField->getImageRepresentation();
@@ -51,8 +51,8 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &, Shader *,
-                                    TextureUnitContainer &) {
+void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D>&, Shader*,
+                                    TextureUnitContainer&) {
     // auto volumes = tensorField->getVolumeRepresentation();
 }
 
@@ -205,6 +205,58 @@ std::shared_ptr<BasicMesh> generateSlicePlaneGeometryForTensorField(
     indices->add(0);
 
     return mesh;
+}
+
+IVW_MODULE_TENSORVISBASE_API std::array<std::pair<float, vec3>, 3>
+getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D> tf,
+                                             size_t index) {
+    const auto& majorEigenValues = tf->getMetaDataContainer<attributes::Lambda1>();
+    const auto& middleEigenValues = tf->getMetaDataContainer<attributes::Lambda2>();
+    const auto& minorEigenValues = tf->getMetaDataContainer<attributes::Lambda3>();
+
+    const auto& majorEigenValue = majorEigenValues[index];
+    const auto& middleEigenValue = middleEigenValues[index];
+    const auto& minorEigenValue = minorEigenValues[index];
+
+    const auto& majorEigenVectors = tf->getMetaDataContainer<attributes::MajorEigenVector>();
+    const auto& middleEigenVectors =
+        tf->getMetaDataContainer<attributes::IntermediateEigenVector>();
+    const auto& minorEigenVectors = tf->getMetaDataContainer<attributes::MinorEigenVector>();
+
+    const auto& majorEigenVector = majorEigenVectors[index];
+    const auto& middleEigenVector = middleEigenVectors[index];
+    const auto& minorEigenVector = minorEigenVectors[index];
+
+    std::array<std::pair<float, vec3>, 3> ret;
+    ret[0] = {majorEigenValue, majorEigenVector};
+    ret[1] = {middleEigenValue, middleEigenVector};
+    ret[2] = {minorEigenValue, minorEigenVector};
+
+    return ret;
+}
+
+IVW_MODULE_TENSORVISBASE_API std::array<std::pair<float, vec3>, 3>
+getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D> tf,
+                                             size3_t position) {
+    return getSortedEigenValuesAndEigenVectorsForTensor(tf, tf->indexMapper()(position));
+}
+
+IVW_MODULE_TENSORVISBASE_API std::array<float, 3> getSortedEigenValuesForTensor(
+    std::shared_ptr<const TensorField3D> tf, size_t index) {
+    const auto& majorEigenValues = tf->getMetaDataContainer<attributes::Lambda1>();
+    const auto& middleEigenValues = tf->getMetaDataContainer<attributes::Lambda2>();
+    const auto& minorEigenValues = tf->getMetaDataContainer<attributes::Lambda3>();
+
+    const auto& majorEigenValue = majorEigenValues[index];
+    const auto& middleEigenValue = middleEigenValues[index];
+    const auto& minorEigenValue = minorEigenValues[index];
+
+    std::array<float, 3>{majorEigenValue, middleEigenValue, minorEigenValue};
+}
+
+IVW_MODULE_TENSORVISBASE_API std::array<float, 3> getSortedEigenValuesForTensor(
+    std::shared_ptr<const TensorField3D> tf, size3_t position) {
+    return getSortedEigenValuesForTensor(tf, tf->indexMapper()(position));
 }
 
 namespace detail {

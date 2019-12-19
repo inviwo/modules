@@ -12,23 +12,24 @@ struct AttributeBase {
     virtual void foo() = 0;
 };
 
-struct ScalarBase : AttributeBase {
-    using value_type = float;
-};
-struct VectorBase : AttributeBase {
-    using value_type = glm::vec3;
+template <typename T>
+struct TypedAttributeBase : AttributeBase {
+    using value_type = T;
 };
 
+using ScalarBase = TypedAttributeBase<float>;
+using VectorBase = TypedAttributeBase<vec3>;
+
 struct Lambda1 : ScalarBase {
-    static constexpr inline std::string_view identifier{ u8"λ1" };
+    static constexpr inline std::string_view identifier{u8"λ1"};
 };
 
 struct Lambda2 : ScalarBase {
-    static constexpr inline std::string_view identifier{ u8"λ2" };
+    static constexpr inline std::string_view identifier{u8"λ2"};
 };
 
 struct Lambda3 : ScalarBase {
-    static constexpr inline std::string_view identifier{ u8"λ3" };
+    static constexpr inline std::string_view identifier{u8"λ3"};
 };
 
 struct I1 : ScalarBase {
@@ -72,15 +73,19 @@ struct PlanarAnisotropy : ScalarBase {
 };
 
 struct SphericalAnisotropy : ScalarBase {
-    static constexpr inline std::string_view identifier{ "Spherical anisotropy" };
+    static constexpr inline std::string_view identifier{"Spherical anisotropy"};
+};
+
+struct FrobeniusNorm : ScalarBase {
+    static constexpr inline std::string_view identifier{"Frobenius Norm"};
 };
 
 struct MinorEigenVector : VectorBase {
-    static constexpr inline std::string_view identifier{ "Minor Eigenvector" };
+    static constexpr inline std::string_view identifier{"Minor Eigenvector"};
 };
 
 struct IntermediateEigenVector : VectorBase {
-    static constexpr inline std::string_view identifier{ "Intermediate Eigenvector" };
+    static constexpr inline std::string_view identifier{"Intermediate Eigenvector"};
 };
 
 struct MajorEigenVector : VectorBase {

@@ -4,7 +4,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 
 namespace inviwo {
@@ -21,9 +20,7 @@ public:
 
 private:
     TensorField3DInport tensorFieldInport_;
-
-    InvariantSpaceOutport outport_;
-
+    
     CompositeProperty invariantSpaceAxes_;
 
     BoolProperty sigma1_;

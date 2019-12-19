@@ -3,7 +3,7 @@
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
+//#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
@@ -19,7 +19,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    InvariantSpaceInport inport_;
+    //InvariantSpaceInport inport_;
     DataFrameOutport outport_;
 };
 

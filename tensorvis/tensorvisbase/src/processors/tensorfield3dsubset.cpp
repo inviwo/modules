@@ -95,7 +95,7 @@ void TensorField3DSubset::process() {
     for (size_t z = origin_.get().z; z <= origin_.get().z + offset_.get().z; ++z) {
         for (size_t y = origin_.get().y; y <= origin_.get().y + offset_.get().y; ++y) {
             for (size_t x = origin_.get().x; x <= origin_.get().x + offset_.get().x; ++x) {
-                rawData.push_back(tensorField->at(size3_t(x, y, z)).second);
+                rawData.push_back(tensorField->at(size3_t(x, y, z)));
             }
         }
     }

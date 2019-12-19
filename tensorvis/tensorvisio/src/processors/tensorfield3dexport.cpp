@@ -29,7 +29,6 @@
 
 #include <inviwo/tensorvisio/processors/tensorfield3dexport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 
 namespace inviwo {
 
@@ -124,7 +123,7 @@ void TensorField3DExport::exportBinary() const {
     outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[2].dataRange),
                   sizeof(double) * 2);
 
-    const auto &data = tensorField->tensors();
+    const auto &data = *tensorField->tensors();
 
     for (const auto &val : data) {
         // Upper row
@@ -153,15 +152,15 @@ void TensorField3DExport::exportBinary() const {
     }
 
     if (includeMetaData_.get()) {
-        const auto numMetaDataEntries = tensorField->metaData().size();
+        const auto numMetaDataEntries = tensorField->metaData()->getNumberOfColumns();
         outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
 
-        for (const auto &dataItem : tensorField->metaData()) {
+        /*for (const auto &dataItem : tensorField->metaData()) {
             dataItem.second->serialize(outFile);
-        }
+        }*/
     }
     // We always include eigenvalues and eigenvectors
-    else {
+    /*else {
         for (const auto &dataItem : tensorField->metaData()) {
             auto id = dataItem.first;
 
@@ -188,7 +187,7 @@ void TensorField3DExport::exportBinary() const {
                     break;
             }
         }
-    }
+    }*/
 
     std::string str("EOFreached");
     size = str.size();

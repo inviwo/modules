@@ -37,7 +37,7 @@
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
+
 
 namespace inviwo {
 
@@ -75,7 +75,6 @@ private:
     TensorField3DInport inport_;
     VolumeOutport outport_;
 
-    TemplateOptionProperty<TensorFeature> feature_;
 
     BoolProperty normalizeVectors_;
 };

@@ -29,7 +29,7 @@
 
 #include <inviwo/tensorvisbase/processors/tensorinformation.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 
@@ -87,10 +87,10 @@ void TensorInformation::initializeResources() {
 void TensorInformation::process() {
     auto tensorField = inport_.getData();
 
-    tensor_.set(mat3(tensorField->at(index_.get()).second));
+    tensor_.set(mat3(tensorField->at(index_.get())));
 
     auto eigenValuesAndEigenVectors =
-        tensorField->getSortedEigenValuesAndEigenVectorsForTensor(index_.get());
+        tensorutil::getSortedEigenValuesAndEigenVectorsForTensor(tensorField,index_.get());
 
     auto eigenVectors =
         mat3(vec3(eigenValuesAndEigenVectors[0].second), vec3(eigenValuesAndEigenVectors[1].second),

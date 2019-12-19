@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
 
 namespace inviwo {
 
@@ -56,7 +55,7 @@ private:
     TensorField3DInport tensorField3DInport1_;
     TensorField3DInport fiberOrientation_;
 
-    InvariantSpaceOutport invariantSpaceOutport_;
+ //   InvariantSpaceOutport invariantSpaceOutport_;
 };
 
 }  // namespace inviwo

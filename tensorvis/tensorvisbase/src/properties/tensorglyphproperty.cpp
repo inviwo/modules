@@ -31,6 +31,7 @@
 #include <inviwo/tensorvisbase/datastructures/deformablesphere.h>
 #include <inviwo/tensorvisbase/datastructures/deformablecube.h>
 #include <inviwo/tensorvisbase/datastructures/deformablecylinder.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};
@@ -190,7 +191,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
     auto eigenValuesAndEigenVectors =
-        tensorField->getSortedEigenValuesAndEigenVectorsForTensor(index);
+        tensorutil::getSortedEigenValuesAndEigenVectorsForTensor(tensorField, index);
 
     auto magicScalingNumer = 0.00001;
     std::transform(eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
@@ -305,7 +306,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateReynolds(
     const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get());
 
-    const auto tensor = mat3(tensorField->at(index).second);
+    const auto tensor = mat3(tensorField->at(index));
 
     sphere.deform([tensor](vec3& v, vec4& c) {
         const auto displacement = tensor * v;
@@ -329,7 +330,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateQuadric(
     const dvec4& color, const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
-    const auto tensor = mat3(tensorField->at(index).second);
+    const auto tensor = mat3(tensorField->at(index));
 
     sphere.deform([tensor](vec3& v) { v = tensor * v; });
 
@@ -382,7 +383,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateHWY(
     const dvec4& color, const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
-    const auto tensor = mat3(tensorField->at(index).second);
+    const auto tensor = mat3(tensorField->at(index));
 
     sphere.deform([tensor](vec3& v) {
         const auto displacement = tensor * v;
@@ -438,7 +439,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get());
 
     auto eigenValuesAndEigenVectors =
-        tensorField->getSortedEigenValuesAndEigenVectorsForTensor(index);
+        tensorutil::getSortedEigenValuesAndEigenVectorsForTensor(tensorField, index);
 
     auto magicScalingNumer = 0.00001;
     std::transform(eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
@@ -478,8 +479,9 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
     if (!useEigenBasis_.get())
         basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
-    const auto frobeniusNorm = tensorField->getMetaData<FrobeniusNorm>()[index];
-    auto lamda = tensorField->getSortedEigenValuesForTensor(index);
+    const auto frobeniusNorm =
+        tensorField->getMetaDataContainer<attributes::FrobeniusNorm>()[index];
+    auto lamda = tensorutil::getSortedEigenValuesForTensor(tensorField, index);
 
     std::transform(lamda.begin(), lamda.end(), lamda.begin(),
                    [frobeniusNorm](const double& a) { return a / frobeniusNorm; });

@@ -79,8 +79,8 @@ void TensorField3DAnisotropy::process() {
     const auto& majorEigenValues = tensorField->majorEigenValues();
     const auto& intermediateEigenValues = tensorField->middleEigenValues();
     const auto& minorEigenValues = tensorField->minorEigenValues();
-    auto min = std::numeric_limits<double>::max();
-    auto max = std::numeric_limits<double>::lowest();
+    auto min = std::numeric_limits<float>::max();
+    auto max = std::numeric_limits<float>::lowest();
 
     switch (anisotropy_.get()) {
         case tensorutil::Anisotropy::abs_lamda1_minus_lamda2:
@@ -127,25 +127,25 @@ void TensorField3DAnisotropy::process() {
                 tensorutil::forEachVoxelParallel(
                     *(tensorField.get()), [&](const size3_t& pos) -> void {
                         const auto index = indexMapper(pos);
-                        auto eigenValues = std::array<double, 3>{majorEigenValues[index],
+                        auto eigenValues = std::array<float, 3>{majorEigenValues[index],
                                                                  intermediateEigenValues[index],
                                                                  minorEigenValues[index]};
 
                         std::transform(eigenValues.begin(), eigenValues.end(), eigenValues.begin(),
-                                       [](const double& val) { return glm::abs(val); });
+                                       [](const float& val) { return glm::abs(val); });
 
                         std::sort(
                             eigenValues.begin(), eigenValues.end(),
-                            [](const double& valA, const double& valB) { return valA > valB; });
+                            [](const float& valA, const float& valB) { return valA > valB; });
 
                         auto denominator = eigenValues[0] + eigenValues[1] + eigenValues[2];
-                        if (denominator < std::numeric_limits<double>::epsilon())
-                            denominator = std::numeric_limits<double>::epsilon();
+                        if (denominator < std::numeric_limits<float>::epsilon())
+                            denominator = std::numeric_limits<float>::epsilon();
                         const auto c_l_ = (eigenValues[0] - eigenValues[1]) / denominator;
                         const auto c_p_ = (2. * (eigenValues[1] - eigenValues[2])) / denominator;
                         const auto c_s_ = (3. * eigenValues[2]) / denominator;
 
-                        const auto barycentricCoordinates = dvec3(c_l_, c_p_, c_s_);
+                        const auto barycentricCoordinates = vec3(c_l_, c_p_, c_s_);
 
                         max = std::max(max, barycentricCoordinates.x);
                         max = std::max(max, barycentricCoordinates.y);

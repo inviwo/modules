@@ -15,7 +15,6 @@ const ProcessorInfo InvariantSpaceSelection::getProcessorInfo() const { return p
 InvariantSpaceSelection::InvariantSpaceSelection()
     : Processor()
     , tensorFieldInport_("tensorFieldInport")
-    , outport_("outport")
     , invariantSpaceAxes_("invariantSpaceAxes_", "Invariant space axes")
     , sigma1_("sigma1", tensorutil::sigma1_str, true)
     , sigma2_("sigma2", tensorutil::sigma2_str, true)
@@ -39,7 +38,6 @@ InvariantSpaceSelection::InvariantSpaceSelection()
     , rotation_("rotation", "Rotation", false)
     , hill_("hill", "Hill", false) {
     addPort(tensorFieldInport_);
-    addPort(outport_);
 
     invariantSpaceAxes_.addProperty(sigma1_);
     invariantSpaceAxes_.addProperty(sigma2_);
@@ -68,7 +66,7 @@ InvariantSpaceSelection::InvariantSpaceSelection()
     invariantSpaceAxes_.onChange([this]() {
         std::unordered_set<size_t> selectedIndices;
 
-        if (sigma1_.get()) {
+        /*if (sigma1_.get()) {
             selectedIndices.insert(MajorEigenValues::id());
         }
         if (sigma2_.get()) {
@@ -130,12 +128,12 @@ InvariantSpaceSelection::InvariantSpaceSelection()
         }
         if (hill_.get()) {
             selectedIndices.insert(HillYieldCriterion::id());
-        }
+        }*/
     });
 }
 
 void InvariantSpaceSelection::process() {
-    if (!tensorFieldInport_.hasData()) return;
+    /*if (!tensorFieldInport_.hasData()) return;
 
     auto invariantSpace = std::make_shared<InvariantSpace>();
 
@@ -304,7 +302,7 @@ void InvariantSpaceSelection::process() {
                 "processor.")
     }
 
-    outport_.setData(invariantSpace);
+    outport_.setData(invariantSpace);*/
 }
 
 }  // namespace inviwo

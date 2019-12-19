@@ -9,8 +9,8 @@ namespace inviwo {
 
 TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
     : dimensions_(dimensions)
-    , tensors_(std::make_shared<std::vector<mat3>>(tensors))
-    , indexMapper_(util::IndexMapper3D(dimensions)) {
+    
+    , indexMapper_(util::IndexMapper3D(dimensions)), tensors_(std::make_shared<std::vector<mat3>>(tensors)) {
     initializeDefaultMetaData();
 }
 
@@ -19,7 +19,9 @@ TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> 
     : dimensions_(dimensions)
     , indexMapper_(util::IndexMapper3D(dimensions))
     , tensors_(std::make_shared<std::vector<mat3>>(tensors))
-    , metaData_(std::make_shared<DataFrame>(metaData)) {}
+    , metaData_(std::make_shared<DataFrame>(metaData)) {
+    initializeDefaultMetaData();
+}
 
 TensorField3D::TensorField3D(const size3_t &dimensions,
                              std::shared_ptr<const std::vector<mat3>> tensors,
@@ -27,7 +29,9 @@ TensorField3D::TensorField3D(const size3_t &dimensions,
     : dimensions_(dimensions)
     , indexMapper_(util::IndexMapper3D(dimensions))
     , tensors_(tensors)
-    , metaData_(metaData) {}
+    , metaData_(metaData) {
+    initializeDefaultMetaData();
+}
 
 TensorField3D::TensorField3D(const TensorField3D &tf)
     : StructuredGridEntity<3>()
@@ -185,6 +189,19 @@ int TensorField3D::getNumDefinedEntries() const {
 TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
 
 void TensorField3D::initializeDefaultMetaData() {
+    // clang-format off
+    if (this->hasMetaData<attributes::Lambda1>() &&
+        this->hasMetaData<attributes::Lambda2>() &&
+        this->hasMetaData<attributes::Lambda3>() &&
+        this->hasMetaData<attributes::MajorEigenVector>() &&
+        this->hasMetaData<attributes::IntermediateEigenVector>() &&
+        this->hasMetaData<attributes::MinorEigenVector>()) {
+        return;
+    }
+    // clang-format on
+
+    auto newMetaData = std::make_shared<DataFrame>(*metaData_);
+
     auto func = [](const mat3 &tensor) -> std::array<std::pair<float, vec3>, 3> {
         if (tensor == mat3(0.0f)) {
             return {{std::make_pair(0, vec3{0}), std::make_pair(0, vec3{0}),
@@ -209,19 +226,19 @@ void TensorField3D::initializeDefaultMetaData() {
     };
 
     std::vector<float> majorEigenValues;
-    std::vector<float> middleEigenValues;
+    std::vector<float> intermediateEigenValues;
     std::vector<float> minorEigenValues;
 
     std::vector<vec3> majorEigenVectors;
-    std::vector<vec3> middleEigenVectors;
+    std::vector<vec3> intermediateEigenVectors;
     std::vector<vec3> minorEigenVectors;
 
     majorEigenValues.reserve(size_);
-    middleEigenValues.reserve(size_);
+    intermediateEigenValues.reserve(size_);
     minorEigenValues.reserve(size_);
 
     majorEigenVectors.reserve(size_);
-    middleEigenVectors.reserve(size_);
+    intermediateEigenVectors.reserve(size_);
     minorEigenVectors.reserve(size_);
 
     const auto &t_ref = *tensors_;
@@ -232,32 +249,22 @@ void TensorField3D::initializeDefaultMetaData() {
         auto eigenValuesAndEigenVectors = func(tensor);
 
         majorEigenVectors[i] = eigenValuesAndEigenVectors[0].second;
-        middleEigenVectors[i] = eigenValuesAndEigenVectors[1].second;
+        intermediateEigenVectors[i] = eigenValuesAndEigenVectors[1].second;
         minorEigenVectors[i] = eigenValuesAndEigenVectors[2].second;
 
         majorEigenValues[i] = eigenValuesAndEigenVectors[0].first;
-        middleEigenValues[i] = eigenValuesAndEigenVectors[1].first;
+        intermediateEigenValues[i] = eigenValuesAndEigenVectors[1].first;
         minorEigenValues[i] = eigenValuesAndEigenVectors[2].first;
     }
 
-    if (!this->hasMetaData<attributes::Lambda1>()) {
-        this->addMetaData<attributes::Lambda1>(majorEigenValues);
-    }
-    if (!this->hasMetaData<attributes::Lambda2>()) {
-        addMetaData<attributes::Lambda2>(middleEigenValues);
-    }
-    if (!this->hasMetaData<attributes::Lambda3>()) {
-        addMetaData<attributes::Lambda3>(minorEigenValues);
-    }
-    if (!this->hasMetaData<attributes::MajorEigenVector>()) {
-        addMetaData<MajorEigenVectors>(majorEigenVectors);
-    }
-    if (!this->hasMetaData<attributes::IntermediateEigenVector>()) {
-        addMetaData<IntermediateEigenVectors>(middleEigenVectors);
-    }
-    if (!this->hasMetaData<attributes::MinorEigenVector>()) {
-        addMetaData<MinorEigenVectors>(minorEigenVectors);
-    }
+    addIfNotPresent<attributes::Lambda1>(newMetaData, majorEigenValues);
+    addIfNotPresent<attributes::Lambda2>(newMetaData, intermediateEigenValues);
+    addIfNotPresent<attributes::Lambda3>(newMetaData, minorEigenValues);
+    addIfNotPresent<attributes::MajorEigenVector>(newMetaData, majorEigenVectors);
+    addIfNotPresent<attributes::IntermediateEigenVector>(newMetaData, intermediateEigenVectors);
+    addIfNotPresent<attributes::MinorEigenVector>(newMetaData, minorEigenVectors);
+
+    metaData_ = newMetaData;
 }
 
 vec3 TensorField3D::getNormalizedVolumePosition(const size_t index, const double sliceCoord) const {
@@ -268,7 +275,7 @@ vec3 TensorField3D::getNormalizedVolumePosition(const size_t index, const double
                 dimensions_.z < 2 ? sliceCoord : pos.z * stepSize.z);
 }
 
-std::vector<vec3> TensorField3D::getNormalizedScreenCoordinates(double sliceCoord) {
+std::optional<std::vector<vec3>> TensorField3D::getNormalizedScreenCoordinates(double sliceCoord) {
     std::vector<vec3> normalizedVolumePositions;
     normalizedVolumePositions.resize(size_);
 
@@ -276,7 +283,7 @@ std::vector<vec3> TensorField3D::getNormalizedScreenCoordinates(double sliceCoor
 
     if (dimensions_.x == 0 || dimensions_.y == 0 || dimensions_.z == 0) {
         LogError("Tensor field 3D has at least one zero-sized dimension!");
-        return;
+        return std::nullopt;
     }
 
     for (size_t z = 0; z < dimensions_.z; z++) {

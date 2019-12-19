@@ -51,20 +51,11 @@ TensorFieldToVolume::TensorFieldToVolume()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , feature_("feature", "Feature",
-               {{"majorEigenVector", "Major eigenvector", TensorFeature::MajorEigenVector},
-                {"intermediateEigenVector", "Intermediate eigenvector",
-                 TensorFeature::IntermediateEigenVector},
-                {"minorEigenVector", "Minor eigenvector", TensorFeature::MinorEigenVector},
-                {"majorEigenValue", "Major eigenvalue", TensorFeature::Sigma1},
-                {"intermediateEigenValue", "Intermediate eigenvalue", TensorFeature::Sigma2},
-                {"minorEigenValue", "Minor eigenvalue", TensorFeature::Sigma3},
-                {"hill", "Hill", TensorFeature::HillYieldCriterion}})
+
     , normalizeVectors_("normalize", "Normalize eigenvectors") {
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(feature_);
     addProperty(normalizeVectors_);
 
     /*feature_.onChange([this]() {
@@ -76,61 +67,61 @@ TensorFieldToVolume::TensorFieldToVolume()
 }
 
 void TensorFieldToVolume::process() {
-    auto tensorField = inport_.getData();
-
-    if (!tensorField->hasMetaData(feature_.get())) {
-        LogError("Tensorfield has no metadata for \'" << feature_.get() << "\'");
-        return;
-    }
-    if (!tensorField->hasMetaData(uint64_t(feature_.get()))) {
-        LogError("Tensorfield has no metadata (id) for \'" << feature_.get() << "\'");
-        return;
-    }
-
-    const auto metaData = tensorField->getMetaDataContainer(uint64_t(feature_.get()));
-    const auto numberOfComponents = metaData->getNumberOfComponents();
-
-    auto vol =
-        std::make_shared<Volume>(tensorField->getDimensions(),
-                                 DataFormatBase::get(NumericType::Float, numberOfComponents, 32));
-
-    DataMapper map =
-        vol->getEditableRepresentation<VolumeRAM>()
-            ->dispatch<DataMapper, dispatching::filter::Floats>([metaData](auto repr) {
-                auto ptr = repr->getDataTyped();
-                using ValueType = util::PrecisionValueType<decltype(repr)>;
-                // TODO: use type of metadata instead of assuming double!
-                using P = typename util::same_extent<ValueType, double>::type;
-
-                const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
-#include <warn/push>
-#include <warn/ignore/conversion>
-                std::transform(srcData, srcData + glm::compMul(repr->getDimensions()), ptr,
-                               [](P v) { return static_cast<ValueType>(v); });
-#include <warn/pop>
-
-                const auto minmax = util::dataMinMax(srcData, glm::compMul(repr->getDimensions()));
-
-                DataMapper datamap;
-
-                double max = std::numeric_limits<float>::lowest();
-                double min = std::numeric_limits<float>::max();
-                for (size_t i = 0; i < 4; ++i) {
-                    if ((minmax.first[i] == minmax.second[i]) && (minmax.first[i] == 0.0)) {
-                        break;
-                    }
-                    max = std::max(max, minmax.second[i]);
-                    min = std::min(min, minmax.first[i]);
-                }
-
-                datamap.dataRange = dvec2{min, max};
-                datamap.valueRange = dvec2{min, max};
-                return datamap;
-            });
-
-    vol->setModelMatrix(tensorField->getBasisAndOffset());
-    vol->dataMap_ = map;
-    outport_.setData(vol);
+//    auto tensorField = inport_.getData();
+//
+//    if (!tensorField->hasMetaData(feature_.get())) {
+//        LogError("Tensorfield has no metadata for \'" << feature_.get() << "\'");
+//        return;
+//    }
+//    if (!tensorField->hasMetaData(uint64_t(feature_.get()))) {
+//        LogError("Tensorfield has no metadata (id) for \'" << feature_.get() << "\'");
+//        return;
+//    }
+//
+//    const auto metaData = tensorField->getMetaDataContainer(uint64_t(feature_.get()));
+//    const auto numberOfComponents = metaData->getNumberOfComponents();
+//
+//    auto vol =
+//        std::make_shared<Volume>(tensorField->getDimensions(),
+//                                 DataFormatBase::get(NumericType::Float, numberOfComponents, 32));
+//
+//    DataMapper map =
+//        vol->getEditableRepresentation<VolumeRAM>()
+//            ->dispatch<DataMapper, dispatching::filter::Floats>([metaData](auto repr) {
+//                auto ptr = repr->getDataTyped();
+//                using ValueType = util::PrecisionValueType<decltype(repr)>;
+//                // TODO: use type of metadata instead of assuming double!
+//                using P = typename util::same_extent<ValueType, double>::type;
+//
+//                const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
+//#include <warn/push>
+//#include <warn/ignore/conversion>
+//                std::transform(srcData, srcData + glm::compMul(repr->getDimensions()), ptr,
+//                               [](P v) { return static_cast<ValueType>(v); });
+//#include <warn/pop>
+//
+//                const auto minmax = util::dataMinMax(srcData, glm::compMul(repr->getDimensions()));
+//
+//                DataMapper datamap;
+//
+//                double max = std::numeric_limits<float>::lowest();
+//                double min = std::numeric_limits<float>::max();
+//                for (size_t i = 0; i < 4; ++i) {
+//                    if ((minmax.first[i] == minmax.second[i]) && (minmax.first[i] == 0.0)) {
+//                        break;
+//                    }
+//                    max = std::max(max, minmax.second[i]);
+//                    min = std::min(min, minmax.first[i]);
+//                }
+//
+//                datamap.dataRange = dvec2{min, max};
+//                datamap.valueRange = dvec2{min, max};
+//                return datamap;
+//            });
+//
+//    vol->setModelMatrix(tensorField->getBasisAndOffset());
+//    vol->dataMap_ = map;
+//    outport_.setData(vol);
 }
 
 }  // namespace inviwo

@@ -12,6 +12,7 @@
 #include <inviwo/core/datastructures/spatialdata.h>
 #include <inviwo/tensorvisbase/datastructures/attributes.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/dataframe/datastructures/column.h>
 #include <type_traits>
 #include <optional>
 #include <memory>
@@ -74,7 +75,7 @@ public:
     glm::u8 dimensionality() const { return 3; }
 
     vec3 getNormalizedVolumePosition(size_t index, double sliceCoord) const;
-    std::vector<vec3> getNormalizedScreenCoordinates(double sliceCoord);
+    std::optional<std::vector<vec3>> getNormalizedScreenCoordinates(double sliceCoord);
 
     template <typename T = float>
     T getMajorEigenValue(const size_t index) const;
@@ -141,6 +142,10 @@ protected:
     std::shared_ptr<const DataFrame> metaData_;
 
     std::vector<glm::uint8> binaryMask_;
+
+private:
+    template <typename T, typename R>
+    void addIfNotPresent(std::shared_ptr<DataFrame>, const R& data) const;
 };
 
 template <bool useMask>
@@ -186,15 +191,15 @@ glm::tvec3<T> TensorField3D::getSpacing() const {
 
 template <typename T>
 T TensorField3D::getMajorEigenValue(const size_t index) const {
-    return T(this->getMetaDataContainer<attributes::MajorEigenValues>()[index]);
+    return T(this->getMetaDataContainer<attributes::Lambda1>()[index]);
 }
 template <typename T>
 T TensorField3D::getMiddleEigenValue(const size_t index) const {
-    return T(this->getMetaDataContainer<attributes::IntermediateEigenValues>()[index]);
+    return T(this->getMetaDataContainer<attributes::Lambda2>()[index]);
 }
 template <typename T>
 T TensorField3D::getMinorEigenValue(const size_t index) const {
-    return T(this->getMetaDataContainer<attributes::MinorEigenValues>()[index]);
+    return T(this->getMetaDataContainer<attributes::Lambda3>()[index]);
 }
 
 template <typename T>
@@ -202,7 +207,7 @@ bool TensorField3D::hasMetaData() const {
     if constexpr (std::is_base_of_v<attributes::AttributeBase, T>) {
         const auto& headers = metaData_->getHeaders();
         const auto name = std::string(T::identifier);
-        return std::find(headers.begin(), headers.end(), name) != headers.end());
+        return std::find(headers.begin(), headers.end(), name) != headers.end();
     }
 }
 
@@ -223,11 +228,20 @@ std::optional<std::shared_ptr<const Column>> TensorField3D::getMetaData() const 
 template <typename T>
 const std::vector<typename T::value_type>& TensorField3D::getMetaDataContainer() const {
     if constexpr (std::is_base_of_v<attributes::AttributeBase, T>) {
-        auto column = this->getMetaData<T>();
-        auto bufferRAM = column->getBuffer()->getRAMRepresentation();
-        auto typedBuffer = std::dynamic_pointer_cast<BufferRamPrecision<T::value_type>>(bufferRAM);
+        auto column = *this->getMetaData<T>();
+        auto bufferRAM = column->getBuffer();/*->getRAMRepresentation();
+        auto typedBuffer = std::dynamic_pointer_cast<BufferRAMPrecision<T::value_type>>(bufferRAM);
 
-        return typedBuffer->getDataContainer();
+        return typedBuffer->getDataContainer();*/
+        return std::vector<T::value_type>{};
+    }
+}
+
+template <typename T, typename R>
+void TensorField3D::addIfNotPresent(std::shared_ptr<DataFrame> df, const R& data) const {
+    if (!this->hasMetaData<T>()) {
+        df->addColumn(
+            std::make_shared<TemplateColumn<T::value_type>>(std::string(T::identifier), data));
     }
 }
 }  // namespace inviwo

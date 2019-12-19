@@ -32,7 +32,7 @@
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
+//#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
@@ -51,10 +51,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    InvariantSpaceInport invariantSpaceInport_;
+    /*InvariantSpaceInport invariantSpaceInport_;*/
     TensorField3DInport tensorField3DInport_;
 
-    InvariantSpaceOutport invariantSpaceOutport_;
+    /*InvariantSpaceOutport invariantSpaceOutport_;*/
 };
 
 }  // namespace inviwo

@@ -114,107 +114,107 @@ void VTKDataSetToTensorField3D::initializeResources() {
 void VTKDataSetToTensorField3D::process() {}
 
 void VTKDataSetToTensorField3D::generate() {
-    if (!dataSetInport_.hasData()) return;
-    if (busy_) return;
+    //if (!dataSetInport_.hasData()) return;
+    //if (busy_) return;
 
-    busy_ = true;
+    //busy_ = true;
 
-    dispatchPool([this]() {
-        dispatchFront([this]() {
-            {
-                NetworkLock lock;
-                tensors_.setReadOnly(true);
-            }
-            getActivityIndicator().setActive(true);
-        });
+    //dispatchPool([this]() {
+    //    dispatchFront([this]() {
+    //        {
+    //            NetworkLock lock;
+    //            tensors_.setReadOnly(true);
+    //        }
+    //        getActivityIndicator().setActive(true);
+    //    });
 
-        const auto& dataSet = *dataSetInport_.getData();
+    //    const auto& dataSet = *dataSetInport_.getData();
 
-        auto tensorArray = dataSet->GetPointData()->GetArray(tensors_.get().c_str());
+    //    auto tensorArray = dataSet->GetPointData()->GetArray(tensors_.get().c_str());
 
-        if (!tensorArray) return;
+    //    if (!tensorArray) return;
 
-        size3_t dimensions{0};
+    //    size3_t dimensions{0};
 
-        if (const auto dimensionsOpt = dataSet.getDimensions()) {
-            dimensions = *dimensionsOpt;
-        } else {
-            throw inviwo::Exception("Dimensions were not available.", IVW_CONTEXT);
-        }
+    //    if (const auto dimensionsOpt = dataSet.getDimensions()) {
+    //        dimensions = *dimensionsOpt;
+    //    } else {
+    //        throw inviwo::Exception("Dimensions were not available.", IVW_CONTEXT);
+    //    }
 
-        LogProcessorInfo("Attempting to generate tensor field from array \""
-                         << std::string{tensorArray->GetName()} << "\"");
+    //    LogProcessorInfo("Attempting to generate tensor field from array \""
+    //                     << std::string{tensorArray->GetName()} << "\"");
 
-        const auto bounds = dataSet->GetBounds();
-        auto extent = vtkutil::extentFromBounds(bounds);
-        const auto offset = vtkutil::offsetFromBounds(bounds);
+    //    const auto bounds = dataSet->GetBounds();
+    //    auto extent = vtkutil::extentFromBounds(bounds);
+    //    const auto offset = vtkutil::offsetFromBounds(bounds);
 
-        if (normalizeExtents_.get()) {
-            extent /= std::max(std::max(extent.x, extent.y), extent.z);
-        }
+    //    if (normalizeExtents_.get()) {
+    //        extent /= std::max(std::max(extent.x, extent.y), extent.z);
+    //    }
 
-        std::shared_ptr<TensorField3D> tensorField;
-        if (tensorArray->GetDataType() == VTK_DOUBLE) {
-            tensorField = std::make_shared<TensorField3D>(
-                dimensions, vtkDoubleArray::SafeDownCast(tensorArray)->GetPointer(0), extent);
-            tensorField->setOffset(offset);
+    //    std::shared_ptr<TensorField3D> tensorField;
+    //    if (tensorArray->GetDataType() == VTK_DOUBLE) {
+    //        tensorField = std::make_shared<TensorField3D>(
+    //            dimensions, vtkDoubleArray::SafeDownCast(tensorArray)->GetPointer(0), extent);
+    //        tensorField->setOffset(offset);
 
-        } else if (tensorArray->GetDataType() == VTK_FLOAT) {
-            tensorField = std::make_shared<TensorField3D>(
-                dimensions, vtkFloatArray::SafeDownCast(tensorArray)->GetPointer(0), extent);
-            tensorField->setOffset(offset);
-        } else {
-            LogProcessorError("Failed to generate tensor field from array \""
-                              << std::string{tensorArray->GetName()} << "\" because data type is "
-                              << std::string{tensorArray->GetDataTypeAsString()} << ".") return;
-        }
+    //    } else if (tensorArray->GetDataType() == VTK_FLOAT) {
+    //        tensorField = std::make_shared<TensorField3D>(
+    //            dimensions, vtkFloatArray::SafeDownCast(tensorArray)->GetPointer(0), extent);
+    //        tensorField->setOffset(offset);
+    //    } else {
+    //        LogProcessorError("Failed to generate tensor field from array \""
+    //                          << std::string{tensorArray->GetName()} << "\" because data type is "
+    //                          << std::string{tensorArray->GetDataTypeAsString()} << ".") return;
+    //    }
 
-        // Add meta data from scalar array
-        if (!scalars_.getOptions().empty() && scalars_.get() != "none") {
-            auto scalarArray = dataSet->GetPointData()->GetArray(scalars_.get().c_str());
-            const auto size = scalarArray->GetNumberOfValues();
+    //    // Add meta data from scalar array
+    //    if (!scalars_.getOptions().empty() && scalars_.get() != "none") {
+    //        auto scalarArray = dataSet->GetPointData()->GetArray(scalars_.get().c_str());
+    //        const auto size = scalarArray->GetNumberOfValues();
 
-            std::vector<double> scalars{};
-            scalars.resize(size);
-            auto scalarIterator = scalars.begin();
+    //        std::vector<double> scalars{};
+    //        scalars.resize(size);
+    //        auto scalarIterator = scalars.begin();
 
-            if (scalarArray->GetDataType() == VTK_DOUBLE) {
-                const auto data = vtkDoubleArray::SafeDownCast(scalarArray)->GetPointer(0);
+    //        if (scalarArray->GetDataType() == VTK_DOUBLE) {
+    //            const auto data = vtkDoubleArray::SafeDownCast(scalarArray)->GetPointer(0);
 
-                for (int i = 0; i < size; ++i) {
-                    std::copy(data + i, data + (i + 1), scalarIterator++);
-                }
+    //            for (int i = 0; i < size; ++i) {
+    //                std::copy(data + i, data + (i + 1), scalarIterator++);
+    //            }
 
-                tensorField->addMetaData<HillYieldCriterion>(scalars,
-                                                             TensorFeature::HillYieldCriterion);
-            } else if (scalarArray->GetDataType() == VTK_FLOAT) {
-                const auto data = vtkFloatArray::SafeDownCast(scalarArray)->GetPointer(0);
+    //            tensorField->addMetaData<HillYieldCriterion>(scalars,
+    //                                                         TensorFeature::HillYieldCriterion);
+    //        } else if (scalarArray->GetDataType() == VTK_FLOAT) {
+    //            const auto data = vtkFloatArray::SafeDownCast(scalarArray)->GetPointer(0);
 
-                for (int i = 0; i < size; ++i) {
-                    std::copy(data + i, data + (i + 1), scalarIterator++);
-                }
-                tensorField->addMetaData<HillYieldCriterion>(scalars,
-                                                             TensorFeature::HillYieldCriterion);
-            } else {
-                LogProcessorError("Failed to generate meta data from array \""
-                                  << std::string{scalarArray->GetName()}
-                                  << "\" because data type is "
-                                  << std::string{scalarArray->GetDataTypeAsString()} << ".") return;
-            }
-        }
+    //            for (int i = 0; i < size; ++i) {
+    //                std::copy(data + i, data + (i + 1), scalarIterator++);
+    //            }
+    //            tensorField->addMetaData<HillYieldCriterion>(scalars,
+    //                                                         TensorFeature::HillYieldCriterion);
+    //        } else {
+    //            LogProcessorError("Failed to generate meta data from array \""
+    //                              << std::string{scalarArray->GetName()}
+    //                              << "\" because data type is "
+    //                              << std::string{scalarArray->GetDataTypeAsString()} << ".") return;
+    //        }
+    //    }
 
-        busy_ = false;
+    //    busy_ = false;
 
-        dispatchFront([this, tensorField]() {
-            {
-                NetworkLock lock;
-                tensors_.setReadOnly(false);
-            }
-            getActivityIndicator().setActive(false);
-            tensorField3DOutport_.setData(tensorField);
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    });
+    //    dispatchFront([this, tensorField]() {
+    //        {
+    //            NetworkLock lock;
+    //            tensors_.setReadOnly(false);
+    //        }
+    //        getActivityIndicator().setActive(false);
+    //        tensorField3DOutport_.setData(tensorField);
+    //        invalidate(InvalidationLevel::InvalidOutput);
+    //    });
+    //});
 }
 
 }  // namespace inviwo

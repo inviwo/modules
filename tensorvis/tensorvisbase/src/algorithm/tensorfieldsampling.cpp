@@ -137,23 +137,23 @@ std::pair<glm::uint8, dmat3> sample(std::shared_ptr<const TensorField3D> tensorF
         const auto zFrac = glm::fract(position.z * bounds.z);
 
         // Upper layer
-        const auto& tensor010 = tensorField->at(size3_t(xm, yp, zm)).second;
-        const auto& tensor011 = tensorField->at(size3_t(xm, yp, zp)).second;
+        const auto& tensor010 = tensorField->at(size3_t(xm, yp, zm));
+        const auto& tensor011 = tensorField->at(size3_t(xm, yp, zp));
         const auto tensorUpperLeft = glm::mix(tensor010, tensor011, zFrac);
 
-        const auto& tensor111 = tensorField->at(size3_t(xp, yp, zp)).second;
-        const auto& tensor110 = tensorField->at(size3_t(xp, yp, zm)).second;
+        const auto& tensor111 = tensorField->at(size3_t(xp, yp, zp));
+        const auto& tensor110 = tensorField->at(size3_t(xp, yp, zm));
         const auto tensorUpperRight = glm::mix(tensor110, tensor111, zFrac);
 
         const auto tensorUpper = glm::mix(tensorUpperLeft, tensorUpperRight, xFrac);
 
         // Lower layer
-        const auto& tensor000 = tensorField->at(size3_t(xm, ym, zm)).second;
-        const auto& tensor001 = tensorField->at(size3_t(xm, ym, zp)).second;
+        const auto& tensor000 = tensorField->at(size3_t(xm, ym, zm));
+        const auto& tensor001 = tensorField->at(size3_t(xm, ym, zp));
         const auto tensorLowerLeft = glm::mix(tensor000, tensor001, zFrac);
 
-        const auto& tensor100 = tensorField->at(size3_t(xp, ym, zm)).second;
-        const auto& tensor101 = tensorField->at(size3_t(xp, ym, zp)).second;
+        const auto& tensor100 = tensorField->at(size3_t(xp, ym, zm));
+        const auto& tensor101 = tensorField->at(size3_t(xp, ym, zp));
         const auto tensorLowerRight = glm::mix(tensor100, tensor101, zFrac);
 
         const auto tensorLower = glm::mix(tensorLowerLeft, tensorLowerRight, xFrac);
@@ -161,7 +161,7 @@ std::pair<glm::uint8, dmat3> sample(std::shared_ptr<const TensorField3D> tensorF
         val = glm::mix(tensorLower, tensorUpper, yFrac);
     } else {
         if (method == tensorutil::InterpolationMethod::Nearest) {
-            val = tensorField->at(size3_t(glm::round(indexPosition))).second;
+            val = tensorField->at(size3_t(glm::round(indexPosition)));
         }
     }
     return std::pair<glm::uint8, dmat3>(glm::uint8{1}, dmat3());

@@ -1,10 +1,3 @@
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-#endif
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -50,17 +43,17 @@ const ProcessorInfo InvariantSpaceCombine::processorInfo_{
 const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
 
 InvariantSpaceCombine::InvariantSpaceCombine()
-    : Processor()
+    : Processor()/*
     , invariantSpaceInport1_("invariantSpaceInport1")
     , invariantSpaceInport2_("invariantSpaceInport2")
-    , outport_("outport") {
-    addPort(invariantSpaceInport1_);
+    , outport_("outport")*/ {
+    /*addPort(invariantSpaceInport1_);
     addPort(invariantSpaceInport2_);
-    addPort(outport_);
+    addPort(outport_);*/
 }
 
 void InvariantSpaceCombine::process() {
-    auto iv1 = invariantSpaceInport1_.getData();
+    /*auto iv1 = invariantSpaceInport1_.getData();
     auto iv2 = invariantSpaceInport2_.getData();
 
     auto ivOut = std::make_shared<InvariantSpace>();
@@ -68,13 +61,7 @@ void InvariantSpaceCombine::process() {
     ivOut->addAxes(iv1);
     ivOut->addAxes(iv2);
 
-    outport_.setData(ivOut);
+    outport_.setData(ivOut);*/
 }
 
 }  // namespace inviwo
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC pop_options
-#endif

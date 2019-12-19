@@ -29,7 +29,6 @@
 
 #include <inviwo/tensorvisbase/processors/tensorfield3dmetadata.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 
 namespace inviwo {
 
@@ -126,7 +125,7 @@ void TensorField3DMetaData::initializeResources() {
 
         tensorFieldOut_ = std::shared_ptr<TensorField3D>(tensorField->clone());
 
-        sigma1_.set(tensorFieldOut_->hasMetaData<MajorEigenValues>());
+        /*sigma1_.set(tensorFieldOut_->hasMetaData<MajorEigenValues>());
         sigma2_.set(tensorFieldOut_->hasMetaData<IntermediateEigenValues>());
         sigma3_.set(tensorFieldOut_->hasMetaData<MinorEigenValues>());
 
@@ -156,14 +155,14 @@ void TensorField3DMetaData::initializeResources() {
         isotropicScaling_.set(tensorFieldOut_->hasMetaData<IsotropicScaling>());
         rotation_.set(tensorFieldOut_->hasMetaData<Rotation>());
         frobeniusNorm_.set(tensorFieldOut_->hasMetaData<FrobeniusNorm>());
-        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<HillYieldCriterion>());
+        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<HillYieldCriterion>());*/
     }
 }
 
 void TensorField3DMetaData::addMetaData() {
     const auto& tensors = tensorFieldOut_->tensors();
 
-    if (i1_.get() && !tensorFieldOut_->hasMetaData<I1>()) {
+    /*if (i1_.get() && !tensorFieldOut_->hasMetaData<I1>()) {
         std::vector<double> i1;
 
         for (const auto& tensor : tensors) {
@@ -423,11 +422,11 @@ void TensorField3DMetaData::addMetaData() {
         }
 
         tensorFieldOut_->addMetaData<FrobeniusNorm>(frobeniusNorm, TensorFeature::FrobeniusNorm);
-    }
+    }*/
 }
 
 void TensorField3DMetaData::removeMetaData() {
-    if (!i1_.get()) {
+    /*if (!i1_.get()) {
         tensorFieldOut_->removeMetaData<I1>();
     }
     if (!i2_.get()) {
@@ -480,7 +479,7 @@ void TensorField3DMetaData::removeMetaData() {
     }
     if (!frobeniusNorm_.get()) {
         tensorFieldOut_->removeMetaData<FrobeniusNorm>();
-    }
+    }*/
 }
 
 void TensorField3DMetaData::selectAll() {

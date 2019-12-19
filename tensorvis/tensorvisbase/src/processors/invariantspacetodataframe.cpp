@@ -42,14 +42,14 @@ const ProcessorInfo InvariantSpaceToDataFrame::processorInfo_{
 const ProcessorInfo InvariantSpaceToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 InvariantSpaceToDataFrame::InvariantSpaceToDataFrame()
-    : Processor(), inport_("inport"), outport_("outport") {
+    : Processor(), /*inport_("inport"),*/ outport_("outport") {
 
-    addPort(inport_);
+//    addPort(inport_);
     addPort(outport_);
 }
 
 void InvariantSpaceToDataFrame::process() {
-    const auto& invariantSpace = *inport_.getData();
+   /* const auto& invariantSpace = *inport_.getData();
 
     auto dataFrame = std::make_shared<DataFrame>();
 
@@ -72,7 +72,7 @@ void InvariantSpaceToDataFrame::process() {
 
     dataFrame->updateIndexBuffer();
 
-    outport_.setData(dataFrame);
+    outport_.setData(dataFrame);*/
 }
 
 }  // namespace inviwo

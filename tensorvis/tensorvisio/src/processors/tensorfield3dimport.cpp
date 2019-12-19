@@ -30,7 +30,6 @@
 #include <fstream>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <ios>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 #include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
 #include <unordered_map>
 
@@ -81,245 +80,245 @@ TensorField3DImport::TensorField3DImport()
 }
 
 void TensorField3DImport::initializeResources() {
-    tensorFieldOut_.reset();
-    tensorFieldOut_ = nullptr;
+    //tensorFieldOut_.reset();
+    //tensorFieldOut_ = nullptr;
 
-    std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
+    //std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
-    if (!inFile) {
-        LogError("Couldn't open file");
-        return;
-    }
+    //if (!inFile) {
+    //    LogError("Couldn't open file");
+    //    return;
+    //}
 
-    size_t version;
-    size3_t dimensions;
-    auto extents = dvec3(1.0);
-    auto offset = dvec3(0.0);
-    size_t rank;
-    size_t dimensionality;
-    glm::uint8 hasMetaData;
-    std::array<DataMapper, 3> dataMapperEigenValues;
-    std::array<DataMapper, 3> dataMapperEigenVectors;
-    std::vector<glm::uint8> mask;
-    std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> metaData;
+    //size_t version;
+    //size3_t dimensions;
+    //auto extents = dvec3(1.0);
+    //auto offset = dvec3(0.0);
+    //size_t rank;
+    //size_t dimensionality;
+    //glm::uint8 hasMetaData;
+    //std::array<DataMapper, 3> dataMapperEigenValues;
+    //std::array<DataMapper, 3> dataMapperEigenVectors;
+    //std::vector<glm::uint8> mask;
+    //std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> metaData;
 
-    std::string versionStr;
-    size_t size;
-    inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));
-    versionStr.resize(size);
-    inFile.read(&versionStr[0], size);
+    //std::string versionStr;
+    //size_t size;
+    //inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));
+    //versionStr.resize(size);
+    //inFile.read(&versionStr[0], size);
 
-    if (versionStr != "TFBVersion:") {
-        LogError("No valid tfb file!");
-        return;
-    }
+    //if (versionStr != "TFBVersion:") {
+    //    LogError("No valid tfb file!");
+    //    return;
+    //}
 
-    inFile.read(reinterpret_cast<char *>(&version), sizeof(size_t));
+    //inFile.read(reinterpret_cast<char *>(&version), sizeof(size_t));
 
-    if (version < TFB_CURRENT_VERSION) {
-        LogError("Please update the tfb file.");
-        LogError("Current version is " << TFB_CURRENT_VERSION << ", file has " << version);
-        return;
-    }
+    //if (version < TFB_CURRENT_VERSION) {
+    //    LogError("Please update the tfb file.");
+    //    LogError("Current version is " << TFB_CURRENT_VERSION << ", file has " << version);
+    //    return;
+    //}
 
-    inFile.read(reinterpret_cast<char *>(&dimensionality), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&rank), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&hasMetaData), sizeof(glm::uint8));
+    //inFile.read(reinterpret_cast<char *>(&dimensionality), sizeof(size_t));
+    //inFile.read(reinterpret_cast<char *>(&rank), sizeof(size_t));
+    //inFile.read(reinterpret_cast<char *>(&hasMetaData), sizeof(glm::uint8));
 
-    if (dimensionality != 3) {
-        LogError("The loaded file is not a 3D tensor field. Try the 2D reader.");
-        return;
-    }
+    //if (dimensionality != 3) {
+    //    LogError("The loaded file is not a 3D tensor field. Try the 2D reader.");
+    //    return;
+    //}
 
-    inFile.read(reinterpret_cast<char *>(&dimensions.x), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&dimensions.y), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&dimensions.z), sizeof(size_t));
+    //inFile.read(reinterpret_cast<char *>(&dimensions.x), sizeof(size_t));
+    //inFile.read(reinterpret_cast<char *>(&dimensions.y), sizeof(size_t));
+    //inFile.read(reinterpret_cast<char *>(&dimensions.z), sizeof(size_t));
 
-    // Read the extents
+    //// Read the extents
 
-    inFile.read(reinterpret_cast<char *>(&extents.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extents.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extents.z), sizeof(double));
+    //inFile.read(reinterpret_cast<char *>(&extents.x), sizeof(double));
+    //inFile.read(reinterpret_cast<char *>(&extents.y), sizeof(double));
+    //inFile.read(reinterpret_cast<char *>(&extents.z), sizeof(double));
 
-    inFile.read(reinterpret_cast<char *>(&offset.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&offset.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&offset.z), sizeof(double));
+    //inFile.read(reinterpret_cast<char *>(&offset.x), sizeof(double));
+    //inFile.read(reinterpret_cast<char *>(&offset.y), sizeof(double));
+    //inFile.read(reinterpret_cast<char *>(&offset.z), sizeof(double));
 
-    // Read the data maps
+    //// Read the data maps
 
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[0].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[1].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[2].dataRange), sizeof(double) * 2);
-    dataMapperEigenValues[0].valueRange = dataMapperEigenValues[0].dataRange;
-    dataMapperEigenValues[1].valueRange = dataMapperEigenValues[1].dataRange;
-    dataMapperEigenValues[2].valueRange = dataMapperEigenValues[2].dataRange;
+    //inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[0].dataRange), sizeof(double) * 2);
+    //inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[1].dataRange), sizeof(double) * 2);
+    //inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[2].dataRange), sizeof(double) * 2);
+    //dataMapperEigenValues[0].valueRange = dataMapperEigenValues[0].dataRange;
+    //dataMapperEigenValues[1].valueRange = dataMapperEigenValues[1].dataRange;
+    //dataMapperEigenValues[2].valueRange = dataMapperEigenValues[2].dataRange;
 
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[0].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[1].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[2].dataRange), sizeof(double) * 2);
-    dataMapperEigenVectors[0].valueRange = dataMapperEigenVectors[0].dataRange;
-    dataMapperEigenVectors[1].valueRange = dataMapperEigenVectors[1].dataRange;
-    dataMapperEigenVectors[2].valueRange = dataMapperEigenVectors[2].dataRange;
+    //inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[0].dataRange), sizeof(double) * 2);
+    //inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[1].dataRange), sizeof(double) * 2);
+    //inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[2].dataRange), sizeof(double) * 2);
+    //dataMapperEigenVectors[0].valueRange = dataMapperEigenVectors[0].dataRange;
+    //dataMapperEigenVectors[1].valueRange = dataMapperEigenVectors[1].dataRange;
+    //dataMapperEigenVectors[2].valueRange = dataMapperEigenVectors[2].dataRange;
 
-    auto numElements = dimensions.x * dimensions.y * dimensions.z;
-    auto numValues = numElements * 9;
+    //auto numElements = dimensions.x * dimensions.y * dimensions.z;
+    //auto numValues = numElements * 9;
 
-    std::vector<double> data;
-    data.resize(numValues);
-    auto dataRaw = data.data();
+    //std::vector<double> data;
+    //data.resize(numValues);
+    //auto dataRaw = data.data();
 
-    inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(double) * numValues);
+    //inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(double) * numValues);
 
-    std::vector<dmat3> tensors;
-    buildTensors(data, tensors);
+    //std::vector<dmat3> tensors;
+    //buildTensors(data, tensors);
 
-    glm::uint8 hasMask;
-    inFile.read(reinterpret_cast<char *>(&hasMask), sizeof(glm::uint8));
+    //glm::uint8 hasMask;
+    //inFile.read(reinterpret_cast<char *>(&hasMask), sizeof(glm::uint8));
 
-    if (hasMask) {
-        mask.resize(numElements);
-        auto maskData = mask.data();
-        inFile.read(reinterpret_cast<char *>(maskData), sizeof(glm::uint8) * numElements);
-    }
+    //if (hasMask) {
+    //    mask.resize(numElements);
+    //    auto maskData = mask.data();
+    //    inFile.read(reinterpret_cast<char *>(maskData), sizeof(glm::uint8) * numElements);
+    //}
 
-    if (hasMetaData) {
-        size_t numMetaDataEntries;
-        inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
+    //if (hasMetaData) {
+    //    size_t numMetaDataEntries;
+    //    inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
 
-        for (size_t i = 0; i < numMetaDataEntries; i++) {
-            uint64_t id;
-            inFile.read(reinterpret_cast<char *>(&id), sizeof(uint64_t));
+    //    for (size_t i = 0; i < numMetaDataEntries; i++) {
+    //        uint64_t id;
+    //        inFile.read(reinterpret_cast<char *>(&id), sizeof(uint64_t));
 
-            std::unique_ptr<MetaDataBase> ptr = nullptr;
+    //        std::unique_ptr<MetaDataBase> ptr = nullptr;
 
-            switch (id) {
-                case MajorEigenVectors::id():
-                    ptr = std::make_unique<MajorEigenVectors>();
-                    break;
-                case IntermediateEigenVectors::id():
-                    ptr = std::make_unique<IntermediateEigenVectors>();
-                    break;
-                case MinorEigenVectors::id():
-                    ptr = std::make_unique<MinorEigenVectors>();
-                    break;
-                case MajorEigenValues::id():
-                    ptr = std::make_unique<MajorEigenValues>();
-                    break;
-                case IntermediateEigenValues::id():
-                    ptr = std::make_unique<IntermediateEigenValues>();
-                    break;
-                case MinorEigenValues::id():
-                    ptr = std::make_unique<MinorEigenValues>();
-                    break;
-                case I1::id():
-                    ptr = std::make_unique<I1>();
-                    break;
-                case I2::id():
-                    ptr = std::make_unique<I2>();
-                    break;
-                case I3::id():
-                    ptr = std::make_unique<I3>();
-                    break;
-                case J1::id():
-                    ptr = std::make_unique<J1>();
-                    break;
-                case J2::id():
-                    ptr = std::make_unique<J2>();
-                    break;
-                case J3::id():
-                    ptr = std::make_unique<J3>();
-                    break;
-                case LodeAngle::id():
-                    ptr = std::make_unique<LodeAngle>();
-                    break;
-                case Anisotropy::id():
-                    ptr = std::make_unique<Anisotropy>();
-                    break;
-                case LinearAnisotropy::id():
-                    ptr = std::make_unique<LinearAnisotropy>();
-                    break;
-                case PlanarAnisotropy::id():
-                    ptr = std::make_unique<PlanarAnisotropy>();
-                    break;
-                case SphericalAnisotropy::id():
-                    ptr = std::make_unique<SphericalAnisotropy>();
-                    break;
-                case Diffusivity::id():
-                    ptr = std::make_unique<Diffusivity>();
-                    break;
-                case ShearStress::id():
-                    ptr = std::make_unique<ShearStress>();
-                    break;
-                case PureShear::id():
-                    ptr = std::make_unique<PureShear>();
-                    break;
-                case ShapeFactor::id():
-                    ptr = std::make_unique<ShapeFactor>();
-                    break;
-                case IsotropicScaling::id():
-                    ptr = std::make_unique<IsotropicScaling>();
-                    break;
-                case Rotation::id():
-                    ptr = std::make_unique<Rotation>();
-                    break;
-                case FrobeniusNorm::id():
-                    ptr = std::make_unique<FrobeniusNorm>();
-                    break;
-                case HillYieldCriterion::id():
-                    ptr = std::make_unique<HillYieldCriterion>();
-                    break;
-                default:
-                    // clang-format off
-                    LogError(
-                        "Default case reached. Revise tensor field import for missing meta data "
-                        "entry."
-                    )
-                    LogError(
-                        "The imported tensor field now does not have all the meta data with which "
-                        "it was stored."
-                    )
+    //        switch (id) {
+    //            case MajorEigenVectors::id():
+    //                ptr = std::make_unique<MajorEigenVectors>();
+    //                break;
+    //            case IntermediateEigenVectors::id():
+    //                ptr = std::make_unique<IntermediateEigenVectors>();
+    //                break;
+    //            case MinorEigenVectors::id():
+    //                ptr = std::make_unique<MinorEigenVectors>();
+    //                break;
+    //            case MajorEigenValues::id():
+    //                ptr = std::make_unique<MajorEigenValues>();
+    //                break;
+    //            case IntermediateEigenValues::id():
+    //                ptr = std::make_unique<IntermediateEigenValues>();
+    //                break;
+    //            case MinorEigenValues::id():
+    //                ptr = std::make_unique<MinorEigenValues>();
+    //                break;
+    //            case I1::id():
+    //                ptr = std::make_unique<I1>();
+    //                break;
+    //            case I2::id():
+    //                ptr = std::make_unique<I2>();
+    //                break;
+    //            case I3::id():
+    //                ptr = std::make_unique<I3>();
+    //                break;
+    //            case J1::id():
+    //                ptr = std::make_unique<J1>();
+    //                break;
+    //            case J2::id():
+    //                ptr = std::make_unique<J2>();
+    //                break;
+    //            case J3::id():
+    //                ptr = std::make_unique<J3>();
+    //                break;
+    //            case LodeAngle::id():
+    //                ptr = std::make_unique<LodeAngle>();
+    //                break;
+    //            case Anisotropy::id():
+    //                ptr = std::make_unique<Anisotropy>();
+    //                break;
+    //            case LinearAnisotropy::id():
+    //                ptr = std::make_unique<LinearAnisotropy>();
+    //                break;
+    //            case PlanarAnisotropy::id():
+    //                ptr = std::make_unique<PlanarAnisotropy>();
+    //                break;
+    //            case SphericalAnisotropy::id():
+    //                ptr = std::make_unique<SphericalAnisotropy>();
+    //                break;
+    //            case Diffusivity::id():
+    //                ptr = std::make_unique<Diffusivity>();
+    //                break;
+    //            case ShearStress::id():
+    //                ptr = std::make_unique<ShearStress>();
+    //                break;
+    //            case PureShear::id():
+    //                ptr = std::make_unique<PureShear>();
+    //                break;
+    //            case ShapeFactor::id():
+    //                ptr = std::make_unique<ShapeFactor>();
+    //                break;
+    //            case IsotropicScaling::id():
+    //                ptr = std::make_unique<IsotropicScaling>();
+    //                break;
+    //            case Rotation::id():
+    //                ptr = std::make_unique<Rotation>();
+    //                break;
+    //            case FrobeniusNorm::id():
+    //                ptr = std::make_unique<FrobeniusNorm>();
+    //                break;
+    //            case HillYieldCriterion::id():
+    //                ptr = std::make_unique<HillYieldCriterion>();
+    //                break;
+    //            default:
+    //                // clang-format off
+    //                LogError(
+    //                    "Default case reached. Revise tensor field import for missing meta data "
+    //                    "entry."
+    //                )
+    //                LogError(
+    //                    "The imported tensor field now does not have all the meta data with which "
+    //                    "it was stored."
+    //                )
 
-                    continue;
-                    // clang-format on
-            }
+    //                continue;
+    //                // clang-format on
+    //        }
 
-            ptr->deserialize(inFile, numElements);
+    //        ptr->deserialize(inFile, numElements);
 
-            metaData.insert(std::make_pair(id, std::move(ptr)));
-        }
-    }
+    //        metaData.insert(std::make_pair(id, std::move(ptr)));
+    //    }
+    //}
 
-    std::string str;
-    inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));
-    str.resize(size);
-    inFile.read(&str[0], size);
+    //std::string str;
+    //inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));
+    //str.resize(size);
+    //inFile.read(&str[0], size);
 
-    if (str != "EOFreached") {
-        LogError("EOF not reached");
-        return;
-    }
+    //if (str != "EOFreached") {
+    //    LogError("EOF not reached");
+    //    return;
+    //}
 
-    inFile.close();
+    //inFile.close();
 
-    if (data.size() != numValues) {
-        LogWarn("Dimensions do not match data size");
-        return;
-    }
+    //if (data.size() != numValues) {
+    //    LogWarn("Dimensions do not match data size");
+    //    return;
+    //}
 
-    dextents_ = extents;
+    //dextents_ = extents;
 
-    tensorFieldOut_ = std::make_shared<TensorField3D>(dimensions, tensors, metaData, extents);
+    //tensorFieldOut_ = std::make_shared<TensorField3D>(dimensions, tensors, metaData, extents);
 
-    tensorFieldOut_->dataMapEigenValues_ = dataMapperEigenValues;
-    tensorFieldOut_->dataMapEigenVectors_ = dataMapperEigenVectors;
+    //tensorFieldOut_->dataMapEigenValues_ = dataMapperEigenValues;
+    //tensorFieldOut_->dataMapEigenVectors_ = dataMapperEigenVectors;
 
-    tensorFieldOut_->setOffset(offset);
+    //tensorFieldOut_->setOffset(offset);
 
-    tensorFieldOut_->setMask(mask);
+    //tensorFieldOut_->setMask(mask);
 
-    extents_.set(extents);
-    offset_.set(offset);
-    dimensions_.set(dimensions);
+    //extents_.set(extents);
+    //offset_.set(offset);
+    //dimensions_.set(dimensions);
 }
 
 void TensorField3DImport::process() {

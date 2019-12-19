@@ -12,7 +12,6 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/datastructures/deformablecylinder.h
     include/inviwo/tensorvisbase/datastructures/deformablesphere.h
     include/inviwo/tensorvisbase/datastructures/hyperstreamlinetracer.h
-    include/inviwo/tensorvisbase/datastructures/invariantspace.h
     include/inviwo/tensorvisbase/datastructures/tensorfield2d.h
     include/inviwo/tensorvisbase/datastructures/tensorfield3d.h
     include/inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h
@@ -66,7 +65,6 @@ set(SOURCE_FILES
     src/datastructures/deformablecylinder.cpp
     src/datastructures/deformablesphere.cpp
     src/datastructures/hyperstreamlinetracer.cpp
-    src/datastructures/invariantspace.cpp
     src/datastructures/tensorfield2d.cpp
     src/datastructures/tensorfield3d.cpp
     src/datavisualizer/anisotropyraycastingvisualizer.cpp
