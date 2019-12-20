@@ -79,7 +79,7 @@ void init(py::module ivwmodule, InviwoApplication *app) {
                           self->activate(dimensions, pixelRatio);
                       },
                       py::arg("dimensions"), py::arg("pixelRatio") = 1.0f);
-    
+
     nanoVGContext.def("deactivate", &NanoVGContext::deactivate);
     nanoVGContext.def("cancel", &NanoVGContext::cancel);
 
