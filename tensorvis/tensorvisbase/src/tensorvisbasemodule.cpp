@@ -54,6 +54,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield3dmetadata.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubsample.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubset.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldgenerator.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
@@ -67,6 +68,8 @@
 #include <inviwo/tensorvisbase/properties/tensorglyphproperty.h>
 
 namespace inviwo {
+
+const Tag TensorVisTag::OpenTensorVis("OpenTensorVis");
 
 TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     : InviwoModule(app, "TensorVisBase") {
@@ -88,6 +91,7 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorField3DMetaData>();
     registerProcessor<TensorField3DSubsample>();
     registerProcessor<TensorField3DSubset>();
+    registerProcessor<TensorField3DToDataFrame>();
     registerProcessor<TensorFieldGenerator>();
     registerProcessor<TensorFieldLIC>();
     registerProcessor<TensorFieldSlice>();

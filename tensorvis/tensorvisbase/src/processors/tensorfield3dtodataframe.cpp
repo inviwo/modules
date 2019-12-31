@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,32 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORVISBASEMODULE_H
-#define IVW_TENSORVISBASEMODULE_H
-
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
-class IVW_MODULE_TENSORVISBASE_API TensorVisTag : public Tag {
-public:
-    static const Tag OpenTensorVis;
-};
 
-class IVW_MODULE_TENSORVISBASE_API TensorVisBaseModule : public InviwoModule {
-public:
-    TensorVisBaseModule(InviwoApplication* app);
-    virtual ~TensorVisBaseModule() = default;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo TensorField3DToDataFrame::processorInfo_{
+    "org.inviwo.TensorField3DToDataFrame",    // Class identifier
+    "Tensor Field 3D To Data Frame",          // Display name
+    "Plotting",                               // Category
+    CodeState::Stable,                        // Code state
+    Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
 };
+const ProcessorInfo TensorField3DToDataFrame::getProcessorInfo() const { return processorInfo_; }
+
+TensorField3DToDataFrame::TensorField3DToDataFrame()
+    : Processor()
+    , tensorField3DInport_("tensorField3DInport")
+    , dataFrameOutport_("dataFrameOutport") {
+
+    addPort(tensorField3DInport_);
+    addPort(dataFrameOutport_);
+}
+
+void TensorField3DToDataFrame::process() {
+    dataFrameOutport_.setData(tensorField3DInport_.getData()->metaData());
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORVISBASEMODULE_H

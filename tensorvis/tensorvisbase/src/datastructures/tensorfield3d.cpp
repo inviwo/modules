@@ -9,8 +9,20 @@ namespace inviwo {
 
 TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
     : dimensions_(dimensions)
-    
-    , indexMapper_(util::IndexMapper3D(dimensions)), tensors_(std::make_shared<std::vector<mat3>>(tensors)) {
+    , indexMapper_(util::IndexMapper3D(dimensions))
+    , tensors_(std::make_shared<std::vector<mat3>>(tensors))
+    , size_(glm::compMul(dimensions))
+    , metaData_(std::make_shared<DataFrame>()) {
+    initializeDefaultMetaData();
+}
+
+TensorField3D::TensorField3D(const size3_t &dimensions,
+                             std::shared_ptr<const std::vector<mat3>> tensors)
+    : dimensions_(dimensions)
+    , indexMapper_(util::IndexMapper3D(dimensions))
+    , tensors_(tensors)
+    , size_(glm::compMul(dimensions))
+    , metaData_(std::make_shared<DataFrame>()) {
     initializeDefaultMetaData();
 }
 
@@ -19,6 +31,7 @@ TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> 
     : dimensions_(dimensions)
     , indexMapper_(util::IndexMapper3D(dimensions))
     , tensors_(std::make_shared<std::vector<mat3>>(tensors))
+    , size_(glm::compMul(dimensions))
     , metaData_(std::make_shared<DataFrame>(metaData)) {
     initializeDefaultMetaData();
 }
@@ -29,6 +42,7 @@ TensorField3D::TensorField3D(const size3_t &dimensions,
     : dimensions_(dimensions)
     , indexMapper_(util::IndexMapper3D(dimensions))
     , tensors_(tensors)
+    , size_(glm::compMul(dimensions))
     , metaData_(metaData) {
     initializeDefaultMetaData();
 }
@@ -43,6 +57,7 @@ TensorField3D::TensorField3D(const TensorField3D &tf)
     , size_(tf.size_)
     , rank_(tf.rank_)
     , dimensionality_(tf.dimensionality_)
+    , metaData_(tf.metaData_)
     , binaryMask_(tf.binaryMask_) {
     setOffset(tf.getOffset());
     setBasis(tf.getBasis());
@@ -74,48 +89,43 @@ std::string TensorField3D::getDataInfo() const {
 }
 
 /**
- *   Returns two volumes representing the tensor field.
+ *   Returns three volumes representing the tensor field.
  *
+ * At each position, a tensor is given by
+
  *   xx   xy   xz
  *   yx   yy   yz
  *   zx   zy   zz
  *
- *   If we consider a 3x3 tensor like above and assume it is symmetric such that
- *
- *   xy == yx, xz == zx, yz == zy
- *
- *   we can split it up into two parts: the diagonal and the upper (or lower) triangle.
- *   The first volume of the pair will then store (xx, yy, zz) and the second volume
- *   will store (xy, yz, xz).
+ * The volumes return by this method decompose the tensor into its three columns.
+ * I.e., the first volume contains the values xx, yz, and zx.
  */
-std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> TensorField3D::getVolumeRepresentation()
-    const {
-    std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> ret;
+std::array<std::shared_ptr<Volume>, 3> TensorField3D::getVolumeRepresentation() const {
+    auto volumeCol1 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
+    auto volumeCol2 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
+    auto volumeCol3 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
 
-    auto volume1 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
-    auto volume2 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
-
-    auto tensorField = std::make_pair(volume1, volume2);
-
-    auto XXYYZZ = tensorField.first->getEditableRepresentation<VolumeRAM>();
-    auto XYYZXZ = tensorField.second->getEditableRepresentation<VolumeRAM>();
+    auto col1RAM = volumeCol1->getEditableRepresentation<VolumeRAM>();
+    auto col2RAM = volumeCol2->getEditableRepresentation<VolumeRAM>();
+    auto col3RAM = volumeCol3->getEditableRepresentation<VolumeRAM>();
 
     util::IndexMapper3D indexMapper(dimensions_);
 
     for (size_t z = 0; z < dimensions_.z; z++) {
         for (size_t x = 0; x < dimensions_.x; x++) {
             for (size_t y = 0; y < dimensions_.y; y++) {
-                auto tensor = at(size3_t(x, y, z));
-                XXYYZZ->setFromDVec3(size3_t(x, y, z),
-                                     dvec3(tensor[0][0], tensor[1][1], tensor[2][2]));
+                const auto &tensor = at(size3_t(x, y, z));
 
-                XYYZXZ->setFromDVec3(size3_t(x, y, y),
-                                     dvec3(tensor[1][0], tensor[2][1], tensor[2][0]));
+                col1RAM->setFromDVec3(size3_t(x, y, z), tensor[0]);
+
+                col2RAM->setFromDVec3(size3_t(x, y, y), tensor[1]);
+
+                col3RAM->setFromDVec3(size3_t(x, y, y), tensor[2]);
             }
         }
     }
 
-    return ret;
+    return {volumeCol1, volumeCol2, volumeCol3};
 }
 
 void TensorField3D::setExtents(const vec3 &extents) {
@@ -148,10 +158,10 @@ mat4 TensorField3D::getBasisAndOffset() const {
     modelMatrix[3][1] = offset[1];
     modelMatrix[3][2] = offset[2];
 
-    modelMatrix[0][3] = 0.0;
-    modelMatrix[1][3] = 0.0;
-    modelMatrix[2][3] = 0.0;
-    modelMatrix[3][3] = 1.0;
+    modelMatrix[0][3] = 0.0f;
+    modelMatrix[1][3] = 0.0f;
+    modelMatrix[2][3] = 0.0f;
+    modelMatrix[3][3] = 1.0f;
 
     return modelMatrix;
 }
@@ -160,7 +170,7 @@ const std::vector<vec3> &TensorField3D::majorEigenVectors() const {
     return this->getMetaDataContainer<attributes::MajorEigenVector>();
 }
 
-const std::vector<vec3> &TensorField3D::middleEigenVectors() const {
+const std::vector<vec3> &TensorField3D::intermediateEigenVectors() const {
     return this->getMetaDataContainer<attributes::IntermediateEigenVector>();
 }
 
@@ -172,7 +182,7 @@ const std::vector<float> &TensorField3D::majorEigenValues() const {
     return this->getMetaDataContainer<attributes::Lambda1>();
 }
 
-const std::vector<float> &TensorField3D::middleEigenValues() const {
+const std::vector<float> &TensorField3D::intermediateEigenValues() const {
     return this->getMetaDataContainer<attributes::Lambda2>();
 }
 
@@ -182,8 +192,23 @@ const std::vector<float> &TensorField3D::minorEigenValues() const {
 
 std::shared_ptr<const std::vector<mat3>> TensorField3D::tensors() const { return tensors_; }
 
+void TensorField3D::setTensors(std::shared_ptr<const std::vector<mat3>> tensors) {
+    tensors_ = tensors;
+}
+
+void TensorField3D::setMetaData(std::shared_ptr<const DataFrame> metaData) { metaData_ = metaData; }
+
 int TensorField3D::getNumDefinedEntries() const {
     return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
+}
+
+std::shared_ptr<TensorField3D> TensorField3D::deepCopy() const {
+    auto tf = std::make_shared<TensorField3D>(*this);
+
+    tf->setTensors(std::make_shared<std::vector<mat3>>(*tensors_));
+    tf->setMetaData(std::make_shared<DataFrame>(*metaData_));
+
+    return tf;
 }
 
 TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
@@ -204,14 +229,14 @@ void TensorField3D::initializeDefaultMetaData() {
 
     auto func = [](const mat3 &tensor) -> std::array<std::pair<float, vec3>, 3> {
         if (tensor == mat3(0.0f)) {
-            return {{std::make_pair(0, vec3{0}), std::make_pair(0, vec3{0}),
-                     std::make_pair(0, vec3{0})}};
-            return std::array<std::pair<float, vec3>, 3>{std::make_pair(0, dvec3(0)),
-                                                         std::make_pair(0, dvec3(0)),
-                                                         std::make_pair(0, dvec3(0))};
+            return {{std::make_pair(0.0f, vec3{0.0f}), std::make_pair(0.0f, vec3{0.0f}),
+                     std::make_pair(0.0f, vec3{0.0f})}};
+            return std::array<std::pair<float, vec3>, 3>{std::make_pair(0.0f, vec3(0.0f)),
+                                                         std::make_pair(0.0f, vec3(0.0f)),
+                                                         std::make_pair(0.0f, vec3(0.0f))};
         }
 
-        Eigen::EigenSolver<Eigen::Matrix3d> solver(util::glm2eigen(tensor));
+        Eigen::EigenSolver<Eigen::Matrix3f> solver(util::glm2eigen(tensor));
         const auto eigenValues = util::eigen2glm<float, 3, 1>(solver.eigenvalues().real());
         const auto eigenVectors = util::eigen2glm<float, 3, 3>(solver.eigenvectors().real());
 
@@ -233,13 +258,13 @@ void TensorField3D::initializeDefaultMetaData() {
     std::vector<vec3> intermediateEigenVectors;
     std::vector<vec3> minorEigenVectors;
 
-    majorEigenValues.reserve(size_);
-    intermediateEigenValues.reserve(size_);
-    minorEigenValues.reserve(size_);
+    majorEigenValues.resize(size_);
+    intermediateEigenValues.resize(size_);
+    minorEigenValues.resize(size_);
 
-    majorEigenVectors.reserve(size_);
-    intermediateEigenVectors.reserve(size_);
-    minorEigenVectors.reserve(size_);
+    majorEigenVectors.resize(size_);
+    intermediateEigenVectors.resize(size_);
+    minorEigenVectors.resize(size_);
 
     const auto &t_ref = *tensors_;
 
@@ -275,7 +300,7 @@ vec3 TensorField3D::getNormalizedVolumePosition(const size_t index, const double
                 dimensions_.z < 2 ? sliceCoord : pos.z * stepSize.z);
 }
 
-std::optional<std::vector<vec3>> TensorField3D::getNormalizedScreenCoordinates(double sliceCoord) {
+std::optional<std::vector<vec3>> TensorField3D::getNormalizedScreenCoordinates(float sliceCoord) {
     std::vector<vec3> normalizedVolumePositions;
     normalizedVolumePositions.resize(size_);
 
@@ -299,9 +324,9 @@ std::optional<std::vector<vec3>> TensorField3D::getNormalizedScreenCoordinates(d
 }
 
 void TensorField3D::computeDataMaps() {
-    const auto &majorEigenValues = getMetaDataContainer<attributes::Lambda1>();
-    const auto &middleEigenValues = getMetaDataContainer<attributes::Lambda2>();
-    const auto &minorEigenValues = getMetaDataContainer<attributes::Lambda3>();
+    const auto &majorEigenValues = this->majorEigenValues();
+    const auto &middleEigenValues = this->intermediateEigenValues();
+    const auto &minorEigenValues = this->minorEigenValues();
 
     dataMapEigenValues_[0].dataRange.x = dataMapEigenValues_[0].valueRange.x =
         *std::min_element(majorEigenValues.begin(), majorEigenValues.end());
@@ -321,7 +346,7 @@ void TensorField3D::computeDataMaps() {
 
     auto min = std::numeric_limits<double>::max();
     auto max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaDataContainer<attributes::MajorEigenVector>()) {
+    for (const auto &v : this->majorEigenVectors()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -330,7 +355,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaDataContainer<attributes::IntermediateEigenVector>()) {
+    for (const auto &v : this->intermediateEigenVectors()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -339,7 +364,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaDataContainer<attributes::MinorEigenVector>()) {
+    for (const auto &v : this->minorEigenVectors()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }

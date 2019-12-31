@@ -34,7 +34,7 @@
 
 namespace inviwo {
 namespace tensorutil {
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image> texture,
                                    std::shared_ptr<const TensorField2D> tensorField, Shader& shader,
                                    TextureUnitContainer& textureUnits) {
     texture = tensorField->getImageRepresentation();
@@ -42,7 +42,7 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture, TensorField2DInport& inport,
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image> texture, TensorField2DInport& inport,
                                    Shader& shader, TextureUnitContainer& textureUnits) {
     auto tensorField = inport.getData();
 
@@ -51,9 +51,18 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture, TensorField2
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D>&, Shader*,
-                                    TextureUnitContainer&) {
-    // auto volumes = tensorField->getVolumeRepresentation();
+void bindTensorFieldAsVolume(std::array<std::shared_ptr<Volume>, 3> volumes,
+                             std::shared_ptr<const TensorField3D>& tensorField, Shader& shader,
+                             TextureUnitContainer& textureUnits) {
+
+    volumes = tensorField->getVolumeRepresentation();
+    auto volumeCol1 = volumes[0];
+    auto volumeCol2 = volumes[1];
+    auto volumeCol3 = volumes[2];
+
+    utilgl::bindAndSetUniforms(shader, textureUnits, *volumeCol1, "tensorFieldCol1");
+    utilgl::bindAndSetUniforms(shader, textureUnits, *volumeCol2, "tensorFieldCol2");
+    utilgl::bindAndSetUniforms(shader, textureUnits, *volumeCol3, "tensorFieldCol3");
 }
 
 std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> tensorField,
@@ -88,9 +97,9 @@ std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> 
     return std::make_shared<TensorField2D>(newDimensions, dataNew);
 }
 
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
-            const InterpolationMethod method) {
+std::shared_ptr<TensorField3D> subsample3D(std::shared_ptr<const TensorField3D> tensorField,
+                                           size3_t newDimensions,
+                                           const InterpolationMethod method) {
     std::vector<mat3> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y * newDimensions.z);
 
@@ -121,9 +130,9 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
     return outField;
 }
 
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
-            const InterpolationMethod method, std::function<void(float)> fun) {
+std::shared_ptr<TensorField3D> subsample3D(std::shared_ptr<const TensorField3D> tensorField,
+                                           size3_t newDimensions, const InterpolationMethod method,
+                                           std::function<void(float)> fun) {
     std::vector<mat3> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y * newDimensions.z);
 
@@ -143,7 +152,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
                 fun(std::min(0.99f, i++ / numElements));
                 // Find position in old tensor field
                 auto pos = vec3(xFrac * static_cast<float>(x), yFrac * static_cast<float>(y),
-                                 zFrac * static_cast<float>(z));
+                                zFrac * static_cast<float>(z));
 
                 // Sample old tensor field at position
                 auto tensor = sample(tensorField, pos, method);
@@ -210,21 +219,19 @@ std::shared_ptr<BasicMesh> generateSlicePlaneGeometryForTensorField(
     return mesh;
 }
 
-IVW_MODULE_TENSORVISBASE_API std::array<std::pair<float, vec3>, 3>
-getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D> tf,
-                                             size_t index) {
-    const auto& majorEigenValues = tf->getMetaDataContainer<attributes::Lambda1>();
-    const auto& middleEigenValues = tf->getMetaDataContainer<attributes::Lambda2>();
-    const auto& minorEigenValues = tf->getMetaDataContainer<attributes::Lambda3>();
+std::array<std::pair<float, vec3>, 3> getSortedEigenValuesAndEigenVectorsForTensor(
+    std::shared_ptr<const TensorField3D> tf, size_t index) {
+    const auto& majorEigenValues = tf->majorEigenValues();
+    const auto& middleEigenValues = tf->intermediateEigenValues();
+    const auto& minorEigenValues = tf->minorEigenValues();
 
     const auto& majorEigenValue = majorEigenValues[index];
     const auto& middleEigenValue = middleEigenValues[index];
     const auto& minorEigenValue = minorEigenValues[index];
 
-    const auto& majorEigenVectors = tf->getMetaDataContainer<attributes::MajorEigenVector>();
-    const auto& middleEigenVectors =
-        tf->getMetaDataContainer<attributes::IntermediateEigenVector>();
-    const auto& minorEigenVectors = tf->getMetaDataContainer<attributes::MinorEigenVector>();
+    const auto& majorEigenVectors = tf->majorEigenVectors();
+    const auto& middleEigenVectors = tf->intermediateEigenVectors();
+    const auto& minorEigenVectors = tf->minorEigenVectors();
 
     const auto& majorEigenVector = majorEigenVectors[index];
     const auto& middleEigenVector = middleEigenVectors[index];
@@ -238,27 +245,26 @@ getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D
     return ret;
 }
 
-IVW_MODULE_TENSORVISBASE_API std::array<std::pair<float, vec3>, 3>
-getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D> tf,
-                                             size3_t position) {
+std::array<std::pair<float, vec3>, 3> getSortedEigenValuesAndEigenVectorsForTensor(
+    std::shared_ptr<const TensorField3D> tf, size3_t position) {
     return getSortedEigenValuesAndEigenVectorsForTensor(tf, tf->indexMapper()(position));
 }
 
-IVW_MODULE_TENSORVISBASE_API std::array<float, 3> getSortedEigenValuesForTensor(
-    std::shared_ptr<const TensorField3D> tf, size_t index) {
-    const auto& majorEigenValues = tf->getMetaDataContainer<attributes::Lambda1>();
-    const auto& middleEigenValues = tf->getMetaDataContainer<attributes::Lambda2>();
-    const auto& minorEigenValues = tf->getMetaDataContainer<attributes::Lambda3>();
+std::array<float, 3> getSortedEigenValuesForTensor(std::shared_ptr<const TensorField3D> tf,
+                                                   size_t index) {
+    const auto& majorEigenValues = tf->majorEigenValues();
+    const auto& middleEigenValues = tf->intermediateEigenValues();
+    const auto& minorEigenValues = tf->minorEigenValues();
 
     const auto& majorEigenValue = majorEigenValues[index];
     const auto& middleEigenValue = middleEigenValues[index];
     const auto& minorEigenValue = minorEigenValues[index];
 
-    std::array<float, 3>{majorEigenValue, middleEigenValue, minorEigenValue};
+    return std::array<float, 3>{majorEigenValue, middleEigenValue, minorEigenValue};
 }
 
-IVW_MODULE_TENSORVISBASE_API std::array<float, 3> getSortedEigenValuesForTensor(
-    std::shared_ptr<const TensorField3D> tf, size3_t position) {
+std::array<float, 3> getSortedEigenValuesForTensor(std::shared_ptr<const TensorField3D> tf,
+                                                   size3_t position) {
     return getSortedEigenValuesForTensor(tf, tf->indexMapper()(position));
 }
 

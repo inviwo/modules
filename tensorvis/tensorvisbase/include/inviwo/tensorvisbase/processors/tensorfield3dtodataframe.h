@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,40 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORVISBASEMODULE_H
-#define IVW_TENSORVISBASEMODULE_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
-class IVW_MODULE_TENSORVISBASE_API TensorVisTag : public Tag {
-public:
-    static const Tag OpenTensorVis;
-};
 
-class IVW_MODULE_TENSORVISBASE_API TensorVisBaseModule : public InviwoModule {
+/** \docpage{org.inviwo.TensorField3DToDataFrame, Tensor Field 3D To Data Frame}
+ * ![](org.inviwo.TensorField3DToDataFrame.png?classIdentifier=org.inviwo.TensorField3DToDataFrame)
+ * Forwards the meta data container (data frame) of the input tensor field for plotting or the like.
+ *
+ * ### Inports
+ *   * __tensorField3DInport___ Tensor field inport.
+ *
+ * ### Outports
+ *   * __dataFrameOutport___ Outputs the data frame.
+ *
+ */
+class IVW_MODULE_TENSORVISBASE_API TensorField3DToDataFrame : public Processor {
 public:
-    TensorVisBaseModule(InviwoApplication* app);
-    virtual ~TensorVisBaseModule() = default;
+    TensorField3DToDataFrame();
+    virtual ~TensorField3DToDataFrame() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    TensorField3DInport tensorField3DInport_;
+    DataFrameOutport dataFrameOutport_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORVISBASEMODULE_H

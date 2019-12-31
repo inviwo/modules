@@ -102,10 +102,10 @@ void TensorField3DExport::exportBinary() const {
     outFile.write(reinterpret_cast<const char *>(&dimensions), sizeof(size_t) * 3);
 
     auto extents = tensorField->getExtents();
-    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(double) * 3);
+    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(float) * 3);
 
     auto offset = tensorField->getOffset();
-    outFile.write(reinterpret_cast<const char *>(&offset), sizeof(double) * 3);
+    outFile.write(reinterpret_cast<const char *>(&offset), sizeof(float) * 3);
 
     auto &eigenValueDataMaps = tensorField->dataMapEigenValues_;
     outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[0].dataRange),
@@ -126,20 +126,7 @@ void TensorField3DExport::exportBinary() const {
     const auto &data = *tensorField->tensors();
 
     for (const auto &val : data) {
-        // Upper row
-        outFile.write(reinterpret_cast<const char *>(&val[0][0]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][0]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[2][0]), sizeof(double));
-
-        // Middle row
-        outFile.write(reinterpret_cast<const char *>(&val[0][1]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][1]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[2][1]), sizeof(double));
-
-        // Bottom row
-        outFile.write(reinterpret_cast<const char *>(&val[0][2]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][2]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[2][2]), sizeof(double));
+        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)), sizeof(float) * 9);
     }
 
     auto hasMask = glm::uint8(tensorField->hasMask());
@@ -152,43 +139,11 @@ void TensorField3DExport::exportBinary() const {
     }
 
     if (includeMetaData_.get()) {
-        const auto numMetaDataEntries = tensorField->metaData()->getNumberOfColumns();
-        outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
-
-        /*for (const auto &dataItem : tensorField->metaData()) {
-            dataItem.second->serialize(outFile);
-        }*/
+        serializeDataFrame(tensorField->metaData(), outFile);
     }
-    // We always include eigenvalues and eigenvectors
-    /*else {
-        for (const auto &dataItem : tensorField->metaData()) {
-            auto id = dataItem.first;
 
-            switch (id) {
-                case MajorEigenValues::id():
-                    dataItem.second->serialize(outFile);
-                    break;
-                case IntermediateEigenValues::id():
-                    dataItem.second->serialize(outFile);
-                    break;
-                case MinorEigenValues::id():
-                    dataItem.second->serialize(outFile);
-                    break;
-                case MajorEigenVectors::id():
-                    dataItem.second->serialize(outFile);
-                    break;
-                case IntermediateEigenVectors::id():
-                    dataItem.second->serialize(outFile);
-                    break;
-                case MinorEigenVectors::id():
-                    dataItem.second->serialize(outFile);
-                    break;
-                default:
-                    break;
-            }
-        }
-    }*/
-
+    // Append some string here as a safety measure to be able to see if we read the file correctly
+    // afterwards.
     std::string str("EOFreached");
     size = str.size();
     outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));

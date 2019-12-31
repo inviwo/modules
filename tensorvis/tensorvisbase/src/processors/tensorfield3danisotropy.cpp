@@ -77,7 +77,7 @@ void TensorField3DAnisotropy::process() {
     std::function<void(const size3_t&)> func;
     util::IndexMapper3D indexMapper(dimensions);
     const auto& majorEigenValues = tensorField->majorEigenValues();
-    const auto& intermediateEigenValues = tensorField->middleEigenValues();
+    const auto& intermediateEigenValues = tensorField->intermediateEigenValues();
     const auto& minorEigenValues = tensorField->minorEigenValues();
     auto min = std::numeric_limits<float>::max();
     auto max = std::numeric_limits<float>::lowest();

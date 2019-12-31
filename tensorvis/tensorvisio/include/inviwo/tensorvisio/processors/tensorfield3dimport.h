@@ -82,11 +82,9 @@ private:
 
     FloatVec3Property offset_;
     IntVec3Property dimensions_;
-    std::shared_ptr<TensorField3D> tensorFieldOut_;
 
-    dvec3 dextents_;
-
-    void buildTensors(const std::vector<double> &data, std::vector<dmat3> &tensors) const;
+    void buildTensors(const std::vector<float> &data,
+                      std::shared_ptr<std::vector<mat3>> tensors) const;
 };
 
 }  // namespace inviwo

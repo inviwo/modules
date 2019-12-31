@@ -80,6 +80,21 @@ private:
     BoolProperty includeMetaData_;
 
     void exportBinary() const;
+
+    void serializeDataFrame(std::shared_ptr<const DataFrame> dataFrame, std::ofstream& file) const{
+        for (auto col : *dataFrame) {
+            auto buf = col->getBuffer();
+            const auto name = col->getHeader();
+            
+            buf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::All>(
+                [&file, &name](auto brprecision) {
+                    using ValueType = util::PrecisionValueType<decltype(brprecision)>;
+                    auto& data = brprecision->getDataContainer();
+
+                    file.write(reinterpret_cast<const char*>(data.data()), sizeof(ValueType)* data.size());
+                });
+        }
+    }
 };
 
 }  // namespace inviwo
