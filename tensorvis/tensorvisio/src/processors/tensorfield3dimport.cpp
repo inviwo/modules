@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#pragma optimize("", off)
+
 #include <fstream>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <ios>
@@ -37,20 +39,22 @@
 namespace inviwo {
 
 namespace {
-struct FindType {
+struct DeserializeColumn {
     template <typename T>
     void operator()(size_t id, std::ifstream &inFile, std::shared_ptr<DataFrame> df,
                     size_t numItems) {
+        using ValueType = typename T::value_type;
+
         if (id == util::constexpr_hash(T::identifier)) {
             // construct std::vector from binary data
-            std::vector<T::value_type> data;
+            std::vector<ValueType> data;
             data.resize(numItems);
 
-            inFile.read(reinterpret_cast<char *>(data.data()), sizeof(T::value_type) * numItems);
+            inFile.read(reinterpret_cast<char *>(data.data()), sizeof(ValueType) * numItems);
 
             // Add column to data frame
             df->addColumn(
-                std::make_shared<TemplateColumn<T::value_type>>(std::string(T::identifier), data));
+                std::make_shared<TemplateColumn<ValueType>>(std::string(T::identifier), data));
         }
     }
 };
@@ -218,8 +222,11 @@ void TensorField3DImport::process() {
             size_t numItems{};
             inFile.read(reinterpret_cast<char *>(&numItems), sizeof(size_t));
 
-            util::for_each_type<attributes::types>{}(FindType{}, id, inFile, dataFrame, numItems);
+            util::for_each_type<attributes::types>{}(DeserializeColumn{}, id, inFile, dataFrame,
+                                                     numItems);
         }
+
+        dataFrame->updateIndexBuffer();
 
         tensorFieldOut->setMetaData(dataFrame);
     }
@@ -250,3 +257,4 @@ void TensorField3DImport::buildTensors(const std::vector<float> &data,
 }
 
 }  // namespace inviwo
+#pragma optimize("", on)

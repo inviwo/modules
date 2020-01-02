@@ -21,15 +21,15 @@ using ScalarBase = TypedAttributeBase<float>;
 using VectorBase = TypedAttributeBase<vec3>;
 
 struct MajorEigenValue : ScalarBase {
-    static constexpr inline std::string_view identifier{"MajorEigenValue"};
+    static constexpr inline std::string_view identifier{"Major Eigenvalue"};
 };
 
 struct IntermediateEigenValue : ScalarBase {
-    static constexpr inline std::string_view identifier{"IntermediateEigenValue"};
+    static constexpr inline std::string_view identifier{"Intermediate Eigenvalue"};
 };
 
 struct MinorEigenValue : ScalarBase {
-    static constexpr inline std::string_view identifier{"MinorEigenValue"};
+    static constexpr inline std::string_view identifier{"Minor Eigenvalue"};
 };
 
 struct I1 : ScalarBase {

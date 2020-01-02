@@ -44,24 +44,17 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.TensorField3DExport, Tensor Field Export}
  * ![](org.inviwo.TensorField3DExport.png?classIdentifier=org.inviwo.TensorField3DExport)
- * Explanation of how to use the processor.
+ * Input a tensor field, specify a path where to save the file and hit that button!
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __Inport__ Tensor field inport.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __File__ The file which the tensor field will be saved to.
+ *   * __Button__ Trigger the saving process.
+ *   * __Include Meta data__ Include/exclude meta data in the saved file.
  */
 
-/**
- * \class TensorField3DExport
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISIO_API TensorField3DExport : public Processor {
 public:
     TensorField3DExport();
@@ -86,17 +79,22 @@ private:
         for (auto col : *dataFrame) {
             const auto id = util::constexpr_hash(std::string_view(col->getHeader()));
             file.write(reinterpret_cast<const char*>(&id), sizeof(size_t));
-            const auto numItems = col->getSize();
-            file.write(reinterpret_cast<const char*>(&numItems), sizeof(size_t));
-
+            
             auto buf = col->getBuffer();
+
+            // Omit the index column
+            if (buf->getBufferTarget() == BufferTarget::Index) { continue; }
+
             buf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::All>(
                 [&file](auto brprecision) {
                     using ValueType = util::PrecisionValueType<decltype(brprecision)>;
                     auto& data = brprecision->getDataContainer();
 
+                    const auto numItems = data.size();
+                    file.write(reinterpret_cast<const char*>(&numItems), sizeof(size_t));
+
                     file.write(reinterpret_cast<const char*>(data.data()),
-                               sizeof(ValueType) * data.size());
+                               sizeof(ValueType) * numItems);
                 });
         }
     }

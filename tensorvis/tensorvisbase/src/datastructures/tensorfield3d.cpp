@@ -155,6 +155,8 @@ void TensorField3D::initializeDefaultMetaData() {
     addIfNotPresent<attributes::IntermediateEigenVector>(newMetaData, intermediateEigenVectors);
     addIfNotPresent<attributes::MinorEigenVector>(newMetaData, minorEigenVectors);
 
+    newMetaData->updateIndexBuffer();
+
     metaData_ = newMetaData;
 }
 
