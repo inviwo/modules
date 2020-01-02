@@ -32,15 +32,15 @@ public:
 
     template <typename T = float>
     T getMajorEigenValue(const size_t index) const {
-        return T(this->getMetaDataContainer<attributes::Lambda1>()[index]);
+        return T(this->getMetaDataContainer<attributes::MajorEigenValue>()[index]);
     }
     template <typename T = float>
     T getIntermediateEigenValue(const size_t index) const {
-        return T(this->getMetaDataContainer<attributes::Lambda2>()[index]);
+        return T(this->getMetaDataContainer<attributes::IntermediateEigenValue>()[index]);
     }
     template <typename T = float>
     T getMinorEigenValue(const size_t index) const {
-        return T(this->getMetaDataContainer<attributes::Lambda3>()[index]);
+        return T(this->getMetaDataContainer<attributes::MinorEigenValue>()[index]);
     }
 
     const std::vector<vec3>& majorEigenVectors() const {
@@ -54,13 +54,13 @@ public:
     }
 
     const std::vector<float>& majorEigenValues() const {
-        return this->getMetaDataContainer<attributes::Lambda1>();
+        return this->getMetaDataContainer<attributes::MajorEigenValue>();
     }
     const std::vector<float>& intermediateEigenValues() const {
-        return this->getMetaDataContainer<attributes::Lambda2>();
+        return this->getMetaDataContainer<attributes::IntermediateEigenValue>();
     }
     const std::vector<float>& minorEigenValues() const {
-        return this->getMetaDataContainer<attributes::Lambda3>();
+        return this->getMetaDataContainer < attributes::MinorEigenValue > ();
     }
 
     std::array<std::shared_ptr<Volume>, 3> getVolumeRepresentation() const;

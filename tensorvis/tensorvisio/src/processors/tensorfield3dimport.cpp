@@ -32,8 +32,30 @@
 #include <ios>
 #include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
 #include <unordered_map>
+#include <inviwo/tensorvisbase/datastructures/attributes.h>
 
 namespace inviwo {
+
+namespace {
+struct FindType {
+    template <typename T>
+    void operator()(size_t id, std::ifstream &inFile, std::shared_ptr<DataFrame> df,
+                    size_t numItems) {
+        if (id == util::constexpr_hash(T::identifier)) {
+            // construct std::vector from binary data
+            std::vector<T::value_type> data;
+            data.resize(numItems);
+
+            inFile.read(reinterpret_cast<char *>(data.data()), sizeof(T::value_type) * numItems);
+
+            // Add column to data frame
+            df->addColumn(
+                std::make_shared<TemplateColumn<T::value_type>>(std::string(T::identifier), data));
+        }
+    }
+};
+
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming
 // scheme
@@ -89,8 +111,6 @@ void TensorField3DImport::process() {
     size3_t dimensions;
     auto extents = vec3{};
     auto offset = vec3{};
-    size_t rank;
-    size_t dimensionality;
     glm::uint8 hasMetaData;
     std::array<DataMapper, 3> dataMapperEigenValues;
     std::array<DataMapper, 3> dataMapperEigenVectors;
@@ -116,11 +136,6 @@ void TensorField3DImport::process() {
     }
 
     inFile.read(reinterpret_cast<char *>(&hasMetaData), sizeof(glm::uint8));
-
-    if (dimensionality != 3) {
-        LogError("The loaded file is not a 3D tensor field. Try the 2D reader.");
-        return;
-    }
 
     inFile.read(reinterpret_cast<char *>(&dimensions.x), sizeof(size_t));
     inFile.read(reinterpret_cast<char *>(&dimensions.y), sizeof(size_t));
@@ -190,112 +205,24 @@ void TensorField3DImport::process() {
     offset_.set(offset);
     dimensions_.set(dimensions);
 
-    // if (hasMetaData) {
-    //    size_t numMetaDataEntries;
-    //    inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
+    std::shared_ptr<DataFrame> dataFrame;
 
-    //    for (size_t i = 0; i < numMetaDataEntries; i++) {
-    //        uint64_t id;
-    //        inFile.read(reinterpret_cast<char *>(&id), sizeof(uint64_t));
+    if (hasMetaData) {
+        dataFrame = std::make_shared<DataFrame>();
+        size_t numMetaDataEntries;
+        inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
 
-    //        std::unique_ptr<MetaDataBase> ptr = nullptr;
+        for (size_t i = 0; i < numMetaDataEntries; i++) {
+            size_t id{};
+            inFile.read(reinterpret_cast<char *>(&id), sizeof(size_t));
+            size_t numItems{};
+            inFile.read(reinterpret_cast<char *>(&numItems), sizeof(size_t));
 
-    //        switch (id) {
-    //            case MajorEigenVectors::id():
-    //                ptr = std::make_unique<MajorEigenVectors>();
-    //                break;
-    //            case IntermediateEigenVectors::id():
-    //                ptr = std::make_unique<IntermediateEigenVectors>();
-    //                break;
-    //            case MinorEigenVectors::id():
-    //                ptr = std::make_unique<MinorEigenVectors>();
-    //                break;
-    //            case MajorEigenValues::id():
-    //                ptr = std::make_unique<MajorEigenValues>();
-    //                break;
-    //            case IntermediateEigenValues::id():
-    //                ptr = std::make_unique<IntermediateEigenValues>();
-    //                break;
-    //            case MinorEigenValues::id():
-    //                ptr = std::make_unique<MinorEigenValues>();
-    //                break;
-    //            case I1::id():
-    //                ptr = std::make_unique<I1>();
-    //                break;
-    //            case I2::id():
-    //                ptr = std::make_unique<I2>();
-    //                break;
-    //            case I3::id():
-    //                ptr = std::make_unique<I3>();
-    //                break;
-    //            case J1::id():
-    //                ptr = std::make_unique<J1>();
-    //                break;
-    //            case J2::id():
-    //                ptr = std::make_unique<J2>();
-    //                break;
-    //            case J3::id():
-    //                ptr = std::make_unique<J3>();
-    //                break;
-    //            case LodeAngle::id():
-    //                ptr = std::make_unique<LodeAngle>();
-    //                break;
-    //            case Anisotropy::id():
-    //                ptr = std::make_unique<Anisotropy>();
-    //                break;
-    //            case LinearAnisotropy::id():
-    //                ptr = std::make_unique<LinearAnisotropy>();
-    //                break;
-    //            case PlanarAnisotropy::id():
-    //                ptr = std::make_unique<PlanarAnisotropy>();
-    //                break;
-    //            case SphericalAnisotropy::id():
-    //                ptr = std::make_unique<SphericalAnisotropy>();
-    //                break;
-    //            case Diffusivity::id():
-    //                ptr = std::make_unique<Diffusivity>();
-    //                break;
-    //            case ShearStress::id():
-    //                ptr = std::make_unique<ShearStress>();
-    //                break;
-    //            case PureShear::id():
-    //                ptr = std::make_unique<PureShear>();
-    //                break;
-    //            case ShapeFactor::id():
-    //                ptr = std::make_unique<ShapeFactor>();
-    //                break;
-    //            case IsotropicScaling::id():
-    //                ptr = std::make_unique<IsotropicScaling>();
-    //                break;
-    //            case Rotation::id():
-    //                ptr = std::make_unique<Rotation>();
-    //                break;
-    //            case FrobeniusNorm::id():
-    //                ptr = std::make_unique<FrobeniusNorm>();
-    //                break;
-    //            case HillYieldCriterion::id():
-    //                ptr = std::make_unique<HillYieldCriterion>();
-    //                break;
-    //            default:
-    //                // clang-format off
-    //                LogError(
-    //                    "Default case reached. Revise tensor field import for missing meta data "
-    //                    "entry."
-    //                )
-    //                LogError(
-    //                    "The imported tensor field now does not have all the meta data with which
-    //                    " "it was stored."
-    //                )
+            util::for_each_type<attributes::types>{}(FindType{}, id, inFile, dataFrame, numItems);
+        }
 
-    //                continue;
-    //                // clang-format on
-    //        }
-
-    //        ptr->deserialize(inFile, numElements);
-
-    //        metaData.insert(std::make_pair(id, std::move(ptr)));
-    //    }
-    //}
+        tensorFieldOut->setMetaData(dataFrame);
+    }
 
     std::string str;
     inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));

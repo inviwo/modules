@@ -82,21 +82,23 @@ private:
 
     void exportBinary() const;
 
-    void serializeDataFrame(std::shared_ptr<const DataFrame> dataFrame, std::ofstream& file) const{
+    void serializeDataFrame(std::shared_ptr<const DataFrame> dataFrame, std::ofstream& file) const {
         for (auto col : *dataFrame) {
+            const auto id = util::constexpr_hash(std::string_view(col->getHeader()));
+            file.write(reinterpret_cast<const char*>(&id), sizeof(size_t));
+            const auto numItems = col->getSize();
+            file.write(reinterpret_cast<const char*>(&numItems), sizeof(size_t));
+
             auto buf = col->getBuffer();
-            const auto name = col->getHeader();
-            
             buf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::All>(
-                [&file, &name](auto brprecision) {
+                [&file](auto brprecision) {
                     using ValueType = util::PrecisionValueType<decltype(brprecision)>;
                     auto& data = brprecision->getDataContainer();
 
-                    file.write(reinterpret_cast<const char*>(data.data()), sizeof(ValueType)* data.size());
+                    file.write(reinterpret_cast<const char*>(data.data()),
+                               sizeof(ValueType) * data.size());
                 });
         }
-
-        auto v = util::constexpr_hash(attributes::Anisotropy::identifier);
     }
 };
 

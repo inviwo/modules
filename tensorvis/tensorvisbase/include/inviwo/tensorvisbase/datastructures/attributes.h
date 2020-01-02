@@ -20,16 +20,16 @@ struct TypedAttributeBase : AttributeBase {
 using ScalarBase = TypedAttributeBase<float>;
 using VectorBase = TypedAttributeBase<vec3>;
 
-struct Lambda1 : ScalarBase {
-    static constexpr inline std::string_view identifier{u8"λ1"};
+struct MajorEigenValue : ScalarBase {
+    static constexpr inline std::string_view identifier{"MajorEigenValue"};
 };
 
-struct Lambda2 : ScalarBase {
-    static constexpr inline std::string_view identifier{u8"λ2"};
+struct IntermediateEigenValue : ScalarBase {
+    static constexpr inline std::string_view identifier{"IntermediateEigenValue"};
 };
 
-struct Lambda3 : ScalarBase {
-    static constexpr inline std::string_view identifier{u8"λ3"};
+struct MinorEigenValue : ScalarBase {
+    static constexpr inline std::string_view identifier{"MinorEigenValue"};
 };
 
 struct I1 : ScalarBase {
@@ -92,7 +92,27 @@ struct MajorEigenVector : VectorBase {
     static constexpr inline std::string_view identifier{"Major Eigenvector"};
 };
 
-
+// clang-format off
+using types =
+    std::tuple<MajorEigenValue,
+               IntermediateEigenValue,
+               MinorEigenValue,
+               I1,
+               I2,
+               I3,
+               J1,
+               J2,
+               J3,
+               LodeAngle,
+               Anisotropy,
+               LinearAnisotropy,
+               PlanarAnisotropy,
+               SphericalAnisotropy,
+               FrobeniusNorm,
+               MinorEigenVector,
+               IntermediateEigenVector,
+               MinorEigenVector>;
+// clang-format on
 
 }  // namespace attributes
 }  // namespace inviwo

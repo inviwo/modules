@@ -81,9 +81,9 @@ TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
 
 void TensorField3D::initializeDefaultMetaData() {
     // clang-format off
-    if (this->hasMetaData<attributes::Lambda1>() &&
-        this->hasMetaData<attributes::Lambda2>() &&
-        this->hasMetaData<attributes::Lambda3>() &&
+    if (this->hasMetaData<attributes::MajorEigenValue>() &&
+        this->hasMetaData<attributes::IntermediateEigenValue>() &&
+        this->hasMetaData<attributes::MinorEigenValue>() &&
         this->hasMetaData<attributes::MajorEigenVector>() &&
         this->hasMetaData<attributes::IntermediateEigenVector>() &&
         this->hasMetaData<attributes::MinorEigenVector>()) {
@@ -148,9 +148,9 @@ void TensorField3D::initializeDefaultMetaData() {
         minorEigenValues[i] = eigenValuesAndEigenVectors[2].first;
     }
 
-    addIfNotPresent<attributes::Lambda1>(newMetaData, majorEigenValues);
-    addIfNotPresent<attributes::Lambda2>(newMetaData, intermediateEigenValues);
-    addIfNotPresent<attributes::Lambda3>(newMetaData, minorEigenValues);
+    addIfNotPresent<attributes::MajorEigenValue>(newMetaData, majorEigenValues);
+    addIfNotPresent<attributes::IntermediateEigenValue>(newMetaData, intermediateEigenValues);
+    addIfNotPresent<attributes::MinorEigenValue>(newMetaData, minorEigenValues);
     addIfNotPresent<attributes::MajorEigenVector>(newMetaData, majorEigenVectors);
     addIfNotPresent<attributes::IntermediateEigenVector>(newMetaData, intermediateEigenVectors);
     addIfNotPresent<attributes::MinorEigenVector>(newMetaData, minorEigenVectors);
