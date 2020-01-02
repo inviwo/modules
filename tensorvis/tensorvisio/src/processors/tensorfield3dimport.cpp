@@ -115,8 +115,6 @@ void TensorField3DImport::process() {
         return;
     }
 
-    inFile.read(reinterpret_cast<char *>(&dimensionality), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&rank), sizeof(size_t));
     inFile.read(reinterpret_cast<char *>(&hasMetaData), sizeof(glm::uint8));
 
     if (dimensionality != 3) {

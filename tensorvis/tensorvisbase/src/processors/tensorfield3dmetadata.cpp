@@ -160,7 +160,7 @@ void TensorField3DMetaData::initializeResources() {
 }
 
 void TensorField3DMetaData::addMetaData() {
-    const auto& tensors = tensorFieldOut_->tensors();
+    //const auto& tensors = tensorFieldOut_->tensors();
 
     /*if (i1_.get() && !tensorFieldOut_->hasMetaData<I1>()) {
         std::vector<double> i1;

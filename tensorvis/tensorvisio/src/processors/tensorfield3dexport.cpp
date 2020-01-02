@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisio/processors/tensorfield3dexport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -36,9 +37,9 @@ namespace inviwo {
 const ProcessorInfo TensorField3DExport::processorInfo_{
     "org.inviwo.TensorField3DExport",  // Class identifier
     "Tensor Field 3D Export",          // Display name
-    "Tensor Field IO",                 // Category
+    "IO",                              // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    TensorVisTag::OpenTensorVis,       // Tags
 };
 const ProcessorInfo TensorField3DExport::getProcessorInfo() const { return processorInfo_; }
 
@@ -88,12 +89,6 @@ void TensorField3DExport::exportBinary() const {
 
     size_t version = TFB_CURRENT_VERSION;
     outFile.write(reinterpret_cast<const char *>(&version), sizeof(size_t));
-
-    size_t dimensionality = tensorField->dimensionality();
-    outFile.write(reinterpret_cast<const char *>(&dimensionality), sizeof(size_t));
-
-    size_t rank = tensorField->rank();
-    outFile.write(reinterpret_cast<const char *>(&rank), sizeof(size_t));
 
     auto hasMetaData = glm::uint8(includeMetaData_.get());
     outFile.write(reinterpret_cast<const char *>(&hasMetaData), sizeof(glm::uint8));

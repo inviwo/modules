@@ -92,5 +92,7 @@ struct MajorEigenVector : VectorBase {
     static constexpr inline std::string_view identifier{"Major Eigenvector"};
 };
 
+
+
 }  // namespace attributes
 }  // namespace inviwo

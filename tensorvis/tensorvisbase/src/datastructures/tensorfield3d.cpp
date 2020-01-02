@@ -7,87 +7,6 @@
 
 namespace inviwo {
 
-TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
-    : dimensions_(dimensions)
-    , indexMapper_(util::IndexMapper3D(dimensions))
-    , tensors_(std::make_shared<std::vector<mat3>>(tensors))
-    , size_(glm::compMul(dimensions))
-    , metaData_(std::make_shared<DataFrame>()) {
-    initializeDefaultMetaData();
-}
-
-TensorField3D::TensorField3D(const size3_t &dimensions,
-                             std::shared_ptr<const std::vector<mat3>> tensors)
-    : dimensions_(dimensions)
-    , indexMapper_(util::IndexMapper3D(dimensions))
-    , tensors_(tensors)
-    , size_(glm::compMul(dimensions))
-    , metaData_(std::make_shared<DataFrame>()) {
-    initializeDefaultMetaData();
-}
-
-TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors,
-                             const DataFrame &metaData)
-    : dimensions_(dimensions)
-    , indexMapper_(util::IndexMapper3D(dimensions))
-    , tensors_(std::make_shared<std::vector<mat3>>(tensors))
-    , size_(glm::compMul(dimensions))
-    , metaData_(std::make_shared<DataFrame>(metaData)) {
-    initializeDefaultMetaData();
-}
-
-TensorField3D::TensorField3D(const size3_t &dimensions,
-                             std::shared_ptr<const std::vector<mat3>> tensors,
-                             std::shared_ptr<const DataFrame> metaData)
-    : dimensions_(dimensions)
-    , indexMapper_(util::IndexMapper3D(dimensions))
-    , tensors_(tensors)
-    , size_(glm::compMul(dimensions))
-    , metaData_(metaData) {
-    initializeDefaultMetaData();
-}
-
-TensorField3D::TensorField3D(const TensorField3D &tf)
-    : StructuredGridEntity<3>()
-    , dataMapEigenValues_(tf.dataMapEigenValues_)
-    , dataMapEigenVectors_(tf.dataMapEigenVectors_)
-    , dimensions_(tf.dimensions_)
-    , indexMapper_(util::IndexMapper3D(dimensions_))
-    , tensors_(tf.tensors_)
-    , size_(tf.size_)
-    , rank_(tf.rank_)
-    , dimensionality_(tf.dimensionality_)
-    , metaData_(tf.metaData_)
-    , binaryMask_(tf.binaryMask_) {
-    setOffset(tf.getOffset());
-    setBasis(tf.getBasis());
-}
-
-std::string TensorField3D::getDataInfo() const {
-    std::stringstream ss;
-    ss << "<table border='0' cellspacing='0' cellpadding='0' "
-          "style='border-color:white;white-space:pre;'>/n"
-       << tensorutil::getHTMLTableRowString("Type", "3D tensor field")
-       << tensorutil::getHTMLTableRowString("Number of tensors", tensors_->size())
-       << tensorutil::getHTMLTableRowString("Dimensions", dimensions_)
-       << tensorutil::getHTMLTableRowString("Max major field eigenvalue",
-                                            dataMapEigenValues_[0].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min major field eigenvalue",
-                                            dataMapEigenValues_[0].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Max intermediate field eigenvalue",
-                                            dataMapEigenValues_[1].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min intermediate field eigenvalue",
-                                            dataMapEigenValues_[1].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Max minor field eigenvalue",
-                                            dataMapEigenValues_[2].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min minor field eigenvalue",
-                                            dataMapEigenValues_[2].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Extends", getExtents())
-
-       << "</table>";
-    return ss.str();
-}
-
 /**
  *   Returns three volumes representing the tensor field.
  *
@@ -128,88 +47,35 @@ std::array<std::shared_ptr<Volume>, 3> TensorField3D::getVolumeRepresentation() 
     return {volumeCol1, volumeCol2, volumeCol3};
 }
 
-void TensorField3D::setExtents(const vec3 &extents) {
-    auto basis = getBasis();
-    basis[0] = glm::normalize(basis[0]) * extents[0];
-    basis[1] = glm::normalize(basis[1]) * extents[1];
-    basis[2] = glm::normalize(basis[2]) * extents[2];
-    setBasis(basis);
+TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
+    : TensorField<3, float>(dimensions, tensors) {
+    initializeDefaultMetaData();
+    computeDataMaps();
 }
 
-mat4 TensorField3D::getBasisAndOffset() const {
-    auto basis = getBasis();
-    auto offset = getOffset();
-
-    mat4 modelMatrix;
-
-    modelMatrix[0][0] = basis[0][0];
-    modelMatrix[0][1] = basis[0][1];
-    modelMatrix[0][2] = basis[0][2];
-
-    modelMatrix[1][0] = basis[1][0];
-    modelMatrix[1][1] = basis[1][1];
-    modelMatrix[1][2] = basis[1][2];
-
-    modelMatrix[2][0] = basis[2][0];
-    modelMatrix[2][1] = basis[2][1];
-    modelMatrix[2][2] = basis[2][2];
-
-    modelMatrix[3][0] = offset[0];
-    modelMatrix[3][1] = offset[1];
-    modelMatrix[3][2] = offset[2];
-
-    modelMatrix[0][3] = 0.0f;
-    modelMatrix[1][3] = 0.0f;
-    modelMatrix[2][3] = 0.0f;
-    modelMatrix[3][3] = 1.0f;
-
-    return modelMatrix;
+TensorField3D::TensorField3D(const size3_t &dimensions,
+                             std::shared_ptr<const std::vector<mat3>> tensors)
+    : TensorField<3, float>(dimensions, tensors) {
+    initializeDefaultMetaData();
+    computeDataMaps();
 }
 
-const std::vector<vec3> &TensorField3D::majorEigenVectors() const {
-    return this->getMetaDataContainer<attributes::MajorEigenVector>();
+TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors,
+                             const DataFrame &metaData)
+    : TensorField<3, float>(dimensions, tensors, metaData) {
+    initializeDefaultMetaData();
+    computeDataMaps();
 }
 
-const std::vector<vec3> &TensorField3D::intermediateEigenVectors() const {
-    return this->getMetaDataContainer<attributes::IntermediateEigenVector>();
+TensorField3D::TensorField3D(const size3_t &dimensions,
+                             std::shared_ptr<const std::vector<mat3>> tensors,
+                             std::shared_ptr<const DataFrame> metaData)
+    : TensorField<3, float>(dimensions, tensors, metaData) {
+    initializeDefaultMetaData();
+    computeDataMaps();
 }
 
-const std::vector<vec3> &TensorField3D::minorEigenVectors() const {
-    return this->getMetaDataContainer<attributes::MinorEigenVector>();
-}
-
-const std::vector<float> &TensorField3D::majorEigenValues() const {
-    return this->getMetaDataContainer<attributes::Lambda1>();
-}
-
-const std::vector<float> &TensorField3D::intermediateEigenValues() const {
-    return this->getMetaDataContainer<attributes::Lambda2>();
-}
-
-const std::vector<float> &TensorField3D::minorEigenValues() const {
-    return this->getMetaDataContainer<attributes::Lambda3>();
-}
-
-std::shared_ptr<const std::vector<mat3>> TensorField3D::tensors() const { return tensors_; }
-
-void TensorField3D::setTensors(std::shared_ptr<const std::vector<mat3>> tensors) {
-    tensors_ = tensors;
-}
-
-void TensorField3D::setMetaData(std::shared_ptr<const DataFrame> metaData) { metaData_ = metaData; }
-
-int TensorField3D::getNumDefinedEntries() const {
-    return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
-}
-
-std::shared_ptr<TensorField3D> TensorField3D::deepCopy() const {
-    auto tf = std::make_shared<TensorField3D>(*this);
-
-    tf->setTensors(std::make_shared<std::vector<mat3>>(*tensors_));
-    tf->setMetaData(std::make_shared<DataFrame>(*metaData_));
-
-    return tf;
-}
+TensorField3D::TensorField3D(const TensorField3D &tf) : TensorField<3, float>(tf) {}
 
 TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
 

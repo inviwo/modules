@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/tensorvisbase/datastructures/attributes.h>
 
 namespace inviwo {
 
@@ -94,6 +95,8 @@ private:
                     file.write(reinterpret_cast<const char*>(data.data()), sizeof(ValueType)* data.size());
                 });
         }
+
+        auto v = util::constexpr_hash(attributes::Anisotropy::identifier);
     }
 };
 
