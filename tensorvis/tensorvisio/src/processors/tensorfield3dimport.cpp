@@ -217,13 +217,13 @@ void TensorField3DImport::process() {
         inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
 
         for (size_t i = 0; i < numMetaDataEntries; i++) {
-            size_t id{};
+            size_t id{0};
             inFile.read(reinterpret_cast<char *>(&id), sizeof(size_t));
-            size_t numItems{};
+            size_t numItems{0};
             inFile.read(reinterpret_cast<char *>(&numItems), sizeof(size_t));
 
-            util::for_each_type<attributes::types>{}(DeserializeColumn{}, id, inFile, dataFrame,
-                                                     numItems);
+            util::for_each_type<attributes::types>{}(DeserializeColumn{}, id, std::ref(inFile),
+                                                     dataFrame, numItems);
         }
 
         dataFrame->updateIndexBuffer();

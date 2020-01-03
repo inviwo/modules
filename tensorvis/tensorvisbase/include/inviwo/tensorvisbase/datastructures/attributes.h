@@ -109,7 +109,7 @@ using types =
                PlanarAnisotropy,
                SphericalAnisotropy,
                FrobeniusNorm,
-               MinorEigenVector,
+               MajorEigenVector,
                IntermediateEigenVector,
                MinorEigenVector>;
 // clang-format on

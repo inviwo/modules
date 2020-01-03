@@ -77,28 +77,31 @@ private:
 
     void serializeDataFrame(std::shared_ptr<const DataFrame> dataFrame, std::ofstream& file) const {
         for (auto col : *dataFrame) {
-            const auto id = util::constexpr_hash(std::string_view(col->getHeader()));
-            file.write(reinterpret_cast<const char*>(&id), sizeof(size_t));
-            
             auto buf = col->getBuffer();
 
             // Omit the index column
-            if (buf->getBufferTarget() == BufferTarget::Index) { continue; }
+            if (buf->getBufferTarget() == BufferTarget::Index) {
+                continue;
+            }
+
+            const auto id = util::constexpr_hash(std::string_view(col->getHeader()));
+            file.write(reinterpret_cast<const char*>(&id), sizeof(size_t));
+
+            const auto numItems = buf->getSize();
+            file.write(reinterpret_cast<const char*>(&numItems), sizeof(size_t));
 
             buf->getRepresentation<BufferRAM>()->dispatch<void, dispatching::filter::All>(
-                [&file](auto brprecision) {
+                [numItems](auto brprecision, std::ofstream& file) {
                     using ValueType = util::PrecisionValueType<decltype(brprecision)>;
                     auto& data = brprecision->getDataContainer();
 
-                    const auto numItems = data.size();
-                    file.write(reinterpret_cast<const char*>(&numItems), sizeof(size_t));
-
                     file.write(reinterpret_cast<const char*>(data.data()),
                                sizeof(ValueType) * numItems);
-                });
+                },
+                std::ref(file));
         }
     }
-};
+};  // namespace inviwo
 
 }  // namespace inviwo
 

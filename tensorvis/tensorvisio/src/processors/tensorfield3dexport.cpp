@@ -134,8 +134,8 @@ void TensorField3DExport::exportBinary() const {
     }
 
     if (includeMetaData_.get()) {
-        const auto numMetaDataEntries = tensorField->metaData()->getNumberOfColumns();
-        outFile.write(reinterpret_cast<const char*>(&numMetaDataEntries), sizeof(size_t));
+        const size_t numMetaDataEntries =tensorField->metaData()->getNumberOfColumns() - 1;  // omit index buffer
+        outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
         serializeDataFrame(tensorField->metaData(), outFile);
     }
 
