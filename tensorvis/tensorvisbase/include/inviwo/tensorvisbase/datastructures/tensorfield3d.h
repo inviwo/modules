@@ -12,14 +12,14 @@ namespace inviwo {
 class IVW_MODULE_TENSORVISBASE_API TensorField3D : public TensorField<3, float> {
 public:
     TensorField3D() = delete;
-    
+
     TensorField3D(const size3_t& dimensions, const std::vector<mat3>& tensors);
-    TensorField3D(const size3_t& dimensions, std::shared_ptr<const std::vector<mat3>> tensors);
+    TensorField3D(const size3_t& dimensions, std::shared_ptr<std::vector<mat3>> tensors);
 
     TensorField3D(const size3_t& dimensions, const std::vector<mat3>& tensors,
-        const DataFrame& metaData);
-    TensorField3D(const size3_t& dimensions, std::shared_ptr<const std::vector<mat3>> tensors,
-        std::shared_ptr<const DataFrame> metaData);
+                  const DataFrame& metaData);
+    TensorField3D(const size3_t& dimensions, std::shared_ptr<std::vector<mat3>> tensors,
+                  std::shared_ptr<DataFrame> metaData);
 
     /**
      * NOTE: This copy constructor creates a shallow copy, i.e. the tensors and the meta data are
@@ -60,7 +60,7 @@ public:
         return this->getMetaDataContainer<attributes::IntermediateEigenValue>();
     }
     const std::vector<float>& minorEigenValues() const {
-        return this->getMetaDataContainer < attributes::MinorEigenValue > ();
+        return this->getMetaDataContainer<attributes::MinorEigenValue>();
     }
 
     std::array<std::shared_ptr<Volume>, 3> getVolumeRepresentation() const;

@@ -54,7 +54,7 @@ TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> 
 }
 
 TensorField3D::TensorField3D(const size3_t &dimensions,
-                             std::shared_ptr<const std::vector<mat3>> tensors)
+                             std::shared_ptr<std::vector<mat3>> tensors)
     : TensorField<3, float>(dimensions, tensors) {
     initializeDefaultMetaData();
     computeDataMaps();
@@ -68,8 +68,8 @@ TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> 
 }
 
 TensorField3D::TensorField3D(const size3_t &dimensions,
-                             std::shared_ptr<const std::vector<mat3>> tensors,
-                             std::shared_ptr<const DataFrame> metaData)
+                             std::shared_ptr<std::vector<mat3>> tensors,
+                             std::shared_ptr<DataFrame> metaData)
     : TensorField<3, float>(dimensions, tensors, metaData) {
     initializeDefaultMetaData();
     computeDataMaps();

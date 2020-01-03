@@ -27,14 +27,13 @@
  *
  *********************************************************************************/
 
-#pragma optimize("", off)
-
 #include <fstream>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <ios>
 #include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
 #include <unordered_map>
 #include <inviwo/tensorvisbase/datastructures/attributes.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -66,9 +65,9 @@ struct DeserializeColumn {
 const ProcessorInfo TensorField3DImport::processorInfo_{
     "org.inviwo.TensorField3DImport",  // Class identifier
     "Tensor Field 3D Import",          // Display name
-    "Tensor Field IO",                 // Category
+    "IO",                              // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    TensorVisTag::OpenTensorVis,       // Tags
 };
 const ProcessorInfo TensorField3DImport::getProcessorInfo() const { return processorInfo_; }
 
@@ -257,4 +256,3 @@ void TensorField3DImport::buildTensors(const std::vector<float> &data,
 }
 
 }  // namespace inviwo
-#pragma optimize("", on)

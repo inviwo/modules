@@ -34,12 +34,12 @@ public:
     TensorField() = delete;
 
     TensorField(const sizeN_t& dimensions, const std::vector<matN>& tensors);
-    TensorField(const sizeN_t& dimensions, std::shared_ptr<const std::vector<matN>> tensors);
+    TensorField(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors);
 
     TensorField(const sizeN_t& dimensions, const std::vector<matN>& tensors,
                 const DataFrame& metaData);
-    TensorField(const sizeN_t& dimensions, std::shared_ptr<const std::vector<matN>> tensors,
-                std::shared_ptr<const DataFrame> metaData);
+    TensorField(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors,
+                std::shared_ptr<DataFrame> metaData);
 
     /**
      * NOTE: This method creates a shallow copy, i.e. the tensors and the meta data are
@@ -96,8 +96,8 @@ public:
     void setMask(const std::vector<glm::uint8>& mask) { binaryMask_ = mask; }
     const std::vector<glm::uint8>& getMask() const { return binaryMask_; }
 
-    void setTensors(std::shared_ptr<const std::vector<matN>> tensors);
-    void setMetaData(std::shared_ptr<const DataFrame> metaData);
+    void setTensors(std::shared_ptr<std::vector<matN>> tensors);
+    void setMetaData(std::shared_ptr<DataFrame> metaData);
 
     /*
     If the tensor field has a mask, this method return the number of 1s in it -
@@ -144,13 +144,14 @@ public:
     const std::vector<typename T::value_type>& getMetaDataContainer() const;
 
     std::shared_ptr<const DataFrame> metaData() const { return metaData_; }
+    std::shared_ptr<DataFrame> metaData() { return metaData_; }
 
 protected:
     sizeN_t dimensions_;
     util::IndexMapper<N> indexMapper_;
-    std::shared_ptr<const std::vector<matN>> tensors_;
+    std::shared_ptr<std::vector<matN>> tensors_;
     size_t size_;
-    std::shared_ptr<const DataFrame> metaData_;
+    std::shared_ptr<DataFrame> metaData_;
 
     std::vector<glm::uint8> binaryMask_;
 };
@@ -166,7 +167,7 @@ inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
-                                              std::shared_ptr<const std::vector<matN>> tensors)
+                                              std::shared_ptr<std::vector<matN>> tensors)
     : dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(*tensors))
@@ -185,8 +186,8 @@ inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
-                                              std::shared_ptr<const std::vector<matN>> tensors,
-                                              std::shared_ptr<const DataFrame> metaData)
+                                              std::shared_ptr<std::vector<matN>> tensors,
+                                              std::shared_ptr<DataFrame> metaData)
     : dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(*tensors))
@@ -329,12 +330,12 @@ TensorField<N, precision>::tensors() const {
 
 template <unsigned int N, typename precision>
 inline void TensorField<N, precision>::setTensors(
-    std::shared_ptr<const std::vector<typename TensorField<N, precision>::matN>> tensors) {
+    std::shared_ptr<std::vector<typename TensorField<N, precision>::matN>> tensors) {
     tensors_ = tensors;
 }
 
 template <unsigned int N, typename precision>
-inline void TensorField<N, precision>::setMetaData(std::shared_ptr<const DataFrame> metaData) {
+inline void TensorField<N, precision>::setMetaData(std::shared_ptr<DataFrame> metaData) {
     metaData_ = metaData;
 }
 
