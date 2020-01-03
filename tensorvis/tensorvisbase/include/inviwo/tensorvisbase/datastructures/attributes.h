@@ -29,7 +29,32 @@ struct MajorEigenValue : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        auto fn = [](const glm::mat<N, N, scalar_type>& tensor) -> scalar_type {
+            if (tensor == glm::mat<N, N, scalar_type>(0.0)) {
+                return scalar_type(0);
+            }
+
+            Eigen::EigenSolver<Eigen::Matrix<scalar_type, N, N>> solver(util::glm2eigen(tensor));
+
+            auto sortable = std::array<scalar_type, N>{};
+
+            for (unsigned int i{0}; i < N; ++i) {
+                sortable[i] = solver.eigenvalues().col(0)[i].real();
+            }
+
+            std::sort(sortable.begin(), sortable.end(),
+                      [](const scalar_type A, const scalar_type B) { return A > B; });
+
+            return sortable[0];
+        };
+
+        std::vector<value_type> l1{};
+
+        for (const auto& tensor : *tensors) {
+            l1.emplace_back(fn(tensor));
+        }
+
+        return l1;
     }
 };
 
@@ -40,7 +65,34 @@ struct IntermediateEigenValue : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+		if constexpr (N == 3) {
+			auto fn = [](const glm::mat<N, N, scalar_type>& tensor) -> scalar_type {
+				if (tensor == glm::mat<N, N, scalar_type>(0.0)) {
+					return scalar_type(0);
+				}
+
+				Eigen::EigenSolver<Eigen::Matrix<scalar_type, N, N>> solver(util::glm2eigen(tensor));
+
+				auto sortable = std::array<scalar_type, N>{};
+
+				for (unsigned int i{ 0 }; i < N; ++i) {
+					sortable[i] = solver.eigenvalues().col(0)[i].real();
+				}
+
+				std::sort(sortable.begin(), sortable.end(),
+					[](const scalar_type A, const scalar_type B) { return A > B; });
+
+				return sortable[1];
+			};
+
+			std::vector<value_type> l2{};
+
+			for (const auto& tensor : *tensors) {
+				l2.emplace_back(fn(tensor));
+			}
+
+			return l2;
+		}
     }
 };
 
@@ -51,7 +103,32 @@ struct MinorEigenValue : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        auto fn = [](const glm::mat<N, N, scalar_type>& tensor) -> scalar_type {
+            if (tensor == glm::mat<N, N, scalar_type>(0.0)) {
+                return scalar_type(0);
+            }
+
+            Eigen::EigenSolver<Eigen::Matrix<scalar_type, N, N>> solver(util::glm2eigen(tensor));
+
+            auto sortable = std::array<scalar_type, N>{};
+
+            for (unsigned int i{0}; i < N; ++i) {
+                sortable[i] = solver.eigenvalues().col(0)[i].real();
+            }
+
+            std::sort(sortable.begin(), sortable.end(),
+                      [](const scalar_type A, const scalar_type B) { return A > B; });
+
+            return sortable[N - 1];
+        };
+
+        std::vector<value_type> ln{};
+
+        for (const auto& tensor : *tensors) {
+            ln.emplace_back(fn(tensor));
+        }
+
+        return ln;
     }
 };
 
@@ -96,9 +173,9 @@ struct I1 : ScalarBase {
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
         auto i1 = std::vector<value_type>();
-        value_type sum{ 0 };
+        value_type sum{0};
         for (const auto& tensor : *tensors) {
-            for (unsigned int i{ 0 }; i < N; ++i) {
+            for (unsigned int i{0}; i < N; ++i) {
                 sum += tensor[N][N];
             }
             i1.emplace_back(sum);
@@ -136,7 +213,9 @@ struct J1 : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+		auto j1 = std::vector<value_type>(tensors->size());
+		std::fill(j1.begin(), j1.end(), value_type(0));
+        return j1;
     }
 };
 
