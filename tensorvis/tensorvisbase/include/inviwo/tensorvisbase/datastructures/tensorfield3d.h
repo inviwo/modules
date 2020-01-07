@@ -11,6 +11,8 @@ namespace inviwo {
  */
 class IVW_MODULE_TENSORVISBASE_API TensorField3D : public TensorField<3, float> {
 public:
+    using value_type = typename TensorField3D::value_type;
+
     TensorField3D() = delete;
 
     TensorField3D(const size3_t& dimensions, const std::vector<mat3>& tensors);
@@ -30,17 +32,16 @@ public:
 
     virtual TensorField3D* clone() const final;
 
-    template <typename T = float>
-    T getMajorEigenValue(const size_t index) const {
-        return T(this->getMetaDataContainer<attributes::MajorEigenValue>()[index]);
+    value_type getMajorEigenValue(const size_t index) const {
+        return value_type(this->getMetaDataContainer<attributes::MajorEigenValue>()[index]);
     }
-    template <typename T = float>
-    T getIntermediateEigenValue(const size_t index) const {
-        return T(this->getMetaDataContainer<attributes::IntermediateEigenValue>()[index]);
+
+    value_type getIntermediateEigenValue(const size_t index) const {
+        return value_type(this->getMetaDataContainer<attributes::IntermediateEigenValue>()[index]);
     }
-    template <typename T = float>
-    T getMinorEigenValue(const size_t index) const {
-        return T(this->getMetaDataContainer<attributes::MinorEigenValue>()[index]);
+
+    value_type getMinorEigenValue(const size_t index) const {
+        return value_type(this->getMetaDataContainer<attributes::MinorEigenValue>()[index]);
     }
 
     const std::vector<vec3>& majorEigenVectors() const {

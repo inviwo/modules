@@ -26,6 +26,7 @@ namespace inviwo {
 template <unsigned int N, typename precision>
 class TensorField : public StructuredGridEntity<N> {
 public:
+    using value_type = precision;
     using sizeN_t = glm::vec<N, std::size_t, glm::defaultp>;
     using matN = glm::mat<N, N, precision, glm::defaultp>;
     using matNb = glm::mat<N + 1, N + 1, precision, glm::defaultp>;

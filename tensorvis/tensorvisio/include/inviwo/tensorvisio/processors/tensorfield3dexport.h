@@ -79,7 +79,7 @@ private:
             auto buf = col->getBuffer();
 
             // Omit the index column
-            if (buf->getBufferTarget() == BufferTarget::Index) {
+            if (col->getHeader() == "index") {
                 continue;
             }
 

@@ -136,12 +136,13 @@ constexpr T constexpr_sqrt_helper_i(const T x, const T lo, const T hi) {
 }
 }  // namespace detail
 
-/*
- * Constexpr version of the square root
- * Return value:
- *   - For a finite and non-negative value of "x", returns an approximation for the square root of
- * "x"
- *   - Otherwise, returns NaN
+
+
+/**
+ * Constexpr version of the square root method.
+ * 
+ * \param x Value of which the square root should be calculated.
+ * \return Square root of x.
  */
 template <typename T>
 T constexpr constexpr_sqrt(T x) {
