@@ -37,8 +37,126 @@
 #include <modules/eigenutils/eigenutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <limits>
 
 namespace inviwo {
+namespace util {
+/**
+ * Returns the trace of the tensor.
+ */
+template <typename T, unsigned int N>
+T trace(const glm::mat<N, N, T> &tensor) {
+    T sum{0};
+
+    for (unsigned int i{0}; i < N; ++i) {
+        sum += tensor[i][i];
+    }
+    return sum;
+}
+
+/**
+ * Returns the Nth eigen value of the tensor (counting starts at 0, i.e. the first eigen value has
+ * index 0).
+ */
+template <unsigned int N, typename T, unsigned int M>
+T eigenvalue(const glm::mat<M, M, T> &tensor) {
+    if constexpr (N < M) {
+        if (tensor == glm::mat<M, M, T>(0)) {
+            return T(0);
+        }
+
+        Eigen::EigenSolver<Eigen::Matrix<T, M, M>> solver(util::glm2eigen(tensor));
+
+        auto sortable = std::array<T, M>{};
+
+        for (unsigned int i{0}; i < M; ++i) {
+            sortable[i] = solver.eigenvalues().col(0)[i].real();
+        }
+
+        std::sort(sortable.begin(), sortable.end(), [](const T A, const T B) { return A > B; });
+
+        return sortable[N];
+    }
+}
+
+/**
+ * Returns the Nth eigen vector of the tensor (counting starts at 0, i.e. the first eigen value has
+ * index 0).
+ */
+template <unsigned int N, typename T, unsigned int M>
+glm::vec<M, T> eigenvector(const glm::mat<M, M, T> &tensor) {
+    using vec_type = glm::vec<M, T>;
+
+    if constexpr (N < M) {
+        if (tensor == glm::mat<M, M, T>(0)) {
+            return vec_type(0);
+        }
+
+        Eigen::EigenSolver<Eigen::Matrix<T, M, M>> solver(util::glm2eigen(tensor));
+
+        std::vector<std::pair<T, vec_type>> sortable;
+        for (unsigned int i{0}; i < M; ++i) {
+            auto vec = vec_type{0};
+            for (unsigned int j{0}; j < M; ++j) {
+                vec[j] = solver.eigenvectors().col(i).real()[j];
+            }
+            sortable.emplace_back(solver.eigenvalues().col(0)[i].real(), vec);
+        }
+
+        std::sort(sortable.begin(), sortable.end(),
+                  [](const std::pair<T, vec_type> &pairA, const std::pair<T, vec_type> &pairB) {
+                      return pairA.first > pairB.first;
+                  });
+
+        return sortable[N].second;
+    }
+}
+
+namespace detail {
+template <typename T>
+T constexpr constexpr_sqrt_helper_f(T x, T curr, T prev) {
+    if constexpr (std::is_floating_point_v<T>) {
+        return curr == prev ? curr
+                            : detail::constexpr_sqrt_helper_f(x, T(0.5) * (curr + x / curr), curr);
+    }
+}
+
+template <typename T>
+constexpr T constexpr_sqrt_helper_i(const T x, const T lo, const T hi) {
+    if constexpr (std::is_integral_v<T>) {
+        if (lo == hi) return lo;
+
+        const T mid = (lo + hi + 1) / 2;
+
+        if (x / mid < mid)
+            return constexpr_sqrt_helper_i(x, lo, mid - 1);
+        else
+            return constexpr_sqrt_helper_i(x, mid, hi);
+    }
+}
+}  // namespace detail
+
+/*
+ * Constexpr version of the square root
+ * Return value:
+ *   - For a finite and non-negative value of "x", returns an approximation for the square root of
+ * "x"
+ *   - Otherwise, returns NaN
+ */
+template <typename T>
+T constexpr constexpr_sqrt(T x) {
+    if constexpr (std::is_floating_point_v<T>) {
+        return x >= 0 && x < std::numeric_limits<T>::infinity()
+                   ? detail::constexpr_sqrt_helper_f(x, x, T(0))
+                   : std::numeric_limits<T>::quiet_NaN();
+    }
+    else {
+        if constexpr (std::is_integral_v<T>) {
+            return detail::constexpr_sqrt_helper_i(x, T(0), x / 2 + 1);
+        }
+    }
+}
+}  // namespace util
 namespace tensorutil {
 
 enum class Anisotropy {
@@ -152,20 +270,6 @@ dmat3 IVW_MODULE_TENSORVISBASE_API reconstruct(const std::array<double, 3> &eige
                                                const std::array<dvec3, 3> &eigenvectors);
 
 vec4 IVW_MODULE_TENSORVISBASE_API tensor2DToDvec4(const dmat2 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API trace(const dmat2 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API trace(const dmat3 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API calculateI1(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateI2(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateI3(const dmat3 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API calculateJ1(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateJ2(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateJ3(const dmat3 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API calculateLodeAngle(const dmat3 &tensor);
 
 dmat3 IVW_MODULE_TENSORVISBASE_API stressDeviatorTensor(const dmat3 &tensor);
 

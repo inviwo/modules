@@ -2,6 +2,7 @@
 
 #include <string_view>
 #include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
 
 namespace inviwo {
 
@@ -29,31 +30,10 @@ struct MajorEigenValue : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        auto fn = [](const glm::mat<N, N, scalar_type>& tensor) -> scalar_type {
-            if (tensor == glm::mat<N, N, scalar_type>(0.0)) {
-                return scalar_type(0);
-            }
-
-            Eigen::EigenSolver<Eigen::Matrix<scalar_type, N, N>> solver(util::glm2eigen(tensor));
-
-            auto sortable = std::array<scalar_type, N>{};
-
-            for (unsigned int i{0}; i < N; ++i) {
-                sortable[i] = solver.eigenvalues().col(0)[i].real();
-            }
-
-            std::sort(sortable.begin(), sortable.end(),
-                      [](const scalar_type A, const scalar_type B) { return A > B; });
-
-            return sortable[0];
-        };
-
         std::vector<value_type> l1{};
-
         for (const auto& tensor : *tensors) {
-            l1.emplace_back(fn(tensor));
+            l1.emplace_back(util::eigenvalue<0>(tensor));
         }
-
         return l1;
     }
 };
@@ -65,34 +45,13 @@ struct IntermediateEigenValue : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-		if constexpr (N == 3) {
-			auto fn = [](const glm::mat<N, N, scalar_type>& tensor) -> scalar_type {
-				if (tensor == glm::mat<N, N, scalar_type>(0.0)) {
-					return scalar_type(0);
-				}
-
-				Eigen::EigenSolver<Eigen::Matrix<scalar_type, N, N>> solver(util::glm2eigen(tensor));
-
-				auto sortable = std::array<scalar_type, N>{};
-
-				for (unsigned int i{ 0 }; i < N; ++i) {
-					sortable[i] = solver.eigenvalues().col(0)[i].real();
-				}
-
-				std::sort(sortable.begin(), sortable.end(),
-					[](const scalar_type A, const scalar_type B) { return A > B; });
-
-				return sortable[1];
-			};
-
-			std::vector<value_type> l2{};
-
-			for (const auto& tensor : *tensors) {
-				l2.emplace_back(fn(tensor));
-			}
-
-			return l2;
-		}
+        if constexpr (N % 2) {
+            std::vector<value_type> l2{};
+            for (const auto& tensor : *tensors) {
+                l2.emplace_back(util::eigenvalue<N / 2>(tensor));
+            }
+            return l2;
+        }
     }
 };
 
@@ -103,54 +62,11 @@ struct MinorEigenValue : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        auto fn = [](const glm::mat<N, N, scalar_type>& tensor) -> scalar_type {
-            if (tensor == glm::mat<N, N, scalar_type>(0.0)) {
-                return scalar_type(0);
-            }
-
-            Eigen::EigenSolver<Eigen::Matrix<scalar_type, N, N>> solver(util::glm2eigen(tensor));
-
-            auto sortable = std::array<scalar_type, N>{};
-
-            for (unsigned int i{0}; i < N; ++i) {
-                sortable[i] = solver.eigenvalues().col(0)[i].real();
-            }
-
-            std::sort(sortable.begin(), sortable.end(),
-                      [](const scalar_type A, const scalar_type B) { return A > B; });
-
-            return sortable[N - 1];
-        };
-
         std::vector<value_type> ln{};
-
         for (const auto& tensor : *tensors) {
-            ln.emplace_back(fn(tensor));
+            ln.emplace_back(util::eigenvalue<N - 1>(tensor));
         }
-
         return ln;
-    }
-};
-
-struct MinorEigenVector : VectorBase {
-    static constexpr inline std::string_view identifier{"Minor Eigenvector"};
-
-    template <unsigned int N>
-    static std::vector<value_type> calculate(
-        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
-        std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
-    }
-};
-
-struct IntermediateEigenVector : VectorBase {
-    static constexpr inline std::string_view identifier{"Intermediate Eigenvector"};
-
-    template <unsigned int N>
-    static std::vector<value_type> calculate(
-        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
-        std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
     }
 };
 
@@ -161,7 +77,43 @@ struct MajorEigenVector : VectorBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        std::vector<value_type> ev{};
+        for (const auto& tensor : *tensors) {
+            ev.emplace_back(util::eigenvector<0>(tensor));
+        }
+        return ev;
+    }
+};
+
+struct IntermediateEigenVector : VectorBase {
+    static constexpr inline std::string_view identifier{"Intermediate Eigenvector"};
+
+    template <unsigned int N>
+    static std::vector<value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+        std::shared_ptr<const DataFrame> metaData) {
+        if constexpr (N % 2) {
+            std::vector<value_type> ev{};
+            for (const auto& tensor : *tensors) {
+                ev.emplace_back(util::eigenvector<N / 2>(tensor));
+            }
+            return ev;
+        }
+    }
+};
+
+struct MinorEigenVector : VectorBase {
+    static constexpr inline std::string_view identifier{"Minor Eigenvector"};
+
+    template <unsigned int N>
+    static std::vector<value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+        std::shared_ptr<const DataFrame> metaData) {
+        std::vector<value_type> ev{};
+        for (const auto& tensor : *tensors) {
+            ev.emplace_back(util::eigenvector<N - 1>(tensor));
+        }
+        return ev;
     }
 };
 
@@ -173,12 +125,9 @@ struct I1 : ScalarBase {
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
         auto i1 = std::vector<value_type>();
-        value_type sum{0};
+        i1.reserve(tensors->size());
         for (const auto& tensor : *tensors) {
-            for (unsigned int i{0}; i < N; ++i) {
-                sum += tensor[N][N];
-            }
-            i1.emplace_back(sum);
+            i1.emplace_back(util::trace(tensor));
         }
         return i1;
     }
@@ -191,7 +140,15 @@ struct I2 : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            auto i2 = std::vector<value_type>();
+            for (const auto& tensor : *tensors) {
+                i2.emplace_back(tensor[0][0] * tensor[1][1] + tensor[1][1] * tensor[2][2] +
+                                tensor[0][0] * tensor[2][2] - tensor[0][1] * tensor[0][1] -
+                                tensor[1][2] * tensor[1][2] - tensor[2][0] * tensor[2][0]);
+            }
+            return i2;
+        }
     }
 };
 
@@ -202,7 +159,17 @@ struct I3 : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            auto i3 = std::vector<value_type>();
+            for (const auto& tensor : *tensors) {
+                i3.emplace_back(tensor[0][0] * tensor[1][1] * tensor[2][2] +
+                                value_type(2) * tensor[0][1] * tensor[1][2] * tensor[2][0] -
+                                tensor[0][1] * tensor[0][1] * tensor[2][2] -
+                                tensor[1][2] * tensor[1][2] * tensor[0][0] -
+                                tensor[2][0] * tensor[2][0] * tensor[1][1]);
+            }
+            return i3;
+        }
     }
 };
 
@@ -213,8 +180,8 @@ struct J1 : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-		auto j1 = std::vector<value_type>(tensors->size());
-		std::fill(j1.begin(), j1.end(), value_type(0));
+        auto j1 = std::vector<value_type>(tensors->size());
+        std::fill(j1.begin(), j1.end(), value_type(0));
         return j1;
     }
 };
@@ -226,7 +193,16 @@ struct J2 : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            auto j2 = std::vector<value_type>();
+            const auto i1 = I1::calculate(tensors, metaData);
+            const auto i2 = I2::calculate(tensors, metaData);
+            for (size_t i{0}; i < tensors->size(); ++i) {
+                j2.emplace_back((value_type(1. / 3.)) * i1[i] * i1[i] - i2[i]);
+                i++;
+            }
+            return j2;
+        }
     }
 };
 
@@ -237,7 +213,18 @@ struct J3 : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            auto j3 = std::vector<value_type>();
+            const auto i1 = I1::calculate(tensors, metaData);
+            const auto i2 = I2::calculate(tensors, metaData);
+            const auto i3 = I3::calculate(tensors, metaData);
+
+            for (size_t i{0}; i < tensors->size(); ++i) {
+                j3.emplace_back(value_type(2. / 27.) * i1[i] * i1[i] * i1[i] -
+                                value_type(1. / 3.) * i1[i] * i2[i] + i3[i]);
+            }
+            return j3;
+        }
     }
 };
 
@@ -248,7 +235,22 @@ struct LodeAngle : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            auto lodeAngle = std::vector<value_type>();
+            constexpr auto a =
+                (value_type(3.) * util::constexpr_sqrt(value_type(3.))) * value_type(.5);
+            constexpr auto third = value_type(1. / 3.);
+
+            const auto j2 = J2::calculate(tensors, metaData);
+            const auto j3 = J3::calculate(tensors, metaData);
+
+            for (size_t i{0}; i < tensors->size(); ++i) {
+                const auto b = j3[i] / std::pow(j2[i], value_type(1.5));
+
+                lodeAngle.emplace_back(third * std::acos(a * b));
+            }
+            return lodeAngle;
+        }
     }
 };
 
@@ -308,25 +310,27 @@ struct FrobeniusNorm : ScalarBase {
 };
 
 // clang-format off
-            using types =
-                std::tuple<MajorEigenValue,
-                IntermediateEigenValue,
-                MinorEigenValue,
-                MajorEigenVector,
-                IntermediateEigenVector,
-                MinorEigenVector,
-                I1,
-                I2,
-                I3,
-                J1,
-                J2,
-                J3,
-                LodeAngle,
-                Anisotropy,
-                LinearAnisotropy,
-                PlanarAnisotropy,
-                SphericalAnisotropy,
-                FrobeniusNorm>;
+using types =
+    std::tuple<
+        MajorEigenValue,
+        IntermediateEigenValue,
+        MinorEigenValue,
+        MajorEigenVector,
+        IntermediateEigenVector,
+        MinorEigenVector,
+        I1,
+        I2,
+        I3,
+        J1,
+        J2,
+        J3,
+        LodeAngle,
+        Anisotropy,
+        LinearAnisotropy,
+        PlanarAnisotropy,
+        SphericalAnisotropy,
+        FrobeniusNorm
+    >;
 // clang-format on
 
 }  // namespace attributes
