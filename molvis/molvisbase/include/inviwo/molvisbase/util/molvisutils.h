@@ -158,6 +158,7 @@ static constexpr unsigned int colors[num_elements] = {
 }  // namespace detail
 
 // Element functions
+constexpr Element element(int atomicNumber) { return static_cast<Element>(atomicNumber); }
 constexpr const char* name(Element symbol) { return detail::names[(int)symbol]; }
 constexpr const char* symbol(Element symbol) { return detail::symbols[(int)symbol]; }
 constexpr vec4 color(Element symbol) {

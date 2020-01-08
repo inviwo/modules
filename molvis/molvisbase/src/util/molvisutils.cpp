@@ -38,6 +38,27 @@ namespace inviwo {
 
 namespace molvis {
 
+namespace {
+
+template <typename T>
+T square(T a) {
+    return a * a;
+}
+
+}  // namespace
+
+bool covalentBondHeuristics(Element element1, const dvec3& pos1, Element element2,
+                            const dvec3& pos2) {
+    const dvec3 delta{pos2 - pos1};
+    const double distSq = glm::dot(delta, delta);
+
+    const double covalentDist =
+        element::covalentRadius(element1) + element::covalentRadius(element2);
+    const double dMinSq = square(covalentDist - 0.5);
+    const double dMaxSq = square(covalentDist + 0.3);
+    return (dMinSq < distSq) && (distSq < dMaxSq);
+}
+
 std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
     std::vector<vec3> positions{
         util::transform(s.getAtoms().positions, [](auto& p) { return vec3{p}; })};
