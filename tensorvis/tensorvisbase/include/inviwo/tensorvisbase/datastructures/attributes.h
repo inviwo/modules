@@ -29,13 +29,7 @@ struct MajorEigenValue : ScalarBase {
     template <unsigned int N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
-        std::shared_ptr<const DataFrame> metaData) {
-        std::vector<value_type> l1{};
-        for (const auto& tensor : *tensors) {
-            l1.emplace_back(util::eigenvalue<0>(tensor));
-        }
-        return l1;
-    }
+        std::shared_ptr<const DataFrame> metaData);
 };
 
 struct IntermediateEigenValue : ScalarBase {
@@ -254,6 +248,34 @@ struct LodeAngle : ScalarBase {
     }
 };
 
+namespace {
+    template <unsigned int N, typename T>
+    std::vector<std::array<T, N>> sortedEigenValues(std::shared_ptr<const std::vector<glm::mat<N, N, T>>> tensors,
+        std::shared_ptr<const DataFrame> metaData) {
+        auto majorEigenValues = MajorEigenValue::calculate(tensors, metaData);
+        auto intermediateEigenValues = IntermediateEigenValue::calculate(tensors, metaData);
+        auto minorEigenValues = MinorEigenValue::calculate(tensors, metaData);
+
+        auto ev = std::vector<std::array<T, N>>{};
+
+        for (size_t i = 0; i < majorEigenValues.size(); i++) {
+            std::array<T, N> eigenValues{
+                majorEigenValues[i], intermediateEigenValues[i], minorEigenValues[i] };
+
+            std::transform(eigenValues.begin(), eigenValues.end(), eigenValues.begin(),
+                [](const T& val) { return glm::abs(val); });
+
+            std::sort(
+                eigenValues.begin(), eigenValues.end(),
+                [](const T& valA, const T& valB) { return valA > valB; });
+
+            ev.push_back(eigenValues);
+        }
+
+        return ev;
+    }
+}
+
 struct Anisotropy : ScalarBase {
     static constexpr inline std::string_view identifier{"Anisotropy"};
 
@@ -261,7 +283,18 @@ struct Anisotropy : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            std::vector<scalar_type> anisotropy{};
+            auto ev = sortedEigenValues(tensors, metaData);
+            for (const auto& eigenValues : ev) {
+                auto denominator = eigenValues[0] + eigenValues[N / 2] + eigenValues[N - 1];
+                if (denominator < std::numeric_limits<scalar_type>::epsilon())
+                    denominator = std::numeric_limits<scalar_type>::epsilon();
+
+                anisotropy.emplace_back(std::abs(eigenValues[0] - eigenValues[2]));
+            }
+            return anisotropy;
+        }
     }
 };
 
@@ -272,7 +305,18 @@ struct LinearAnisotropy : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            std::vector<scalar_type> linearAnisotropy{};
+            auto ev = sortedEigenValues(tensors, metaData);
+            for (const auto& eigenValues:ev) {
+                auto denominator = eigenValues[0] + eigenValues[N / 2] + eigenValues[N - 1];
+                if (denominator < std::numeric_limits<scalar_type>::epsilon())
+                    denominator = std::numeric_limits<scalar_type>::epsilon();
+
+                linearAnisotropy.emplace_back((eigenValues[0] - eigenValues[1]) / denominator);
+            }
+            return linearAnisotropy;
+        }
     }
 };
 
@@ -283,7 +327,19 @@ struct PlanarAnisotropy : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            std::vector<scalar_type> planarAnisotropy{};
+            auto ev = sortedEigenValues(tensors, metaData);
+            for (const auto& eigenValues : ev) {
+                auto denominator = eigenValues[0] + eigenValues[N / 2] + eigenValues[N - 1];
+                if (denominator < std::numeric_limits<scalar_type>::epsilon())
+                    denominator = std::numeric_limits<scalar_type>::epsilon();
+
+                planarAnisotropy.emplace_back((scalar_type(2) * (eigenValues[1] - eigenValues[2])) /
+                                              denominator);
+            }
+            return planarAnisotropy;
+        }
     }
 };
 
@@ -294,7 +350,18 @@ struct SphericalAnisotropy : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        if constexpr (N == 3) {
+            std::vector<scalar_type> sphericalAnisotropy{};
+            auto ev = sortedEigenValues(tensors, metaData);
+            for (const auto& eigenValues : ev) {
+                auto denominator = eigenValues[0] + eigenValues[N / 2] + eigenValues[N - 1];
+                if (denominator < std::numeric_limits<scalar_type>::epsilon())
+                    denominator = std::numeric_limits<scalar_type>::epsilon();
+
+                sphericalAnisotropy.emplace_back((scalar_type(3) * eigenValues[2]) / denominator);
+            }
+            return sphericalAnisotropy;
+        }
     }
 };
 
@@ -335,3 +402,5 @@ using types =
 
 }  // namespace attributes
 }  // namespace inviwo
+
+#include "attributes.inl"

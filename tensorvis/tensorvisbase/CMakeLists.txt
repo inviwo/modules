@@ -8,6 +8,7 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/algorithm/tensorfieldsampling.h
     include/inviwo/tensorvisbase/algorithm/tensorfieldslicing.h
     include/inviwo/tensorvisbase/datastructures/attributes.h
+    include/inviwo/tensorvisbase/datastructures/attributes.inl
     include/inviwo/tensorvisbase/datastructures/deformablecube.h
     include/inviwo/tensorvisbase/datastructures/deformablecylinder.h
     include/inviwo/tensorvisbase/datastructures/deformablesphere.h
