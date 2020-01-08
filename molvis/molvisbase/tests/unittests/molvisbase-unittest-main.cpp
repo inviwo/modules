@@ -43,11 +43,14 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
+#include <inviwo/core/datastructures/datatraits.h>
+#include <fmt/format.h>
+
 int main(int argc, char** argv) {
     using namespace inviwo;
     LogCentral::init();
     auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Info);
     LogCentral::getPtr()->registerLogger(logger);
 
     int ret = -1;
@@ -59,6 +62,7 @@ int main(int argc, char** argv) {
 #else
         ::testing::InitGoogleTest(&argc, argv);
 #endif
+
         inviwo::ConfigurableGTestEventListener::setup();
         ret = RUN_ALL_TESTS();
     }
