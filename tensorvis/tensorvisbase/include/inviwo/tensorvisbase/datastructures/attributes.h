@@ -193,7 +193,6 @@ struct J2 : ScalarBase {
             const auto i2 = I2::calculate(tensors, metaData);
             for (size_t i{0}; i < tensors->size(); ++i) {
                 j2.emplace_back((value_type(1. / 3.)) * i1[i] * i1[i] - i2[i]);
-                i++;
             }
             return j2;
         }

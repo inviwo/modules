@@ -41,7 +41,6 @@
 #include <inviwo/tensorvisbase/processors/imagetospherefield.h>
 #include <inviwo/tensorvisbase/processors/invariantspacecombine.h>
 #include <inviwo/tensorvisbase/processors/invariantspacefilter.h>
-#include <inviwo/tensorvisbase/processors/invariantspaceselection.h>
 #include <inviwo/tensorvisbase/processors/invariantspacetodataframe.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2danisotropy.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubsample.h>
@@ -102,7 +101,6 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorInformation>();
     registerProcessor<VolumeActualDataAndValueRange>();
     registerProcessor<InvariantSpaceToDataFrame>();
-    registerProcessor<InvariantSpaceSelection>();
 
     registerProperty<EigenValueProperty>();
     registerProperty<TensorGlyphProperty>();

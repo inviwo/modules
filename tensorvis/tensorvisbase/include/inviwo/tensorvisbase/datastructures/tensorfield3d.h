@@ -81,7 +81,7 @@ template <typename T, typename R>
 void TensorField3D::addIfNotPresent(std::shared_ptr<DataFrame> df, const R& data) const {
     if (!this->hasMetaData<T>()) {
         df->addColumn(
-            std::make_shared<TemplateColumn<T::value_type>>(std::string(T::identifier), data));
+            std::make_shared<TemplateColumn<typename T::value_type>>(std::string(T::identifier), data));
     }
 }
 }  // namespace inviwo

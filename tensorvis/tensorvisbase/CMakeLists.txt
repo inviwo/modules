@@ -25,7 +25,6 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/imagetospherefield.h
     include/inviwo/tensorvisbase/processors/invariantspacecombine.h
     include/inviwo/tensorvisbase/processors/invariantspacefilter.h
-    include/inviwo/tensorvisbase/processors/invariantspaceselection.h
     include/inviwo/tensorvisbase/processors/invariantspacetodataframe.h
     include/inviwo/tensorvisbase/processors/tensorfield2danisotropy.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubsample.h
@@ -78,7 +77,6 @@ set(SOURCE_FILES
     src/processors/imagetospherefield.cpp
     src/processors/invariantspacecombine.cpp
     src/processors/invariantspacefilter.cpp
-    src/processors/invariantspaceselection.cpp
     src/processors/invariantspacetodataframe.cpp
     src/processors/tensorfield2danisotropy.cpp
     src/processors/tensorfield2dsubsample.cpp
