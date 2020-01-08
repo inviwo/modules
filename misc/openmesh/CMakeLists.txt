@@ -2,28 +2,7 @@
 # Inviwo OpenMesh Module
 ivw_module(OpenMesh)
 
-#--------------------------------------------------------------------
-# Add OpenMesh add set correct folders
-option(OPENMESH_BUILD_PYTHON_BINDINGS "" OFF)
-
-set( BUILD_APPS OFF CACHE BOOL "Enable or disable building of apps" )
-
-add_subdirectory(ext/OpenMesh)
-if(TARGET doc)
-    ivw_folder(doc ext/OpenMesh)
-endif()
-if(TARGET doc-install)
-    ivw_folder(doc-install ext/OpenMesh)
-endif()
-if(TARGET winhelp)
-    ivw_folder(winhelp ext/OpenMesh)
-endif()
-ivw_suppress_compiler_warnings(OpenMeshCore OpenMeshTools)
-
-ivw_folder(OpenMeshCore ext/OpenMesh)
-ivw_folder(OpenMeshTools ext/OpenMesh)
-
-
+add_subdirectory(ext)
 
 #--------------------------------------------------------------------
 # Add header files
