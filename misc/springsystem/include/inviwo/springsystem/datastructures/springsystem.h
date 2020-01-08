@@ -158,6 +158,8 @@ protected:
     inline Derived& derived() { return *static_cast<Derived*>(this); }
     inline const Derived& derived() const { return *static_cast<const Derived*>(this); }
 
+    void externalForces(std::vector<Vector>& forces);
+    Vector externalForce(size_t i);
     void updateForces();
     void verletIntegration();
 
@@ -250,11 +252,23 @@ ComponentType SpringSystem<Components, ComponentType, Derived, PBC>::forceMagnit
 }
 
 template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+void SpringSystem<Components, ComponentType, Derived, PBC>::externalForces(
+    std::vector<Vector>& forces) {
+
+    const auto fseq = util::make_sequence(size_t{0}, forces.size(), size_t{1});
+    util::for_each_parallel(fseq.begin(), fseq.end(),
+                            [&](size_t i) { forces[i] = derived().externalForce(i); });
+}
+
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
+auto SpringSystem<Components, ComponentType, Derived, PBC>::externalForce(size_t) -> Vector {
+    return Vector{0};
+}
+
+template <size_t Components, typename ComponentType, typename Derived, typename PBC>
 void SpringSystem<Components, ComponentType, Derived, PBC>::updateForces() {
 
-    const auto fseq = util::make_sequence(size_t{0}, forces_.size(), size_t{1});
-    util::for_each_parallel(fseq.begin(), fseq.end(),
-                            [&](size_t i) { forces_[i] = derived().externalForce(i); });
+    derived().externalForces(forces_);
 
     const auto& positions = getPositions();
 
@@ -274,7 +288,7 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::updateForces() {
 
         auto dir(pos2 - pos1);
         const auto dist = glm::length(dir);
-        if (std::abs(dist) != ComponentType{0}) {
+        if (dist > ComponentType{0}) {
             dir /= dist;
         }
 
