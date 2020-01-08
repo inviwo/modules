@@ -32,6 +32,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
