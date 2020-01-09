@@ -1,6 +1,6 @@
 namespace inviwo {
 namespace attributes {
-template <unsigned int N>
+template <glm::length_t N>
 inline std::vector<typename Trace::value_type> Trace::calculate(
     std::shared_ptr<const std::vector<glm::mat<N, N, typename Trace::scalar_type>>> tensors,
     std::shared_ptr<const DataFrame> metaData) {
@@ -11,7 +11,7 @@ inline std::vector<typename Trace::value_type> Trace::calculate(
     return trace;
 }
 
-template <unsigned int N>
+template <glm::length_t N>
 inline std::vector<typename Norm::value_type> Norm::calculate(
     std::shared_ptr<const std::vector<glm::mat<N, N, typename Norm::scalar_type>>> tensors,
     std::shared_ptr<const DataFrame> metaData) {
@@ -28,7 +28,7 @@ inline std::vector<typename Norm::value_type> Norm::calculate(
     return norm;
 }
 
-template <unsigned int N>
+template <glm::length_t N>
 inline std::vector<typename MajorEigenValue::value_type> MajorEigenValue::calculate(
     std::shared_ptr<const std::vector<glm::mat<N, N, typename MajorEigenValue::scalar_type>>>
         tensors,
@@ -40,7 +40,7 @@ inline std::vector<typename MajorEigenValue::value_type> MajorEigenValue::calcul
     return l1;
 }
 
-template <unsigned int N>
+template <glm::length_t N>
 inline std::vector<typename IntermediateEigenValue::value_type> IntermediateEigenValue::calculate(
     std::shared_ptr<const std::vector<glm::mat<N, N, typename IntermediateEigenValue::scalar_type>>>
     tensors,
@@ -54,7 +54,7 @@ inline std::vector<typename IntermediateEigenValue::value_type> IntermediateEige
     }
 }
 
-template <unsigned int N>
+template <glm::length_t N>
 inline std::vector<typename MinorEigenValue::value_type> MinorEigenValue::calculate(
     std::shared_ptr<const std::vector<glm::mat<N, N, typename MinorEigenValue::scalar_type>>>
     tensors,

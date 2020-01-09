@@ -26,7 +26,7 @@ using VectorBase = TypedAttributeBase<vec3>;
 struct Trace : ScalarBase {
     static constexpr inline std::string_view identifier{"Trace"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData);
@@ -35,7 +35,7 @@ struct Trace : ScalarBase {
 struct Norm : ScalarBase {
     static constexpr inline std::string_view identifier{"Norm"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData);
@@ -44,7 +44,7 @@ struct Norm : ScalarBase {
 struct MajorEigenValue : ScalarBase {
     static constexpr inline std::string_view identifier{"Major Eigenvalue"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData);
@@ -53,7 +53,7 @@ struct MajorEigenValue : ScalarBase {
 struct IntermediateEigenValue : ScalarBase {
     static constexpr inline std::string_view identifier{"Intermediate Eigenvalue"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData);
@@ -62,7 +62,7 @@ struct IntermediateEigenValue : ScalarBase {
 struct MinorEigenValue : ScalarBase {
     static constexpr inline std::string_view identifier{"Minor Eigenvalue"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData);
@@ -71,7 +71,7 @@ struct MinorEigenValue : ScalarBase {
 struct MajorEigenVector : VectorBase {
     static constexpr inline std::string_view identifier{"Major Eigenvector"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -86,7 +86,7 @@ struct MajorEigenVector : VectorBase {
 struct IntermediateEigenVector : VectorBase {
     static constexpr inline std::string_view identifier{"Intermediate Eigenvector"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -103,7 +103,7 @@ struct IntermediateEigenVector : VectorBase {
 struct MinorEigenVector : VectorBase {
     static constexpr inline std::string_view identifier{"Minor Eigenvector"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -118,7 +118,7 @@ struct MinorEigenVector : VectorBase {
 struct I1 : ScalarBase {
     static constexpr inline std::string_view identifier{"I1"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -134,7 +134,7 @@ struct I1 : ScalarBase {
 struct I2 : ScalarBase {
     static constexpr inline std::string_view identifier{"I2"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -153,7 +153,7 @@ struct I2 : ScalarBase {
 struct I3 : ScalarBase {
     static constexpr inline std::string_view identifier{"I3"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -174,7 +174,7 @@ struct I3 : ScalarBase {
 struct J1 : ScalarBase {
     static constexpr inline std::string_view identifier{"J1"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -187,7 +187,7 @@ struct J1 : ScalarBase {
 struct J2 : ScalarBase {
     static constexpr inline std::string_view identifier{"J2"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -206,7 +206,7 @@ struct J2 : ScalarBase {
 struct J3 : ScalarBase {
     static constexpr inline std::string_view identifier{"J3"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -228,7 +228,7 @@ struct J3 : ScalarBase {
 struct LodeAngle : ScalarBase {
     static constexpr inline std::string_view identifier{"Lode angle"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -252,7 +252,7 @@ struct LodeAngle : ScalarBase {
 };
 
 namespace {
-template <unsigned int N, typename T>
+template <glm::length_t N, typename T>
 std::vector<std::array<T, N>> sortedEigenValues(
     std::shared_ptr<const std::vector<glm::mat<N, N, T>>> tensors,
     std::shared_ptr<const DataFrame> metaData) {
@@ -315,7 +315,7 @@ std::vector<std::array<T, N>> sortedEigenValues(
 struct Anisotropy : ScalarBase {
     static constexpr inline std::string_view identifier{"Anisotropy"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -337,7 +337,7 @@ struct Anisotropy : ScalarBase {
 struct LinearAnisotropy : ScalarBase {
     static constexpr inline std::string_view identifier{"Linear anisotropy"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -359,7 +359,7 @@ struct LinearAnisotropy : ScalarBase {
 struct PlanarAnisotropy : ScalarBase {
     static constexpr inline std::string_view identifier{"Planar anisotropy"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -382,7 +382,7 @@ struct PlanarAnisotropy : ScalarBase {
 struct SphericalAnisotropy : ScalarBase {
     static constexpr inline std::string_view identifier{"Spherical anisotropy"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
@@ -404,7 +404,7 @@ struct SphericalAnisotropy : ScalarBase {
 struct FrobeniusNorm : ScalarBase {
     static constexpr inline std::string_view identifier{"Frobenius Norm"};
 
-    template <unsigned int N>
+    template <glm::length_t N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
