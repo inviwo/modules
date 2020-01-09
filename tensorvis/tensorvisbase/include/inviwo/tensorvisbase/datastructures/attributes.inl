@@ -37,7 +37,7 @@ inline std::vector<typename MajorEigenValue::value_type> MajorEigenValue::calcul
     for (const auto& tensor : *tensors) {
         l1.emplace_back(util::eigenvalue<0>(tensor));
     }
-    return std::move(l1);
+    return l1;
 }
 
 template <unsigned int N>
@@ -50,7 +50,7 @@ inline std::vector<typename IntermediateEigenValue::value_type> IntermediateEige
         for (const auto& tensor : *tensors) {
             l2.emplace_back(util::eigenvalue<N / 2>(tensor));
         }
-        return std::move(l2);
+        return l2;
     }
 }
 
@@ -63,7 +63,7 @@ inline std::vector<typename MinorEigenValue::value_type> MinorEigenValue::calcul
     for (const auto& tensor : *tensors) {
         ln.emplace_back(util::eigenvalue<N - 1>(tensor));
     }
-    return std::move(ln);
+    return ln;
 }
 }  // namespace attributes
 }  // namespace inviwo
