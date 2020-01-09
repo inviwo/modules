@@ -44,7 +44,7 @@ namespace util {
 /**
  * Returns the trace of the tensor.
  */
-template <typename T, unsigned int N>
+template <typename T, glm::length_t N>
 T trace(const glm::mat<N, N, T> &tensor) {
     T sum{0};
 
@@ -58,7 +58,7 @@ T trace(const glm::mat<N, N, T> &tensor) {
  * Returns the Nth eigen value of the tensor (counting starts at 0, i.e. the first eigen value has
  * index 0).
  */
-template <unsigned int N, typename T, unsigned int M>
+template <unsigned int N, typename T, glm::length_t M>
 T eigenvalue(const glm::mat<M, M, T> &tensor) {
     if constexpr (N < M) {
         if (tensor == glm::mat<M, M, T>(0)) {
@@ -83,7 +83,7 @@ T eigenvalue(const glm::mat<M, M, T> &tensor) {
  * Returns the Nth eigen vector of the tensor (counting starts at 0, i.e. the first eigen value has
  * index 0).
  */
-template <unsigned int N, typename T, unsigned int M>
+template <unsigned int N, typename T, glm::length_t M>
 glm::vec<M, T> eigenvector(const glm::mat<M, M, T> &tensor) {
     using vec_type = glm::vec<M, T>;
 
