@@ -172,9 +172,7 @@ std::optional<std::vector<vec3>> TensorField3D::getNormalizedScreenCoordinates(f
     std::vector<vec3> normalizedVolumePositions;
     normalizedVolumePositions.resize(size_);
 
-    auto stepSize = getSpacing();
-
-    if (dimensions_.x == 0 || dimensions_.y == 0 || dimensions_.z == 0) {
+     if (dimensions_.x == 0 || dimensions_.y == 0 || dimensions_.z == 0) {
         LogError("Tensor field 3D has at least one zero-sized dimension!");
         return std::nullopt;
     }

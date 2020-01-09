@@ -152,6 +152,8 @@ T constexpr constexpr_sqrt(T x) {
     if constexpr (std::is_integral_v<T>) {
         return detail::constexpr_sqrt_helper_i(x, T(0), x / 2 + 1);
     }
+
+	return std::numeric_limits<T>::quiet_NaN();
 }
 }  // namespace util
 namespace tensorutil {

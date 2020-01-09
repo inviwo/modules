@@ -38,6 +38,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/tensorvisbase/datastructures/attributes.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
