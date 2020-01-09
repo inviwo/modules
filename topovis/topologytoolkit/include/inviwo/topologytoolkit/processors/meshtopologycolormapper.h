@@ -47,13 +47,20 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 
-
 #include <inviwo/topologytoolkit/ports/contourtreeport.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/topologytoolkit/utils/ttkutils.h>
 #include <inviwo/topologytoolkit/utils/ttkexception.h>
+
+#include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+
+#include <inviwo/topologytoolkit/utils/pickingutils.h>
 
 
 #include <warn/push>
@@ -73,13 +80,20 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    void handlePickingEvent(PickingEvent* p);
+
 private:
     MeshInport meshInport_;
     topology::ContourTreeInport contourtreeInport;
     topology::MorseSmaleComplexInport morseSmaleComplexInport;
     MeshOutport outport_;
 
-	TransferFunctionProperty transferFunction_;
+    TransferFunctionProperty transferFunction_;
+    inviwo::topology::PickingUtil pickingutil_;
+    inviwo::topology::PickingProperties pickingProperties_;
+    
+	CompositeProperty morseSmaleComplex_;
+	OptionPropertyInt mscSegmentOptions_;
 };
 
 }  // namespace inviwo

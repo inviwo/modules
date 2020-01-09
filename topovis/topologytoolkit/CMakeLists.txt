@@ -38,6 +38,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/topologytoolkitmoduledefine.h
     include/inviwo/topologytoolkit/utils/ttkexception.h
     include/inviwo/topologytoolkit/utils/ttkutils.h
+    include/inviwo/topologytoolkit/utils/pickingutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     src/topologytoolkitmodule.cpp
     src/utils/ttkexception.cpp
     src/utils/ttkutils.cpp
+    src/utils/pickingutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -88,6 +90,10 @@ ivw_compile_optimize_on_target(inviwo-module-topologytoolkit)
 
 target_include_directories(inviwo-module-topologytoolkit PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/ttk>
+)
+
+target_include_directories(inviwo-module-topologytoolkit PUBLIC 
+    ${CMAKE_CURRENT_SOURCE_DIR}/ext/ttk
 )
 target_link_libraries(inviwo-module-topologytoolkit PUBLIC baseAll)
 

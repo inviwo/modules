@@ -32,12 +32,23 @@
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/meshport.h>
 
 #include <inviwo/topologytoolkit/ports/contourtreeport.h>
+
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/interaction/pickingmanager.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/interaction/events/touchevent.h>
+#include <inviwo/core/interaction/events/wheelevent.h>
+
+#include <inviwo/topologytoolkit/utils/pickingutils.h>
+
 
 namespace inviwo {
 
@@ -78,6 +89,12 @@ private:
     FloatVec4Property localMinimaColor_;
     FloatVec4Property saddleColor_;
     FloatVec4Property arcColor_;
+
+	
+    PickingMapper pickingMapper_;
+    inviwo::topology::PickingProperties pickingProperties_;
+	void picking(PickingEvent* p);
+	std::vector<size_t> pickedNodeIndices_;
 };
 
 }  // namespace inviwo

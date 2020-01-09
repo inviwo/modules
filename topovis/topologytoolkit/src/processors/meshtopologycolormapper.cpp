@@ -30,18 +30,13 @@
 #include <inviwo/topologytoolkit/processors/meshtopologycolormapper.h>
 
 namespace inviwo {
-
-namespace topology {
-
-
-}  // namespace topology
-
+	
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MeshTopologyColorMapper::processorInfo_{
     "org.inviwo.MeshTopologyColorMapper",  // Class identifier
     "Mesh Topology Color Mapper",          // Display name
-    "Topology",                          // Category
-    CodeState::Experimental,              // Code state
+    "Topology",                            // Category
+    CodeState::Experimental,               // Code state
     "CPU, Topology, TTK, Triangulation",   // Tags
 };
 const ProcessorInfo MeshTopologyColorMapper::getProcessorInfo() const { return processorInfo_; }
@@ -52,7 +47,10 @@ MeshTopologyColorMapper::MeshTopologyColorMapper()
     , morseSmaleComplexInport("morsesmalecomplex")
     , meshInport_("mesh")
     , outport_("outport")
-    , transferFunction_("transferFunction", "TranferFunction") {
+    , transferFunction_("transferFunction", "TranferFunction")
+    , pickingutil_(this, [&](PickingEvent* p) { this->handlePickingEvent(p); })
+    , mscSegmentOptions_("mscSegmentOptions", "MSC Segments")
+    , morseSmaleComplex_("morseSmaleComplex", "MSC Options"){
 
     addPort(meshInport_);
     addPort(contourtreeInport);
@@ -63,15 +61,47 @@ MeshTopologyColorMapper::MeshTopologyColorMapper()
 
     contourtreeInport.setOptional(true);
     morseSmaleComplexInport.setOptional(true);
+
+	mscSegmentOptions_.addOption("asc", "Ascending", 0);
+	mscSegmentOptions_.addOption("des", "Descending",1);
+	mscSegmentOptions_.addOption("msc", "MSC", 2);
+	mscSegmentOptions_.setSelectedValue(2);
+	mscSegmentOptions_.setCurrentStateAsDefault();
+	morseSmaleComplex_.addProperty(mscSegmentOptions_);
+	addProperty(morseSmaleComplex_);
+
+    addProperty(pickingProperties_.pickingProps_);
+
+	morseSmaleComplexInport.onChange([this]() {
+		if (morseSmaleComplexInport.hasData()) {
+			morseSmaleComplex_.setReadOnly(false);
+		}
+		else {
+			morseSmaleComplex_.setReadOnly(true);
+		}
+	});
+
+	contourtreeInport.onChange([this]() {
+		if (morseSmaleComplexInport.hasData()) {
+			morseSmaleComplex_.setReadOnly(false);
+		}
+		else {
+			morseSmaleComplex_.setReadOnly(true);
+		}
+	});
 }
 
 void MeshTopologyColorMapper::process() {
-	
-	if (contourtreeInport.getData()) {
+
+    if (contourtreeInport.getData()) {
         auto mesh =
             topology::applyColorMapToMesh(transferFunction_.get(), *meshInport_.getData().get(),
-											contourtreeInport.getData()->getSegments(),
-                                           *contourtreeInport.getData()->triangulation.get());
+                                          contourtreeInport.getData()->getSegments(),
+                                          *contourtreeInport.getData()->triangulation.get());
+
+        pickingutil_.addPickingBuffer(*mesh);
+
+		pickingutil_.buildSegmentMap(contourtreeInport.getData()->getSegments());
 
         // set output mesh
         outport_.setData(mesh);
@@ -79,18 +109,77 @@ void MeshTopologyColorMapper::process() {
     }
 
     if (morseSmaleComplexInport.getData()) {
+
+		std::vector<int> segs;
+
+		switch (mscSegmentOptions_.get()) {
+			case 0: 
+				segs = morseSmaleComplexInport.getData()->segmentation.ascending;
+				break;
+			case 1: 
+				segs = morseSmaleComplexInport.getData()->segmentation.descending;
+				break;
+			case 2:
+			default:
+				segs = morseSmaleComplexInport.getData()->segmentation.msc;
+		}
+
         auto mesh =
             topology::applyColorMapToMesh(transferFunction_.get(), *meshInport_.getData().get(),
-                                           morseSmaleComplexInport.getData()->segmentation.msc,
-                                           *morseSmaleComplexInport.getData()->triangulation.get());
+                                          segs,
+                                          *morseSmaleComplexInport.getData()->triangulation.get());
+
+        pickingutil_.addPickingBuffer(*mesh);
+
+		pickingutil_.buildSegmentMap(segs);		
 
         // set output mesh
         outport_.setData(mesh);
         return;
-    } 
+    }
 
-	//default original mesh
+    // default original mesh
     outport_.setData(meshInport_.getData());
+}
+
+void MeshTopologyColorMapper::handlePickingEvent(PickingEvent* p) {
+    if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
+        if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Press) {
+			           
+			auto selectedSegmentIndices = pickingutil_.getSegmentIndices(p->getCurrentGlobalPickingId());
+
+			std::string sids;
+			for (auto& sid : selectedSegmentIndices) {
+				 sids += " ";
+				 sids += toString<int>(sid);
+			}
+
+			LogInfo("Selecting the picking ID-" +
+				toString<size_t>(p->getCurrentGlobalPickingId()) + " with corresponding SegmentID-" + sids);
+        }
+    } else if (p->getState() == PickingState::Updated &&
+               p->getEvent()->hash() == TouchEvent::chash()) {
+
+        auto te = p->getEventAs<TouchEvent>();
+        if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
+            LogInfo("Not yet implemented.");
+        }
+    } else if (auto we = p->getEventAs<WheelEvent>()) {
+        p->markAsUsed();
+
+        LogInfo("Not yet implemented.");
+    }
+
+	return;
+	
+    if (p->getState() == PickingState::Started) {
+        pickingutil_.highlight_ = true;
+        invalidate(InvalidationLevel::InvalidOutput);
+    } else if (p->getState() == PickingState::Finished) {
+        pickingutil_.highlight_ = false;
+        invalidate(InvalidationLevel::InvalidOutput);
+    }
 }
 
 }  // namespace inviwo

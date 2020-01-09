@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2018-2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,69 +27,86 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifndef IVW_PICKING_UTILS_H
+#define IVW_PICKING_UTILS_H
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
-#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/topologytoolkit/datastructures/triangulationdata.h>
 
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+
+#include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+
 #include <inviwo/core/interaction/pickingmanager.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/touchevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
 
-#include <inviwo/topologytoolkit/utils/pickingutils.h>
+#include <vector>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MorseSmaleComplexToMesh, Morse Smale Complex To Mesh}
- * ![](org.inviwo.MorseSmaleComplexToMesh.png?classIdentifier=org.inviwo.MorseSmaleComplexToMesh)
- * Converts TTK Morse-Smale complex data into a mesh. Critical points are encoded as point mesh with the
- * specified radius. Separatrices are stored as lines.
- *
- * ### Inports
- *   * __mscomplex__   TTK Morse-Smale Complex input data
- *
- * ### Outports
- *   * __mesh__        Output mesh
- */
-
-/**
- * \brief convert a TTK Morse-Smale complex into a Mesh.
- */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexToMesh : public Processor {
-public:
-    MorseSmaleComplexToMesh();
-    virtual ~MorseSmaleComplexToMesh() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-protected:
-    /// Input Morse-Smale Complex from TTK
-    topology::MorseSmaleComplexInport mscInport_{"mscomplex"};
-    /// Output Mesh representing critical points and separatrices of the MS Complex
-    MeshOutport outport_{"mesh"};
-
-    /// Colors for the critical points and other topological elements
-    TopologyColorsProperty propColors_;
-
-    FloatProperty sphereRadius_;
+namespace topology {
 	
-	PickingMapper pickingMapper_;
-    inviwo::topology::PickingProperties pickingProperties_;
-	void picking(PickingEvent* p);
-	std::vector<size_t> pickedNodeIndices_;
+class IVW_MODULE_TOPOLOGYTOOLKIT_API PickingUtil {
+public:
+    PickingUtil(Processor* proc, std::function<void(PickingEvent*)> callback = nullptr);
+    BoolProperty enablePicking_;
+    PickingMapper pickingMapper_;
+    bool highlight_ = false;
+    Processor* proc_;
+
+    void addPickingBuffer(Mesh& mesh);
+
+    const std::vector<uint32_t>& getPickingBuffer();
+
+    void handlePickingEvent(PickingEvent* p);
+
+    size_t getIdIndex(size_t s);
+
+    void buildSegmentMap(const std::vector<int>& segments);
+
+	std::vector<int>& getSegmentIndices(size_t pickingId);
+
+private:
+    std::shared_ptr<BufferRAMPrecision<uint32_t>> pickingBuffer_;
+    size_t pickingBufferSize_ = 0;
+
+    std::vector<int> segments_;
+    std::map<int, std::vector<int>> segmentIndicesMap_;
+
+    void resize(size_t s);
 };
 
+
+struct IVW_MODULE_TOPOLOGYTOOLKIT_API PickingProperties {
+
+public:
+	PickingProperties();
+
+	CompositeProperty pickingProps_;
+	BoolProperty enablePicking_;
+    FloatVec4Property pickingColor_;
+    FloatProperty pickingIntensity_;
+	StringProperty pickingIndicesTxt_;
+};
+
+}  // namespace topology
+
 }  // namespace inviwo
+
+#endif  // IVW_TTK_UTILS_H

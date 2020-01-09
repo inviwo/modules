@@ -55,13 +55,16 @@ ContourTreeToMesh::ContourTreeToMesh()
                         vec4(0.0f), vec4(1.0f))
     , saddleColor_("saddleColor", "Saddle Point", vec4(1.0f, 1.0f, 0.5f, 1.0f), vec4(0.0f),
                    vec4(1.0f))
-    , arcColor_("arcColor", "Arc Color", vec4(0.2f, 0.2f, 0.2f, 1.0f), vec4(0.0f), vec4(1.0f)) {
+    , arcColor_("arcColor", "Arc Color", vec4(0.2f, 0.2f, 0.2f, 1.0f), vec4(0.0f), vec4(1.0f)) 	
+	, pickingMapper_(this, 1, [&](PickingEvent* p) { picking(p); })
+{
+	
 
     addPort(inport_);
     addPort(outport_);
 
     addProperties(treeType_, showSaddlepoints_, sphereRadius_, localMaximaColor_, localMinimaColor_,
-                  saddleColor_, arcColor_);
+                  saddleColor_, arcColor_, pickingProperties_.pickingProps_);
 
     treeType_.setReadOnly(true);
 
@@ -107,6 +110,9 @@ void ContourTreeToMesh::process() {
     positions.reserve(numPoints);
     colors.reserve(numPoints);
 
+	auto pickingColor = pickingProperties_.pickingColor_.get();
+	auto pickingIntensity = pickingProperties_.pickingIntensity_.get();
+
     // create a mesh with critical points and arcs
     auto triangulation = inport_.getData()->triangulation;
     for (ttk::ftm::idNode i = 0; i < tree->getNumberOfNodes(); ++i) {
@@ -116,7 +122,13 @@ void ContourTreeToMesh::process() {
         const bool down = node->getNumberOfDownSuperArcs() > 0;
 
         positions.push_back(triangulation->getPoint(node->getVertexId()));
-        colors.push_back(up && down ? saddleColor_ : (up ? localMaximaColor_ : localMinimaColor_));
+
+		auto col = up && down ? saddleColor_ : (up ? localMaximaColor_ : localMinimaColor_);
+		if (inviwo::util::contains(pickedNodeIndices_, (size_t)(i)))
+			col = glm::mix(col.get(), pickingColor, pickingIntensity);
+		//else continue;
+
+        colors.push_back(col);
     }
 
     // arcs
@@ -133,9 +145,21 @@ void ContourTreeToMesh::process() {
     }
 
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
-    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
-    mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
-    mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
+
+	if (pickingProperties_.enablePicking_) {
+		pickingMapper_.resize(positions.size());
+		auto pickingBuffer_ = std::make_shared<BufferRAMPrecision<uint32_t>>(positions.size());
+		auto& data = pickingBuffer_->getDataContainer();
+		// fill in picking IDs
+		std::iota(data.begin(), data.end(), static_cast<uint32_t>(pickingMapper_.getPickingId(0)));
+		mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib),
+			std::make_shared<Buffer<uint32_t>>(pickingBuffer_));
+	}
+
+	mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+	mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
+	mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
+
 
     // critical points
     std::vector<uint32_t> indices(tree->getNumberOfNodes());
@@ -150,5 +174,62 @@ void ContourTreeToMesh::process() {
 
     outport_.setData(mesh);
 }
+
+void ContourTreeToMesh::picking(PickingEvent* p) {
+	if (!pickingProperties_.enablePicking_) return;
+    auto tree = inport_.getData()->getTree();
+	if (!tree) return;
+
+	 if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
+        if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Press) {
+			           
+			auto firstId = pickingMapper_.getPickingId(0);
+			auto pickingIndex = p->getCurrentGlobalPickingId() - firstId;
+
+			auto msg = "Selecting the picking ID-" +
+				toString<size_t>(p->getCurrentGlobalPickingId()) + " with corresponding Index-" + toString<size_t>(pickingIndex);
+
+			auto node = tree->getNode(pickingIndex);
+
+			msg += " and corresponding node id is-" + toString<size_t>(node->getVertexId());
+
+			auto pIt = std::find(pickedNodeIndices_.begin(), pickedNodeIndices_.end(), pickingIndex);
+
+			if (pIt == pickedNodeIndices_.end())
+				pickedNodeIndices_.push_back(pickingIndex);
+			else
+				pickedNodeIndices_.erase(pIt);
+
+			std::string picked_string = "";
+
+			for (auto&pi : pickedNodeIndices_) {
+				picked_string += " ";
+				picked_string += toString<size_t>(pi);
+			}
+
+			LogInfo(msg);
+			LogInfo(picked_string);
+
+			pickingProperties_.pickingIndicesTxt_ = picked_string;
+
+			invalidate(inviwo::InvalidationLevel::InvalidOutput);
+        }
+    } else if (p->getState() == PickingState::Updated &&
+               p->getEvent()->hash() == TouchEvent::chash()) {
+
+        auto te = p->getEventAs<TouchEvent>();
+        if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
+            LogInfo("Not yet implemented.");
+        }
+    } else if (auto we = p->getEventAs<WheelEvent>()) {
+        p->markAsUsed();
+
+        LogInfo("Not yet implemented.");
+    }
+
+	return;
+}
+
 
 }  // namespace inviwo

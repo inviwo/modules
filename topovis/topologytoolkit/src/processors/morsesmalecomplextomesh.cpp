@@ -46,13 +46,17 @@ const ProcessorInfo MorseSmaleComplexToMesh::processorInfo_{
 const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return processorInfo_; }
 
 MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
-    : Processor()
-    , propColors_("colors", "Colors")
-    , sphereRadius_("sphereRadius", "Radius", 0.05f, 0.0f, 10.0f) {
+	: Processor()
+	, propColors_("colors", "Colors")
+	, sphereRadius_("sphereRadius", "Radius", 0.05f, 0.0f, 10.0f)	
+	, pickingMapper_(this, 1, [&](PickingEvent* p) { picking(p); })
+{
+
+
     addPort(mscInport_);
     addPort(outport_);
 
-    addProperties(propColors_, sphereRadius_);
+    addProperties(propColors_, sphereRadius_, pickingProperties_.pickingProps_);
 }
 
 void MorseSmaleComplexToMesh::process() {
@@ -66,10 +70,10 @@ void MorseSmaleComplexToMesh::process() {
     std::vector<float> radius(numcp, sphereRadius_.get());
 
     // Add critical points with their color
-    for (ttk::SimplexId i = 0; i < numcp; i++) {
-        positions[i].x = pMSCData->criticalPoints.points[3 * i];
-        positions[i].y = pMSCData->criticalPoints.points[3 * i + 1];
-        positions[i].z = pMSCData->criticalPoints.points[3 * i + 2];
+	for (ttk::SimplexId i = 0; i < numcp; i++) {
+		positions[i].x = pMSCData->criticalPoints.points[3 * i];
+		positions[i].y = pMSCData->criticalPoints.points[3 * i + 1];
+		positions[i].z = pMSCData->criticalPoints.points[3 * i + 2];
     }
 
     if (pMSCData->triangulation->getTriangulation().getDimensionality() == 2) {
@@ -80,6 +84,16 @@ void MorseSmaleComplexToMesh::process() {
         std::transform(pMSCData->criticalPoints.cellDimensions.begin(),
                        pMSCData->criticalPoints.cellDimensions.end(), colors.begin(),
                        [this](char c) { return propColors_.getColor3D(c); });
+    }
+
+	auto pickingColor = pickingProperties_.pickingColor_.get();
+	auto pickingIntensity = pickingProperties_.pickingIntensity_.get();
+	for (ttk::SimplexId i = 0; i < numcp; i++) {		
+		auto col = colors[i];
+		if (inviwo::util::contains(pickedNodeIndices_, (size_t)(i)))
+			col = glm::mix(col, pickingColor, pickingIntensity);
+		else continue;
+		colors[i] = col;
     }
 
     // Add the separatrixCells
@@ -125,6 +139,17 @@ void MorseSmaleComplexToMesh::process() {
     }
 
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
+
+	if (pickingProperties_.enablePicking_) {
+		pickingMapper_.resize(positions.size());
+		auto pickingBuffer_ = std::make_shared<BufferRAMPrecision<uint32_t>>(positions.size());
+		auto& data = pickingBuffer_->getDataContainer();
+		// fill in picking IDs
+		std::iota(data.begin(), data.end(), static_cast<uint32_t>(pickingMapper_.getPickingId(0)));
+		mesh->addBuffer(Mesh::BufferInfo(BufferType::PickingAttrib),
+			std::make_shared<Buffer<uint32_t>>(pickingBuffer_));
+	}
+
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
@@ -148,6 +173,63 @@ void MorseSmaleComplexToMesh::process() {
     glEnable(GL_PRIMITIVE_RESTART);
 
     outport_.setData(mesh);
+}
+
+void MorseSmaleComplexToMesh::picking(PickingEvent* p) {
+	if (!pickingProperties_.enablePicking_) return;
+
+	auto pMSCData = mscInport_.getData();
+	if (!pMSCData) return;
+
+	 if (p->getState() == PickingState::Updated && p->getEvent()->hash() == MouseEvent::chash()) {
+        auto me = p->getEventAs<MouseEvent>();
+        if ((me->buttonState() & MouseButton::Left) && me->state() == MouseState::Press) {
+			           
+			auto firstId = pickingMapper_.getPickingId(0);
+			auto pickingIndex = p->getCurrentGlobalPickingId() - firstId;
+
+			auto msg = "Selecting the picking ID-" +
+				toString<size_t>(p->getCurrentGlobalPickingId()) + " with corresponding Index-" + toString<size_t>(pickingIndex);
+			
+			auto cellId = pMSCData->criticalPoints.PLVertexIdentifiers[pickingIndex];
+			msg += " and corresponding cell id is-" + toString<size_t>(cellId);
+
+			auto pIt = std::find(pickedNodeIndices_.begin(), pickedNodeIndices_.end(), pickingIndex);
+
+			if (pIt == pickedNodeIndices_.end())
+				pickedNodeIndices_.push_back(pickingIndex);
+			else
+				pickedNodeIndices_.erase(pIt);
+
+			std::string picked_string = "";
+
+			for (auto&pi : pickedNodeIndices_) {
+				picked_string += " ";
+				picked_string += toString<size_t>(pi);
+			}
+
+			pickingProperties_.pickingIndicesTxt_ = picked_string;
+
+			LogInfo(msg);
+			LogInfo(picked_string);
+
+			invalidate(inviwo::InvalidationLevel::InvalidOutput);
+
+        }
+    } else if (p->getState() == PickingState::Updated &&
+               p->getEvent()->hash() == TouchEvent::chash()) {
+
+        auto te = p->getEventAs<TouchEvent>();
+        if (!te->touchPoints().empty() && te->touchPoints()[0].state() == TouchState::Updated) {
+            LogInfo("Not yet implemented.");
+        }
+    } else if (auto we = p->getEventAs<WheelEvent>()) {
+        p->markAsUsed();
+
+        LogInfo("Not yet implemented.");
+    }
+
+	return;
 }
 
 }  // namespace inviwo
