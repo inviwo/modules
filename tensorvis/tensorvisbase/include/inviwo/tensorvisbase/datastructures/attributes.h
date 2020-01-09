@@ -23,6 +23,24 @@ struct TypedAttributeBase : AttributeBase {
 using ScalarBase = TypedAttributeBase<float>;
 using VectorBase = TypedAttributeBase<vec3>;
 
+struct Trace : ScalarBase {
+    static constexpr inline std::string_view identifier{"Trace"};
+
+    template <unsigned int N>
+    static std::vector<value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+        std::shared_ptr<const DataFrame> metaData);
+};
+
+struct Norm : ScalarBase {
+    static constexpr inline std::string_view identifier{"Norm"};
+
+    template <unsigned int N>
+    static std::vector<value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+        std::shared_ptr<const DataFrame> metaData);
+};
+
 struct MajorEigenValue : ScalarBase {
     static constexpr inline std::string_view identifier{"Major Eigenvalue"};
 
@@ -38,15 +56,7 @@ struct IntermediateEigenValue : ScalarBase {
     template <unsigned int N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
-        std::shared_ptr<const DataFrame> metaData) {
-        if constexpr (N % 2) {
-            std::vector<value_type> l2{};
-            for (const auto& tensor : *tensors) {
-                l2.emplace_back(util::eigenvalue<N / 2>(tensor));
-            }
-            return l2;
-        }
-    }
+        std::shared_ptr<const DataFrame> metaData);
 };
 
 struct MinorEigenValue : ScalarBase {
@@ -55,13 +65,7 @@ struct MinorEigenValue : ScalarBase {
     template <unsigned int N>
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
-        std::shared_ptr<const DataFrame> metaData) {
-        std::vector<value_type> ln{};
-        for (const auto& tensor : *tensors) {
-            ln.emplace_back(util::eigenvalue<N - 1>(tensor));
-        }
-        return ln;
-    }
+        std::shared_ptr<const DataFrame> metaData);
 };
 
 struct MajorEigenVector : VectorBase {
@@ -248,32 +252,65 @@ struct LodeAngle : ScalarBase {
 };
 
 namespace {
-    template <unsigned int N, typename T>
-    std::vector<std::array<T, N>> sortedEigenValues(std::shared_ptr<const std::vector<glm::mat<N, N, T>>> tensors,
-        std::shared_ptr<const DataFrame> metaData) {
-        auto majorEigenValues = MajorEigenValue::calculate(tensors, metaData);
-        auto intermediateEigenValues = IntermediateEigenValue::calculate(tensors, metaData);
-        auto minorEigenValues = MinorEigenValue::calculate(tensors, metaData);
+template <unsigned int N, typename T>
+std::vector<std::array<T, N>> sortedEigenValues(
+    std::shared_ptr<const std::vector<glm::mat<N, N, T>>> tensors,
+    std::shared_ptr<const DataFrame> metaData) {
 
-        auto ev = std::vector<std::array<T, N>>{};
+    std::vector<T> mae;
+    std::vector<T> ine;
+    std::vector<T> mie;
 
-        for (size_t i = 0; i < majorEigenValues.size(); i++) {
-            std::array<T, N> eigenValues{
-                majorEigenValues[i], intermediateEigenValues[i], minorEigenValues[i] };
-
-            std::transform(eigenValues.begin(), eigenValues.end(), eigenValues.begin(),
-                [](const T& val) { return glm::abs(val); });
-
-            std::sort(
-                eigenValues.begin(), eigenValues.end(),
-                [](const T& valA, const T& valB) { return valA > valB; });
-
-            ev.push_back(eigenValues);
-        }
-
-        return ev;
+    if (!metaData->getColumn(std::string(MajorEigenValue::identifier))) {
+        mae = MajorEigenValue::calculate(tensors, metaData);
     }
+    if (!metaData->getColumn(std::string(IntermediateEigenValue::identifier))) {
+        ine = IntermediateEigenValue::calculate(tensors, metaData);
+    }
+    if (!metaData->getColumn(std::string(MinorEigenValue::identifier))) {
+        mie = MinorEigenValue::calculate(tensors, metaData);
+    }
+
+    const auto& majorEigenValues =
+        mae.empty() ? std::dynamic_pointer_cast<const TemplateColumn<T>>(
+                          metaData->getColumn(std::string(MajorEigenValue::identifier)))
+                          ->getTypedBuffer()
+                          ->getRAMRepresentation()
+                          ->getDataContainer()
+                    : mae;
+    const auto& intermediateEigenValues =
+        ine.empty() ? std::dynamic_pointer_cast<const TemplateColumn<T>>(
+                          metaData->getColumn(std::string(IntermediateEigenValue::identifier)))
+                          ->getTypedBuffer()
+                          ->getRAMRepresentation()
+                          ->getDataContainer()
+                    : ine;
+    const auto& minorEigenValues =
+        mie.empty() ? std::dynamic_pointer_cast<const TemplateColumn<T>>(
+                          metaData->getColumn(std::string(MinorEigenValue::identifier)))
+                          ->getTypedBuffer()
+                          ->getRAMRepresentation()
+                          ->getDataContainer()
+                    : mie;
+
+    auto ev = std::vector<std::array<T, N>>{};
+
+    for (size_t i = 0; i < majorEigenValues.size(); i++) {
+        std::array<T, N> eigenValues{majorEigenValues[i], intermediateEigenValues[i],
+                                     minorEigenValues[i]};
+
+        std::transform(eigenValues.begin(), eigenValues.end(), eigenValues.begin(),
+                       [](const T& val) { return glm::abs(val); });
+
+        std::sort(eigenValues.begin(), eigenValues.end(),
+                  [](const T& valA, const T& valB) { return valA > valB; });
+
+        ev.push_back(eigenValues);
+    }
+
+    return ev;
 }
+}  // namespace
 
 struct Anisotropy : ScalarBase {
     static constexpr inline std::string_view identifier{"Anisotropy"};
@@ -307,7 +344,7 @@ struct LinearAnisotropy : ScalarBase {
         if constexpr (N == 3) {
             std::vector<scalar_type> linearAnisotropy{};
             auto ev = sortedEigenValues(tensors, metaData);
-            for (const auto& eigenValues:ev) {
+            for (const auto& eigenValues : ev) {
                 auto denominator = eigenValues[0] + eigenValues[N / 2] + eigenValues[N - 1];
                 if (denominator < std::numeric_limits<scalar_type>::epsilon())
                     denominator = std::numeric_limits<scalar_type>::epsilon();
@@ -378,6 +415,8 @@ struct FrobeniusNorm : ScalarBase {
 // clang-format off
 using types =
     std::tuple<
+        Trace,
+        Norm,
         MajorEigenValue,
         IntermediateEigenValue,
         MinorEigenValue,
@@ -398,6 +437,15 @@ using types =
         FrobeniusNorm
     >;
 // clang-format on
+
+// Aliases for different domain languages
+using MajorPrincipalStress = MajorEigenValue;
+using IntermediatePrincipalStress = IntermediateEigenValue;
+using MinorPrincipalStress = MinorEigenValue;
+
+using Lambda1 = MajorEigenValue;
+using Lambda2 = IntermediateEigenValue;
+using Lambda3 = MinorEigenValue;
 
 }  // namespace attributes
 }  // namespace inviwo
