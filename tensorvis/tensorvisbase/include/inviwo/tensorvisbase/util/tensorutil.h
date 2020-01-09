@@ -145,15 +145,14 @@ constexpr T constexpr_sqrt_helper_i(const T x, const T lo, const T hi) {
 template <typename T>
 T constexpr constexpr_sqrt(T x) {
     if constexpr (std::is_floating_point_v<T>) {
-        return x >= 0 && x < std::numeric_limits<T>::infinity()
-                   ? detail::constexpr_sqrt_helper_f(x, x, T(0))
-                   : std::numeric_limits<T>::quiet_NaN();
+        if (x >= 0 && x < std::numeric_limits<T>::infinity())
+            return detail::constexpr_sqrt_helper_f(x, x, T(0));
     }
     if constexpr (std::is_integral_v<T>) {
         return detail::constexpr_sqrt_helper_i(x, T(0), x / 2 + 1);
     }
 
-	return std::numeric_limits<T>::quiet_NaN();
+    return std::numeric_limits<T>::quiet_NaN();
 }
 }  // namespace util
 namespace tensorutil {

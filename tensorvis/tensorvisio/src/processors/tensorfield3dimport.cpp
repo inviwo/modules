@@ -34,6 +34,7 @@
 #include <unordered_map>
 #include <inviwo/tensorvisbase/datastructures/attributes.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
