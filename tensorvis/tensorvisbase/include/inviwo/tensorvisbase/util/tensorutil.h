@@ -136,11 +136,9 @@ constexpr T constexpr_sqrt_helper_i(const T x, const T lo, const T hi) {
 }
 }  // namespace detail
 
-
-
 /**
  * Constexpr version of the square root method.
- * 
+ *
  * \param x Value of which the square root should be calculated.
  * \return Square root of x.
  */
@@ -151,10 +149,8 @@ T constexpr constexpr_sqrt(T x) {
                    ? detail::constexpr_sqrt_helper_f(x, x, T(0))
                    : std::numeric_limits<T>::quiet_NaN();
     }
-    else {
-        if constexpr (std::is_integral_v<T>) {
-            return detail::constexpr_sqrt_helper_i(x, T(0), x / 2 + 1);
-        }
+    if constexpr (std::is_integral_v<T>) {
+        return detail::constexpr_sqrt_helper_i(x, T(0), x / 2 + 1);
     }
 }
 }  // namespace util
