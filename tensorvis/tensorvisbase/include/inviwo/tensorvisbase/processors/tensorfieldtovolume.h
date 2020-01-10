@@ -73,8 +73,10 @@ public:
 
 private:
     TensorField3DInport inport_;
+
     VolumeOutport outport_;
 
+    OptionPropertySize_t volumeContent_;
 
     BoolProperty normalizeVectors_;
 };

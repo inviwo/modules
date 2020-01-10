@@ -34,8 +34,93 @@
 #include <inviwo/core/util/volumeramutils.h>
 #include <modules/base/algorithm/dataminmax.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/core/util/constexprhash.h>
+#include <glm/gtx/component_wise.hpp>
 
 namespace inviwo {
+namespace {
+
+struct AddOptions {
+    AddOptions() = delete;
+    AddOptions(std::vector<OptionPropertyOption<size_t>>& options,
+               std::shared_ptr<const TensorField3D> tensorField)
+        : options_(options), tensorField_(tensorField) {}
+
+    template <typename T>
+    void operator()() {
+        if (!tensorField_->hasMetaData<T>()) return;
+
+        const auto name = std::string(T::identifier);
+        auto identifier = name;
+        const auto id = util::constexpr_hash(T::identifier);
+        replaceInString(identifier, " ", "");
+
+        options_.emplace_back(identifier, name, id);
+    }
+
+private:
+    std::vector<OptionPropertyOption<size_t>>& options_;
+    std::shared_ptr<const TensorField3D> tensorField_;
+};
+
+struct CreateVolume {
+    CreateVolume() = delete;
+    CreateVolume(size_t id, std::shared_ptr<const TensorField3D> tensorField, Processor* p)
+        : id_(id), tensorField_(tensorField), p_(p) {}
+
+    template <typename T>
+    void operator()() {
+        using type = typename T::value_type;
+
+        if (id_ == util::constexpr_hash(T::identifier)) {
+            auto dataFormat = new DataFormat<type>();
+            auto dimensions = tensorField_->getDimensions();
+            volume_ = std::make_shared<Volume>(dimensions, dataFormat);
+            auto data = static_cast<VolumeRAMPrecision<type>*>(
+                            volume_->getEditableRepresentation<VolumeRAM>())
+                            ->getDataTyped();
+
+            auto metaData = tensorField_->metaData();
+            auto col_data = std::dynamic_pointer_cast<const TemplateColumn<type>>(
+                                metaData->getColumn(std::string(T::identifier)))
+                                ->getTypedBuffer()
+                                ->getRAMRepresentation()
+                                ->getDataContainer();
+
+            std::memcpy(data, col_data.data(), sizeof(type) * glm::compMul(dimensions));
+
+            if constexpr (util::extent<type>::value == 1) {
+                auto [min, max] =
+                    std::minmax_element(col_data.begin(), col_data.end(),
+                                        [](const auto a, const auto b) -> bool { return a < b; });
+
+                volume_->dataMap_.dataRange = volume_->dataMap_.valueRange = dvec2{*min, *max};
+            } else {
+                auto [min, max] = std::minmax_element(col_data.begin(), col_data.end(),
+                                                      [](const auto& a, const auto& b) -> bool {
+                                                          return glm::compMax(a) < glm::compMax(b);
+                                                      });
+
+                volume_->dataMap_.dataRange = volume_->dataMap_.valueRange =
+                    dvec2{glm::compMax(*min), glm::compMax(*max)};
+
+                if (p_->getPropertiesByType<BoolProperty>().front()->get()) {
+                    for (size_t i{ 0 }; i < glm::compMul(dimensions); ++i) {
+                        data[i] = glm::normalize(data[i]);
+                    }
+                }
+            }
+        }
+    }
+
+    std::shared_ptr<Volume> volume_;
+
+private:
+    size_t id_;
+    std::shared_ptr<const TensorField3D> tensorField_;
+    Processor* p_;
+};
+}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorFieldToVolume::processorInfo_{
@@ -51,14 +136,26 @@ TensorFieldToVolume::TensorFieldToVolume()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-
+    , volumeContent_("volumeContent", "Volume content")
     , normalizeVectors_("normalize", "Normalize eigenvectors") {
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(normalizeVectors_);
+    addProperties(volumeContent_, normalizeVectors_);
 
-    /*feature_.onChange([this]() {
+    inport_.onChange([this]() {
+        if (!inport_.hasData()) return;
+
+        std::vector<OptionPropertyOption<size_t>> options{};
+
+        util::for_each_type<attributes::types>{}(AddOptions{options, inport_.getData()});
+
+        volumeContent_.replaceOptions(options);
+    });
+
+    inport_.onDisconnect([this]() { volumeContent_.clearOptions(); });
+
+    /*volumeContent_.onChange([this]() {
         if (feature_.get() > 2)
             normalizeVectors_.setVisible(false);
         else
@@ -67,61 +164,9 @@ TensorFieldToVolume::TensorFieldToVolume()
 }
 
 void TensorFieldToVolume::process() {
-//    auto tensorField = inport_.getData();
-//
-//    if (!tensorField->hasMetaData(feature_.get())) {
-//        LogError("Tensorfield has no metadata for \'" << feature_.get() << "\'");
-//        return;
-//    }
-//    if (!tensorField->hasMetaData(uint64_t(feature_.get()))) {
-//        LogError("Tensorfield has no metadata (id) for \'" << feature_.get() << "\'");
-//        return;
-//    }
-//
-//    const auto metaData = tensorField->getMetaDataContainer(uint64_t(feature_.get()));
-//    const auto numberOfComponents = metaData->getNumberOfComponents();
-//
-//    auto vol =
-//        std::make_shared<Volume>(tensorField->getDimensions(),
-//                                 DataFormatBase::get(NumericType::Float, numberOfComponents, 32));
-//
-//    DataMapper map =
-//        vol->getEditableRepresentation<VolumeRAM>()
-//            ->dispatch<DataMapper, dispatching::filter::Floats>([metaData](auto repr) {
-//                auto ptr = repr->getDataTyped();
-//                using ValueType = util::PrecisionValueType<decltype(repr)>;
-//                // TODO: use type of metadata instead of assuming double!
-//                using P = typename util::same_extent<ValueType, double>::type;
-//
-//                const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
-//#include <warn/push>
-//#include <warn/ignore/conversion>
-//                std::transform(srcData, srcData + glm::compMul(repr->getDimensions()), ptr,
-//                               [](P v) { return static_cast<ValueType>(v); });
-//#include <warn/pop>
-//
-//                const auto minmax = util::dataMinMax(srcData, glm::compMul(repr->getDimensions()));
-//
-//                DataMapper datamap;
-//
-//                double max = std::numeric_limits<float>::lowest();
-//                double min = std::numeric_limits<float>::max();
-//                for (size_t i = 0; i < 4; ++i) {
-//                    if ((minmax.first[i] == minmax.second[i]) && (minmax.first[i] == 0.0)) {
-//                        break;
-//                    }
-//                    max = std::max(max, minmax.second[i]);
-//                    min = std::min(min, minmax.first[i]);
-//                }
-//
-//                datamap.dataRange = dvec2{min, max};
-//                datamap.valueRange = dvec2{min, max};
-//                return datamap;
-//            });
-//
-//    vol->setModelMatrix(tensorField->getBasisAndOffset());
-//    vol->dataMap_ = map;
-//    outport_.setData(vol);
+    outport_.setData(util::for_each_type<attributes::types>{}(
+                         CreateVolume{volumeContent_.get(), inport_.getData(),this})
+                         .volume_);
 }
 
 }  // namespace inviwo
