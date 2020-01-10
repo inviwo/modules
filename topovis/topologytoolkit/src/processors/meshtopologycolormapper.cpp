@@ -29,6 +29,8 @@
 
 #include <inviwo/topologytoolkit/processors/meshtopologycolormapper.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
+#pragma optimize("", off)
+
 
 namespace inviwo {
 	
@@ -93,6 +95,10 @@ MeshTopologyColorMapper::MeshTopologyColorMapper()
 		else {
 			morseSmaleComplex_.setReadOnly(true);
 		}
+
+		if (contourtreeInport.getData()) {
+			segmentTriangulations_ = topology::ttkSegmentExtraction(contourtreeInport.getData());
+		}
 	});
 }
 
@@ -115,32 +121,49 @@ void MeshTopologyColorMapper::process() {
 
 
 		if (showContour) {		
-			std::vector<float> scalars = topology::extractScalarValuesFromTriangulation(*triangulation);
-			auto minmax = std::minmax_element(scalars.begin(), scalars.end());
-            auto div = (float)(*minmax.second - *minmax.first);
-			auto avg = (*minmax.first + *minmax.second) / 2.0f;
 
-			std::vector<vec3> positions(scalars.size(), vec3(0.0f));
-			std::vector<vec4> colors(scalars.size(), vec4(1.0f));
+
+			std::set<int> s(contourtreeInport.getData()->getSegments().begin(), contourtreeInport.getData()->getSegments().end());
+			std::vector<int> usegments(s.begin(), s.end());
+
+			std::vector<float> scalars = topology::ttkExtractScalarValuesFromTriangulation(*triangulation);
+			/*auto minmax = std::minmax_element(scalars.begin(), scalars.end());
+            auto div = (*minmax.second - *minmax.first);
+			auto avg = (*minmax.first + *minmax.second) / 2.0f;*/
 
 			std::shared_ptr<inviwo::Mesh> contour_mesh = nullptr;
 
-			for (ttk::ftm::idSuperArc i = 0; i < tree->getNumberOfSuperArcs(); ++i) {
-				auto arc = tree->getSuperArc(i);
+			auto numArcs = tree->getNumberOfSuperArcs();
+
+			std::vector<ttk::ftm::idNode> leafNodes;
+			for (size_t i = 0; i < tree->getLeaves().size(); i++)
+				leafNodes.push_back( tree->getLeave(i));
+			
+
+			for (ttk::ftm::idSuperArc i = 0; i <usegments.size(); ++i) {
+				
+				if (usegments[i] >= numArcs) continue;
+
+				//if (usegments[i] != (int)(isoFactor_.get() * numArcs))
+				//	continue;				
+
+				auto arc = tree->getSuperArc(usegments[i]);
+
+				if (std::find(leafNodes.begin(), leafNodes.end(), arc->getDownNodeId()) == leafNodes.end() &&
+					std::find(leafNodes.begin(), leafNodes.end(), arc->getUpNodeId()) == leafNodes.end())
+						continue;
 
 				auto upscalar = scalars[tree->getNode(arc->getUpNodeId())->getVertexId()];
 				auto downscalar =  scalars[tree->getNode(arc->getDownNodeId())->getVertexId()];
-				auto avg = (upscalar + downscalar) * isoFactor_;
 
-				auto col =  transferFunction_.get().sample(static_cast<float>((scalars[i] - *minmax.first) / div));
+				auto iso = (upscalar * isoFactor_.get()) + downscalar *(1.0f - isoFactor_.get());
+				auto avg = (upscalar + downscalar) * 0.5f;
+
+				auto col = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+				//col = transferFunction_.get().sample(usegments[i] / usegments.size());
 				col = glm::clamp(col, vec4(0.0f), vec4(1.0f));
-				col = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-				//col = transferFunction_.get().sample(float(i) / tree->getNumberOfSuperArcs());
 
-				//if (i !=  tree->getNumberOfSuperArcs()-1) continue;
-
-				auto iso_contours = marchingTriangles_from_Triangulation(*triangulation, 
-																		contourtreeInport.getData()->getSegments(), i, avg, col);
+				auto iso_contours = marchingTriangles_from_Triangulation(*segmentTriangulations_[i], iso, col);
 
 				if (!contour_mesh) {
 					contour_mesh = iso_contours;

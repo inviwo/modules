@@ -96,6 +96,8 @@ private:
 	FloatProperty isoFactor_;
 	CompositeProperty morseSmaleComplex_;
 	OptionPropertyInt mscSegmentOptions_;
+
+	std::vector<std::shared_ptr<topology::TriangulationData>> segmentTriangulations_;
 };
 
 }  // namespace inviwo

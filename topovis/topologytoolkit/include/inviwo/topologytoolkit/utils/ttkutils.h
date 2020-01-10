@@ -39,6 +39,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/topologytoolkit/datastructures/contourtreedata.h>
 
 #include <vector>
 
@@ -117,15 +118,15 @@ std::shared_ptr<Mesh> applyColorMapToMesh(
     MeshColorOption coloroption = MeshColorOption::SEGMENT_COLORMAP);
 
 IVW_MODULE_TOPOLOGYTOOLKIT_API
-std::vector<float> extractScalarValuesFromTriangulation(const TriangulationData& tdata);
+std::vector<float> ttkExtractScalarValuesFromTriangulation(const TriangulationData& tdata);
 
 IVW_MODULE_TOPOLOGYTOOLKIT_API
 std::shared_ptr<Mesh> marchingTriangles_from_Triangulation(
 															const TriangulationData& tdata,
-															const std::vector<int>& segments,
-															const int currentSegId,
 															double isoValue,
 															vec4 color);
+IVW_MODULE_TOPOLOGYTOOLKIT_API
+std::vector<std::shared_ptr<TriangulationData>> ttkSegmentExtraction(std::shared_ptr<const ContourTreeData> tree);
 
 
 

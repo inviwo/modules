@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <inviwo/core/util/formats.h>
 
+
 #pragma optimize("", off)
 
 
@@ -327,7 +328,7 @@ std::shared_ptr<Mesh> applyColorMapToMesh(const TransferFunction& tf, const Mesh
     return newMesh;
 }
 
-std::vector<float> extractScalarValuesFromTriangulation(const TriangulationData& tdata) {
+std::vector<float> ttkExtractScalarValuesFromTriangulation(const TriangulationData& tdata) {
 
     if (tdata.getScalarValues()) {
 
@@ -339,7 +340,7 @@ std::vector<float> extractScalarValuesFromTriangulation(const TriangulationData&
             ->dispatch<void, dispatching::filter::Scalars>([&vertices](auto bufferpr) { 
 				auto& scalars = bufferpr->getDataContainer();
                 for (size_t i = 0; i < std::min(bufferpr->getSize(), vertices.size()); ++i) {
-                    vertices[i] = static_cast<float>(scalars[i]);
+                    vertices[i] = scalars[i];
                 }
             });
 
@@ -349,65 +350,114 @@ std::vector<float> extractScalarValuesFromTriangulation(const TriangulationData&
 	return std::vector<float>();
 }
 
-std::shared_ptr<Mesh> marchingTriangles_from_Triangulation( 
-							    const TriangulationData& tdata,
-								const std::vector<int>& segments,
-								const int currentSegId,
-								double isoValue,
-								vec4 color) 
-{    
-	
-    // loop over VTK index list
-    // <#indices in cell 1>, <v1_1>, ..., v1_n>, <#indices in cell 2>, <v2_1> ...
-    size_t invalid = 0;
-    const auto& cells = tdata.getCells();
-    const auto& positions = tdata.getPoints();
+//Each segment as triangulation data
+std::vector<std::shared_ptr<TriangulationData>> ttkSegmentExtraction(std::shared_ptr<const ContourTreeData> contourTreeData) {
+
+	const TriangulationData& tdata = *contourTreeData->triangulation.get();
+
+	std::vector<std::shared_ptr<TriangulationData>> segTriangulations;
+
+	 const std::vector<int>& segments = contourTreeData->getSegments();
 
 	std::set<int> s(segments.begin(), segments.end());
 	std::vector<int> usegments(s.begin(), s.end());
 
-	std::vector<float> vertices = extractScalarValuesFromTriangulation(tdata);
 	std::map<int, std::vector<uint32_t>> segmentedTriangleIndices;
+
+    const auto& cells = tdata.getCells();
+    const auto& positions = tdata.getPoints();
+
 
 	for (auto& us : usegments) {
 
-		if (us != currentSegId) continue;
-
+		// create index buffer(s)
+		std::vector<uint32_t> indicesLines;
 		std::vector<uint32_t> indicesTriangles;
+		
+		auto line = [&indicesLines](auto i1, auto i2) {
+			indicesLines.push_back(static_cast<uint32_t>(i1));
+			indicesLines.push_back(static_cast<uint32_t>(i2));			
+		};
 		auto triangle = [&indicesTriangles](auto i1, auto i2, auto i3) {
 			indicesTriangles.push_back(static_cast<uint32_t>(i1));
 			indicesTriangles.push_back(static_cast<uint32_t>(i2));
 			indicesTriangles.push_back(static_cast<uint32_t>(i3));
 		};
 
+		// loop over VTK index list
+		// <#indices in cell 1>, <v1_1>, ..., v1_n>, <#indices in cell 2>, <v2_1> ...
+		size_t invalid = 0;
 		for (size_t i = 0; i < cells.size(); i += cells[i] + 1) {
 
 			if (segments[cells[i + 1]] != us && segments[cells[i + 2]] != us && segments[cells[i + 3]] != us)
 				continue;
 
+			//if (!(segments[cells[i + 1]] == us || segments[cells[i + 2]] == us || segments[cells[i + 3]] == us))
+			//	continue;
+
 			const auto numIndices = cells[i];
+
 			switch (numIndices) {
-			case 2:  // edge
-				break;
-			case 3:  // triangle
-				triangle(cells[i + 1], cells[i + 2], cells[i + 3]);
-				break;
-			case 4:  // tetrahedron
-				break;
-			default:
-				++invalid;
+				case 2:  // edge
+					line(cells[i + 1], cells[i + 2]);
+					break;
+				case 3:  // triangle
+					triangle(cells[i + 1], cells[i + 2], cells[i + 3]);
+					break;
+				case 4:  // tetrahedron
+					triangle(cells[i + 1], cells[i + 2], cells[i + 3]);
+					triangle(cells[i + 1], cells[i + 3], cells[i + 4]);
+					triangle(cells[i + 2], cells[i + 1], cells[i + 4]);
+					triangle(cells[i + 2], cells[i + 4], cells[i + 3]);
+					break;
+				default:
+					++invalid;
 			}
 		}
-
 		if (invalid > 0) {
-			LogWarnCustom("topology::marchingTriangles_from_Triangulation",
-				"Triangulation contains " + std::to_string(invalid) + " invalid cells.");
+			LogWarnCustom("topology::ttkTriangulationToMesh",
+						  "Triangulation contains " + std::to_string(invalid) + " invalid cells.");
 			continue;
 		}
 
-		segmentedTriangleIndices[us] = indicesTriangles;
+		std::shared_ptr<TriangulationData> segTri = std::make_shared<TriangulationData>();
+		if (!indicesLines.empty()) {
+			segTri->set(std::move(positions), indicesLines,
+                 Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None));
+
+			auto scalars = ttkExtractScalarValuesFromTriangulation(tdata);
+			segTri->setScalarValues(util::makeBuffer(std::move(scalars)));
+		}
+
+		
+		if (!indicesTriangles.empty()) {
+			segmentedTriangleIndices[us] = indicesTriangles;
+			segTri->set(std::move(positions), indicesTriangles,
+                 Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None));
+
+			auto scalars = ttkExtractScalarValuesFromTriangulation(tdata);
+			segTri->setScalarValues(util::makeBuffer(std::move(scalars)));
+
+		}
+
+		segTriangulations.push_back(segTri);
 	}
 
+
+	return segTriangulations;
+}
+
+std::shared_ptr<Mesh> marchingTriangles_from_Triangulation( 
+							    const TriangulationData& tdata,
+								double isoValue,
+								vec4 color) 
+{
+    // loop over VTK index list
+    // <#indices in cell 1>, <v1_1>, ..., v1_n>, <#indices in cell 2>, <v2_1> ...
+    size_t invalid = 0;
+    const auto& cells = tdata.getCells();
+    const auto& positions = tdata.getPoints();
+	
 	static const std::vector<std::vector<int>> caseTable = {
         std::vector<int>(),            // case 0
         std::vector<int>({0, 1, 0, 2}),// case 1 (6)
@@ -423,70 +473,94 @@ std::shared_ptr<Mesh> marchingTriangles_from_Triangulation(
     auto indices = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None);
 
 	auto debug_mesh = std::make_shared<Mesh>();	
-    //auto debug_indices = debug_mesh->addIndexBuffer(DrawType::Points, ConnectivityType::None);
-
-    //auto data = scalars;
 
     double vals[4];
     vec3 outPos[4];
 	vec3 outPosScale = vec3(1.0f);
 
-	std::vector<vec3> vpositions;
+	/*std::vector<vec3> vpositions;
 	std::vector<vec4> vcolors;
-	std::vector<float> vradius;
+	std::vector<float> vradius;*/
 
-	for (auto& us : usegments) {
+	std::vector<uint32_t> indicesTriangles;
+	auto triangle = [&indicesTriangles](auto i1, auto i2, auto i3) {
+		indicesTriangles.push_back(static_cast<uint32_t>(i1));
+		indicesTriangles.push_back(static_cast<uint32_t>(i2));
+		indicesTriangles.push_back(static_cast<uint32_t>(i3));
+	};
 
-		if (us != currentSegId) continue;
+	for (size_t i = 0; i < cells.size(); i += cells[i] + 1) {
 
-		std::vector<uint32_t>& indicesTriangles = segmentedTriangleIndices[us];
+		//if (segments[cells[i + 1]] != us && segments[cells[i + 2]] != us && segments[cells[i + 3]] != us)
+		//	continue;
+
+		const auto numIndices = cells[i];
+		switch (numIndices) {
+		case 2:  // edge
+			break;
+		case 3:  // triangle
+			triangle(cells[i + 1], cells[i + 2], cells[i + 3]);
+			break;
+		case 4:  // tetrahedron
+			break;
+		default:
+			++invalid;
+		}
+	}
+
+	if (invalid > 0) {
+		LogWarnCustom("topology::marchingTriangles_from_Triangulation",
+			"Triangulation contains " + std::to_string(invalid) + " invalid cells.");
+		//continue;
+	}
+
+	std::vector<float> vertices = ttkExtractScalarValuesFromTriangulation(tdata);
 		
-		for (size_t i = 0; i < indicesTriangles.size(); i += 3) {
-			size_t idx_1 = indicesTriangles[i + 0];
-			size_t idx_2 = indicesTriangles[i + 1];
-			size_t idx_3 = indicesTriangles[i + 2];
+	for (size_t i = 0; i < indicesTriangles.size(); i += 3) {
+		size_t idx_1 = indicesTriangles[i + 0];
+		size_t idx_2 = indicesTriangles[i + 1];
+		size_t idx_3 = indicesTriangles[i + 2];
 
-			vals[0] = util::glm_convert<double>(vertices[idx_1]);
-			vals[1] = util::glm_convert<double>(vertices[idx_2]);
-			vals[2] = util::glm_convert<double>(vertices[idx_3]);
+		vals[0] = util::glm_convert<double>(vertices[idx_1]);
+		vals[1] = util::glm_convert<double>(vertices[idx_2]);
+		vals[2] = util::glm_convert<double>(vertices[idx_3]);
 
-			int theCase = 0;
-			theCase += vals[0] < isoValue ? 0 : 1;
-			theCase += vals[1] < isoValue ? 0 : 2;
-			theCase += vals[2] < isoValue ? 0 : 4;
+		int theCase = 0;
+		theCase += vals[0] < isoValue ? 0 : 1;
+		theCase += vals[1] < isoValue ? 0 : 2;
+		theCase += vals[2] < isoValue ? 0 : 4;
 
-			if (theCase == 0 || theCase == 7) {
-				continue;
-			}
+		if (theCase == 0 || theCase == 7) {
+			continue;
+		}
 
-			auto p = (positions[idx_1] + positions[idx_2] + positions[idx_3]) / 3.0f;
-			vpositions.push_back(p);
-			vcolors.push_back(color);
-			vradius.push_back(1.0f);
+		/*auto p = (positions[idx_1] + positions[idx_2] + positions[idx_3]) / 3.0f;
+		vpositions.push_back(p);
+		vcolors.push_back(color);
+		vradius.push_back(1.0f);*/
 
-			outPos[0] = positions[idx_1] * outPosScale;
-			outPos[1] = positions[idx_2] * outPosScale;
-			outPos[2] = positions[idx_3] * outPosScale;
+		outPos[0] = positions[idx_1] * outPosScale;
+		outPos[1] = positions[idx_2] * outPosScale;
+		outPos[2] = positions[idx_3] * outPosScale;
 
-			auto& edges = caseTable[theCase];
-			for (size_t i = 0; i < edges.size(); i += 2) {
-				auto t = (isoValue - vals[edges[i]]) / (vals[edges[i + 1]] - vals[edges[i]]);
-				auto p = Interpolation<vec3, float>::linear(outPos[edges[i]], outPos[edges[i + 1]],
-					static_cast<float>(t));
-				indices->add(mesh->addVertex(p, p, p, color));
-			}
+		auto& edges = caseTable[theCase];
+		for (size_t i = 0; i < edges.size(); i += 2) {
+			auto t = (isoValue - vals[edges[i]]) / (vals[edges[i + 1]] - vals[edges[i]]);
+			auto p = Interpolation<vec3, float>::linear(outPos[edges[i]], outPos[edges[i + 1]],
+				static_cast<float>(t));
+			indices->add(mesh->addVertex(p, p, p, color));
 		}
 	}
 
 	// critical points
-    std::vector<uint32_t> vindices(vpositions.size());
+    /*std::vector<uint32_t> vindices(vpositions.size());
     std::iota(vindices.begin(), vindices.end(), 0);
     debug_mesh->addIndicies(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
                       util::makeIndexBuffer(std::move(vindices)));
 
 	debug_mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(vpositions)));
 	debug_mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(vcolors)));
-	debug_mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(vradius)));  
+	debug_mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(vradius)));  */
 
     return mesh;
 }
