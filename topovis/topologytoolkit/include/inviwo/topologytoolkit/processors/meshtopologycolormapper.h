@@ -87,11 +87,13 @@ private:
     topology::ContourTreeInport contourtreeInport;
     topology::MorseSmaleComplexInport morseSmaleComplexInport;
     MeshOutport outport_;
+    MeshOutport isolinesOutport_;
 
     TransferFunctionProperty transferFunction_;
     inviwo::topology::PickingUtil pickingutil_;
     inviwo::topology::PickingProperties pickingProperties_;
     
+	FloatProperty isoFactor_;
 	CompositeProperty morseSmaleComplex_;
 	OptionPropertyInt mscSegmentOptions_;
 };

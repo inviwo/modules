@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/topologytoolkit/processors/meshtopologycolormapper.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
 
 namespace inviwo {
 	
@@ -47,7 +48,9 @@ MeshTopologyColorMapper::MeshTopologyColorMapper()
     , morseSmaleComplexInport("morsesmalecomplex")
     , meshInport_("mesh")
     , outport_("outport")
+	, isolinesOutport_("isolinesOutport_")
     , transferFunction_("transferFunction", "TranferFunction")
+	, isoFactor_("isoFactor", "IsoFactor", 0.5f, 0.0f, 1.0f)
     , pickingutil_(this, [&](PickingEvent* p) { this->handlePickingEvent(p); })
     , mscSegmentOptions_("mscSegmentOptions", "MSC Segments")
     , morseSmaleComplex_("morseSmaleComplex", "MSC Options"){
@@ -56,8 +59,10 @@ MeshTopologyColorMapper::MeshTopologyColorMapper()
     addPort(contourtreeInport);
     addPort(morseSmaleComplexInport);
     addPort(outport_);
+    addPort(isolinesOutport_);
 
     addProperty(transferFunction_);
+	addProperty(isoFactor_);
 
     contourtreeInport.setOptional(true);
     morseSmaleComplexInport.setOptional(true);
@@ -102,6 +107,52 @@ void MeshTopologyColorMapper::process() {
         pickingutil_.addPickingBuffer(*mesh);
 
 		pickingutil_.buildSegmentMap(contourtreeInport.getData()->getSegments());
+
+		//iso contours
+		bool showContour = true;
+		auto tree = contourtreeInport.getData()->getTree();
+		auto triangulation = contourtreeInport.getData()->triangulation.get();
+
+
+		if (showContour) {		
+			std::vector<float> scalars = topology::extractScalarValuesFromTriangulation(*triangulation);
+			auto minmax = std::minmax_element(scalars.begin(), scalars.end());
+            auto div = (float)(*minmax.second - *minmax.first);
+			auto avg = (*minmax.first + *minmax.second) / 2.0f;
+
+			std::vector<vec3> positions(scalars.size(), vec3(0.0f));
+			std::vector<vec4> colors(scalars.size(), vec4(1.0f));
+
+			std::shared_ptr<inviwo::Mesh> contour_mesh = nullptr;
+
+			for (ttk::ftm::idSuperArc i = 0; i < tree->getNumberOfSuperArcs(); ++i) {
+				auto arc = tree->getSuperArc(i);
+
+				auto upscalar = scalars[tree->getNode(arc->getUpNodeId())->getVertexId()];
+				auto downscalar =  scalars[tree->getNode(arc->getDownNodeId())->getVertexId()];
+				auto avg = (upscalar + downscalar) * isoFactor_;
+
+				auto col =  transferFunction_.get().sample(static_cast<float>((scalars[i] - *minmax.first) / div));
+				col = glm::clamp(col, vec4(0.0f), vec4(1.0f));
+				col = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+				//col = transferFunction_.get().sample(float(i) / tree->getNumberOfSuperArcs());
+
+				//if (i !=  tree->getNumberOfSuperArcs()-1) continue;
+
+				auto iso_contours = marchingTriangles_from_Triangulation(*triangulation, 
+																		contourtreeInport.getData()->getSegments(), i, avg, col);
+
+				if (!contour_mesh) {
+					contour_mesh = iso_contours;
+					continue;
+				}
+
+				contour_mesh->append(*iso_contours);
+			}
+
+			isolinesOutport_.setData(contour_mesh);
+
+		}
 
         // set output mesh
         outport_.setData(mesh);

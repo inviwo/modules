@@ -32,6 +32,8 @@
 //#include <inviwo/topologytoolkit/utils/ttkutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
+#include <inviwo/topologytoolkit/utils/ttkutils.h>
+
 
 namespace inviwo {
 
@@ -144,6 +146,8 @@ void ContourTreeToMesh::process() {
         colors.push_back(arcColor_);
     }
 
+	
+
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
 
 	if (pickingProperties_.enablePicking_) {
@@ -171,6 +175,8 @@ void ContourTreeToMesh::process() {
     std::iota(arcIndices.begin(), arcIndices.end(), tree->getNumberOfNodes());
     mesh->addIndicies(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                       util::makeIndexBuffer(std::move(arcIndices)));
+
+	
 
     outport_.setData(mesh);
 }
