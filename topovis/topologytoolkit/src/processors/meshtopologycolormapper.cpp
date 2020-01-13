@@ -116,65 +116,12 @@ void MeshTopologyColorMapper::process() {
 
 		//iso contours
 		bool showContour = true;
-		auto tree = contourtreeInport.getData()->getTree();
-		auto triangulation = contourtreeInport.getData()->triangulation.get();
 
-
-		if (showContour) {		
-
-
-			std::set<int> s(contourtreeInport.getData()->getSegments().begin(), contourtreeInport.getData()->getSegments().end());
-			std::vector<int> usegments(s.begin(), s.end());
-
-			std::vector<float> scalars = topology::ttkExtractScalarValuesFromTriangulation(*triangulation);
-			/*auto minmax = std::minmax_element(scalars.begin(), scalars.end());
-            auto div = (*minmax.second - *minmax.first);
-			auto avg = (*minmax.first + *minmax.second) / 2.0f;*/
-
-			std::shared_ptr<inviwo::Mesh> contour_mesh = nullptr;
-
-			auto numArcs = tree->getNumberOfSuperArcs();
-
-			std::vector<ttk::ftm::idNode> leafNodes;
-			for (size_t i = 0; i < tree->getLeaves().size(); i++)
-				leafNodes.push_back( tree->getLeave(i));
-			
-
-			for (ttk::ftm::idSuperArc i = 0; i <usegments.size(); ++i) {
-				
-				if (usegments[i] >= numArcs) continue;
-
-				//if (usegments[i] != (int)(isoFactor_.get() * numArcs))
-				//	continue;				
-
-				auto arc = tree->getSuperArc(usegments[i]);
-
-				if (std::find(leafNodes.begin(), leafNodes.end(), arc->getDownNodeId()) == leafNodes.end() &&
-					std::find(leafNodes.begin(), leafNodes.end(), arc->getUpNodeId()) == leafNodes.end())
-						continue;
-
-				auto upscalar = scalars[tree->getNode(arc->getUpNodeId())->getVertexId()];
-				auto downscalar =  scalars[tree->getNode(arc->getDownNodeId())->getVertexId()];
-
-				auto iso = (upscalar * isoFactor_.get()) + downscalar *(1.0f - isoFactor_.get());
-				auto avg = (upscalar + downscalar) * 0.5f;
-
-				auto col = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-				//col = transferFunction_.get().sample(usegments[i] / usegments.size());
-				col = glm::clamp(col, vec4(0.0f), vec4(1.0f));
-
-				auto iso_contours = marchingTriangles_from_Triangulation(*segmentTriangulations_[i], iso, col);
-
-				if (!contour_mesh) {
-					contour_mesh = iso_contours;
-					continue;
-				}
-
-				contour_mesh->append(*iso_contours);
-			}
-
+		if (showContour) {
+			auto treeData = contourtreeInport.getData();
+			auto col = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			auto contour_mesh = topology::ttkIsoContour(treeData, isoFactor_.get(), col, segmentTriangulations_);
 			isolinesOutport_.setData(contour_mesh);
-
 		}
 
         // set output mesh

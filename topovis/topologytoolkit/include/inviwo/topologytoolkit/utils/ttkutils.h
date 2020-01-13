@@ -128,6 +128,11 @@ std::shared_ptr<Mesh> marchingTriangles_from_Triangulation(
 IVW_MODULE_TOPOLOGYTOOLKIT_API
 std::vector<std::shared_ptr<TriangulationData>> ttkSegmentExtraction(std::shared_ptr<const ContourTreeData> tree);
 
+IVW_MODULE_TOPOLOGYTOOLKIT_API
+std::shared_ptr<Mesh> ttkIsoContour(std::shared_ptr<const ContourTreeData> tree, 
+									float iso = 0.5f, vec4 col = vec4(1.0f, 0.0f, 0.0f, 1.0f),
+									std::vector<std::shared_ptr<TriangulationData>> segmentTriangulations = {});
+
 
 
 }  // namespace topology

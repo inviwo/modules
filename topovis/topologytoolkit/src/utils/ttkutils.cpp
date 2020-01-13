@@ -437,14 +437,72 @@ std::vector<std::shared_ptr<TriangulationData>> ttkSegmentExtraction(std::shared
 
 			auto scalars = ttkExtractScalarValuesFromTriangulation(tdata);
 			segTri->setScalarValues(util::makeBuffer(std::move(scalars)));
-
 		}
 
 		segTriangulations.push_back(segTri);
 	}
 
-
 	return segTriangulations;
+}
+
+std::shared_ptr<Mesh> ttkIsoContour(std::shared_ptr<const ContourTreeData> treeData, 
+									float isoF, vec4 col,
+									std::vector<std::shared_ptr<TriangulationData>> segmentTriangulations)
+{
+		std::set<int> s(treeData->getSegments().begin(),treeData->getSegments().end());
+		std::vector<int> usegments(s.begin(), s.end());
+
+		auto triangulation = treeData->triangulation.get();
+		std::vector<float> scalars = topology::ttkExtractScalarValuesFromTriangulation(*triangulation);
+
+		//This is expensive and memory consuming
+		if (!segmentTriangulations.size())
+			segmentTriangulations = topology::ttkSegmentExtraction(treeData); 
+
+		/*auto minmax = std::minmax_element(scalars.begin(), scalars.end());
+        auto div = (*minmax.second - *minmax.first);
+		auto avg = (*minmax.first + *minmax.second) / 2.0f;*/
+
+		std::shared_ptr<inviwo::Mesh> contour_mesh = nullptr;
+
+		auto tree = treeData->getTree();
+		auto numArcs = tree->getNumberOfSuperArcs();
+
+		std::vector<ttk::ftm::idNode> leafNodes;
+		for (size_t i = 0; i < tree->getLeaves().size(); i++)
+			leafNodes.push_back( tree->getLeave(i));
+			
+
+		for (ttk::ftm::idSuperArc i = 0; i <usegments.size(); ++i) {
+				
+			if (usegments[i] >= numArcs) continue;		
+
+			auto arc = tree->getSuperArc(usegments[i]);
+
+			if (std::find(leafNodes.begin(), leafNodes.end(), arc->getDownNodeId()) == leafNodes.end() &&
+				std::find(leafNodes.begin(), leafNodes.end(), arc->getUpNodeId()) == leafNodes.end())
+					continue;
+
+			auto upscalar = scalars[tree->getNode(arc->getUpNodeId())->getVertexId()];
+			auto downscalar =  scalars[tree->getNode(arc->getDownNodeId())->getVertexId()];
+
+			auto iso = (upscalar * isoF) + downscalar *(1.0f - isoF);
+			auto avg = (upscalar + downscalar) * 0.5f;
+
+			//auto col = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			//col = glm::clamp(col, vec4(0.0f), vec4(1.0f));
+
+			auto iso_contours = marchingTriangles_from_Triangulation(*segmentTriangulations[i], iso, col);
+
+			if (!contour_mesh) {
+				contour_mesh = iso_contours;
+				continue;
+			}
+
+			contour_mesh->append(*iso_contours);
+		}
+
+		return contour_mesh;
 }
 
 std::shared_ptr<Mesh> marchingTriangles_from_Triangulation( 
