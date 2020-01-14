@@ -475,9 +475,15 @@ std::shared_ptr<Mesh> ttkIsoContour(std::shared_ptr<const ContourTreeData> treeD
 
 		for (ttk::ftm::idSuperArc i = 0; i <usegments.size(); ++i) {
 				
-			if (usegments[i] >= numArcs) continue;		
+			//if (usegments[i] >= numArcs) continue;
 
 			auto arc = tree->getSuperArc(usegments[i]);
+
+			if (!arc) {
+				LogWarnCustom("topology::ttkIsoContour",
+				"Segment Id does not have corresponding Super Arc. SegId = " + std::to_string(usegments[i]));
+				continue;
+			}
 
 			if (std::find(leafNodes.begin(), leafNodes.end(), arc->getDownNodeId()) == leafNodes.end() &&
 				std::find(leafNodes.begin(), leafNodes.end(), arc->getUpNodeId()) == leafNodes.end())

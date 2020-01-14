@@ -43,6 +43,7 @@
 #include <inviwo/topologytoolkit/processors/contourtree.h>
 #include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 #include <inviwo/topologytoolkit/processors/meshtopologycolormapper.h>
+#include <inviwo/topologytoolkit/processors/volumetopologycolormapper.h>
 
 namespace inviwo {
 
@@ -62,6 +63,7 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<TriangulationToVolume>();
     registerProcessor<ContourTree>();
     registerProcessor<MeshTopologyColorMapper>();
+    registerProcessor<VolumeTopologyColorMapper>();
 
     registerProperty<TopologyColorsProperty>();
 }

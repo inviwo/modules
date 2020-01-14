@@ -21,6 +21,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/ports/triangulationdataport.h
     include/inviwo/topologytoolkit/processors/contourtree.h
     include/inviwo/topologytoolkit/processors/meshtopologycolormapper.h
+    include/inviwo/topologytoolkit/processors/volumetopologycolormapper.h
     include/inviwo/topologytoolkit/processors/contourtreetodataframe.h
     include/inviwo/topologytoolkit/processors/contourtreetomesh.h
     include/inviwo/topologytoolkit/processors/meshtotriangulation.h
@@ -54,6 +55,7 @@ set(SOURCE_FILES
     src/ports/triangulationdataport.cpp
     src/processors/contourtree.cpp
     src/processors/meshtopologycolormapper.cpp
+    src/processors/volumetopologycolormapper.cpp
     src/processors/contourtreetodataframe.cpp
     src/processors/contourtreetomesh.cpp
     src/processors/meshtotriangulation.cpp
