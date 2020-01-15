@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDTOVOLUME_H
-#define IVW_TENSORFIELDTOVOLUME_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,33 +37,29 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 
-
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSubset, Tensor Field Subset}
- * ![](org.inviwo.TensorFieldSubset.png?classIdentifier=org.inviwo.TensorFieldSubset)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.TensorField3DToVolume, Tensor Field 3D To Volume}
+ * ![](org.inviwo.TensorField3DToVolume.png?classIdentifier=org.inviwo.TensorField3DToVolume)
+ * This processor takes in a 3D tensor field and outputs the selected meta data as volume for volume
+ * rendering or other subsequent actions.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __tensorFieldInport__ Input tensor field.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __volumeOutport__ Volume containing the selected meta data.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __volumeContent__ Select the meta data that should be output as volume.
+ *   * __normalizeVectors___ If the meta data is a vector type (such as the eigen vectors), set
+ * whether or not the vectors should be normalized.
  */
 
-/**
- * \class TensorFieldSubset
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldToVolume : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DToVolume : public Processor {
 public:
-    TensorFieldToVolume();
-    virtual ~TensorFieldToVolume() = default;
+    TensorField3DToVolume();
+    virtual ~TensorField3DToVolume() = default;
 
     virtual void process() override;
 
@@ -82,5 +77,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDTOVOLUME_H

@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfieldtovolume.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtovolume.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -36,6 +36,8 @@
 #include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/core/util/constexprhash.h>
 #include <glm/gtx/component_wise.hpp>
+#include <inviwo/core/network/networklock.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 namespace {
@@ -61,6 +63,26 @@ struct AddOptions {
 private:
     std::vector<OptionPropertyOption<size_t>>& options_;
     std::shared_ptr<const TensorField3D> tensorField_;
+};
+
+struct IsVec {
+    IsVec() = delete;
+    IsVec(Processor* p, size_t id) : p_(p), id_(id) {}
+
+    template <typename T>
+    void operator()() {
+        if (id_ == util::constexpr_hash(T::identifier)) {
+            if constexpr (util::extent<T>::value == 1) {
+                p_->getPropertiesByType<BoolProperty>().front()->setVisible(false);
+            } else {
+                p_->getPropertiesByType<BoolProperty>().front()->setVisible(true);
+            }
+        }
+    }
+
+private:
+    Processor* p_;
+    size_t id_;
 };
 
 struct CreateVolume {
@@ -105,7 +127,7 @@ struct CreateVolume {
                     dvec2{glm::compMax(*min), glm::compMax(*max)};
 
                 if (p_->getPropertiesByType<BoolProperty>().front()->get()) {
-                    for (size_t i{ 0 }; i < glm::compMul(dimensions); ++i) {
+                    for (size_t i{0}; i < glm::compMul(dimensions); ++i) {
                         data[i] = glm::normalize(data[i]);
                     }
                 }
@@ -123,16 +145,16 @@ private:
 }  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorFieldToVolume::processorInfo_{
-    "org.inviwo.TensorFieldToVolume",  // Class identifier
-    "Tensor Field To Volume",          // Display name
-    "Tensor visualization",            // Category
-    CodeState::Stable,                 // Code state
-    Tags::CPU,                         // Tags
+const ProcessorInfo TensorField3DToVolume::processorInfo_{
+    "org.inviwo.TensorField3DToVolume",         // Class identifier
+    "Tensor Field 3D To Volume",                 // Display name
+    "Conversion",                             // Category
+    CodeState::Stable,                        // Code state
+    Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
 };
-const ProcessorInfo TensorFieldToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField3DToVolume::getProcessorInfo() const { return processorInfo_; }
 
-TensorFieldToVolume::TensorFieldToVolume()
+TensorField3DToVolume::TensorField3DToVolume()
     : Processor()
     , inport_("inport")
     , outport_("outport")
@@ -150,22 +172,21 @@ TensorFieldToVolume::TensorFieldToVolume()
 
         util::for_each_type<attributes::types>{}(AddOptions{options, inport_.getData()});
 
+        // NetworkLock l; --> As far as I can see this is done internally in replaceOptions
         volumeContent_.replaceOptions(options);
     });
 
     inport_.onDisconnect([this]() { volumeContent_.clearOptions(); });
 
-    /*volumeContent_.onChange([this]() {
-        if (feature_.get() > 2)
-            normalizeVectors_.setVisible(false);
-        else
-            normalizeVectors_.setVisible(true);
-    });*/
+    volumeContent_.onChange([this]() {
+        NetworkLock l;
+        util::for_each_type<attributes::types>{}(IsVec{this, volumeContent_.get()});
+    });
 }
 
-void TensorFieldToVolume::process() {
+void TensorField3DToVolume::process() {
     outport_.setData(util::for_each_type<attributes::types>{}(
-                         CreateVolume{volumeContent_.get(), inport_.getData(),this})
+                         CreateVolume{volumeContent_.get(), inport_.getData(), this})
                          .volume_);
 }
 

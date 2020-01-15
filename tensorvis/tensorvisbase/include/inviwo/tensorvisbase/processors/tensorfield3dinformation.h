@@ -27,21 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DANISOTROPY_H
-#define IVW_TENSORFIELD3DANISOTROPY_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DAnisotropy, Tensor Field 3D Anisotropy}
- * ![](org.inviwo.TensorField3DAnisotropy.png?classIdentifier=org.inviwo.TensorField3DAnisotropy)
+/** \docpage{org.inviwo.TensorField3DInformation, Tensor Field 3D Information}
+ * ![](org.inviwo.TensorField3DInformation.png?classIdentifier=org.inviwo.TensorField3DInformation)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -56,29 +52,29 @@ namespace inviwo {
  */
 
 /**
- * \class TensorField3DAnisotropy
+ * \class TensorField3DInformation
  * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
  * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISBASE_API TensorField3DAnisotropy : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DInformation : public Processor {
 public:
-    TensorField3DAnisotropy();
-    virtual ~TensorField3DAnisotropy() = default;
+    TensorField3DInformation();
+    virtual ~TensorField3DInformation() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField3DInport tensorFieldInport_;
-    VolumeOutport volumeOutport_;
+    TensorField3DInport inport_;
 
-    TemplateOptionProperty<tensorutil::Anisotropy> anisotropy_;
+    IntVec3Property index_;
 
-    TemplateOptionProperty<GLint> interpolationScheme_;
+    FloatMat3Property tensor_;
+    FloatMat3Property eigenVectors_;
+    FloatVec3Property eigenValues_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DANISOTROPY_H

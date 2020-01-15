@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDLIC_H
-#define IVW_TENSORFIELDLIC_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
@@ -57,11 +56,6 @@ namespace inviwo {
  *   * __<Prop2>__ <description>
  */
 
-/**
- * \class TensorFieldLIC
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorFieldLIC : public Processor {
 public:
     TensorFieldLIC();
@@ -98,5 +92,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDLIC_H

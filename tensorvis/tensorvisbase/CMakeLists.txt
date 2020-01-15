@@ -30,7 +30,6 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/tensorfield2dsubsample.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubset.h
     include/inviwo/tensorvisbase/processors/tensorfield3dangle.h
-    include/inviwo/tensorvisbase/processors/tensorfield3danisotropy.h
     include/inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h
     include/inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h
     include/inviwo/tensorvisbase/processors/tensorfield3dmasktovolume.h
@@ -42,10 +41,10 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/tensorfieldlic.h
     include/inviwo/tensorvisbase/processors/tensorfieldslice.h
     include/inviwo/tensorvisbase/processors/tensorfieldtorgba.h
-    include/inviwo/tensorvisbase/processors/tensorfieldtovolume.h
+    include/inviwo/tensorvisbase/processors/tensorfield3dtovolume.h
     include/inviwo/tensorvisbase/processors/tensorglyphprocessor.h
     include/inviwo/tensorvisbase/processors/tensorglyphrenderer.h
-    include/inviwo/tensorvisbase/processors/tensorinformation.h
+    include/inviwo/tensorvisbase/processors/tensorfield3dinformation.h
     include/inviwo/tensorvisbase/processors/volumeactualdataandvaluerange.h
     include/inviwo/tensorvisbase/properties/eigenvalueproperty.h
     include/inviwo/tensorvisbase/properties/tensorglyphproperty.h
@@ -82,7 +81,6 @@ set(SOURCE_FILES
     src/processors/tensorfield2dsubsample.cpp
     src/processors/tensorfield2dsubset.cpp
     src/processors/tensorfield3dangle.cpp
-    src/processors/tensorfield3danisotropy.cpp
     src/processors/tensorfield3dbasismanipulation.cpp
     src/processors/tensorfield3dboundingbox.cpp
     src/processors/tensorfield3dmasktovolume.cpp
@@ -94,10 +92,10 @@ set(SOURCE_FILES
     src/processors/tensorfieldlic.cpp
     src/processors/tensorfieldslice.cpp
     src/processors/tensorfieldtorgba.cpp
-    src/processors/tensorfieldtovolume.cpp
+    src/processors/tensorfield3dtovolume.cpp
     src/processors/tensorglyphprocessor.cpp
     src/processors/tensorglyphrenderer.cpp
-    src/processors/tensorinformation.cpp
+    src/processors/tensorfield3dinformation.cpp
     src/processors/volumeactualdataandvaluerange.cpp
     src/properties/eigenvalueproperty.cpp
     src/properties/tensorglyphproperty.cpp

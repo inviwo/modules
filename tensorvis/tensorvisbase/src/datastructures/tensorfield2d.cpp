@@ -280,15 +280,13 @@ std::string TensorField2D::getDataInfo() const {
 std::shared_ptr<Image> TensorField2D::getImageRepresentation() const {
     std::shared_ptr<Image> ret = std::make_shared<Image>(dimensions_, DataVec4Float32::get());
 
-    auto colorLayer = ret->getEditableRepresentation<ImageRAM>()->getColorLayerRAM();
+    auto colorLayer = static_cast<LayerRAMPrecision<glm::f32vec4>*>(
+                          ret->getEditableRepresentation<ImageRAM>()->getColorLayerRAM())
+                          ->getDataTyped();
 
-    for (size_t y = 0; y < dimensions_.y; y++) {
-        for (size_t x = 0; x < dimensions_.x; x++) {
-            auto tensor = at(x, y);
-
-            colorLayer->setFromDVec4(size2_t(x, y),
-                                     dvec4(tensor[0][0], tensor[1][0], tensor[0][1], tensor[1][1]));
-        }
+    for (size_t i{0}; i < glm::compMul(dimensions_); ++i) {
+        const auto& tensor = at(i);
+        colorLayer[i] = vec4(tensor[0][0], tensor[1][0], tensor[0][1], tensor[1][1]);
     }
 
     return ret;

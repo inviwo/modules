@@ -69,11 +69,13 @@ public:
 
     std::string getDataInfo() const;
 
-    template <bool useMask = false>
-    const auto& at(sizeN_t position) const;
+    template <bool useMask = false,
+              typename ReturnType = std::conditional_t<useMask, std::pair<bool, const matN&>, matN&>>
+    const ReturnType at(sizeN_t position) const;
 
-    template <bool useMask = false>
-    const auto& at(size_t index) const;
+    template <bool useMask = false,
+              typename ReturnType = std::conditional_t<useMask, std::pair<bool, const matN&>, matN&>>
+    const ReturnType at(size_t index) const;
 
     sizeN_t getDimensions() const final { return dimensions_; }
 
@@ -252,14 +254,14 @@ inline std::string TensorField<N, precision>::getDataInfo() const {
 }
 
 template <unsigned int N, typename precision>
-template <bool useMask>
-inline const auto& TensorField<N, precision>::at(sizeN_t position) const {
+template <bool useMask, typename ReturnType>
+inline const ReturnType TensorField<N, precision>::at(sizeN_t position) const {
     return this->at<useMask>(indexMapper_(position));
 }
 
 template <unsigned int N, typename precision>
-template <bool useMask>
-inline const auto& TensorField<N, precision>::at(size_t index) const {
+template <bool useMask, typename ReturnType>
+inline const ReturnType TensorField<N, precision>::at(size_t index) const {
     if constexpr (useMask) {
         return std::make_pair<const bool, const matN&>(binaryMask_[index],
                                                        tensors_->operator[](index));
@@ -383,8 +385,9 @@ inline const std::vector<typename T::value_type>& TensorField<N, precision>::get
     const {
     if constexpr (std::is_base_of_v<attributes::AttributeBase, T>) {
         auto column = *this->getMetaData<T>();
-        auto bufferRAM = std::dynamic_pointer_cast<const Buffer<typename T::value_type>>(column->getBuffer())
-                             ->getRAMRepresentation();
+        auto bufferRAM =
+            std::dynamic_pointer_cast<const Buffer<typename T::value_type>>(column->getBuffer())
+                ->getRAMRepresentation();
 
         return bufferRAM->getDataContainer();
     }

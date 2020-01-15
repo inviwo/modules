@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENVALUEFIELDTOIMAGE_H
-#define IVW_EIGENVALUEFIELDTOIMAGE_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -102,5 +101,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENVALUEFIELDTOIMAGE_H
