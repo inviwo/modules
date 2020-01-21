@@ -88,16 +88,11 @@ TEST(ShannonEntroyTest, Vectors2D) {
     }
     {
         ASSERT_GE(pointsInSquare.size(), N);
-        auto e0 =
-            util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 1) / util::shannonEntropyMax(4);
-        auto e1 =
-            util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 2) / util::shannonEntropyMax(16);
-        auto e2 =
-            util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 4) / util::shannonEntropyMax(64);
-        auto e3 =
-            util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 8) / util::shannonEntropyMax(256);
-        auto e4 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 16) /
-                  util::shannonEntropyMax(1024);
+        auto e0 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 1);
+        auto e1 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 2);
+        auto e2 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 4);
+        auto e3 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 8);
+        auto e4 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 16);
         EXPECT_NEAR(e0, 1, 0.005);
         EXPECT_NEAR(e1, 1, 0.005);
         EXPECT_NEAR(e2, 1, 0.005);
@@ -110,10 +105,12 @@ TEST(ShannonEntroyTest, Vectors2D) {
         auto e1 = util::shannonEntropyDirectional(pointsInCircle, 4);
         auto e2 = util::shannonEntropyDirectional(pointsInCircle, 8);
         auto e3 = util::shannonEntropyDirectional(pointsInCircle, 16);
-        EXPECT_NEAR(e0, 1, 0.005);
-        EXPECT_NEAR(e1, 1, 0.005);
-        EXPECT_NEAR(e2, 1, 0.005);
-        EXPECT_NEAR(e3, 1, 0.005);
+        auto e4 = util::shannonEntropyDirectional(pointsInCircle, 100);
+        EXPECT_NEAR(e0, 1, 0.00008);
+        EXPECT_NEAR(e1, 1, 0.0003);
+        EXPECT_NEAR(e2, 1, 0.0004);
+        EXPECT_NEAR(e3, 1, 0.0004);
+        EXPECT_NEAR(e4, 1, 0.001);
     }
 }
 
@@ -138,32 +135,27 @@ TEST(ShannonEntroyTest, Vectors3D2) {
     }
     {
         ASSERT_GE(pointsInCube.size(), N);
-        auto e0 =
-            util::shannonEntropyEuclidean(pointsInCube, 1.0f / 1) / util::shannonEntropyMax(8);
-        auto e1 =
-            util::shannonEntropyEuclidean(pointsInCube, 1.0f / 2) / util::shannonEntropyMax(64);
-        auto e2 =
-            util::shannonEntropyEuclidean(pointsInCube, 1.0f / 4) / util::shannonEntropyMax(512);
-        auto e3 =
-            util::shannonEntropyEuclidean(pointsInCube, 1.0f / 8) / util::shannonEntropyMax(4096);
-        auto e4 =
-            util::shannonEntropyEuclidean(pointsInCube, 1.0f / 16) / util::shannonEntropyMax(32678);
-        EXPECT_NEAR(e0, 1, 0.005);
-        EXPECT_NEAR(e1, 1, 0.005);
-        EXPECT_NEAR(e2, 1, 0.005);
-        EXPECT_NEAR(e3, 1, 0.005);
+        auto e0 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 1);
+        auto e1 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 2);
+        auto e2 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 4);
+        auto e3 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 8);
+        auto e4 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 16);
+        EXPECT_NEAR(e0, 1, 0.0005);
+        EXPECT_NEAR(e1, 1, 0.0005);
+        EXPECT_NEAR(e2, 1, 0.0005);
+        EXPECT_NEAR(e3, 1, 0.002);
         EXPECT_NEAR(e4, 1, 0.009);
     }
     {
         ASSERT_EQ(pointsInSphere.size(), N);
 
-        auto e0 = util::shannonEntropyDirectional(pointsInSphere, 0);
-        auto e1 = util::shannonEntropyDirectional(pointsInSphere, 1);
-        auto e2 = util::shannonEntropyDirectional(pointsInSphere, 2);
+        auto e0 = util::shannonEntropyDirectional(pointsInSphere, 10);
+        auto e1 = util::shannonEntropyDirectional(pointsInSphere, 100);
+        auto e2 = util::shannonEntropyDirectional(pointsInSphere, 1000);
 
-        EXPECT_NEAR(e0, 1, 0.0005);
-        EXPECT_NEAR(e1, 1, 0.0005);
-        EXPECT_NEAR(e2, 1, 0.0005);
+        EXPECT_NEAR(e0, 1, 0.00005);
+        EXPECT_NEAR(e1, 1, 0.0002);
+        EXPECT_NEAR(e2, 1, 0.0008);
     }
 }
 

@@ -31,9 +31,6 @@
 
 namespace inviwo {
 namespace {
-using D2D = DirectionalHistogram<2, double>;
-using D3D = DirectionalHistogram<3, double>;
-using D2F = DirectionalHistogram<2, float>;
-using D3F = DirectionalHistogram<3, float>;
+
 }  // namespace
 }  // namespace inviwo

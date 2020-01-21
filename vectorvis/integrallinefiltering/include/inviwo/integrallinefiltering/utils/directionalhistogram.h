@@ -34,131 +34,202 @@
 
 #include <inviwo/integrallinefiltering/utils/sparsehistogram.h>
 
-namespace inviwo {
-namespace detail {}
+#pragma optimize("", off)
 
-template <unsigned Dims = 3, typename T = double>
-class DirectionalHistogram {
+namespace inviwo {
+
+namespace {
+template <typename T>
+T V(const T t) {
+    const T s = sin(t / 2);
+    return 4 * glm::pi<T>() * s * s;
+}
+
+template <typename T>
+T Theta(const T v) {
+    return 2 * std::asin(std::sqrt(v / (4 * glm::pi<T>())));
+}
+
+}  // namespace
+
+template <unsigned Dims, typename T>
+class DirectionalHistogram;
+
+template <typename T>
+class DirectionalHistogram<2, T> {
     static_assert(std::is_floating_point_v<T>);
 
-    using type = glm::vec<Dims, T>;
-
-private:
-    DirectionalHistogram(std::vector<type> directions)
-        : directions_(std::move(directions)), bins_(directions_.size(), 0) {}
-
 public:
+    using type = glm::vec<2, T>;
+
+    DirectionalHistogram(const size_t segments = 20) : bins_(segments, 0) {}
+
     DirectionalHistogram(const DirectionalHistogram &) = default;
     DirectionalHistogram(DirectionalHistogram &&) = default;
     DirectionalHistogram &operator=(const DirectionalHistogram &) = default;
     DirectionalHistogram &operator=(DirectionalHistogram &&) = default;
+
+    size_t numberOfBins() const { return bins_.size(); }
+
+    size_t inc(const type &in_dir) {
+        const auto dir = glm::normalize(in_dir);
+        const auto a = atan2(dir.y, dir.x) / glm::two_pi<T>() + 0.5;
+        const auto I = std::min(static_cast<size_t>(a * bins_.size()), bins_.size() - 1);
+        bins_[I]++;
+        return I;
+    }
 
     auto begin() { return bins_.begin(); }
     auto end() { return bins_.end(); }
     auto begin() const { return bins_.begin(); }
     auto end() const { return bins_.end(); }
 
-    size_t numberOfBins() const { return bins_.size(); }
-
-    virtual ~DirectionalHistogram() = default;
-
-    void inc(const type &dir);
-
-    static DirectionalHistogram createFromCircle(size_t directions = 0);
-    static DirectionalHistogram createFromIcosahedron(size_t subdivision = 0);
-
 private:
-    std::vector<type> directions_;
     std::vector<size_t> bins_;
 };
 
-template <unsigned Dims, typename T>
-void DirectionalHistogram<Dims, T>::inc(const type &dir) {
-    T max = std::numeric_limits<T>::lowest();
-    size_t maxindex;
-    util::forEach(directions_, [&](const auto &d, size_t i) {
-        const auto dot = glm::dot(d, dir);
-        if (max < dot) {
-            maxindex = i;
-            max = dot;
+/*
+ * Using Sphere partitioning defined in paper [1]. 
+ * 
+ * [1] Leopardi, Paul. "A partition of the unit sphere into regions of equal area and small diameter."
+ * Electronic Transactions on Numerical Analysis 25.12 (2006): 309-327.
+ */
+template <typename T>
+class DirectionalHistogram<3, T> {
+    static_assert(std::is_floating_point_v<T>);
+    struct Segment {
+        Segment(T endAngle, size_t patches)
+            : endAngle_(endAngle), cosAngle_(cos(endAngle)), patches_(patches), startIndex(0) {}
+
+        const T endAngle_;
+        const T cosAngle_;
+        const size_t patches_;
+        size_t startIndex;
+
+        size_t index(T alpha) {
+            const auto A = std::min(static_cast<size_t>(alpha * patches_), patches_ - 1);
+            return A + startIndex;
         }
-    });
-    IVW_ASSERT(maxindex < bins_.size(),
-               "maxindex should not be able to largers than number of bins");
-    bins_[maxindex]++;
-}
 
-template <unsigned Dims, typename T>
-DirectionalHistogram<Dims, T> DirectionalHistogram<Dims, T>::createFromCircle(
-    size_t numDirections) {
-    static_assert(Dims == 2, "createFromCircle only works in 2 dimenssions");
-
-    std::vector<type> directions;
-    const T da = glm::two_pi<T>() / static_cast<T>(numDirections);
-    for (size_t i = 0; i < numDirections; i++) {
-        float angle = i * da;
-        directions.emplace_back(std::cos(angle), std::sin(angle));
-    }
-    return {directions};
-}
-
-template <unsigned Dims, typename T>
-DirectionalHistogram<Dims, T> DirectionalHistogram<Dims, T>::createFromIcosahedron(
-    size_t subdivision) {
-    static_assert(Dims == 3, "createFromIcosahedron only works in 3 dimenssions");
-
-    static const T alpha = static_cast<T>(0.525731087);
-    static const T beta = static_cast<T>(0.850650787);
-    static const T zero = 0;
-
-    static const std::array<type, 12> startVertices = {{{-alpha, zero, beta},
-                                                        {alpha, zero, beta},
-                                                        {-alpha, zero, -beta},
-                                                        {alpha, zero, -beta},
-                                                        {zero, beta, alpha},
-                                                        {zero, beta, -alpha},
-                                                        {zero, -beta, alpha},
-                                                        {zero, -beta, -alpha},
-                                                        {beta, alpha, zero},
-                                                        {-beta, alpha, zero},
-                                                        {beta, -alpha, zero},
-                                                        {-beta, -alpha, zero}}};
-
-    constexpr static const std::array<size3_t, 20> startTriangles = {
-        {{0, 4, 1}, {0, 9, 4},  {9, 5, 4},  {4, 5, 8},  {4, 8, 1},  {8, 10, 1}, {8, 3, 10},
-         {5, 3, 8}, {5, 2, 3},  {2, 7, 3},  {7, 10, 3}, {7, 6, 10}, {7, 11, 6}, {11, 0, 6},
-         {0, 1, 6}, {6, 1, 10}, {9, 0, 11}, {9, 11, 2}, {9, 2, 5},  {7, 2, 11}}};
-
-    std::vector<type> vertices(startVertices.begin(), startVertices.end());
-    std::vector<size3_t> triangles(startTriangles.begin(), startTriangles.end());
-
-    for (size_t i = 0; i < subdivision; i++) {
-        std::vector<size3_t> newTriangles;
-        for (const auto &t : triangles) {
-            auto i0 = vertices.size() + 0;
-            auto i1 = vertices.size() + 1;
-            auto i2 = vertices.size() + 2;
-            vertices.push_back(glm::normalize(vertices[t.x] + vertices[t.y]));
-            vertices.push_back(glm::normalize(vertices[t.y] + vertices[t.z]));
-            vertices.push_back(glm::normalize(vertices[t.z] + vertices[t.x]));
-
-            newTriangles.emplace_back(t.x, i0, i2);
-            newTriangles.emplace_back(i0, t.y, i1);
-            newTriangles.emplace_back(i0, i1, i2);
-            newTriangles.emplace_back(i2, i1, t.z);
+        size_t index(T x, T y) {
+            if (patches_ == 1) {
+                return startIndex;
+            }
+            const T a = atan2(y, x) / glm::two_pi<T>() + T(0.5);
+            return index(a);
         }
-        swap(triangles, newTriangles);
+
+        bool operator<(const Segment &rhs) const { return this->endAngle_ < rhs.endAngle_; }
+        bool operator<(const T cosAngle) const { return this->cosAngle_ > cosAngle; }
+    };
+
+public:
+    using type = glm::vec<3, T>;
+
+    DirectionalHistogram(const size_t segments = 20) : bins_(segments, 0) {
+        if (segments == 0) {
+            throw Exception("Zero segments not allowed", IVW_CONTEXT);
+        } else if (segments == 1) {
+            segments_.emplace_back(glm::pi<T>(), 1);
+            return;
+        } else if (segments == 2) {
+            segments_.emplace_back(glm::half_pi<T>(), 1);
+            segments_.emplace_back(glm::pi<T>(), 1);
+            segments_.back().startIndex = 1;
+            return;
+        }
+
+        const T regionArea = 4 * glm::pi<T>() / segments;
+        const T colatPole = Theta(regionArea);
+
+        const T idealCollarAngle = std::sqrt(regionArea);
+        const T idealNumberOfCollars = (glm::pi<T>() - 2 * colatPole) / idealCollarAngle;
+
+        const size_t numberOfCollars =
+            std::max(size_t(1), static_cast<size_t>(idealNumberOfCollars + 0.5));
+
+        const auto fittingCollarAngle = (glm::pi<T>() - 2 * colatPole) / numberOfCollars;
+
+        auto collatOfCollar = [&](size_t i) { return colatPole + (i - 1) * fittingCollarAngle; };
+
+        std::vector<T> idealNumberOfRegions;
+        idealNumberOfRegions.push_back(0);
+        for (size_t i = 1; i <= numberOfCollars; i++) {
+            auto a = V(collatOfCollar(i + 1));
+            auto b = V(collatOfCollar(i));
+
+            idealNumberOfRegions.push_back((a - b) / regionArea);
+        }
+
+        std::vector<T> a(1, 0);
+        std::vector<size_t> regionsInCollar(1, 0);
+        for (size_t i = 1; i <= numberOfCollars; i++) {
+            T tmp = idealNumberOfRegions[i] + a[i - 1];
+            regionsInCollar.push_back(static_cast<size_t>(tmp + 0.5));
+            a.push_back(T(0.0));
+            for (size_t j = 1; j <= i; j++) {
+                a.back() += idealNumberOfRegions[j] - regionsInCollar[j];
+            }
+        }
+
+        std::vector<T> collatitudes;
+
+        collatitudes.push_back(0);
+        std::vector<T> debug = collatitudes;
+
+        for (size_t i = 1; i <= numberOfCollars + 1; i++) {
+
+            T totM = 0;
+            for (size_t j = 1; j < i; j++) {
+                totM += regionsInCollar[j];
+            }
+            const T v = (1 + totM) * regionArea;
+
+            debug.push_back(v);
+            collatitudes.push_back(Theta(v));
+        }
+
+        collatitudes.push_back(glm::pi<T>());
+        debug.push_back(glm::pi<T>());
+
+        segments_.emplace_back(collatitudes[1], 1);
+        for (size_t i = 1; i < collatitudes.size() - 2; i++) {
+            segments_.emplace_back(collatitudes[i + 1], regionsInCollar[i]);
+        }
+        segments_.emplace_back(glm::pi<T>(), 1);
+
+        size_t count = 0;
+        for (auto &segment : segments_) {
+            segment.startIndex = count;
+            count += segment.patches_;
+        }
+        IVW_ASSERT(count == segments, "");
     }
 
-    std::vector<type> directions;
-    for (const auto &t : triangles) {
-        const auto &v0 = vertices[t.x];
-        const auto &v1 = vertices[t.y];
-        const auto &v2 = vertices[t.z];
-        directions.push_back(glm::normalize(v0 + v1 + v2));
+    DirectionalHistogram(const DirectionalHistogram &) = default;
+    DirectionalHistogram(DirectionalHistogram &&) = default;
+    DirectionalHistogram &operator=(const DirectionalHistogram &) = default;
+    DirectionalHistogram &operator=(DirectionalHistogram &&) = default;
+
+    size_t numberOfBins() const { return bins_.size(); }
+
+    size_t inc(const type &in_dir) {
+        const auto dir = glm::normalize(in_dir);
+        const auto it = std::lower_bound(segments_.begin(), segments_.end(), dir.z);
+        auto I = it->index(dir.x, dir.y);
+        IVW_ASSERT(I < bins_.size(), "maxindex should not be able to largers than number of bins");
+        bins_[I]++;
+        return I;
     }
 
-    return {directions};
-}
+    auto begin() { return bins_.begin(); }
+    auto end() { return bins_.end(); }
+    auto begin() const { return bins_.begin(); }
+    auto end() const { return bins_.end(); }
+
+private:
+    std::vector<size_t> bins_;
+    std::vector<Segment> segments_;
+};
 
 }  // namespace inviwo

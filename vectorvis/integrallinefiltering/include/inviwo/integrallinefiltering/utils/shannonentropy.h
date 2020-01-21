@@ -46,9 +46,11 @@
 namespace inviwo {
 
 namespace util {
-enum PerformNormalize { Yes, No };
+enum class PerformNormalization { Yes, No };
 
-inline double shannonEntropyMax(size_t N) { return std::log2(static_cast<double>(N)); }
+inline double shannonEntropyMax(size_t numberOfBins) {
+    return std::log2(static_cast<double>(numberOfBins));
+}
 
 namespace detail {
 template <typename T, typename = void>
@@ -85,7 +87,8 @@ double shannonEntropy(const Histogram& histogram) {
 }
 
 template <typename T>
-double shannonEntropyScalars(const std::vector<T>& data, size_t numBins = 8) {
+double shannonEntropyScalars(const std::vector<T>& data, size_t numBins = 8,
+                             PerformNormalization normalize = PerformNormalization::Yes) {
     auto minmax = std::minmax_element(data.begin(), data.end());
     T min = *minmax->first;
     T max = *minmax->second;
@@ -100,28 +103,31 @@ double shannonEntropyScalars(const std::vector<T>& data, size_t numBins = 8) {
         }
         histogram[i]++;
     }
-
-    return shannonEntropy(histogram);
+    if (normalize == PerformNormalization::Yes) {
+        return shannonEntropy(histogram) / shannonEntropyMax(histogram.numberOfBins());
+    } else {
+        return shannonEntropy(histogram);
+    }
 }
 
 template <size_t Dims, typename T>
 double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& values, const size_t subdivs,
-                                 PerformNormalize normalize = PerformNormalize::Yes) {
+                                 PerformNormalization normalize = PerformNormalization::Yes) {
     static_assert(std::is_floating_point_v<T>);
     static_assert(Dims == 2 || Dims == 3);
     auto histogram = [subdivs] {
         if constexpr (Dims == 2) {
-            return DirectionalHistogram<2, T>::createFromCircle(subdivs);
+            return DirectionalHistogram<2, T>(subdivs);
 
         } else if constexpr (Dims == 3) {
-            return DirectionalHistogram<3, T>::createFromIcosahedron(subdivs);
+            return DirectionalHistogram<3, T>(subdivs);
         }
     }();
 
     for (const auto& val : values) {
         histogram.inc(val);
     }
-    if (normalize == PerformNormalize::Yes) {
+    if (normalize == PerformNormalization::Yes) {
         return shannonEntropy(histogram) / shannonEntropyMax(histogram.numberOfBins());
     } else {
         return shannonEntropy(histogram);
@@ -130,22 +136,33 @@ double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& values, c
 
 template <size_t Dims, typename T>
 double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values,
-                               const glm::vec<Dims, T>& binSize) {
+                               const glm::vec<Dims, T>& binSize, 
+                               PerformNormalization normalize = PerformNormalization::Yes) {
     static_assert(std::is_floating_point_v<T>);
     using bin_t = glm::vec<Dims, glm::i64>;
     SparseHistogram<bin_t> histogram;
 
     for (const auto& v : values) {
-        const auto bin = static_cast<bin_t>(glm::ceil(v / binSize));
-        histogram[bin]++;
+            const auto bin = static_cast<bin_t>(glm::ceil(v / binSize));
+            histogram[bin]++; 
     }
 
-    return shannonEntropy(histogram);
+
+    SparseHistogram<size_t> binHist;
+    for (auto bin : histogram) {
+        binHist[bin.second]++;
+    }
+
+    if (normalize == PerformNormalization::Yes) {
+        return shannonEntropy(histogram) / shannonEntropyMax(histogram.numberOfBins());
+    } else {
+        return shannonEntropy(histogram);
+    }
 }
 
 template <size_t Dims, typename T>
-double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values, const T& binSize) {
-    return shannonEntropyEuclidean(values, glm::vec<Dims, T>{binSize});
+double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values, const T& binSize,PerformNormalization normalize = PerformNormalization::Yes) {
+    return shannonEntropyEuclidean(values, glm::vec<Dims, T>{binSize},normalize);
 }
 
 }  // namespace util
