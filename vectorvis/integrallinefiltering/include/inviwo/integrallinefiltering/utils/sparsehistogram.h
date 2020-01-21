@@ -33,29 +33,56 @@
 
 namespace inviwo {
 
+/*
+ * A class to represent sparse histograms. Supports both signed and unsigned indices and multi
+ * dimensional histogram through the IndexType. For example, `SparseHistogram<int>` is a 1D
+ * histogram accepting both negative and positive indices, i.e. [INT_MIN INT_MAX].
+ * SparseHistgram can represent multi dimensional histogram when using vec as index type: For
+ * example, `SparseHistogram<glm::ivec2>` represents a 2D histogram.
+ */
 template <typename IndexType = glm::i64>
 class SparseHistogram {
 public:
+    using index_type = IndexType;
+    using value_type = typename util::value_type<IndexType>::type;
+
+    static_assert(std::is_integral_v<value_type>);
+
     SparseHistogram() = default;
     SparseHistogram(const SparseHistogram&) = default;
     SparseHistogram(SparseHistogram&&) noexcept = default;
     SparseHistogram& operator=(const SparseHistogram&) = default;
     SparseHistogram& operator=(SparseHistogram&&) noexcept = default;
 
-    using value_type = IndexType;
-    size_t operator[](IndexType binId) const {
+    size_t operator[](index_type binId) const {
         const auto it = bins_.find(binId);
         return it != bins_.end() ? it->second : 0;
     }
 
-    size_t& operator[](IndexType binId) { return bins_[binId]; }
+    size_t& operator[](index_type binId) { return bins_[binId]; }
 
     auto begin() { return bins_.begin(); }
     auto end() { return bins_.end(); }
     auto begin() const { return bins_.begin(); }
     auto end() const { return bins_.end(); }
 
+    /*
+     * Returns the current number of used bins.
+     */
     size_t numberOfBins() const { return bins_.size(); }
+
+    /*
+     * Removed bins where count is zero.
+     */
+    void cleanup() {
+        for (auto it = bins_.begin(); it != bins_.end();) {
+            if (it->second == 0) {
+                it = bins_.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    }
 
 private:
     std::unordered_map<IndexType, size_t> bins_;

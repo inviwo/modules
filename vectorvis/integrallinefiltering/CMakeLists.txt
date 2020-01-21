@@ -39,6 +39,7 @@ ivw_group("Shader Files" ${SHADER_FILES})
 set(TEST_FILES
 	${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/integrallinefiltering-unittest-main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/shannonentropy-test.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/sparsehistorgram-test.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
