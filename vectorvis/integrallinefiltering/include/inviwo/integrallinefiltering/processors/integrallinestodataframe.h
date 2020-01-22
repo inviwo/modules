@@ -62,14 +62,18 @@ namespace inviwo {
  *
  * ### Properties
  *   * __Include Line ID__ Check to include Line ID as a parameter.
- *   * __Include Number of points__ Check to include the number of vertices in the line as a parameter.
+ *   * __Include Number of points__ Check to include the number of vertices in the line as a
+ * parameter.
  *   * __Include Line Length__ Check to include the arc length of the line as a parameter.
  *   * __Include Tortuosity__ Check to include the lines tortuosity as a parameter.
- *   * __Include Termination Reasons__ Check to include each lines termination reason as a parameter.
+ *   * __Include Termination Reasons__ Check to include each lines termination reason as a
+ * parameter.
  *   * __Include Entropy__ Check to include each lines entropy as a parameter.
- *   * __Include Line Start Coordinates__ Check to include the {x,y,z} of the first vertex as a parameter.
+ *   * __Include Line Start Coordinates__ Check to include the {x,y,z} of the first vertex as a
+ * parameter.
  *   * __Include Line End Coordinates__ Check to include {x,y,z} of the last vertex as a parameter.
- *   * __Meta Data Settings__ Group of properties related meta data of the lines and wether or not to include it as a parameter.
+ *   * __Meta Data Settings__ Group of properties related meta data of the lines and wether or not
+ * to include it as a parameter.
  *
  */
 class IVW_MODULE_INTEGRALLINEFILTERING_API IntegralLinesToDataFrame : public Processor {

@@ -62,13 +62,13 @@ TEST(SpraseHistgoramTest, GLMTypeDefinition) {
 
 TEST(SpraseHistgoramTest, SizeAndCleanup) {
     auto histogram = SparseHistogram<int>();
-    
+
     EXPECT_EQ(histogram.numberOfBins(), 0);
 
     histogram[1]++;
     histogram[4]++;
     EXPECT_EQ(histogram.numberOfBins(), 2);
-        
+
     histogram[4]++;
     EXPECT_EQ(histogram.numberOfBins(), 2);
 
