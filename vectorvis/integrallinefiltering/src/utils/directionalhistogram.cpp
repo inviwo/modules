@@ -30,7 +30,5 @@
 #include <inviwo/integrallinefiltering/utils/directionalhistogram.h>
 
 namespace inviwo {
-namespace {
-
-}  // namespace
+namespace {}  // namespace
 }  // namespace inviwo

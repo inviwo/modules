@@ -34,8 +34,6 @@
 
 #include <inviwo/integrallinefiltering/utils/sparsehistogram.h>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 namespace {
@@ -89,10 +87,10 @@ private:
 };
 
 /*
- * Using Sphere partitioning defined in paper [1]. 
- * 
- * [1] Leopardi, Paul. "A partition of the unit sphere into regions of equal area and small diameter."
- * Electronic Transactions on Numerical Analysis 25.12 (2006): 309-327.
+ * Using Sphere partitioning defined in paper [1].
+ *
+ * [1] Leopardi, Paul. "A partition of the unit sphere into regions of equal area and small
+ * diameter." Electronic Transactions on Numerical Analysis 25.12 (2006): 309-327.
  */
 template <typename T>
 class DirectionalHistogram<3, T> {
