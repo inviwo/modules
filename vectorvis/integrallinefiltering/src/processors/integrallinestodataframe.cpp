@@ -190,7 +190,7 @@ IntegralLinesToDataFrame::IntegralLinesToDataFrame()
     , includeNumberOfPoints_("includeNumberOfPoints", "Include Number of points", false)
 
     , includeLineLength_("includeLineLength", "Include Line Length", true)
-    , includeTurtuosity_("includeTurtuosity", "Include Turtuosity", true)
+    , includeTortuosity_("includeTurtuosity", "Include Tortuosity", true)
     , includeTerminationReason_("includeTerminationReason", "Include Termination Reasons", true)
     , includeEntropy_("includeEntropy", "Include Entropy", true)
     , includeStartPositions_("includeStartPositions", "Include Line Start Coordinates", false)
@@ -202,7 +202,7 @@ IntegralLinesToDataFrame::IntegralLinesToDataFrame()
     addProperty(includeLineID_);
     addProperty(includeNumberOfPoints_);
     addProperty(includeLineLength_);
-    addProperty(includeTurtuosity_);
+    addProperty(includeTortuosity_);
     addProperty(includeTerminationReason_);
     addProperty(includeEntropy_);
     addProperty(includeStartPositions_);
@@ -268,7 +268,7 @@ void IntegralLinesToDataFrame::process() {
                 lengths.push_back(static_cast<float>(line.getLength()));
             });
         }
-        if (includeTurtuosity_.get()) {
+        if (includeTortuosity_.get()) {
             auto &tortuosities = detail::createColumn<float>(*df, "Tortuosity");
             funcs.push_back([&tortuosities](const IntegralLine &line) {
                 double v = glm::length(line.getPositions().front() - line.getPositions().back());

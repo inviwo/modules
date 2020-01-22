@@ -50,23 +50,27 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.IntegralLinesToDataFrame, Integral Lines To Data Frame}
  * ![](org.inviwo.IntegralLinesToDataFrame.png?classIdentifier=org.inviwo.IntegralLinesToDataFrame)
- * Explanation of how to use the processor.
+ *
+ * Processor that converts a IntegralLineSet to DataFrame which can be used together with the
+ * processors in Plotting and PlottingGL for interactive filtering of Integral Lines
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __lines__ The set of lines.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __dataframe__ Constructed dataframe.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class IntegralLinesToDataFrame
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ *   * __Include Line ID__ Check to include Line ID as a parameter.
+ *   * __Include Number of points__ Check to include the number of vertices in the line as a parameter.
+ *   * __Include Line Length__ Check to include the arc length of the line as a parameter.
+ *   * __Include Tortuosity__ Check to include the lines tortuosity as a parameter.
+ *   * __Include Termination Reasons__ Check to include each lines termination reason as a parameter.
+ *   * __Include Entropy__ Check to include each lines entropy as a parameter.
+ *   * __Include Line Start Coordinates__ Check to include the {x,y,z} of the first vertex as a parameter.
+ *   * __Include Line End Coordinates__ Check to include {x,y,z} of the last vertex as a parameter.
+ *   * __Meta Data Settings__ Group of properties related meta data of the lines and wether or not to include it as a parameter.
+ *
  */
 class IVW_MODULE_INTEGRALLINEFILTERING_API IntegralLinesToDataFrame : public Processor {
 public:
@@ -95,7 +99,7 @@ public:
         BoolProperty log_{"log", "Log values", false};
 
         BoolProperty avg_{"avg", "Include Average", true};
-        BoolProperty sd_{"sd", "Include Standard divation", false};
+        BoolProperty sd_{"sd", "Include Standard deviation", false};
         StringProperty percentiles_{"percentiles",
                                     "Percentiles (space separated, float [0-1] or ints (0-100) )"};
 
@@ -185,7 +189,7 @@ private:
     BoolProperty includeLineID_;
     BoolProperty includeNumberOfPoints_;
     BoolProperty includeLineLength_;
-    BoolProperty includeTurtuosity_;
+    BoolProperty includeTortuosity_;
     BoolProperty includeTerminationReason_;
     BoolProperty includeEntropy_;
     BoolProperty includeStartPositions_;
