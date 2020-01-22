@@ -50,27 +50,42 @@ T Theta(const T v) {
 
 }  // namespace
 
+/**
+ * @see DirectionalHistogram<2, T>
+ * @see DirectionalHistogram<3, T>
+ */
 template <unsigned Dims, typename T>
 class DirectionalHistogram;
 
+/**
+ * A DirectionalHistgram<2, T> is used to create a histgram of a set of 2D directional vectors,
+ * magnitudes are ignored. The histogram consits of N bins, each representing a unique secotor of
+ * the circle with a central angle of 2*pi/N.
+ */
 template <typename T>
 class DirectionalHistogram<2, T> {
     static_assert(std::is_floating_point_v<T>);
 
 public:
-    using type = glm::vec<2, T>;
-
-    DirectionalHistogram(const size_t segments = 20) : bins_(segments, 0) {}
+    /**
+     * Initialize an histogram with given number of empty bins.
+     */
+    DirectionalHistogram(const size_t numberOfBins = 20) : bins_(numberOfBins, 0) {}
 
     DirectionalHistogram(const DirectionalHistogram &) = default;
     DirectionalHistogram(DirectionalHistogram &&) = default;
     DirectionalHistogram &operator=(const DirectionalHistogram &) = default;
     DirectionalHistogram &operator=(DirectionalHistogram &&) = default;
 
+    /**
+     * Returns the number of bins in the histogram.
+     */
     size_t numberOfBins() const { return bins_.size(); }
 
-    size_t inc(const type &in_dir) {
-        const auto dir = glm::normalize(in_dir);
+    /**
+     * Increments the bin that \param dir falls into.
+     */
+    size_t inc(const glm::vec<2, T> &dir) {
         const auto a = atan2(dir.y, dir.x) / glm::two_pi<T>() + 0.5;
         const auto I = std::min(static_cast<size_t>(a * bins_.size()), bins_.size() - 1);
         bins_[I]++;
@@ -86,8 +101,13 @@ private:
     std::vector<size_t> bins_;
 };
 
-/*
- * Using Sphere partitioning defined in paper [1].
+/**
+ * A DirectionalHistgram<3, T> is used to create a histgram of a set of 3D directional vectors,
+ * magnitudes are ignored. The histogram consists of N bins of equal area and diameter, defined
+ * using the algorithm defined in [1].
+ *
+ * \image html sphere-partitioning.png "Image demostrating 100k points binned using a directional
+ * histogram with 100 bins"
  *
  * [1] Leopardi, Paul. "A partition of the unit sphere into regions of equal area and small
  * diameter." Electronic Transactions on Numerical Analysis 25.12 (2006): 309-327.
@@ -122,8 +142,9 @@ class DirectionalHistogram<3, T> {
     };
 
 public:
-    using type = glm::vec<3, T>;
-
+    /**
+     * Initialize an histogram with given number of empty bins.
+     */
     DirectionalHistogram(const size_t segments = 20) : bins_(segments, 0) {
         if (segments == 0) {
             throw Exception("Zero segments not allowed", IVW_CONTEXT);
@@ -153,42 +174,33 @@ public:
         std::vector<T> idealNumberOfRegions;
         idealNumberOfRegions.push_back(0);
         for (size_t i = 1; i <= numberOfCollars; i++) {
-            auto a = V(collatOfCollar(i + 1));
-            auto b = V(collatOfCollar(i));
-
+            const auto a = V(collatOfCollar(i + 1));
+            const auto b = V(collatOfCollar(i));
             idealNumberOfRegions.push_back((a - b) / regionArea);
         }
 
-        std::vector<T> a(1, 0);
+        std::vector<T> accumulatedMissingRegionArea(1, 0);  //
         std::vector<size_t> regionsInCollar(1, 0);
         for (size_t i = 1; i <= numberOfCollars; i++) {
-            T tmp = idealNumberOfRegions[i] + a[i - 1];
+            T tmp = idealNumberOfRegions[i] + accumulatedMissingRegionArea[i - 1];
             regionsInCollar.push_back(static_cast<size_t>(tmp + 0.5));
-            a.push_back(T(0.0));
+            accumulatedMissingRegionArea.push_back(T(0.0));
             for (size_t j = 1; j <= i; j++) {
-                a.back() += idealNumberOfRegions[j] - regionsInCollar[j];
+                accumulatedMissingRegionArea.back() += idealNumberOfRegions[j] - regionsInCollar[j];
             }
         }
 
         std::vector<T> collatitudes;
-
         collatitudes.push_back(0);
-        std::vector<T> debug = collatitudes;
-
         for (size_t i = 1; i <= numberOfCollars + 1; i++) {
-
             T totM = 0;
             for (size_t j = 1; j < i; j++) {
                 totM += regionsInCollar[j];
             }
             const T v = (1 + totM) * regionArea;
-
-            debug.push_back(v);
             collatitudes.push_back(Theta(v));
         }
-
         collatitudes.push_back(glm::pi<T>());
-        debug.push_back(glm::pi<T>());
 
         segments_.emplace_back(collatitudes[1], 1);
         for (size_t i = 1; i < collatitudes.size() - 2; i++) {
@@ -201,7 +213,9 @@ public:
             segment.startIndex = count;
             count += segment.patches_;
         }
-        IVW_ASSERT(count == segments, "");
+
+        IVW_ASSERT(count == segments,
+                   "Code failed to partion the sphere into the right number of segments");
     }
 
     DirectionalHistogram(const DirectionalHistogram &) = default;
@@ -209,13 +223,20 @@ public:
     DirectionalHistogram &operator=(const DirectionalHistogram &) = default;
     DirectionalHistogram &operator=(DirectionalHistogram &&) = default;
 
+    /**
+     * Returns the number of bins in the histogram.
+     */
     size_t numberOfBins() const { return bins_.size(); }
 
-    size_t inc(const type &in_dir) {
+    /**
+     * Increments the bin that \param dir falls into.
+     */
+    size_t inc(const glm::vec<3, T> &in_dir) {
         const auto dir = glm::normalize(in_dir);
         const auto it = std::lower_bound(segments_.begin(), segments_.end(), dir.z);
         auto I = it->index(dir.x, dir.y);
-        IVW_ASSERT(I < bins_.size(), "maxindex should not be able to largers than number of bins");
+        IVW_ASSERT(I < bins_.size(),
+                   "maxindex should not be able to be larger than the number of bins");
         bins_[I]++;
         return I;
     }

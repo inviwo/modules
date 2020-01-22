@@ -310,8 +310,8 @@ void IntegralLinesToDataFrame::process() {
             if (firstLine.hasMetaData("velocity")) {
                 auto &entropies = detail::createColumn<float>(*df, "Entropy");
                 funcs.push_back([&](const IntegralLine &line) {
-                    entropies.push_back((float)util::shannonEntropyDirectional(
-                        line.getMetaData<dvec3>("velocity"), 2));
+                    entropies.push_back(static_cast<float>(entropy::shannonEntropyDirectional(
+                        line.getMetaData<dvec3>("velocity"), 33)));
                 });
             }
         }

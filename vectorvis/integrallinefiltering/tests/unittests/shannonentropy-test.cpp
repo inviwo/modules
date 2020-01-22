@@ -55,12 +55,12 @@ TEST(ShannonEntroyTest, OneDimension) {
     }
     hist3[0]++;
     hist3[1]--;
-    auto e1 = util::shannonEntropy(hist1);  // should be max
-    auto e2 = util::shannonEntropy(hist2);  // should be zero
-    auto e3 = util::shannonEntropy(hist3) / util::shannonEntropyMax(N);
-    auto e4 = util::shannonEntropy(hist4) / util::shannonEntropyMax(N);
+    auto e1 = entopy::shannonEntropy(hist1);  // should be max
+    auto e2 = entopy::shannonEntropy(hist2);  // should be zero
+    auto e3 = entopy::shannonEntropy(hist3) / entopy::shannonEntropyMax(N);
+    auto e4 = entopy::shannonEntropy(hist4) / entopy::shannonEntropyMax(N);
 
-    ASSERT_EQ(e1, util::shannonEntropyMax(N)) << "Equal probablility == Maximum entropy";
+    ASSERT_EQ(e1, entopy::shannonEntropyMax(N)) << "Equal probablility == Maximum entropy";
     ASSERT_EQ(e2, 0) << "No (zero) entropy if everything is the same";
 
     EXPECT_NEAR(e3, 0.93, 0.01);
@@ -88,11 +88,11 @@ TEST(ShannonEntroyTest, Vectors2D) {
     }
     {
         ASSERT_GE(pointsInSquare.size(), N);
-        auto e0 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 1);
-        auto e1 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 2);
-        auto e2 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 4);
-        auto e3 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 8);
-        auto e4 = util::shannonEntropyEuclidean(pointsInSquare, 1.0f / 16);
+        auto e0 = entopy::shannonEntropyEuclidean(pointsInSquare, 1.0f / 1);
+        auto e1 = entopy::shannonEntropyEuclidean(pointsInSquare, 1.0f / 2);
+        auto e2 = entopy::shannonEntropyEuclidean(pointsInSquare, 1.0f / 4);
+        auto e3 = entopy::shannonEntropyEuclidean(pointsInSquare, 1.0f / 8);
+        auto e4 = entopy::shannonEntropyEuclidean(pointsInSquare, 1.0f / 16);
         EXPECT_NEAR(e0, 1, 0.005);
         EXPECT_NEAR(e1, 1, 0.005);
         EXPECT_NEAR(e2, 1, 0.005);
@@ -101,11 +101,11 @@ TEST(ShannonEntroyTest, Vectors2D) {
     }
     {
         ASSERT_EQ(pointsInCircle.size(), N);
-        auto e0 = util::shannonEntropyDirectional(pointsInCircle, 2);
-        auto e1 = util::shannonEntropyDirectional(pointsInCircle, 4);
-        auto e2 = util::shannonEntropyDirectional(pointsInCircle, 8);
-        auto e3 = util::shannonEntropyDirectional(pointsInCircle, 16);
-        auto e4 = util::shannonEntropyDirectional(pointsInCircle, 100);
+        auto e0 = entopy::shannonEntropyDirectional(pointsInCircle, 2);
+        auto e1 = entopy::shannonEntropyDirectional(pointsInCircle, 4);
+        auto e2 = entopy::shannonEntropyDirectional(pointsInCircle, 8);
+        auto e3 = entopy::shannonEntropyDirectional(pointsInCircle, 16);
+        auto e4 = entopy::shannonEntropyDirectional(pointsInCircle, 100);
         EXPECT_NEAR(e0, 1, 0.00008);
         EXPECT_NEAR(e1, 1, 0.0003);
         EXPECT_NEAR(e2, 1, 0.0004);
@@ -135,11 +135,11 @@ TEST(ShannonEntroyTest, Vectors3D2) {
     }
     {
         ASSERT_GE(pointsInCube.size(), N);
-        auto e0 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 1);
-        auto e1 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 2);
-        auto e2 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 4);
-        auto e3 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 8);
-        auto e4 = util::shannonEntropyEuclidean(pointsInCube, 1.0f / 16);
+        auto e0 = entopy::shannonEntropyEuclidean(pointsInCube, 1.0f / 1);
+        auto e1 = entopy::shannonEntropyEuclidean(pointsInCube, 1.0f / 2);
+        auto e2 = entopy::shannonEntropyEuclidean(pointsInCube, 1.0f / 4);
+        auto e3 = entopy::shannonEntropyEuclidean(pointsInCube, 1.0f / 8);
+        auto e4 = entopy::shannonEntropyEuclidean(pointsInCube, 1.0f / 16);
         EXPECT_NEAR(e0, 1, 0.0005);
         EXPECT_NEAR(e1, 1, 0.0005);
         EXPECT_NEAR(e2, 1, 0.0005);
@@ -149,9 +149,9 @@ TEST(ShannonEntroyTest, Vectors3D2) {
     {
         ASSERT_EQ(pointsInSphere.size(), N);
 
-        auto e0 = util::shannonEntropyDirectional(pointsInSphere, 10);
-        auto e1 = util::shannonEntropyDirectional(pointsInSphere, 100);
-        auto e2 = util::shannonEntropyDirectional(pointsInSphere, 1000);
+        auto e0 = entopy::shannonEntropyDirectional(pointsInSphere, 10);
+        auto e1 = entopy::shannonEntropyDirectional(pointsInSphere, 100);
+        auto e2 = entopy::shannonEntropyDirectional(pointsInSphere, 1000);
 
         EXPECT_NEAR(e0, 1, 0.00005);
         EXPECT_NEAR(e1, 1, 0.0002);

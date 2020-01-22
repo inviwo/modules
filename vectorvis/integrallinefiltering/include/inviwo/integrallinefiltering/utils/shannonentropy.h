@@ -45,9 +45,17 @@
 
 namespace inviwo {
 
-namespace util {
+/**
+ * \namespace inviwo::entropy
+ * Utility function to calculate the entropy of data.
+ */
+namespace entropy {
 enum class PerformNormalization { Yes, No };
 
+/**
+ * Returns the maximum entropy value for a histogram of given size.
+ * Used for normalization
+ */
 inline double shannonEntropyMax(size_t numberOfBins) {
     return std::log2(static_cast<double>(numberOfBins));
 }
@@ -60,6 +68,14 @@ template <typename T1, typename T2>
 struct is_pair<std::pair<T1, T2>> : public std::true_type {};
 }  // namespace detail
 
+/**
+ * Calculates the entropy for a given histogram of data.
+ * For datasets that has not been binned into histogram use shannonEntropyScalars() for scalars,
+ * shannonEntropyDirectional() for vector or shannonEntropyEuclidean() for points.
+ * @see shannonEntropyScalars
+ * @see shannonEntropyDirectional
+ * @see shannonEntropyEuclidean
+ */
 template <typename Histogram>
 double shannonEntropy(const Histogram& histogram) {
     size_t c = std::accumulate(histogram.begin(), histogram.end(), 0, [](size_t a, auto bin) {
@@ -86,6 +102,13 @@ double shannonEntropy(const Histogram& histogram) {
     return -ent;
 }
 
+/**
+ * Calculates the entropy of the given input dataset. Bins the data into an histogram of \p numBins
+ * @param data the input data
+ * @param numBins number of bins to use for the histogram
+ * @param normalize wether to use normalization or not, if normalization the output will be on the
+ * range [0 1], if not, the range will be on [0 log2(numBins)]
+ */
 template <typename T>
 double shannonEntropyScalars(const std::vector<T>& data, size_t numBins = 8,
                              PerformNormalization normalize = PerformNormalization::Yes) {
@@ -110,21 +133,22 @@ double shannonEntropyScalars(const std::vector<T>& data, size_t numBins = 8,
     }
 }
 
+/**
+ * Calculates the entropy of the given input dataset of directional vectors, for example velocities
+ * in a vectorfield. Bins the data into an histogram of \p numBins. @see DirectionalHistogram
+ * @param data the input data
+ * @param numBins number of bins to use for the histogram
+ * @param normalize wether to use normalization or not, if normalization the output will be on the
+ * range [0 1], if not, the range will be on [0 log2(numBins)]
+ */
 template <size_t Dims, typename T>
-double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& values, const size_t subdivs,
+double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& data, const size_t numBins,
                                  PerformNormalization normalize = PerformNormalization::Yes) {
     static_assert(std::is_floating_point_v<T>);
     static_assert(Dims == 2 || Dims == 3);
-    auto histogram = [subdivs] {
-        if constexpr (Dims == 2) {
-            return DirectionalHistogram<2, T>(subdivs);
+    DirectionalHistogram<2, T> histogram(numBins);
 
-        } else if constexpr (Dims == 3) {
-            return DirectionalHistogram<3, T>(subdivs);
-        }
-    }();
-
-    for (const auto& val : values) {
+    for (const auto& val : data) {
         histogram.inc(val);
     }
     if (normalize == PerformNormalization::Yes) {
@@ -134,19 +158,26 @@ double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& values, c
     }
 }
 
+/**
+ * Calculates the entropy of the given input dataset of points.
+ * Bins the data into an histogram of with bins of size \p binSize.
+ * @param points the input data
+ * @param numBins number of bins to use for the histogram
+ * @param normalize wether to use normalization or not, if normalization the output will be on the
+ * range [0 1], if not, the range will be on [0 log2(numBins)]
+ */
 template <size_t Dims, typename T>
-double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values,
-                               const glm::vec<Dims, T>& binSize, 
+double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& points,
+                               const glm::vec<Dims, T>& binSize,
                                PerformNormalization normalize = PerformNormalization::Yes) {
     static_assert(std::is_floating_point_v<T>);
     using bin_t = glm::vec<Dims, glm::i64>;
     SparseHistogram<bin_t> histogram;
 
-    for (const auto& v : values) {
-            const auto bin = static_cast<bin_t>(glm::ceil(v / binSize));
-            histogram[bin]++; 
+    for (const auto& v : points) {
+        const auto bin = static_cast<bin_t>(glm::ceil(v / binSize));
+        histogram[bin]++;
     }
-
 
     SparseHistogram<size_t> binHist;
     for (auto bin : histogram) {
@@ -160,12 +191,21 @@ double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values,
     }
 }
 
+/**
+ * Calculates the entropy of the given input dataset of points.
+ * Bins the data into an histogram of with bins of size \p binSize.
+ * @param points the input data
+ * @param numBins number of bins to use for the histogram
+ * @param normalize wether to use normalization or not, if normalization the output will be on the
+ * range [0 1], if not, the range will be on [0 log2(numBins)]
+ */
 template <size_t Dims, typename T>
-double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values, const T& binSize,PerformNormalization normalize = PerformNormalization::Yes) {
-    return shannonEntropyEuclidean(values, glm::vec<Dims, T>{binSize},normalize);
+double shannonEntropyEuclidean(const std::vector<glm::vec<Dims, T>>& values, const T& binSize,
+                               PerformNormalization normalize = PerformNormalization::Yes) {
+    return shannonEntropyEuclidean(values, glm::vec<Dims, T>{binSize}, normalize);
 }
 
-}  // namespace util
+}  // namespace entropy
 
 }  // namespace inviwo
 
