@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2D_H
-#define IVW_TENSORFIELD2D_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -40,134 +39,65 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield.h>
 
 namespace inviwo {
 /**
  * \class TensorField2D
  * \brief Data structure for 2D tensorfields.
  */
-class IVW_MODULE_TENSORVISBASE_API TensorField2D {
+class IVW_MODULE_TENSORVISBASE_API TensorField2D : public TensorField<2, float> {
 public:
+    using value_type = typename TensorField2D::value_type;
+
     TensorField2D() = delete;
 
-    // Contructors with ready tensors
-    TensorField2D(size2_t dimensions, const std::vector<dmat2> &data,
-                  const dvec2 &extends = dvec2(1.0));
-    TensorField2D(size_t x, size_t y, const std::vector<dmat2> &data,
-                  const dvec2 &extends = dvec2(1.0));
-    TensorField2D(size2_t dimensions, const std::vector<dmat2> &data,
-                  const std::vector<double> &majorEigenvalues,
-                  const std::vector<double> &minorEigenvalues,
-                  const std::vector<dvec2> &majorEigenvectors,
-                  const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
-    TensorField2D(size_t x, size_t y, const std::vector<dmat2> &data,
-                  const std::vector<double> &majorEigenvalues,
-                  const std::vector<double> &minorEigenvalues,
-                  const std::vector<dvec2> &majorEigenvectors,
-                  const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
+    TensorField2D(const sizeN_t& dimensions, const std::vector<matN>& tensors);
+    TensorField2D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors);
 
-    // Constructors with raw data
-    TensorField2D(size2_t dimensions, const std::vector<double> &data,
-                  const dvec2 &extends = dvec2(1.0));
-    TensorField2D(size_t x, size_t y, const std::vector<double> &data,
-                  const dvec2 &extends = dvec2(1.0));
-    TensorField2D(size2_t dimensions, const std::vector<double> &data,
-                  const std::vector<double> &majorEigenvalues,
-                  const std::vector<double> &minorEigenvalues,
-                  const std::vector<dvec2> &majorEigenvectors,
-                  const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
-    TensorField2D(size_t x, size_t y, const std::vector<double> &data,
-                  const std::vector<double> &majorEigenvalues,
-                  const std::vector<double> &minorEigenvalues,
-                  const std::vector<dvec2> &majorEigenvectors,
-                  const std::vector<dvec2> &minorEigenvectors, const dvec2 &extends = dvec2(1.0));
+    TensorField2D(const sizeN_t& dimensions, const std::vector<matN>& tensors,
+        const DataFrame& metaData);
+    TensorField2D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors,
+        std::shared_ptr<DataFrame> metaData);
 
     // Destructors
     virtual ~TensorField2D() = default;
 
-    std::string getDataInfo() const;
+    /**
+     * NOTE: This copy constructor creates a shallow copy, i.e. the tensors and the meta data are
+     * not copied. Rather, the copy points towards the same data as the input field. If you need a
+     * deep copy, use the deepCopy method.
+     */
+    TensorField2D(const TensorField2D& tf);
+
+    virtual TensorField2D* clone() const final;
+
+    virtual TensorField2D* deepCopy() const final;
+
     std::shared_ptr<Image> getImageRepresentation() const;
-
-    dmat2 &at(size2_t position);
-    dmat2 &at(size_t x, size_t y);
-    dmat2 &at(size_t index);
-
-    const dmat2 &at(size2_t position) const;
-    const dmat2 &at(size_t x, size_t y) const;
-    const dmat2 &at(size_t index) const;
-
-    template <typename T = size_t>
-    const glm::tvec2<T> getDimensions() const {
-        return glm::tvec2<T>(dimensions_);
-    }
-    template <typename T = double>
-    glm::tvec2<T> getExtents() const {
-        return glm::tvec2<T>(extends_);
-    }
-    template <typename T = size_t>
-    const glm::tvec2<T> getBounds() const {
-        return glm::tvec2<T>(dimensions_ - size2_t(1));
-    }
-    size_t getSize() const;
-    glm::u8 rank() const { return rank_; }
-    glm::u8 dimensionality() const { return dimensionality_; }
-
-    template <typename T = double>
-    T getMinorEigenValue(const size_t index) const {
-        return T(minorEigenValues_[index]);
-    }
-    template <typename T = double>
-    T getMajorEigenValue(const size_t index) const {
-        return T(majorEigenValues_[index]);
-    }
-
-    dmat2 getBasis() const;
-    dmat3 getBasisAndOffset() const;
-    dvec2 getOffset() const { return offset_; };
-    void setOffset(const dvec2 &offset) { offset_ = offset; };
-
+    
     const dvec2 &getNormalizedImagePosition(size_t index) const;
-    const dvec2 &getMinorEigenVector(size_t index) const;
-    const dvec2 &getMinorEigenVector(const size2_t &position) const;
-    const dvec2 &getMajorEigenVector(size_t index) const;
-    const dvec2 &getMajorEigenVector(const size2_t &position) const;
-
-    const std::vector<dvec2> &minorEigenVectors() const;
-    const std::vector<dvec2> &majorEigenVectors() const;
-    const std::vector<double> &minorEigenValues() const;
-    const std::vector<double> &majorEigenValues() const;
     const std::vector<dvec2> &normalizedImagePositions() const;
-    const std::vector<dmat2> &tensors() const;
 
-    std::array<std::pair<double, dvec2>, 2> getSortedEigenValuesAndEigenVectorsForTensor(
-        size_t index) const;
-    std::array<std::pair<double, dvec2>, 2> getSortedEigenValuesAndEigenVectorsForTensor(
-        const size2_t &pos) const;
-    std::array<double, 2> getSortedEigenValuesForTensor(size_t index) const;
-    std::array<double, 2> getSortedEigenValuesForTensor(const size2_t &pos) const;
-    std::array<dvec2, 2> getSortedEigenVectorsForTensor(size_t index) const;
-    std::array<dvec2, 2> getSortedEigenVectorsForTensor(const size2_t &pos) const;
+protected:
+    virtual void initializeDefaultMetaData()final;
+    virtual void computeDataMaps()final;
 
 private:
-    void computeEigenValuesAndEigenVectors();
     void computeNormalizedScreenCoordinates();
 
-    std::vector<dvec2> majorEigenVectors_;
-    std::vector<dvec2> minorEigenVectors_;
-    std::vector<double> majorEigenValues_;
-    std::vector<double> minorEigenValues_;
     std::vector<dvec2> normalizedImagePositions_;
-    std::vector<dvec2> coordinates_;
-    size2_t dimensions_;
-    dvec2 extends_;
-    dvec2 offset_;
-    size_t size_;
-    glm::u8 rank_;
-    glm::u8 dimensionality_;
-    util::IndexMapper2D indexMapper_;
-    std::vector<dmat2> tensors_;
+
+    template <typename T, typename R>
+    void addIfNotPresent(std::shared_ptr<DataFrame>, const R& data) const;
 };
 
-}  // namespace inviwo
+template <typename T, typename R>
+void TensorField2D::addIfNotPresent(std::shared_ptr<DataFrame> df, const R& data) const {
+    if (!this->hasMetaData<T>()) {
+        df->addColumn(
+            std::make_shared<TemplateColumn<typename T::value_type>>(std::string(T::identifier), data));
+    }
+}
 
-#endif  // IVW_TENSORFIELD2D_H
+}  // namespace inviwo

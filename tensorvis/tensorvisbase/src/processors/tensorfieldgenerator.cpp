@@ -285,7 +285,11 @@ void TensorFieldGenerator::generate2DField() {
             break;
     }
 
-    outport2D_.setData(std::make_shared<TensorField2D>(dimensions, rawData));
+    std::vector<TensorField2D::matN> data;
+    data.resize(rawData.size());
+    std::copy(std::begin(rawData), std::end(rawData), std::begin(data));
+
+    outport2D_.setData(std::make_shared<TensorField2D>(dimensions, data));
 }
 
 }  // namespace inviwo

@@ -27,24 +27,26 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/invariantspacefilter.h
     include/inviwo/tensorvisbase/processors/invariantspacetodataframe.h
     include/inviwo/tensorvisbase/processors/tensorfield2danisotropy.h
+    include/inviwo/tensorvisbase/processors/tensorfield2dmetadata.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubsample.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubset.h
+    include/inviwo/tensorvisbase/processors/tensorfield2dtoimage.h
     include/inviwo/tensorvisbase/processors/tensorfield3dangle.h
     include/inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h
     include/inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h
+    include/inviwo/tensorvisbase/processors/tensorfield3dinformation.h
     include/inviwo/tensorvisbase/processors/tensorfield3dmasktovolume.h
     include/inviwo/tensorvisbase/processors/tensorfield3dmetadata.h
     include/inviwo/tensorvisbase/processors/tensorfield3dsubsample.h
     include/inviwo/tensorvisbase/processors/tensorfield3dsubset.h
     include/inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h
+    include/inviwo/tensorvisbase/processors/tensorfield3dtovolume.h
     include/inviwo/tensorvisbase/processors/tensorfieldgenerator.h
     include/inviwo/tensorvisbase/processors/tensorfieldlic.h
     include/inviwo/tensorvisbase/processors/tensorfieldslice.h
     include/inviwo/tensorvisbase/processors/tensorfieldtorgba.h
-    include/inviwo/tensorvisbase/processors/tensorfield3dtovolume.h
     include/inviwo/tensorvisbase/processors/tensorglyphprocessor.h
     include/inviwo/tensorvisbase/processors/tensorglyphrenderer.h
-    include/inviwo/tensorvisbase/processors/tensorfield3dinformation.h
     include/inviwo/tensorvisbase/processors/volumeactualdataandvaluerange.h
     include/inviwo/tensorvisbase/properties/eigenvalueproperty.h
     include/inviwo/tensorvisbase/properties/tensorglyphproperty.h
@@ -78,24 +80,26 @@ set(SOURCE_FILES
     src/processors/invariantspacefilter.cpp
     src/processors/invariantspacetodataframe.cpp
     src/processors/tensorfield2danisotropy.cpp
+    src/processors/tensorfield2dmetadata.cpp
     src/processors/tensorfield2dsubsample.cpp
     src/processors/tensorfield2dsubset.cpp
+    src/processors/tensorfield2dtoimage.cpp
     src/processors/tensorfield3dangle.cpp
     src/processors/tensorfield3dbasismanipulation.cpp
     src/processors/tensorfield3dboundingbox.cpp
+    src/processors/tensorfield3dinformation.cpp
     src/processors/tensorfield3dmasktovolume.cpp
     src/processors/tensorfield3dmetadata.cpp
     src/processors/tensorfield3dsubsample.cpp
     src/processors/tensorfield3dsubset.cpp
     src/processors/tensorfield3dtodataframe.cpp
+    src/processors/tensorfield3dtovolume.cpp
     src/processors/tensorfieldgenerator.cpp
     src/processors/tensorfieldlic.cpp
     src/processors/tensorfieldslice.cpp
     src/processors/tensorfieldtorgba.cpp
-    src/processors/tensorfield3dtovolume.cpp
     src/processors/tensorglyphprocessor.cpp
     src/processors/tensorglyphrenderer.cpp
-    src/processors/tensorfield3dinformation.cpp
     src/processors/volumeactualdataandvaluerange.cpp
     src/properties/eigenvalueproperty.cpp
     src/properties/tensorglyphproperty.cpp

@@ -146,8 +146,8 @@ private:
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DToVolume::processorInfo_{
-    "org.inviwo.TensorField3DToVolume",         // Class identifier
-    "Tensor Field 3D To Volume",                 // Display name
+    "org.inviwo.TensorField3DToVolume",       // Class identifier
+    "Tensor Field 3D To Volume",              // Display name
     "Conversion",                             // Category
     CodeState::Stable,                        // Code state
     Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
@@ -170,7 +170,7 @@ TensorField3DToVolume::TensorField3DToVolume()
 
         std::vector<OptionPropertyOption<size_t>> options{};
 
-        util::for_each_type<attributes::types>{}(AddOptions{options, inport_.getData()});
+        util::for_each_type<attributes::types3D>{}(AddOptions{options, inport_.getData()});
 
         // NetworkLock l; --> As far as I can see this is done internally in replaceOptions
         volumeContent_.replaceOptions(options);
@@ -180,12 +180,12 @@ TensorField3DToVolume::TensorField3DToVolume()
 
     volumeContent_.onChange([this]() {
         NetworkLock l;
-        util::for_each_type<attributes::types>{}(IsVec{this, volumeContent_.get()});
+        util::for_each_type<attributes::types3D>{}(IsVec{this, volumeContent_.get()});
     });
 }
 
 void TensorField3DToVolume::process() {
-    outport_.setData(util::for_each_type<attributes::types>{}(
+    outport_.setData(util::for_each_type<attributes::types3D>{}(
                          CreateVolume{volumeContent_.get(), inport_.getData(), this})
                          .volume_);
 }

@@ -59,25 +59,30 @@ public:
      * not copied. Rather, the copy points towards the same data as the input field. If you need a
      * deep copy, use the deepCopy method.
      */
-    virtual TensorField<N, precision>* clone() const override;
+    virtual TensorField<N, precision>* clone() const = 0;
 
     /**
      * NOTE: This method constructor creates a deep copy, i.e. the tensors and the meta data are
      * copied. If you need a shallow copy, use the copy constructor or clone method.
      */
-    virtual std::shared_ptr<TensorField<N, precision>> deepCopy() const;
+    virtual TensorField<N, precision>* deepCopy() const = 0;
 
     std::string getDataInfo() const;
 
-    template <bool useMask = false,
-              typename ReturnType = std::conditional_t<useMask, std::pair<bool, const matN&>, matN&>>
+    template <bool useMask = false, typename ReturnType = std::conditional_t<
+                                        useMask, std::pair<bool, const matN&>, matN&>>
     const ReturnType at(sizeN_t position) const;
 
-    template <bool useMask = false,
-              typename ReturnType = std::conditional_t<useMask, std::pair<bool, const matN&>, matN&>>
+    template <bool useMask = false, typename ReturnType = std::conditional_t<
+                                        useMask, std::pair<bool, const matN&>, matN&>>
     const ReturnType at(size_t index) const;
 
     sizeN_t getDimensions() const final { return dimensions_; }
+
+    template <typename T>
+    glm::vec<N, T, glm::defaultp> getDimensionsAs()const {
+        return glm::vec<N, T, glm::defaultp>(dimensions_);
+    }
 
     template <typename T = float>
     glm::vec<N, T> getExtents() const;
@@ -149,6 +154,27 @@ public:
     std::shared_ptr<const DataFrame> metaData() const { return metaData_; }
     std::shared_ptr<DataFrame> metaData() { return metaData_; }
 
+    value_type getMajorEigenValue(const size_t index) const {
+        return value_type(this->getMetaDataContainer<attributes::MajorEigenValue>()[index]);
+    }
+    value_type getMinorEigenValue(const size_t index) const {
+        return value_type(this->getMetaDataContainer<attributes::MinorEigenValue>()[index]);
+    }
+
+    const std::vector<vecN>& majorEigenVectors() const {
+        return this->getMetaDataContainer<attributes::MajorEigenVector<N>>();
+    }
+    const std::vector<vecN>& minorEigenVectors() const {
+        return this->getMetaDataContainer<attributes::MinorEigenVector<N>>();
+    }
+
+    const std::vector<value_type>& majorEigenValues() const {
+        return this->getMetaDataContainer<attributes::MajorEigenValue>();
+    }
+    const std::vector<value_type>& minorEigenValues() const {
+        return this->getMetaDataContainer<attributes::MinorEigenValue>();
+    }
+
 protected:
     sizeN_t dimensions_;
     util::IndexMapper<N> indexMapper_;
@@ -157,12 +183,16 @@ protected:
     std::shared_ptr<DataFrame> metaData_;
 
     std::vector<glm::uint8> binaryMask_;
+
+    virtual void initializeDefaultMetaData() =0;
+    virtual void computeDataMaps() = 0;
 };
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
                                               const std::vector<matN>& tensors)
-    : dimensions_(dimensions)
+    : StructuredGridEntity<N>()
+    , dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(tensors))
     , size_(glm::compMul(dimensions))
@@ -171,7 +201,8 @@ inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
                                               std::shared_ptr<std::vector<matN>> tensors)
-    : dimensions_(dimensions)
+    : StructuredGridEntity<N>()
+    , dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(*tensors))
     , size_(glm::compMul(dimensions))
@@ -181,7 +212,8 @@ template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
                                               const std::vector<matN>& tensors,
                                               const DataFrame& metaData)
-    : dimensions_(dimensions)
+    : StructuredGridEntity<N>()
+    , dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(tensors))
     , size_(glm::compMul(dimensions))
@@ -191,7 +223,8 @@ template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
                                               std::shared_ptr<std::vector<matN>> tensors,
                                               std::shared_ptr<DataFrame> metaData)
-    : dimensions_(dimensions)
+    : StructuredGridEntity<N>()
+    , dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(*tensors))
     , size_(glm::compMul(dimensions))
@@ -199,7 +232,7 @@ inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const TensorField<N, precision>& tf)
-    : StructuredGridEntity<3>()
+    : StructuredGridEntity<N>()
     , dataMapEigenValues_(tf.dataMapEigenValues_)
     , dataMapEigenVectors_(tf.dataMapEigenVectors_)
     , dimensions_(tf.dimensions_)
@@ -213,37 +246,24 @@ inline TensorField<N, precision>::TensorField(const TensorField<N, precision>& t
 }
 
 template <unsigned int N, typename precision>
-inline TensorField<N, precision>* TensorField<N, precision>::clone() const {
-    return new TensorField<N, precision>(*this);
-}
-
-template <unsigned int N, typename precision>
-inline std::shared_ptr<TensorField<N, precision>> TensorField<N, precision>::deepCopy() const {
-    auto tf = std::make_shared<TensorField<N, precision>>(*this);
-
-    tf->setTensors(std::make_shared<std::vector<matN>>(*tensors_));
-    tf->setMetaData(std::make_shared<DataFrame>(*metaData_));
-
-    return tf;
-}
-
-template <unsigned int N, typename precision>
 inline std::string TensorField<N, precision>::getDataInfo() const {
     std::stringstream ss;
     ss << "<table border='0' cellspacing='0' cellpadding='0' "
           "style='border-color:white;white-space:pre;'>/n"
-       << tensorutil::getHTMLTableRowString("Type", "3D tensor field")
+       << tensorutil::getHTMLTableRowString("Type", std::to_string(N) + "D tensor field")
        << tensorutil::getHTMLTableRowString("Number of tensors", tensors_->size())
        << tensorutil::getHTMLTableRowString("Dimensions", dimensions_)
        << tensorutil::getHTMLTableRowString("Max major field eigenvalue",
                                             dataMapEigenValues_[0].valueRange.y)
        << tensorutil::getHTMLTableRowString("Min major field eigenvalue",
-                                            dataMapEigenValues_[0].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Max intermediate field eigenvalue",
-                                            dataMapEigenValues_[1].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min intermediate field eigenvalue",
-                                            dataMapEigenValues_[1].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Max minor field eigenvalue",
+                                            dataMapEigenValues_[0].valueRange.x);
+    if (N > 2) {
+        ss << tensorutil::getHTMLTableRowString("Max intermediate field eigenvalue",
+                                                dataMapEigenValues_[1].valueRange.y)
+           << tensorutil::getHTMLTableRowString("Min intermediate field eigenvalue",
+                                                dataMapEigenValues_[1].valueRange.x);
+    }
+    ss << tensorutil::getHTMLTableRowString("Max minor field eigenvalue",
                                             dataMapEigenValues_[2].valueRange.y)
        << tensorutil::getHTMLTableRowString("Min minor field eigenvalue",
                                             dataMapEigenValues_[2].valueRange.x)

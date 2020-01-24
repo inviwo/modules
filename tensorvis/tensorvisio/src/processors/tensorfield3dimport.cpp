@@ -222,7 +222,7 @@ void TensorField3DImport::process() {
             size_t numItems{0};
             inFile.read(reinterpret_cast<char *>(&numItems), sizeof(size_t));
 
-            util::for_each_type<attributes::types>{}(DeserializeColumn{}, id, std::ref(inFile),
+            util::for_each_type<attributes::types3D>{}(DeserializeColumn{}, id, std::ref(inFile),
                                                      dataFrame, numItems);
         }
 

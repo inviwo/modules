@@ -53,7 +53,7 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
 
     util::IndexMapper2D indexMapper(dimensions);
 
-    std::vector<dmat2> sliceData;
+    std::vector<TensorField2D::matN> sliceData;
     sliceData.resize(dimensions.x * dimensions.y);
 
     switch (axis) {

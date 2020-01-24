@@ -69,8 +69,8 @@ void TensorField2DAnisotropy::process() {
     util::IndexMapper2D indexMapper(dimensions);
     const auto& majorEigenValues = tensorField->majorEigenValues();
     const auto& minorEigenValues = tensorField->minorEigenValues();
-    auto min = std::numeric_limits<double>::max();
-    auto max = std::numeric_limits<double>::lowest();
+    auto min = std::numeric_limits<TensorField2D::value_type>::max();
+    auto max = std::numeric_limits<TensorField2D::value_type>::lowest();
 
     switch (anisotropy_.get()) {
         case tensorutil::Anisotropy::abs_lamda1_minus_lamda2:

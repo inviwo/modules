@@ -56,7 +56,7 @@ TensorField2DSubset::TensorField2DSubset()
     addProperty(offset_);
 
     inport_.onChange([&]() {
-        auto dimensions = inport_.getData()->getDimensions<size_t>();
+        auto dimensions = inport_.getData()->getDimensions();
         origin_.setMaxValue(dimensions - size2_t{1});
         origin_.setMinValue(size2_t{0});
 
@@ -78,7 +78,7 @@ TensorField2DSubset::TensorField2DSubset()
         if (!inport_.hasData()) return;
         auto origin = origin_.get();
 
-        offset_.setMaxValue(inport_.getData()->getDimensions<size_t>() - origin - size2_t{1});
+        offset_.setMaxValue(inport_.getData()->getDimensions() - origin - size2_t{1});
     });
 }
 
@@ -87,7 +87,7 @@ void TensorField2DSubset::process() {
 
     auto dimensions = size2_t(offset_.get() + size2_t{1});
 
-    std::vector<dmat2> rawData;
+    std::vector<TensorField2D::matN> rawData;
 
     for (size_t y = origin_.get().y; y <= origin_.get().y + offset_.get().y; ++y) {
         for (size_t x = origin_.get().x; x <= origin_.get().x + offset_.get().x; ++x) {

@@ -6,87 +6,56 @@
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
-
-/**
- *   Returns three volumes representing the tensor field.
- *
- * At each position, a tensor is given by
-
- *   xx   xy   xz
- *   yx   yy   yz
- *   zx   zy   zz
- *
- * The volumes return by this method decompose the tensor into its three columns.
- * I.e., the first volume contains the values xx, yz, and zx.
- */
-std::array<std::shared_ptr<Volume>, 3> TensorField3D::getVolumeRepresentation() const {
-    auto volumeCol1 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
-    auto volumeCol2 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
-    auto volumeCol3 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
-
-    auto col1RAM = volumeCol1->getEditableRepresentation<VolumeRAM>();
-    auto col2RAM = volumeCol2->getEditableRepresentation<VolumeRAM>();
-    auto col3RAM = volumeCol3->getEditableRepresentation<VolumeRAM>();
-
-    util::IndexMapper3D indexMapper(dimensions_);
-
-    for (size_t z = 0; z < dimensions_.z; z++) {
-        for (size_t x = 0; x < dimensions_.x; x++) {
-            for (size_t y = 0; y < dimensions_.y; y++) {
-                const auto &tensor = at(size3_t(x, y, z));
-
-                col1RAM->setFromDVec3(size3_t(x, y, z), tensor[0]);
-
-                col2RAM->setFromDVec3(size3_t(x, y, y), tensor[1]);
-
-                col3RAM->setFromDVec3(size3_t(x, y, y), tensor[2]);
-            }
-        }
-    }
-
-    return {volumeCol1, volumeCol2, volumeCol3};
-}
-
-TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors)
+TensorField3D::TensorField3D(const sizeN_t &dimensions, const std::vector<matN> &tensors)
     : TensorField<3, float>(dimensions, tensors) {
     initializeDefaultMetaData();
     computeDataMaps();
 }
 
-TensorField3D::TensorField3D(const size3_t &dimensions,
-                             std::shared_ptr<std::vector<mat3>> tensors)
+TensorField3D::TensorField3D(const sizeN_t &dimensions, std::shared_ptr<std::vector<matN>> tensors)
     : TensorField<3, float>(dimensions, tensors) {
     initializeDefaultMetaData();
     computeDataMaps();
 }
 
-TensorField3D::TensorField3D(const size3_t &dimensions, const std::vector<mat3> &tensors,
+TensorField3D::TensorField3D(const sizeN_t &dimensions, const std::vector<matN> &tensors,
                              const DataFrame &metaData)
     : TensorField<3, float>(dimensions, tensors, metaData) {
     initializeDefaultMetaData();
     computeDataMaps();
 }
 
-TensorField3D::TensorField3D(const size3_t &dimensions,
-                             std::shared_ptr<std::vector<mat3>> tensors,
+TensorField3D::TensorField3D(const sizeN_t &dimensions, std::shared_ptr<std::vector<matN>> tensors,
                              std::shared_ptr<DataFrame> metaData)
     : TensorField<3, float>(dimensions, tensors, metaData) {
     initializeDefaultMetaData();
     computeDataMaps();
 }
 
-TensorField3D::TensorField3D(const TensorField3D &tf) : TensorField<3, float>(tf) {}
+TensorField3D::TensorField3D(const TensorField3D &tf) : TensorField<3, float>(tf) {
+    initializeDefaultMetaData();
+    computeDataMaps();
+}
 
 TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
+
+TensorField3D *TensorField3D::deepCopy() const {
+    auto tf = new TensorField3D(*this);
+
+    tf->setTensors(std::make_shared<std::vector<matN>>(*tensors_));
+    tf->setMetaData(std::make_shared<DataFrame>(*metaData_));
+
+    return tf;
+}
 
 void TensorField3D::initializeDefaultMetaData() {
     // clang-format off
     if (this->hasMetaData<attributes::MajorEigenValue>() &&
         this->hasMetaData<attributes::IntermediateEigenValue>() &&
         this->hasMetaData<attributes::MinorEigenValue>() &&
-        this->hasMetaData<attributes::MajorEigenVector>() &&
-        this->hasMetaData<attributes::IntermediateEigenVector>() &&
-        this->hasMetaData<attributes::MinorEigenVector>()) {
+        this->hasMetaData<attributes::MajorEigenVector3D>() &&
+        this->hasMetaData<attributes::IntermediateEigenVector3D>() &&
+        this->hasMetaData<attributes::MinorEigenVector3D>()) {
         return;
     }
     // clang-format on
@@ -151,9 +120,9 @@ void TensorField3D::initializeDefaultMetaData() {
     addIfNotPresent<attributes::MajorEigenValue>(newMetaData, majorEigenValues);
     addIfNotPresent<attributes::IntermediateEigenValue>(newMetaData, intermediateEigenValues);
     addIfNotPresent<attributes::MinorEigenValue>(newMetaData, minorEigenValues);
-    addIfNotPresent<attributes::MajorEigenVector>(newMetaData, majorEigenVectors);
-    addIfNotPresent<attributes::IntermediateEigenVector>(newMetaData, intermediateEigenVectors);
-    addIfNotPresent<attributes::MinorEigenVector>(newMetaData, minorEigenVectors);
+    addIfNotPresent<attributes::MajorEigenVector3D>(newMetaData, majorEigenVectors);
+    addIfNotPresent<attributes::IntermediateEigenVector3D>(newMetaData, intermediateEigenVectors);
+    addIfNotPresent<attributes::MinorEigenVector3D>(newMetaData, minorEigenVectors);
 
     newMetaData->updateIndexBuffer();
 
@@ -172,7 +141,7 @@ std::optional<std::vector<vec3>> TensorField3D::getNormalizedScreenCoordinates(f
     std::vector<vec3> normalizedVolumePositions;
     normalizedVolumePositions.resize(size_);
 
-     if (dimensions_.x == 0 || dimensions_.y == 0 || dimensions_.z == 0) {
+    if (dimensions_.x == 0 || dimensions_.y == 0 || dimensions_.z == 0) {
         LogError("Tensor field 3D has at least one zero-sized dimension!");
         return std::nullopt;
     }
@@ -236,6 +205,46 @@ void TensorField3D::computeDataMaps() {
     }
     dataMapEigenVectors_[2].dataRange.x = dataMapEigenVectors_[2].valueRange.x = min;
     dataMapEigenVectors_[2].dataRange.y = dataMapEigenVectors_[2].valueRange.y = max;
+}
+
+/**
+ *   Returns three volumes representing the tensor field.
+ *
+ * At each position, a tensor is given by
+
+ *   xx   xy   xz
+ *   yx   yy   yz
+ *   zx   zy   zz
+ *
+ * The volumes return by this method decompose the tensor into its three columns.
+ * I.e., the first volume contains the values xx, yz, and zx.
+ */
+std::array<std::shared_ptr<Volume>, 3> TensorField3D::getVolumeRepresentation() const {
+    auto volumeCol1 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
+    auto volumeCol2 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
+    auto volumeCol3 = std::make_shared<Volume>(dimensions_, DataVec3Float32::get());
+
+    auto col1RAM = volumeCol1->getEditableRepresentation<VolumeRAM>();
+    auto col2RAM = volumeCol2->getEditableRepresentation<VolumeRAM>();
+    auto col3RAM = volumeCol3->getEditableRepresentation<VolumeRAM>();
+
+    util::IndexMapper3D indexMapper(dimensions_);
+
+    for (size_t z = 0; z < dimensions_.z; z++) {
+        for (size_t x = 0; x < dimensions_.x; x++) {
+            for (size_t y = 0; y < dimensions_.y; y++) {
+                const auto &tensor = at(size3_t(x, y, z));
+
+                col1RAM->setFromDVec3(size3_t(x, y, z), tensor[0]);
+
+                col2RAM->setFromDVec3(size3_t(x, y, y), tensor[1]);
+
+                col3RAM->setFromDVec3(size3_t(x, y, y), tensor[2]);
+            }
+        }
+    }
+
+    return {volumeCol1, volumeCol2, volumeCol3};
 }
 
 }  // namespace inviwo

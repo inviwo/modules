@@ -55,11 +55,11 @@ TensorField2DImport::TensorField2DImport()
 }
 
 void TensorField2DImport::buildTensors(const std::vector<double>& data,
-                                       std::vector<dmat2>& tensors) const {
+                                       std::vector<TensorField2D::matN>& tensors) const {
     for (size_t i{0}; i < data.size() / 3; i++) {
         size_t offset = i * 3;
-        tensors.emplace_back(dvec2(data[offset], data[offset + 2]),
-                             dvec2(data[offset + 2], data[offset + 1]));
+        tensors.emplace_back(vec2(data[offset], data[offset + 2]),
+                             vec2(data[offset + 2], data[offset + 1]));
     }
 }
 
@@ -139,7 +139,7 @@ void TensorField2DImport::process() {
 
     inFile.read(reinterpret_cast<char*>(dataRaw), sizeof(double) * numValues);
 
-    std::vector<dmat2> tensors;
+    std::vector<TensorField2D::matN> tensors;
     buildTensors(data, tensors);
 
     if (hasEigenInfo) {
@@ -171,14 +171,13 @@ void TensorField2DImport::process() {
     }
     if (hasEigenInfo) {
         auto tensorField =
-            std::make_shared<TensorField2D>(dimensions, tensors, majorEigenvalues, minorEigenvalues,
-                                            majorEigenvectors, minorEigenvectors, extents);
+            std::make_shared<TensorField2D>(dimensions, tensors);
 
         extents_.set(tensorField->getExtents());
 
         outport_.setData(tensorField);
     } else {
-        auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors, extents);
+        auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors);
 
         extents_.set(tensorField->getExtents());
 

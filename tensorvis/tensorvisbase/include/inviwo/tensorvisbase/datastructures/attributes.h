@@ -21,7 +21,11 @@ struct TypedAttributeBase : AttributeBase {
 };
 
 using ScalarBase = TypedAttributeBase<float>;
-using VectorBase = TypedAttributeBase<vec3>;
+
+template <glm::length_t N, typename T = float>
+struct VectorBase : TypedAttributeBase<glm::vec<N, T>> {
+    static constexpr glm::length_t extent = N;
+};
 
 struct Trace : ScalarBase {
     static constexpr inline std::string_view identifier{"Trace"};
@@ -68,14 +72,15 @@ struct MinorEigenValue : ScalarBase {
         std::shared_ptr<const DataFrame> metaData);
 };
 
-struct MajorEigenVector : VectorBase {
+template <glm::length_t N>
+struct MajorEigenVector : VectorBase<N> {
     static constexpr inline std::string_view identifier{"Major Eigenvector"};
 
-    template <glm::length_t N>
-    static std::vector<value_type> calculate(
-        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+    static std::vector<typename VectorBase<N>::value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, typename VectorBase<N>::scalar_type>>>
+            tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        std::vector<value_type> ev{};
+        std::vector<typename VectorBase<N>::value_type> ev{};
         for (const auto& tensor : *tensors) {
             ev.emplace_back(util::eigenvector<0>(tensor));
         }
@@ -83,15 +88,16 @@ struct MajorEigenVector : VectorBase {
     }
 };
 
-struct IntermediateEigenVector : VectorBase {
+template <glm::length_t N>
+struct IntermediateEigenVector : VectorBase<N> {
     static constexpr inline std::string_view identifier{"Intermediate Eigenvector"};
 
-    template <glm::length_t N>
-    static std::vector<value_type> calculate(
-        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+    static std::vector<typename VectorBase<N>::value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, typename VectorBase<N>::scalar_type>>>
+            tensors,
         std::shared_ptr<const DataFrame> metaData) {
         if constexpr (N % 2) {
-            std::vector<value_type> ev{};
+            std::vector<typename VectorBase<N>::value_type> ev{};
             for (const auto& tensor : *tensors) {
                 ev.emplace_back(util::eigenvector<N / 2>(tensor));
             }
@@ -100,14 +106,15 @@ struct IntermediateEigenVector : VectorBase {
     }
 };
 
-struct MinorEigenVector : VectorBase {
+template <glm::length_t N>
+struct MinorEigenVector : VectorBase<N> {
     static constexpr inline std::string_view identifier{"Minor Eigenvector"};
 
-    template <glm::length_t N>
-    static std::vector<value_type> calculate(
-        std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
+    static std::vector<typename VectorBase<N>::value_type> calculate(
+        std::shared_ptr<const std::vector<glm::mat<N, N, typename VectorBase<N>::scalar_type>>>
+            tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        std::vector<value_type> ev{};
+        std::vector<typename VectorBase<N>::value_type> ev{};
         for (const auto& tensor : *tensors) {
             ev.emplace_back(util::eigenvector<N - 1>(tensor));
         }
@@ -412,17 +419,34 @@ struct FrobeniusNorm : ScalarBase {
     }
 };
 
+// Aliases for different domain languages
+using MajorPrincipalStress = MajorEigenValue;
+using IntermediatePrincipalStress = IntermediateEigenValue;
+using MinorPrincipalStress = MinorEigenValue;
+
+using Lambda1 = MajorEigenValue;
+using Lambda2 = IntermediateEigenValue;
+using Lambda3 = MinorEigenValue;
+
+using MajorEigenVector2D = MajorEigenVector<2>;
+using IntermediateEigenVector2D = IntermediateEigenVector<2>;
+using MinorEigenVector2D = MinorEigenVector<2>;
+
+using MajorEigenVector3D = MajorEigenVector<3>;
+using IntermediateEigenVector3D = IntermediateEigenVector<3>;
+using MinorEigenVector3D = MinorEigenVector<3>;
+
 // clang-format off
-using types =
+using types3D =
     std::tuple<
         Trace,
         Norm,
         MajorEigenValue,
         IntermediateEigenValue,
         MinorEigenValue,
-        MajorEigenVector,
-        IntermediateEigenVector,
-        MinorEigenVector,
+        MajorEigenVector3D,
+        IntermediateEigenVector3D,
+        MinorEigenVector3D,
         I1,
         I2,
         I3,
@@ -436,16 +460,19 @@ using types =
         SphericalAnisotropy,
         FrobeniusNorm
     >;
+
+using types2D =
+    std::tuple <
+        Trace,
+        Norm,
+        MajorEigenValue,
+        MinorEigenValue,
+        MajorEigenVector2D,
+        IntermediateEigenVector2D,
+        MinorEigenVector2D,
+        Anisotropy
+    > ;
 // clang-format on
-
-// Aliases for different domain languages
-using MajorPrincipalStress = MajorEigenValue;
-using IntermediatePrincipalStress = IntermediateEigenValue;
-using MinorPrincipalStress = MinorEigenValue;
-
-using Lambda1 = MajorEigenValue;
-using Lambda2 = IntermediateEigenValue;
-using Lambda3 = MinorEigenValue;
 
 }  // namespace attributes
 }  // namespace inviwo

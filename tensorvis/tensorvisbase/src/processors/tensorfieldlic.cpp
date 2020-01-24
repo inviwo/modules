@@ -89,11 +89,11 @@ void TensorFieldLIC::updateEigenValues() {
     auto subsampled = tensorutil::subsample2D(inport_.getData(),
                                               inport_.getData()->getDimensions() * size2_t(2, 2));
 
-    std::vector<double> eigenValues;
+    std::vector<TensorField2D::value_type> eigenValues;
     if (majorMinor_.get()) {
-        eigenValues = std::vector<double>(subsampled->minorEigenValues());
+        eigenValues = std::vector<TensorField2D::value_type>(subsampled->minorEigenValues());
     } else {
-        eigenValues = std::vector<double>(subsampled->majorEigenValues());
+        eigenValues = std::vector<TensorField2D::value_type>(subsampled->majorEigenValues());
     }
 
     minVal_ = static_cast<float>(*std::min_element(eigenValues.begin(), eigenValues.end()));
@@ -103,7 +103,7 @@ void TensorFieldLIC::updateEigenValues() {
         // Delete zero entries to find actual minimum
         eigenValues.erase(
             std::remove_if(eigenValues.begin(), eigenValues.end(),
-                           [](double x) { return x < std::numeric_limits<double>::epsilon(); }),
+                           [](auto x) { return x < std::numeric_limits<TensorField2D::value_type>::epsilon(); }),
             eigenValues.end());
 
         minVal_ = static_cast<float>(*std::min_element(eigenValues.begin(), eigenValues.end()));

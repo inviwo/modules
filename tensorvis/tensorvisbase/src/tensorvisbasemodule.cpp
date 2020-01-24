@@ -43,8 +43,10 @@
 #include <inviwo/tensorvisbase/processors/invariantspacefilter.h>
 #include <inviwo/tensorvisbase/processors/invariantspacetodataframe.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubsample.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubset.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dtoimage.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dangle.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h>
@@ -79,8 +81,10 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<InvariantSpaceCombine>();
     registerProcessor<InvariantSpaceFilter>();
     registerProcessor<TensorField2DAnisotropy>();
+    registerProcessor<TensorField2DMetaData>();
     registerProcessor<TensorField2DSubsample>();
     registerProcessor<TensorField2DSubset>();
+    registerProcessor<TensorField2DToImage>();
     registerProcessor<TensorField3DAngle>();
     registerProcessor<TensorField3DBasisManipulation>();
     registerProcessor<TensorField3DBoundingBox>();

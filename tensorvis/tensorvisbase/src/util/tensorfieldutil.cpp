@@ -68,7 +68,7 @@ void bindTensorFieldAsVolume(std::array<std::shared_ptr<Volume>, 3> volumes,
 std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> tensorField,
                                            size2_t newDimensions,
                                            const InterpolationMethod method) {
-    std::vector<dmat2> dataNew;
+    std::vector<TensorField2D::matN> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y);
 
     util::IndexMapper2D indexMapperNew(newDimensions);

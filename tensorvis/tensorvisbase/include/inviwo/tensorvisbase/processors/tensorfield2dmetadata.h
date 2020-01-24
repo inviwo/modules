@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,18 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DIMPORT_H
-#define IVW_TENSORFIELD2DIMPORT_H
+#pragma once
 
-#include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DImport, Tensor Field2DImport}
- * ![](org.inviwo.TensorField2DImport.png?classIdentifier=org.inviwo.TensorField2DImport)
+/** \docpage{org.inviwo.TensorField2DMetaData, Tensor Field2DMeta Data}
+ * ![](org.inviwo.TensorField2DMetaData.png?classIdentifier=org.inviwo.TensorField2DMetaData)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -52,16 +51,10 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TensorField2DImport
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DMetaData : public Processor {
 public:
-    TensorField2DImport();
-    virtual ~TensorField2DImport() = default;
+    TensorField2DMetaData();
+    virtual ~TensorField2DMetaData() = default;
 
     virtual void process() override;
 
@@ -69,16 +62,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    FileProperty inFile_;
-
-    TensorField2DOutport outport_;
-
-    void buildTensors(const std::vector<double>& data,
-                      std::vector<TensorField2D::matN>& tensors) const;
-
-    FloatVec2Property extents_;
+    ImageOutport outport_;
+    FloatVec3Property position_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DIMPORT_H

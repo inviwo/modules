@@ -124,15 +124,17 @@ void EigenvalueFieldToImage::updateEigenValues() {
     auto subsampled = tensorutil::subsample2D(inport_.getData(),
                                               inport_.getData()->getDimensions() * size2_t(2, 2));
 
-    std::vector<double> eigenValues;
+    std::vector<TensorField2D::value_type> eigenValues;
     if (majorMinor_.get()) {
-        eigenValues = std::vector<double>(subsampled->minorEigenValues());
+        eigenValues = std::vector<TensorField2D::value_type>(subsampled->minorEigenValues());
     } else {
-        eigenValues = std::vector<double>(subsampled->majorEigenValues());
+        eigenValues = std::vector<TensorField2D::value_type>(subsampled->majorEigenValues());
     }
 
-    minVal_ = static_cast<float>(*std::min_element(eigenValues.begin(), eigenValues.end()));
-    maxVal_ = static_cast<float>(*std::max_element(eigenValues.begin(), eigenValues.end()));
+    auto [min, max] = std::minmax_element(eigenValues.begin(), eigenValues.end());
+
+    minVal_ = *min;
+    maxVal_ = *max;
 
     if (minVal_ == 0.0) {
         // Delete zero entries to find actual minimum
@@ -152,11 +154,11 @@ void EigenvalueFieldToImage::updateAnisotropy() {
     auto subsampled = tensorutil::subsample2D(inport_.getData(),
                                               inport_.getData()->getDimensions() * size2_t(2, 2));
 
-    std::vector<double> minorEigenValues;
-    std::vector<double> majorEigenValues;
-    std::vector<double> anisotropyValues;
-    minorEigenValues = std::vector<double>(subsampled->minorEigenValues());
-    majorEigenValues = std::vector<double>(subsampled->majorEigenValues());
+    std::vector<TensorField2D::value_type> minorEigenValues;
+    std::vector<TensorField2D::value_type> majorEigenValues;
+    std::vector<TensorField2D::value_type> anisotropyValues;
+    minorEigenValues = std::vector<TensorField2D::value_type>(subsampled->minorEigenValues());
+    majorEigenValues = std::vector<TensorField2D::value_type>(subsampled->majorEigenValues());
     anisotropyValues.resize(minorEigenValues.size());
 
     for (size_t i = 0; i < minorEigenValues.size(); ++i) {

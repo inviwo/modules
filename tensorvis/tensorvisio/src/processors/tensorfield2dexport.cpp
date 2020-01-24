@@ -87,12 +87,6 @@ void TensorField2DExport::exportBinary() const {
     size_t version = 2;
     outFile.write(reinterpret_cast<const char *>(&version), sizeof(size_t));
 
-    size_t dimensionality = tensorField->dimensionality();
-    outFile.write(reinterpret_cast<const char *>(&dimensionality), sizeof(size_t));
-
-    size_t rank = tensorField->rank();
-    outFile.write(reinterpret_cast<const char *>(&rank), sizeof(size_t));
-
     bool hasEigenInfo = includeEigenInfo_.get();
     outFile.write(reinterpret_cast<const char *>(&hasEigenInfo), sizeof(bool));
 
@@ -104,7 +98,7 @@ void TensorField2DExport::exportBinary() const {
 
     const auto &data = tensorField->tensors();
 
-    for (const auto &val : data) {
+    for (const auto &val : *data) {
         // Diagonal
         outFile.write(reinterpret_cast<const char *>(&val[0][0]), sizeof(double));
         outFile.write(reinterpret_cast<const char *>(&val[1][1]), sizeof(double));

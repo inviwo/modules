@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#pragma optimize("",off)
+
 #include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
 
 namespace inviwo {
@@ -167,3 +169,5 @@ std::pair<glm::uint8, dmat3> sample(std::shared_ptr<const TensorField3D> tensorF
     return std::pair<glm::uint8, dmat3>(glm::uint8{1}, dmat3());
 }
 }  // namespace inviwo
+
+#pragma optimize("",on)

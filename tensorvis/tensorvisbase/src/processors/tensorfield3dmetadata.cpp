@@ -40,7 +40,7 @@ namespace {
 
 struct AddMetaDataProperties {
     AddMetaDataProperties() = delete;
-    AddMetaDataProperties(Processor* p, std::shared_ptr<const TensorField3D> tensorField = nullptr)
+    AddMetaDataProperties(Processor* p, std::shared_ptr<const TensorField3D> tensorField)
         : processor(p), tensorField_(tensorField) {}
 
     template <typename T>
@@ -131,6 +131,8 @@ TensorField3DMetaData::TensorField3DMetaData()
 }
 
 void TensorField3DMetaData::initializeResources() {
+    if (!inport_.hasData()) return;
+
     NetworkLock l;
 
     auto comp = getPropertiesByType<CompositeProperty>().front();
@@ -140,11 +142,7 @@ void TensorField3DMetaData::initializeResources() {
         comp->removeProperty(prop);
     }
 
-    if (inport_.hasData()) {
-        util::for_each_type<attributes::types>{}(AddMetaDataProperties{this, inport_.getData()});
-    } else {
-        util::for_each_type<attributes::types>{}(AddMetaDataProperties{this});
-    }
+    util::for_each_type<attributes::types3D>{}(AddMetaDataProperties{this, inport_.getData()});
 
     /*
     This is a bit of a hack but it'll do. What happens is that adding/removing of the default meta
@@ -166,7 +164,7 @@ void TensorField3DMetaData::addRemoveMetaData(std::shared_ptr<TensorField3D> ten
         const auto id = util::constexpr_hash(std::string_view(prop->getDisplayName()));
         const auto add = static_cast<BoolProperty*>(prop)->get();
 
-        util::for_each_type<attributes::types>{}(AddRemoveMetaData{tensorField}, id, add);
+        util::for_each_type<attributes::types3D>{}(AddRemoveMetaData{tensorField}, id, add);
     }
 }
 

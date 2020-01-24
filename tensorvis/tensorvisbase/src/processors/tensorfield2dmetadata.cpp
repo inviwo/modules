@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,58 +27,31 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DIMPORT_H
-#define IVW_TENSORFIELD2DIMPORT_H
-
-#include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/fileproperty.h>
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DImport, Tensor Field2DImport}
- * ![](org.inviwo.TensorField2DImport.png?classIdentifier=org.inviwo.TensorField2DImport)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DImport
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor {
-public:
-    TensorField2DImport();
-    virtual ~TensorField2DImport() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    FileProperty inFile_;
-
-    TensorField2DOutport outport_;
-
-    void buildTensors(const std::vector<double>& data,
-                      std::vector<TensorField2D::matN>& tensors) const;
-
-    FloatVec2Property extents_;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo TensorField2DMetaData::processorInfo_{
+    "org.inviwo.TensorField2DMetaData",      // Class identifier
+    "Tensor Field2DMeta Data",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
 };
+const ProcessorInfo TensorField2DMetaData::getProcessorInfo() const { return processorInfo_; }
+
+TensorField2DMetaData::TensorField2DMetaData()
+    : Processor()
+    , outport_("outport")
+    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+
+    addPort(outport_);
+    addProperty(position_);
+}
+
+void TensorField2DMetaData::process() {
+    // outport_.setData(myImage);
+}
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DIMPORT_H

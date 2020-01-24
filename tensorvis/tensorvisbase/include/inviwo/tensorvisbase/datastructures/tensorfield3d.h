@@ -15,13 +15,15 @@ public:
 
     TensorField3D() = delete;
 
-    TensorField3D(const size3_t& dimensions, const std::vector<mat3>& tensors);
-    TensorField3D(const size3_t& dimensions, std::shared_ptr<std::vector<mat3>> tensors);
+    TensorField3D(const sizeN_t& dimensions, const std::vector<matN>& tensors);
+    TensorField3D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors);
 
-    TensorField3D(const size3_t& dimensions, const std::vector<mat3>& tensors,
+    TensorField3D(const sizeN_t& dimensions, const std::vector<matN>& tensors,
                   const DataFrame& metaData);
-    TensorField3D(const size3_t& dimensions, std::shared_ptr<std::vector<mat3>> tensors,
+    TensorField3D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors,
                   std::shared_ptr<DataFrame> metaData);
+
+    virtual ~TensorField3D() = default;
 
     /**
      * NOTE: This copy constructor creates a shallow copy, i.e. the tensors and the meta data are
@@ -32,36 +34,18 @@ public:
 
     virtual TensorField3D* clone() const final;
 
-    value_type getMajorEigenValue(const size_t index) const {
-        return value_type(this->getMetaDataContainer<attributes::MajorEigenValue>()[index]);
-    }
-
+    virtual TensorField3D* deepCopy() const final;
+        
     value_type getIntermediateEigenValue(const size_t index) const {
         return value_type(this->getMetaDataContainer<attributes::IntermediateEigenValue>()[index]);
     }
-
-    value_type getMinorEigenValue(const size_t index) const {
-        return value_type(this->getMetaDataContainer<attributes::MinorEigenValue>()[index]);
+    
+    const std::vector<vecN>& intermediateEigenVectors() const {
+        return this->getMetaDataContainer<attributes::IntermediateEigenVector<3>>();
     }
 
-    const std::vector<vec3>& majorEigenVectors() const {
-        return this->getMetaDataContainer<attributes::MajorEigenVector>();
-    }
-    const std::vector<vec3>& intermediateEigenVectors() const {
-        return this->getMetaDataContainer<attributes::IntermediateEigenVector>();
-    }
-    const std::vector<vec3>& minorEigenVectors() const {
-        return this->getMetaDataContainer<attributes::MinorEigenVector>();
-    }
-
-    const std::vector<float>& majorEigenValues() const {
-        return this->getMetaDataContainer<attributes::MajorEigenValue>();
-    }
-    const std::vector<float>& intermediateEigenValues() const {
+    const std::vector<value_type>& intermediateEigenValues() const {
         return this->getMetaDataContainer<attributes::IntermediateEigenValue>();
-    }
-    const std::vector<float>& minorEigenValues() const {
-        return this->getMetaDataContainer<attributes::MinorEigenValue>();
     }
 
     std::array<std::shared_ptr<Volume>, 3> getVolumeRepresentation() const;
@@ -69,8 +53,8 @@ public:
     std::optional<std::vector<vec3>> getNormalizedScreenCoordinates(float sliceCoord);
 
 protected:
-    void initializeDefaultMetaData();
-    void computeDataMaps();
+    virtual void initializeDefaultMetaData()final;
+    virtual void computeDataMaps()final;
 
 private:
     template <typename T, typename R>

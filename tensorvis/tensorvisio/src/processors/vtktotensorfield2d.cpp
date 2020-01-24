@@ -89,7 +89,7 @@ void VTKToTensorField2D::process() {
         return;
     }
 
-    std::vector<dmat2> tensorVector2D;
+    std::vector<TensorField2D::matN> tensorVector2D;
     tensorVector2D.resize(numberOfElements);
 
     // Check to see if we need to project the tensor
