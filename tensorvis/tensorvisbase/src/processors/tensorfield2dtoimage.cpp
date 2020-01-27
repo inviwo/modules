@@ -28,30 +28,172 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield2dtoimage.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 
 namespace inviwo {
 
+namespace {
+
+struct AddOptions {
+    AddOptions() = delete;
+    AddOptions(std::vector<OptionPropertyOption<size_t>>& options,
+               std::shared_ptr<const TensorField2D> tensorField)
+        : options_(options), tensorField_(tensorField) {}
+
+    template <typename T>
+    void operator()() {
+        if (!tensorField_->hasMetaData<T>()) return;
+
+        const auto name = std::string(T::identifier);
+        auto identifier = name;
+        const auto id = util::constexpr_hash(T::identifier);
+        replaceInString(identifier, " ", "");
+
+        options_.emplace_back(identifier, name, id);
+    }
+
+private:
+    std::vector<OptionPropertyOption<size_t>>& options_;
+    std::shared_ptr<const TensorField2D> tensorField_;
+};
+
+struct IsVec {
+    IsVec() = delete;
+    IsVec(Processor* p, size_t id) : p_(p), id_(id) {}
+
+    template <typename T>
+    void operator()() {
+        if (id_ == util::constexpr_hash(T::identifier)) {
+            if constexpr (util::extent<T>::value == 1) {
+                p_->getPropertiesByType<BoolProperty>().front()->setVisible(false);
+            } else {
+                p_->getPropertiesByType<BoolProperty>().front()->setVisible(true);
+            }
+        }
+    }
+
+private:
+    Processor* p_;
+    size_t id_;
+};
+
+struct CreateImage {
+    CreateImage() = delete;
+    CreateImage(size_t id, std::shared_ptr<const TensorField2D> tensorField, Processor* p)
+        : id_(id), tensorField_(tensorField), p_(p) {}
+
+    template <typename T>
+    void operator()() {
+        using type = typename T::value_type;
+
+        if (id_ == util::constexpr_hash(T::identifier)) {
+            auto dataFormat = new DataFormat<type>();
+            auto dimensions = tensorField_->getDimensions();
+            layer_ = std::make_shared<Layer>(dimensions, dataFormat);
+            auto data =
+                static_cast<LayerRAMPrecision<type>*>(layer_->getEditableRepresentation<LayerRAM>())
+                    ->getDataTyped();
+
+            auto metaData = tensorField_->metaData();
+            auto col_data = std::dynamic_pointer_cast<const TemplateColumn<type>>(
+                                metaData->getColumn(std::string(T::identifier)))
+                                ->getTypedBuffer()
+                                ->getRAMRepresentation()
+                                ->getDataContainer();
+
+            std::memcpy(data, col_data.data(), sizeof(type) * glm::compMul(dimensions));
+
+            if constexpr (util::extent<type>::value == 1) {
+                auto [min, max] =
+                    std::minmax_element(col_data.begin(), col_data.end(),
+                                        [](const auto a, const auto b) -> bool { return a < b; });
+
+                dataMap_.dataRange = dataMap_.valueRange = dvec2{*min, *max};
+
+                if (p_->getPropertiesByType<BoolProperty>().front()->get()) {
+                    for (size_t i{0}; i < glm::compMul(dimensions); ++i) {
+                        data[i] = dataMap_.mapFromValueToNormalized(data[i]);
+                    }
+                }
+            } else {
+                auto [min, max] = std::minmax_element(col_data.begin(), col_data.end(),
+                                                      [](const auto& a, const auto& b) -> bool {
+                                                          return glm::compMax(a) < glm::compMax(b);
+                                                      });
+
+                dataMap_.dataRange = dataMap_.valueRange =
+                    dvec2{glm::compMax(*min), glm::compMax(*max)};
+
+                if (p_->getPropertiesByType<BoolProperty>().front()->get()) {
+                    for (size_t i{0}; i < glm::compMul(dimensions); ++i) {
+                        data[i] = glm::normalize(data[i]);
+                    }
+                }
+            }
+        }
+    }
+
+    std::shared_ptr<Layer> layer_;
+    DataMapper dataMap_;
+
+private:
+    size_t id_;
+    std::shared_ptr<const TensorField2D> tensorField_;
+    Processor* p_;
+};
+}  // namespace
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DToImage::processorInfo_{
-    "org.inviwo.TensorField2DToImage",      // Class identifier
-    "Tensor Field2DTo Image",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.TensorField2DToImage",  // Class identifier
+    "Tensor Field2DTo Image",           // Display name
+    "Undefined",                        // Category
+    CodeState::Experimental,            // Code state
+    Tags::None,                         // Tags
 };
 const ProcessorInfo TensorField2DToImage::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DToImage::TensorField2DToImage()
     : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+    , tensorField2DInport_("tensorField2DInport")
+    , imageOutport_("imageOutport")
+    , imageContent_("imageContent", "Image content")
+    , normalizeVectors_("normalize", "Normalize eigenvectors", true) {
 
-    addPort(outport_);
-    addProperty(position_);
+    addPort(tensorField2DInport_);
+    addPort(imageOutport_);
+
+    addProperties(imageContent_, normalizeVectors_);
+
+    tensorField2DInport_.onChange([this]() {
+        if (!tensorField2DInport_.hasData()) return;
+
+        std::vector<OptionPropertyOption<size_t>> options{};
+
+        util::for_each_type<attributes::types2D>{}(
+            AddOptions{options, tensorField2DInport_.getData()});
+
+        // NetworkLock l; --> As far as I can see this is done internally in replaceOptions
+        imageContent_.replaceOptions(options);
+    });
+
+    tensorField2DInport_.onDisconnect([this]() { imageContent_.clearOptions(); });
+
+    imageContent_.onChange([this]() {
+        NetworkLock l;
+        util::for_each_type<attributes::types2D>{}(IsVec{this, imageContent_.get()});
+    });
 }
 
 void TensorField2DToImage::process() {
-    // outport_.setData(myImage);
+    auto layer = util::for_each_type<attributes::types2D>{}(
+                     CreateImage{imageContent_.get(), tensorField2DInport_.getData(), this})
+                     .layer_;
+
+    auto image = std::make_shared<Image>(layer);
+
+    imageOutport_.setData(image);
 }
 
 }  // namespace inviwo

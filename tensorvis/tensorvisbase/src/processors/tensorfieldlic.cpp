@@ -103,7 +103,7 @@ void TensorFieldLIC::updateEigenValues() {
         // Delete zero entries to find actual minimum
         eigenValues.erase(
             std::remove_if(eigenValues.begin(), eigenValues.end(),
-                           [](auto x) { return x < std::numeric_limits<TensorField2D::value_type>::epsilon(); }),
+                           [](auto x) { return std::abs(x) < std::numeric_limits<TensorField2D::value_type>::epsilon(); }),
             eigenValues.end());
 
         minVal_ = static_cast<float>(*std::min_element(eigenValues.begin(), eigenValues.end()));
@@ -122,6 +122,7 @@ void TensorFieldLIC::process() {
     // add tensorfield to texture unit container
     tensorutil::bindTensorFieldAsColorTexture(tensorFieldTexture, inport_.getData(), shader_,
                                               units);
+
     // add noise texture to texture unit container
     utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
 

@@ -46,8 +46,7 @@ TensorField2DSubsample::TensorField2DSubsample()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , resolutionMultiplier_("resolutionMultiplier", "Resolution multiplier", 1.0f, 0.1f, 10.0f,
-                            0.1f)
+    , resolutionMultiplier_("resolutionMultiplier", "Resolution multiplier", 1, 1, 10, 1)
     , interpolationMethod_(
           "interpolationMethod", "Interpolation method",
           {{"linear", "Linear", tensorutil::InterpolationMethod::Linear},
@@ -65,10 +64,12 @@ TensorField2DSubsample::TensorField2DSubsample()
 void TensorField2DSubsample::initializeResources() {}
 
 void TensorField2DSubsample::process() {
-    outport_.setData(tensorutil::subsample2D(
+    auto subsampled = tensorutil::subsample2D(
         inport_.getData(),
-        size2_t(glm::round(vec2(inport_.getData()->getDimensions()) * resolutionMultiplier_.get())),
-        interpolationMethod_.get()));
+        inport_.getData()->getDimensions() * resolutionMultiplier_.get(),
+        interpolationMethod_.get());
+
+    outport_.setData(subsampled);
 }
 
 }  // namespace inviwo

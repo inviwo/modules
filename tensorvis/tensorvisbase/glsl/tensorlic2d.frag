@@ -33,7 +33,6 @@
 uniform sampler2D tensorFieldColor;
 uniform sampler2D noiseTextureColor;
 uniform sampler2D imageInportColor;
-uniform sampler2D tf;
 uniform ImageParameters tensorFieldParameters;
 uniform ImageParameters noiseTextureParameters;
 

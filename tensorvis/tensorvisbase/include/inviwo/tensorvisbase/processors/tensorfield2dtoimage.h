@@ -32,8 +32,10 @@
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
@@ -62,8 +64,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    ImageOutport outport_;
-    FloatVec3Property position_;
+    TensorField2DInport tensorField2DInport_;
+    ImageOutport imageOutport_;
+
+    OptionPropertySize_t imageContent_;
+
+    BoolProperty normalizeVectors_;
 };
 
 }  // namespace inviwo

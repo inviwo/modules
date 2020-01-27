@@ -34,7 +34,7 @@
 
 namespace inviwo {
 namespace tensorutil {
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image> texture,
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
                                    std::shared_ptr<const TensorField2D> tensorField, Shader& shader,
                                    TextureUnitContainer& textureUnits) {
     texture = tensorField->getImageRepresentation();
@@ -42,13 +42,9 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image> texture,
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image> texture, TensorField2DInport& inport,
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture, TensorField2DInport& inport,
                                    Shader& shader, TextureUnitContainer& textureUnits) {
-    auto tensorField = inport.getData();
-
-    texture = tensorField->getImageRepresentation();
-
-    utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
+    bindTensorFieldAsColorTexture(texture, inport.getData(), shader, textureUnits);
 }
 
 void bindTensorFieldAsVolume(std::array<std::shared_ptr<Volume>, 3> volumes,
@@ -73,18 +69,17 @@ std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> 
 
     util::IndexMapper2D indexMapperNew(newDimensions);
 
-    auto xFrac = static_cast<double>(tensorField->getDimensions().x - 1) /
-                 static_cast<double>(newDimensions.x - 1);
-    auto yFrac = static_cast<double>(tensorField->getDimensions().y - 1) /
-                 static_cast<double>(newDimensions.y - 1);
+    const auto bounds = tensorField->getBounds<double>();
+    const auto newBounds = glm::dvec2(newDimensions - size_t(1));
+
+    const auto xFrac = bounds.x / newBounds.x;
+    const auto yFrac = bounds.y / newBounds.y;
 
     for (size_t x = 0; x < newDimensions.x; x++) {
         for (size_t y = 0; y < newDimensions.y; y++) {
             // Find position in old tensor field
             auto pos = dvec2(xFrac * static_cast<double>(x), yFrac * static_cast<double>(y));
-            auto posNormalized =
-                pos / dvec2(static_cast<double>(tensorField->getDimensions().x - 1),
-                            static_cast<double>(tensorField->getDimensions().y - 1));
+            auto posNormalized = pos / bounds;
 
             // Sample old tensor field at position
             auto tensor = sample(tensorField, posNormalized, method);

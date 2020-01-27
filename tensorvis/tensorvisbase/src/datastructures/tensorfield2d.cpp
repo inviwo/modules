@@ -35,12 +35,14 @@ TensorField2D::TensorField2D(const sizeN_t& dimensions, const std::vector<matN>&
     : TensorField<2, float>(dimensions, tensors) {
     initializeDefaultMetaData();
     computeDataMaps();
+    computeNormalizedScreenCoordinates();
 }
 
 TensorField2D::TensorField2D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors)
     : TensorField<2, float>(dimensions, tensors) {
     initializeDefaultMetaData();
     computeDataMaps();
+    computeNormalizedScreenCoordinates();
 }
 
 TensorField2D::TensorField2D(const sizeN_t& dimensions, const std::vector<matN>& tensors,
@@ -72,23 +74,24 @@ TensorField2D* TensorField2D::deepCopy() const {
 
     tf->setTensors(std::make_shared<std::vector<matN>>(*tensors_));
     tf->setMetaData(std::make_shared<DataFrame>(*metaData_));
-
+       
     return tf;
 }
 
 std::shared_ptr<Image> TensorField2D::getImageRepresentation() const {
-    std::shared_ptr<Image> ret = std::make_shared<Image>(dimensions_, DataVec4Float32::get());
-
-    auto colorLayer = static_cast<LayerRAMPrecision<glm::f32vec4>*>(
-                          ret->getEditableRepresentation<ImageRAM>()->getColorLayerRAM())
-                          ->getDataTyped();
+    using layer_type = glm::vec<4, value_type>;
+    auto dataFormat = new DataFormat<layer_type>();
+    auto layer = std::make_shared<Layer>(dimensions_, dataFormat);
+    auto data =
+        static_cast<LayerRAMPrecision<layer_type>*>(layer->getEditableRepresentation<LayerRAM>())
+        ->getDataTyped();
 
     for (size_t i{0}; i < glm::compMul(dimensions_); ++i) {
         const auto& tensor = at(i);
-        colorLayer[i] = vec4(tensor[0][0], tensor[1][0], tensor[0][1], tensor[1][1]);
+        data[i] = vec4(tensor[0][0], tensor[1][0], tensor[0][1], tensor[1][1]);
     }
 
-    return ret;
+    return std::make_shared<Image>(layer);
 }
 
 const dvec2& TensorField2D::getNormalizedImagePosition(const size_t index) const {
@@ -150,10 +153,10 @@ void TensorField2D::initializeDefaultMetaData() {
         auto eigenValuesAndEigenVectors = func(tensor);
 
         majorEigenVectors[i] = eigenValuesAndEigenVectors[0].second;
-        minorEigenVectors[i] = eigenValuesAndEigenVectors[2].second;
+        minorEigenVectors[i] = eigenValuesAndEigenVectors[1].second;
 
         majorEigenValues[i] = eigenValuesAndEigenVectors[0].first;
-        minorEigenValues[i] = eigenValuesAndEigenVectors[2].first;
+        minorEigenValues[i] = eigenValuesAndEigenVectors[1].first;
     }
 
     addIfNotPresent<attributes::MajorEigenValue>(newMetaData, majorEigenValues);

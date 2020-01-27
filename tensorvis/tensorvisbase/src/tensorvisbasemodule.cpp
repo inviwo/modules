@@ -36,7 +36,6 @@
 #include <inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
 
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/processors/eigenvaluefieldtoimage.h>
 #include <inviwo/tensorvisbase/processors/hyperstreamlines.h>
 #include <inviwo/tensorvisbase/processors/imagetospherefield.h>
 #include <inviwo/tensorvisbase/processors/invariantspacecombine.h>
@@ -55,7 +54,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubsample.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubset.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldgenerator.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dgenerator.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
@@ -75,7 +74,6 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     : InviwoModule(app, "TensorVisBase") {
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    registerProcessor<EigenvalueFieldToImage>();
     registerProcessor<HyperStreamlines>();
     registerProcessor<ImageToSphereField>();
     registerProcessor<InvariantSpaceCombine>();
@@ -93,7 +91,7 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorField3DSubsample>();
     registerProcessor<TensorField3DSubset>();
     registerProcessor<TensorField3DToDataFrame>();
-    registerProcessor<TensorFieldGenerator>();
+    registerProcessor<TensorField2DGenerator>();
     registerProcessor<TensorFieldLIC>();
     registerProcessor<TensorFieldSlice>();
     registerProcessor<TensorFieldToRGBA>();

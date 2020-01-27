@@ -35,6 +35,7 @@
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
@@ -73,7 +74,7 @@ private:
     TensorField2DInport inport_;
     TensorField2DOutport outport_;
 
-    FloatProperty resolutionMultiplier_;
+    IntSizeTProperty resolutionMultiplier_;
     TemplateOptionProperty<tensorutil::InterpolationMethod> interpolationMethod_;
 };
 
