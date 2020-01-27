@@ -58,26 +58,6 @@ private:
     std::shared_ptr<const TensorField2D> tensorField_;
 };
 
-struct IsVec {
-    IsVec() = delete;
-    IsVec(Processor* p, size_t id) : p_(p), id_(id) {}
-
-    template <typename T>
-    void operator()() {
-        if (id_ == util::constexpr_hash(T::identifier)) {
-            if constexpr (util::extent<T>::value == 1) {
-                p_->getPropertiesByType<BoolProperty>().front()->setVisible(false);
-            } else {
-                p_->getPropertiesByType<BoolProperty>().front()->setVisible(true);
-            }
-        }
-    }
-
-private:
-    Processor* p_;
-    size_t id_;
-};
-
 struct CreateImage {
     CreateImage() = delete;
     CreateImage(size_t id, std::shared_ptr<const TensorField2D> tensorField, Processor* p)
@@ -179,11 +159,6 @@ TensorField2DToImage::TensorField2DToImage()
     });
 
     tensorField2DInport_.onDisconnect([this]() { imageContent_.clearOptions(); });
-
-    imageContent_.onChange([this]() {
-        NetworkLock l;
-        util::for_each_type<attributes::types2D>{}(IsVec{this, imageContent_.get()});
-    });
 }
 
 void TensorField2DToImage::process() {
