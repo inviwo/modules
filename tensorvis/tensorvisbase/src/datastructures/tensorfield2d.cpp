@@ -74,7 +74,7 @@ TensorField2D* TensorField2D::deepCopy() const {
 
     tf->setTensors(std::make_shared<std::vector<matN>>(*tensors_));
     tf->setMetaData(std::make_shared<DataFrame>(*metaData_));
-       
+
     return tf;
 }
 
@@ -84,7 +84,7 @@ std::shared_ptr<Image> TensorField2D::getImageRepresentation() const {
     auto layer = std::make_shared<Layer>(dimensions_, dataFormat);
     auto data =
         static_cast<LayerRAMPrecision<layer_type>*>(layer->getEditableRepresentation<LayerRAM>())
-        ->getDataTyped();
+            ->getDataTyped();
 
     for (size_t i{0}; i < glm::compMul(dimensions_); ++i) {
         const auto& tensor = at(i);

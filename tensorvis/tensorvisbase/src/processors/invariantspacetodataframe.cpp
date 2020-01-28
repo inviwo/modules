@@ -44,35 +44,35 @@ const ProcessorInfo InvariantSpaceToDataFrame::getProcessorInfo() const { return
 InvariantSpaceToDataFrame::InvariantSpaceToDataFrame()
     : Processor(), /*inport_("inport"),*/ outport_("outport") {
 
-//    addPort(inport_);
+    //    addPort(inport_);
     addPort(outport_);
 }
 
 void InvariantSpaceToDataFrame::process() {
-   /* const auto& invariantSpace = *inport_.getData();
+    /* const auto& invariantSpace = *inport_.getData();
 
-    auto dataFrame = std::make_shared<DataFrame>();
+     auto dataFrame = std::make_shared<DataFrame>();
 
-    size_t i{0};
-    for (const auto axis : invariantSpace) {
-        auto buffer = std::make_shared<Buffer<glm::f32>>();
+     size_t i{0};
+     for (const auto axis : invariantSpace) {
+         auto buffer = std::make_shared<Buffer<glm::f32>>();
 
-        buffer->setSize(axis->size());
+         buffer->setSize(axis->size());
 
-        const auto data = axis->data();
+         const auto data = axis->data();
 
-        for (size_t j{0}; j < axis->size(); ++j) {
-            buffer->getEditableRepresentation<BufferRAM>()->setFromDouble(j, data[j]);
-        }
+         for (size_t j{0}; j < axis->size(); ++j) {
+             buffer->getEditableRepresentation<BufferRAM>()->setFromDouble(j, data[j]);
+         }
 
-        dataFrame->addColumnFromBuffer(invariantSpace.getIdentifier(i), buffer);
+         dataFrame->addColumnFromBuffer(invariantSpace.getIdentifier(i), buffer);
 
-        i++;
-    }
+         i++;
+     }
 
-    dataFrame->updateIndexBuffer();
+     dataFrame->updateIndexBuffer();
 
-    outport_.setData(dataFrame);*/
+     outport_.setData(dataFrame);*/
 }
 
 }  // namespace inviwo

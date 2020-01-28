@@ -5,7 +5,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DBasisManipulation::processorInfo_{
     "org.inviwo.TensorField3DBasisManipulation",  // Class identifier
-    "Tensor Field 3D Basis Manipulation",           // Display name
+    "Tensor Field 3D Basis Manipulation",         // Display name
     "Tensor",                                     // Category
     CodeState::Experimental,                      // Code state
     Tags::CPU,                                    // Tags

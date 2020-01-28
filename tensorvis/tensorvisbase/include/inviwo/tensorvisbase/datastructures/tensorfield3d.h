@@ -35,11 +35,11 @@ public:
     virtual TensorField3D* clone() const final;
 
     virtual TensorField3D* deepCopy() const final;
-        
+
     value_type getIntermediateEigenValue(const size_t index) const {
         return value_type(this->getMetaDataContainer<attributes::IntermediateEigenValue>()[index]);
     }
-    
+
     const std::vector<vecN>& intermediateEigenVectors() const {
         return this->getMetaDataContainer<attributes::IntermediateEigenVector<3>>();
     }
@@ -53,8 +53,8 @@ public:
     std::optional<std::vector<vec3>> getNormalizedScreenCoordinates(float sliceCoord);
 
 protected:
-    virtual void initializeDefaultMetaData()final;
-    virtual void computeDataMaps()final;
+    virtual void initializeDefaultMetaData() final;
+    virtual void computeDataMaps() final;
 
 private:
     template <typename T, typename R>
@@ -64,8 +64,8 @@ private:
 template <typename T, typename R>
 void TensorField3D::addIfNotPresent(std::shared_ptr<DataFrame> df, const R& data) const {
     if (!this->hasMetaData<T>()) {
-        df->addColumn(
-            std::make_shared<TemplateColumn<typename T::value_type>>(std::string(T::identifier), data));
+        df->addColumn(std::make_shared<TemplateColumn<typename T::value_type>>(
+            std::string(T::identifier), data));
     }
 }
 }  // namespace inviwo

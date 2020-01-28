@@ -33,7 +33,6 @@
 
 namespace inviwo {
 
-
 namespace tensorutil {
 vec4 tensor2DToDvec4(const dmat2 &tensor) {
     return vec4(tensor[0][0], tensor[1][0], tensor[1][1], 1.0);

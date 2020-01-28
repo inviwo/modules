@@ -80,7 +80,7 @@ public:
     sizeN_t getDimensions() const final { return dimensions_; }
 
     template <typename T>
-    glm::vec<N, T, glm::defaultp> getDimensionsAs()const {
+    glm::vec<N, T, glm::defaultp> getDimensionsAs() const {
         return glm::vec<N, T, glm::defaultp>(dimensions_);
     }
 
@@ -184,7 +184,7 @@ protected:
 
     std::vector<glm::uint8> binaryMask_;
 
-    virtual void initializeDefaultMetaData() =0;
+    virtual void initializeDefaultMetaData() = 0;
     virtual void computeDataMaps() = 0;
 };
 
@@ -336,7 +336,7 @@ inline typename TensorField<N, precision>::matNb TensorField<N, precision>::getB
 
     matNb modelMatrix;
 
-    for (unsigned int i{ 0 }; i < N; ++i) {
+    for (unsigned int i{0}; i < N; ++i) {
         modelMatrix[i] = glm::vec<N + 1, precision>(basis[i], precision(0));
     }
 

@@ -170,8 +170,7 @@ void TensorField2DImport::process() {
         return;
     }
     if (hasEigenInfo) {
-        auto tensorField =
-            std::make_shared<TensorField2D>(dimensions, tensors);
+        auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors);
 
         extents_.set(tensorField->getExtents());
 

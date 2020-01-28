@@ -43,10 +43,11 @@ const ProcessorInfo InvariantSpaceCombine::processorInfo_{
 const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
 
 InvariantSpaceCombine::InvariantSpaceCombine()
-    : Processor()/*
-    , invariantSpaceInport1_("invariantSpaceInport1")
-    , invariantSpaceInport2_("invariantSpaceInport2")
-    , outport_("outport")*/ {
+    : Processor() /*
+     , invariantSpaceInport1_("invariantSpaceInport1")
+     , invariantSpaceInport2_("invariantSpaceInport2")
+     , outport_("outport")*/
+{
     /*addPort(invariantSpaceInport1_);
     addPort(invariantSpaceInport2_);
     addPort(outport_);*/

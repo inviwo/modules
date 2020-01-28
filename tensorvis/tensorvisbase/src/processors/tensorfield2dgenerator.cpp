@@ -34,10 +34,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DGenerator::processorInfo_{
     "org.inviwo.TensorField2DGenerator",  // Class identifier
-    "Tensor Field 2D Generator",           // Display name
-    "Tensor Field IO",                  // Category
-    CodeState::Experimental,            // Code state
-    Tags::CPU,                          // Tags
+    "Tensor Field 2D Generator",          // Display name
+    "Tensor Field IO",                    // Category
+    CodeState::Experimental,              // Code state
+    Tags::CPU,                            // Tags
 };
 
 const ProcessorInfo TensorField2DGenerator::getProcessorInfo() const { return processorInfo_; }
@@ -138,9 +138,7 @@ TensorField2DGenerator::TensorField2DGenerator()
 
     addProperty(collectionField_);
 
-    auto setMatProperty = [this](const dmat2& mat, DoubleMat2Property& prop) {
-        prop.set(mat);
-    };
+    auto setMatProperty = [this](const dmat2& mat, DoubleMat2Property& prop) { prop.set(mat); };
 
     setMatProperty(dmat2(dvec2(15., 6.4), dvec2(6.4, 14.)), collectionRow1T1_);
     setMatProperty(dmat2(dvec2(7.5, 3.), dvec2(3., 21.)), collectionRow1T2_);

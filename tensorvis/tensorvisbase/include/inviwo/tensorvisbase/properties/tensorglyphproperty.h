@@ -76,13 +76,12 @@ public:
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
                                                    size_t index, const vec3 pos);
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
-                                                   size_t index, const vec3 pos,
-                                                   const vec4& color);
+                                                   size_t index, const vec3 pos, const vec4& color);
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
                                                    size_t index, const vec3 pos, const float size);
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
-                                                   size_t index, const vec3 pos,
-                                                   const vec4& color, const float size);
+                                                   size_t index, const vec3 pos, const vec4& color,
+                                                   const float size);
 
     const std::shared_ptr<BasicMesh> generateGlyph(const mat3& tensor, const vec3& pos,
                                                    const float size,
@@ -125,7 +124,7 @@ private:
     float signedExponentiation(float x, float a);
     vec3 cartesianToSpherical(const vec3& pos) const;
     std::pair<bool, vec3> intersectTriangle(const vec2& coord,
-                                             const std::array<vec2, 3>& tri_verts);
+                                            const std::array<vec2, 3>& tri_verts);
 
     const std::shared_ptr<BasicMesh> generateSuperquadric(
         std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,

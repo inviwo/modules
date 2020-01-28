@@ -46,10 +46,10 @@ namespace inviwo {
 namespace tensorutil {
 
 IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(
-    std::shared_ptr<Image>& texture, std::shared_ptr<const TensorField2D> tensorField,
+    std::shared_ptr<Image> &texture, std::shared_ptr<const TensorField2D> tensorField,
     Shader &shader, TextureUnitContainer &textureUnits);
 
-IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
+IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
                                                                 TensorField2DInport &inport,
                                                                 Shader &shader,
                                                                 TextureUnitContainer &textureUnits);

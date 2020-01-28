@@ -123,8 +123,8 @@ void AmiraTensorReader::process() {
                         auto dataPoint6 = pData[Idx * NumComponents + 5];
 
                         auto tensor = mat3(vec3(dataPoint1, dataPoint2, dataPoint3),
-                                            vec3(dataPoint2, dataPoint4, dataPoint5),
-                                            vec3(dataPoint3, dataPoint5, dataPoint6));
+                                           vec3(dataPoint2, dataPoint4, dataPoint5),
+                                           vec3(dataPoint3, dataPoint5, dataPoint6));
 
                         data.push_back(tensor);
 

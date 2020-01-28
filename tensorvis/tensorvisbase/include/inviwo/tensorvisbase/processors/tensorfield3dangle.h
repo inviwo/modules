@@ -55,7 +55,7 @@ private:
     TensorField3DInport tensorField3DInport1_;
     TensorField3DInport fiberOrientation_;
 
- //   InvariantSpaceOutport invariantSpaceOutport_;
+    //   InvariantSpaceOutport invariantSpaceOutport_;
 };
 
 }  // namespace inviwo

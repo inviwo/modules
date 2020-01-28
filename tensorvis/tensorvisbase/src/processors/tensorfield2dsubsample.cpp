@@ -65,8 +65,7 @@ void TensorField2DSubsample::initializeResources() {}
 
 void TensorField2DSubsample::process() {
     auto subsampled = tensorutil::subsample2D(
-        inport_.getData(),
-        inport_.getData()->getDimensions() * resolutionMultiplier_.get(),
+        inport_.getData(), inport_.getData()->getDimensions() * resolutionMultiplier_.get(),
         interpolationMethod_.get());
 
     outport_.setData(subsampled);

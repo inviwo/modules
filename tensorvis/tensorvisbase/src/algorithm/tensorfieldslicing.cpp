@@ -85,11 +85,11 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
             }
             break;
         default:
-            IVW_ASSERT(false,"getSlice2D");
+            IVW_ASSERT(false, "getSlice2D");
     }
 
     auto tensorField = std::make_shared<TensorField2D>(dimensions, sliceData);
-    //tensorField->setOffset(inTensorField->getOffset());
+    // tensorField->setOffset(inTensorField->getOffset());
 
     return tensorField;
 }
@@ -154,8 +154,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
             break;
     }
 
-    auto tensorField =
-        std::make_shared<TensorField3D>(dimensions, sliceData);
+    auto tensorField = std::make_shared<TensorField3D>(dimensions, sliceData);
 
     tensorField->setExtents(inTensorField->getExtents());
     tensorField->setOffset(offset);

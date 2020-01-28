@@ -49,9 +49,8 @@ TensorField2DAsRGBA::TensorField2DAsRGBA()
     , inport_("inport")
     , outport_("outport", DataVec4Float32::get())
     , shader_("tensorfieldtorgba.frag")
-    , hover_(
-          "hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
-          MouseState::Move)
+    , hover_("hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
+             MouseState::Move)
     , tensor_("tensor", "Tensor", glm::mat<2, 2, TensorField2D::value_type>{0},
               glm::mat<2, 2, TensorField2D::value_type>{-10000},
               glm::mat<2, 2, TensorField2D::value_type>{10000},

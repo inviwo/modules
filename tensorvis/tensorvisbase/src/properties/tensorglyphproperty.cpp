@@ -158,8 +158,8 @@ vec3 TensorGlyphProperty::cartesianToSpherical(const vec3& pos) const {
 }
 
 // From Ericsson Real-time collision detection
-std::pair<bool, vec3> TensorGlyphProperty::intersectTriangle(
-    const vec2& coord, const std::array<vec2, 3>& tri_verts) {
+std::pair<bool, vec3> TensorGlyphProperty::intersectTriangle(const vec2& coord,
+                                                             const std::array<vec2, 3>& tri_verts) {
     vec2 p = coord;
     vec2 a = tri_verts[0];
     vec2 b = tri_verts[1];
@@ -216,11 +216,11 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
         });
 
     std::array<float, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
-                                      glm::abs(eigenValuesAndEigenVectors[1].first),
-                                      glm::abs(eigenValuesAndEigenVectors[2].first)};
+                                     glm::abs(eigenValuesAndEigenVectors[1].first),
+                                     glm::abs(eigenValuesAndEigenVectors[2].first)};
 
     auto basis = mat3(eigenValuesAndEigenVectors[0].second, eigenValuesAndEigenVectors[1].second,
-                       eigenValuesAndEigenVectors[2].second);
+                      eigenValuesAndEigenVectors[2].second);
     if (!useEigenBasis_.get())
         basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
@@ -235,8 +235,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
     return mesh;
 }
 
-const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(const mat3&,
-                                                                           const vec3&,
+const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(const mat3&, const vec3&,
                                                                            const float,
                                                                            const vec4&) const {
     return std::shared_ptr<BasicMesh>();
@@ -470,11 +469,11 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
     }
 
     std::array<float, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
-                                      glm::abs(eigenValuesAndEigenVectors[1].first),
-                                      glm::abs(eigenValuesAndEigenVectors[2].first)};
+                                     glm::abs(eigenValuesAndEigenVectors[1].first),
+                                     glm::abs(eigenValuesAndEigenVectors[2].first)};
 
     auto basis = mat3(eigenValuesAndEigenVectors[0].second, eigenValuesAndEigenVectors[1].second,
-                       eigenValuesAndEigenVectors[2].second);
+                      eigenValuesAndEigenVectors[2].second);
 
     if (!useEigenBasis_.get())
         basis = glm::diagonal3x3(vec3(eigenValues[0], eigenValues[1], eigenValues[2]));
@@ -546,8 +545,8 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
         }
 
         std::array<float, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
-                                          glm::abs(eigenValuesAndEigenVectors[1].first),
-                                          glm::abs(eigenValuesAndEigenVectors[2].first)};
+                                         glm::abs(eigenValuesAndEigenVectors[1].first),
+                                         glm::abs(eigenValuesAndEigenVectors[2].first)};
 
         auto mat = glm::diagonal3x3(vec3(eigenValues[0], eigenValues[1], eigenValues[2]));
         auto sign = glm::dot(vec3(v), mat * vec3(v));

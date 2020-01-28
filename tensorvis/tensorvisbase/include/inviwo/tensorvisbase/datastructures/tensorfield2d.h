@@ -56,9 +56,9 @@ public:
     TensorField2D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors);
 
     TensorField2D(const sizeN_t& dimensions, const std::vector<matN>& tensors,
-        const DataFrame& metaData);
+                  const DataFrame& metaData);
     TensorField2D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors,
-        std::shared_ptr<DataFrame> metaData);
+                  std::shared_ptr<DataFrame> metaData);
 
     // Destructors
     virtual ~TensorField2D() = default;
@@ -75,13 +75,13 @@ public:
     virtual TensorField2D* deepCopy() const final;
 
     std::shared_ptr<Image> getImageRepresentation() const;
-    
-    const dvec2 &getNormalizedImagePosition(size_t index) const;
-    const std::vector<dvec2> &normalizedImagePositions() const;
+
+    const dvec2& getNormalizedImagePosition(size_t index) const;
+    const std::vector<dvec2>& normalizedImagePositions() const;
 
 protected:
-    virtual void initializeDefaultMetaData()final;
-    virtual void computeDataMaps()final;
+    virtual void initializeDefaultMetaData() final;
+    virtual void computeDataMaps() final;
 
 private:
     void computeNormalizedScreenCoordinates();
@@ -95,8 +95,8 @@ private:
 template <typename T, typename R>
 void TensorField2D::addIfNotPresent(std::shared_ptr<DataFrame> df, const R& data) const {
     if (!this->hasMetaData<T>()) {
-        df->addColumn(
-            std::make_shared<TemplateColumn<typename T::value_type>>(std::string(T::identifier), data));
+        df->addColumn(std::make_shared<TemplateColumn<typename T::value_type>>(
+            std::string(T::identifier), data));
     }
 }
 

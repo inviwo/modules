@@ -168,36 +168,36 @@ enum class YieldCriterion {
 };
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
-    YieldCriterion yieldCriterion) {
+std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+                                             YieldCriterion yieldCriterion) {
     switch (yieldCriterion) {
-    case YieldCriterion::William_Warnke:
-        os << "William-Warnke";
-        break;
-    case YieldCriterion::Von_Mises:
-        os << "von Mises";
-        break;
-    case YieldCriterion::Mohr_Coulomb:
-        os << "Mohr-Coulomb";
-        break;
-    case YieldCriterion::Tresca:
-        os << "Tresca";
-        break;
-    case YieldCriterion::Drucker_Prager:
-        os << "Drucker-Prager";
-        break;
-    case YieldCriterion::Matrix_Constituent_Failure_Criterion:
-        os << "Matrix constituent";
-        break;
-    case YieldCriterion::MohrCoulomb_InvariantBased:
-        os << "Mohr-Coulomb invariant based";
-        break;
-    case YieldCriterion::Tsai_Hill:
-        os << "Tsai-Hill";
-        break;
-    case YieldCriterion::Tsai_Wu:
-        os << "Tsai-Wu";
-        break;
+        case YieldCriterion::William_Warnke:
+            os << "William-Warnke";
+            break;
+        case YieldCriterion::Von_Mises:
+            os << "von Mises";
+            break;
+        case YieldCriterion::Mohr_Coulomb:
+            os << "Mohr-Coulomb";
+            break;
+        case YieldCriterion::Tresca:
+            os << "Tresca";
+            break;
+        case YieldCriterion::Drucker_Prager:
+            os << "Drucker-Prager";
+            break;
+        case YieldCriterion::Matrix_Constituent_Failure_Criterion:
+            os << "Matrix constituent";
+            break;
+        case YieldCriterion::MohrCoulomb_InvariantBased:
+            os << "Mohr-Coulomb invariant based";
+            break;
+        case YieldCriterion::Tsai_Hill:
+            os << "Tsai-Hill";
+            break;
+        case YieldCriterion::Tsai_Wu:
+            os << "Tsai-Wu";
+            break;
     }
 
     return os;
@@ -223,10 +223,6 @@ enum class Decomposition {
     Shape_Orientation,
     Isotropic_Anisotropic
 };
-
-
-
-
 
 /*
  * Projects the 3D tensor T onto the given cartesian plane. This means for

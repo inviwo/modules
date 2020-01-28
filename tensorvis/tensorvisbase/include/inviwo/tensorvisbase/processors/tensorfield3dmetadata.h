@@ -69,7 +69,7 @@ private:
     TensorField3DOutport outport_;
 
     CompositeProperty metaDataPropertyContainer_;
-    
+
     ButtonProperty selectAll_;
     ButtonProperty deselectAll_;
 

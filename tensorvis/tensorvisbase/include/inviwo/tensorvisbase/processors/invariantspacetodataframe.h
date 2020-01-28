@@ -19,7 +19,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    //InvariantSpaceInport inport_;
+    // InvariantSpaceInport inport_;
     DataFrameOutport outport_;
 };
 

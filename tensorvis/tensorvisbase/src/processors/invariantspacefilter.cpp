@@ -44,30 +44,30 @@ const ProcessorInfo InvariantSpaceFilter::getProcessorInfo() const { return proc
 
 InvariantSpaceFilter::InvariantSpaceFilter()
     : Processor()
-//    , invariantSpaceInport_("invariantSpaceInport")
+    //    , invariantSpaceInport_("invariantSpaceInport")
     , tensorField3DInport_("tensorField3DInport")
-    //, invariantSpaceOutport_("invariantSpaceOutport")
+//, invariantSpaceOutport_("invariantSpaceOutport")
 {
 
     addPort(tensorField3DInport_);
-//    addPort(invariantSpaceInport_);
-//    addPort(invariantSpaceOutport_);
+    //    addPort(invariantSpaceInport_);
+    //    addPort(invariantSpaceOutport_);
 }
 
 void InvariantSpaceFilter::process() {
-    //auto tensorField = tensorField3DInport_.getData();
-    //auto invariantSpace = invariantSpaceInport_.getData();
+    // auto tensorField = tensorField3DInport_.getData();
+    // auto invariantSpace = invariantSpaceInport_.getData();
 
-    //const auto& tensors = tensorField->tensors();
-    //auto filteredInvariantSpace = std::make_shared<InvariantSpace>(
+    // const auto& tensors = tensorField->tensors();
+    // auto filteredInvariantSpace = std::make_shared<InvariantSpace>(
     //    invariantSpace->getNumberOfDimensions(), invariantSpace->getIdentifiers(),
     //    invariantSpace->getMetaDataTypes());
 
-    //size_t numberOfFilteredTensors{0};
-    //const auto numberOfElements = invariantSpace->getNumElements();
-    //const auto epsilon{std::numeric_limits<double>::epsilon()};
+    // size_t numberOfFilteredTensors{0};
+    // const auto numberOfElements = invariantSpace->getNumElements();
+    // const auto epsilon{std::numeric_limits<double>::epsilon()};
 
-    //auto lessThanEpsilon = [&](const double* tensor) -> bool {
+    // auto lessThanEpsilon = [&](const double* tensor) -> bool {
     //    if (glm::abs(tensor[0]) < epsilon && glm::abs(tensor[1]) < epsilon &&
     //        glm::abs(tensor[2]) < epsilon && glm::abs(tensor[3]) < epsilon &&
     //        glm::abs(tensor[4]) < epsilon && glm::abs(tensor[5]) < epsilon &&
@@ -79,7 +79,7 @@ void InvariantSpaceFilter::process() {
     //    return false;
     //};
 
-    //for (size_t i = 0; i < numberOfElements; i++) {
+    // for (size_t i = 0; i < numberOfElements; i++) {
     //    if (!lessThanEpsilon(glm::value_ptr(tensors[i]))) {
     //        //        if (glm::all(glm::lessThan(glm::abs(tensors[i]), epsilon))){
     //        filteredInvariantSpace->addPoint(invariantSpace->getPoint(i));
@@ -87,12 +87,12 @@ void InvariantSpaceFilter::process() {
     //    }
     //}
 
-    //LogProcessorInfo(
+    // LogProcessorInfo(
     //    std::to_string((float(numberOfFilteredTensors) / float(numberOfElements)) * 100.f)
     //    << "% filtered (" << std::to_string(numberOfFilteredTensors) << " out of "
     //    << std::to_string(numberOfElements) << ").");
 
-    //invariantSpaceOutport_.setData(filteredInvariantSpace);
+    // invariantSpaceOutport_.setData(filteredInvariantSpace);
 }
 
 }  // namespace inviwo

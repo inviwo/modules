@@ -99,7 +99,7 @@ private:
         std::shared_ptr<std::vector<mat3>> vec;
 
         VTKToVector() : vec(std::make_shared<std::vector<mat3>>()) {}
-        
+
         template <typename TensorArray>
         void operator()(TensorArray* tensors) {
             vec->clear();

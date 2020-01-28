@@ -63,7 +63,7 @@ TensorField3DInformation::TensorField3DInformation()
 
     inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addProperties(index_, tensor_, eigenVectors_, eigenValues_,basisAndOffset_);
+    addProperties(index_, tensor_, eigenVectors_, eigenValues_, basisAndOffset_);
 
     tensor_.setReadOnly(true);
     eigenVectors_.setReadOnly(true);
