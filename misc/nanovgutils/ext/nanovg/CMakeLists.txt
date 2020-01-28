@@ -1,7 +1,7 @@
 project(nanovg)
 
 find_package(OpenGL QUIET REQUIRED)
-find_package(freetype REQUIRED)
+find_package(Freetype REQUIRED)
 
 set(nanovg_HEADERS  
     ${CMAKE_CURRENT_SOURCE_DIR}/nanovg/src/fontstash.h
