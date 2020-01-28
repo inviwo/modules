@@ -36,15 +36,15 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DAngle, Tensor Field 3D Angle}
- * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DAngle)
+/** \docpage{org.inviwo.TensorField3DFiberAngle, Tensor Field 3D Fiber Angle}
+ * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DFiberAngle)
  * Explanation of how to use the processor.
  */
 
-class IVW_MODULE_TENSORVISBASE_API TensorField3DAngle : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DFiberAngle : public Processor {
 public:
-    TensorField3DAngle();
-    virtual ~TensorField3DAngle() = default;
+    TensorField3DFiberAngle();
+    virtual ~TensorField3DFiberAngle() = default;
 
     virtual void process() override;
 
@@ -52,10 +52,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField3DInport tensorField3DInport1_;
-    TensorField3DInport fiberOrientation_;
+    TensorField3DInport stressField_;
+    TensorField3DInport fiberField_;
 
-    //   InvariantSpaceOutport invariantSpaceOutport_;
+    DataFrameOutport angleOutport_;
 };
 
 }  // namespace inviwo

@@ -30,7 +30,7 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/tensorfield2dsubsample.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubset.h
     include/inviwo/tensorvisbase/processors/tensorfield2dtoimage.h
-    include/inviwo/tensorvisbase/processors/tensorfield3dangle.h
+    include/inviwo/tensorvisbase/processors/tensorfield3dfiberangle.h
     include/inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h
     include/inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h
     include/inviwo/tensorvisbase/processors/tensorfield3dinformation.h
@@ -82,7 +82,7 @@ set(SOURCE_FILES
     src/processors/tensorfield2dsubsample.cpp
     src/processors/tensorfield2dsubset.cpp
     src/processors/tensorfield2dtoimage.cpp
-    src/processors/tensorfield3dangle.cpp
+    src/processors/tensorfield3dfiberangle.cpp
     src/processors/tensorfield3dbasismanipulation.cpp
     src/processors/tensorfield3dboundingbox.cpp
     src/processors/tensorfield3dinformation.cpp

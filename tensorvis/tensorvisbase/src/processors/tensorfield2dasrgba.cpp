@@ -54,7 +54,7 @@ TensorField2DAsRGBA::TensorField2DAsRGBA()
     , tensor_("tensor", "Tensor", glm::mat<2, 2, TensorField2D::value_type>{0},
               glm::mat<2, 2, TensorField2D::value_type>{-10000},
               glm::mat<2, 2, TensorField2D::value_type>{10000},
-              glm::mat<2, 2, TensorField2D::value_type>{0.00001}) {
+              glm::mat<2, 2, TensorField2D::value_type>{0.00001f}) {
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
     addPort(inport_);

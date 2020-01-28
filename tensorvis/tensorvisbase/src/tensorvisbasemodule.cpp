@@ -46,7 +46,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubsample.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubset.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dtoimage.h>
-#include <inviwo/tensorvisbase/processors/tensorfield3dangle.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dfiberangle.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dmasktovolume.h>
@@ -88,7 +88,7 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorField2DSubsample>();
     registerProcessor<TensorField2DSubset>();
     registerProcessor<TensorField2DToImage>();
-    registerProcessor<TensorField3DAngle>();
+    registerProcessor<TensorField3DFiberAngle>();
     registerProcessor<TensorField3DBasisManipulation>();
     registerProcessor<TensorField3DBoundingBox>();
     registerProcessor<TensorField3DMaskToVolume>();
