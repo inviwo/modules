@@ -74,6 +74,11 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     : InviwoModule(app, "TensorVisBase") {
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
+    registerPort<TensorField2DInport>();
+    registerPort<TensorField2DOutport>();
+    registerPort<TensorField3DInport>();
+    registerPort<TensorField3DOutport>();
+
     registerProcessor<HyperStreamlines>();
     registerProcessor<ImageToSphereField>();
     registerProcessor<InvariantSpaceCombine>();
