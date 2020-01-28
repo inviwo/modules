@@ -138,7 +138,7 @@ TensorField2DGenerator::TensorField2DGenerator()
 
     addProperty(collectionField_);
 
-    auto setMatProperty = [this](const dmat2& mat, DoubleMat2Property& prop) { prop.set(mat); };
+    auto setMatProperty = [](const dmat2& mat, DoubleMat2Property& prop) { prop.set(mat); };
 
     setMatProperty(dmat2(dvec2(15., 6.4), dvec2(6.4, 14.)), collectionRow1T1_);
     setMatProperty(dmat2(dvec2(7.5, 3.), dvec2(3., 21.)), collectionRow1T2_);
