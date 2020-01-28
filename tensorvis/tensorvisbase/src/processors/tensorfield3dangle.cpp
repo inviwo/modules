@@ -37,10 +37,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DFiberAngle::processorInfo_{
     "org.inviwo.TensorField3DFiberAngle",  // Class identifier
-    "Tensor Field 3D Fiber Angle",          // Display name
-    "Tensor",                         // Category
-    CodeState::Experimental,          // Code state
-    Tags::CPU,                        // Tags
+    "Tensor Field 3D Fiber Angle",         // Display name
+    "Tensor",                              // Category
+    CodeState::Experimental,               // Code state
+    Tags::CPU,                             // Tags
 };
 const ProcessorInfo TensorField3DFiberAngle::getProcessorInfo() const { return processorInfo_; }
 
@@ -85,7 +85,8 @@ void TensorField3DFiberAngle::process() {
     }
 
     dataFrame->addColumnFromBuffer(u8"φmax", std::make_shared<Buffer<float>>(phiMajor));
-    dataFrame->addColumnFromBuffer(u8"φintermediate", std::make_shared<Buffer<float>>(phiIntermediate));
+    dataFrame->addColumnFromBuffer(u8"φintermediate",
+                                   std::make_shared<Buffer<float>>(phiIntermediate));
     dataFrame->addColumnFromBuffer(u8"φmin", std::make_shared<Buffer<float>>(phiMinor));
 
     angleOutport_.setData(dataFrame);
