@@ -75,6 +75,7 @@ private:
     FloatMat3Property tensor_;
     FloatMat3Property eigenVectors_;
     FloatVec3Property eigenValues_;
+    FloatMat4Property basisAndOffset_;
 };
 
 }  // namespace inviwo

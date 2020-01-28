@@ -36,11 +36,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DInformation::processorInfo_{
-    "org.inviwo.TensorField3DInformation",  // Class identifier
-    "Tensor Field 3D Information",           // Display name
-    "Information",                 // Category
-    CodeState::Experimental,                // Code state
-    Tags::CPU|TensorVisTag::OpenTensorVis,                              // Tags
+    "org.inviwo.TensorField3DInformation",    // Class identifier
+    "Tensor Field 3D Information",            // Display name
+    "Information",                            // Category
+    CodeState::Experimental,                  // Code state
+    Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
 };
 
 const ProcessorInfo TensorField3DInformation::getProcessorInfo() const { return processorInfo_; }
@@ -56,15 +56,14 @@ TensorField3DInformation::TensorField3DInformation()
                     mat3(std::numeric_limits<float>::max()))
     , eigenValues_("eigenValues", "Eigenvalues", vec3(0.f),
                    vec3(std::numeric_limits<float>::lowest()),
-                   vec3(std::numeric_limits<float>::max())) {
+                   vec3(std::numeric_limits<float>::max()))
+    , basisAndOffset_("basisAndOffset", "Basis and offset", mat4{1.f}, mat4{-1000.f}, mat4{1000.f},
+                      mat4{0.00001f}) {
     addPort(inport_);
 
     inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addProperty(index_);
-    addProperty(tensor_);
-    addProperty(eigenVectors_);
-    addProperty(eigenValues_);
+    addProperties(index_, tensor_, eigenVectors_, eigenValues_,basisAndOffset_);
 
     tensor_.setReadOnly(true);
     eigenVectors_.setReadOnly(true);
@@ -102,6 +101,8 @@ void TensorField3DInformation::process() {
         vec3(eigenValuesAndEigenVectors[0].first, eigenValuesAndEigenVectors[1].first,
              eigenValuesAndEigenVectors[2].first);
     eigenValues_.set(eigenValues);
+
+    basisAndOffset_.set(tensorField->getBasisAndOffset());
 }
 
 }  // namespace inviwo

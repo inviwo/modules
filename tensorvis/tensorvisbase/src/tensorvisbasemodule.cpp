@@ -57,7 +57,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield2dgenerator.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dasrgba.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dtovolume.h>
 #include <inviwo/tensorvisbase/processors/tensorglyphprocessor.h>
 #include <inviwo/tensorvisbase/processors/tensorglyphrenderer.h>
@@ -94,7 +94,7 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     registerProcessor<TensorField2DGenerator>();
     registerProcessor<TensorFieldLIC>();
     registerProcessor<TensorFieldSlice>();
-    registerProcessor<TensorFieldToRGBA>();
+    registerProcessor<TensorField2DAsRGBA>();
     registerProcessor<TensorField3DToVolume>();
     registerProcessor<TensorGlyphProcessor>();
     registerProcessor<TensorGlyphRenderer>();

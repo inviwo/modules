@@ -28,16 +28,17 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DMetaData::processorInfo_{
-    "org.inviwo.TensorField2DMetaData",      // Class identifier
-    "Tensor Field2DMeta Data",                // Display name
-    "Undefined",              // Category
-    CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    "org.inviwo.TensorField2DMetaData",     // Class identifier
+    "Tensor Field 2D Meta Data",            // Display name
+    "Undefined",                            // Category
+    CodeState::Experimental,                // Code state
+    TensorVisTag::OpenTensorVis | Tag::CPU  // Tags
 };
 const ProcessorInfo TensorField2DMetaData::getProcessorInfo() const { return processorInfo_; }
 

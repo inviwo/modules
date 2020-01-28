@@ -43,7 +43,7 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/tensorfield2dgenerator.h
     include/inviwo/tensorvisbase/processors/tensorfieldlic.h
     include/inviwo/tensorvisbase/processors/tensorfieldslice.h
-    include/inviwo/tensorvisbase/processors/tensorfieldtorgba.h
+    include/inviwo/tensorvisbase/processors/tensorfield2dasrgba.h
     include/inviwo/tensorvisbase/processors/tensorglyphprocessor.h
     include/inviwo/tensorvisbase/processors/tensorglyphrenderer.h
     include/inviwo/tensorvisbase/processors/volumeactualdataandvaluerange.h
@@ -95,7 +95,7 @@ set(SOURCE_FILES
     src/processors/tensorfield2dgenerator.cpp
     src/processors/tensorfieldlic.cpp
     src/processors/tensorfieldslice.cpp
-    src/processors/tensorfieldtorgba.cpp
+    src/processors/tensorfield2dasrgba.cpp
     src/processors/tensorglyphprocessor.cpp
     src/processors/tensorglyphrenderer.cpp
     src/processors/volumeactualdataandvaluerange.cpp

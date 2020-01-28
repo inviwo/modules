@@ -127,8 +127,8 @@ private:
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DToImage::processorInfo_{
     "org.inviwo.TensorField2DToImage",  // Class identifier
-    "Tensor Field2DTo Image",           // Display name
-    "Undefined",                        // Category
+    "Tensor Field 2D To Image",         // Display name
+    "Conversion",                       // Category
     CodeState::Experimental,            // Code state
     Tags::None,                         // Tags
 };
@@ -150,6 +150,7 @@ TensorField2DToImage::TensorField2DToImage()
         if (!tensorField2DInport_.hasData()) return;
 
         std::vector<OptionPropertyOption<size_t>> options{};
+        options.emplace_back("rgba", "RGBA", 0);
 
         util::for_each_type<attributes::types2D>{}(
             AddOptions{options, tensorField2DInport_.getData()});
@@ -162,13 +163,21 @@ TensorField2DToImage::TensorField2DToImage()
 }
 
 void TensorField2DToImage::process() {
-    auto layer = util::for_each_type<attributes::types2D>{}(
-                     CreateImage{imageContent_.get(), tensorField2DInport_.getData(), this})
-                     .layer_;
+    auto tensorField = tensorField2DInport_.getData();
 
-    auto image = std::make_shared<Image>(layer);
+    std::shared_ptr<Image> img;
 
-    imageOutport_.setData(image);
+    if (!imageContent_.get()) {
+        img = tensorField->getImageRepresentation();
+    } else {
+        auto layer = util::for_each_type<attributes::types2D>{}(
+                         CreateImage{imageContent_.get(), tensorField2DInport_.getData(), this})
+                         .layer_;
+
+        img = std::make_shared<Image>(layer);
+    }
+
+    imageOutport_.setData(img);
 }
 
 }  // namespace inviwo

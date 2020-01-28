@@ -336,11 +336,11 @@ inline typename TensorField<N, precision>::matNb TensorField<N, precision>::getB
 
     matNb modelMatrix;
 
-    for (unsigned int i{0}; i < N - 1; ++i) {
+    for (unsigned int i{ 0 }; i < N; ++i) {
         modelMatrix[i] = glm::vec<N + 1, precision>(basis[i], precision(0));
     }
 
-    modelMatrix[N - 1] = glm::vec<N + 1, precision>(offset, precision(1));
+    modelMatrix[N] = glm::vec<N + 1, precision>(offset, precision(1));
 
     return modelMatrix;
 }
