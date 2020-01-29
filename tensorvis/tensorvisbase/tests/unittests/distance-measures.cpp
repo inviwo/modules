@@ -14,7 +14,7 @@ TEST(TensorUtilTests, euclideanDistanceSuccess) {
     std::iota(vec1.begin(), vec1.end(), 0);
     std::iota(vec2.begin(), vec2.end(), 1);
 
-    EXPECT_EQ(std::sqrt(3.0f), tensorutil::euclideanDistance(vec1, vec2));
+    EXPECT_EQ(std::sqrt(3.0f), util::euclideanDistance(vec1, vec2));
 }
 
 TEST(TensorUtilTests, squaredSumDistanceSuccess) {
@@ -25,7 +25,7 @@ TEST(TensorUtilTests, squaredSumDistanceSuccess) {
     std::iota(vec1.begin(), vec1.end(), 0);
     std::iota(vec2.begin(), vec2.end(), 1);
 
-    EXPECT_EQ(3.0f, tensorutil::squaredSumDistance(vec1, vec2));
+    EXPECT_EQ(3.0f, util::squaredSumDistance(vec1, vec2));
 }
 
 }  // namespace inviwo

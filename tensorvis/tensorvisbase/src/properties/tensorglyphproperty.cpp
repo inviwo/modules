@@ -37,9 +37,7 @@ namespace inviwo {
 const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};
 std::string TensorGlyphProperty::getClassIdentifier() const { return classIdentifier; }
 
-// constexpr std::array<std::array<dvec2, 3>, 10> TensorGlyphProperty::tri_uv;
 
-// constexpr std::array<std::array<dvec3, 3>, 10> TensorGlyphProperty::tri_alpha_beta;
 
 TensorGlyphProperty::TensorGlyphProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
@@ -411,30 +409,6 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCombinedReynoldsHW
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtended(
     std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
     const float size) {
-    std::array<std::array<vec2, 3>, 10> tri_uv{
-        {{vec2(0.00, 0.00), vec2(0.50, 0.00), vec2(0.25, 0.25)},
-         {vec2(0.00, 0.00), vec2(0.25, 0.25), vec2(0.00, 0.50)},
-         {vec2(0.00, 0.50), vec2(0.50, 0.00), vec2(0.00, 1.00)},
-         {vec2(0.00, 1.00), vec2(0.50, 0.00), vec2(0.50, 0.50)},
-         {vec2(0.00, 1.00), vec2(0.50, 0.50), vec2(0.50, 1.00)},
-         {vec2(0.50, 1.00), vec2(0.75, 0.75), vec2(1.00, 1.00)},
-         {vec2(1.00, 1.00), vec2(0.75, 0.75), vec2(1.00, 0.50)},
-         {vec2(1.00, 0.50), vec2(0.50, 1.00), vec2(1.00, 0.00)},
-         {vec2(1.00, 0.00), vec2(0.50, 1.00), vec2(0.50, 0.50)},
-         {vec2(1.00, 0.00), vec2(0.50, 0.50), vec2(0.50, 0.00)}}};
-
-    std::array<std::array<vec3, 3>, 10> tri_alpha_beta{
-        {{vec3(1.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0), vec3(0.5, 0.5, 0.0)},
-         {vec3(1.0, 1.0, 0.0), vec3(0.5, 0.5, 0.0), vec3(1.0, 0.0, 0.0)},
-         {vec3(1.0, 2.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(1.0, 4.0, 0.0)},
-         {vec3(1.0, 4.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(0.0, 4.0, 2.0)},
-         {vec3(1.0, 4.0, 0.0), vec3(0.0, 4.0, 2.0), vec3(1.0, 2.0, 0.0)},
-         {vec3(1.0, 0.0, 0.0), vec3(0.5, 0.5, 0.0), vec3(1.0, 1.0, 0.0)},
-         {vec3(1.0, 1.0, 0.0), vec3(0.5, 0.5, 0.0), vec3(1.0, 0.0, 0.0)},
-         {vec3(1.0, 2.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(1.0, 4.0, 0.0)},
-         {vec3(1.0, 4.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(0.0, 4.0, 2.0)},
-         {vec3(1.0, 4.0, 0.0), vec3(0.0, 4.0, 2.0), vec3(1.0, 2.0, 0.0)}}};
-
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get());
 
     auto eigenValuesAndEigenVectors =
