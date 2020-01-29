@@ -37,8 +37,6 @@ namespace inviwo {
 const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};
 std::string TensorGlyphProperty::getClassIdentifier() const { return classIdentifier; }
 
-
-
 TensorGlyphProperty::TensorGlyphProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
     , glyphType_(

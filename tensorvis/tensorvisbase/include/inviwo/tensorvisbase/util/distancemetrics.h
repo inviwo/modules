@@ -72,21 +72,21 @@ T squaredSumDistance(const std::vector<T>& a, const std::vector<T>& b) {
 }
 
 template <typename T>
-inline std::function<T(const std::vector<T>&,
-    const std::vector<T>&)> getDistanceMetricFunctor(DistanceMetric metric) {
+inline std::function<T(const std::vector<T>&, const std::vector<T>&)> getDistanceMetricFunctor(
+    DistanceMetric metric) {
 
     switch (metric) {
-    case DistanceMetric::Euclidean:
-        return euclideanDistance<T>;
-    case DistanceMetric::Manhattan:
-        return manhattanDistance<T>;
-    case DistanceMetric::SquaredSum:
-        return squaredSumDistance<T>;
-    default:
-        break;
+        case DistanceMetric::Euclidean:
+            return euclideanDistance<T>;
+        case DistanceMetric::Manhattan:
+            return manhattanDistance<T>;
+        case DistanceMetric::SquaredSum:
+            return squaredSumDistance<T>;
+        default:
+            break;
     }
 
-    return [](const std::vector<T>& , const std::vector<T>& ) {return T(0); };
+    return [](const std::vector<T>&, const std::vector<T>&) { return T(0); };
 }
 
 }  // namespace util
