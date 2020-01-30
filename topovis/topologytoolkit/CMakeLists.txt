@@ -2,8 +2,7 @@
 find_package(Boost REQUIRED)
 
 #TBB is required for parallel STL used in separatrix relaxation processor
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
-    "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
     find_package(TBB REQUIRED)
 endif()
@@ -100,8 +99,7 @@ ivw_compile_optimize_on_target(inviwo-module-topologytoolkit)
 target_include_directories(inviwo-module-topologytoolkit PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/ttk>
 )
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
-    "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_link_libraries(inviwo-module-topologytoolkit PUBLIC baseAll TBB::tbb)
 else()
     target_link_libraries(inviwo-module-topologytoolkit PUBLIC baseAll)
