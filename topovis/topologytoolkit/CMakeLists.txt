@@ -1,9 +1,11 @@
 # Boost is required by TTK
 find_package(Boost REQUIRED)
 
+#TBB is required for parallel STL used in separatrix relaxation processor
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR 
     "${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-    find_package(TBB REQUIRED)         #TBB is required for parallel STL used in separatrix relaxation processor
+    set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+    find_package(TBB REQUIRED)
 endif()
 
 #--------------------------------------------------------------------
