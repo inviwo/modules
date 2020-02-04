@@ -122,7 +122,8 @@ void TensorField3DExport::exportBinary() const {
     const auto &data = *tensorField->tensors();
 
     for (const auto &val : data) {
-        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)), sizeof(TensorField3D::value_type) * 9);
+        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)),
+                      sizeof(TensorField3D::value_type) * 9);
     }
 
     auto hasMask = glm::uint8(tensorField->hasMask());
@@ -148,8 +149,8 @@ void TensorField3DExport::exportBinary() const {
 
     outFile.close();
 
-    LogInfo(exportFile_.get()
-        << " successfully exported. (roughly "
-        << util::getFileSizeAsString(exportFile_.get(), util::FileSizeOrder::GiB));
+    LogInfo(exportFile_.get() << " successfully exported. (roughly "
+                              << util::getFileSizeAsString(exportFile_.get(),
+                                                           util::FileSizeOrder::GiB));
 }
 }  // namespace inviwo

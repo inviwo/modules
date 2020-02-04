@@ -76,7 +76,7 @@ inline void serializeDataFrame(std::shared_ptr<const DataFrame> dataFrame, std::
 struct IVW_MODULE_TENSORVISIO_API DeserializeColumn {
     template <typename T>
     void operator()(size_t id, std::ifstream& inFile, std::shared_ptr<DataFrame> df,
-        size_t numItems) {
+                    size_t numItems) {
         using ValueType = typename T::value_type;
 
         if (id == util::constexpr_hash(T::identifier)) {
@@ -84,7 +84,7 @@ struct IVW_MODULE_TENSORVISIO_API DeserializeColumn {
             std::vector<ValueType> data;
             data.resize(numItems);
 
-            inFile.read(reinterpret_cast<char*>(data.data()), sizeof(ValueType)* numItems);
+            inFile.read(reinterpret_cast<char*>(data.data()), sizeof(ValueType) * numItems);
 
             // Add column to data frame
             df->addColumn(

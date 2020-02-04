@@ -37,10 +37,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DSlice::processorInfo_{
     "org.inviwo.TensorField3DSlice",  // Class identifier
-    "Tensor Field 3D Slice",           // Display name
-    "Tensor visualization",         // Category
-    CodeState::Experimental,        // Code state
-    Tags::CPU,                      // Tags
+    "Tensor Field 3D Slice",          // Display name
+    "Tensor visualization",           // Category
+    CodeState::Experimental,          // Code state
+    Tags::CPU,                        // Tags
 };
 
 const ProcessorInfo TensorField3DSlice::getProcessorInfo() const { return processorInfo_; }

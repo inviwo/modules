@@ -80,8 +80,9 @@ std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
     auto aniso = net->addProcessor(util::makeProcessor<TensorField3DToVolume>(GP{0, 3}));
     auto cubep = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 6}));
     auto entry = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 9}));
-    auto volra = static_cast<VolumeRaycaster*>(net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 12})));
-    auto backg = net->addProcessor(util::makeProcessor<Background>(GP{ 0, 15 }));
+    auto volra = static_cast<VolumeRaycaster*>(
+        net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 12})));
+    auto backg = net->addProcessor(util::makeProcessor<Background>(GP{0, 15}));
     auto canva = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 18}));
 
     net->addConnection(aniso->getOutports()[0], cubep->getInports()[0]);
@@ -105,7 +106,8 @@ std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
     }
 
     TransferFunction tf;
-    tf.load(InviwoApplication::getPtr()->getBasePath() + "\\data\\transferfunctions\\matplotlib\\viridis.itf");
+    tf.load(InviwoApplication::getPtr()->getBasePath() +
+            "\\data\\transferfunctions\\matplotlib\\viridis.itf");
 
     volra->getPropertiesByType<IsoTFProperty>().front()->tf_.set(tf);
 

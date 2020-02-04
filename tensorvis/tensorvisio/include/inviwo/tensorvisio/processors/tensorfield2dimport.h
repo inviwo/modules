@@ -67,7 +67,7 @@ private:
     TensorField2DOutport outport_;
 
     void buildTensors(const std::vector<float>& data,
-        std::shared_ptr<std::vector<mat2>> tensors) const;
+                      std::shared_ptr<std::vector<mat2>> tensors) const;
 
     FloatVec2Property extents_;
     IntVec2Property dimensions_;

@@ -35,10 +35,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DLIC::processorInfo_{
     "org.inviwo.TensorField2DLIC",  // Class identifier
-    "Tensor Field 2D LIC",           // Display name
-    "Tensor Visualization",       // Category
-    CodeState::Experimental,      // Code state
-    Tags::GL,                     // Tags
+    "Tensor Field 2D LIC",          // Display name
+    "Tensor Visualization",         // Category
+    CodeState::Experimental,        // Code state
+    Tags::GL,                       // Tags
 };
 
 const ProcessorInfo TensorField2DLIC::getProcessorInfo() const { return processorInfo_; }

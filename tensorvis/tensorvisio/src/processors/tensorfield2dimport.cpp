@@ -173,12 +173,13 @@ void TensorField2DImport::process() {
     outport_.setData(tensorFieldOut);
 }
 
-void TensorField2DImport::buildTensors(const std::vector<float>& data,
-                                       std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const {
+void TensorField2DImport::buildTensors(
+    const std::vector<float>& data,
+    std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const {
     for (size_t i{0}; i < data.size() / 4; i++) {
         size_t offset = i * 4;
         tensors->emplace_back(TensorField2D::vecN(data[offset + 0], data[offset + 2]),
-            TensorField2D::vecN(data[offset + 1], data[offset + 3]));
+                              TensorField2D::vecN(data[offset + 1], data[offset + 3]));
     }
 }
 

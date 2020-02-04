@@ -97,28 +97,29 @@ void TensorField2DExport::exportBinary() const {
     auto extents = tensorField->getExtents();
     outFile.write(reinterpret_cast<const char *>(&extents), sizeof(float) * 2);
 
-    auto& eigenValueDataMaps = tensorField->dataMapEigenValues_;
-    outFile.write(reinterpret_cast<const char*>(&eigenValueDataMaps[0].dataRange),
-        sizeof(double) * 2);
-    outFile.write(reinterpret_cast<const char*>(&eigenValueDataMaps[1].dataRange),
-        sizeof(double) * 2);
+    auto &eigenValueDataMaps = tensorField->dataMapEigenValues_;
+    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[0].dataRange),
+                  sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[1].dataRange),
+                  sizeof(double) * 2);
 
-    auto& eigenVectorDataMaps = tensorField->dataMapEigenVectors_;
-    outFile.write(reinterpret_cast<const char*>(&eigenVectorDataMaps[0].dataRange),
-        sizeof(double) * 2);
-    outFile.write(reinterpret_cast<const char*>(&eigenVectorDataMaps[1].dataRange),
-        sizeof(double) * 2);
+    auto &eigenVectorDataMaps = tensorField->dataMapEigenVectors_;
+    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[0].dataRange),
+                  sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[1].dataRange),
+                  sizeof(double) * 2);
 
     const auto &data = *tensorField->tensors();
 
     for (const auto &val : data) {
-        outFile.write(reinterpret_cast<const char*>(glm::value_ptr(val)), sizeof(TensorField2D::value_type) * 4);
+        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)),
+                      sizeof(TensorField2D::value_type) * 4);
     }
 
     if (includeMetaData_.get()) {
         const size_t numMetaDataEntries =
             tensorField->metaData()->getNumberOfColumns() - 1;  // omit index buffer
-        outFile.write(reinterpret_cast<const char*>(&numMetaDataEntries), sizeof(size_t));
+        outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
         util::serializeDataFrame(tensorField->metaData(), outFile);
     }
 
@@ -129,9 +130,9 @@ void TensorField2DExport::exportBinary() const {
 
     outFile.close();
 
-    LogInfo(exportFile_.get()
-        << " successfully exported. (roughly "
-        << util::getFileSizeAsString(exportFile_.get(), util::FileSizeOrder::GiB));
+    LogInfo(exportFile_.get() << " successfully exported. (roughly "
+                              << util::getFileSizeAsString(exportFile_.get(),
+                                                           util::FileSizeOrder::GiB));
 }
 
 }  // namespace inviwo
