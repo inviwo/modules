@@ -40,7 +40,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DAsRGBA, TensorField2DAsRGBA}
+/** \docpage{org.inviwo.TensorField2DAsRGBA, Tensor Field 2D As RGBA}
  * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DAsRGBA)
  * Explanation of how to use the processor.
  *

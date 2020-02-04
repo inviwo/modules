@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DEXPORT_H
-#define IVW_TENSORFIELD2DEXPORT_H
+#pragma once
 
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -41,7 +40,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DExport, Tensor Field2DExport}
+/** \docpage{org.inviwo.TensorField2DExport, Tensor Field 2D Export}
  * ![](org.inviwo.TensorField2DExport.png?classIdentifier=org.inviwo.TensorField2DExport)
  * Explanation of how to use the processor.
  *
@@ -54,12 +53,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DExport
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_TENSORVISIO_API TensorField2DExport : public Processor {
 public:
@@ -77,10 +70,8 @@ private:
     CompositeProperty export_;
     FileProperty exportFile_;
     ButtonProperty exportButton_;
-    BoolProperty includeEigenInfo_;
+    BoolProperty includeMetaData_;
 
     void exportBinary() const;
 };
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DEXPORT_H

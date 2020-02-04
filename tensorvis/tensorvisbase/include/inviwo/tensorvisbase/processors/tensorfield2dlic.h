@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,22 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGETOSPHEREFIELD_H
-#define IVW_IMAGETOSPHEREFIELD_H
+#pragma once
 
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageToSphereField, Image To Sphere Field}
- * ![](org.inviwo.ImageToSphereField.png?classIdentifier=org.inviwo.ImageToSphereField)
+/** \docpage{org.inviwo.TensorField2DLIC, Tensor Field 2D LIC}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DLIC)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -53,26 +56,39 @@ namespace inviwo {
  *   * __<Prop2>__ <description>
  */
 
-/**
- * \class ImageToSphereField
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API ImageToSphereField : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DLIC : public Processor {
 public:
-    ImageToSphereField();
-    virtual ~ImageToSphereField() = default;
+    TensorField2DLIC();
+    virtual ~TensorField2DLIC() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
+    TensorField2DInport inport_;
+    ImageInport noiseTexture_;
+    ImageInport imageInport_;
     ImageOutport outport_;
-    FloatVec3Property position_;
+
+    IntProperty samples_;
+    FloatProperty stepLength_;
+    BoolProperty normalizeVectors_;
+    BoolProperty intensityMapping_;
+    BoolProperty useRK4_;
+    BoolProperty majorMinor_;
+    FloatVec4Property backgroundColor_;
+
+    Shader shader_;
+    Image tf_texture_;
+
+    float minVal_;
+    float maxVal_;
+    float eigenValueRange_;
+
+    void updateEigenValues();
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_IMAGETOSPHEREFIELD_H

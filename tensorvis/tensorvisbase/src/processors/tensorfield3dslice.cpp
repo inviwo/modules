@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dslice.h>
 #include <inviwo/tensorvisbase/algorithm/tensorfieldslicing.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
@@ -35,17 +35,17 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorFieldSlice::processorInfo_{
-    "org.inviwo.TensorFieldSlice",  // Class identifier
-    "Tensor Field Slice",           // Display name
+const ProcessorInfo TensorField3DSlice::processorInfo_{
+    "org.inviwo.TensorField3DSlice",  // Class identifier
+    "Tensor Field 3D Slice",           // Display name
     "Tensor visualization",         // Category
     CodeState::Experimental,        // Code state
     Tags::CPU,                      // Tags
 };
 
-const ProcessorInfo TensorFieldSlice::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField3DSlice::getProcessorInfo() const { return processorInfo_; }
 
-TensorFieldSlice::TensorFieldSlice()
+TensorField3DSlice::TensorField3DSlice()
     : Processor()
     , inport_("inport")
     , outport2D_("outport2D")
@@ -122,7 +122,7 @@ TensorFieldSlice::TensorFieldSlice()
     });
 }
 
-void TensorFieldSlice::process() {
+void TensorField3DSlice::process() {
     uvec3 axis{};
     auto tensorField = inport_.getData();
     auto dimensions = tensorField->getDimensions();

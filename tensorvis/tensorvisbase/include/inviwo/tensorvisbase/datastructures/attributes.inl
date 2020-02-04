@@ -1,3 +1,5 @@
+#pragma once
+
 namespace inviwo {
 namespace attributes {
 template <glm::length_t N>

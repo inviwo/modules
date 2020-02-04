@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #pragma once
+
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {

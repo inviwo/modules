@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DToImage, Tensor Field2DTo Image}
+/** \docpage{org.inviwo.TensorField2DToImage, Tensor Field 2D To Image}
  * ![](org.inviwo.TensorField2DToImage.png?classIdentifier=org.inviwo.TensorField2DToImage)
  * Explanation of how to use the processor.
  *

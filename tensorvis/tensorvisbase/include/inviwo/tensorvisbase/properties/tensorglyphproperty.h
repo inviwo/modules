@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHPROPERTY_H
-#define IVW_TENSORGLYPHPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -199,5 +198,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHPROPERTY_H

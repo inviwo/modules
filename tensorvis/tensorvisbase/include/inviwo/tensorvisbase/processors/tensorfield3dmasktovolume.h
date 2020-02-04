@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DMASKTOVOLUME_H
-#define IVW_TENSORFIELD3DMASKTOVOLUME_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,7 +38,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DMaskToVolume, Tensor Field3DMask To Volume}
+/** \docpage{org.inviwo.TensorField3DMaskToVolume, Tensor Field 3D Mask To Volume}
  * ![](org.inviwo.TensorField3DMaskToVolume.png?classIdentifier=org.inviwo.TensorField3DMaskToVolume)
  * Explanation of how to use the processor.
  *
@@ -52,12 +51,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField3DMaskToVolume
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_TENSORVISBASE_API TensorField3DMaskToVolume : public Processor {
 public:
@@ -80,5 +73,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DMASKTOVOLUME_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDPORT_H
-#define IVW_TENSORFIELDPORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -88,5 +87,3 @@ struct DataTraits<TensorField3D> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DPORT_H

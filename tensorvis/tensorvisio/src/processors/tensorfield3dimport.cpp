@@ -35,31 +35,9 @@
 #include <inviwo/tensorvisbase/datastructures/attributes.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 #include <inviwo/core/util/constexprhash.h>
+#include <inviwo/tensorvisio/util/util.h>
 
 namespace inviwo {
-
-namespace {
-struct DeserializeColumn {
-    template <typename T>
-    void operator()(size_t id, std::ifstream &inFile, std::shared_ptr<DataFrame> df,
-                    size_t numItems) {
-        using ValueType = typename T::value_type;
-
-        if (id == util::constexpr_hash(T::identifier)) {
-            // construct std::vector from binary data
-            std::vector<ValueType> data;
-            data.resize(numItems);
-
-            inFile.read(reinterpret_cast<char *>(data.data()), sizeof(ValueType) * numItems);
-
-            // Add column to data frame
-            df->addColumn(
-                std::make_shared<TemplateColumn<ValueType>>(std::string(T::identifier), data));
-        }
-    }
-};
-
-}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming
 // scheme
@@ -97,13 +75,15 @@ TensorField3DImport::TensorField3DImport()
     addProperties(inFile_, normalizeExtents_, extents_, offset_, dimensions_);
 
     inFile_.onChange([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+
+    inFile_.set(InviwoApplication::getPtr()->getModuleByType<TensorVisBaseModule>()->getPath(
+                    ModulePath::Data) +
+                "\\tensorfields\\two_point_load.tfb");
 }
 
 void TensorField3DImport::initializeResources() {}
 
 void TensorField3DImport::process() {
-    std::shared_ptr<TensorField3D> tensorFieldOut;
-
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
@@ -174,13 +154,13 @@ void TensorField3DImport::process() {
     auto numElements = dimensions.x * dimensions.y * dimensions.z;
     auto numValues = numElements * 9;
 
-    std::vector<float> data;
+    std::vector<TensorField3D::value_type> data;
     data.resize(numValues);
     auto dataRaw = data.data();
 
-    inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(float) * numValues);
+    inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(TensorField3D::value_type) * numValues);
 
-    auto tensors = std::make_shared<std::vector<mat3>>();
+    auto tensors = std::make_shared<std::vector<TensorField3D::matN>>();
     buildTensors(data, tensors);
 
     glm::uint8 hasMask;
@@ -192,7 +172,7 @@ void TensorField3DImport::process() {
         inFile.read(reinterpret_cast<char *>(maskData), sizeof(glm::uint8) * numElements);
     }
 
-    tensorFieldOut = std::make_shared<TensorField3D>(dimensions, tensors);
+    auto tensorFieldOut = std::make_shared<TensorField3D>(dimensions, tensors);
 
     tensorFieldOut->dataMapEigenValues_ = dataMapperEigenValues;
     tensorFieldOut->dataMapEigenVectors_ = dataMapperEigenVectors;
@@ -222,8 +202,8 @@ void TensorField3DImport::process() {
             size_t numItems{0};
             inFile.read(reinterpret_cast<char *>(&numItems), sizeof(size_t));
 
-            util::for_each_type<attributes::types3D>{}(DeserializeColumn{}, id, std::ref(inFile),
-                                                       dataFrame, numItems);
+            util::for_each_type<attributes::types3D>{}(util::DeserializeColumn{}, id,
+                                                       std::ref(inFile), dataFrame, numItems);
         }
 
         dataFrame->updateIndexBuffer();
@@ -246,13 +226,15 @@ void TensorField3DImport::process() {
     outport_.setData(tensorFieldOut);
 }
 
-void TensorField3DImport::buildTensors(const std::vector<float> &data,
-                                       std::shared_ptr<std::vector<mat3>> tensors) const {
+void TensorField3DImport::buildTensors(
+    const std::vector<float> &data,
+    std::shared_ptr<std::vector<TensorField3D::matN>> tensors) const {
     for (size_t i{0}; i < data.size() / 9; i++) {
         size_t offset = i * 9;
-        tensors->emplace_back(vec3(data[offset + 0], data[offset + 3], data[offset + 6]),
-                              vec3(data[offset + 1], data[offset + 4], data[offset + 7]),
-                              vec3(data[offset + 2], data[offset + 5], data[offset + 8]));
+        tensors->emplace_back(
+            TensorField3D::vecN(data[offset + 0], data[offset + 3], data[offset + 6]),
+            TensorField3D::vecN(data[offset + 1], data[offset + 4], data[offset + 7]),
+            TensorField3D::vecN(data[offset + 2], data[offset + 5], data[offset + 8]));
     }
 }
 

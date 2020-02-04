@@ -21,11 +21,6 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h
     include/inviwo/tensorvisbase/ports/tensorfieldport.h
     include/inviwo/tensorvisbase/processors/hyperstreamlines.h
-    include/inviwo/tensorvisbase/processors/imagetospherefield.h
-    include/inviwo/tensorvisbase/processors/invariantspacecombine.h
-    include/inviwo/tensorvisbase/processors/invariantspacefilter.h
-    include/inviwo/tensorvisbase/processors/invariantspacetodataframe.h
-    include/inviwo/tensorvisbase/processors/tensorfield2danisotropy.h
     include/inviwo/tensorvisbase/processors/tensorfield2dmetadata.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubsample.h
     include/inviwo/tensorvisbase/processors/tensorfield2dsubset.h
@@ -41,8 +36,8 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h
     include/inviwo/tensorvisbase/processors/tensorfield3dtovolume.h
     include/inviwo/tensorvisbase/processors/tensorfield2dgenerator.h
-    include/inviwo/tensorvisbase/processors/tensorfieldlic.h
-    include/inviwo/tensorvisbase/processors/tensorfieldslice.h
+    include/inviwo/tensorvisbase/processors/tensorfield2dlic.h
+    include/inviwo/tensorvisbase/processors/tensorfield3dslice.h
     include/inviwo/tensorvisbase/processors/tensorfield2dasrgba.h
     include/inviwo/tensorvisbase/processors/tensorglyphprocessor.h
     include/inviwo/tensorvisbase/processors/tensorglyphrenderer.h
@@ -73,11 +68,6 @@ set(SOURCE_FILES
     src/datavisualizer/hyperlicvisualizer2d.cpp
     src/datavisualizer/hyperlicvisualizer3d.cpp
     src/processors/hyperstreamlines.cpp
-    src/processors/imagetospherefield.cpp
-    src/processors/invariantspacecombine.cpp
-    src/processors/invariantspacefilter.cpp
-    src/processors/invariantspacetodataframe.cpp
-    src/processors/tensorfield2danisotropy.cpp
     src/processors/tensorfield2dmetadata.cpp
     src/processors/tensorfield2dsubsample.cpp
     src/processors/tensorfield2dsubset.cpp
@@ -93,8 +83,8 @@ set(SOURCE_FILES
     src/processors/tensorfield3dtodataframe.cpp
     src/processors/tensorfield3dtovolume.cpp
     src/processors/tensorfield2dgenerator.cpp
-    src/processors/tensorfieldlic.cpp
-    src/processors/tensorfieldslice.cpp
+    src/processors/tensorfield2dlic.cpp
+    src/processors/tensorfield3dslice.cpp
     src/processors/tensorfield2dasrgba.cpp
     src/processors/tensorglyphprocessor.cpp
     src/processors/tensorglyphrenderer.cpp

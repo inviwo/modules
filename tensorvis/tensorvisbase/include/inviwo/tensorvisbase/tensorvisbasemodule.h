@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORVISBASEMODULE_H
-#define IVW_TENSORVISBASEMODULE_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
@@ -46,5 +45,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORVISBASEMODULE_H

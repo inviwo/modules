@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DGenerator, TensorField2DGenerator}
+/** \docpage{org.inviwo.TensorField2DGenerator, Tensor Field 2D Generator}
  * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DGenerator)
  * Explanation of how to use the processor.
  *
@@ -50,12 +50,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DGenerator
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_TENSORVISBASE_API TensorField2DGenerator : public Processor {
 public:

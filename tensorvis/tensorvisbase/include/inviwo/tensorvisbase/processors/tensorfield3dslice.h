@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,43 @@
 
 #pragma once
 
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-//#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/dataoutport.h>
+
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.InvariantSpaceFilter, Invariant Space Filter}
- * ![](org.inviwo.InvariantSpaceFilter.png?classIdentifier=org.inviwo.InvariantSpaceFilter)
+/** \docpage{org.inviwo.TensorField3DSlice, Tensor Field 3D Slice}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField3DSlice)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
  */
-class IVW_MODULE_TENSORVISBASE_API InvariantSpaceFilter : public Processor {
+
+/**
+ * \class TensorFieldSlice
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
+ * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISBASE_API TensorField3DSlice : public Processor {
 public:
-    InvariantSpaceFilter();
-    virtual ~InvariantSpaceFilter() = default;
+    TensorField3DSlice();
+    virtual ~TensorField3DSlice() = default;
 
     virtual void process() override;
 
@@ -51,10 +73,18 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    /*InvariantSpaceInport invariantSpaceInport_;*/
-    TensorField3DInport tensorField3DInport_;
+    TensorField3DInport inport_;
+    TensorField2DOutport outport2D_;
+    TensorField3DOutport outport3D_;
 
-    /*InvariantSpaceOutport invariantSpaceOutport_;*/
+    MeshOutport sliceOutport_;
+    MeshOutport planeOutport_;
+    DataOutport<size_t> offsetOutport_;
+
+    TemplateOptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
+    OrdinalProperty<size_t> sliceNr_;
+    FloatVec4Property sliceColor_;
+    FloatVec4Property planeColor_;
 };
 
 }  // namespace inviwo

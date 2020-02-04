@@ -53,12 +53,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TensorField3DImport
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISIO_API TensorField3DImport : public Processor {
 public:
     TensorField3DImport();
@@ -78,7 +72,6 @@ private:
     BoolProperty normalizeExtents_;
 
     FloatVec3Property extents_;
-
     FloatVec3Property offset_;
     IntVec3Property dimensions_;
 

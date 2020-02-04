@@ -37,7 +37,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DMetaData, Tensor Field2DMeta Data}
+/** \docpage{org.inviwo.TensorField2DMetaData, Tensor Field 2D Meta Data}
  * ![](org.inviwo.TensorField2DMetaData.png?classIdentifier=org.inviwo.TensorField2DMetaData)
  * Explanation of how to use the processor.
  *

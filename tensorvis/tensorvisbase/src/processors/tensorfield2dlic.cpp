@@ -27,23 +27,23 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dlic.h>
 #include <algorithm>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorFieldLIC::processorInfo_{
-    "org.inviwo.TensorFieldLIC",  // Class identifier
-    "Tensor Field LIC",           // Display name
+const ProcessorInfo TensorField2DLIC::processorInfo_{
+    "org.inviwo.TensorField2DLIC",  // Class identifier
+    "Tensor Field 2D LIC",           // Display name
     "Tensor Visualization",       // Category
     CodeState::Experimental,      // Code state
     Tags::GL,                     // Tags
 };
 
-const ProcessorInfo TensorFieldLIC::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField2DLIC::getProcessorInfo() const { return processorInfo_; }
 
-TensorFieldLIC::TensorFieldLIC()
+TensorField2DLIC::TensorField2DLIC()
     : Processor()
     , inport_("inport")
     , noiseTexture_("noiseTexture", true)
@@ -79,13 +79,13 @@ TensorFieldLIC::TensorFieldLIC()
     majorMinor_.onChange([&]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void TensorFieldLIC::initializeResources() {
+void TensorField2DLIC::initializeResources() {
     if (!inport_.hasData() || !inport_.getData().get()) return;
 
     updateEigenValues();
 }
 
-void TensorFieldLIC::updateEigenValues() {
+void TensorField2DLIC::updateEigenValues() {
     auto subsampled = tensorutil::subsample2D(inport_.getData(),
                                               inport_.getData()->getDimensions() * size2_t(2, 2));
 
@@ -116,7 +116,7 @@ void TensorFieldLIC::updateEigenValues() {
     eigenValueRange_ = glm::abs(minVal_ - maxVal_);
 }
 
-void TensorFieldLIC::process() {
+void TensorField2DLIC::process() {
     utilgl::activateAndClearTarget(outport_);
 
     shader_.activate();

@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisio/processors/tensorfield3dexport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/tensorvisio/util/util.h>
 
 namespace inviwo {
 
@@ -121,7 +122,7 @@ void TensorField3DExport::exportBinary() const {
     const auto &data = *tensorField->tensors();
 
     for (const auto &val : data) {
-        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)), sizeof(float) * 9);
+        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)), sizeof(TensorField3D::value_type) * 9);
     }
 
     auto hasMask = glm::uint8(tensorField->hasMask());
@@ -137,11 +138,9 @@ void TensorField3DExport::exportBinary() const {
         const size_t numMetaDataEntries =
             tensorField->metaData()->getNumberOfColumns() - 1;  // omit index buffer
         outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
-        serializeDataFrame(tensorField->metaData(), outFile);
+        util::serializeDataFrame(tensorField->metaData(), outFile);
     }
 
-    // Append some string here as a safety measure to be able to see if we read the file correctly
-    // afterwards.
     std::string str("EOFreached");
     size = str.size();
     outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));
@@ -149,6 +148,8 @@ void TensorField3DExport::exportBinary() const {
 
     outFile.close();
 
-    LogInfo("Exporting done.");
+    LogInfo(exportFile_.get()
+        << " successfully exported. (roughly "
+        << util::getFileSizeAsString(exportFile_.get(), util::FileSizeOrder::GiB));
 }
 }  // namespace inviwo
