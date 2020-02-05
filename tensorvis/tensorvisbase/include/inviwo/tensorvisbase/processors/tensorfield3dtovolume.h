@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2018 Inviwo Foundation
+ * Copyright (c) 2017-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,45 +27,39 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDTORGBA_H
-#define IVW_TENSORFIELDTORGBA_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldLIC, TensorFieldLIC}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldLIC)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.TensorField3DToVolume, Tensor Field 3D To Volume}
+ * ![](org.inviwo.TensorField3DToVolume.png?classIdentifier=org.inviwo.TensorField3DToVolume)
+ * This processor takes in a 3D tensor field and outputs the selected meta data as volume for volume
+ * rendering or other subsequent actions.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __tensorFieldInport__ Input tensor field.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __volumeOutport__ Volume containing the selected meta data.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __volumeContent__ Select the meta data that should be output as volume.
+ *   * __normalizeVectors___ If the meta data is a vector type (such as the eigen vectors), set
+ * whether or not the vectors should be normalized.
  */
 
-/**
- * \class TensorFieldToRGBA
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldToRGBA : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DToVolume : public Processor {
 public:
-    TensorFieldToRGBA();
-    virtual ~TensorFieldToRGBA() = default;
+    TensorField3DToVolume();
+    virtual ~TensorField3DToVolume() = default;
 
     virtual void process() override;
 
@@ -73,17 +67,13 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField2DInport inport_;
-    ImageOutport outport_;
+    TensorField3DInport inport_;
 
-    Shader shader_;
+    VolumeOutport outport_;
 
-    EventProperty hover_;
-    DoubleMat2Property tensor_;
+    OptionPropertySize_t volumeContent_;
 
-    void hoverAction(Event *e);
+    BoolProperty normalizeVectors_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDTORGBA_H

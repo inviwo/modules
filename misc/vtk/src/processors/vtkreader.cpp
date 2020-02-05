@@ -34,11 +34,11 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkCallbackCommand.h>
+
 #include <warn/pop>
 
 #include <fstream>
-#include <inviwo/vtk/util/vtkutil.h>
+
 #include <fmt/format.h>
 
 namespace inviwo {
@@ -58,8 +58,6 @@ VTKReader::VTKReader()
     , file_("vtkFile", "VTK file", "", "VTK")
     , reloadButton_("reload", "Reload Data")
     , outport_("VTKDataObjectOutport")
-    , xmlreader_(nullptr)
-    , legacyreader_(nullptr)
     , data_(nullptr) {
 
     file_.addNameFilter(FileExtension("vti", "VTK ImageData (structured)"));
@@ -79,11 +77,6 @@ VTKReader::VTKReader()
     addPort(outport_);
 
     progressBar_.hide();
-
-    reloadButton_.onChange([this]() {
-        xmlreader_ = nullptr;
-        legacyreader_ = nullptr;
-    });
 }
 
 void VTKReader::process() {
@@ -97,7 +90,16 @@ void VTKReader::process() {
 
         const auto fileType = determineFileType(fileName);
 
-        read(fileType);
+        switch (fileType) {
+            case VTKFileType::Legacy:
+                read<VTKFileType::Legacy>();
+                break;
+            case VTKFileType::XML:
+                read<VTKFileType::XML>();
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -125,71 +127,5 @@ VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName)
         return VTKFileType::Legacy;
     }
     LogInfo("File type could not be determined.") { return VTKFileType::Unknown; }
-}
-
-bool VTKReader::read(const VTKFileType fileType) {
-    switch (fileType) {
-        case VTKFileType::Legacy:
-            readLegacy();
-            break;
-        case VTKFileType::XML:
-            readXML();
-            break;
-        default:
-            return false;
-    }
-    return true;
-}
-
-void VTKReader::readLegacy() {
-    dispatchPool([this]() {
-        dispatchFront([this]() { getActivityIndicator().setActive(true); });
-
-        auto progressCallback = vtkSmartPointer<vtkCallbackCommand>::New();
-        progressCallback->SetCallback(vtkProgressBarCallback);
-        progressCallback->SetClientData(&progressBar_);
-
-        if (!legacyreader_) {
-            legacyreader_ = vtkSmartPointer<vtkGenericDataObjectReader>::New();
-        }
-        legacyreader_->AddObserver(vtkCommand::ProgressEvent, progressCallback);
-        legacyreader_->SetFileName(file_.get().c_str());
-        legacyreader_->Update();
-
-        dataSet_ = vtkDataSet::SafeDownCast(legacyreader_->GetOutput());
-
-        dispatchFront([this]() {
-            data_ = std::make_shared<VTKDataSet>(dataSet_);
-            getActivityIndicator().setActive(false);
-            outport_.setData(data_);
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    });
-}
-
-void VTKReader::readXML() {
-    dispatchPool([this]() {
-        dispatchFront([this]() { getActivityIndicator().setActive(true); });
-
-        auto progressCallback = vtkSmartPointer<vtkCallbackCommand>::New();
-        progressCallback->SetCallback(vtkProgressBarCallback);
-        progressCallback->SetClientData(&progressBar_);
-
-        if (!xmlreader_) {
-            xmlreader_ = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
-        }
-        xmlreader_->AddObserver(vtkCommand::ProgressEvent, progressCallback);
-        xmlreader_->SetFileName(file_.get().c_str());
-        xmlreader_->Update();
-
-        dataSet_ = vtkDataSet::SafeDownCast(xmlreader_->GetOutput());
-
-        dispatchFront([this]() {
-            data_ = std::make_shared<VTKDataSet>(dataSet_);
-            getActivityIndicator().setActive(false);
-            outport_.setData(data_);
-            invalidate(InvalidationLevel::InvalidOutput);
-        });
-    });
 }
 }  // namespace inviwo

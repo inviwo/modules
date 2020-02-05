@@ -36,32 +36,27 @@
 #include <inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
 
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/processors/eigenvaluefieldtoimage.h>
 #include <inviwo/tensorvisbase/processors/hyperstreamlines.h>
-#include <inviwo/tensorvisbase/processors/imagetospherefield.h>
-#include <inviwo/tensorvisbase/processors/invariantspacecombine.h>
-#include <inviwo/tensorvisbase/processors/invariantspacefilter.h>
-#include <inviwo/tensorvisbase/processors/invariantspaceselection.h>
-#include <inviwo/tensorvisbase/processors/invariantspacetodataframe.h>
-#include <inviwo/tensorvisbase/processors/tensorfield2danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubsample.h>
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubset.h>
-#include <inviwo/tensorvisbase/processors/tensorfield3dangle.h>
-#include <inviwo/tensorvisbase/processors/tensorfield3danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dtoimage.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dfiberangle.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dmasktovolume.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dmetadata.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubsample.h>
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubset.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldgenerator.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldtovolume.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dgenerator.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dlic.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dslice.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dasrgba.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtovolume.h>
 #include <inviwo/tensorvisbase/processors/tensorglyphprocessor.h>
 #include <inviwo/tensorvisbase/processors/tensorglyphrenderer.h>
-#include <inviwo/tensorvisbase/processors/tensorinformation.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dinformation.h>
 #include <inviwo/tensorvisbase/processors/volumeactualdataandvaluerange.h>
 #include <inviwo/tensorvisbase/properties/eigenvalueproperty.h>
 #include <inviwo/tensorvisbase/properties/tensorglyphproperty.h>
@@ -72,33 +67,33 @@ TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     : InviwoModule(app, "TensorVisBase") {
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    registerProcessor<EigenvalueFieldToImage>();
+    registerPort<TensorField2DInport>();
+    registerPort<TensorField2DOutport>();
+    registerPort<TensorField3DInport>();
+    registerPort<TensorField3DOutport>();
+
     registerProcessor<HyperStreamlines>();
-    registerProcessor<ImageToSphereField>();
-    registerProcessor<InvariantSpaceCombine>();
-    registerProcessor<InvariantSpaceFilter>();
-    registerProcessor<TensorField2DAnisotropy>();
+    registerProcessor<TensorField2DMetaData>();
     registerProcessor<TensorField2DSubsample>();
     registerProcessor<TensorField2DSubset>();
-    registerProcessor<TensorField3DAngle>();
-    registerProcessor<TensorField3DAnisotropy>();
+    registerProcessor<TensorField2DToImage>();
+    registerProcessor<TensorField3DFiberAngle>();
     registerProcessor<TensorField3DBasisManipulation>();
     registerProcessor<TensorField3DBoundingBox>();
     registerProcessor<TensorField3DMaskToVolume>();
     registerProcessor<TensorField3DMetaData>();
     registerProcessor<TensorField3DSubsample>();
     registerProcessor<TensorField3DSubset>();
-    registerProcessor<TensorFieldGenerator>();
-    registerProcessor<TensorFieldLIC>();
-    registerProcessor<TensorFieldSlice>();
-    registerProcessor<TensorFieldToRGBA>();
-    registerProcessor<TensorFieldToVolume>();
+    registerProcessor<TensorField3DToDataFrame>();
+    registerProcessor<TensorField2DGenerator>();
+    registerProcessor<TensorField2DLIC>();
+    registerProcessor<TensorField3DSlice>();
+    registerProcessor<TensorField2DAsRGBA>();
+    registerProcessor<TensorField3DToVolume>();
     registerProcessor<TensorGlyphProcessor>();
     registerProcessor<TensorGlyphRenderer>();
-    registerProcessor<TensorInformation>();
+    registerProcessor<TensorField3DInformation>();
     registerProcessor<VolumeActualDataAndValueRange>();
-    registerProcessor<InvariantSpaceToDataFrame>();
-    registerProcessor<InvariantSpaceSelection>();
 
     registerProperty<EigenValueProperty>();
     registerProperty<TensorGlyphProperty>();

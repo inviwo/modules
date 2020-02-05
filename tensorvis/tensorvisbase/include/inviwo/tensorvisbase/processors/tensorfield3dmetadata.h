@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DMETADATA_H
-#define IVW_TENSORFIELD3DMETADATA_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,7 +38,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DMetaData, Tensor Field3DMeta Data}
+/** \docpage{org.inviwo.TensorField3DMetaData, Tensor Field 3D Meta Data}
  * ![](org.inviwo.TensorField3DMetaData.png?classIdentifier=org.inviwo.TensorField3DMetaData)
  * Explanation of how to use the processor.
  *
@@ -52,12 +51,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField3DMetaData
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_TENSORVISBASE_API TensorField3DMetaData : public Processor {
 public:
@@ -74,44 +67,12 @@ private:
     TensorField3DInport inport_;
     TensorField3DOutport outport_;
 
-    BoolProperty sigma1_;
-    BoolProperty sigma2_;
-    BoolProperty sigma3_;
-    BoolProperty ev1_;
-    BoolProperty ev2_;
-    BoolProperty ev3_;
-    BoolProperty i1_;
-    BoolProperty i2_;
-    BoolProperty i3_;
-    BoolProperty j1_;
-    BoolProperty j2_;
-    BoolProperty j3_;
-    BoolProperty lodeAngle_;
-    BoolProperty anisotropy_;
-    BoolProperty linearAnisotropy_;
-    BoolProperty planarAnisotropy_;
-    BoolProperty sphericalAnisotropy_;
-    BoolProperty diffusivity_;
-    BoolProperty shearStress_;
-    BoolProperty pureShear_;
-    BoolProperty shapeFactor_;
-    BoolProperty isotropicScaling_;
-    BoolProperty rotation_;
-    BoolProperty frobeniusNorm_;
-    BoolProperty hillYieldCriterion_;
+    CompositeProperty metaDataPropertyContainer_;
 
     ButtonProperty selectAll_;
     ButtonProperty deselectAll_;
 
-    std::shared_ptr<TensorField3D> tensorFieldOut_;
-
-    void addMetaData();
-    void removeMetaData();
-
-    void selectAll();
-    void deselectAll();
+    void addRemoveMetaData(std::shared_ptr<TensorField3D> tensorField);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DMETADATA_H

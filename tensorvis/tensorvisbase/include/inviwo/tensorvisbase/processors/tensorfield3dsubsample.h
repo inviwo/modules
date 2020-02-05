@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DSUBSAMPLE_H
-#define IVW_TENSORFIELD3DSUBSAMPLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -39,7 +38,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DSubsample, <dname>}
+/** \docpage{org.inviwo.TensorField3DSubsample, Tensor Field 3D Subsample}
  * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField3DSubsample)
  * Explanation of how to use the processor.
  *
@@ -86,5 +85,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DSUBSAMPLE_H

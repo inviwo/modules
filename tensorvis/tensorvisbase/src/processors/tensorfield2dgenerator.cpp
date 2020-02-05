@@ -27,29 +27,30 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfieldgenerator.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dgenerator.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorFieldGenerator::processorInfo_{
-    "org.inviwo.TensorFieldGenerator",  // Class identifier
-    "Tensor Field Generator",           // Display name
-    "Tensor Field IO",                  // Category
-    CodeState::Experimental,            // Code state
-    Tags::CPU,                          // Tags
+const ProcessorInfo TensorField2DGenerator::processorInfo_{
+    "org.inviwo.TensorField2DGenerator",  // Class identifier
+    "Tensor Field 2D Generator",          // Display name
+    "Tensor Field IO",                    // Category
+    CodeState::Experimental,              // Code state
+    tag::OpenTensorVis | Tag::CPU,        // Tags
 };
 
-const ProcessorInfo TensorFieldGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField2DGenerator::getProcessorInfo() const { return processorInfo_; }
 
-TensorFieldGenerator::TensorFieldGenerator()
+TensorField2DGenerator::TensorField2DGenerator()
     : Processor()
     , singularityPresets_("singularityPresets", "Singularity presets")
     , tensors_("tensors", "Tensors")
-    , T12D_("T12D", "Tensor 1")
-    , T22D_("T22D", "Tensor 2")
-    , T32D_("T32D", "Tensor 3")
-    , T42D_("T42D", "Tensor 4")
+    , T12D_("T12D", "Tensor 1", T1, min, max, inc)
+    , T22D_("T22D", "Tensor 2", T2, min, max, inc)
+    , T32D_("T32D", "Tensor 3", T3, min, max, inc)
+    , T42D_("T42D", "Tensor 4", T4, min, max, inc)
     , collectionField_("collectionField_", "collectionField_")
     , collectionRow1_("collectionRow1_", "Row1")
     , collectionRow2_("collectionRow2_", "Row2")
@@ -138,13 +139,7 @@ TensorFieldGenerator::TensorFieldGenerator()
 
     addProperty(collectionField_);
 
-    auto setMatProperty = [this](const dmat2& mat, DoubleMat2Property& prop) {
-        prop.setMinValue(min);
-        prop.setMaxValue(max);
-        prop.setIncrement(inc);
-        prop.set(mat);
-        prop.setCurrentStateAsDefault();
-    };
+    auto setMatProperty = [](const dmat2& mat, DoubleMat2Property& prop) { prop.set(mat); };
 
     setMatProperty(dmat2(dvec2(15., 6.4), dvec2(6.4, 14.)), collectionRow1T1_);
     setMatProperty(dmat2(dvec2(7.5, 3.), dvec2(3., 21.)), collectionRow1T2_);
@@ -179,9 +174,9 @@ TensorFieldGenerator::TensorFieldGenerator()
     addPort(outport2D_);
 }
 
-void TensorFieldGenerator::process() { generate2DField(); }
+void TensorField2DGenerator::process() { generate2DField(); }
 
-void TensorFieldGenerator::generate2DField() {
+void TensorField2DGenerator::generate2DField() {
     std::vector<dmat2> rawData;
     size2_t dimensions{0};
 
@@ -285,7 +280,11 @@ void TensorFieldGenerator::generate2DField() {
             break;
     }
 
-    outport2D_.setData(std::make_shared<TensorField2D>(dimensions, rawData));
+    std::vector<TensorField2D::matN> data;
+    data.resize(rawData.size());
+    std::copy(std::begin(rawData), std::end(rawData), std::begin(data));
+
+    outport2D_.setData(std::make_shared<TensorField2D>(dimensions, data));
 }
 
 }  // namespace inviwo

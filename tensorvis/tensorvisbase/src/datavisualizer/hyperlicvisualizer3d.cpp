@@ -33,8 +33,8 @@
 #include <modules/base/processors/noiseprocessor.h>
 #include <inviwo/core/processors/processorutils.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
-#include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dslice.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dlic.h>
 
 #include <inviwo/core/io/datareaderfactory.h>
 
@@ -72,9 +72,9 @@ std::pair<Processor*, Outport*> HyperLICVisualizer3D::addSourceProcessor(const s
 std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outport,
                                                                    ProcessorNetwork* net) const {
 
-    auto slicer = net->addProcessor(util::makeProcessor<TensorFieldSlice>(GP{0, 3}));
+    auto slicer = net->addProcessor(util::makeProcessor<TensorField3DSlice>(GP{0, 3}));
     auto noiser = net->addProcessor(util::makeProcessor<NoiseProcessor>(GP{1, 6}));
-    auto hlicer = net->addProcessor(util::makeProcessor<TensorFieldLIC>(GP{0, 9}));
+    auto hlicer = net->addProcessor(util::makeProcessor<TensorField2DLIC>(GP{0, 9}));
     auto canvas = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 12}));
 
     net->addConnection(slicer->getOutports()[0], hlicer->getInports()[0]);

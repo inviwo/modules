@@ -27,31 +27,55 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/imagetospherefield.h>
+#pragma once
+
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageToSphereField::processorInfo_{
-    "org.inviwo.ImageToSphereField",  // Class identifier
-    "Image To Sphere Field",          // Display name
-    "Mesh Creation",                  // Category
-    CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
+/** \docpage{org.inviwo.TensorField3DInformation, Tensor Field 3D Information}
+ * ![](org.inviwo.TensorField3DInformation.png?classIdentifier=org.inviwo.TensorField3DInformation)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+
+/**
+ * \class TensorField3DInformation
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ */
+class IVW_MODULE_TENSORVISBASE_API TensorField3DInformation : public Processor {
+public:
+    TensorField3DInformation();
+    virtual ~TensorField3DInformation() = default;
+
+    virtual void initializeResources() override;
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    TensorField3DInport inport_;
+
+    IntVec3Property index_;
+
+    FloatMat3Property tensor_;
+    FloatMat3Property eigenVectors_;
+    FloatVec3Property eigenValues_;
+    FloatMat4Property basisAndOffset_;
 };
-const ProcessorInfo ImageToSphereField::getProcessorInfo() const { return processorInfo_; }
-
-ImageToSphereField::ImageToSphereField()
-    : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
-
-    addPort(outport_);
-    addProperty(position_);
-}
-
-void ImageToSphereField::process() {
-    // outport_.setData(myImage);
-}
 
 }  // namespace inviwo

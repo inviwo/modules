@@ -53,7 +53,7 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
 
     util::IndexMapper2D indexMapper(dimensions);
 
-    std::vector<dmat2> sliceData;
+    std::vector<TensorField2D::matN> sliceData;
     sliceData.resize(dimensions.x * dimensions.y);
 
     switch (axis) {
@@ -62,7 +62,7 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
                 for (size_t y = 0; y < dimensions.x; y++) {
                     auto x = sliceNumber;
                     sliceData[indexMapper(size2_t(y, z))] =
-                        tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
+                        tensorutil::getProjectedTensor(inTensorField->at(size3_t(x, y, z)), axis);
                 }
             }
             break;
@@ -71,7 +71,7 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
                 for (size_t x = 0; x < dimensions.x; x++) {
                     auto y = sliceNumber;
                     sliceData[indexMapper(size2_t(x, z))] =
-                        tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
+                        tensorutil::getProjectedTensor(inTensorField->at(size3_t(x, y, z)), axis);
                 }
             }
             break;
@@ -80,14 +80,16 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
                 for (size_t x = 0; x < dimensions.x; x++) {
                     auto z = sliceNumber;
                     sliceData[indexMapper(size2_t(x, y))] =
-                        tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
+                        tensorutil::getProjectedTensor(inTensorField->at(size3_t(x, y, z)), axis);
                 }
             }
             break;
+        default:
+            IVW_ASSERT(false, "getSlice2D");
     }
 
     auto tensorField = std::make_shared<TensorField2D>(dimensions, sliceData);
-    tensorField->setOffset(inTensorField->getOffset());
+    // tensorField->setOffset(inTensorField->getOffset());
 
     return tensorField;
 }
@@ -118,7 +120,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
 
     util::IndexMapper3D indexMapper(dimensions);
 
-    std::vector<dmat3> sliceData{};
+    std::vector<mat3> sliceData{};
     sliceData.resize(dimensions.x * dimensions.y * dimensions.z);
     vec3 offset{0};
 
@@ -127,7 +129,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
             for (size_t z = 0; z < dimensions.z; z++) {
                 for (size_t y = 0; y < dimensions.y; y++) {
                     auto x = sliceNumber;
-                    sliceData[indexMapper(size3_t(0, y, z))] = inTensorField->at(x, y, z).second;
+                    sliceData[indexMapper(size3_t(0, y, z))] = inTensorField->at(size3_t(x, y, z));
                     offset.x = frac;
                 }
             }
@@ -136,7 +138,7 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
             for (size_t z = 0; z < dimensions.z; z++) {
                 for (size_t x = 0; x < dimensions.x; x++) {
                     auto y = sliceNumber;
-                    sliceData[indexMapper(size3_t(x, 0, z))] = inTensorField->at(x, y, z).second;
+                    sliceData[indexMapper(size3_t(x, 0, z))] = inTensorField->at(size3_t(x, y, z));
                     offset.y = frac;
                 }
             }
@@ -145,15 +147,16 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
             for (size_t y = 0; y < dimensions.y; y++) {
                 for (size_t x = 0; x < dimensions.x; x++) {
                     auto z = sliceNumber;
-                    sliceData[indexMapper(size3_t(x, y, 0))] = inTensorField->at(x, y, z).second;
+                    sliceData[indexMapper(size3_t(x, y, 0))] = inTensorField->at(size3_t(x, y, z));
                     offset.z = frac;
                 }
             }
             break;
     }
 
-    auto tensorField =
-        std::make_shared<TensorField3D>(dimensions, sliceData, inTensorField->getExtents(), frac);
+    auto tensorField = std::make_shared<TensorField3D>(dimensions, sliceData);
+
+    tensorField->setExtents(inTensorField->getExtents());
     tensorField->setOffset(offset);
 
     return tensorField;

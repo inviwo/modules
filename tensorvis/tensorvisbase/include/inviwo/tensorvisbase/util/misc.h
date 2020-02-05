@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #pragma once
+
 #include <inviwo/core/common/inviwo.h>
 
 namespace inviwo {
@@ -58,14 +59,11 @@ inline std::string getHTMLTableRowString(const std::string& left, const std::str
            detail::getHTMLTableColumnString(right) + "</tr>";
 }
 
-inline std::string getHTMLTableRowString(const std::string& left, const dvec3& right) {
+template <std::size_t N, typename T>
+inline std::string getHTMLTableRowString(const std::string& left,
+                                         const glm::vec<N, T, glm::defaultp>& right) {
     return "<tr>" + detail::getHTMLTableColumnString(left) +
            detail::getHTMLTableColumnString(glm::to_string(right)) + "</tr>";
-}
-
-inline std::string getHTMLTableRowString(const std::string& left, const size3_t& right) {
-    return "<tr>" + detail::getHTMLTableColumnString(left) +
-           detail::getHTMLTableColumnString(glm::to_string(uvec3(right))) + "</tr>";
 }
 
 inline std::string getHTMLTableRowString(const std::string& left, const size_t right) {

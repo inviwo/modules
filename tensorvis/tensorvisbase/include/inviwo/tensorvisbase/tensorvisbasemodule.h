@@ -27,13 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORVISBASEMODULE_H
-#define IVW_TENSORVISBASEMODULE_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
+namespace tag {
+static const Tag OpenTensorVis("OpenTensorVis");
+}
 
 class IVW_MODULE_TENSORVISBASE_API TensorVisBaseModule : public InviwoModule {
 public:
@@ -42,5 +44,3 @@ public:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORVISBASEMODULE_H

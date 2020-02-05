@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2016-2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DANISOTROPY_H
-#define IVW_TENSORFIELD3DANISOTROPY_H
+#pragma once
 
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/tensorvisbase/util/tensorutil.h>
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DAnisotropy, Tensor Field 3D Anisotropy}
- * ![](org.inviwo.TensorField3DAnisotropy.png?classIdentifier=org.inviwo.TensorField3DAnisotropy)
+/** \docpage{org.inviwo.TensorField2DAsRGBA, Tensor Field 2D As RGBA}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DAsRGBA)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -55,15 +55,10 @@ namespace inviwo {
  *   * __<Prop2>__ <description>
  */
 
-/**
- * \class TensorField3DAnisotropy
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorField3DAnisotropy : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DAsRGBA : public Processor {
 public:
-    TensorField3DAnisotropy();
-    virtual ~TensorField3DAnisotropy() = default;
+    TensorField2DAsRGBA();
+    virtual ~TensorField2DAsRGBA() = default;
 
     virtual void process() override;
 
@@ -71,14 +66,16 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField3DInport tensorFieldInport_;
-    VolumeOutport volumeOutport_;
+    ImageInport inport_;
+    ImageOutport outport_;
 
-    TemplateOptionProperty<tensorutil::Anisotropy> anisotropy_;
+    Shader shader_;
 
-    TemplateOptionProperty<GLint> interpolationScheme_;
+    EventProperty hover_;
+
+    OrdinalProperty<glm::mat<2, 2, TensorField2D::value_type>> tensor_;
+
+    void hoverAction(Event *e);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DANISOTROPY_H

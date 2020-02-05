@@ -27,23 +27,24 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dlic.h>
 #include <algorithm>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorFieldLIC::processorInfo_{
-    "org.inviwo.TensorFieldLIC",  // Class identifier
-    "Tensor Field LIC",           // Display name
-    "Tensor Visualization",       // Category
-    CodeState::Experimental,      // Code state
-    Tags::GL,                     // Tags
+const ProcessorInfo TensorField2DLIC::processorInfo_{
+    "org.inviwo.TensorField2DLIC",  // Class identifier
+    "Tensor Field 2D LIC",          // Display name
+    "Tensor Visualization",         // Category
+    CodeState::Experimental,        // Code state
+    tag::OpenTensorVis | Tag::GL,   // Tags
 };
 
-const ProcessorInfo TensorFieldLIC::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField2DLIC::getProcessorInfo() const { return processorInfo_; }
 
-TensorFieldLIC::TensorFieldLIC()
+TensorField2DLIC::TensorField2DLIC()
     : Processor()
     , inport_("inport")
     , noiseTexture_("noiseTexture", true)
@@ -79,21 +80,21 @@ TensorFieldLIC::TensorFieldLIC()
     majorMinor_.onChange([&]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
-void TensorFieldLIC::initializeResources() {
+void TensorField2DLIC::initializeResources() {
     if (!inport_.hasData() || !inport_.getData().get()) return;
 
     updateEigenValues();
 }
 
-void TensorFieldLIC::updateEigenValues() {
+void TensorField2DLIC::updateEigenValues() {
     auto subsampled = tensorutil::subsample2D(inport_.getData(),
                                               inport_.getData()->getDimensions() * size2_t(2, 2));
 
-    std::vector<double> eigenValues;
+    std::vector<TensorField2D::value_type> eigenValues;
     if (majorMinor_.get()) {
-        eigenValues = std::vector<double>(subsampled->minorEigenValues());
+        eigenValues = std::vector<TensorField2D::value_type>(subsampled->minorEigenValues());
     } else {
-        eigenValues = std::vector<double>(subsampled->majorEigenValues());
+        eigenValues = std::vector<TensorField2D::value_type>(subsampled->majorEigenValues());
     }
 
     minVal_ = static_cast<float>(*std::min_element(eigenValues.begin(), eigenValues.end()));
@@ -103,7 +104,10 @@ void TensorFieldLIC::updateEigenValues() {
         // Delete zero entries to find actual minimum
         eigenValues.erase(
             std::remove_if(eigenValues.begin(), eigenValues.end(),
-                           [](double x) { return x < std::numeric_limits<double>::epsilon(); }),
+                           [](auto x) {
+                               return std::abs(x) <
+                                      std::numeric_limits<TensorField2D::value_type>::epsilon();
+                           }),
             eigenValues.end());
 
         minVal_ = static_cast<float>(*std::min_element(eigenValues.begin(), eigenValues.end()));
@@ -113,7 +117,7 @@ void TensorFieldLIC::updateEigenValues() {
     eigenValueRange_ = glm::abs(minVal_ - maxVal_);
 }
 
-void TensorFieldLIC::process() {
+void TensorField2DLIC::process() {
     utilgl::activateAndClearTarget(outport_);
 
     shader_.activate();
@@ -122,6 +126,7 @@ void TensorFieldLIC::process() {
     // add tensorfield to texture unit container
     tensorutil::bindTensorFieldAsColorTexture(tensorFieldTexture, inport_.getData(), shader_,
                                               units);
+
     // add noise texture to texture unit container
     utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
 

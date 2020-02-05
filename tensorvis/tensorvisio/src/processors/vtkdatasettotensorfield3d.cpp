@@ -34,24 +34,24 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkRectilinearGrid.h>
-#include <vtkStructuredGrid.h>
-#include <vtkStructuredPoints.h>
-#include <vtkDoubleArray.h>
-#include <vtkFloatArray.h>
+#include <vtkArrayDispatch.h>
 #include <vtkPointData.h>
-#include <vtkCellData.h>
+#include <vtkArray.h>
 #include <warn/pop>
+
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/vtk/vtkmodule.h>
+#include <inviwo/tensorvisio/util/util.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKDataSetToTensorField3D::processorInfo_{
-    "org.inviwo.VTKDataSetToTensorField3D",  // Class identifier
-    "VTK Data Set To Tensor Field 3D",       // Display name
-    "VTK",                                   // Category
-    CodeState::Experimental,                 // Code state
-    Tags::CPU,                               // Tags
+    "org.inviwo.VTKDataSetToTensorField3D",       // Class identifier
+    "VTK Data Set To Tensor Field 3D",            // Display name
+    "VTK",                                        // Category
+    CodeState::Experimental,                      // Code state
+    tag::OpenTensorVis | Tag("VTK") | Tags::CPU,  // Tags
 };
 const ProcessorInfo VTKDataSetToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
@@ -61,7 +61,7 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     , tensorField3DOutport_("tensorField3DOutport")
     , normalizeExtents_("normalizeExtents", "Normalize extents", false)
     , tensors_("tensors_", "Tensors")
-    , scalars_("scalars", "Scalars")
+    //, scalars_("scalars", "Scalars")
     , generate_("generate", "Generate")
     , busy_(false) {
     addPort(dataSetInport_);
@@ -70,7 +70,7 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     addProperty(normalizeExtents_);
 
     addProperty(tensors_);
-    addProperty(scalars_);
+    // addProperty(scalars_);
 
     addProperties(generate_);
 
@@ -100,15 +100,15 @@ void VTKDataSetToTensorField3D::initializeResources() {
         if (array->GetNumberOfComponents() == 9) {
             tensorOptions.emplace_back(identifier, name, name);
         }
-        if (array->GetNumberOfComponents() == 1) {
+        /*if (array->GetNumberOfComponents() == 1) {
             scalarOptions.emplace_back(identifier, name, name);
-        }
+        }*/
     }
 
-    scalarOptions.emplace_back("none", "None", "none");
+    // scalarOptions.emplace_back("none", "None", "none");
 
     tensors_.replaceOptions(tensorOptions);
-    scalars_.replaceOptions(scalarOptions);
+    // scalars_.replaceOptions(scalarOptions);
 }
 
 void VTKDataSetToTensorField3D::process() {}
@@ -154,54 +154,19 @@ void VTKDataSetToTensorField3D::generate() {
         }
 
         std::shared_ptr<TensorField3D> tensorField;
-        if (tensorArray->GetDataType() == VTK_DOUBLE) {
-            tensorField = std::make_shared<TensorField3D>(
-                dimensions, vtkDoubleArray::SafeDownCast(tensorArray)->GetPointer(0), extent);
-            tensorField->setOffset(offset);
+        auto tensors = std::make_shared<std::vector<TensorField3D::matN>>();
 
-        } else if (tensorArray->GetDataType() == VTK_FLOAT) {
-            tensorField = std::make_shared<TensorField3D>(
-                dimensions, vtkFloatArray::SafeDownCast(tensorArray)->GetPointer(0), extent);
-            tensorField->setOffset(offset);
-        } else {
-            LogProcessorError("Failed to generate tensor field from array \""
-                              << std::string{tensorArray->GetName()} << "\" because data type is "
-                              << std::string{tensorArray->GetDataTypeAsString()} << ".") return;
+        util::VTKToVector<3> worker;
+
+        typedef vtkArrayDispatch::DispatchByValueType<vtkArrayDispatch::AllTypes> Dispatcher;
+
+        if (!Dispatcher::Execute(tensorArray, worker)) {
+            worker(tensorArray);
         }
 
-        // Add meta data from scalar array
-        if (!scalars_.getOptions().empty() && scalars_.get() != "none") {
-            auto scalarArray = dataSet->GetPointData()->GetArray(scalars_.get().c_str());
-            const auto size = scalarArray->GetNumberOfValues();
-
-            std::vector<double> scalars{};
-            scalars.resize(size);
-            auto scalarIterator = scalars.begin();
-
-            if (scalarArray->GetDataType() == VTK_DOUBLE) {
-                const auto data = vtkDoubleArray::SafeDownCast(scalarArray)->GetPointer(0);
-
-                for (int i = 0; i < size; ++i) {
-                    std::copy(data + i, data + (i + 1), scalarIterator++);
-                }
-
-                tensorField->addMetaData<HillYieldCriterion>(scalars,
-                                                             TensorFeature::HillYieldCriterion);
-            } else if (scalarArray->GetDataType() == VTK_FLOAT) {
-                const auto data = vtkFloatArray::SafeDownCast(scalarArray)->GetPointer(0);
-
-                for (int i = 0; i < size; ++i) {
-                    std::copy(data + i, data + (i + 1), scalarIterator++);
-                }
-                tensorField->addMetaData<HillYieldCriterion>(scalars,
-                                                             TensorFeature::HillYieldCriterion);
-            } else {
-                LogProcessorError("Failed to generate meta data from array \""
-                                  << std::string{scalarArray->GetName()}
-                                  << "\" because data type is "
-                                  << std::string{scalarArray->GetDataTypeAsString()} << ".") return;
-            }
-        }
+        tensorField = std::make_shared<TensorField3D>(dimensions, worker.vec);
+        tensorField->setExtents(extent);
+        tensorField->setOffset(offset);
 
         busy_ = false;
 

@@ -34,11 +34,12 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/vtk/ports/vtkdatasetport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/processors/activityindicator.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKToTensorField2D, VTK To Tensor Field 2D}
- * ![](org.inviwo.VTKToTensorField2D.png?classIdentifier=org.inviwo.VTKToTensorField2D)
+/** \docpage{org.inviwo.VTKDataSetToTensorField2D, VTK Data Set To Tensor Field 2D}
+ * ![](org.inviwo.VTKToTensorField2D.png?classIdentifier=org.inviwo.VTKDataSetToTensorField2D)
  *
  * Converts a VTK data set to a 2D tensor field.
  * This requires that one of the dimensions of the VTK data set is 1.
@@ -54,19 +55,32 @@ namespace inviwo {
  *
  */
 
-class IVW_MODULE_TENSORVISIO_API VTKToTensorField2D : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField2D : public Processor,
+                                                             public ActivityIndicatorOwner {
 public:
-    VTKToTensorField2D();
-    virtual ~VTKToTensorField2D() = default;
+    VTKDataSetToTensorField2D();
+    virtual ~VTKDataSetToTensorField2D() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    VTKDataSetInport vtkDataSetInport_;
+    VTKDataSetInport dataSetInport_;
+
     TensorField2DOutport tensorField2DOutport_;
+
+    BoolProperty normalizeExtents_;
+
+    OptionPropertyString tensors_;
+    // OptionPropertyString scalars_;
+    ButtonProperty generate_;
+
+    void generate();
+
+    bool busy_;
 };
 
 }  // namespace inviwo

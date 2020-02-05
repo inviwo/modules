@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -37,27 +37,123 @@
 #include <modules/eigenutils/eigenutils.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <limits>
 
 namespace inviwo {
-namespace tensorutil {
-
-enum class Anisotropy {
-    abs_lamda1_minus_lamda2,
-    abs_lamda1_minus_lamda3,
-    barycentric,
-    abs_lamda1_minus_abs_lamda2
-};
-
-/*
- * Specifies several common decompositions for tensors.
- * See: https://diglib.eg.org/handle/10.1111/v32i1pp049-074
+namespace util {
+/**
+ * Returns the trace of the tensor.
  */
-enum class Decomposition {
-    Symmetric_Antisymmetric,
-    Stretch_Rotation,
-    Shape_Orientation,
-    Isotropic_Anisotropic
-};
+template <typename T, glm::length_t N>
+T trace(const glm::mat<N, N, T> &tensor) {
+    T sum{0};
+
+    for (unsigned int i{0}; i < N; ++i) {
+        sum += tensor[i][i];
+    }
+    return sum;
+}
+
+/**
+ * Returns the Nth eigen value of the tensor (counting starts at 0, i.e. the first eigen value has
+ * index 0).
+ */
+template <unsigned int N, typename T, glm::length_t M>
+T eigenvalue(const glm::mat<M, M, T> &tensor) {
+    if constexpr (N < M) {
+        if (tensor == glm::mat<M, M, T>(0)) {
+            return T(0);
+        }
+
+        Eigen::EigenSolver<Eigen::Matrix<T, M, M>> solver(util::glm2eigen(tensor));
+
+        auto sortable = std::array<T, M>{};
+
+        for (unsigned int i{0}; i < M; ++i) {
+            sortable[i] = solver.eigenvalues().col(0)[i].real();
+        }
+
+        std::sort(sortable.begin(), sortable.end(), [](const T A, const T B) { return A > B; });
+
+        return sortable[N];
+    }
+}
+
+/**
+ * Returns the Nth eigen vector of the tensor (counting starts at 0, i.e. the first eigen value has
+ * index 0).
+ */
+template <unsigned int N, typename T, glm::length_t M>
+glm::vec<M, T> eigenvector(const glm::mat<M, M, T> &tensor) {
+    using vec_type = glm::vec<M, T>;
+
+    if constexpr (N < M) {
+        if (tensor == glm::mat<M, M, T>(0)) {
+            return vec_type(0);
+        }
+
+        Eigen::EigenSolver<Eigen::Matrix<T, M, M>> solver(util::glm2eigen(tensor));
+
+        std::vector<std::pair<T, vec_type>> sortable;
+        for (unsigned int i{0}; i < M; ++i) {
+            auto vec = vec_type{0};
+            for (unsigned int j{0}; j < M; ++j) {
+                vec[j] = solver.eigenvectors().col(i).real()[j];
+            }
+            sortable.emplace_back(solver.eigenvalues().col(0)[i].real(), vec);
+        }
+
+        std::sort(sortable.begin(), sortable.end(),
+                  [](const std::pair<T, vec_type> &pairA, const std::pair<T, vec_type> &pairB) {
+                      return pairA.first > pairB.first;
+                  });
+
+        return sortable[N].second;
+    }
+}
+
+namespace detail {
+template <typename T>
+T constexpr constexpr_sqrt_helper_f(T x, T curr, T prev) {
+    if constexpr (std::is_floating_point_v<T>) {
+        return curr == prev ? curr
+                            : detail::constexpr_sqrt_helper_f(x, T(0.5) * (curr + x / curr), curr);
+    }
+}
+
+template <typename T>
+constexpr T constexpr_sqrt_helper_i(const T x, const T lo, const T hi) {
+    if constexpr (std::is_integral_v<T>) {
+        if (lo == hi) return lo;
+
+        const T mid = (lo + hi + 1) / 2;
+
+        if (x / mid < mid)
+            return constexpr_sqrt_helper_i(x, lo, mid - 1);
+        else
+            return constexpr_sqrt_helper_i(x, mid, hi);
+    }
+}
+}  // namespace detail
+
+/**
+ * Constexpr version of the square root method.
+ *
+ * \param x Value of which the square root should be calculated.
+ * \return Square root of x.
+ */
+template <typename T>
+T constexpr constexpr_sqrt(T x) {
+    if constexpr (std::is_floating_point_v<T>) {
+        if (x >= 0 && x < std::numeric_limits<T>::infinity())
+            return detail::constexpr_sqrt_helper_f(x, x, T(0));
+    }
+    if constexpr (std::is_integral_v<T>) {
+        return detail::constexpr_sqrt_helper_i(x, T(0), x / 2 + 1);
+    }
+
+    return std::numeric_limits<T>::quiet_NaN();
+}
 
 enum class YieldCriterion {
     William_Warnke,
@@ -107,6 +203,27 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     return os;
 }
 
+}  // namespace util
+namespace tensorutil {
+
+enum class Anisotropy {
+    abs_lamda1_minus_lamda2,
+    abs_lamda1_minus_lamda3,
+    barycentric,
+    abs_lamda1_minus_abs_lamda2
+};
+
+/*
+ * Specifies several common decompositions for tensors.
+ * See: https://diglib.eg.org/handle/10.1111/v32i1pp049-074
+ */
+enum class Decomposition {
+    Symmetric_Antisymmetric,
+    Stretch_Rotation,
+    Shape_Orientation,
+    Isotropic_Anisotropic
+};
+
 /*
  * Projects the 3D tensor T onto the given cartesian plane. This means for
  * cartesian plane spanned by
@@ -152,20 +269,6 @@ dmat3 IVW_MODULE_TENSORVISBASE_API reconstruct(const std::array<double, 3> &eige
                                                const std::array<dvec3, 3> &eigenvectors);
 
 vec4 IVW_MODULE_TENSORVISBASE_API tensor2DToDvec4(const dmat2 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API trace(const dmat2 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API trace(const dmat3 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API calculateI1(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateI2(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateI3(const dmat3 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API calculateJ1(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateJ2(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateJ3(const dmat3 &tensor);
-
-double IVW_MODULE_TENSORVISBASE_API calculateLodeAngle(const dmat3 &tensor);
 
 dmat3 IVW_MODULE_TENSORVISBASE_API stressDeviatorTensor(const dmat3 &tensor);
 

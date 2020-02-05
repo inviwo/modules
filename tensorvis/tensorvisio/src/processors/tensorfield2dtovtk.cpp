@@ -39,16 +39,18 @@
 #include <warn/pop>
 
 #include <inviwo/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/vtk/vtkmodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField2DToVTK::processorInfo_{
-    "org.inviwo.TensorField2DToVTK",  // Class identifier
-    "Tensor Field 2D To VTK",         // Display name
-    "VTK",                            // Category
-    CodeState::Experimental,          // Code state
-    "VTK",                            // Tags
+    "org.inviwo.TensorField2DToVTK",             // Class identifier
+    "Tensor Field 2D To VTK",                    // Display name
+    "VTK",                                       // Category
+    CodeState::Experimental,                     // Code state
+    tag::OpenTensorVis | Tag::CPU | Tag("VTK"),  // Tags
 };
 const ProcessorInfo TensorField2DToVTK::getProcessorInfo() const { return processorInfo_; }
 
@@ -63,8 +65,8 @@ TensorField2DToVTK::TensorField2DToVTK()
 
 void TensorField2DToVTK::process() {
     const auto tensorField = tensorFieldInport_.getData();
-    const auto dimensions = ivec3{tensorField->getDimensions<int>(), 1};
-    const auto &tensors = tensorField->tensors();
+    const auto dimensions = ivec3{tensorField->getDimensionsAs<int>(), 1};
+    const auto &tensors = *tensorField->tensors();
 
     auto structuredGrid = vtkSmartPointer<vtkStructuredGrid>::New();
     auto points = vtkSmartPointer<vtkPoints>::New();

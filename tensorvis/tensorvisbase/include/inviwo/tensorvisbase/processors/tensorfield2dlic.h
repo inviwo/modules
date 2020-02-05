@@ -27,24 +27,22 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENVALUEFIELDTOIMAGE_H
-#define IVW_EIGENVALUEFIELDTOIMAGE_H
+#pragma once
 
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenvalueFieldToImage, Eigenvalue Field To Image}
- * ![](org.inviwo.EigenvalueFieldToImage.png?classIdentifier=org.inviwo.EigenvalueFieldToImage)
+/** \docpage{org.inviwo.TensorField2DLIC, Tensor Field 2D LIC}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DLIC)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -58,15 +56,10 @@ namespace inviwo {
  *   * __<Prop2>__ <description>
  */
 
-/**
- * \class EigenvalueFieldToImage
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
-class IVW_MODULE_TENSORVISBASE_API EigenvalueFieldToImage : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DLIC : public Processor {
 public:
-    EigenvalueFieldToImage();
-    virtual ~EigenvalueFieldToImage() = default;
+    TensorField2DLIC();
+    virtual ~TensorField2DLIC() = default;
 
     virtual void initializeResources() override;
     virtual void process() override;
@@ -76,31 +69,26 @@ public:
 
 private:
     TensorField2DInport inport_;
+    ImageInport noiseTexture_;
+    ImageInport imageInport_;
     ImageOutport outport_;
 
-    OptionPropertyInt valueType_;
+    IntProperty samples_;
+    FloatProperty stepLength_;
+    BoolProperty normalizeVectors_;
+    BoolProperty intensityMapping_;
+    BoolProperty useRK4_;
+    BoolProperty majorMinor_;
+    FloatVec4Property backgroundColor_;
 
-    BoolProperty grayscale_;
-
-    IntVec2Property dimensions_;
-
-    TransferFunctionProperty tf_;
     Shader shader_;
     Image tf_texture_;
-    BoolProperty majorMinor_;
 
     float minVal_;
     float maxVal_;
     float eigenValueRange_;
 
-    float anisotropyMinVal_;
-    float anisotropyMaxVal_;
-    float anisotropyValueRange_;
-
     void updateEigenValues();
-    void updateAnisotropy();
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENVALUEFIELDTOIMAGE_H

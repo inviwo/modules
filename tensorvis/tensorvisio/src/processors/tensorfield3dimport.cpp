@@ -30,9 +30,12 @@
 #include <fstream>
 #include <inviwo/core/datastructures/datamapper.h>
 #include <ios>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 #include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
 #include <unordered_map>
+#include <inviwo/tensorvisbase/datastructures/attributes.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/core/util/constexprhash.h>
+#include <inviwo/tensorvisio/util/util.h>
 
 namespace inviwo {
 
@@ -41,9 +44,9 @@ namespace inviwo {
 const ProcessorInfo TensorField3DImport::processorInfo_{
     "org.inviwo.TensorField3DImport",  // Class identifier
     "Tensor Field 3D Import",          // Display name
-    "Tensor Field IO",                 // Category
+    "IO",                              // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField3DImport::getProcessorInfo() const { return processorInfo_; }
 
@@ -57,33 +60,30 @@ TensorField3DImport::TensorField3DImport()
     , offset_("offset", "Offset", vec3(1.f), vec3(-1000.f), vec3(1000.f), vec3(0.0001f),
               InvalidationLevel::Valid)
     , dimensions_("dimensions", "Dimensions", ivec3(0), ivec3(0), ivec3(1024), ivec3(1),
-                  InvalidationLevel::Valid)
-    , tensorFieldOut_(nullptr) {
+                  InvalidationLevel::Valid) {
     addPort(outport_);
-
-    addProperty(inFile_);
-
-    addProperty(normalizeExtents_);
 
     extents_.setReadOnly(true);
     extents_.setCurrentStateAsDefault();
-    addProperty(extents_);
 
     offset_.setReadOnly(true);
     offset_.setCurrentStateAsDefault();
-    addProperty(offset_);
 
     dimensions_.setReadOnly(true);
     dimensions_.setCurrentStateAsDefault();
-    addProperty(dimensions_);
 
-    inFile_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    addProperties(inFile_, normalizeExtents_, extents_, offset_, dimensions_);
+
+    inFile_.onChange([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+
+    inFile_.set(InviwoApplication::getPtr()->getModuleByType<TensorVisBaseModule>()->getPath(
+                    ModulePath::Data) +
+                "\\tensorfields\\two_point_load.tfb");
 }
 
-void TensorField3DImport::initializeResources() {
-    tensorFieldOut_.reset();
-    tensorFieldOut_ = nullptr;
+void TensorField3DImport::initializeResources() {}
 
+void TensorField3DImport::process() {
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
@@ -93,15 +93,12 @@ void TensorField3DImport::initializeResources() {
 
     size_t version;
     size3_t dimensions;
-    auto extents = dvec3(1.0);
-    auto offset = dvec3(0.0);
-    size_t rank;
-    size_t dimensionality;
+    auto extents = vec3{};
+    auto offset = vec3{};
     glm::uint8 hasMetaData;
     std::array<DataMapper, 3> dataMapperEigenValues;
     std::array<DataMapper, 3> dataMapperEigenVectors;
     std::vector<glm::uint8> mask;
-    std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> metaData;
 
     std::string versionStr;
     size_t size;
@@ -122,14 +119,7 @@ void TensorField3DImport::initializeResources() {
         return;
     }
 
-    inFile.read(reinterpret_cast<char *>(&dimensionality), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&rank), sizeof(size_t));
     inFile.read(reinterpret_cast<char *>(&hasMetaData), sizeof(glm::uint8));
-
-    if (dimensionality != 3) {
-        LogError("The loaded file is not a 3D tensor field. Try the 2D reader.");
-        return;
-    }
 
     inFile.read(reinterpret_cast<char *>(&dimensions.x), sizeof(size_t));
     inFile.read(reinterpret_cast<char *>(&dimensions.y), sizeof(size_t));
@@ -137,13 +127,13 @@ void TensorField3DImport::initializeResources() {
 
     // Read the extents
 
-    inFile.read(reinterpret_cast<char *>(&extents.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extents.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extents.z), sizeof(double));
+    inFile.read(reinterpret_cast<char *>(&extents.x), sizeof(float));
+    inFile.read(reinterpret_cast<char *>(&extents.y), sizeof(float));
+    inFile.read(reinterpret_cast<char *>(&extents.z), sizeof(float));
 
-    inFile.read(reinterpret_cast<char *>(&offset.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&offset.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&offset.z), sizeof(double));
+    inFile.read(reinterpret_cast<char *>(&offset.x), sizeof(float));
+    inFile.read(reinterpret_cast<char *>(&offset.y), sizeof(float));
+    inFile.read(reinterpret_cast<char *>(&offset.z), sizeof(float));
 
     // Read the data maps
 
@@ -164,13 +154,13 @@ void TensorField3DImport::initializeResources() {
     auto numElements = dimensions.x * dimensions.y * dimensions.z;
     auto numValues = numElements * 9;
 
-    std::vector<double> data;
+    std::vector<TensorField3D::value_type> data;
     data.resize(numValues);
     auto dataRaw = data.data();
 
-    inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(double) * numValues);
+    inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(TensorField3D::value_type) * numValues);
 
-    std::vector<dmat3> tensors;
+    auto tensors = std::make_shared<std::vector<TensorField3D::matN>>();
     buildTensors(data, tensors);
 
     glm::uint8 hasMask;
@@ -182,111 +172,43 @@ void TensorField3DImport::initializeResources() {
         inFile.read(reinterpret_cast<char *>(maskData), sizeof(glm::uint8) * numElements);
     }
 
+    auto tensorFieldOut = std::make_shared<TensorField3D>(dimensions, tensors);
+
+    tensorFieldOut->dataMapEigenValues_ = dataMapperEigenValues;
+    tensorFieldOut->dataMapEigenVectors_ = dataMapperEigenVectors;
+
+    if (normalizeExtents_.get()) {
+        extents /= std::max(std::max(extents.x, extents.y), extents.z);
+    }
+
+    tensorFieldOut->setExtents(extents);
+    tensorFieldOut->setOffset(offset);
+    tensorFieldOut->setMask(mask);
+
+    extents_.set(extents);
+    offset_.set(offset);
+    dimensions_.set(dimensions);
+
+    std::shared_ptr<DataFrame> dataFrame;
+
     if (hasMetaData) {
+        dataFrame = std::make_shared<DataFrame>();
         size_t numMetaDataEntries;
         inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
 
         for (size_t i = 0; i < numMetaDataEntries; i++) {
-            uint64_t id;
-            inFile.read(reinterpret_cast<char *>(&id), sizeof(uint64_t));
+            size_t id{0};
+            inFile.read(reinterpret_cast<char *>(&id), sizeof(size_t));
+            size_t numItems{0};
+            inFile.read(reinterpret_cast<char *>(&numItems), sizeof(size_t));
 
-            std::unique_ptr<MetaDataBase> ptr = nullptr;
-
-            switch (id) {
-                case MajorEigenVectors::id():
-                    ptr = std::make_unique<MajorEigenVectors>();
-                    break;
-                case IntermediateEigenVectors::id():
-                    ptr = std::make_unique<IntermediateEigenVectors>();
-                    break;
-                case MinorEigenVectors::id():
-                    ptr = std::make_unique<MinorEigenVectors>();
-                    break;
-                case MajorEigenValues::id():
-                    ptr = std::make_unique<MajorEigenValues>();
-                    break;
-                case IntermediateEigenValues::id():
-                    ptr = std::make_unique<IntermediateEigenValues>();
-                    break;
-                case MinorEigenValues::id():
-                    ptr = std::make_unique<MinorEigenValues>();
-                    break;
-                case I1::id():
-                    ptr = std::make_unique<I1>();
-                    break;
-                case I2::id():
-                    ptr = std::make_unique<I2>();
-                    break;
-                case I3::id():
-                    ptr = std::make_unique<I3>();
-                    break;
-                case J1::id():
-                    ptr = std::make_unique<J1>();
-                    break;
-                case J2::id():
-                    ptr = std::make_unique<J2>();
-                    break;
-                case J3::id():
-                    ptr = std::make_unique<J3>();
-                    break;
-                case LodeAngle::id():
-                    ptr = std::make_unique<LodeAngle>();
-                    break;
-                case Anisotropy::id():
-                    ptr = std::make_unique<Anisotropy>();
-                    break;
-                case LinearAnisotropy::id():
-                    ptr = std::make_unique<LinearAnisotropy>();
-                    break;
-                case PlanarAnisotropy::id():
-                    ptr = std::make_unique<PlanarAnisotropy>();
-                    break;
-                case SphericalAnisotropy::id():
-                    ptr = std::make_unique<SphericalAnisotropy>();
-                    break;
-                case Diffusivity::id():
-                    ptr = std::make_unique<Diffusivity>();
-                    break;
-                case ShearStress::id():
-                    ptr = std::make_unique<ShearStress>();
-                    break;
-                case PureShear::id():
-                    ptr = std::make_unique<PureShear>();
-                    break;
-                case ShapeFactor::id():
-                    ptr = std::make_unique<ShapeFactor>();
-                    break;
-                case IsotropicScaling::id():
-                    ptr = std::make_unique<IsotropicScaling>();
-                    break;
-                case Rotation::id():
-                    ptr = std::make_unique<Rotation>();
-                    break;
-                case FrobeniusNorm::id():
-                    ptr = std::make_unique<FrobeniusNorm>();
-                    break;
-                case HillYieldCriterion::id():
-                    ptr = std::make_unique<HillYieldCriterion>();
-                    break;
-                default:
-                    // clang-format off
-                    LogError(
-                        "Default case reached. Revise tensor field import for missing meta data "
-                        "entry."
-                    )
-                    LogError(
-                        "The imported tensor field now does not have all the meta data with which "
-                        "it was stored."
-                    )
-
-                    continue;
-                    // clang-format on
-            }
-
-            ptr->deserialize(inFile, numElements);
-
-            metaData.insert(std::make_pair(id, std::move(ptr)));
+            util::for_each_type<attributes::types3D>{}(util::DeserializeColumn{}, id,
+                                                       std::ref(inFile), dataFrame, numItems);
         }
+
+        dataFrame->updateIndexBuffer();
+
+        tensorFieldOut->setMetaData(dataFrame);
     }
 
     std::string str;
@@ -301,50 +223,18 @@ void TensorField3DImport::initializeResources() {
 
     inFile.close();
 
-    if (data.size() != numValues) {
-        LogWarn("Dimensions do not match data size");
-        return;
-    }
-
-    dextents_ = extents;
-
-    tensorFieldOut_ = std::make_shared<TensorField3D>(dimensions, tensors, metaData, extents);
-
-    tensorFieldOut_->dataMapEigenValues_ = dataMapperEigenValues;
-    tensorFieldOut_->dataMapEigenVectors_ = dataMapperEigenVectors;
-
-    tensorFieldOut_->setOffset(offset);
-
-    tensorFieldOut_->setMask(mask);
-
-    extents_.set(extents);
-    offset_.set(offset);
-    dimensions_.set(dimensions);
+    outport_.setData(tensorFieldOut);
 }
 
-void TensorField3DImport::process() {
-    if (!tensorFieldOut_) return;
-
-    auto extents = dextents_;
-
-    if (normalizeExtents_.get()) {
-        extents /= std::max(std::max(extents.x, extents.y), extents.z);
-    }
-
-    extents_.set(vec3(extents));
-
-    tensorFieldOut_->setExtents(vec3(extents));
-
-    outport_.setData(tensorFieldOut_);
-}
-
-void TensorField3DImport::buildTensors(const std::vector<double> &data,
-                                       std::vector<dmat3> &tensors) const {
+void TensorField3DImport::buildTensors(
+    const std::vector<TensorField3D::value_type> &data,
+    std::shared_ptr<std::vector<TensorField3D::matN>> tensors) const {
     for (size_t i{0}; i < data.size() / 9; i++) {
         size_t offset = i * 9;
-        tensors.emplace_back(vec3(data[offset + 0], data[offset + 3], data[offset + 6]),
-                             vec3(data[offset + 1], data[offset + 4], data[offset + 7]),
-                             vec3(data[offset + 2], data[offset + 5], data[offset + 8]));
+        tensors->emplace_back(
+            TensorField3D::vecN(data[offset + 0], data[offset + 3], data[offset + 6]),
+            TensorField3D::vecN(data[offset + 1], data[offset + 4], data[offset + 7]),
+            TensorField3D::vecN(data[offset + 2], data[offset + 5], data[offset + 8]));
     }
 }
 

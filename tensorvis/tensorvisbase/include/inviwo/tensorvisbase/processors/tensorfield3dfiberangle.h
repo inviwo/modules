@@ -32,33 +32,19 @@
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/tensorvisbase/datastructures/invariantspace.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.InvariantSpaceCombine, Invariant Space Combine}
- * ![](org.inviwo.InvariantSpaceCombine.png?classIdentifier=org.inviwo.InvariantSpaceCombine)
+/** \docpage{org.inviwo.TensorField3DFiberAngle, Tensor Field 3D Fiber Angle}
+ * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DFiberAngle)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API InvariantSpaceCombine : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DFiberAngle : public Processor {
 public:
-    InvariantSpaceCombine();
-    virtual ~InvariantSpaceCombine() = default;
+    TensorField3DFiberAngle();
+    virtual ~TensorField3DFiberAngle() = default;
 
     virtual void process() override;
 
@@ -66,10 +52,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    InvariantSpaceInport invariantSpaceInport1_;
-    InvariantSpaceInport invariantSpaceInport2_;
+    TensorField3DInport stressField_;
+    TensorField3DInport fiberField_;
 
-    InvariantSpaceOutport outport_;
+    DataFrameOutport angleOutport_;
 };
 
 }  // namespace inviwo

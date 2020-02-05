@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfield3dmetadata.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/network/networklock.h>
@@ -38,16 +38,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorField3DMetaData::processorInfo_{
-    "org.inviwo.TensorField3DMetaData",  // Class identifier
-    "Tensor Field 3D Meta Data",         // Display name
+const ProcessorInfo TensorField2DMetaData::processorInfo_{
+    "org.inviwo.TensorField2DMetaData",  // Class identifier
+    "Tensor Field 2D Meta Data",         // Display name
     "Data generation",                   // Category
     CodeState::Experimental,             // Code state
     tag::OpenTensorVis | Tag::CPU        // Tags
 };
-const ProcessorInfo TensorField3DMetaData::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField2DMetaData::getProcessorInfo() const { return processorInfo_; }
 
-TensorField3DMetaData::TensorField3DMetaData()
+TensorField2DMetaData::TensorField2DMetaData()
     : Processor()
     , inport_("inport")
     , outport_("outport")
@@ -81,7 +81,7 @@ TensorField3DMetaData::TensorField3DMetaData()
     });
 }
 
-void TensorField3DMetaData::initializeResources() {
+void TensorField2DMetaData::initializeResources() {
     if (!inport_.hasData()) return;
 
     NetworkLock l;
@@ -93,8 +93,8 @@ void TensorField3DMetaData::initializeResources() {
         comp->removeProperty(prop);
     }
 
-    util::for_each_type<attributes::types3D>{}(
-        util::AddMetaDataProperties<3>{this, inport_.getData()});
+    util::for_each_type<attributes::types2D>{}(
+        util::AddMetaDataProperties<2>{this, inport_.getData()});
 
     /*
     This is a bit of a hack but it'll do. What happens is that adding/removing of the default meta
@@ -103,12 +103,12 @@ void TensorField3DMetaData::initializeResources() {
     */
     comp = getPropertiesByType<CompositeProperty>().front();
     props = comp->getProperties();
-    for (size_t i{0}; i < 6; ++i) {
+    for (size_t i{0}; i < 4; ++i) {
         props[i]->setReadOnly(true);
     }
 }
 
-void TensorField3DMetaData::addRemoveMetaData(std::shared_ptr<TensorField3D> tensorField) {
+void TensorField2DMetaData::addRemoveMetaData(std::shared_ptr<TensorField2D> tensorField) {
     auto comp = getPropertiesByType<CompositeProperty>().front();
     auto props = comp->getProperties();
 
@@ -116,13 +116,13 @@ void TensorField3DMetaData::addRemoveMetaData(std::shared_ptr<TensorField3D> ten
         const auto id = util::constexpr_hash(std::string_view(prop->getDisplayName()));
         const auto add = static_cast<BoolProperty*>(prop)->get();
 
-        util::for_each_type<attributes::types3D>{}(util::AddRemoveMetaData<3>{tensorField}, id,
+        util::for_each_type<attributes::types2D>{}(util::AddRemoveMetaData<2>{tensorField}, id,
                                                    add);
     }
 }
 
-void TensorField3DMetaData::process() {
-    auto newTensorField = std::make_shared<TensorField3D>(*inport_.getData());
+void TensorField2DMetaData::process() {
+    auto newTensorField = std::make_shared<TensorField2D>(*inport_.getData());
 
     addRemoveMetaData(newTensorField);
 

@@ -27,30 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
+#include <inviwo/tensorvisbase/processors/tensorfield2dasrgba.h>
 #include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
+#include <inviwo/core/util/imagesampler.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorFieldToRGBA::processorInfo_{
-    "org.inviwo.Tensor Field To RGBA",  // Class identifier
-    "TensorFieldToRGBA",                // Display name
-    "Tensor visualization",             // Category
-    CodeState::Experimental,            // Code state
-    Tags::GL,                           // Tags
+const ProcessorInfo TensorField2DAsRGBA::processorInfo_{
+    "org.inviwo.TensorField2DAsRGBA",  // Class identifier
+    "Tensor Field 2D As RGBA",         // Display name
+    "Tensor visualization",            // Category
+    CodeState::Experimental,           // Code state
+    tag::OpenTensorVis | Tag::GL,      // Tags
 };
 
-const ProcessorInfo TensorFieldToRGBA::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField2DAsRGBA::getProcessorInfo() const { return processorInfo_; }
 
-TensorFieldToRGBA::TensorFieldToRGBA()
+TensorField2DAsRGBA::TensorField2DAsRGBA()
     : Processor()
     , inport_("inport")
     , outport_("outport", DataVec4Float32::get())
     , shader_("tensorfieldtorgba.frag")
     , hover_("hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
              MouseState::Move)
-    , tensor_("tensor", "Tensor") {
+    , tensor_("tensor", "Tensor", glm::mat<2, 2, TensorField2D::value_type>{0},
+              glm::mat<2, 2, TensorField2D::value_type>{-10000},
+              glm::mat<2, 2, TensorField2D::value_type>{10000},
+              glm::mat<2, 2, TensorField2D::value_type>{0.00001f}) {
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
     addPort(inport_);
@@ -60,27 +65,33 @@ TensorFieldToRGBA::TensorFieldToRGBA()
     addProperty(tensor_);
 }
 
-void TensorFieldToRGBA::process() {
+void TensorField2DAsRGBA::process() {
     utilgl::activateAndClearTarget(outport_);
 
     shader_.activate();
     TextureUnitContainer units;
-    std::shared_ptr<Image> tensorFieldTexture;
-    tensorutil::bindTensorFieldAsColorTexture(tensorFieldTexture, inport_.getData(), shader_,
-                                              units);
+
+    utilgl::bindAndSetUniforms(shader_, units, *inport_.getData(), "tensorField",
+                               ImageType::ColorOnly);
 
     utilgl::singleDrawImagePlaneRect();
     shader_.deactivate();
     utilgl::deactivateCurrentTarget();
 }
 
-void TensorFieldToRGBA::hoverAction(Event* e) {
+void TensorField2DAsRGBA::hoverAction(Event* e) {
+    using m_type = glm::mat<2, 2, TensorField2D::value_type>;
+    using v_type = glm::vec<2, TensorField2D::value_type>;
+
     if (inport_.hasData() && inport_.getData().get()) {
         if (auto mouseEvent = dynamic_cast<MouseEvent*>(e)) {
             auto tensorField = inport_.getData();
             auto p = mouseEvent->posNormalized();
-            auto tensor = sample(tensorField, p, tensorutil::InterpolationMethod::Barycentric);
-            tensor_.set(tensor);
+
+            ImageSpatialSampler<4, TensorField2D::value_type> sampler(inport_.getData());
+            auto vec = sampler.sample(p.x, p.y);
+
+            tensor_.set(m_type(v_type(vec[0], vec[1]), v_type(vec[2], vec[3])));
         }
     }
 }

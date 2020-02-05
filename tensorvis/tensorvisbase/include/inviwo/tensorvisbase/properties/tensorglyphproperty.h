@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHPROPERTY_H
-#define IVW_TENSORGLYPHPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -74,27 +73,26 @@ public:
     float gamma() const;
 
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
-                                                   size_t index, const dvec3 pos);
+                                                   size_t index, const vec3 pos);
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
-                                                   size_t index, const dvec3 pos,
-                                                   const dvec4& color);
+                                                   size_t index, const vec3 pos, const vec4& color);
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
-                                                   size_t index, const dvec3 pos, const float size);
+                                                   size_t index, const vec3 pos, const float size);
     const std::shared_ptr<BasicMesh> generateGlyph(std::shared_ptr<const TensorField3D> tensorField,
-                                                   size_t index, const dvec3 pos,
-                                                   const dvec4& color, const float size);
+                                                   size_t index, const vec3 pos, const vec4& color,
+                                                   const float size);
 
-    const std::shared_ptr<BasicMesh> generateGlyph(const dmat3& tensor, const dvec3& pos,
+    const std::shared_ptr<BasicMesh> generateGlyph(const mat3& tensor, const vec3& pos,
                                                    const float size,
-                                                   const dvec4& color = dvec4(1.)) const;
+                                                   const vec4& color = vec4(1.)) const;
 
-    const std::shared_ptr<BasicMesh> generateGlyph(const std::array<double, 3>& eigenvalues,
-                                                   const dvec3& pos, const float size,
-                                                   const dvec4& color = dvec4(1.)) const;
+    const std::shared_ptr<BasicMesh> generateGlyph(const std::array<float, 3>& eigenvalues,
+                                                   const vec3& pos, const float size,
+                                                   const vec4& color = vec4(1.)) const;
 
-    const std::shared_ptr<BasicMesh> generateQuadric(const dmat3& tensor, const dvec3& pos,
+    const std::shared_ptr<BasicMesh> generateQuadric(const mat3& tensor, const vec3& pos,
                                                      const float size,
-                                                     const dvec4& color = dvec4(1.)) const;
+                                                     const vec4& color = vec4(1.)) const;
 
 protected:
     // Properties go here
@@ -122,83 +120,81 @@ private:
     }
 
     void evalColorReadOnly();
-    double signedExponentiation(double x, double a);
-    dvec3 cartesianToSpherical(const dvec3& pos) const;
-    std::pair<bool, dvec3> intersectTriangle(const dvec2& coord,
-                                             const std::array<dvec2, 3>& tri_verts);
+    float signedExponentiation(float x, float a);
+    vec3 cartesianToSpherical(const vec3& pos) const;
+    std::pair<bool, vec3> intersectTriangle(const vec2& coord,
+                                            const std::array<vec2, 3>& tri_verts);
 
     const std::shared_ptr<BasicMesh> generateSuperquadric(
-        std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const float size);
+        std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+        const vec4& color, const float size);
 
-    const std::shared_ptr<BasicMesh> generateSuperquadric(const dmat3& tensor, const dvec3& pos,
+    const std::shared_ptr<BasicMesh> generateSuperquadric(const mat3& tensor, const vec3& pos,
                                                           const float size,
-                                                          const dvec4& color = dvec4(1.)) const;
+                                                          const vec4& color = vec4(1.)) const;
 
-    const std::shared_ptr<BasicMesh> generateSuperquadric(const std::array<double, 3>& eigenvalues,
-                                                          const dvec3& pos, const float size,
-                                                          const dvec4& color = dvec4(1.)) const;
+    const std::shared_ptr<BasicMesh> generateSuperquadric(const std::array<float, 3>& eigenvalues,
+                                                          const vec3& pos, const float size,
+                                                          const vec4& color = vec4(1.)) const;
 
     const std::shared_ptr<BasicMesh> generateReynolds(
-        std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
+        std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
         const float size);
 
     const std::shared_ptr<BasicMesh> generateQuadric(
-        std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const float size);
+        std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+        const vec4& color, const float size);
 
-    const std::shared_ptr<BasicMesh> generateCube(const dmat3& tensor, const dvec3& pos,
+    const std::shared_ptr<BasicMesh> generateCube(const mat3& tensor, const vec3& pos,
                                                   const float size,
-                                                  const dvec4& color = dvec4(1.)) const;
+                                                  const vec4& color = vec4(1.)) const;
 
-    const std::shared_ptr<BasicMesh> generateCylinder(const dmat3& tensor, const dvec3& pos,
+    const std::shared_ptr<BasicMesh> generateCylinder(const mat3& tensor, const vec3& pos,
                                                       const float size,
-                                                      const dvec4& color = dvec4(1.)) const;
+                                                      const vec4& color = vec4(1.)) const;
 
     const std::shared_ptr<BasicMesh> generateHWY(std::shared_ptr<const TensorField3D> tensorField,
-                                                 size_t index, const dvec3 pos, const dvec4& color,
+                                                 size_t index, const vec3 pos, const vec4& color,
                                                  const float size);
 
     const std::shared_ptr<BasicMesh> generateCombinedReynoldsHWY(
-        std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-        const dvec4& color, const float size);
+        std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+        const vec4& color, const float size);
 
     const std::shared_ptr<BasicMesh> generateSuperquadricExtended(
-        std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
+        std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
         const float size);
 
-    std::shared_ptr<BasicMesh> createSuperquadric(const std::array<double, 3>& eigenValues,
-                                                  const dvec3& pos, const float size,
-                                                  const dvec4& color) const;
+    std::shared_ptr<BasicMesh> createSuperquadric(const std::array<float, 3>& eigenValues,
+                                                  const vec3& pos, const float size,
+                                                  const vec4& color) const;
 
-    //    static constexpr std::array<std::array<dvec2, 3>, 10> tri_uv{
-    //        {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},
-    //         {dvec2(0.00, 0.00), dvec2(0.25, 0.25), dvec2(0.00, 0.50)},
-    //         {dvec2(0.00, 0.50), dvec2(0.50, 0.00), dvec2(0.00, 1.00)},
-    //         {dvec2(0.00, 1.00), dvec2(0.50, 0.00), dvec2(0.50, 0.50)},
-    //         {dvec2(0.00, 1.00), dvec2(0.50, 0.50), dvec2(0.50, 1.00)},
-    //         {dvec2(0.50, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 1.00)},
-    //         {dvec2(1.00, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 0.50)},
-    //         {dvec2(1.00, 0.50), dvec2(0.50, 1.00), dvec2(1.00, 0.00)},
-    //         {dvec2(1.00, 0.00), dvec2(0.50, 1.00), dvec2(0.50, 0.50)},
-    //         {dvec2(1.00, 0.00), dvec2(0.50, 0.50), dvec2(0.50, 0.00)}}};
-    //
-    //    static constexpr std::array<std::array<dvec3, 3>, 10> tri_alpha_beta{
-    //        {{dvec3(1.0, 1.0, 0.0), dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0)},
-    //         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-    //         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)},
-    //         {dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 1.0, 0.0)},
-    //         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-    //         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-    //         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)}}};
+    static inline constexpr std::array<std::array<vec2, 3>, 10> tri_uv{
+        {{vec2(0.00, 0.00), vec2(0.50, 0.00), vec2(0.25, 0.25)},
+         {vec2(0.00, 0.00), vec2(0.25, 0.25), vec2(0.00, 0.50)},
+         {vec2(0.00, 0.50), vec2(0.50, 0.00), vec2(0.00, 1.00)},
+         {vec2(0.00, 1.00), vec2(0.50, 0.00), vec2(0.50, 0.50)},
+         {vec2(0.00, 1.00), vec2(0.50, 0.50), vec2(0.50, 1.00)},
+         {vec2(0.50, 1.00), vec2(0.75, 0.75), vec2(1.00, 1.00)},
+         {vec2(1.00, 1.00), vec2(0.75, 0.75), vec2(1.00, 0.50)},
+         {vec2(1.00, 0.50), vec2(0.50, 1.00), vec2(1.00, 0.00)},
+         {vec2(1.00, 0.00), vec2(0.50, 1.00), vec2(0.50, 0.50)},
+         {vec2(1.00, 0.00), vec2(0.50, 0.50), vec2(0.50, 0.00)}}};
 
-    const std::array<bool, 10> tri_rotate = {false, true, true,  true,  true,
-                                             true,  true, false, false, false};
+    static inline constexpr std::array<std::array<vec3, 3>, 10> tri_alpha_beta{
+        {{vec3(1.0, 1.0, 0.0), vec3(1.0, 0.0, 0.0), vec3(0.5, 0.5, 0.0)},
+         {vec3(1.0, 1.0, 0.0), vec3(0.5, 0.5, 0.0), vec3(1.0, 0.0, 0.0)},
+         {vec3(1.0, 2.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(1.0, 4.0, 0.0)},
+         {vec3(1.0, 4.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(0.0, 4.0, 2.0)},
+         {vec3(1.0, 4.0, 0.0), vec3(0.0, 4.0, 2.0), vec3(1.0, 2.0, 0.0)},
+         {vec3(1.0, 0.0, 0.0), vec3(0.5, 0.5, 0.0), vec3(1.0, 1.0, 0.0)},
+         {vec3(1.0, 1.0, 0.0), vec3(0.5, 0.5, 0.0), vec3(1.0, 0.0, 0.0)},
+         {vec3(1.0, 2.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(1.0, 4.0, 0.0)},
+         {vec3(1.0, 4.0, 0.0), vec3(0.0, 2.0, 0.0), vec3(0.0, 4.0, 2.0)},
+         {vec3(1.0, 4.0, 0.0), vec3(0.0, 4.0, 2.0), vec3(1.0, 2.0, 0.0)}}};
+
+    static inline constexpr std::array<bool, 10> tri_rotate = {false, true, true,  true,  true,
+                                                               true,  true, false, false, false};
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHPROPERTY_H

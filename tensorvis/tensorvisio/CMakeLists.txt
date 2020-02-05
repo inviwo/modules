@@ -17,6 +17,7 @@ set(HEADER_FILES
     include/inviwo/tensorvisio/processors/vtktotensorfield2d.h
     include/inviwo/tensorvisio/tensorvisiomodule.h
     include/inviwo/tensorvisio/tensorvisiomoduledefine.h
+    include/inviwo/tensorvisio/util/util.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 

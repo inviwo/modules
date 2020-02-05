@@ -32,12 +32,15 @@
 
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>
-#include <inviwo/tensorvisbase/processors/tensorfield3danisotropy.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtovolume.h>
+#include <inviwo/core/util/constexprhash.h>
+#include <inviwo/tensorvisbase/datastructures/attributes.h>
 
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/volumeraycaster.h>
 #include <modules/opengl/canvasprocessorgl.h>
+#include <modules/basegl/processors/background.h>
 
 namespace inviwo {
 
@@ -74,22 +77,41 @@ std::pair<Processor*, Outport*> AnisotropyRaycastingVisualizer::addSourceProcess
 std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
 
-    auto aniso = net->addProcessor(util::makeProcessor<TensorField3DAnisotropy>(GP{0, 3}));
+    auto aniso = net->addProcessor(util::makeProcessor<TensorField3DToVolume>(GP{0, 3}));
     auto cubep = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 6}));
     auto entry = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 9}));
-    auto volra = net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 12}));
-    auto canva = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15}));
+    auto volra = static_cast<VolumeRaycaster*>(
+        net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 12})));
+    auto backg = net->addProcessor(util::makeProcessor<Background>(GP{0, 15}));
+    auto canva = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 18}));
 
     net->addConnection(aniso->getOutports()[0], cubep->getInports()[0]);
     net->addConnection(cubep->getOutports()[0], entry->getInports()[0]);
     net->addConnection(entry->getOutports()[0], volra->getInports()[1]);
     net->addConnection(entry->getOutports()[1], volra->getInports()[2]);
     net->addConnection(aniso->getOutports()[0], volra->getInports()[0]);
-    net->addConnection(volra->getOutports()[0], canva->getInports()[0]);
+    net->addConnection(volra->getOutports()[0], backg->getInports()[0]);
+    net->addConnection(backg->getOutports()[0], canva->getInports()[0]);
 
     net->addConnection(outport, aniso->getInports()[0]);
 
-    return {aniso, cubep, entry, volra, canva};
+    if (auto prop =
+            static_cast<OptionPropertySize_t*>(aniso->getPropertyByIdentifier("volumeContent"))) {
+        const auto& identifiers = prop->getIdentifiers();
+
+        if (std::find(identifiers.begin(), identifiers.end(),
+                      std::string(attributes::Anisotropy::identifier)) != identifiers.end()) {
+            prop->set(util::constexpr_hash(attributes::Anisotropy::identifier));
+        }
+    }
+
+    TransferFunction tf;
+    tf.load(InviwoApplication::getPtr()->getBasePath() +
+            "\\data\\transferfunctions\\matplotlib\\viridis.itf");
+
+    volra->getPropertiesByType<IsoTFProperty>().front()->tf_.set(tf);
+
+    return {aniso, cubep, entry, volra, backg, canva};
 }
 
 std::vector<Processor*> AnisotropyRaycastingVisualizer::addSourceAndVisualizerNetwork(

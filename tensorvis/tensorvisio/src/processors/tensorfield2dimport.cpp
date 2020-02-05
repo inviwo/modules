@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisio/processors/tensorfield2dimport.h>
+#include <inviwo/tensorvisio/util/util.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -37,7 +39,7 @@ const ProcessorInfo TensorField2DImport::processorInfo_{
     "Tensor Field 2D Import",          // Display name
     "Tensor Field IO",                 // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField2DImport::getProcessorInfo() const { return processorInfo_; }
 
@@ -45,7 +47,11 @@ TensorField2DImport::TensorField2DImport()
     : Processor()
     , inFile_("inFile", "File", "")
     , outport_("outport")
-    , extents_("", "", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f)) {
+    , extents_("", "", vec2(1.f), vec2(0.f), vec2(1000.f), vec2(0.0001f))
+    , offset_("offset", "Offset", vec2(1.f), vec2(-1000.f), vec2(1000.f), vec2(0.0001f),
+              InvalidationLevel::Valid)
+    , dimensions_("dimensions", "Dimensions", ivec2(0), ivec2(0), ivec2(1024), ivec2(1),
+                  InvalidationLevel::Valid) {
     addPort(outport_);
 
     addProperty(inFile_);
@@ -54,16 +60,8 @@ TensorField2DImport::TensorField2DImport()
     addProperty(extents_);
 }
 
-void TensorField2DImport::buildTensors(const std::vector<double>& data,
-                                       std::vector<dmat2>& tensors) const {
-    for (size_t i{0}; i < data.size() / 3; i++) {
-        size_t offset = i * 3;
-        tensors.emplace_back(dvec2(data[offset], data[offset + 2]),
-                             dvec2(data[offset + 2], data[offset + 1]));
-    }
-}
-
 void TensorField2DImport::process() {
+
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
@@ -72,11 +70,12 @@ void TensorField2DImport::process() {
     }
 
     size_t version;
-    size2_t dimensions;
-    auto extents = dvec2(1.0);
-    size_t rank;
-    size_t dimensionality;
-    bool hasEigenInfo;
+    size2_t dimensions{};
+    auto extents = vec2{};
+    auto offset = vec2{};
+    glm::uint8 hasMetaData;
+    std::array<DataMapper, 2> dataMapperEigenValues;
+    std::array<DataMapper, 2> dataMapperEigenVectors;
 
     std::string versionStr;
     size_t size;
@@ -91,98 +90,105 @@ void TensorField2DImport::process() {
 
     inFile.read(reinterpret_cast<char*>(&version), sizeof(size_t));
 
-    if (version < 2) {
-        LogWarn("Please update the tfb file.")
-    }
-
-    inFile.read(reinterpret_cast<char*>(&dimensionality), sizeof(size_t));
-    inFile.read(reinterpret_cast<char*>(&rank), sizeof(size_t));
-    inFile.read(reinterpret_cast<char*>(&hasEigenInfo), sizeof(bool));
-
-    if (dimensionality == 2) {
-        inFile.read(reinterpret_cast<char*>(&dimensions.x), sizeof(size_t));
-        inFile.read(reinterpret_cast<char*>(&dimensions.y), sizeof(size_t));
-    }
-
-    if (dimensionality == 3) {
-        LogError("The loaded file is a 3D tensor field. Aborting.");
+    if (version < TFB_CURRENT_VERSION) {
+        LogError("Please update the tfb file.");
+        LogError("Current version is " << TFB_CURRENT_VERSION << ", file has " << version);
         return;
     }
 
-    if (version > 1) {
-        inFile.read(reinterpret_cast<char*>(&extents.x), sizeof(double));
-        inFile.read(reinterpret_cast<char*>(&extents.y), sizeof(double));
-    }
+    inFile.read(reinterpret_cast<char*>(&hasMetaData), sizeof(glm::uint8));
+
+    inFile.read(reinterpret_cast<char*>(&dimensions.x), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&dimensions.y), sizeof(size_t));
+
+    // Read the extents
+
+    inFile.read(reinterpret_cast<char*>(&extents.x), sizeof(float));
+    inFile.read(reinterpret_cast<char*>(&extents.y), sizeof(float));
+
+    inFile.read(reinterpret_cast<char*>(&offset.x), sizeof(float));
+    inFile.read(reinterpret_cast<char*>(&offset.y), sizeof(float));
+
+    // Read the data maps
+
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenValues[0].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenValues[1].dataRange), sizeof(double) * 2);
+    dataMapperEigenValues[0].valueRange = dataMapperEigenValues[0].dataRange;
+    dataMapperEigenValues[1].valueRange = dataMapperEigenValues[1].dataRange;
+
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenVectors[0].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenVectors[1].dataRange), sizeof(double) * 2);
+    dataMapperEigenVectors[0].valueRange = dataMapperEigenVectors[0].dataRange;
+    dataMapperEigenVectors[1].valueRange = dataMapperEigenVectors[1].dataRange;
 
     auto numElements = dimensions.x * dimensions.y;
-    auto numValues = numElements * 3;
+    auto numValues = numElements * 4;
 
-    std::vector<double> data;
+    std::vector<TensorField2D::value_type> data;
     data.resize(numValues);
     auto dataRaw = data.data();
 
-    std::vector<double> majorEigenvalues;
-    majorEigenvalues.resize(numElements);
-    auto majorEigenValuesRaw = majorEigenvalues.data();
+    inFile.read(reinterpret_cast<char*>(dataRaw), sizeof(TensorField2D::value_type) * numValues);
 
-    std::vector<double> minorEigenvalues;
-    minorEigenvalues.resize(numElements);
-    auto minorEigenvaluesRaw = minorEigenvalues.data();
-
-    std::vector<dvec2> majorEigenvectors;
-    majorEigenvectors.resize(numElements);
-    auto majorEigenvectorsRaw = majorEigenvectors.data();
-
-    std::vector<dvec2> minorEigenvectors;
-    minorEigenvectors.resize(numElements);
-    auto minorEigenvectorsRaw = minorEigenvectors.data();
-
-    inFile.read(reinterpret_cast<char*>(dataRaw), sizeof(double) * numValues);
-
-    std::vector<dmat2> tensors;
+    auto tensors = std::make_shared<std::vector<TensorField2D::matN>>();
     buildTensors(data, tensors);
 
-    if (hasEigenInfo) {
-        inFile.read(reinterpret_cast<char*>(majorEigenValuesRaw), sizeof(double) * numElements);
+    auto tensorFieldOut = std::make_shared<TensorField2D>(dimensions, tensors);
 
-        inFile.read(reinterpret_cast<char*>(minorEigenvaluesRaw), sizeof(double) * numElements);
+    tensorFieldOut->dataMapEigenValues_ = dataMapperEigenValues;
+    tensorFieldOut->dataMapEigenVectors_ = dataMapperEigenVectors;
 
-        inFile.read(reinterpret_cast<char*>(majorEigenvectorsRaw),
-                    sizeof(double) * numElements * 2);
+    tensorFieldOut->setExtents(extents);
+    tensorFieldOut->setOffset(offset);
 
-        inFile.read(reinterpret_cast<char*>(minorEigenvectorsRaw),
-                    sizeof(double) * numElements * 2);
+    extents_.set(extents);
+    offset_.set(offset);
+    dimensions_.set(dimensions);
 
-        std::string str;
-        inFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
-        str.resize(size);
-        inFile.read(&str[0], size);
+    std::shared_ptr<DataFrame> dataFrame;
 
-        if (str != "EOFreached") {
-            LogError("EOF not reached");
+    if (hasMetaData) {
+        dataFrame = std::make_shared<DataFrame>();
+        size_t numMetaDataEntries;
+        inFile.read(reinterpret_cast<char*>(&numMetaDataEntries), sizeof(size_t));
+
+        for (size_t i = 0; i < numMetaDataEntries; i++) {
+            size_t id{0};
+            inFile.read(reinterpret_cast<char*>(&id), sizeof(size_t));
+            size_t numItems{0};
+            inFile.read(reinterpret_cast<char*>(&numItems), sizeof(size_t));
+
+            util::for_each_type<attributes::types2D>{}(util::DeserializeColumn{}, id,
+                                                       std::ref(inFile), dataFrame, numItems);
         }
+
+        dataFrame->updateIndexBuffer();
+
+        tensorFieldOut->setMetaData(dataFrame);
+    }
+
+    std::string str;
+    inFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
+    str.resize(size);
+    inFile.read(&str[0], size);
+
+    if (str != "EOFreached") {
+        LogError("EOF not reached");
+        return;
     }
 
     inFile.close();
 
-    if (data.size() != numValues) {
-        LogWarn("Dimensions do not match data size");
-        return;
-    }
-    if (hasEigenInfo) {
-        auto tensorField =
-            std::make_shared<TensorField2D>(dimensions, tensors, majorEigenvalues, minorEigenvalues,
-                                            majorEigenvectors, minorEigenvectors, extents);
+    outport_.setData(tensorFieldOut);
+}
 
-        extents_.set(tensorField->getExtents());
-
-        outport_.setData(tensorField);
-    } else {
-        auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors, extents);
-
-        extents_.set(tensorField->getExtents());
-
-        outport_.setData(tensorField);
+void TensorField2DImport::buildTensors(
+    const std::vector<TensorField2D::value_type>& data,
+    std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const {
+    for (size_t i{0}; i < data.size() / 4; i++) {
+        size_t offset = i * 4;
+        tensors->emplace_back(TensorField2D::vecN(data[offset + 0], data[offset + 2]),
+                              TensorField2D::vecN(data[offset + 1], data[offset + 3]));
     }
 }
 

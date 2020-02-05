@@ -1,10 +1,3 @@
-#ifdef _MSC_VER
-#pragma optimize("", off)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC push_options
-#pragma GCC optimize("O0")
-#endif
-
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -34,47 +27,40 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/invariantspacecombine.h>
-#include <inviwo/tensorvisbase/util/misc.h>
+#pragma once
+
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo InvariantSpaceCombine::processorInfo_{
-    "org.inviwo.InvariantSpaceCombine",  // Class identifier
-    "Invariant Space Combine",           // Display name
-    "Tensor",                            // Category
-    CodeState::Experimental,             // Code state
-    Tags::CPU,                           // Tags
+/** \docpage{org.inviwo.TensorField3DToDataFrame, Tensor Field 3D To Data Frame}
+ * ![](org.inviwo.TensorField3DToDataFrame.png?classIdentifier=org.inviwo.TensorField3DToDataFrame)
+ * Forwards the meta data container (data frame) of the input tensor field for plotting or the like.
+ *
+ * ### Inports
+ *   * __tensorField3DInport___ Tensor field inport.
+ *
+ * ### Outports
+ *   * __dataFrameOutport___ Outputs the data frame.
+ *
+ */
+class IVW_MODULE_TENSORVISBASE_API TensorField3DToDataFrame : public Processor {
+public:
+    TensorField3DToDataFrame();
+    virtual ~TensorField3DToDataFrame() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    TensorField3DInport tensorField3DInport_;
+    DataFrameOutport dataFrameOutport_;
 };
-const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
-
-InvariantSpaceCombine::InvariantSpaceCombine()
-    : Processor()
-    , invariantSpaceInport1_("invariantSpaceInport1")
-    , invariantSpaceInport2_("invariantSpaceInport2")
-    , outport_("outport") {
-    addPort(invariantSpaceInport1_);
-    addPort(invariantSpaceInport2_);
-    addPort(outport_);
-}
-
-void InvariantSpaceCombine::process() {
-    auto iv1 = invariantSpaceInport1_.getData();
-    auto iv2 = invariantSpaceInport2_.getData();
-
-    auto ivOut = std::make_shared<InvariantSpace>();
-
-    ivOut->addAxes(iv1);
-    ivOut->addAxes(iv2);
-
-    outport_.setData(ivOut);
-}
 
 }  // namespace inviwo
-
-#ifdef _MSC_VER
-#pragma optimize("", on)
-#elif ((__GNUC__ > 3) && (__GNUC_MINOR__ > 3))
-#pragma GCC pop_options
-#endif

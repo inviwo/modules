@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDSLICE_H
-#define IVW_TENSORFIELDSLICE_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -43,8 +42,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSource, TensorFieldSource}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldSource)
+/** \docpage{org.inviwo.TensorField3DSlice, Tensor Field 3D Slice}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField3DSlice)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -63,10 +62,10 @@ namespace inviwo {
  * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
  * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldSlice : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DSlice : public Processor {
 public:
-    TensorFieldSlice();
-    virtual ~TensorFieldSlice() = default;
+    TensorField3DSlice();
+    virtual ~TensorField3DSlice() = default;
 
     virtual void process() override;
 
@@ -89,5 +88,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDSLICE_H

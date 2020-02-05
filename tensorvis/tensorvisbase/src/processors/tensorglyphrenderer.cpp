@@ -32,6 +32,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -41,7 +42,7 @@ const ProcessorInfo TensorGlyphRenderer::processorInfo_{
     "Tensor Glyph Renderer",           // Display name
     "Tensor visualization",            // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    tag::OpenTensorVis | Tag::GL,      // Tags
 };
 const ProcessorInfo TensorGlyphRenderer::getProcessorInfo() const { return processorInfo_; }
 

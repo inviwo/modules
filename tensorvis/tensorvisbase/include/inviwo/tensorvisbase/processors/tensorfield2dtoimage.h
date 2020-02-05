@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2018 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,20 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DANISOTROPY_H
-#define IVW_TENSORFIELD2DANISOTROPY_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DAnisotropy, Tensor Field2DAnisotropy}
- * ![](org.inviwo.TensorField2DAnisotropy.png?classIdentifier=org.inviwo.TensorField2DAnisotropy)
+/** \docpage{org.inviwo.TensorField2DToImage, Tensor Field 2D To Image}
+ * ![](org.inviwo.TensorField2DToImage.png?classIdentifier=org.inviwo.TensorField2DToImage)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -54,16 +53,10 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TensorField2DAnisotropy
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorField2DAnisotropy : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DToImage : public Processor {
 public:
-    TensorField2DAnisotropy();
-    virtual ~TensorField2DAnisotropy() = default;
+    TensorField2DToImage();
+    virtual ~TensorField2DToImage() = default;
 
     virtual void process() override;
 
@@ -71,11 +64,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField2DInport tensorFieldInport_;
-    ImageOutport outport_;
-    TemplateOptionProperty<tensorutil::Anisotropy> anisotropy_;
+    TensorField2DInport tensorField2DInport_;
+    ImageOutport imageOutport_;
+
+    OptionPropertySize_t imageContent_;
+
+    BoolProperty normalizeVectors_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DANISOTROPY_H
