@@ -10,7 +10,7 @@ const ProcessorInfo VolumeActualDataAndValueRange::processorInfo_{
     "Volume Actual Data And Value Range",        // Display name
     "Tensor",                                    // Category
     CodeState::Experimental,                     // Code state
-    tag::OpenTensorVis | Tag::CPU,                                   // Tags
+    tag::OpenTensorVis | Tag::CPU,               // Tags
 };
 const ProcessorInfo VolumeActualDataAndValueRange::getProcessorInfo() const {
     return processorInfo_;

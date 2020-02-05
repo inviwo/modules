@@ -42,7 +42,7 @@ const ProcessorInfo TensorGlyphRenderer::processorInfo_{
     "Tensor Glyph Renderer",           // Display name
     "Tensor visualization",            // Category
     CodeState::Experimental,           // Code state
-    tag::OpenTensorVis | Tag::GL,                        // Tags
+    tag::OpenTensorVis | Tag::GL,      // Tags
 };
 const ProcessorInfo TensorGlyphRenderer::getProcessorInfo() const { return processorInfo_; }
 

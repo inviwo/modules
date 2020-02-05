@@ -62,7 +62,7 @@
 #include <inviwo/tensorvisbase/properties/tensorglyphproperty.h>
 
 namespace inviwo {
-    
+
 TensorVisBaseModule::TensorVisBaseModule(InviwoApplication* app)
     : InviwoModule(app, "TensorVisBase") {
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));

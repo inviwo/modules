@@ -146,11 +146,11 @@ private:
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DToVolume::processorInfo_{
-    "org.inviwo.TensorField3DToVolume",       // Class identifier
-    "Tensor Field 3D To Volume",              // Display name
-    "Conversion",                             // Category
-    CodeState::Stable,                        // Code state
-    Tags::CPU | tag::OpenTensorVis,  // Tags
+    "org.inviwo.TensorField3DToVolume",  // Class identifier
+    "Tensor Field 3D To Volume",         // Display name
+    "Conversion",                        // Category
+    CodeState::Stable,                   // Code state
+    Tags::CPU | tag::OpenTensorVis,      // Tags
 };
 const ProcessorInfo TensorField3DToVolume::getProcessorInfo() const { return processorInfo_; }
 

@@ -39,7 +39,7 @@ const ProcessorInfo TensorField2DImport::processorInfo_{
     "Tensor Field 2D Import",          // Display name
     "Tensor Field IO",                 // Category
     CodeState::Experimental,           // Code state
-    tag::OpenTensorVis | Tag::CPU,                        // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField2DImport::getProcessorInfo() const { return processorInfo_; }
 
@@ -49,7 +49,7 @@ TensorField2DImport::TensorField2DImport()
     , outport_("outport")
     , extents_("", "", vec2(1.f), vec2(0.f), vec2(1000.f), vec2(0.0001f))
     , offset_("offset", "Offset", vec2(1.f), vec2(-1000.f), vec2(1000.f), vec2(0.0001f),
-        InvalidationLevel::Valid)
+              InvalidationLevel::Valid)
     , dimensions_("dimensions", "Dimensions", ivec2(0), ivec2(0), ivec2(1024), ivec2(1),
                   InvalidationLevel::Valid) {
     addPort(outport_);

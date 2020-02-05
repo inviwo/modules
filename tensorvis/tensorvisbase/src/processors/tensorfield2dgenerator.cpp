@@ -38,7 +38,7 @@ const ProcessorInfo TensorField2DGenerator::processorInfo_{
     "Tensor Field 2D Generator",          // Display name
     "Tensor Field IO",                    // Category
     CodeState::Experimental,              // Code state
-   tag::OpenTensorVis | Tag::CPU,                            // Tags
+    tag::OpenTensorVis | Tag::CPU,        // Tags
 };
 
 const ProcessorInfo TensorField2DGenerator::getProcessorInfo() const { return processorInfo_; }

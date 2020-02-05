@@ -40,7 +40,7 @@ const ProcessorInfo TensorField3DExport::processorInfo_{
     "Tensor Field 3D Export",          // Display name
     "IO",                              // Category
     CodeState::Experimental,           // Code state
-    tag::OpenTensorVis | Tag::CPU,       // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField3DExport::getProcessorInfo() const { return processorInfo_; }
 

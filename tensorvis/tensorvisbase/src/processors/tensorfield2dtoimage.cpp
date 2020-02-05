@@ -131,7 +131,7 @@ const ProcessorInfo TensorField2DToImage::processorInfo_{
     "Tensor Field 2D To Image",         // Display name
     "Conversion",                       // Category
     CodeState::Experimental,            // Code state
-    tag::OpenTensorVis | Tag::CPU,                       // Tags
+    tag::OpenTensorVis | Tag::CPU,      // Tags
 };
 const ProcessorInfo TensorField2DToImage::getProcessorInfo() const { return processorInfo_; }
 

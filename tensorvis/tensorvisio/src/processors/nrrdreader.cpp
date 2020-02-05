@@ -37,11 +37,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo NRRDReader::processorInfo_{
-    "org.inviwo.NRRDReader",  // Class identifier
-    "NRRDReader",             // Display name
-    "Tensor Field IO",        // Category
-    CodeState::Experimental,  // Code state
-    tag::OpenTensorVis | Tag::CPU,               // Tags
+    "org.inviwo.NRRDReader",        // Class identifier
+    "NRRDReader",                   // Display name
+    "Tensor Field IO",              // Category
+    CodeState::Experimental,        // Code state
+    tag::OpenTensorVis | Tag::CPU,  // Tags
 };
 const ProcessorInfo NRRDReader::getProcessorInfo() const { return processorInfo_; }
 

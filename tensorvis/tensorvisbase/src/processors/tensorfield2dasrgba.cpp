@@ -40,7 +40,7 @@ const ProcessorInfo TensorField2DAsRGBA::processorInfo_{
     "Tensor Field 2D As RGBA",         // Display name
     "Tensor visualization",            // Category
     CodeState::Experimental,           // Code state
-    tag::OpenTensorVis | Tag::GL,                          // Tags
+    tag::OpenTensorVis | Tag::GL,      // Tags
 };
 
 const ProcessorInfo TensorField2DAsRGBA::getProcessorInfo() const { return processorInfo_; }

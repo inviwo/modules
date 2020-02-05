@@ -41,7 +41,7 @@ const ProcessorInfo TensorField3DSlice::processorInfo_{
     "Tensor Field 3D Slice",          // Display name
     "Tensor visualization",           // Category
     CodeState::Experimental,          // Code state
-   tag::OpenTensorVis | Tag::CPU,                        // Tags
+    tag::OpenTensorVis | Tag::CPU,    // Tags
 };
 
 const ProcessorInfo TensorField3DSlice::getProcessorInfo() const { return processorInfo_; }

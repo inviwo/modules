@@ -38,7 +38,7 @@ const ProcessorInfo TensorField2DSubsample::processorInfo_{
     "Tensor Field 2D Subsample",          // Display name
     "Tensor visualization",               // Category
     CodeState::Experimental,              // Code state
-    tag::OpenTensorVis | Tag::CPU,                             // Tags
+    tag::OpenTensorVis | Tag::CPU,        // Tags
 };
 
 const ProcessorInfo TensorField2DSubsample::getProcessorInfo() const { return processorInfo_; }

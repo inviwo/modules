@@ -38,7 +38,7 @@ const ProcessorInfo TensorField3DSubset::processorInfo_{
     "Tensor Field 3D Subset",          // Display name
     "Tensor visualization",            // Category
     CodeState::Stable,                 // Code state
-    tag::OpenTensorVis | Tag::CPU,                         // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField3DSubset::getProcessorInfo() const { return processorInfo_; }
 

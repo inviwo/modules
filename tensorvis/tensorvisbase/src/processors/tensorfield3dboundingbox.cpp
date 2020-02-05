@@ -40,7 +40,7 @@ const ProcessorInfo TensorField3DBoundingBox::processorInfo_{
     "Tensor Field Bounding Box",            // Display name
     "Mesh Creation",                        // Category
     CodeState::Stable,                      // Code state
-    tag::OpenTensorVis | Tag::CPU,                           // Tags
+    tag::OpenTensorVis | Tag::CPU,          // Tags
 };
 const ProcessorInfo TensorField3DBoundingBox::getProcessorInfo() const { return processorInfo_; }
 

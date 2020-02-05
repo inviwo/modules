@@ -10,7 +10,7 @@ const ProcessorInfo TensorField3DMaskToVolume::processorInfo_{
     "Tensor Field 3D Mask To Volume",        // Display name
     "Tensor",                                // Category
     CodeState::Experimental,                 // Code state
-    tag::OpenTensorVis | Tag::CPU,                               // Tags
+    tag::OpenTensorVis | Tag::CPU,           // Tags
 };
 const ProcessorInfo TensorField3DMaskToVolume::getProcessorInfo() const { return processorInfo_; }
 

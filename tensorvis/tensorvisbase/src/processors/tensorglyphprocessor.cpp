@@ -39,7 +39,7 @@ const ProcessorInfo TensorGlyphProcessor::processorInfo_{
     "Tensor Glyphs",                    // Display name
     "Tensor visualization",             // Category
     CodeState::Stable,                  // Code state
-    tag::OpenTensorVis | Tag::CPU,                          // Tags
+    tag::OpenTensorVis | Tag::CPU,      // Tags
 };
 
 const ProcessorInfo TensorGlyphProcessor::getProcessorInfo() const { return processorInfo_; }

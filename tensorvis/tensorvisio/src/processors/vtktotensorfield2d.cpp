@@ -48,10 +48,10 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKDataSetToTensorField2D::processorInfo_{
-    "org.inviwo.VTKDataSetToTensorField2D",    // Class identifier
-    "VTK Data Set To Tensor Field 2D",         // Display name
-    "VTK",                                     // Category
-    CodeState::Experimental,                   // Code state
+    "org.inviwo.VTKDataSetToTensorField2D",      // Class identifier
+    "VTK Data Set To Tensor Field 2D",           // Display name
+    "VTK",                                       // Category
+    CodeState::Experimental,                     // Code state
     tag::OpenTensorVis | Tag("VTK") | Tag::CPU,  // Tags
 };
 const ProcessorInfo VTKDataSetToTensorField2D::getProcessorInfo() const { return processorInfo_; }
@@ -71,7 +71,7 @@ VTKDataSetToTensorField2D::VTKDataSetToTensorField2D()
     addProperty(normalizeExtents_);
 
     addProperty(tensors_);
-    //addProperty(scalars_);
+    // addProperty(scalars_);
 
     addProperties(generate_);
 
@@ -89,10 +89,10 @@ void VTKDataSetToTensorField2D::initializeResources() {
     std::vector<OptionPropertyOption<std::string>> tensorOptions{};
     std::vector<OptionPropertyOption<std::string>> scalarOptions{};
 
-    for (int i{ 0 }; i < pointData->GetNumberOfArrays(); ++i) {
+    for (int i{0}; i < pointData->GetNumberOfArrays(); ++i) {
         auto array = pointData->GetArray(i);
 
-        std::string name{ array->GetName() };
+        std::string name{array->GetName()};
         auto identifier = name;
 
         replaceInString(identifier, ".", "");
@@ -106,10 +106,10 @@ void VTKDataSetToTensorField2D::initializeResources() {
         }*/
     }
 
-    //scalarOptions.emplace_back("none", "None", "none");
+    // scalarOptions.emplace_back("none", "None", "none");
 
     tensors_.replaceOptions(tensorOptions);
-    //scalars_.replaceOptions(scalarOptions);
+    // scalars_.replaceOptions(scalarOptions);
 }
 
 void VTKDataSetToTensorField2D::process() {}
@@ -127,7 +127,7 @@ void VTKDataSetToTensorField2D::generate() {
                 tensors_.setReadOnly(true);
             }
             getActivityIndicator().setActive(true);
-            });
+        });
 
         const auto& dataSet = *dataSetInport_.getData();
 
@@ -135,17 +135,16 @@ void VTKDataSetToTensorField2D::generate() {
 
         if (!tensorArray) return;
 
-        size2_t dimensions{ 0 };
+        size2_t dimensions{0};
 
         if (const auto dimensionsOpt = dataSet.getDimensions()) {
             dimensions = *dimensionsOpt;
-        }
-        else {
+        } else {
             throw inviwo::Exception("Dimensions were not available.", IVW_CONTEXT);
         }
 
         LogProcessorInfo("Attempting to generate tensor field from array \""
-            << std::string{ tensorArray->GetName() } << "\"");
+                         << std::string{tensorArray->GetName()} << "\"");
 
         const auto bounds = dataSet->GetBounds();
         auto extent = vtkutil::extentFromBounds(bounds);
@@ -180,8 +179,8 @@ void VTKDataSetToTensorField2D::generate() {
             getActivityIndicator().setActive(false);
             tensorField2DOutport_.setData(tensorField);
             invalidate(InvalidationLevel::InvalidOutput);
-            });
         });
+    });
 }
 
 }  // namespace inviwo

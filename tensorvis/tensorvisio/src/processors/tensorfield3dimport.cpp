@@ -46,7 +46,7 @@ const ProcessorInfo TensorField3DImport::processorInfo_{
     "Tensor Field 3D Import",          // Display name
     "IO",                              // Category
     CodeState::Experimental,           // Code state
-    tag::OpenTensorVis|Tag::CPU,       // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField3DImport::getProcessorInfo() const { return processorInfo_; }
 
@@ -227,7 +227,7 @@ void TensorField3DImport::process() {
 }
 
 void TensorField3DImport::buildTensors(
-    const std::vector<TensorField3D::value_type>& data,
+    const std::vector<TensorField3D::value_type> &data,
     std::shared_ptr<std::vector<TensorField3D::matN>> tensors) const {
     for (size_t i{0}; i < data.size() / 9; i++) {
         size_t offset = i * 9;

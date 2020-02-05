@@ -56,7 +56,7 @@ namespace inviwo {
  */
 
 class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField2D : public Processor,
-    public ActivityIndicatorOwner {
+                                                             public ActivityIndicatorOwner {
 public:
     VTKDataSetToTensorField2D();
     virtual ~VTKDataSetToTensorField2D() = default;
@@ -75,7 +75,7 @@ private:
     BoolProperty normalizeExtents_;
 
     OptionPropertyString tensors_;
-    //OptionPropertyString scalars_;
+    // OptionPropertyString scalars_;
     ButtonProperty generate_;
 
     void generate();

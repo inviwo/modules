@@ -10,7 +10,7 @@ const ProcessorInfo FlowGUIFileReader::processorInfo_{
     "Wito File Reader",              // Display name
     "Tensor",                        // Category
     CodeState::Experimental,         // Code state
-    tag::OpenTensorVis | Tag::CPU,                       // Tags
+    tag::OpenTensorVis | Tag::CPU,   // Tags
 };
 const ProcessorInfo FlowGUIFileReader::getProcessorInfo() const { return processorInfo_; }
 

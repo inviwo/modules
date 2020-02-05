@@ -47,11 +47,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKDataSetToTensorField3D::processorInfo_{
-    "org.inviwo.VTKDataSetToTensorField3D",  // Class identifier
-    "VTK Data Set To Tensor Field 3D",       // Display name
-    "VTK",                                   // Category
-    CodeState::Experimental,                 // Code state
-    tag::OpenTensorVis | Tag("VTK") |Tags::CPU,                               // Tags
+    "org.inviwo.VTKDataSetToTensorField3D",       // Class identifier
+    "VTK Data Set To Tensor Field 3D",            // Display name
+    "VTK",                                        // Category
+    CodeState::Experimental,                      // Code state
+    tag::OpenTensorVis | Tag("VTK") | Tags::CPU,  // Tags
 };
 const ProcessorInfo VTKDataSetToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
@@ -70,7 +70,7 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     addProperty(normalizeExtents_);
 
     addProperty(tensors_);
-    //addProperty(scalars_);
+    // addProperty(scalars_);
 
     addProperties(generate_);
 
@@ -105,10 +105,10 @@ void VTKDataSetToTensorField3D::initializeResources() {
         }*/
     }
 
-    //scalarOptions.emplace_back("none", "None", "none");
+    // scalarOptions.emplace_back("none", "None", "none");
 
     tensors_.replaceOptions(tensorOptions);
-    //scalars_.replaceOptions(scalarOptions);
+    // scalars_.replaceOptions(scalarOptions);
 }
 
 void VTKDataSetToTensorField3D::process() {}

@@ -77,7 +77,7 @@ private:
     BoolProperty normalizeExtents_;
 
     OptionPropertyString tensors_;
-    //OptionPropertyString scalars_;
+    // OptionPropertyString scalars_;
     ButtonProperty generate_;
 
     void generate();

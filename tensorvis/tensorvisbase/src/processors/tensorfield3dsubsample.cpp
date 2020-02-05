@@ -38,7 +38,7 @@ const ProcessorInfo TensorField3DSubsample::processorInfo_{
     "Tensor Field 3D Subsample",          // Display name
     "Tensor Visualization",               // Category
     CodeState::Experimental,              // Code state
-    tag::OpenTensorVis | Tag::CPU,                            // Tags
+    tag::OpenTensorVis | Tag::CPU,        // Tags
 };
 
 const ProcessorInfo TensorField3DSubsample::getProcessorInfo() const { return processorInfo_; }

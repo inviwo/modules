@@ -71,7 +71,7 @@ private:
     IntVec2Property dimensions_;
 
     void buildTensors(const std::vector<TensorField2D::value_type>& data,
-        std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const;
+                      std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const;
 };
 
 }  // namespace inviwo
