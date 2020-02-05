@@ -41,7 +41,7 @@ const ProcessorInfo TensorField3DFiberAngle::processorInfo_{
     "Tensor Field 3D Fiber Angle",           // Display name
     "OpenTensorVis",                         // Category
     CodeState::Experimental,                 // Code state
-    TensorVisTag::OpenTensorVis | Tag::CPU,  // Tags
+    tag::OpenTensorVis | Tag::CPU,  // Tags
 };
 const ProcessorInfo TensorField3DFiberAngle::getProcessorInfo() const { return processorInfo_; }
 

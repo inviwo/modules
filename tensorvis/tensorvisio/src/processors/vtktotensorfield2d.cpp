@@ -31,107 +31,157 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <vtkArrayDispatch.h>
 #include <vtkPointData.h>
-#include <vtkDataArray.h>
-#include <vtkDoubleArray.h>
-#include <vtkFloatArray.h>
+#include <vtkArray.h>
 #include <warn/pop>
 
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/util/misc.h>
 #include <inviwo/vtk/util/vtkutil.h>
 #include <fmt/format.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/vtk/vtkmodule.h>
+#include <inviwo/tensorvisio/util/util.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VTKToTensorField2D::processorInfo_{
-    "org.inviwo.VTKToTensorField2D",  // Class identifier
-    "VTK To Tensor Field 2D",         // Display name
-    "VTK",                            // Category
-    CodeState::Experimental,          // Code state
-    "VTK",                            // Tags
+const ProcessorInfo VTKDataSetToTensorField2D::processorInfo_{
+    "org.inviwo.VTKDataSetToTensorField2D",    // Class identifier
+    "VTK Data Set To Tensor Field 2D",         // Display name
+    "VTK",                                     // Category
+    CodeState::Experimental,                   // Code state
+    tag::OpenTensorVis | Tag("VTK") | Tag::CPU,  // Tags
 };
-const ProcessorInfo VTKToTensorField2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VTKDataSetToTensorField2D::getProcessorInfo() const { return processorInfo_; }
 
-VTKToTensorField2D::VTKToTensorField2D()
+VTKDataSetToTensorField2D::VTKDataSetToTensorField2D()
     : Processor()
-    , vtkDataSetInport_("vtkDataSetInport")
-    , tensorField2DOutport_("tensorField2DOutport") {
-    addPort(vtkDataSetInport_);
+    , dataSetInport_("dataSetInport")
+    , tensorField2DOutport_("tensorField2DOutport")
+    , normalizeExtents_("normalizeExtents", "Normalize extents", false)
+    , tensors_("tensors_", "Tensors")
+    //, scalars_("scalars", "Scalars")
+    , generate_("generate", "Generate")
+    , busy_(false) {
+    addPort(dataSetInport_);
     addPort(tensorField2DOutport_);
+
+    addProperty(normalizeExtents_);
+
+    addProperty(tensors_);
+    //addProperty(scalars_);
+
+    addProperties(generate_);
+
+    dataSetInport_.onChange([this]() { initializeResources(); });
+
+    generate_.onChange([this]() { generate(); });
 }
 
-void VTKToTensorField2D::process() {
-    const auto inviwoDataSet = vtkDataSetInport_.getData();
+void VTKDataSetToTensorField2D::initializeResources() {
+    if (!dataSetInport_.hasData()) return;
 
-    size3_t dimensions{};
-    if (auto d = inviwoDataSet->getDimensions())
-        dimensions = *d;
-    else {
-        inviwo::Exception(
-            fmt::format("VTK data set type '{}' not supported.", (*inviwoDataSet)->GetClassName()),
-            IVW_CONTEXT);
-        return;
+    const auto& dataSet = *dataSetInport_.getData();
+    auto pointData = dataSet->GetPointData();
+
+    std::vector<OptionPropertyOption<std::string>> tensorOptions{};
+    std::vector<OptionPropertyOption<std::string>> scalarOptions{};
+
+    for (int i{ 0 }; i < pointData->GetNumberOfArrays(); ++i) {
+        auto array = pointData->GetArray(i);
+
+        std::string name{ array->GetName() };
+        auto identifier = name;
+
+        replaceInString(identifier, ".", "");
+        replaceInString(identifier, " ", "");
+
+        if (array->GetNumberOfComponents() == 4) {
+            tensorOptions.emplace_back(identifier, name, name);
+        }
+        /*if (array->GetNumberOfComponents() == 1) {
+            scalarOptions.emplace_back(identifier, name, name);
+        }*/
     }
-    if (dimensions.x != 1 && dimensions.y != 1 && dimensions.z != 1) {
-        inviwo::Exception("Data set is not 2D. Aborting.", IVW_CONTEXT);
-        return;
-    }
 
-    const auto numberOfElements = glm::compMul(dimensions);
+    //scalarOptions.emplace_back("none", "None", "none");
 
-    const auto pointData = (*inviwoDataSet)->GetPointData();
-    const auto tensors = pointData->GetTensors();
+    tensors_.replaceOptions(tensorOptions);
+    //scalars_.replaceOptions(scalarOptions);
+}
 
-    if (tensors->GetDataType() != VTK_FLOAT && tensors->GetDataType() != VTK_DOUBLE) {
-        LogError("Data type is neither float nor double. Aborting.");
-        return;
-    }
+void VTKDataSetToTensorField2D::process() {}
 
-    std::vector<TensorField2D::matN> tensorVector2D;
-    tensorVector2D.resize(numberOfElements);
+void VTKDataSetToTensorField2D::generate() {
+    if (!dataSetInport_.hasData()) return;
+    if (busy_) return;
 
-    // Check to see if we need to project the tensor
-    if (tensors->GetNumberOfComponents() == 9) {
-        // If so, find out onto which plane to project
-        CartesianCoordinateAxis axis =
-            dimensions.z == 1
-                ? CartesianCoordinateAxis::Z
-                : dimensions.y == 1 ? CartesianCoordinateAxis::Y : CartesianCoordinateAxis::X;
+    busy_ = true;
 
-        std::vector<dmat3> tensorVector3D;
-        tensorVector3D.resize(numberOfElements);
-        auto tensorVector3DRawData = reinterpret_cast<double*>(tensorVector3D.data());
-
-        if (tensors->GetDataType() == VTK_DOUBLE) {
-            const double* raw = vtkDoubleArray::SafeDownCast(tensors)->GetPointer(0);
-            std::memcpy(tensorVector3DRawData, raw, 9 * sizeof(double) * tensorVector3D.size());
-        } else if (tensors->GetDataType() == VTK_FLOAT) {
-            const float* raw = vtkFloatArray::SafeDownCast(tensors)->GetPointer(0);
-            for (size_t i{0}; i < tensorVector3D.size(); ++i) {
-                tensorVector3DRawData[i] = static_cast<double>(raw[i]);
+    dispatchPool([this]() {
+        dispatchFront([this]() {
+            {
+                NetworkLock lock;
+                tensors_.setReadOnly(true);
             }
+            getActivityIndicator().setActive(true);
+            });
+
+        const auto& dataSet = *dataSetInport_.getData();
+
+        auto tensorArray = dataSet->GetPointData()->GetArray(tensors_.get().c_str());
+
+        if (!tensorArray) return;
+
+        size2_t dimensions{ 0 };
+
+        if (const auto dimensionsOpt = dataSet.getDimensions()) {
+            dimensions = *dimensionsOpt;
+        }
+        else {
+            throw inviwo::Exception("Dimensions were not available.", IVW_CONTEXT);
         }
 
-        std::transform(
-            tensorVector3D.begin(), tensorVector3D.end(), tensorVector2D.begin(),
-            [&](const dmat3& tensor) { return tensorutil::getProjectedTensor(tensor, axis); });
-    } else {
-        auto tensorVector2DRawData = reinterpret_cast<double*>(tensorVector2D.data());
-        if (tensors->GetDataType() == VTK_DOUBLE) {
-            const double* raw = vtkDoubleArray::SafeDownCast(tensors)->GetPointer(0);
-            std::memcpy(tensorVector2DRawData, raw, 4 * sizeof(double) * tensorVector2D.size());
-        } else if (tensors->GetDataType() == VTK_FLOAT) {
-            const float* raw = vtkFloatArray::SafeDownCast(tensors)->GetPointer(0);
-            for (size_t i{0}; i < tensorVector2D.size(); ++i) {
-                tensorVector2DRawData[i] = static_cast<double>(raw[i]);
-            }
-        }
-    }
+        LogProcessorInfo("Attempting to generate tensor field from array \""
+            << std::string{ tensorArray->GetName() } << "\"");
 
-    tensorField2DOutport_.setData(
-        std::make_shared<TensorField2D>(size2_t{dimensions}, tensorVector2D));
+        const auto bounds = dataSet->GetBounds();
+        auto extent = vtkutil::extentFromBounds(bounds);
+        const auto offset = vtkutil::offsetFromBounds(bounds);
+
+        if (normalizeExtents_.get()) {
+            extent /= std::max(std::max(extent.x, extent.y), extent.z);
+        }
+
+        std::shared_ptr<TensorField2D> tensorField;
+        auto tensors = std::make_shared<std::vector<TensorField2D::matN>>();
+
+        util::VTKToVector<2> worker;
+
+        typedef vtkArrayDispatch::DispatchByValueType<vtkArrayDispatch::AllTypes> Dispatcher;
+
+        if (!Dispatcher::Execute(tensorArray, worker)) {
+            worker(tensorArray);
+        }
+
+        tensorField = std::make_shared<TensorField2D>(dimensions, worker.vec);
+        tensorField->setExtents(extent);
+        tensorField->setOffset(offset);
+
+        busy_ = false;
+
+        dispatchFront([this, tensorField]() {
+            {
+                NetworkLock lock;
+                tensors_.setReadOnly(false);
+            }
+            getActivityIndicator().setActive(false);
+            tensorField2DOutport_.setData(tensorField);
+            invalidate(InvalidationLevel::InvalidOutput);
+            });
+        });
 }
 
 }  // namespace inviwo

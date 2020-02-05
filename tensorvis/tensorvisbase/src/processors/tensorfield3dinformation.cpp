@@ -40,7 +40,7 @@ const ProcessorInfo TensorField3DInformation::processorInfo_{
     "Tensor Field 3D Information",            // Display name
     "Information",                            // Category
     CodeState::Experimental,                  // Code state
-    Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
+    Tags::CPU | tag::OpenTensorVis,  // Tags
 };
 
 const ProcessorInfo TensorField3DInformation::getProcessorInfo() const { return processorInfo_; }

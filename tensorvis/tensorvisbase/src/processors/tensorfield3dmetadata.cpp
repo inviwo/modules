@@ -39,11 +39,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DMetaData::processorInfo_{
-    "org.inviwo.TensorField3DMetaData",  // Class identifier
-    "Tensor Field 3D Meta Data",         // Display name
-    "Data generation",                   // Category
-    CodeState::Experimental,             // Code state
-    TensorVisTag::OpenTensorVis,         // Tags
+    "org.inviwo.TensorField3DMetaData",     // Class identifier
+    "Tensor Field 3D Meta Data",            // Display name
+    "Data generation",                      // Category
+    CodeState::Experimental,                // Code state
+    tag::OpenTensorVis | Tag::CPU  // Tags
 };
 const ProcessorInfo TensorField3DMetaData::getProcessorInfo() const { return processorInfo_; }
 

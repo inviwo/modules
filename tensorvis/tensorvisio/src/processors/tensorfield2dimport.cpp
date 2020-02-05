@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisio/processors/tensorfield2dimport.h>
 #include <inviwo/tensorvisio/util/util.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -38,7 +39,7 @@ const ProcessorInfo TensorField2DImport::processorInfo_{
     "Tensor Field 2D Import",          // Display name
     "Tensor Field IO",                 // Category
     CodeState::Experimental,           // Code state
-    Tags::None,                        // Tags
+    tag::OpenTensorVis | Tag::CPU,                        // Tags
 };
 const ProcessorInfo TensorField2DImport::getProcessorInfo() const { return processorInfo_; }
 
@@ -46,7 +47,9 @@ TensorField2DImport::TensorField2DImport()
     : Processor()
     , inFile_("inFile", "File", "")
     , outport_("outport")
-    , extents_("", "", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f))
+    , extents_("", "", vec2(1.f), vec2(0.f), vec2(1000.f), vec2(0.0001f))
+    , offset_("offset", "Offset", vec2(1.f), vec2(-1000.f), vec2(1000.f), vec2(0.0001f),
+        InvalidationLevel::Valid)
     , dimensions_("dimensions", "Dimensions", ivec2(0), ivec2(0), ivec2(1024), ivec2(1),
                   InvalidationLevel::Valid) {
     addPort(outport_);
@@ -69,6 +72,7 @@ void TensorField2DImport::process() {
     size_t version;
     size2_t dimensions{};
     auto extents = vec2{};
+    auto offset = vec2{};
     glm::uint8 hasMetaData;
     std::array<DataMapper, 2> dataMapperEigenValues;
     std::array<DataMapper, 2> dataMapperEigenVectors;
@@ -102,6 +106,9 @@ void TensorField2DImport::process() {
     inFile.read(reinterpret_cast<char*>(&extents.x), sizeof(float));
     inFile.read(reinterpret_cast<char*>(&extents.y), sizeof(float));
 
+    inFile.read(reinterpret_cast<char*>(&offset.x), sizeof(float));
+    inFile.read(reinterpret_cast<char*>(&offset.y), sizeof(float));
+
     // Read the data maps
 
     inFile.read(reinterpret_cast<char*>(&dataMapperEigenValues[0].dataRange), sizeof(double) * 2);
@@ -132,8 +139,10 @@ void TensorField2DImport::process() {
     tensorFieldOut->dataMapEigenVectors_ = dataMapperEigenVectors;
 
     tensorFieldOut->setExtents(extents);
+    tensorFieldOut->setOffset(offset);
 
     extents_.set(extents);
+    offset_.set(offset);
     dimensions_.set(dimensions);
 
     std::shared_ptr<DataFrame> dataFrame;
@@ -174,7 +183,7 @@ void TensorField2DImport::process() {
 }
 
 void TensorField2DImport::buildTensors(
-    const std::vector<float>& data,
+    const std::vector<TensorField2D::value_type>& data,
     std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const {
     for (size_t i{0}; i < data.size() / 4; i++) {
         size_t offset = i * 4;

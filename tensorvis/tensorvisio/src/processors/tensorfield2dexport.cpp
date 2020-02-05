@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisio/processors/tensorfield2dexport.h>
 #include <inviwo/tensorvisio/util/util.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -38,7 +39,7 @@ const ProcessorInfo TensorField2DExport::processorInfo_{
     "Tensor Field 2D Export",          // Display name
     "Tensor Field IO",                 // Category
     CodeState::Experimental,           // Code state
-    Tags::CPU,                         // Tags
+    tag::OpenTensorVis | Tag::CPU,                         // Tags
 };
 const ProcessorInfo TensorField2DExport::getProcessorInfo() const { return processorInfo_; }
 
@@ -96,6 +97,9 @@ void TensorField2DExport::exportBinary() const {
 
     auto extents = tensorField->getExtents();
     outFile.write(reinterpret_cast<const char *>(&extents), sizeof(float) * 2);
+
+    auto offset = tensorField->getOffset();
+    outFile.write(reinterpret_cast<const char*>(&offset), sizeof(float) * 2);
 
     auto &eigenValueDataMaps = tensorField->dataMapEigenValues_;
     outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[0].dataRange),

@@ -39,7 +39,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DImport, Tensor Field File Reader}
+/** \docpage{org.inviwo.TensorField3DImport, Tensor Field 3D Import}
  * ![](org.inviwo.TensorField3DImport.png?classIdentifier=org.inviwo.TensorField3DImport)
  * Explanation of how to use the processor.
  *
@@ -75,8 +75,8 @@ private:
     FloatVec3Property offset_;
     IntVec3Property dimensions_;
 
-    void buildTensors(const std::vector<float> &data,
-                      std::shared_ptr<std::vector<mat3>> tensors) const;
+    void buildTensors(const std::vector<TensorField3D::value_type> &data,
+                      std::shared_ptr<std::vector<TensorField3D::matN>> tensors) const;
 };
 
 }  // namespace inviwo

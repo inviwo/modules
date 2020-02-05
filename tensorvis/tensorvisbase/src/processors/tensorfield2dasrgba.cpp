@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield2dasrgba.h>
 #include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
 #include <inviwo/core/util/imagesampler.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -39,7 +40,7 @@ const ProcessorInfo TensorField2DAsRGBA::processorInfo_{
     "Tensor Field 2D As RGBA",         // Display name
     "Tensor visualization",            // Category
     CodeState::Experimental,           // Code state
-    Tags::GL,                          // Tags
+    tag::OpenTensorVis | Tag::GL,                          // Tags
 };
 
 const ProcessorInfo TensorField2DAsRGBA::getProcessorInfo() const { return processorInfo_; }

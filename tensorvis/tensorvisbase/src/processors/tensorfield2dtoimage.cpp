@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield2dtoimage.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/datastructures/image/layerramprecision.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -130,7 +131,7 @@ const ProcessorInfo TensorField2DToImage::processorInfo_{
     "Tensor Field 2D To Image",         // Display name
     "Conversion",                       // Category
     CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    tag::OpenTensorVis | Tag::CPU,                       // Tags
 };
 const ProcessorInfo TensorField2DToImage::getProcessorInfo() const { return processorInfo_; }
 

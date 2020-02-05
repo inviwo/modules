@@ -31,6 +31,7 @@
 #include <inviwo/tensorvisbase/algorithm/tensorfieldslicing.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -40,7 +41,7 @@ const ProcessorInfo TensorField3DSlice::processorInfo_{
     "Tensor Field 3D Slice",          // Display name
     "Tensor visualization",           // Category
     CodeState::Experimental,          // Code state
-    Tags::CPU,                        // Tags
+   tag::OpenTensorVis | Tag::CPU,                        // Tags
 };
 
 const ProcessorInfo TensorField3DSlice::getProcessorInfo() const { return processorInfo_; }

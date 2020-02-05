@@ -43,7 +43,7 @@ const ProcessorInfo TensorField2DMetaData::processorInfo_{
     "Tensor Field 2D Meta Data",            // Display name
     "Data generation",                      // Category
     CodeState::Experimental,                // Code state
-    TensorVisTag::OpenTensorVis | Tag::CPU  // Tags
+    tag::OpenTensorVis | Tag::CPU  // Tags
 };
 const ProcessorInfo TensorField2DMetaData::getProcessorInfo() const { return processorInfo_; }
 

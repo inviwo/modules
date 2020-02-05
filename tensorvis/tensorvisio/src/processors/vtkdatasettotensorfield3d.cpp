@@ -34,15 +34,14 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkRectilinearGrid.h>
-#include <vtkStructuredGrid.h>
-#include <vtkStructuredPoints.h>
-#include <vtkDoubleArray.h>
-#include <vtkFloatArray.h>
-#include <vtkPointData.h>
-#include <vtkCellData.h>
 #include <vtkArrayDispatch.h>
+#include <vtkPointData.h>
+#include <vtkArray.h>
 #include <warn/pop>
+
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/vtk/vtkmodule.h>
+#include <inviwo/tensorvisio/util/util.h>
 
 namespace inviwo {
 
@@ -52,7 +51,7 @@ const ProcessorInfo VTKDataSetToTensorField3D::processorInfo_{
     "VTK Data Set To Tensor Field 3D",       // Display name
     "VTK",                                   // Category
     CodeState::Experimental,                 // Code state
-    Tags::CPU,                               // Tags
+    tag::OpenTensorVis | Tag("VTK") |Tags::CPU,                               // Tags
 };
 const ProcessorInfo VTKDataSetToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
@@ -62,7 +61,7 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     , tensorField3DOutport_("tensorField3DOutport")
     , normalizeExtents_("normalizeExtents", "Normalize extents", false)
     , tensors_("tensors_", "Tensors")
-    , scalars_("scalars", "Scalars")
+    //, scalars_("scalars", "Scalars")
     , generate_("generate", "Generate")
     , busy_(false) {
     addPort(dataSetInport_);
@@ -71,7 +70,7 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     addProperty(normalizeExtents_);
 
     addProperty(tensors_);
-    addProperty(scalars_);
+    //addProperty(scalars_);
 
     addProperties(generate_);
 
@@ -101,15 +100,15 @@ void VTKDataSetToTensorField3D::initializeResources() {
         if (array->GetNumberOfComponents() == 9) {
             tensorOptions.emplace_back(identifier, name, name);
         }
-        if (array->GetNumberOfComponents() == 1) {
+        /*if (array->GetNumberOfComponents() == 1) {
             scalarOptions.emplace_back(identifier, name, name);
-        }
+        }*/
     }
 
-    scalarOptions.emplace_back("none", "None", "none");
+    //scalarOptions.emplace_back("none", "None", "none");
 
     tensors_.replaceOptions(tensorOptions);
-    scalars_.replaceOptions(scalarOptions);
+    //scalars_.replaceOptions(scalarOptions);
 }
 
 void VTKDataSetToTensorField3D::process() {}
@@ -155,9 +154,9 @@ void VTKDataSetToTensorField3D::generate() {
         }
 
         std::shared_ptr<TensorField3D> tensorField;
-        auto tensors = std::make_shared<std::vector<mat3>>();
+        auto tensors = std::make_shared<std::vector<TensorField3D::matN>>();
 
-        VTKToVector worker;
+        util::VTKToVector<3> worker;
 
         typedef vtkArrayDispatch::DispatchByValueType<vtkArrayDispatch::AllTypes> Dispatcher;
 

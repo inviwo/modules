@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield2dgenerator.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -37,7 +38,7 @@ const ProcessorInfo TensorField2DGenerator::processorInfo_{
     "Tensor Field 2D Generator",          // Display name
     "Tensor Field IO",                    // Category
     CodeState::Experimental,              // Code state
-    Tags::CPU,                            // Tags
+   tag::OpenTensorVis | Tag::CPU,                            // Tags
 };
 
 const ProcessorInfo TensorField2DGenerator::getProcessorInfo() const { return processorInfo_; }

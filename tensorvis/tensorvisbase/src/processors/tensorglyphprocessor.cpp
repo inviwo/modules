@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisbase/processors/tensorglyphprocessor.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -38,7 +39,7 @@ const ProcessorInfo TensorGlyphProcessor::processorInfo_{
     "Tensor Glyphs",                    // Display name
     "Tensor visualization",             // Category
     CodeState::Stable,                  // Code state
-    Tags::CPU,                          // Tags
+    tag::OpenTensorVis | Tag::CPU,                          // Tags
 };
 
 const ProcessorInfo TensorGlyphProcessor::getProcessorInfo() const { return processorInfo_; }

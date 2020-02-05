@@ -39,6 +39,8 @@
 #include <warn/pop>
 
 #include <inviwo/tensorvisbase/util/misc.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/vtk/vtkmodule.h>
 
 namespace inviwo {
 
@@ -48,7 +50,7 @@ const ProcessorInfo TensorField2DToVTK::processorInfo_{
     "Tensor Field 2D To VTK",         // Display name
     "VTK",                            // Category
     CodeState::Experimental,          // Code state
-    "VTK",                            // Tags
+    tag::OpenTensorVis | Tag::CPU|Tag("VTK"),                            // Tags
 };
 const ProcessorInfo TensorField2DToVTK::getProcessorInfo() const { return processorInfo_; }
 

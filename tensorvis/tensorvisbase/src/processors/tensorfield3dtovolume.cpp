@@ -150,7 +150,7 @@ const ProcessorInfo TensorField3DToVolume::processorInfo_{
     "Tensor Field 3D To Volume",              // Display name
     "Conversion",                             // Category
     CodeState::Stable,                        // Code state
-    Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
+    Tags::CPU | tag::OpenTensorVis,  // Tags
 };
 const ProcessorInfo TensorField3DToVolume::getProcessorInfo() const { return processorInfo_; }
 

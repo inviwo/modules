@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield2dsubset.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -37,7 +38,7 @@ const ProcessorInfo TensorField2DSubset::processorInfo_{
     "Tensor Field 2D Subset",          // Display name
     "Tensor visualization",            // Category
     CodeState::Stable,                 // Code state
-    Tags::CPU,                         // Tags
+    tag::OpenTensorVis | Tag::CPU,                        // Tags
 };
 const ProcessorInfo TensorField2DSubset::getProcessorInfo() const { return processorInfo_; }
 

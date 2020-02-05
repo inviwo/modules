@@ -31,6 +31,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -40,7 +41,7 @@ const ProcessorInfo NRRDReader::processorInfo_{
     "NRRDReader",             // Display name
     "Tensor Field IO",        // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
+    tag::OpenTensorVis | Tag::CPU,               // Tags
 };
 const ProcessorInfo NRRDReader::getProcessorInfo() const { return processorInfo_; }
 

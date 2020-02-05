@@ -66,11 +66,12 @@ private:
 
     TensorField2DOutport outport_;
 
-    void buildTensors(const std::vector<float>& data,
-                      std::shared_ptr<std::vector<mat2>> tensors) const;
-
     FloatVec2Property extents_;
+    FloatVec2Property offset_;
     IntVec2Property dimensions_;
+
+    void buildTensors(const std::vector<TensorField2D::value_type>& data,
+        std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const;
 };
 
 }  // namespace inviwo

@@ -38,7 +38,7 @@ const ProcessorInfo TensorField3DToDataFrame::processorInfo_{
     "Tensor Field 3D To Data Frame",          // Display name
     "Plotting",                               // Category
     CodeState::Stable,                        // Code state
-    Tags::CPU | TensorVisTag::OpenTensorVis,  // Tags
+    Tags::CPU | tag::OpenTensorVis,  // Tags
 };
 const ProcessorInfo TensorField3DToDataFrame::getProcessorInfo() const { return processorInfo_; }
 

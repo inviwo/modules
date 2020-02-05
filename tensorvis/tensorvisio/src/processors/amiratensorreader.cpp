@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -11,7 +12,7 @@ const ProcessorInfo AmiraTensorReader::processorInfo_{
     "Amira Tensor Reader",           // Display name
     "Tensor Field IO",               // Category
     CodeState::Experimental,         // Code state
-    Tags::CPU,                       // Tags
+    tag::OpenTensorVis | Tag::CPU,                      // Tags
 };
 const ProcessorInfo AmiraTensorReader::getProcessorInfo() const { return processorInfo_; }
 

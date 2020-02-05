@@ -1,4 +1,5 @@
 #include <inviwo/tensorvisbase/processors/tensorfield3dbasismanipulation.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -8,7 +9,7 @@ const ProcessorInfo TensorField3DBasisManipulation::processorInfo_{
     "Tensor Field 3D Basis Manipulation",         // Display name
     "Tensor",                                     // Category
     CodeState::Experimental,                      // Code state
-    Tags::CPU,                                    // Tags
+    tag::OpenTensorVis | Tag::CPU,                                  // Tags
 };
 const ProcessorInfo TensorField3DBasisManipulation::getProcessorInfo() const {
     return processorInfo_;

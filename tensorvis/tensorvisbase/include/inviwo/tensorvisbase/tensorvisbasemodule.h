@@ -33,10 +33,9 @@
 #include <inviwo/core/common/inviwomodule.h>
 
 namespace inviwo {
-class IVW_MODULE_TENSORVISBASE_API TensorVisTag : public Tag {
-public:
-    static const Tag OpenTensorVis;
-};
+namespace tag {
+static const Tag OpenTensorVis("OpenTensorVis");
+}
 
 class IVW_MODULE_TENSORVISBASE_API TensorVisBaseModule : public InviwoModule {
 public:

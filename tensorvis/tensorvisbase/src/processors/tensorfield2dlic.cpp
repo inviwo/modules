@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisbase/processors/tensorfield2dlic.h>
 #include <algorithm>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -38,7 +39,7 @@ const ProcessorInfo TensorField2DLIC::processorInfo_{
     "Tensor Field 2D LIC",          // Display name
     "Tensor Visualization",         // Category
     CodeState::Experimental,        // Code state
-    Tags::GL,                       // Tags
+    tag::OpenTensorVis | Tag::GL,                       // Tags
 };
 
 const ProcessorInfo TensorField2DLIC::getProcessorInfo() const { return processorInfo_; }
