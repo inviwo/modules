@@ -28,7 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
+#include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <inviwo/core/util/constexprhash.h>
+#include <inviwo/tensorvisbase/util/attributeutil.h>
 
 namespace inviwo {
 
@@ -36,7 +41,7 @@ namespace inviwo {
 const ProcessorInfo TensorField2DMetaData::processorInfo_{
     "org.inviwo.TensorField2DMetaData",     // Class identifier
     "Tensor Field 2D Meta Data",            // Display name
-    "Undefined",                            // Category
+    "Data generation",                      // Category
     CodeState::Experimental,                // Code state
     TensorVisTag::OpenTensorVis | Tag::CPU  // Tags
 };
@@ -44,15 +49,84 @@ const ProcessorInfo TensorField2DMetaData::getProcessorInfo() const { return pro
 
 TensorField2DMetaData::TensorField2DMetaData()
     : Processor()
+    , inport_("inport")
     , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+    , metaDataPropertyContainer_("metaDataPropertyContainer", "Meta data")
+    , selectAll_("selectAll", "Select all")
+    , deselectAll_("deselectAll", "Deselect all") {
 
+    addPort(inport_);
     addPort(outport_);
-    addProperty(position_);
+
+    addProperty(metaDataPropertyContainer_);
+    addProperty(selectAll_);
+    addProperty(deselectAll_);
+
+    inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
+
+    selectAll_.onChange([this]() {
+        auto comp = getPropertiesByType<CompositeProperty>().front()->getProperties();
+
+        for (auto prop : comp) {
+            static_cast<BoolProperty*>(prop)->set(true);
+        }
+    });
+
+    deselectAll_.onChange([this]() {
+        auto comp = getPropertiesByType<CompositeProperty>().front()->getProperties();
+
+        for (auto prop : comp) {
+            static_cast<BoolProperty*>(prop)->set(false);
+        }
+    });
+}
+
+void TensorField2DMetaData::initializeResources() {
+    if (!inport_.hasData()) return;
+
+    NetworkLock l;
+
+    auto comp = getPropertiesByType<CompositeProperty>().front();
+    auto props = comp->getProperties();
+
+    for (auto prop : props) {
+        comp->removeProperty(prop);
+    }
+
+    util::for_each_type<attributes::types2D>{}(
+        util::AddMetaDataProperties<2>{this, inport_.getData()});
+
+    /*
+    This is a bit of a hack but it'll do. What happens is that adding/removing of the default meta
+    data such as eigen values and eigen vectors is disabled by setting the respective properties to
+    readonly.
+    */
+    comp = getPropertiesByType<CompositeProperty>().front();
+    props = comp->getProperties();
+    for (size_t i{0}; i < 4; ++i) {
+        props[i]->setReadOnly(true);
+    }
+}
+
+void TensorField2DMetaData::addRemoveMetaData(std::shared_ptr<TensorField2D> tensorField) {
+    auto comp = getPropertiesByType<CompositeProperty>().front();
+    auto props = comp->getProperties();
+
+    for (auto prop : props) {
+        const auto id = util::constexpr_hash(std::string_view(prop->getDisplayName()));
+        const auto add = static_cast<BoolProperty*>(prop)->get();
+
+        util::for_each_type<attributes::types2D>{}(util::AddRemoveMetaData<2>{tensorField}, id,
+                                                   add);
+    }
 }
 
 void TensorField2DMetaData::process() {
-    // outport_.setData(myImage);
+    auto newTensorField = std::make_shared<TensorField2D>(*inport_.getData());
+
+    addRemoveMetaData(newTensorField);
+
+    outport_.setData(newTensorField);
 }
 
 }  // namespace inviwo

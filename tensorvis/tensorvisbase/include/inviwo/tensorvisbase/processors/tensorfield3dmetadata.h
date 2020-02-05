@@ -52,7 +52,6 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
 class IVW_MODULE_TENSORVISBASE_API TensorField3DMetaData : public Processor {
 public:
     TensorField3DMetaData();

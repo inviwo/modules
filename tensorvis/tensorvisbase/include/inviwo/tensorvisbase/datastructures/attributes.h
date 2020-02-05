@@ -468,9 +468,8 @@ using types2D =
         MajorEigenValue,
         MinorEigenValue,
         MajorEigenVector2D,
-        IntermediateEigenVector2D,
-        MinorEigenVector2D,
-        Anisotropy
+        MinorEigenVector2D
+        //Anisotropy
     > ;
 // clang-format on
 

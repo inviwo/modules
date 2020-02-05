@@ -33,58 +33,9 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 #include <inviwo/core/util/constexprhash.h>
+#include <inviwo/tensorvisbase/util/attributeutil.h>
 
 namespace inviwo {
-
-namespace {
-
-struct AddMetaDataProperties {
-    AddMetaDataProperties() = delete;
-    AddMetaDataProperties(Processor* p, std::shared_ptr<const TensorField3D> tensorField)
-        : processor(p), tensorField_(tensorField) {}
-
-    template <typename T>
-    void operator()() {
-        auto identifier = std::string(T::identifier);
-        replaceInString(identifier, " ", "");
-        auto prop = new BoolProperty(identifier, std::string(T::identifier),
-                                     tensorField_ ? tensorField_->hasMetaData<T>() : false);
-        processor->getPropertiesByType<CompositeProperty>().front()->addProperty(prop);
-    }
-
-private:
-    Processor* processor;
-    std::shared_ptr<const TensorField3D> tensorField_;
-};
-
-struct AddRemoveMetaData {
-    AddRemoveMetaData() = delete;
-    AddRemoveMetaData(std::shared_ptr<TensorField3D> tensorField) : tensorField_(tensorField) {}
-
-    template <typename T>
-    void operator()(const size_t id, const bool add) {
-        auto metaData = tensorField_->metaData();
-
-        if (id == util::constexpr_hash(T::identifier)) {
-            if (tensorField_->hasMetaData<T>()) {
-                if (!add) {
-                    metaData->dropColumn(std::string(T::identifier));
-                }
-            } else {
-                if (add) {
-                    metaData->addColumn(std::make_shared<TemplateColumn<typename T::value_type>>(
-                        std::string(T::identifier),
-                        T::calculate(tensorField_->tensors(), metaData)));
-                }
-            }
-        }
-    }
-
-private:
-    std::shared_ptr<TensorField3D> tensorField_;
-};
-
-}  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorField3DMetaData::processorInfo_{
@@ -142,7 +93,7 @@ void TensorField3DMetaData::initializeResources() {
         comp->removeProperty(prop);
     }
 
-    util::for_each_type<attributes::types3D>{}(AddMetaDataProperties{this, inport_.getData()});
+    util::for_each_type<attributes::types3D>{}(util::AddMetaDataProperties<3>{this, inport_.getData()});
 
     /*
     This is a bit of a hack but it'll do. What happens is that adding/removing of the default meta
@@ -164,7 +115,7 @@ void TensorField3DMetaData::addRemoveMetaData(std::shared_ptr<TensorField3D> ten
         const auto id = util::constexpr_hash(std::string_view(prop->getDisplayName()));
         const auto add = static_cast<BoolProperty*>(prop)->get();
 
-        util::for_each_type<attributes::types3D>{}(AddRemoveMetaData{tensorField}, id, add);
+        util::for_each_type<attributes::types3D>{}(util::AddRemoveMetaData<3>{tensorField}, id, add);
     }
 }
 

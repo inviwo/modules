@@ -46,6 +46,7 @@ set(HEADER_FILES
     include/inviwo/tensorvisbase/properties/tensorglyphproperty.h
     include/inviwo/tensorvisbase/tensorvisbasemodule.h
     include/inviwo/tensorvisbase/tensorvisbasemoduledefine.h
+    include/inviwo/tensorvisbase/util/attributeutil.h
     include/inviwo/tensorvisbase/util/distancemetrics.h
     include/inviwo/tensorvisbase/util/misc.h
     include/inviwo/tensorvisbase/util/tensorfieldutil.h

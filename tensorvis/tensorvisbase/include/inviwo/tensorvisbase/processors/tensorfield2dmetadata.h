@@ -32,8 +32,9 @@
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
@@ -56,14 +57,22 @@ public:
     TensorField2DMetaData();
     virtual ~TensorField2DMetaData() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    ImageOutport outport_;
-    FloatVec3Property position_;
+    TensorField2DInport inport_;
+    TensorField2DOutport outport_;
+
+    CompositeProperty metaDataPropertyContainer_;
+
+    ButtonProperty selectAll_;
+    ButtonProperty deselectAll_;
+
+    void addRemoveMetaData(std::shared_ptr<TensorField2D> tensorField);
 };
 
 }  // namespace inviwo
