@@ -93,7 +93,8 @@ void TensorField3DMetaData::initializeResources() {
         comp->removeProperty(prop);
     }
 
-    util::for_each_type<attributes::types3D>{}(util::AddMetaDataProperties<3>{this, inport_.getData()});
+    util::for_each_type<attributes::types3D>{}(
+        util::AddMetaDataProperties<3>{this, inport_.getData()});
 
     /*
     This is a bit of a hack but it'll do. What happens is that adding/removing of the default meta
@@ -115,7 +116,8 @@ void TensorField3DMetaData::addRemoveMetaData(std::shared_ptr<TensorField3D> ten
         const auto id = util::constexpr_hash(std::string_view(prop->getDisplayName()));
         const auto add = static_cast<BoolProperty*>(prop)->get();
 
-        util::for_each_type<attributes::types3D>{}(util::AddRemoveMetaData<3>{tensorField}, id, add);
+        util::for_each_type<attributes::types3D>{}(util::AddRemoveMetaData<3>{tensorField}, id,
+                                                   add);
     }
 }
 
