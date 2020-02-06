@@ -70,7 +70,7 @@ struct is_pair<std::pair<T1, T2>> : public std::true_type {};
 
 /**
  * Calculates the entropy for a given histogram of data.
- * For datasets that has not been binned into histogram use shannonEntropyScalars() for scalars,
+ * For datasets that have not been binned into histogram use shannonEntropyScalars() for scalars,
  * shannonEntropyDirectional() for vector or shannonEntropyEuclidean() for points.
  * @see shannonEntropyScalars
  * @see shannonEntropyDirectional
@@ -146,7 +146,7 @@ double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& data, con
                                  PerformNormalization normalize = PerformNormalization::Yes) {
     static_assert(std::is_floating_point_v<T>);
     static_assert(Dims == 2 || Dims == 3);
-    DirectionalHistogram<2, T> histogram(numBins);
+    DirectionalHistogram<Dims, T> histogram(numBins);
 
     for (const auto& val : data) {
         histogram.inc(val);

@@ -79,16 +79,16 @@ namespace inviwo {
 class IVW_MODULE_INTEGRALLINEFILTERING_API IntegralLinesToDataFrame : public Processor {
 public:
     using F = std::function<void(const IntegralLine &line)>;
-    class MetaDataProperty : public BoolCompositeProperty {
+    class MetaDataSettings : public BoolCompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override { return classIdentifier; }
 
         static const std::string classIdentifier;
 
-        MetaDataProperty(std::string identifier, std::string displayName);
-        MetaDataProperty(const MetaDataProperty &that);
+        MetaDataSettings(std::string identifier, std::string displayName);
+        MetaDataSettings(const MetaDataSettings &that);
 
-        virtual MetaDataProperty *clone() const override { return new MetaDataProperty(*this); }
+        virtual MetaDataSettings *clone() const override { return new MetaDataSettings(*this); }
 
         void updateDataFormat(const DataFormatBase *df);
 
@@ -145,13 +145,9 @@ public:
                                        return toFloat(v);
                                    }
                                });
-                float mean;
+                
                 if (avg || sds) {
-                    if (values.empty()) {
-                        mean = 0;
-                    } else {
-                        mean = std::accumulate(values.begin(), values.end(), 0.f) / values.size();
-                    }
+                    const auto mean = std::accumulate(values.begin(), values.end(), 0.f) / std::max(size_t(1),values.size());
                     if (avg) {
                         avg->push_back(mean);
                     }
@@ -183,7 +179,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    MetaDataProperty *getMetaDataProperty(std::string key);
+    MetaDataSettings *geMetaDataSettings(std::string key);
 
     IntegralLineSetInport lines_;
     DataFrameOutport dataframe_;

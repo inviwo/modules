@@ -36,7 +36,7 @@ IntegralLineFilteringModule::IntegralLineFilteringModule(InviwoApplication* app)
     : InviwoModule(app, "IntegralLineFiltering") {
     registerProcessor<IntegralLinesToDataFrame>();
 
-    registerProperty<IntegralLinesToDataFrame::MetaDataProperty>();
+    registerProperty<IntegralLinesToDataFrame::MetaDataSettings>();
 }
 
 int IntegralLineFilteringModule::getVersion() const { return 1; }

@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-IntegralLinesToDataFrame::MetaDataProperty::MetaDataProperty(std::string identifier,
+IntegralLinesToDataFrame::MetaDataSettings::MetaDataSettings(std::string identifier,
                                                              std::string displayName)
     : BoolCompositeProperty(identifier, displayName, true) {
 
@@ -56,8 +56,8 @@ IntegralLinesToDataFrame::MetaDataProperty::MetaDataProperty(std::string identif
     setCollapsed(true);
 }
 
-IntegralLinesToDataFrame::MetaDataProperty::MetaDataProperty(
-    const IntegralLinesToDataFrame::MetaDataProperty &that)
+IntegralLinesToDataFrame::MetaDataSettings::MetaDataSettings(
+    const IntegralLinesToDataFrame::MetaDataSettings &that)
     : BoolCompositeProperty(that)
     , dataType_{that.dataType_}
     , useMagnitude_{that.useMagnitude_}
@@ -82,7 +82,7 @@ IntegralLinesToDataFrame::MetaDataProperty::MetaDataProperty(
     addProperty(percentiles_);
 }
 
-void IntegralLinesToDataFrame::MetaDataProperty::updateDataFormat(const DataFormatBase *df) {
+void IntegralLinesToDataFrame::MetaDataSettings::updateDataFormat(const DataFormatBase *df) {
     const auto c = df->getComponents();
     dataType_.set(df->getString());
     useMagnitude_.setVisible(c > 1);
@@ -92,7 +92,7 @@ void IntegralLinesToDataFrame::MetaDataProperty::updateDataFormat(const DataForm
     w_.setVisible(c > 3);
 }
 
-void IntegralLinesToDataFrame::MetaDataProperty::initFunctions(std::vector<F> &funcs,
+void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(std::vector<F> &funcs,
                                                                const BufferRAM *ram,
                                                                DataFrame &dataFrame) {
 
@@ -168,7 +168,7 @@ void IntegralLinesToDataFrame::MetaDataProperty::initFunctions(std::vector<F> &f
     }
 }
 
-const std::string IntegralLinesToDataFrame::MetaDataProperty::classIdentifier =
+const std::string IntegralLinesToDataFrame::MetaDataSettings::classIdentifier =
     "org.inviwo.IntegralLinesToDataFrame.MetaDataProperty";
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -177,7 +177,7 @@ const ProcessorInfo IntegralLinesToDataFrame::processorInfo_{
     "Integral Lines To Data Frame",         // Display name
     "Integral Line Filtering",              // Category
     CodeState::Experimental,                // Code state
-    Tags::None,                             // Tags
+    Tags::CPU,                              // Tags
 };
 const ProcessorInfo IntegralLinesToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
@@ -199,26 +199,19 @@ IntegralLinesToDataFrame::IntegralLinesToDataFrame()
     addPort(lines_);
     addPort(dataframe_);
 
-    addProperty(includeLineID_);
-    addProperty(includeNumberOfPoints_);
-    addProperty(includeLineLength_);
-    addProperty(includeTortuosity_);
-    addProperty(includeTerminationReason_);
-    addProperty(includeEntropy_);
-    addProperty(includeStartPositions_);
-    addProperty(includeEndPositions_);
-
-    addProperty(metaDataSettings_);
+    addProperties(includeLineID_, includeNumberOfPoints_, includeLineLength_, includeTortuosity_,
+                  includeTerminationReason_, includeEntropy_, includeStartPositions_,
+                  includeEndPositions_, metaDataSettings_);
 
     lines_.onChange([this]() {
         if (auto lines = lines_.getData()) {
             if (lines->size() > 0) {
-                for (const auto &p : metaDataSettings_.getPropertiesByType<MetaDataProperty>()) {
+                for (const auto &p : metaDataSettings_.getPropertiesByType<MetaDataSettings>()) {
                     p->setVisible(false);
                 }
 
                 for (const auto &keyBuf : lines->front().getMetaDataBuffers()) {
-                    auto prop = getMetaDataProperty(keyBuf.first);
+                    auto prop = geMetaDataSettings(keyBuf.first);
                     prop->setVisible(true);
                     prop->updateDataFormat(keyBuf.second->getDataFormat());
                 }
@@ -341,7 +334,7 @@ void IntegralLinesToDataFrame::process() {
         }
 
         for (const auto &keyBuf : firstLine.getMetaDataBuffers()) {
-            auto prop = getMetaDataProperty(keyBuf.first);
+            auto prop = geMetaDataSettings(keyBuf.first);
             prop->initFunctions(funcs, keyBuf.second->getRepresentation<BufferRAM>(), *df);
         }
 
@@ -364,17 +357,17 @@ void IntegralLinesToDataFrame::process() {
     dataframe_.setData(df);
 }
 
-IntegralLinesToDataFrame::MetaDataProperty *IntegralLinesToDataFrame::getMetaDataProperty(
+IntegralLinesToDataFrame::MetaDataSettings *IntegralLinesToDataFrame::geMetaDataSettings(
     std::string key) {
     auto id = util::stripIdentifier(toLower(key));
     auto p = metaDataSettings_.getPropertyByIdentifier(id);
     if (p) {
-        if (auto mdp = dynamic_cast<MetaDataProperty *>(p)) {
+        if (auto mdp = dynamic_cast<MetaDataSettings *>(p)) {
             return mdp;
         }
-        throw inviwo::Exception("Not a MetaDataProperty", IvwContext);
+        throw inviwo::Exception("Not a MetaDataSettings", IvwContext);
     }
-    auto newProp = std::make_unique<MetaDataProperty>(id, key);
+    auto newProp = std::make_unique<MetaDataSettings>(id, key);
     auto newPropPtr = newProp.get();
     metaDataSettings_.addProperty(newProp.release());
     return newPropPtr;

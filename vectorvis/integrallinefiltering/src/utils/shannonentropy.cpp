@@ -29,6 +29,4 @@
 
 #include <inviwo/integrallinefiltering/utils/shannonentropy.h>
 
-namespace inviwo {
-namespace util {}  // namespace util
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

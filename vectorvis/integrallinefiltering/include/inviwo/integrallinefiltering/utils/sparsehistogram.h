@@ -34,9 +34,9 @@
 namespace inviwo {
 
 /*
- * A class to represent sparse histograms. Supports both signed and unsigned indices and multi
- * dimensional histogram through the IndexType. For example, `SparseHistogram<int>` is a 1D
- * histogram accepting both negative and positive indices, i.e. [INT_MIN INT_MAX].
+ * A class to represent sparse histograms. Supports both signed and unsigned indices (of integral
+ * type) and multi dimensional histogram through the IndexType. For example, `SparseHistogram<int>`
+ * is a 1D histogram accepting both negative and positive indices, i.e. [INT_MIN INT_MAX].
  * SparseHistgram can represent multi dimensional histogram when using vec as index type: For
  * example, `SparseHistogram<glm::ivec2>` represents a 2D histogram.
  */

@@ -3,8 +3,8 @@
 Additional Inviwo modules grouped into different categories. To enable the modules of a specific category, the path of the category must be added to the CMake option `IVW_EXTERNAL_MODULES` in the Inviwo project. For example, the **topovis** and **misc** modules are enabled by setting `IVW_EXTERNAL_MODULES` to `c:/dev/inviwo/modules/topovis;c:/dev/inviwo/modules/misc`, assuming the repository was checked out into `c:\dev\inviwo\modules`. Paths are separated by semicolon `;`.
 
 ## vectorvis - Vector Visualization
-* IntegralLineFiltering: Functionality to convert a `IntegralLineSet` to `DataFrame` containing various metrics of the lines that can be used together with the plotting functionality in the `Plotting` and `PlottingGL` modules in core. 
-  
+* IntegralLineFiltering: Provides functionality to convert a `IntegralLineSet` to `DataFrame` containing various metrics of the lines that can be used together with the plotting functionality in the `Plotting` and `PlottingGL` modules in core.  See example workspace on how to use it. 
+
 ## infovis - Information Visualization
 ## medvis - Medical Visualization
 

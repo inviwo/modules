@@ -35,20 +35,30 @@
 #include <inviwo/integrallinefiltering/utils/sparsehistogram.h>
 
 namespace inviwo {
+namespace detail {
 
-namespace {
+/**
+ * Calculates the area of a cap of cangle /p colatitudeAngle of a sphere with radius 1
+ */
 template <typename T>
-T V(const T t) {
-    const T s = sin(t / 2);
-    return 4 * glm::pi<T>() * s * s;
+T sphericalCapArea(const T colatitudeAngle) {
+    /*
+     * The forumula in the paper is $4*pi*sin^2(colatitudeAngle/2)$, but applyingthe half-angle
+     * formula the we get rid of the square and end up with: $2*pi*(1-cos(colatitudeAngle))$
+     */
+    return glm::two_pi<T>() * (1 - std::cos(colatitudeAngle));
 }
 
+/**
+ * Inverse of sphericalCapArea(colatitudeAngle). Calcualtes the colatitudal angle for a spherical
+ * cap with a given \p sphericalCapArea on a sphere with a radius of 1.
+ */
 template <typename T>
-T Theta(const T v) {
-    return 2 * std::asin(std::sqrt(v / (4 * glm::pi<T>())));
+T colatitudeAngle(const T sphericalCapArea) {
+    return std::acos(1 - sphericalCapArea / (glm::two_pi<T>()));
 }
 
-}  // namespace
+}  // namespace detail
 
 /**
  * @see DirectionalHistogram<2, T>
@@ -58,9 +68,9 @@ template <unsigned Dims, typename T>
 class DirectionalHistogram;
 
 /**
- * A DirectionalHistgram<2, T> is used to create a histgram of a set of 2D directional vectors,
- * magnitudes are ignored. The histogram consits of N bins, each representing a unique secotor of
- * the circle with a central angle of 2*pi/N.
+ * A DirectionalHistgram<2, T> is used to create a histgram of a set of 2D vectors. Only their
+ * direction is considered, magnitudes are ignored. The histogram consits of N bins, each
+ * representing a unique secotor of the circle with a central angle of 2*pi/N.
  */
 template <typename T>
 class DirectionalHistogram<2, T> {
@@ -102,9 +112,9 @@ private:
 };
 
 /**
- * A DirectionalHistgram<3, T> is used to create a histgram of a set of 3D directional vectors,
- * magnitudes are ignored. The histogram consists of N bins of equal area and diameter, defined
- * using the algorithm defined in [1].
+ * A DirectionalHistgram<3, T> is used to create a histgram of a set of 3D vectors. Only their
+ * direction is considered, magnitudes are ignored. The histogram consists of N bins of equal area
+ * and diameter, defined using the algorithm defined in [1].
  *
  * \image html sphere-partitioning.png "Image demostrating 100k points binned using a directional
  * histogram with 100 bins"
@@ -159,7 +169,7 @@ public:
         }
 
         const T regionArea = 4 * glm::pi<T>() / segments;
-        const T colatPole = Theta(regionArea);
+        const T colatPole = detail::colatitudeAngle(regionArea);
 
         const T idealCollarAngle = std::sqrt(regionArea);
         const T idealNumberOfCollars = (glm::pi<T>() - 2 * colatPole) / idealCollarAngle;
@@ -174,8 +184,8 @@ public:
         std::vector<T> idealNumberOfRegions;
         idealNumberOfRegions.push_back(0);
         for (size_t i = 1; i <= numberOfCollars; i++) {
-            const auto a = V(collatOfCollar(i + 1));
-            const auto b = V(collatOfCollar(i));
+            const auto a = detail::sphericalCapArea(collatOfCollar(i + 1));
+            const auto b = detail::sphericalCapArea(collatOfCollar(i));
             idealNumberOfRegions.push_back((a - b) / regionArea);
         }
 
@@ -198,7 +208,7 @@ public:
                 totM += regionsInCollar[j];
             }
             const T v = (1 + totM) * regionArea;
-            collatitudes.push_back(Theta(v));
+            collatitudes.push_back(detail::colatitudeAngle(v));
         }
         collatitudes.push_back(glm::pi<T>());
 

@@ -1,3 +1,4 @@
-Module that add processors and tools to allow the Integral Lines from the Vector Field Visualization module to be combined the the plotting and filtering from the Plotting modules. 
-See example workspaces for uses. 
+# IntegralLineFiltering Module 
+Provides a processor to convert a `IntegralLineSet` to `DataFrame` containing various metrics of the lines that can be used together with the plotting functionality in the `Plotting` and `PlottingGL` modules in core. 
+See example workspace on how to use it. 
 ![](docs/images/line-filtering.png)
