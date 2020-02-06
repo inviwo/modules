@@ -145,9 +145,10 @@ public:
                                        return toFloat(v);
                                    }
                                });
-                
+
                 if (avg || sds) {
-                    const auto mean = std::accumulate(values.begin(), values.end(), 0.f) / std::max(size_t(1),values.size());
+                    const auto mean = std::accumulate(values.begin(), values.end(), 0.f) /
+                                      std::max(size_t(1), values.size());
                     if (avg) {
                         avg->push_back(mean);
                     }
