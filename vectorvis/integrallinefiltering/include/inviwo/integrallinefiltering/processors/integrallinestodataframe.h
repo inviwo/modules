@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_INTEGRALLINESTODATAFRAME_H
-#define IVW_INTEGRALLINESTODATAFRAME_H
+#pragma once
 
 #include <inviwo/integrallinefiltering/integrallinefilteringmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -199,4 +198,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_INTEGRALLINESTODATAFRAME_H
