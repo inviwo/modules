@@ -113,8 +113,8 @@ private:
 
 /**
  * A DirectionalHistgram<3, T> is used to create a histgram of a set of 3D vectors. Only their
- * direction is considered, magnitudes are ignored. The histogram consists of N bins of equal area and diameter, defined
- * using the algorithm defined in [1].
+ * direction is considered, magnitudes are ignored. The histogram consists of N bins of equal area
+ * and diameter, defined using the algorithm defined in [1].
  *
  * \image html sphere-partitioning.png "Image demostrating 100k points binned using a directional
  * histogram with 100 bins"
