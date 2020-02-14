@@ -34,7 +34,6 @@
 
 #include <inviwo/integrallinefiltering/algorithm/uniformspherepartitioning.h>
 
-
 namespace inviwo {
 
 namespace histogram {

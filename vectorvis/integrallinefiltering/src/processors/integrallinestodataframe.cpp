@@ -92,9 +92,8 @@ void IntegralLinesToDataFrame::MetaDataSettings::updateDataFormat(const DataForm
     w_.setVisible(c > 3);
 }
 
-void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(std::vector<MetricCalcFunction> &funcs,
-                                                               const BufferRAM *ram,
-                                                               DataFrame &dataFrame) {
+void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
+    std::vector<MetricCalcFunction> &funcs, const BufferRAM *ram, DataFrame &dataFrame) {
 
     if (!isChecked()) {
         return;

@@ -106,7 +106,8 @@ public:
         StringProperty percentiles_{"percentiles",
                                     "Percentiles (space separated, float [0-1] or ints (0-100) )"};
 
-        void initFunctions(std::vector<MetricCalcFunction> &funcs, const BufferRAM *ram, DataFrame &dataFrame);
+        void initFunctions(std::vector<MetricCalcFunction> &funcs, const BufferRAM *ram,
+                           DataFrame &dataFrame);
 
         template <typename T, typename C>
         void createFunction(std::vector<MetricCalcFunction> &funcs, DataFrame &dataFrame,
