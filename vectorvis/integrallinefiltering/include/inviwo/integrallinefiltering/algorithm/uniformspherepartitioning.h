@@ -97,7 +97,7 @@ class UniformSpherePartitioning {
 
 public:
     /**
-     * Initialize an histogram with given number of empty bins.
+     * Crate a sphere partition with given number of patches.
      */
     UniformSpherePartitioning(const size_t segments = 20) {
         if (segments == 0) {
@@ -178,12 +178,12 @@ public:
     UniformSpherePartitioning &operator=(UniformSpherePartitioning &&) = default;
 
     /**
-     * Returns the number of bins in the histogram.
+     * Returns the number of partitions.
      */
     size_t numberOfPatches() const { return collars_.back().startIndex + collars_.back().patches_; }
 
     /**
-     * Increments the bin that \param dir falls into.
+     * Return the index of the partition for the given direction.
      */
     size_t getRegionForDirection(const glm::vec<3, T> &in_dir) const {
         const auto dir = glm::normalize(in_dir);
