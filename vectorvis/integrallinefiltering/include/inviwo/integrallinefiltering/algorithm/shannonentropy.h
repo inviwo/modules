@@ -40,8 +40,8 @@
 #include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/datastructures/histogram.h>
 
-#include <inviwo/integrallinefiltering/utils/sparsehistogram.h>
-#include <inviwo/integrallinefiltering/utils/directionalhistogram.h>
+#include <inviwo/integrallinefiltering/datastructures/sparsehistogram.h>
+#include <inviwo/integrallinefiltering/datastructures/directionalhistogram.h>
 
 namespace inviwo {
 
@@ -146,13 +146,10 @@ double shannonEntropyDirectional(const std::vector<glm::vec<Dims, T>>& data, con
                                  PerformNormalization normalize = PerformNormalization::Yes) {
     static_assert(std::is_floating_point_v<T>);
     static_assert(Dims == 2 || Dims == 3);
-    DirectionalHistogram<Dims, T> histogram(numBins);
 
-    for (const auto& val : data) {
-        histogram.inc(val);
-    }
+    const auto histogram = histogram::calculateDirectionalHistogram(data, numBins);
     if (normalize == PerformNormalization::Yes) {
-        return shannonEntropy(histogram) / shannonEntropyMax(histogram.numberOfBins());
+        return shannonEntropy(histogram) / shannonEntropyMax(histogram.size());
     } else {
         return shannonEntropy(histogram);
     }

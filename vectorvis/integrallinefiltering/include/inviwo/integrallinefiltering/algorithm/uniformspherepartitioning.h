@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,13 +26,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/integrallinefiltering/integrallinefilteringmoduledefine.h>
-#include <inviwo/core/util/glm.h>
-#include <inviwo/core/util/foreach.h>
-
-#include <inviwo/integrallinefiltering/utils/sparsehistogram.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 namespace detail {
@@ -61,93 +62,36 @@ T colatitudeAngle(const T sphericalCapArea) {
 }  // namespace detail
 
 /**
- * @see DirectionalHistogram<2, T>
- * @see DirectionalHistogram<3, T>
- */
-template <unsigned Dims, typename T>
-class DirectionalHistogram;
-
-/**
- * A DirectionalHistgram<2, T> is used to create a histgram of a set of 2D vectors. Only their
- * direction is considered, magnitudes are ignored. The histogram consits of N bins, each
- * representing a unique secotor of the circle with a central angle of 2*pi/N.
- */
-template <typename T>
-class DirectionalHistogram<2, T> {
-    static_assert(std::is_floating_point_v<T>);
-
-public:
-    /**
-     * Initialize an histogram with given number of empty bins.
-     */
-    DirectionalHistogram(const size_t numberOfBins = 20) : bins_(numberOfBins, 0) {}
-
-    DirectionalHistogram(const DirectionalHistogram &) = default;
-    DirectionalHistogram(DirectionalHistogram &&) = default;
-    DirectionalHistogram &operator=(const DirectionalHistogram &) = default;
-    DirectionalHistogram &operator=(DirectionalHistogram &&) = default;
-
-    /**
-     * Returns the number of bins in the histogram.
-     */
-    size_t numberOfBins() const { return bins_.size(); }
-
-    /**
-     * Increments the bin that \param dir falls into.
-     */
-    size_t inc(const glm::vec<2, T> &dir) {
-        const auto a = atan2(dir.y, dir.x) / glm::two_pi<T>() + 0.5;
-        const auto I = std::min(static_cast<size_t>(a * bins_.size()), bins_.size() - 1);
-        bins_[I]++;
-        return I;
-    }
-
-    auto begin() { return bins_.begin(); }
-    auto end() { return bins_.end(); }
-    auto begin() const { return bins_.begin(); }
-    auto end() const { return bins_.end(); }
-
-private:
-    std::vector<size_t> bins_;
-};
-
-/**
- * A DirectionalHistgram<3, T> is used to create a histgram of a set of 3D vectors. Only their
- * direction is considered, magnitudes are ignored. The histogram consists of N bins of equal area
- * and diameter, defined using the algorithm defined in [1].
+ * \brief class represeting a sphere diveded into N uniform pathces
+ * UniformSpherePartitioning is a classed that partition the sphere into N pathces. Each patch has
+ * equal area and small diameter. Algorithm is based on [1].
  *
- * \image html sphere-partitioning.png "Image demostrating 100k points binned using a directional
- * histogram with 100 bins"
+ * \image html sphere-partitioning.png "Image demostrating 100k points binned using a
+ * directional histogram with 100 bins"
  *
  * [1] Leopardi, Paul. "A partition of the unit sphere into regions of equal area and small
  * diameter." Electronic Transactions on Numerical Analysis 25.12 (2006): 309-327.
  */
 template <typename T>
-class DirectionalHistogram<3, T> {
+class UniformSpherePartitioning {
     static_assert(std::is_floating_point_v<T>);
-    struct Segment {
-        Segment(T endAngle, size_t patches)
-            : endAngle_(endAngle), cosAngle_(cos(endAngle)), patches_(patches), startIndex(0) {}
+    struct Collar {
+        Collar(T endAngle, size_t patches)
+            : cosAngle_(cos(endAngle)), patches_(patches), startIndex(0) {}
 
-        const T endAngle_;
         const T cosAngle_;
         const size_t patches_;
         size_t startIndex;
 
-        size_t index(T alpha) {
+        size_t index(const T x, const T y) const {
+            if (patches_ == 1) {
+                return startIndex;
+            }
+            const T alpha = atan2(y, x) / glm::two_pi<T>() + T(0.5);
             const auto A = std::min(static_cast<size_t>(alpha * patches_), patches_ - 1);
             return A + startIndex;
         }
 
-        size_t index(T x, T y) {
-            if (patches_ == 1) {
-                return startIndex;
-            }
-            const T a = atan2(y, x) / glm::two_pi<T>() + T(0.5);
-            return index(a);
-        }
-
-        bool operator<(const Segment &rhs) const { return this->endAngle_ < rhs.endAngle_; }
         bool operator<(const T cosAngle) const { return this->cosAngle_ > cosAngle; }
     };
 
@@ -155,16 +99,16 @@ public:
     /**
      * Initialize an histogram with given number of empty bins.
      */
-    DirectionalHistogram(const size_t segments = 20) : bins_(segments, 0) {
+    UniformSpherePartitioning(const size_t segments = 20) {
         if (segments == 0) {
             throw Exception("Zero segments not allowed", IVW_CONTEXT);
         } else if (segments == 1) {
-            segments_.emplace_back(glm::pi<T>(), 1);
+            collars_.emplace_back(glm::pi<T>(), 1);
             return;
         } else if (segments == 2) {
-            segments_.emplace_back(glm::half_pi<T>(), 1);
-            segments_.emplace_back(glm::pi<T>(), 1);
-            segments_.back().startIndex = 1;
+            collars_.emplace_back(glm::half_pi<T>(), 1);
+            collars_.emplace_back(glm::pi<T>(), 1);
+            collars_.back().startIndex = 1;
             return;
         }
 
@@ -212,14 +156,14 @@ public:
         }
         collatitudes.push_back(glm::pi<T>());
 
-        segments_.emplace_back(collatitudes[1], 1);
+        collars_.emplace_back(collatitudes[1], 1);
         for (size_t i = 1; i < collatitudes.size() - 2; i++) {
-            segments_.emplace_back(collatitudes[i + 1], regionsInCollar[i]);
+            collars_.emplace_back(collatitudes[i + 1], regionsInCollar[i]);
         }
-        segments_.emplace_back(glm::pi<T>(), 1);
+        collars_.emplace_back(glm::pi<T>(), 1);
 
         size_t count = 0;
-        for (auto &segment : segments_) {
+        for (auto &segment : collars_) {
             segment.startIndex = count;
             count += segment.patches_;
         }
@@ -228,37 +172,27 @@ public:
                    "Code failed to partion the sphere into the right number of segments");
     }
 
-    DirectionalHistogram(const DirectionalHistogram &) = default;
-    DirectionalHistogram(DirectionalHistogram &&) = default;
-    DirectionalHistogram &operator=(const DirectionalHistogram &) = default;
-    DirectionalHistogram &operator=(DirectionalHistogram &&) = default;
+    UniformSpherePartitioning(const UniformSpherePartitioning &) = default;
+    UniformSpherePartitioning(UniformSpherePartitioning &&) = default;
+    UniformSpherePartitioning &operator=(const UniformSpherePartitioning &) = default;
+    UniformSpherePartitioning &operator=(UniformSpherePartitioning &&) = default;
 
     /**
      * Returns the number of bins in the histogram.
      */
-    size_t numberOfBins() const { return bins_.size(); }
+    size_t numberOfPatches() const { return collars_.back().startIndex + collars_.back().patches_; }
 
     /**
      * Increments the bin that \param dir falls into.
      */
-    size_t inc(const glm::vec<3, T> &in_dir) {
+    size_t getRegionForDirection(const glm::vec<3, T> &in_dir) const {
         const auto dir = glm::normalize(in_dir);
-        const auto it = std::lower_bound(segments_.begin(), segments_.end(), dir.z);
-        auto I = it->index(dir.x, dir.y);
-        IVW_ASSERT(I < bins_.size(),
-                   "maxindex should not be able to be larger than the number of bins");
-        bins_[I]++;
-        return I;
+        const auto it = std::lower_bound(collars_.begin(), collars_.end(), dir.z);
+        return it->index(dir.x, dir.y);
     }
 
-    auto begin() { return bins_.begin(); }
-    auto end() { return bins_.end(); }
-    auto begin() const { return bins_.begin(); }
-    auto end() const { return bins_.end(); }
-
 private:
-    std::vector<size_t> bins_;
-    std::vector<Segment> segments_;
+    std::vector<Collar> collars_;
 };
 
 }  // namespace inviwo

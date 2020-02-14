@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/integrallinefiltering/utils/sparsehistogram.h>
+#include <inviwo/integrallinefiltering/algorithm/uniformspherepartitioning.h>
 
 namespace inviwo {}  // namespace inviwo

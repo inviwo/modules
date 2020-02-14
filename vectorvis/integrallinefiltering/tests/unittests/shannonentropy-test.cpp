@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/integrallinefiltering/utils/shannonentropy.h>
+#include <inviwo/integrallinefiltering/algorithm/shannonentropy.h>
 
 #include <warn/push>
 #include <warn/ignore/all>

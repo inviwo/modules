@@ -5,23 +5,25 @@ ivw_module(IntegralLineFiltering)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/inviwo/integrallinefiltering/algorithm/shannonentropy.h
+    include/inviwo/integrallinefiltering/algorithm/uniformspherepartitioning.h
+    include/inviwo/integrallinefiltering/datastructures/directionalhistogram.h
+    include/inviwo/integrallinefiltering/datastructures/sparsehistogram.h
     include/inviwo/integrallinefiltering/integrallinefilteringmodule.h
     include/inviwo/integrallinefiltering/integrallinefilteringmoduledefine.h
     include/inviwo/integrallinefiltering/processors/integrallinestodataframe.h
-    include/inviwo/integrallinefiltering/utils/directionalhistogram.h
-    include/inviwo/integrallinefiltering/utils/shannonentropy.h
-    include/inviwo/integrallinefiltering/utils/sparsehistogram.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/algorithm/shannonentropy.cpp
+    src/algorithm/uniformspherepartitioning.cpp
+    src/datastructures/directionalhistogram.cpp
+    src/datastructures/sparsehistogram.cpp
     src/integrallinefilteringmodule.cpp
     src/processors/integrallinestodataframe.cpp
-    src/utils/directionalhistogram.cpp
-    src/utils/shannonentropy.cpp
-    src/utils/sparsehistogram.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

@@ -77,7 +77,7 @@ namespace inviwo {
  */
 class IVW_MODULE_INTEGRALLINEFILTERING_API IntegralLinesToDataFrame : public Processor {
 public:
-    using F = std::function<void(const IntegralLine &line)>;
+    using MetricCalcFunction = std::function<void(const IntegralLine &line)>;
     class MetaDataSettings : public BoolCompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override { return classIdentifier; }
@@ -106,10 +106,10 @@ public:
         StringProperty percentiles_{"percentiles",
                                     "Percentiles (space separated, float [0-1] or ints (0-100) )"};
 
-        void initFunctions(std::vector<F> &funcs, const BufferRAM *ram, DataFrame &dataFrame);
+        void initFunctions(std::vector<MetricCalcFunction> &funcs, const BufferRAM *ram, DataFrame &dataFrame);
 
         template <typename T, typename C>
-        void createFunction(std::vector<F> &funcs, DataFrame &dataFrame,
+        void createFunction(std::vector<MetricCalcFunction> &funcs, DataFrame &dataFrame,
                             std::vector<double> percentiles, std::string name, C toFloat) {
             std::vector<float> *avg = nullptr;
             std::vector<float> *sds = nullptr;

@@ -29,7 +29,7 @@
 
 #include <inviwo/integrallinefiltering/processors/integrallinestodataframe.h>
 
-#include <inviwo/integrallinefiltering/utils/shannonentropy.h>
+#include <inviwo/integrallinefiltering/algorithm/shannonentropy.h>
 
 namespace inviwo {
 
@@ -92,7 +92,7 @@ void IntegralLinesToDataFrame::MetaDataSettings::updateDataFormat(const DataForm
     w_.setVisible(c > 3);
 }
 
-void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(std::vector<F> &funcs,
+void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(std::vector<MetricCalcFunction> &funcs,
                                                                const BufferRAM *ram,
                                                                DataFrame &dataFrame) {
 
