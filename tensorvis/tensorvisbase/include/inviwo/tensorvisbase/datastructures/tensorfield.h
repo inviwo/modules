@@ -17,6 +17,7 @@
 #include <type_traits>
 #include <optional>
 #include <memory>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 /**
