@@ -43,6 +43,7 @@
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 #include <inviwo/vtk/vtkmodule.h>
 #include <inviwo/tensorvisio/util/util.h>
+#include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
 
