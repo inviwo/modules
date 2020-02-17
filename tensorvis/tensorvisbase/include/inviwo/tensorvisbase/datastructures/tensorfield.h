@@ -136,6 +136,8 @@ public:
     template <typename T>
     bool hasMetaData() const;
 
+    bool hasMetaData(const std::string& name) const;
+
     /**
      * Tensor field meta data is stored in a DataFrame. If avaliable, this method returns the column
      * for the meta data specified by T (see attributes.h). Nullopt otherwise.
@@ -365,6 +367,29 @@ inline void TensorField<N, precision>::setMetaData(std::shared_ptr<DataFrame> me
 template <unsigned int N, typename precision>
 inline int TensorField<N, precision>::getNumDefinedEntries() const {
     return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
+}
+
+namespace {
+struct HasMetaData {
+    HasMetaData()=default;
+
+    template <typename T>
+    void operator()(const std::string& name) {
+        if (util::constexpr_hash(std::string_view(name)) == util::constexpr_hash(T::identifier)) {
+            wasFound_ = true;
+        }
+    }
+
+    bool wasFound_{false};
+};
+}  // namespace
+
+template <unsigned int N, typename precision>
+inline bool TensorField<N, precision>::hasMetaData(const std::string& name) const {
+    if constexpr (N == 3) {
+        return util::for_each_type<attributes::types3D>{}(HasMetaData{},name).wasFound_;
+    }
+    return false;
 }
 
 template <unsigned int N, typename precision>

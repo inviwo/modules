@@ -37,7 +37,7 @@ namespace inviwo {
 const ProcessorInfo TensorField2DImport::processorInfo_{
     "org.inviwo.TensorField2DImport",  // Class identifier
     "Tensor Field 2D Import",          // Display name
-    "Tensor Field IO",                 // Category
+    "IO",                              // Category
     CodeState::Experimental,           // Code state
     tag::OpenTensorVis | Tag::CPU,     // Tags
 };

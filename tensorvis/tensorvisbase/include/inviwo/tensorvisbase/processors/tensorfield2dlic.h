@@ -84,9 +84,9 @@ private:
     Shader shader_;
     Image tf_texture_;
 
-    float minVal_;
-    float maxVal_;
-    float eigenValueRange_;
+    float minVal_{};
+    float maxVal_{};
+    float eigenValueRange_{};
 
     void updateEigenValues();
 };

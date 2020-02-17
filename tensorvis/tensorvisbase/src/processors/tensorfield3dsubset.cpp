@@ -78,9 +78,11 @@ TensorField3DSubset::TensorField3DSubset()
 
     origin_.onChange([this]() {
         if (!inport_.hasData()) return;
-        auto origin = origin_.get();
+        const auto origin = origin_.get();
+        const auto maxVal = inport_.getData()->getDimensions() - origin - size3_t(1);
 
-        offset_.setMaxValue(inport_.getData()->getDimensions() - origin - size3_t(1));
+        offset_.setMaxValue(maxVal);
+        offset_.set(maxVal);
     });
 }
 
@@ -102,8 +104,14 @@ void TensorField3DSubset::process() {
     }
 
     auto outField = std::make_shared<TensorField3D>(dimensions, rawData);
-    outField->setExtents(spacing * vec3(dimensions));
-    outField->setOffset(tensorField->getOffset() + vec3(origin_.get()) * spacing);
+
+    const auto extents = spacing * vec3(dimensions-size3_t(1));
+    
+    outField->setExtents(extents);
+
+    const auto offset = tensorField->getOffset() + (vec3(origin_.get()) * spacing);
+
+    outField->setOffset(offset);
 
     outport_.setData(outField);
 }

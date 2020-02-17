@@ -129,7 +129,7 @@ void main() {
     finalColor = clamp(finalColor, 0.0, 1.0);
 
     if (hasInputImage) {
-        finalColor = finalColor * texture(imageInportColor, texCoord_.xy);
+        finalColor = finalColor * texture(imageInportColor, newTexForTensorFieldSampling);
     }
 
     FragData0 = finalColor;

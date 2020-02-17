@@ -132,6 +132,9 @@ struct CreateVolume {
                     }
                 }
             }
+
+            volume_->setBasis(tensorField_->getBasis());
+            volume_->setOffset(tensorField_->getOffset());
         }
     }
 

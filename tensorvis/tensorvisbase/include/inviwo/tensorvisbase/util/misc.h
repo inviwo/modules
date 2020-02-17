@@ -34,8 +34,10 @@
 namespace inviwo {
 namespace tensorutil {
 namespace detail {
-inline std::string getHTMLTableColumnString(const std::string& item) {
-    return "  <td style='color:#bbb;padding-right:8px;'>"
+inline std::string getHTMLTableColumnString(const std::string& item,
+                                            const std::string& hexColor = "#bbb") {
+    return "  <td style='color:" + hexColor +
+           ";padding-right:8px;'>"
            "  <span style=\"white-space: nowrap;\">" +
            item +
            "  </span>"
@@ -54,9 +56,11 @@ inline std::string getHTMLTableColumnSpanString(const std::string& item,
 }
 }  // namespace detail
 
-inline std::string getHTMLTableRowString(const std::string& left, const std::string& right) {
-    return "<tr>" + detail::getHTMLTableColumnString(left) +
-           detail::getHTMLTableColumnString(right) + "</tr>";
+inline std::string getHTMLTableRowString(const std::string& left, const std::string& right,
+                                         const std::string& hexColor1 = "#bbb",
+                                         const std::string& hexColor2 = "#bbb") {
+    return "<tr>" + detail::getHTMLTableColumnString(left, hexColor1) +
+           detail::getHTMLTableColumnString(right, hexColor2) + "</tr>";
 }
 
 template <std::size_t N, typename T>
@@ -79,6 +83,12 @@ inline std::string getHTMLTableRowString(const std::string& left, const double r
 inline std::string getHTMLTableIntermediateHeaderString(const std::string& header,
                                                         size_t numberOfColumnsToSpan = 2) {
     return "<tr>" + detail::getHTMLTableColumnSpanString(header, numberOfColumnsToSpan) + "</tr>";
+}
+
+inline std::string colorToHTMLPreview(const dvec4& color) {
+    return "<div style = \"background-color: rgba(" + std::to_string(color.r * 255) + "," +
+           std::to_string(color.g * 255) + "," + std::to_string(color.b * 255) + "," +
+           std::to_string(color.a * 255) + ");\">< / div>";
 }
 
 template <typename T>

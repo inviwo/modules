@@ -27,6 +27,8 @@
  *
  *********************************************************************************/
 
+#pragma optimize("", off)
+
 #include <inviwo/tensorvisbase/processors/tensorfield2dmetadata.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
 #include <inviwo/core/util/stringconversion.h>
@@ -84,10 +86,10 @@ TensorField2DMetaData::TensorField2DMetaData()
 void TensorField2DMetaData::initializeResources() {
     if (!inport_.hasData()) return;
 
-    NetworkLock l;
-
     auto comp = getPropertiesByType<CompositeProperty>().front();
     auto props = comp->getProperties();
+
+    NetworkLock l;
 
     for (auto prop : props) {
         comp->removeProperty(prop);
@@ -130,3 +132,5 @@ void TensorField2DMetaData::process() {
 }
 
 }  // namespace inviwo
+
+#pragma optimize("", on)

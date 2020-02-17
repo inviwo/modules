@@ -140,12 +140,12 @@ TensorField2DToImage::TensorField2DToImage()
     , tensorField2DInport_("tensorField2DInport")
     , imageOutport_("imageOutport")
     , imageContent_("imageContent", "Image content")
-    , normalizeVectors_("normalize", "Normalize eigenvectors", true) {
+    , normalizeContent_("normalize", "Normalize data", true) {
 
     addPort(tensorField2DInport_);
     addPort(imageOutport_);
 
-    addProperties(imageContent_, normalizeVectors_);
+    addProperties(imageContent_, normalizeContent_);
 
     tensorField2DInport_.onChange([this]() {
         if (!tensorField2DInport_.hasData()) return;

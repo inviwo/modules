@@ -415,7 +415,9 @@ struct FrobeniusNorm : ScalarBase {
     static std::vector<value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, scalar_type>>> tensors,
         std::shared_ptr<const DataFrame> metaData) {
-        return std::vector<value_type>();
+        std::vector<value_type> ret;
+        ret.resize(tensors->size());
+        return ret;
     }
 };
 
@@ -439,14 +441,14 @@ using MinorEigenVector3D = MinorEigenVector<3>;
 // clang-format off
 using types3D =
     std::tuple<
-        Trace,
-        Norm,
         MajorEigenValue,
         IntermediateEigenValue,
         MinorEigenValue,
         MajorEigenVector3D,
         IntermediateEigenVector3D,
         MinorEigenVector3D,
+        Trace,
+        Norm,
         I1,
         I2,
         I3,
@@ -463,12 +465,12 @@ using types3D =
 
 using types2D =
     std::tuple <
-        Trace,
-        Norm,
         MajorEigenValue,
         MinorEigenValue,
         MajorEigenVector2D,
-        MinorEigenVector2D
+        MinorEigenVector2D,
+        Trace,
+        Norm
         //Anisotropy
     > ;
 // clang-format on

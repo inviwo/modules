@@ -73,7 +73,7 @@ private:
 
     OptionPropertySize_t imageContent_;
 
-    BoolProperty normalizeVectors_;
+    BoolProperty normalizeContent_;
 };
 
 }  // namespace inviwo
