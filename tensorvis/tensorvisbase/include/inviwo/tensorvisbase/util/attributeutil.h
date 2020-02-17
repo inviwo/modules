@@ -27,8 +27,9 @@ struct AddMetaDataProperties {
     void operator()() {
         auto identifier = std::string(T::identifier);
         replaceInString(identifier, " ", "");
-        auto prop = new BoolProperty(identifier, std::string(T::identifier),
-                                     tensorField_ ? tensorField_->template hasMetaData<T>() : false);
+        auto prop =
+            new BoolProperty(identifier, std::string(T::identifier),
+                             tensorField_ ? tensorField_->template hasMetaData<T>() : false);
         prop->setSerializationMode(PropertySerializationMode::All);
         processor->getPropertiesByType<CompositeProperty>().front()->addProperty(prop);
     }

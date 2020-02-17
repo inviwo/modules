@@ -372,7 +372,7 @@ inline int TensorField<N, precision>::getNumDefinedEntries() const {
 
 namespace {
 struct HasMetaData {
-    HasMetaData()=default;
+    HasMetaData() = default;
 
     template <typename T>
     void operator()(const std::string& name) {
@@ -388,7 +388,7 @@ struct HasMetaData {
 template <unsigned int N, typename precision>
 inline bool TensorField<N, precision>::hasMetaData(const std::string& name) const {
     if constexpr (N == 3) {
-        return util::for_each_type<attributes::types3D>{}(HasMetaData{},name).wasFound_;
+        return util::for_each_type<attributes::types3D>{}(HasMetaData{}, name).wasFound_;
     }
     return false;
 }

@@ -40,9 +40,9 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
     return os;
 }
 
-inline std::string getFileSizeAsString(const std::string& , const FileSizeOrder order,
+inline std::string getFileSizeAsString(const std::string&, const FileSizeOrder order,
                                        const long long precision = 2) {
-    const auto fileSize = 0;// std::filesystem::file_size(file);
+    const auto fileSize = 0;  // std::filesystem::file_size(file);
 
     std::stringstream ss;
 

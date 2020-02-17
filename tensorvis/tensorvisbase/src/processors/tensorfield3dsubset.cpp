@@ -105,8 +105,8 @@ void TensorField3DSubset::process() {
 
     auto outField = std::make_shared<TensorField3D>(dimensions, rawData);
 
-    const auto extents = spacing * vec3(dimensions-size3_t(1));
-    
+    const auto extents = spacing * vec3(dimensions - size3_t(1));
+
     outField->setExtents(extents);
 
     const auto offset = tensorField->getOffset() + (vec3(origin_.get()) * spacing);

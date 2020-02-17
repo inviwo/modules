@@ -2,11 +2,13 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
-<<<<<<< HEAD:tensorvis/tensorvisbase/include/inviwo/tensorvisbase/processors/tensorfield2danisotropy.h
+<<<<<<<
+HEAD:tensorvis/tensorvisbase/include/inviwo/tensorvisbase/processors/tensorfield2danisotropy.h
  * Copyright (c) 2017-2020 Inviwo Foundation
 =======
  * Copyright (c) 2020 Inviwo Foundation
->>>>>>> f8d5f11... TensorVis: Extensive rework:tensorvis/tensorvisbase/include/inviwo/tensorvisbase/processors/tensorfield2dtoimage.h
+>>>>>>> f8d5f11... TensorVis: Extensive
+rework:tensorvis/tensorvisbase/include/inviwo/tensorvisbase/processors/tensorfield2dtoimage.h
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
