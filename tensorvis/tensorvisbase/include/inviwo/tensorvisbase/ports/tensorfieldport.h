@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDPORT_H
-#define IVW_TENSORFIELDPORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwocoredefine.h>
 #include <inviwo/core/ports/datainport.h>
@@ -53,7 +52,7 @@ template <>
 struct DataTraits<TensorField2D> {
     static std::string classIdentifier() { return "org.inviwo.TensorField2D"; }
     static std::string dataName() { return "TensorField2D"; }
-    static uvec3 colorCode() { return uvec3(10, 150, 135); }
+    static uvec3 colorCode() { return uvec3(46, 232, 167); }
     static Document info(const TensorField2D& data) {
         std::ostringstream oss;
         oss << data.getDataInfo();
@@ -77,7 +76,7 @@ template <>
 struct DataTraits<TensorField3D> {
     static std::string classIdentifier() { return "org.inviwo.TensorField3D"; }
     static std::string dataName() { return "TensorField3D"; }
-    static uvec3 colorCode() { return uvec3(10, 150, 135); }
+    static uvec3 colorCode() { return uvec3(46, 179, 232); }
     static Document info(const TensorField3D& data) {
         std::ostringstream oss;
         oss << data.getDataInfo();
@@ -88,5 +87,3 @@ struct DataTraits<TensorField3D> {
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DPORT_H

@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DIMPORT_H
-#define IVW_TENSORFIELD3DIMPORT_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -40,7 +39,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DImport, Tensor Field File Reader}
+/** \docpage{org.inviwo.TensorField3DImport, Tensor Field 3D Import}
  * ![](org.inviwo.TensorField3DImport.png?classIdentifier=org.inviwo.TensorField3DImport)
  * Explanation of how to use the processor.
  *
@@ -53,12 +52,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField3DImport
- * \brief <brief description>
- * <Detailed description from a developer prespective>
  */
 class IVW_MODULE_TENSORVISIO_API TensorField3DImport : public Processor {
 public:
@@ -79,16 +72,11 @@ private:
     BoolProperty normalizeExtents_;
 
     FloatVec3Property extents_;
-
     FloatVec3Property offset_;
     IntVec3Property dimensions_;
-    std::shared_ptr<TensorField3D> tensorFieldOut_;
 
-    dvec3 dextents_;
-
-    void buildTensors(const std::vector<double> &data, std::vector<dmat3> &tensors) const;
+    void buildTensors(const std::vector<TensorField3D::value_type> &data,
+                      std::shared_ptr<std::vector<TensorField3D::matN>> tensors) const;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DIMPORT_H

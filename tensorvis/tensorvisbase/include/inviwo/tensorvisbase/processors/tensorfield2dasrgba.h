@@ -27,24 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENVALUEFIELDTOIMAGE_H
-#define IVW_EIGENVALUEFIELDTOIMAGE_H
+#pragma once
 
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <modules/opengl/shader/shader.h>
-#include <inviwo/core/datastructures/image/image.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenvalueFieldToImage, Eigenvalue Field To Image}
- * ![](org.inviwo.EigenvalueFieldToImage.png?classIdentifier=org.inviwo.EigenvalueFieldToImage)
+/** \docpage{org.inviwo.TensorField2DAsRGBA, Tensor Field 2D As RGBA}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DAsRGBA)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -58,49 +55,27 @@ namespace inviwo {
  *   * __<Prop2>__ <description>
  */
 
-/**
- * \class EigenvalueFieldToImage
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
-class IVW_MODULE_TENSORVISBASE_API EigenvalueFieldToImage : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DAsRGBA : public Processor {
 public:
-    EigenvalueFieldToImage();
-    virtual ~EigenvalueFieldToImage() = default;
+    TensorField2DAsRGBA();
+    virtual ~TensorField2DAsRGBA() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField2DInport inport_;
+    ImageInport inport_;
     ImageOutport outport_;
 
-    OptionPropertyInt valueType_;
-
-    BoolProperty grayscale_;
-
-    IntVec2Property dimensions_;
-
-    TransferFunctionProperty tf_;
     Shader shader_;
-    Image tf_texture_;
-    BoolProperty majorMinor_;
 
-    float minVal_;
-    float maxVal_;
-    float eigenValueRange_;
+    EventProperty hover_;
 
-    float anisotropyMinVal_;
-    float anisotropyMaxVal_;
-    float anisotropyValueRange_;
+    OrdinalProperty<glm::mat<2, 2, TensorField2D::value_type>> tensor_;
 
-    void updateEigenValues();
-    void updateAnisotropy();
+    void hoverAction(Event *e);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENVALUEFIELDTOIMAGE_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,52 +27,32 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/invariantspacetodataframe.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dtodataframe.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo InvariantSpaceToDataFrame::processorInfo_{
-    "org.inviwo.InvariantSpaceToDataFrame",  // Class identifier
-    "Invariant Space To Data Frame",         // Display name
-    "Tensor",                                // Category
-    CodeState::Experimental,                 // Code state
-    Tags::CPU,                               // Tags
+const ProcessorInfo TensorField3DToDataFrame::processorInfo_{
+    "org.inviwo.TensorField3DToDataFrame",  // Class identifier
+    "Tensor Field 3D To Data Frame",        // Display name
+    "Plotting",                             // Category
+    CodeState::Stable,                      // Code state
+    Tags::CPU | tag::OpenTensorVis,         // Tags
 };
-const ProcessorInfo InvariantSpaceToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField3DToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
-InvariantSpaceToDataFrame::InvariantSpaceToDataFrame()
-    : Processor(), inport_("inport"), outport_("outport") {
+TensorField3DToDataFrame::TensorField3DToDataFrame()
+    : Processor()
+    , tensorField3DInport_("tensorField3DInport")
+    , dataFrameOutport_("dataFrameOutport") {
 
-    addPort(inport_);
-    addPort(outport_);
+    addPort(tensorField3DInport_);
+    addPort(dataFrameOutport_);
 }
 
-void InvariantSpaceToDataFrame::process() {
-    const auto& invariantSpace = *inport_.getData();
-
-    auto dataFrame = std::make_shared<DataFrame>();
-
-    size_t i{0};
-    for (const auto axis : invariantSpace) {
-        auto buffer = std::make_shared<Buffer<glm::f32>>();
-
-        buffer->setSize(axis->size());
-
-        const auto data = axis->data();
-
-        for (size_t j{0}; j < axis->size(); ++j) {
-            buffer->getEditableRepresentation<BufferRAM>()->setFromDouble(j, data[j]);
-        }
-
-        dataFrame->addColumnFromBuffer(invariantSpace.getIdentifier(i), buffer);
-
-        i++;
-    }
-
-    dataFrame->updateIndexBuffer();
-
-    outport_.setData(dataFrame);
+void TensorField3DToDataFrame::process() {
+    dataFrameOutport_.setData(tensorField3DInport_.getData()->metaData());
 }
 
 }  // namespace inviwo

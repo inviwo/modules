@@ -53,7 +53,7 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule{app,
     registerProcessor<TensorField3DImport>();
     registerProcessor<VTKDataSetToTensorField3D>();
     registerProcessor<FlowGUIFileReader>();
-    registerProcessor<VTKToTensorField2D>();
+    registerProcessor<VTKDataSetToTensorField2D>();
 }
 
 TensorVisIOModule::~TensorVisIOModule() = default;

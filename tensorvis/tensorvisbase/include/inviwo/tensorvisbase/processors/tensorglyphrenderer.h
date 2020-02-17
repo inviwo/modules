@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHENDERER_H
-#define IVW_TENSORGLYPHENDERER_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 
@@ -127,5 +126,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHENDERER_H

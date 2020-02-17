@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2019-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,76 +27,35 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDLIC_H
-#define IVW_TENSORFIELDLIC_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldLIC, TensorFieldLIC}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldLIC)
+/** \docpage{org.inviwo.TensorField3DFiberAngle, Tensor Field 3D Fiber Angle}
+ * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DFiberAngle)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \class TensorFieldLIC
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldLIC : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DFiberAngle : public Processor {
 public:
-    TensorFieldLIC();
-    virtual ~TensorFieldLIC() = default;
+    TensorField3DFiberAngle();
+    virtual ~TensorField3DFiberAngle() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField2DInport inport_;
-    ImageInport noiseTexture_;
-    ImageInport imageInport_;
-    ImageOutport outport_;
+    TensorField3DInport stressField_;
+    TensorField3DInport fiberField_;
 
-    IntProperty samples_;
-    FloatProperty stepLength_;
-    BoolProperty normalizeVectors_;
-    BoolProperty intensityMapping_;
-    BoolProperty useRK4_;
-    BoolProperty majorMinor_;
-    FloatVec4Property backgroundColor_;
-
-    Shader shader_;
-    Image tf_texture_;
-
-    float minVal_;
-    float maxVal_;
-    float eigenValueRange_;
-
-    void updateEigenValues();
+    DataFrameOutport angleOutport_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDLIC_H

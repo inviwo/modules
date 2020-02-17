@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisbase/processors/tensorfield3dboundingbox.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -39,7 +40,7 @@ const ProcessorInfo TensorField3DBoundingBox::processorInfo_{
     "Tensor Field Bounding Box",            // Display name
     "Mesh Creation",                        // Category
     CodeState::Stable,                      // Code state
-    Tags::None,                             // Tags
+    tag::OpenTensorVis | Tag::CPU,          // Tags
 };
 const ProcessorInfo TensorField3DBoundingBox::getProcessorInfo() const { return processorInfo_; }
 

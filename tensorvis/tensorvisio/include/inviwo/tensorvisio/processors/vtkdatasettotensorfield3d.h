@@ -41,13 +41,9 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
-
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKDataSetToTensorField3D, VTK Data Set To Tensor Field3D}
+/** \docpage{org.inviwo.VTKDataSetToTensorField3D, VTK Data Set To Tensor Field 3D}
  * ![](org.inviwo.VTKDataSetToTensorField3D.png?classIdentifier=org.inviwo.VTKDataSetToTensorField3D)
  * Explanation of how to use the processor.
  *
@@ -60,11 +56,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor,
                                                              public ActivityIndicatorOwner {
@@ -86,12 +77,12 @@ private:
     BoolProperty normalizeExtents_;
 
     OptionPropertyString tensors_;
-    OptionPropertyString scalars_;
+    // OptionPropertyString scalars_;
     ButtonProperty generate_;
 
-    bool busy_;
-
     void generate();
+
+    bool busy_;
 };
 
 }  // namespace inviwo

@@ -27,24 +27,25 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/tensorinformation.h>
+#include <inviwo/tensorvisbase/processors/tensorfield3dinformation.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo TensorInformation::processorInfo_{
-    "org.inviwo.TensorInformation",  // Class identifier
-    "Tensor Information",            // Display name
-    "Tensor visualization",          // Category
-    CodeState::Experimental,         // Code state
-    Tags::CPU,                       // Tags
+const ProcessorInfo TensorField3DInformation::processorInfo_{
+    "org.inviwo.TensorField3DInformation",  // Class identifier
+    "Tensor Field 3D Information",          // Display name
+    "Information",                          // Category
+    CodeState::Experimental,                // Code state
+    Tags::CPU | tag::OpenTensorVis,         // Tags
 };
 
-const ProcessorInfo TensorInformation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo TensorField3DInformation::getProcessorInfo() const { return processorInfo_; }
 
-TensorInformation::TensorInformation()
+TensorField3DInformation::TensorField3DInformation()
     : Processor()
     , inport_("inport")
     , index_("index", "Index", ivec3(0), ivec3(0), ivec3(std::numeric_limits<int>::max()), ivec3(1))
@@ -55,15 +56,14 @@ TensorInformation::TensorInformation()
                     mat3(std::numeric_limits<float>::max()))
     , eigenValues_("eigenValues", "Eigenvalues", vec3(0.f),
                    vec3(std::numeric_limits<float>::lowest()),
-                   vec3(std::numeric_limits<float>::max())) {
+                   vec3(std::numeric_limits<float>::max()))
+    , basisAndOffset_("basisAndOffset", "Basis and offset", mat4{1.f}, mat4{-1000.f}, mat4{1000.f},
+                      mat4{0.00001f}) {
     addPort(inport_);
 
     inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
 
-    addProperty(index_);
-    addProperty(tensor_);
-    addProperty(eigenVectors_);
-    addProperty(eigenValues_);
+    addProperties(index_, tensor_, eigenVectors_, eigenValues_, basisAndOffset_);
 
     tensor_.setReadOnly(true);
     eigenVectors_.setReadOnly(true);
@@ -74,7 +74,7 @@ TensorInformation::TensorInformation()
     eigenValues_.setCurrentStateAsDefault();
 }
 
-void TensorInformation::initializeResources() {
+void TensorField3DInformation::initializeResources() {
     if (!inport_.hasData()) return;
 
     index_.setMinValue(ivec3(0));
@@ -84,13 +84,13 @@ void TensorInformation::initializeResources() {
     index_.setMaxValue(ivec3(dimensions) - ivec3(1));
 }
 
-void TensorInformation::process() {
+void TensorField3DInformation::process() {
     auto tensorField = inport_.getData();
 
-    tensor_.set(mat3(tensorField->at(index_.get()).second));
+    tensor_.set(mat3(tensorField->at(index_.get())));
 
     auto eigenValuesAndEigenVectors =
-        tensorField->getSortedEigenValuesAndEigenVectorsForTensor(index_.get());
+        tensorutil::getSortedEigenValuesAndEigenVectorsForTensor(tensorField, index_.get());
 
     auto eigenVectors =
         mat3(vec3(eigenValuesAndEigenVectors[0].second), vec3(eigenValuesAndEigenVectors[1].second),
@@ -101,6 +101,8 @@ void TensorInformation::process() {
         vec3(eigenValuesAndEigenVectors[0].first, eigenValuesAndEigenVectors[1].first,
              eigenValuesAndEigenVectors[2].first);
     eigenValues_.set(eigenValues);
+
+    basisAndOffset_.set(tensorField->getBasisAndOffset());
 }
 
 }  // namespace inviwo

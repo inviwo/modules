@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDGENERATOR_H
-#define IVW_TENSORFIELDGENERATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
@@ -38,8 +37,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSource, TensorFieldSource}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldSource)
+/** \docpage{org.inviwo.TensorField2DGenerator, Tensor Field 2D Generator}
+ * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DGenerator)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -52,16 +51,10 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TensorFieldSource
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldGenerator : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DGenerator : public Processor {
 public:
-    TensorFieldGenerator();
-    virtual ~TensorFieldGenerator() = default;
+    TensorField2DGenerator();
+    virtual ~TensorField2DGenerator() = default;
 
     virtual void process() override;
 
@@ -117,14 +110,14 @@ private:
 
     TensorField2DOutport outport2D_;
 
-    const dmat2 T1 = dmat2(dvec2(6, 0), dvec2(0, 2));
-    const dmat2 T2 = dmat2(dvec2(4, -2), dvec2(-2, 4));
-    const dmat2 T3 = dmat2(dvec2(2, 0), dvec2(0, 6));
-    const dmat2 T4 = dmat2(dvec2(4, 2), dvec2(2, 4));
+    static constexpr dmat2 T1 = dmat2(dvec2(6, 0), dvec2(0, 2));
+    static constexpr dmat2 T2 = dmat2(dvec2(4, -2), dvec2(-2, 4));
+    static constexpr dmat2 T3 = dmat2(dvec2(2, 0), dvec2(0, 6));
+    static constexpr dmat2 T4 = dmat2(dvec2(4, 2), dvec2(2, 4));
 
-    const dmat2 min = dmat2(-100.0, -100.0, -100.0, -100.0);
-    const dmat2 max = dmat2(100.0, 100.0, 100.0, 100.0);
-    const dmat2 inc = dmat2(0.0001, 0.0001, 0.0001, 0.0001);
+    static constexpr dmat2 min = dmat2(-100.0, -100.0, -100.0, -100.0);
+    static constexpr dmat2 max = dmat2(100.0, 100.0, 100.0, 100.0);
+    static constexpr dmat2 inc = dmat2(0.0001, 0.0001, 0.0001, 0.0001);
 
     void generate2DField();
 
@@ -132,5 +125,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDGENERATOR_H

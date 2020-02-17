@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DEFORMABLESPHERE_H
-#define IVW_DEFORMABLESPHERE_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -62,5 +61,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DEFORMABLESPHERE_H

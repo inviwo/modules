@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,24 +27,19 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDSLICE_H
-#define IVW_TENSORFIELDSLICE_H
+#pragma once
 
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/dataoutport.h>
-
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSource, TensorFieldSource}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldSource)
+/** \docpage{org.inviwo.TensorField2DMetaData, Tensor Field 2D Meta Data}
+ * ![](org.inviwo.TensorField2DMetaData.png?classIdentifier=org.inviwo.TensorField2DMetaData)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -57,37 +52,27 @@ namespace inviwo {
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TensorFieldSlice
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldSlice : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField2DMetaData : public Processor {
 public:
-    TensorFieldSlice();
-    virtual ~TensorFieldSlice() = default;
+    TensorField2DMetaData();
+    virtual ~TensorField2DMetaData() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField3DInport inport_;
-    TensorField2DOutport outport2D_;
-    TensorField3DOutport outport3D_;
+    TensorField2DInport inport_;
+    TensorField2DOutport outport_;
 
-    MeshOutport sliceOutport_;
-    MeshOutport planeOutport_;
-    DataOutport<size_t> offsetOutport_;
+    CompositeProperty metaDataPropertyContainer_;
 
-    TemplateOptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
-    OrdinalProperty<size_t> sliceNr_;
-    FloatVec4Property sliceColor_;
-    FloatVec4Property planeColor_;
+    ButtonProperty selectAll_;
+    ButtonProperty deselectAll_;
+
+    void addRemoveMetaData(std::shared_ptr<TensorField2D> tensorField);
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDSLICE_H

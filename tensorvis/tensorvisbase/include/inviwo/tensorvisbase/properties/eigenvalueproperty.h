@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENVALUEPROPERTY_H
-#define IVW_EIGENVALUEPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -73,5 +72,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENVALUEPROPERTY_H

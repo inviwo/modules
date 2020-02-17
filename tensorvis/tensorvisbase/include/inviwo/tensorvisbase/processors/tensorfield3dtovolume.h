@@ -27,31 +27,53 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisbase/processors/imagetospherefield.h>
+#pragma once
+
+#include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo ImageToSphereField::processorInfo_{
-    "org.inviwo.ImageToSphereField",  // Class identifier
-    "Image To Sphere Field",          // Display name
-    "Mesh Creation",                  // Category
-    CodeState::Experimental,          // Code state
-    Tags::None,                       // Tags
+/** \docpage{org.inviwo.TensorField3DToVolume, Tensor Field 3D To Volume}
+ * ![](org.inviwo.TensorField3DToVolume.png?classIdentifier=org.inviwo.TensorField3DToVolume)
+ * This processor takes in a 3D tensor field and outputs the selected meta data as volume for volume
+ * rendering or other subsequent actions.
+ *
+ * ### Inports
+ *   * __tensorFieldInport__ Input tensor field.
+ *
+ * ### Outports
+ *   * __volumeOutport__ Volume containing the selected meta data.
+ *
+ * ### Properties
+ *   * __volumeContent__ Select the meta data that should be output as volume.
+ *   * __normalizeVectors___ If the meta data is a vector type (such as the eigen vectors), set
+ * whether or not the vectors should be normalized.
+ */
+
+class IVW_MODULE_TENSORVISBASE_API TensorField3DToVolume : public Processor {
+public:
+    TensorField3DToVolume();
+    virtual ~TensorField3DToVolume() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    TensorField3DInport inport_;
+
+    VolumeOutport outport_;
+
+    OptionPropertySize_t volumeContent_;
+
+    BoolProperty normalizeVectors_;
 };
-const ProcessorInfo ImageToSphereField::getProcessorInfo() const { return processorInfo_; }
-
-ImageToSphereField::ImageToSphereField()
-    : Processor()
-    , outport_("outport")
-    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
-
-    addPort(outport_);
-    addProperty(position_);
-}
-
-void ImageToSphereField::process() {
-    // outport_.setData(myImage);
-}
 
 }  // namespace inviwo

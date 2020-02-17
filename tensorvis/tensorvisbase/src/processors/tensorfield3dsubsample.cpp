@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield3dsubsample.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -37,7 +38,7 @@ const ProcessorInfo TensorField3DSubsample::processorInfo_{
     "Tensor Field 3D Subsample",          // Display name
     "Tensor Visualization",               // Category
     CodeState::Experimental,              // Code state
-    Tags::GL,                             // Tags
+    tag::OpenTensorVis | Tag::CPU,        // Tags
 };
 
 const ProcessorInfo TensorField3DSubsample::getProcessorInfo() const { return processorInfo_; }

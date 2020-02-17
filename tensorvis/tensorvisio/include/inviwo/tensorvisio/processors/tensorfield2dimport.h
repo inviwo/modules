@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DIMPORT_H
-#define IVW_TENSORFIELD2DIMPORT_H
+#pragma once
 
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,7 +37,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DImport, Tensor Field2DImport}
+/** \docpage{org.inviwo.TensorField2DImport, Tensor Field 2D Import}
  * ![](org.inviwo.TensorField2DImport.png?classIdentifier=org.inviwo.TensorField2DImport)
  * Explanation of how to use the processor.
  *
@@ -51,12 +50,6 @@ namespace inviwo {
  * ### Properties
  *   * __<Prop1>__ <description>.
  *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DImport
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
 class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor {
 public:
@@ -73,11 +66,12 @@ private:
 
     TensorField2DOutport outport_;
 
-    void buildTensors(const std::vector<double>& data, std::vector<dmat2>& tensors) const;
-
     FloatVec2Property extents_;
+    FloatVec2Property offset_;
+    IntVec2Property dimensions_;
+
+    void buildTensors(const std::vector<TensorField2D::value_type>& data,
+                      std::shared_ptr<std::vector<TensorField2D::matN>> tensors) const;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DIMPORT_H

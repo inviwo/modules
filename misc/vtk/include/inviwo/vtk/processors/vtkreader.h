@@ -38,6 +38,7 @@
 #include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/processors/activityindicator.h>
 #include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <inviwo/vtk/util/vtkutil.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -46,6 +47,7 @@
 #include <vtkGenericDataObjectReader.h>
 #include <vtkDataSet.h>
 #include <vtkDataObject.h>
+#include <vtkCallbackCommand.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -88,16 +90,44 @@ private:
     ButtonProperty reloadButton_;
     VTKDataSetOutport outport_;
 
-    vtkSmartPointer<vtkXMLGenericDataObjectReader> xmlreader_;
-    vtkSmartPointer<vtkGenericDataObjectReader> legacyreader_;
-
     std::shared_ptr<VTKDataSet> data_;
     vtkSmartPointer<vtkDataSet> dataSet_;
 
     VTKFileType determineFileType(const std::string& fileName) const;
-    bool read(const VTKFileType fileType);
-    void readLegacy();
-    void readXML();
+
+    template <VTKFileType T>
+    void read();
 };
+
+template <VTKReader::VTKFileType T>
+inline void VTKReader::read() {
+    if constexpr (T != VTKFileType::Unknown) {
+        using ReaderType = std::conditional_t<T == VTKFileType::Legacy, vtkGenericDataObjectReader,
+                                              vtkXMLGenericDataObjectReader>;
+
+        dispatchPool([this]() {
+            dispatchFront([this]() { getActivityIndicator().setActive(true); });
+
+            auto progressCallback = vtkSmartPointer<vtkCallbackCommand>::New();
+            progressCallback->SetCallback(vtkProgressBarCallback);
+            progressCallback->SetClientData(&progressBar_);
+
+            auto reader = vtkSmartPointer<ReaderType>::New();
+
+            reader->AddObserver(vtkCommand::ProgressEvent, progressCallback);
+            reader->SetFileName(file_.get().c_str());
+            reader->Update();
+
+            dataSet_ = vtkDataSet::SafeDownCast(reader->GetOutput());
+
+            dispatchFront([this]() {
+                data_ = std::make_shared<VTKDataSet>(dataSet_);
+                getActivityIndicator().setActive(false);
+                outport_.setData(data_);
+                invalidate(InvalidationLevel::InvalidOutput);
+            });
+        });
+    }
+}
 
 }  // namespace inviwo

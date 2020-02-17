@@ -32,85 +32,17 @@
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
+
 namespace tensorutil {
 vec4 tensor2DToDvec4(const dmat2 &tensor) {
     return vec4(tensor[0][0], tensor[1][0], tensor[1][1], 1.0);
 }
-
-/*
- * Returns the trace of the tensor
- */
-double trace(const dmat2 &tensor) { return tensor[0][0] + tensor[1][1]; }
-
-/*
- * Returns the trace of the tensor
- */
-double trace(const dmat3 &tensor) { return tensor[0][0] + tensor[1][1] + tensor[2][2]; }
-/*
- * Returns the first invariant of the tensor, see
- * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Principal_stresses_and_stress_invariants
- */
-double calculateI1(const dmat3 &tensor) { return trace(tensor); }
-
-/*
- * Returns the second invariant of the tensor, see
- * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Principal_stresses_and_stress_invariants
- */
-double calculateI2(const dmat3 &tensor) {
-    return tensor[0][0] * tensor[1][1] + tensor[1][1] * tensor[2][2] + tensor[0][0] * tensor[2][2] -
-           tensor[0][1] * tensor[0][1] - tensor[1][2] * tensor[1][2] - tensor[2][0] * tensor[2][0];
-}
-
-/*
- * Returns the third invariant of the tensor, see
- * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Principal_stresses_and_stress_invariants
- */
-double calculateI3(const dmat3 &tensor) {
-    return tensor[0][0] * tensor[1][1] * tensor[2][2] +
-           2. * tensor[0][1] * tensor[1][2] * tensor[2][0] -
-           tensor[0][1] * tensor[0][1] * tensor[2][2] - tensor[1][2] * tensor[1][2] * tensor[0][0] -
-           tensor[2][0] * tensor[2][0] * tensor[1][1];
-}
-
-/*
- * Calculates the first invariant of the stress deviator tensor
- * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
- */
-double calculateJ1(const dmat3 &) {
-    throw Exception("not implemented");
-    return 0.0;
-}
-
-/*
- * Calculates the first invariant of the stress deviator tensor
- * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
- */
-double calculateJ2(const dmat3 &tensor) {
-    const auto i1 = calculateI1(tensor);
-    return (1. / 3.) * i1 * i1 - calculateI2(tensor);
-}
-
-/*
- * Calculates the first invariant of the stress deviator tensor
- * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
- */
-double calculateJ3(const dmat3 &tensor) {
-    const auto i1 = calculateI1(tensor);
-    return (2. / 27.) * i1 * i1 * i1 - (1. / 3.) * i1 * calculateI2(tensor) + calculateI3(tensor);
-}
-
-double calculateLodeAngle(const dmat3 &tensor) {
-    const auto a = (3. * std::sqrt(3.)) * .5;
-    const auto b = calculateJ3(tensor) / std::pow(calculateJ2(tensor), 1.5);
-    return (1. / 3.) * std::acos(a * b);
-}
-
 /*
  * Calculates the stress deviator part of a tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Stress_deviator_tensor
  */
 dmat3 stressDeviatorTensor(const dmat3 &tensor) {
-    return tensor - (1. / 3.) * trace(tensor) * dmat3(1.);
+    return tensor - (1. / 3.) * util::trace(tensor) * dmat3(1.);
 }
 
 /*
@@ -253,7 +185,7 @@ std::pair<dmat2, dmat2> decompose(const dmat2 &tensor, Decomposition decompositi
 
     switch (decomposition) {
         case Decomposition::Isotropic_Anisotropic:
-            T1 = (1. / 3.) * trace(tensor) * dmat2(1.);
+            T1 = (1. / 3.) * util::trace(tensor) * dmat2(1.);
             T2 = tensor - T1;
             break;
         case Decomposition::Shape_Orientation:
@@ -282,7 +214,7 @@ std::pair<dmat3, dmat3> decompose(const dmat3 &tensor, Decomposition decompositi
 
     switch (decomposition) {
         case Decomposition::Isotropic_Anisotropic:
-            T1 = (1. / 3.) * trace(tensor) * dmat3(1.);
+            T1 = (1. / 3.) * util::trace(tensor) * dmat3(1.);
             T2 = tensor - T1;
             break;
         case Decomposition::Shape_Orientation:

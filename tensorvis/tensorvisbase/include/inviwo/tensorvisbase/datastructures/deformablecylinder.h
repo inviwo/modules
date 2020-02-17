@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_DEFORMABLECYLINDER_H
-#define IVW_DEFORMABLECYLINDER_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -62,5 +61,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_DEFORMABLECYLINDER_H

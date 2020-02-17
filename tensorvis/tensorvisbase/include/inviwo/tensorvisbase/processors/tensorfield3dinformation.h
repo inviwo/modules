@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2017-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,23 +27,17 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDTORGBA_H
-#define IVW_TENSORFIELDTORGBA_H
+#pragma once
 
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
-#include <modules/opengl/shader/shaderutils.h>
-#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
-#include <inviwo/core/properties/eventproperty.h>
-#include <inviwo/core/interaction/events/mouseevent.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldLIC, TensorFieldLIC}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldLIC)
+/** \docpage{org.inviwo.TensorField3DInformation, Tensor Field 3D Information}
+ * ![](org.inviwo.TensorField3DInformation.png?classIdentifier=org.inviwo.TensorField3DInformation)
  * Explanation of how to use the processor.
  *
  * ### Inports
@@ -58,32 +52,30 @@ namespace inviwo {
  */
 
 /**
- * \class TensorFieldToRGBA
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
+ * \class TensorField3DInformation
+ * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
+ * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
  */
-class IVW_MODULE_TENSORVISBASE_API TensorFieldToRGBA : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DInformation : public Processor {
 public:
-    TensorFieldToRGBA();
-    virtual ~TensorFieldToRGBA() = default;
+    TensorField3DInformation();
+    virtual ~TensorField3DInformation() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField2DInport inport_;
-    ImageOutport outport_;
+    TensorField3DInport inport_;
 
-    Shader shader_;
+    IntVec3Property index_;
 
-    EventProperty hover_;
-    DoubleMat2Property tensor_;
-
-    void hoverAction(Event *e);
+    FloatMat3Property tensor_;
+    FloatMat3Property eigenVectors_;
+    FloatVec3Property eigenValues_;
+    FloatMat4Property basisAndOffset_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDTORGBA_H

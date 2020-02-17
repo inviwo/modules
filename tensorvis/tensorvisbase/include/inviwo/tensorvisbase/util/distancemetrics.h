@@ -3,9 +3,10 @@
 #include <vector>
 #include <inviwo/core/util/enumtraits.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
-namespace tensorutil {
+namespace util {
 enum class DistanceMetric { Euclidean, Manhattan, Minkowski, SquaredSum };
 
 /**
@@ -70,9 +71,28 @@ T squaredSumDistance(const std::vector<T>& a, const std::vector<T>& b) {
                               [](T x, T y) { return std::pow(y - x, T(2)); });
 }
 
-}  // namespace tensorutil
+template <typename T>
+inline std::function<T(const std::vector<T>&, const std::vector<T>&)> getDistanceMetricFunctor(
+    DistanceMetric metric) {
+
+    switch (metric) {
+        case DistanceMetric::Euclidean:
+            return euclideanDistance<T>;
+        case DistanceMetric::Manhattan:
+            return manhattanDistance<T>;
+        case DistanceMetric::SquaredSum:
+            return squaredSumDistance<T>;
+        default:
+            break;
+    }
+
+    return [](const std::vector<T>&, const std::vector<T>&) { return T(0); };
+}
+
+}  // namespace util
 template <>
-struct EnumTraits<tensorutil::DistanceMetric> {
+struct EnumTraits<util::DistanceMetric> {
     static std::string name() { return "DistanceMetric"; }
 };
+
 }  // namespace inviwo

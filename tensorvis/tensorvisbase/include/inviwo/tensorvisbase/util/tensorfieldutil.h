@@ -54,8 +54,9 @@ IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(std::shared_ptr<
                                                                 Shader &shader,
                                                                 TextureUnitContainer &textureUnits);
 
-IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTextures(
-    std::shared_ptr<const TensorField3D> &tensorField, Shader *shader,
+IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsVolume(
+    std::array<std::shared_ptr<Volume>, 3> volumes,
+    std::shared_ptr<const TensorField3D> &tensorField, Shader &shader,
     TextureUnitContainer &textureUnits);
 
 std::shared_ptr<TensorField2D> IVW_MODULE_TENSORVISBASE_API
@@ -84,6 +85,18 @@ IVW_MODULE_TENSORVISBASE_API std::shared_ptr<BasicMesh> generateSliceLevelGeomet
 IVW_MODULE_TENSORVISBASE_API std::shared_ptr<BasicMesh> generateSlicePlaneGeometryForTensorField(
     std::shared_ptr<const TensorField3D> tensorField, const vec4 color,
     const CartesianCoordinateAxis axis, const size_t sliceNr);
+
+IVW_MODULE_TENSORVISBASE_API std::array<std::pair<float, vec3>, 3>
+getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D> tf, size_t index);
+
+IVW_MODULE_TENSORVISBASE_API std::array<std::pair<float, vec3>, 3>
+getSortedEigenValuesAndEigenVectorsForTensor(std::shared_ptr<const TensorField3D> tf,
+                                             size3_t position);
+
+IVW_MODULE_TENSORVISBASE_API std::array<float, 3> getSortedEigenValuesForTensor(
+    std::shared_ptr<const TensorField3D> tf, size_t index);
+IVW_MODULE_TENSORVISBASE_API std::array<float, 3> getSortedEigenValuesForTensor(
+    std::shared_ptr<const TensorField3D> tf, size3_t position);
 
 namespace detail {
 std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorField3D> tensorField,

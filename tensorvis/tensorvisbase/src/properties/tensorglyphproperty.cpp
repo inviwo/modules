@@ -31,14 +31,11 @@
 #include <inviwo/tensorvisbase/datastructures/deformablesphere.h>
 #include <inviwo/tensorvisbase/datastructures/deformablecube.h>
 #include <inviwo/tensorvisbase/datastructures/deformablecylinder.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
 namespace inviwo {
 const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};
 std::string TensorGlyphProperty::getClassIdentifier() const { return classIdentifier; }
-
-// constexpr std::array<std::array<dvec2, 3>, 10> TensorGlyphProperty::tri_uv;
-
-// constexpr std::array<std::array<dvec3, 3>, 10> TensorGlyphProperty::tri_alpha_beta;
 
 TensorGlyphProperty::TensorGlyphProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
@@ -144,82 +141,82 @@ void TensorGlyphProperty::evalColorReadOnly() {
     }
 }
 
-double TensorGlyphProperty::signedExponentiation(double x, double a) {
+float TensorGlyphProperty::signedExponentiation(float x, float a) {
     auto sgn = glm::sign(x);
     return sgn * std::pow(std::abs(x), a);
 }
 
-dvec3 TensorGlyphProperty::cartesianToSpherical(const dvec3& pos) const {
+vec3 TensorGlyphProperty::cartesianToSpherical(const vec3& pos) const {
     auto r = glm::length(pos);
     auto phi = glm::acos(pos.z / r);
     auto theta = std::atan2(pos.y, pos.x);
-    return dvec3(r, phi, theta);
+    return vec3(r, phi, theta);
 }
 
 // From Ericsson Real-time collision detection
-std::pair<bool, dvec3> TensorGlyphProperty::intersectTriangle(
-    const dvec2& coord, const std::array<dvec2, 3>& tri_verts) {
-    dvec2 p = coord;
-    dvec2 a = tri_verts[0];
-    dvec2 b = tri_verts[1];
-    dvec2 c = tri_verts[2];
+std::pair<bool, vec3> TensorGlyphProperty::intersectTriangle(const vec2& coord,
+                                                             const std::array<vec2, 3>& tri_verts) {
+    vec2 p = coord;
+    vec2 a = tri_verts[0];
+    vec2 b = tri_verts[1];
+    vec2 c = tri_verts[2];
 
-    dvec2 v0 = b - a;
-    dvec2 v1 = c - a;
-    dvec2 v2 = p - a;
+    vec2 v0 = b - a;
+    vec2 v1 = c - a;
+    vec2 v2 = p - a;
 
-    double d00 = dot(v0, v0);
-    double d01 = dot(v0, v1);
-    double d11 = dot(v1, v1);
-    double d20 = dot(v2, v0);
-    double d21 = dot(v2, v1);
-    double ood = 1. / (d00 * d11 - d01 * d01);
+    float d00 = dot(v0, v0);
+    float d01 = dot(v0, v1);
+    float d11 = dot(v1, v1);
+    float d20 = dot(v2, v0);
+    float d21 = dot(v2, v1);
+    float ood = 1.0f / (d00 * d11 - d01 * d01);
 
-    double v = (d11 * d20 - d01 * d21) * ood;
-    double w = (d00 * d21 - d01 * d20) * ood;
+    float v = (d11 * d20 - d01 * d21) * ood;
+    float w = (d00 * d21 - d01 * d20) * ood;
 
-    if (v < 0.0f || v > 1.0f) return {false, dvec3(0)};
-    if (w < 0.0f || v + w > 1.0f) return {false, dvec3(0)};
+    if (v < 0.0f || v > 1.0f) return {false, vec3(0)};
+    if (w < 0.0f || v + w > 1.0f) return {false, vec3(0)};
 
-    return {true, dvec3(1. - v - w, v, w)};
+    return {true, vec3(1. - v - w, v, w)};
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-    const dvec4& color, const float size) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+    const vec4& color, const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
     auto eigenValuesAndEigenVectors =
-        tensorField->getSortedEigenValuesAndEigenVectorsForTensor(index);
+        tensorutil::getSortedEigenValuesAndEigenVectorsForTensor(tensorField, index);
 
-    auto magicScalingNumer = 0.00001;
+    auto magicScalingNumer = 0.00001f;
     std::transform(eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
                    eigenValuesAndEigenVectors.begin(),
-                   [magicScalingNumer](const std::pair<double, dvec3>& a) {
+                   [magicScalingNumer](const std::pair<float, vec3>& a) {
                        return std::make_pair(
                            glm::sign(a.first) * glm::max(glm::abs(a.first), magicScalingNumer),
                            glm::normalize(a.second));
                    });
 
     std::sort(eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
-              [](const std::pair<double, dvec3>& pairA, const std::pair<double, dvec3>& pairB) {
+              [](const std::pair<float, vec3>& pairA, const std::pair<float, vec3>& pairB) {
                   return glm::abs(pairA.first) > glm::abs(pairB.first);
               });
 
     std::transform(
         eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
         eigenValuesAndEigenVectors.begin(),
-        [maxEv = eigenValuesAndEigenVectors[0].first](const std::pair<double, dvec3>& pair) {
+        [maxEv = eigenValuesAndEigenVectors[0].first](const std::pair<float, vec3>& pair) {
             auto newVal = pair.first / maxEv;
             return std::make_pair(newVal, pair.second * newVal);
         });
 
-    std::array<double, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
-                                      glm::abs(eigenValuesAndEigenVectors[1].first),
-                                      glm::abs(eigenValuesAndEigenVectors[2].first)};
+    std::array<float, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
+                                     glm::abs(eigenValuesAndEigenVectors[1].first),
+                                     glm::abs(eigenValuesAndEigenVectors[2].first)};
 
-    auto basis = dmat3(eigenValuesAndEigenVectors[0].second, eigenValuesAndEigenVectors[1].second,
-                       eigenValuesAndEigenVectors[2].second);
+    auto basis = mat3(eigenValuesAndEigenVectors[0].second, eigenValuesAndEigenVectors[1].second,
+                      eigenValuesAndEigenVectors[2].second);
     if (!useEigenBasis_.get())
         basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
@@ -234,16 +231,15 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
     return mesh;
 }
 
-const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(const dmat3&,
-                                                                           const dvec3&,
+const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(const mat3&, const vec3&,
                                                                            const float,
-                                                                           const dvec4&) const {
+                                                                           const vec4&) const {
     return std::shared_ptr<BasicMesh>();
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
-    const std::array<double, 3>& eigenValues, const dvec3& pos, const float size,
-    const dvec4& color) const {
+    const std::array<float, 3>& eigenValues, const vec3& pos, const float size,
+    const vec4& color) const {
 
     auto basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
@@ -254,23 +250,23 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadric(
 }
 
 std::shared_ptr<BasicMesh> TensorGlyphProperty::createSuperquadric(
-    const std::array<double, 3>& eigenValues, const dvec3& pos, const float size,
-    const dvec4& color) const {
+    const std::array<float, 3>& eigenValues, const vec3& pos, const float size,
+    const vec4& color) const {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
     auto denominator = eigenValues[0] + eigenValues[1] + eigenValues[2];
     auto linearAnisotropy = (eigenValues[0] - eigenValues[1]) / denominator;
-    auto planarAnisotropy = (2. * (eigenValues[1] - eigenValues[2])) / denominator;
+    auto planarAnisotropy = (2.0f * (eigenValues[1] - eigenValues[2])) / denominator;
 
-    double alpha;
-    double beta;
+    float alpha;
+    float beta;
 
     if (linearAnisotropy >= planarAnisotropy) {
-        alpha = glm::pow(1. - planarAnisotropy, gamma_.get());
-        beta = glm::pow(1. - linearAnisotropy, gamma_.get());
+        alpha = glm::pow(1.0f - planarAnisotropy, gamma_.get());
+        beta = glm::pow(1.0f - linearAnisotropy, gamma_.get());
     } else {
-        alpha = glm::pow(1. - linearAnisotropy, gamma_.get());
-        beta = glm::pow(1. - planarAnisotropy, gamma_.get());
+        alpha = glm::pow(1.0f - linearAnisotropy, gamma_.get());
+        beta = glm::pow(1.0f - planarAnisotropy, gamma_.get());
     }
 
     sphere.deform(
@@ -295,23 +291,23 @@ std::shared_ptr<BasicMesh> TensorGlyphProperty::createSuperquadric(
             }
         },
         false);
-    sphere.transform(pos, dvec3(size));
+    sphere.transform(pos, vec3(size));
 
     return sphere.getGeometry();
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateReynolds(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
     const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get());
 
-    const auto tensor = mat3(tensorField->at(index).second);
+    const auto tensor = mat3(tensorField->at(index));
 
     sphere.deform([tensor](vec3& v, vec4& c) {
         const auto displacement = tensor * v;
         const auto scale = glm::dot(displacement, v);
         v = v * scale;
-        if (scale < 0.f) {
+        if (scale < 0.0f) {
             c = vec4(1, 0, 0, 1);
             v = -v;
         } else {
@@ -319,70 +315,70 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateReynolds(
         }
     });
 
-    sphere.transform(pos, dvec3(size));
+    sphere.transform(pos, vec3(size));
 
     return sphere.getGeometry();
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateQuadric(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-    const dvec4& color, const float size) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+    const vec4& color, const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
-    const auto tensor = mat3(tensorField->at(index).second);
+    const auto tensor = mat3(tensorField->at(index));
 
     sphere.deform([tensor](vec3& v) { v = tensor * v; });
 
-    sphere.transform(pos, dvec3(size));
+    sphere.transform(pos, vec3(size));
 
     return sphere.getGeometry();
 }
 
-const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateQuadric(const dmat3& tensor,
-                                                                      const dvec3& pos,
+const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateQuadric(const mat3& tensor,
+                                                                      const vec3& pos,
                                                                       const float size,
-                                                                      const dvec4& color) const {
+                                                                      const vec4& color) const {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
     sphere.deform([tensor](vec3& v) { v = mat3(tensor) * v; });
 
-    sphere.transform(pos, dvec3(size));
+    sphere.transform(pos, vec3(size));
 
     return sphere.getGeometry();
 }
 
-const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCube(const dmat3& tensor,
-                                                                   const dvec3& pos,
+const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCube(const mat3& tensor,
+                                                                   const vec3& pos,
                                                                    const float size,
-                                                                   const dvec4& color) const {
+                                                                   const vec4& color) const {
     DeformableCube cube(color);
 
     cube.deform([tensor](vec3& v) { v = mat3(tensor) * v; });
 
-    cube.transform(pos, dvec3(size));
+    cube.transform(pos, vec3(size));
 
     return cube.getGeometry();
 }
 
-const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCylinder(const dmat3& tensor,
-                                                                       const dvec3& pos,
+const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCylinder(const mat3& tensor,
+                                                                       const vec3& pos,
                                                                        const float size,
-                                                                       const dvec4& color) const {
+                                                                       const vec4& color) const {
     DeformableCylinder cylinder(resolutionTheta_.get(), color);
 
     cylinder.deform([tensor](vec3& v) { v = mat3(tensor) * v; });
 
-    cylinder.transform(pos, dvec3(size));
+    cylinder.transform(pos, vec3(size));
 
     return cylinder.getGeometry();
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateHWY(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-    const dvec4& color, const float size) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+    const vec4& color, const float size) {
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get(), color);
 
-    const auto tensor = mat3(tensorField->at(index).second);
+    const auto tensor = mat3(tensorField->at(index));
 
     sphere.deform([tensor](vec3& v) {
         const auto displacement = tensor * v;
@@ -393,14 +389,14 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateHWY(
         v = v * scale;
     });
 
-    sphere.transform(pos, dvec3(size));
+    sphere.transform(pos, vec3(size));
 
     return sphere.getGeometry();
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCombinedReynoldsHWY(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-    const dvec4& color, const float size) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+    const vec4& color, const float size) {
     auto reynolds = generateReynolds(tensorField, index, pos, size);
     auto hwy = generateHWY(tensorField, index, pos, color, size);
     reynolds->append(hwy.get());
@@ -409,55 +405,31 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateCombinedReynoldsHW
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtended(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
     const float size) {
-    std::array<std::array<dvec2, 3>, 10> tri_uv{
-        {{dvec2(0.00, 0.00), dvec2(0.50, 0.00), dvec2(0.25, 0.25)},
-         {dvec2(0.00, 0.00), dvec2(0.25, 0.25), dvec2(0.00, 0.50)},
-         {dvec2(0.00, 0.50), dvec2(0.50, 0.00), dvec2(0.00, 1.00)},
-         {dvec2(0.00, 1.00), dvec2(0.50, 0.00), dvec2(0.50, 0.50)},
-         {dvec2(0.00, 1.00), dvec2(0.50, 0.50), dvec2(0.50, 1.00)},
-         {dvec2(0.50, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 1.00)},
-         {dvec2(1.00, 1.00), dvec2(0.75, 0.75), dvec2(1.00, 0.50)},
-         {dvec2(1.00, 0.50), dvec2(0.50, 1.00), dvec2(1.00, 0.00)},
-         {dvec2(1.00, 0.00), dvec2(0.50, 1.00), dvec2(0.50, 0.50)},
-         {dvec2(1.00, 0.00), dvec2(0.50, 0.50), dvec2(0.50, 0.00)}}};
-
-    std::array<std::array<dvec3, 3>, 10> tri_alpha_beta{
-        {{dvec3(1.0, 1.0, 0.0), dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0)},
-         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)},
-         {dvec3(1.0, 0.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 1.0, 0.0)},
-         {dvec3(1.0, 1.0, 0.0), dvec3(0.5, 0.5, 0.0), dvec3(1.0, 0.0, 0.0)},
-         {dvec3(1.0, 2.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(1.0, 4.0, 0.0)},
-         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 2.0, 0.0), dvec3(0.0, 4.0, 2.0)},
-         {dvec3(1.0, 4.0, 0.0), dvec3(0.0, 4.0, 2.0), dvec3(1.0, 2.0, 0.0)}}};
-
     DeformableSphere sphere(resolutionTheta_.get(), resolutionPhi_.get());
 
     auto eigenValuesAndEigenVectors =
-        tensorField->getSortedEigenValuesAndEigenVectorsForTensor(index);
+        tensorutil::getSortedEigenValuesAndEigenVectorsForTensor(tensorField, index);
 
-    auto magicScalingNumer = 0.00001;
+    auto magicScalingNumer = 0.00001f;
     std::transform(eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
                    eigenValuesAndEigenVectors.begin(),
-                   [magicScalingNumer](const std::pair<double, dvec3>& a) {
+                   [magicScalingNumer](const std::pair<float, vec3>& a) {
                        return std::make_pair(
                            glm::sign(a.first) * glm::max(glm::abs(a.first), magicScalingNumer),
                            glm::normalize(a.second));
                    });
 
     std::sort(eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
-              [](const std::pair<double, dvec3>& pairA, const std::pair<double, dvec3>& pairB) {
+              [](const std::pair<float, vec3>& pairA, const std::pair<float, vec3>& pairB) {
                   return glm::abs(pairA.first) > glm::abs(pairB.first);
               });
 
     std::transform(
         eigenValuesAndEigenVectors.begin(), eigenValuesAndEigenVectors.end(),
         eigenValuesAndEigenVectors.begin(),
-        [maxEv = eigenValuesAndEigenVectors[0].first](const std::pair<double, dvec3>& pair) {
+        [maxEv = eigenValuesAndEigenVectors[0].first](const std::pair<float, vec3>& pair) {
             auto newVal = pair.first / maxEv;
             return std::make_pair(newVal, pair.second * newVal);
         });
@@ -468,24 +440,25 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
         eigenValuesAndEigenVectors[2].second = -eigenValuesAndEigenVectors[2].second;
     }
 
-    std::array<double, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
-                                      glm::abs(eigenValuesAndEigenVectors[1].first),
-                                      glm::abs(eigenValuesAndEigenVectors[2].first)};
+    std::array<float, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
+                                     glm::abs(eigenValuesAndEigenVectors[1].first),
+                                     glm::abs(eigenValuesAndEigenVectors[2].first)};
 
-    auto basis = dmat3(eigenValuesAndEigenVectors[0].second, eigenValuesAndEigenVectors[1].second,
-                       eigenValuesAndEigenVectors[2].second);
+    auto basis = mat3(eigenValuesAndEigenVectors[0].second, eigenValuesAndEigenVectors[1].second,
+                      eigenValuesAndEigenVectors[2].second);
 
     if (!useEigenBasis_.get())
-        basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
+        basis = glm::diagonal3x3(vec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
-    const auto frobeniusNorm = tensorField->getMetaData<FrobeniusNorm>()[index];
-    auto lamda = tensorField->getSortedEigenValuesForTensor(index);
+    const auto frobeniusNorm =
+        tensorField->getMetaDataContainer<attributes::FrobeniusNorm>()[index];
+    auto lamda = tensorutil::getSortedEigenValuesForTensor(tensorField, index);
 
     std::transform(lamda.begin(), lamda.end(), lamda.begin(),
-                   [frobeniusNorm](const double& a) { return a / frobeniusNorm; });
+                   [frobeniusNorm](const float a) { return a / frobeniusNorm; });
 
     // Necessary?
-    std::sort(lamda.begin(), lamda.end(), std::greater<double>());
+    std::sort(lamda.begin(), lamda.end(), std::greater<float>());
 
     auto max_abs_lambda =
         glm::max(glm::max(glm::abs(lamda[0]), glm::abs(lamda[1])), glm::abs(lamda[2]));
@@ -497,10 +470,10 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
     auto u = 0.5f * (1. + lamda[1]);
     auto v =
         (lamda[0] > -lamda[2]) ? 0.5f * (1. + lamda[2]) - u + 1. : 0.5f * (lamda[0] - 1.) - u + 1.;
-    dvec3 alpha_beta_betaprim;
+    vec3 alpha_beta_betaprim;
 
     for (size_t i = 0; i < tri_uv.size(); i++) {
-        auto res = intersectTriangle(dvec2(u, v), tri_uv[i]);
+        auto res = intersectTriangle(vec2(u, v), tri_uv[i]);
         if (res.first) {
             auto bc = res.second;
             auto comp = tri_alpha_beta[i];
@@ -523,12 +496,12 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
         auto phi = spherical_coords.y;
         auto theta = spherical_coords.z;
 
-        if (beta_prim > 0.) {
+        if (beta_prim > 0.0f) {
             auto y_beta = signedExponentiation(glm::sin(theta), alpha) *
                           signedExponentiation(glm::sin(phi), beta);
             auto z = signedExponentiation(glm::cos(phi), beta);
             auto s_beta_prim =
-                signedExponentiation(glm::acos(glm::pow(z, 1. / beta_prim)), beta_prim);
+                signedExponentiation(glm::acos(glm::pow(z, 1.0f / beta_prim)), beta_prim);
             auto s_max = signedExponentiation(glm::sin(phi), beta);
 
             v.x = static_cast<float>(signedExponentiation(glm::cos(theta), alpha) *
@@ -543,20 +516,20 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
             v.z = static_cast<float>(signedExponentiation(glm::cos(phi), beta));
         }
 
-        std::array<double, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
-                                          glm::abs(eigenValuesAndEigenVectors[1].first),
-                                          glm::abs(eigenValuesAndEigenVectors[2].first)};
+        std::array<float, 3> eigenValues{glm::abs(eigenValuesAndEigenVectors[0].first),
+                                         glm::abs(eigenValuesAndEigenVectors[1].first),
+                                         glm::abs(eigenValuesAndEigenVectors[2].first)};
 
-        auto mat = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
-        auto sign = glm::dot(dvec3(v), mat * dvec3(v));
-        if (sign >= 0.) {
-            c = vec4(0., 0., 1., 1.);
+        auto mat = glm::diagonal3x3(vec3(eigenValues[0], eigenValues[1], eigenValues[2]));
+        auto sign = glm::dot(vec3(v), mat * vec3(v));
+        if (sign >= 0.0f) {
+            c = vec4(0.0f, 0.0f, 1.0f, 1.0f);
         } else {
-            c = vec4(1., 0., 0., 1.);
+            c = vec4(1.0f, 0.0f, 0.0f, 1.0f);
         }
     });
 
-    sphere.transform(pos, dvec3(size));
+    sphere.transform(pos, vec3(size));
 
     auto mesh = sphere.getGeometry();
 
@@ -566,7 +539,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos) {
     switch (glyphType_.get()) {
         case GlyphType::Reynolds:
             return generateReynolds(tensorField, index, pos, size_.get());
@@ -587,8 +560,8 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-    const dvec4& color) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+    const vec4& color) {
     switch (glyphType_.get()) {
         case GlyphType::Reynolds:
             return generateReynolds(tensorField, index, pos, size_.get());
@@ -609,7 +582,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
     const float size) {
     switch (glyphType_.get()) {
         case GlyphType::Reynolds:
@@ -631,8 +604,8 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
-    std::shared_ptr<const TensorField3D> tensorField, size_t index, const dvec3 pos,
-    const dvec4& color, const float size) {
+    std::shared_ptr<const TensorField3D> tensorField, size_t index, const vec3 pos,
+    const vec4& color, const float size) {
     switch (glyphType_.get()) {
         case GlyphType::Reynolds:
             return generateReynolds(tensorField, index, pos, size);
@@ -652,10 +625,10 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
     return std::make_shared<BasicMesh>();
 }
 
-const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(const dmat3& tensor,
-                                                                    const dvec3& pos,
+const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(const mat3& tensor,
+                                                                    const vec3& pos,
                                                                     const float size,
-                                                                    const dvec4& color) const {
+                                                                    const vec4& color) const {
     switch (glyphType_.get()) {
         case GlyphType::Quadric:
             return generateQuadric(tensor, pos, size, color);
@@ -671,8 +644,8 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(const dmat3&
 }
 
 const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(
-    const std::array<double, 3>& eigenvalues, const dvec3& pos, const float size,
-    const dvec4& color) const {
+    const std::array<float, 3>& eigenvalues, const vec3& pos, const float size,
+    const vec4& color) const {
     return generateSuperquadric(eigenvalues, pos, size, color);
 }
 

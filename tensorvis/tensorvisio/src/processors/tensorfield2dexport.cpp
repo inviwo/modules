@@ -28,6 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisio/processors/tensorfield2dexport.h>
+#include <inviwo/tensorvisio/util/util.h>
+#include <inviwo/tensorvisbase/tensorvisbasemodule.h>
 
 namespace inviwo {
 
@@ -37,7 +39,7 @@ const ProcessorInfo TensorField2DExport::processorInfo_{
     "Tensor Field 2D Export",          // Display name
     "Tensor Field IO",                 // Category
     CodeState::Experimental,           // Code state
-    Tags::CPU,                         // Tags
+    tag::OpenTensorVis | Tag::CPU,     // Tags
 };
 const ProcessorInfo TensorField2DExport::getProcessorInfo() const { return processorInfo_; }
 
@@ -47,7 +49,7 @@ TensorField2DExport::TensorField2DExport()
     , export_("export", "Export")
     , exportFile_("exportFile", "Export to", "")
     , exportButton_("exportButton", "Export")
-    , includeEigenInfo_("includeEigenInfo", "Include eigen info", true) {
+    , includeMetaData_("includeMetaData", "Include meta data", true) {
     export_.addProperty(exportFile_);
     export_.addProperty(exportButton_);
     addProperty(export_);
@@ -84,54 +86,45 @@ void TensorField2DExport::exportBinary() const {
     outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));
     outFile.write(&versionStr[0], size);
 
-    size_t version = 2;
+    size_t version = TFB_CURRENT_VERSION;
     outFile.write(reinterpret_cast<const char *>(&version), sizeof(size_t));
 
-    size_t dimensionality = tensorField->dimensionality();
-    outFile.write(reinterpret_cast<const char *>(&dimensionality), sizeof(size_t));
-
-    size_t rank = tensorField->rank();
-    outFile.write(reinterpret_cast<const char *>(&rank), sizeof(size_t));
-
-    bool hasEigenInfo = includeEigenInfo_.get();
-    outFile.write(reinterpret_cast<const char *>(&hasEigenInfo), sizeof(bool));
+    auto hasMetaData = glm::uint8(includeMetaData_.get());
+    outFile.write(reinterpret_cast<const char *>(&hasMetaData), sizeof(glm::uint8));
 
     auto dimensions = tensorField->getDimensions();
     outFile.write(reinterpret_cast<const char *>(&dimensions), sizeof(size_t) * 2);
 
     auto extents = tensorField->getExtents();
-    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(float) * 2);
 
-    const auto &data = tensorField->tensors();
+    auto offset = tensorField->getOffset();
+    outFile.write(reinterpret_cast<const char *>(&offset), sizeof(float) * 2);
+
+    auto &eigenValueDataMaps = tensorField->dataMapEigenValues_;
+    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[0].dataRange),
+                  sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[1].dataRange),
+                  sizeof(double) * 2);
+
+    auto &eigenVectorDataMaps = tensorField->dataMapEigenVectors_;
+    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[0].dataRange),
+                  sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[1].dataRange),
+                  sizeof(double) * 2);
+
+    const auto &data = *tensorField->tensors();
 
     for (const auto &val : data) {
-        // Diagonal
-        outFile.write(reinterpret_cast<const char *>(&val[0][0]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][1]), sizeof(double));
-
-        // Symmetric part
-        outFile.write(reinterpret_cast<const char *>(&val[1][0]), sizeof(double));
+        outFile.write(reinterpret_cast<const char *>(glm::value_ptr(val)),
+                      sizeof(TensorField2D::value_type) * 4);
     }
 
-    if (includeEigenInfo_.get()) {
-        // Create tensor field here so eigen properties get calculated
-        auto majorEigenValues = tensorField->majorEigenValues().data();
-        auto minorEigenValues = tensorField->minorEigenValues().data();
-
-        auto majorEigenVectors = tensorField->majorEigenVectors().data();
-        auto minorEigenVectors = tensorField->minorEigenVectors().data();
-
-        auto numItems = tensorField->getSize();
-
-        outFile.write(reinterpret_cast<const char *>(majorEigenValues), sizeof(double) * numItems);
-
-        outFile.write(reinterpret_cast<const char *>(minorEigenValues), sizeof(double) * numItems);
-
-        outFile.write(reinterpret_cast<const char *>(majorEigenVectors),
-                      sizeof(double) * numItems * 2);
-
-        outFile.write(reinterpret_cast<const char *>(minorEigenVectors),
-                      sizeof(double) * numItems * 2);
+    if (includeMetaData_.get()) {
+        const size_t numMetaDataEntries =
+            tensorField->metaData()->getNumberOfColumns() - 1;  // omit index buffer
+        outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
+        util::serializeDataFrame(tensorField->metaData(), outFile);
     }
 
     std::string str("EOFreached");
@@ -141,7 +134,9 @@ void TensorField2DExport::exportBinary() const {
 
     outFile.close();
 
-    LogInfo("Exporting done.");
+    LogInfo(exportFile_.get() << " successfully exported. (roughly "
+                              << util::getFileSizeAsString(exportFile_.get(),
+                                                           util::FileSizeOrder::GiB));
 }
 
 }  // namespace inviwo

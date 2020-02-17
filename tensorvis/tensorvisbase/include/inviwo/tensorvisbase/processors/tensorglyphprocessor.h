@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHPROCESSOR_H
-#define IVW_TENSORGLYPHPROCESSOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
@@ -79,5 +78,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHPROCESSOR_H

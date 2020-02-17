@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DEXPORT_H
-#define IVW_TENSORFIELD3DEXPORT_H
+#pragma once
 
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,29 +37,24 @@
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/tensorvisbase/datastructures/attributes.h>
+#include <inviwo/core/util/constexprhash.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.TensorField3DExport, Tensor Field Export}
  * ![](org.inviwo.TensorField3DExport.png?classIdentifier=org.inviwo.TensorField3DExport)
- * Explanation of how to use the processor.
+ * Input a tensor field, specify a path where to save the file and hit that button!
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __Inport__ Tensor field inport.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __File__ The file which the tensor field will be saved to.
+ *   * __Button__ Trigger the saving process.
+ *   * __Include Meta data__ Include/exclude meta data in the saved file.
  */
 
-/**
- * \class TensorField3DExport
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISIO_API TensorField3DExport : public Processor {
 public:
     TensorField3DExport();
@@ -80,8 +74,6 @@ private:
     BoolProperty includeMetaData_;
 
     void exportBinary() const;
-};
+};  // namespace inviwo
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DEXPORT_H

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2019 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,43 +27,31 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DANISOTROPY_H
-#define IVW_TENSORFIELD3DANISOTROPY_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DAnisotropy, Tensor Field 3D Anisotropy}
- * ![](org.inviwo.TensorField3DAnisotropy.png?classIdentifier=org.inviwo.TensorField3DAnisotropy)
- * Explanation of how to use the processor.
+/** \docpage{org.inviwo.TensorField3DToDataFrame, Tensor Field 3D To Data Frame}
+ * ![](org.inviwo.TensorField3DToDataFrame.png?classIdentifier=org.inviwo.TensorField3DToDataFrame)
+ * Forwards the meta data container (data frame) of the input tensor field for plotting or the like.
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
+ *   * __tensorField3DInport___ Tensor field inport.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __dataFrameOutport___ Outputs the data frame.
  *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
-
-/**
- * \class TensorField3DAnisotropy
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISBASE_API TensorField3DAnisotropy : public Processor {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DToDataFrame : public Processor {
 public:
-    TensorField3DAnisotropy();
-    virtual ~TensorField3DAnisotropy() = default;
+    TensorField3DToDataFrame();
+    virtual ~TensorField3DToDataFrame() = default;
 
     virtual void process() override;
 
@@ -71,14 +59,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    TensorField3DInport tensorFieldInport_;
-    VolumeOutport volumeOutport_;
-
-    TemplateOptionProperty<tensorutil::Anisotropy> anisotropy_;
-
-    TemplateOptionProperty<GLint> interpolationScheme_;
+    TensorField3DInport tensorField3DInport_;
+    DataFrameOutport dataFrameOutport_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DANISOTROPY_H

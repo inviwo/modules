@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_VOLUMEACTUALDATAANDVALUERANGE_H
-#define IVW_VOLUMEACTUALDATAANDVALUERANGE_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -73,5 +72,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_VOLUMEACTUALDATAANDVALUERANGE_H
