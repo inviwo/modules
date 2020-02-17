@@ -2,7 +2,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/constexprhash.h>
 #include <string>
-#include <filesystem>
+//#include <filesystem>
 #include <sstream>
 #include <ostream>
 #include <iomanip>
@@ -42,7 +42,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
 
 inline std::string getFileSizeAsString(const std::string& file, const FileSizeOrder order,
                                        const long long precision = 2) {
-    const auto fileSize = std::filesystem::file_size(file);
+    const auto fileSize = 0;// std::filesystem::file_size(file);
 
     std::stringstream ss;
 
