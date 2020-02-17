@@ -51,7 +51,7 @@ struct AddRemoveMetaData {
         auto metaData = tensorField_->metaData();
 
         if (id == util::constexpr_hash(T::identifier)) {
-            if (tensorField_->hasMetaData<T>()) {
+            if (tensorField_->template hasMetaData<T>()) {
                 if (!add) {
                     metaData->dropColumn(std::string(T::identifier));
                 }
@@ -80,7 +80,7 @@ struct HasMetaData {
     void operator()() {
         auto metaData = tensorField_->metaData();
 
-        availableMetaData_.push_back(tensorField_->hasMetaData<T>());
+        availableMetaData_.push_back(tensorField_->template hasMetaData<T>());
     }
 
     std::vector<bool> availableMetaData_;
