@@ -46,6 +46,7 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/properties/isotfproperty.h>
 
 #include <inviwo/topologytoolkit/ports/contourtreeport.h>
 #include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
@@ -102,10 +103,14 @@ private:
     inviwo::topology::PickingUtil pickingutil_;
     inviwo::topology::PickingProperties pickingProperties_;
 	ButtonProperty updateButton_;
+    IsoTFProperty isotfComposite_;
     
 	FloatProperty isoFactor_;
 	CompositeProperty morseSmaleComplex_;
 	OptionPropertyInt mscSegmentOptions_;
+
+	OptionPropertyInt leafnodeOptions_;
+
 
 	std::vector<std::shared_ptr<topology::TriangulationData>> segmentTriangulations_;
 	bool recompute_ = true;

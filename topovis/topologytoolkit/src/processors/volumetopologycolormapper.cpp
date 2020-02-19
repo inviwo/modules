@@ -30,8 +30,10 @@
 #include <inviwo/topologytoolkit/processors/volumetopologycolormapper.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <modules/base/algorithm/volume/marchingcubesopt.h>
+#include <modules/base/algorithm/volume/marchingcubes.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/util/logcentral.h>
 
 #pragma optimize("", off)
 
@@ -55,7 +57,10 @@ VolumeTopologyColorMapper::VolumeTopologyColorMapper()
     , volumeInport_("volume")
     , outport_("outport")	
     , transferFunction_("transferFunction", "TranferFunction")
+	, isotfComposite_("isotfComposite", "TF & Isovalues", &volumeInport_,
+                      InvalidationLevel::InvalidResources)
 	, isoFactor_("isoFactor", "IsoFactor", 0.5f, 0.0f, 1.0f)
+	, leafnodeOptions_("leafnodeOptions", "Leaf Node Type")
     , pickingutil_(this, [&](PickingEvent* p) { this->handlePickingEvent(p); })
     , mscSegmentOptions_("mscSegmentOptions", "MSC Segments")
     , morseSmaleComplex_("morseSmaleComplex", "MSC Options")
@@ -66,9 +71,18 @@ VolumeTopologyColorMapper::VolumeTopologyColorMapper()
     addPort(morseSmaleComplexInport);
     addPort(outport_);    
 
+	leafnodeOptions_.addOption("all-leaves", "All Leaves", 0);
+	leafnodeOptions_.addOption("maxima-leaves", "Maxima Leaves", 1);
+	leafnodeOptions_.addOption("minima-leaves", "Minima Leaves", 2);
+	leafnodeOptions_.setSelectedValue(3);
+	leafnodeOptions_.setCurrentStateAsDefault();
+
+
     addProperty(transferFunction_);
 	addProperty(isoFactor_);
+	addProperty(leafnodeOptions_);
 	addProperty(updateButton_);
+	addProperty(isotfComposite_);
 
     contourtreeInport.setOptional(true);
     morseSmaleComplexInport.setOptional(true);
@@ -267,6 +281,7 @@ void VolumeTopologyColorMapper::surfaceExtraction()
 	std::vector<std::shared_ptr<const Volume>> data;
 	std::vector<float> isoFs;
 	std::vector<vec4> colors_;
+	std::vector<vec4> segmentColors_;
 	std::vector<float> status_;
 
 	auto triangulation = treeData->triangulation.get();
@@ -274,20 +289,40 @@ void VolumeTopologyColorMapper::surfaceExtraction()
 	
 	auto tree = treeData->getTree();
 	auto numArcs = tree->getNumberOfSuperArcs();
+	
+	auto nodeType = [](ttk::ftm::FTMTree_MT* tree, int nodeId) {
+
+		auto node = tree->getNode(nodeId);
+        const bool up = node->getNumberOfUpSuperArcs() > 0;
+        const bool down = node->getNumberOfDownSuperArcs() > 0;
+
+		// 1 saddle
+		// 2 maxima
+		// 3 minima
+
+		return up && down ? -1 : (up ?  1 : 2);
+	};
 
 	std::vector<ttk::ftm::idNode> leafNodes;
-	for (size_t i = 0; i < tree->getLeaves().size(); i++)
-		leafNodes.push_back( tree->getLeave(i));
-	  
+	for (size_t i = 0; i < tree->getLeaves().size(); i++) {
 
+		if (leafnodeOptions_.get()) {
+			if (nodeType(tree, tree->getLeave(i)) != leafnodeOptions_.get())
+				continue;
+		}
+		leafNodes.push_back(tree->getLeave(i));
+	}
+
+	  
+	std::vector<int> valid_usegments;	
 	for (ttk::ftm::idSuperArc i = 0; i < usegments.size(); ++i) {
 		//if (usegments[i] >= numArcs) continue;
 		auto arc = tree->getSuperArc(usegments[i]);
 		if (!arc) {
-			LogWarn("topology::VolumeTopologyColorMapper::surfaceExtraction",
-			"Segment Id does not have corresponding Super Arc. SegId = " + std::to_string(usegments[i]));
+			LogWarn("topology::VolumeTopologyColorMapper::surfaceExtraction - Segment Id does not have corresponding Super Arc. SegId = " + std::to_string(usegments[i]));
 			continue;
 		}
+
 
 		if (std::find(leafNodes.begin(), leafNodes.end(), arc->getDownNodeId()) == leafNodes.end() &&
 			std::find(leafNodes.begin(), leafNodes.end(), arc->getUpNodeId()) == leafNodes.end())
@@ -300,6 +335,7 @@ void VolumeTopologyColorMapper::surfaceExtraction()
 
 		isoFs.push_back(iso);
 		data.push_back(volume);
+		valid_usegments.push_back(usegments[i]);
 	}
 
 	meshes_->resize(data.size());
@@ -307,10 +343,19 @@ void VolumeTopologyColorMapper::surfaceExtraction()
 
 	auto minMaxIso = std::minmax_element(scalars.begin(), scalars.end());
 
-	for (auto& iso : isoFs) {
-		auto nIso = (iso - *minMaxIso.first) / (*minMaxIso.second - *minMaxIso.first);
+	isotfComposite_.isovalues_.get().clear();
+	isotfComposite_.tf_.get().clear();
+
+	for (size_t i = 0; i < isoFs.size(); i++) {
+		auto nIso = (isoFs[i] - *minMaxIso.first) / (*minMaxIso.second - *minMaxIso.first);
 		colors_.push_back(transferFunction_.get().sample(nIso)*0.8f);
+		segmentColors_.push_back(transferFunction_.get().sample(float(i+1)/isoFs.size())*0.8f);
+
+		auto isoCol = colors_.back();
+		isoCol.a = 0.6f;
+		isotfComposite_.isovalues_.get().add(nIso, isoCol );
 	}
+		
 
 	for (size_t i = 0; i < data.size(); ++i)
 		status_[i] = 0.0f;
@@ -318,15 +363,62 @@ void VolumeTopologyColorMapper::surfaceExtraction()
     float totalStatus = 0.0f;
 
 
-	for (size_t i = 0; i < data.size(); ++i) {
+	/*const ivec3 vdim = (ivec3) volume->getDimensions();
+    const util::IndexMapper3D im(volume->getDimensions());
+	auto& segmentsList = treeData->getSegments();
+	int tokenShift = 0;
 
-		//if (!(i >= 5 && i <= 7)) continue;
+	std::map<int, int> boundaryTokenMap;
+	std::map<int, int> boundaryTokenMap_f;
+	for (size_t i = 0; i < segmentsList.size(); i++) {		
+		if (boundaryTokenMap.find(segmentsList[i]) == boundaryTokenMap.end()) {
+			boundaryTokenMap[segmentsList[i]] = 1 << tokenShift;
+			tokenShift++;
+		}
+
+		boundaryTokenMap_f[segmentsList[i]] += 1;
+	}
+
+	auto boundaryTokenList = std::vector<int>(segmentsList.size(), 0);
+	for (size_t i = 0; i < segmentsList.size(); i++) {
+
+		auto s_n = im(i);
+		for (auto x = -1; x <= 1; x++) {
+			for (auto y = -1; y <= 1; y++) {
+				for (auto z = -1; z <= 1; z++) {
+					auto p = glm::clamp(ivec3(s_n.x + x, s_n.y + y, s_n.z + z), ivec3(0), vdim-1);
+					boundaryTokenList[i] |= boundaryTokenMap[segmentsList[im(p)]];
+				}
+			}
+		}
+
+	}*/
+	
+	
+	for (size_t i = 0; i < data.size(); ++i) {
 
 		auto vol = data[i];
 		float iso = isoFs[i];
 		vec4 color = colors_[i];
 		bool invert = invertIso_;
 		bool enclose = encloseSurface_;
+		int segmentId = valid_usegments[i];
+
+		//color = segmentColors_[i];
+
+		/*auto maskingCallBack = [this, treeData, segmentId, segmentsList, im, vdim, boundaryTokenList, boundaryTokenMap, iso, scalars](const size3_t s){
+
+			auto currInd = im(s);
+			auto currSegmentId = segmentsList[currInd];
+
+			if (segmentId == currSegmentId) {
+					return true;
+			}
+
+			if (glm::abs(iso - scalars[currInd]) <= 0.001f) return true;
+
+			return false;
+		};*/
 
 		// construction of iso surface using marchingCubesOpt
 		auto compute = [vol, iso, color, invert, enclose, i, done, this, &status_, &totalStatus]() -> std::shared_ptr<Mesh> {
@@ -344,36 +436,27 @@ void VolumeTopologyColorMapper::surfaceExtraction()
 					LogInfo("VolumeTopologyColorMapper::surfaceExtraction " + inviwo::toString(i) + " for iso vlaue: " + inviwo::toString(iso) +
 						" has completed " + inviwo::toString((int)(totalStatus * 100)) + "% ");
 				}
-
-				/*dispatchFront(
-					[this, &totalStatus, iso, i](ProgressBar& pb) {
-						pb.updateProgress(totalStatus);
-						if (totalStatus < 1.0f) {
-							pb.show();							
-						}
-						else
-							pb.hide();
-
-						if (int(totalStatus * 100) % 5 == 0) {
-							LogInfo("VolumeTopologyColorMapper::surfaceExtraction " + inviwo::toString(i) + " for iso vlaue: " + inviwo::toString(iso) +
-								" has completed " + inviwo::toString((int)(totalStatus * 100)) + "% ");
-						}
-					}
-					,	std::ref(this->getProgressBar())
-					);*/
-
 			};
-
+			
 			std::shared_ptr<Mesh> m;
 			m = util::marchingCubesOpt(vol, iso, color, invert, enclose,
 				progressCallBack);
+
+			//m = util::marchingcubes(vol, iso, color, false, false,
+			//	progressCallBack, maskingCallBack);
+
+			(this->meshes_->at(i)) = m;
+
 
 			return m;
 		};//compute
 
 		auto m = dispatchPool(compute);
 		(*meshes_)[i] = m.get();
+		//auto m = compute(); (*meshes_)[i] = m;
+		//compute();
 
+		if (i==1) break;
 	}
 
 	done();
