@@ -15,13 +15,13 @@ node {
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"          
     util.config(this)
 
-    def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis", "${env.WORKSPACE}/modules/topovis"]
+    def modulePaths = ["${env.WORKSPACE}/modules/misc", "${env.WORKSPACE}/modules/tensorvis", "${env.WORKSPACE}/modules/topovis", "${env.WORKSPACE}/modules/vectorvis"]
     util.wrap(this, "#jenkins-branch-pr") {
         util.format(this, "${env.WORKSPACE}/modules")
         util.buildStandard(
             state: this,
             modulePaths: modulePaths, 
-            onModules: ["TOPOLOGYTOOLKIT", "VTK", "OPENMESH", "SPRINGSYSTEM", "VASP", "NANOVGUTILS", "TENSORVISBASE", "TENSORVISIO"],
+            onModules: ["TOPOLOGYTOOLKIT", "VTK", "OPENMESH", "SPRINGSYSTEM", "VASP", "NANOVGUTILS", "TENSORVISBASE", "TENSORVISIO", "INTEGRALLINEFILTERING"],
             offModules: ["ABUFFERGL"],
             opts: [:]
         )
