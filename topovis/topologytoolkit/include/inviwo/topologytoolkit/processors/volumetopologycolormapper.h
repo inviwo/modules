@@ -98,6 +98,8 @@ private:
     //MeshOutport outport_;
     //MeshOutport isolinesOutport_;
 	DataOutport<std::vector<std::shared_ptr<Mesh>>> outport_;
+    VolumeOutport volumeOutport_;
+
 
     TransferFunctionProperty transferFunction_;
     inviwo::topology::PickingUtil pickingutil_;
@@ -110,8 +112,7 @@ private:
 	OptionPropertyInt mscSegmentOptions_;
 
 	OptionPropertyInt leafnodeOptions_;
-
-
+	
 	std::vector<std::shared_ptr<topology::TriangulationData>> segmentTriangulations_;
 	bool recompute_ = true;
 	std::shared_ptr<std::vector<std::shared_ptr<Mesh>>> meshes_ = nullptr;

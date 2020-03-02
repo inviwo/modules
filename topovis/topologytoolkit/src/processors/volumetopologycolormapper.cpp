@@ -56,6 +56,7 @@ VolumeTopologyColorMapper::VolumeTopologyColorMapper()
     , morseSmaleComplexInport("morsesmalecomplex")
     , volumeInport_("volume")
     , outport_("outport")	
+	, volumeOutport_("volumeOutport")
     , transferFunction_("transferFunction", "TranferFunction")
 	, isotfComposite_("isotfComposite", "TF & Isovalues", &volumeInport_,
                       InvalidationLevel::InvalidResources)
@@ -70,6 +71,7 @@ VolumeTopologyColorMapper::VolumeTopologyColorMapper()
     addPort(contourtreeInport);
     addPort(morseSmaleComplexInport);
     addPort(outport_);    
+    addPort(volumeOutport_);
 
 	leafnodeOptions_.addOption("all-leaves", "All Leaves", 0);
 	leafnodeOptions_.addOption("maxima-leaves", "Maxima Leaves", 1);
@@ -168,6 +170,32 @@ void VolumeTopologyColorMapper::process() {
 		if (recompute_) {
 			surfaceExtraction();
 			this->recompute_ = false;
+
+
+			
+			const auto &volume = *volumeInport_.getData();
+
+			//auto volumeRep = createVolumeRAM(volume.getDimensions(), DataUInt32::get());
+			auto volumeRep =
+				std::make_shared<VolumeRAMPrecision<glm::uint>>(volume.getDimensions());
+
+			auto treeData = contourtreeInport.getData();
+			// fill volume with the scalar data of the triangulation
+			std::copy(treeData->getSegments().begin(), treeData->getSegments().end(),
+						volumeRep->getDataTyped());
+
+			std::set<int> s(treeData->getSegments().begin(), treeData->getSegments().end());
+			std::vector<int> usegments(s.begin(), s.end());
+			auto sminmax = std::minmax_element(usegments.begin(), usegments.end());
+
+			auto v_out = std::make_shared<Volume>(volumeRep);
+			v_out->setModelMatrix(volume.getModelMatrix());
+			v_out->setWorldMatrix(volume.getWorldMatrix());
+			v_out->copyMetaDataFrom(volume);
+			v_out->dataMap_.dataRange = { *sminmax.first, *sminmax.second };
+			v_out->dataMap_.valueRange = { *sminmax.first, *sminmax.second };
+
+			volumeOutport_.setData(v_out);
 		}
 
         /*auto mesh =
@@ -455,8 +483,6 @@ void VolumeTopologyColorMapper::surfaceExtraction()
 		(*meshes_)[i] = m.get();
 		//auto m = compute(); (*meshes_)[i] = m;
 		//compute();
-
-		if (i==1) break;
 	}
 
 	done();
