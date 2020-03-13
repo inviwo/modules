@@ -101,21 +101,24 @@ void exposeMolVis(pybind11::module& m) {
         .def_property_readonly("atomcount", &MolecularStructure::getAtomCount)
         .def_property_readonly("residuecount", &MolecularStructure::getResidueCount)
         .def_property_readonly("chaincount", &MolecularStructure::getChainCount)
+        .def_property_readonly("bondcount", &MolecularStructure::getBondCount)
 
         .def_property("atoms", &MolecularStructure::getAtoms, &MolecularStructure::setAtoms)
         .def_property("residues", &MolecularStructure::getResidues,
                       &MolecularStructure::setResidues)
         .def_property("chains", &MolecularStructure::getChains, &MolecularStructure::setChains)
+        .def_property_readonly("bonds", &MolecularStructure::getBonds)
 
         .def("getResidue", &MolecularStructure::getResidue)
         .def("getChain", &MolecularStructure::getChain)
         .def("getAtomIndex", &MolecularStructure::getAtomIndex)
         .def("updateStructure", &MolecularStructure::updateStructure)
+        .def("computeCovalentBonds", &MolecularStructure::computeCovalentBonds)
 
         .def("__repr__", [](const MolecularStructure& s) {
-            std::string str =
-                fmt::format("<MolecularStructure: {} atom(s), {} residue(s), {} chain(s)",
-                            s.getAtomCount(), s.getResidueCount(), s.getChainCount());
+            std::string str = fmt::format(
+                "<MolecularStructure: {} atom(s), {} residue(s), {} chain(s), {} bonds",
+                s.getAtomCount(), s.getResidueCount(), s.getChainCount(), s.getBondCount());
             return str + ">";
         });
 

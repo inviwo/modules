@@ -159,6 +159,7 @@ class MolecularStructureSource(ivw.Processor):
         molstruct.chains = chains
 
         molstruct.updateStructure()
+        molstruct.computeCovalentBonds()
 
         positions = []
         colors = []

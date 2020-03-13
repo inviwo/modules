@@ -79,6 +79,23 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
     // mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
 
+    // spheres
+    std::vector<uint32_t> indices(s.getAtomCount());
+    std::iota(indices.begin(), indices.end(), 0);
+    mesh->addIndices(Mesh::MeshInfo(DrawType::Points, ConnectivityType::None),
+                     util::makeIndexBuffer(std::move(indices)));
+
+    // bonds
+    if (s.getBondCount() > 0) {
+        indices.resize(s.getBondCount() * 2);
+        for (const auto& bond : s.getBonds()) {
+            indices.push_back(static_cast<uint32_t>(bond.first));
+            indices.push_back(static_cast<uint32_t>(bond.second));
+        }
+        mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
+                         util::makeIndexBuffer(std::move(indices)));
+    }
+
     return mesh;
 }
 

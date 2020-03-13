@@ -72,6 +72,8 @@ struct IVW_MODULE_MOLVISBASE_API Chain {
     std::set<size_t> residues;
 };
 
+using Bond = std::pair<size_t, size_t>;
+
 class IVW_MODULE_MOLVISBASE_API MolecularStructure {
 public:
     MolecularStructure();
@@ -80,6 +82,7 @@ public:
     size_t getAtomCount() const;
     size_t getResidueCount() const;
     size_t getChainCount() const;
+    size_t getBondCount() const;
 
     void setAtoms(Atoms atoms);
     void setResidues(std::vector<Residue> residues);
@@ -100,10 +103,14 @@ public:
      */
     void updateStructure();
 
+    void computeCovalentBonds();
+    const std::vector<Bond>& getBonds() const;
+
 private:
     Atoms atoms_;
     std::vector<Residue> residues_;
     std::vector<Chain> chains_;
+    std::vector<Bond> bonds_;
 };
 
 }  // namespace molvis

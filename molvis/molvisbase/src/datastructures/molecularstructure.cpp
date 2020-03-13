@@ -29,8 +29,12 @@
 
 #include <inviwo/molvisbase/datastructures/molecularstructure.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -65,6 +69,8 @@ size_t MolecularStructure::getAtomCount() const { return atoms_.positions.size()
 size_t MolecularStructure::getResidueCount() const { return residues_.size(); }
 
 size_t MolecularStructure::getChainCount() const { return chains_.size(); }
+
+size_t MolecularStructure::getBondCount() const { return bonds_.size(); }
 
 void MolecularStructure::setAtoms(Atoms atoms) { atoms_ = std::move(atoms); }
 
@@ -144,6 +150,74 @@ void MolecularStructure::updateStructure() {
         chainIt->residues.insert(residueIndex);
     }
 }
+
+void MolecularStructure::computeCovalentBonds() {
+    bonds_.clear();
+    if (atoms_.empty()) return;
+
+    const double maxCovalentBondLength = 4.0;
+    const dvec3 cellSize{maxCovalentBondLength};
+
+    // create uniform grid enclosing all atoms +- 1.0
+    dvec3 min{atoms_.positions.front()};
+    dvec3 max{atoms_.positions.front()};
+    for (size_t i = 0; i < atoms_.size(); ++i) {
+        min = glm::min(min, atoms_.positions[i]);
+        max = glm::max(max, atoms_.positions[i]);
+    }
+    min -= 1.0;
+    max += 1.0;
+
+    const size3_t dims{glm::max(size3_t(1), size3_t((max - min) / cellSize))};
+    const dvec3 cellExt{(max - min) / dvec3{dims}};
+
+    util::IndexMapper3D im(dims);
+
+    std::vector<int> cells(glm::compMul(dims), -1);
+    std::vector<std::vector<size_t>> cellData;
+
+    auto cellCoord = [&](const dvec3& pos) -> size3_t {
+        return glm::clamp(size3_t((pos - min) / cellExt), size3_t(0), dims - size_t{1});
+    };
+
+    for (size_t i = 0; i < atoms_.size(); ++i) {
+        const auto cellIndex = im(cellCoord(atoms_.positions[i]));
+        if (cells[cellIndex] == -1) {
+            cells[cellIndex] = static_cast<int>(cellData.size());
+            cellData.push_back({});
+        }
+        cellData[cells[cellIndex]].push_back(i);
+    }
+
+    auto covalentBond = [&](size_t atom1, size_t atom2) {
+        return covalentBondHeuristics(
+            element::element(atoms_.atomNumbers[atom1]), atoms_.positions[atom1],
+            element::element(atoms_.atomNumbers[atom2]), atoms_.positions[atom2]);
+    };
+
+    for (size_t atom1 = 0; atom1 < atoms_.size(); ++atom1) {
+        const auto pos = atoms_.positions[atom1];
+        const auto minCell = cellCoord(pos - maxCovalentBondLength);
+        const auto maxCell = cellCoord(pos + maxCovalentBondLength);
+
+        for (size_t z = minCell.z; z <= maxCell.z; ++z) {
+            for (size_t y = minCell.y; y <= maxCell.y; ++y) {
+                for (size_t x = minCell.x; x <= maxCell.x; ++x) {
+                    const auto cellIndex = im(size3_t{x, y, z});
+                    if (cells[cellIndex] > -1) {
+                        for (auto atom2 : cellData[cells[cellIndex]]) {
+                            if ((atom1 < atom2) && covalentBond(atom1, atom2)) {
+                                bonds_.push_back({atom1, atom2});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+const std::vector<Bond>& MolecularStructure::getBonds() const { return bonds_; }
 
 }  // namespace molvis
 
