@@ -24,7 +24,7 @@ class MolecularStructureSource(ivw.Processor):
         self.addOutport(ivw.data.MeshOutport("mesh"))
         self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
 
-        self.filename = ivw.properties.FileProperty("filename", "CIF Filename")
+        self.filename = ivw.properties.FileProperty("filename", "Structure Filename", "", "molecularstructure")
         self.filename.addNameFilter(ivw.properties.FileExtension("cif", "mmCIF file"))
         self.filename.addNameFilter(ivw.properties.FileExtension("pdb", "PDB file"))
         self.addProperty(self.filename, owner=False)
