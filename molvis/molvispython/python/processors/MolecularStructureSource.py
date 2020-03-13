@@ -123,7 +123,6 @@ class MolecularStructureSource(ivw.Processor):
             resId = info[3][1]
             if info[3][0] not in residueDict:
                 residueDict[info[3][0]] = info[3][1]
-
             residueId.append(resId)
             #atomNumber.append()
             atomFullName.append(atom.get_name())
@@ -143,8 +142,23 @@ class MolecularStructureSource(ivw.Processor):
 
         atoms.updateAtomNumbers()
 
+        ## residues
+        residues = []
+        for res in structure.get_residues():
+            info = res.get_id()
+            residues.append(ivwmolvis.Residue(id=info[1], name=res.get_resname(), 
+                fullname=info[0], chainid=chainDict[res.get_parent().get_full_id()[2]]))
+        ## chains
+        chains = []
+        for chain in structure.get_chains():
+            chains.append(ivwmolvis.Chain(id=chainDict[chain.get_id()], name=chain.get_id()))
+
         molstruct = ivwmolvis.MolecularStructure()
         molstruct.atoms = atoms
+        molstruct.residues = residues
+        molstruct.chains = chains
+
+        molstruct.updateStructure()
 
         positions = []
         colors = []
