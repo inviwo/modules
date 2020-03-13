@@ -43,6 +43,9 @@ namespace molvis {
 
 struct IVW_MODULE_MOLVISBASE_API Atoms {
     void updateAtomNumbers();
+    bool empty() const;
+    size_t size() const;
+    void clear();
 
     std::vector<dvec3> positions;
     //std::vector<int> structureIds;
@@ -51,6 +54,8 @@ struct IVW_MODULE_MOLVISBASE_API Atoms {
     std::vector<int> residueIds;
     std::vector<unsigned char> atomNumbers;
     std::vector<std::string> fullNames;
+
+    std::vector<int> residueIndices;
 };
 
 struct IVW_MODULE_MOLVISBASE_API Residue {
@@ -89,6 +94,11 @@ public:
 
     std::optional<size_t> getAtomIndex(const std::string& fullAtomName, size_t residueId,
                                        size_t chainId) const;
+
+    /**
+     * \brief update internal state of residues and chains, i.e. contained atoms/residues
+     */
+    void updateStructure();
 
 private:
     Atoms atoms_;

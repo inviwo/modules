@@ -42,6 +42,22 @@ void Atoms::updateAtomNumbers() {
     });
 }
 
+bool Atoms::empty() const { return positions.empty(); }
+
+size_t Atoms::size() const { return positions.size(); }
+
+void Atoms::clear() {
+    positions.clear();
+    // structureIds.clear();
+    modelIds.clear();
+    chainIds.clear();
+    residueIds.clear();
+    atomNumbers.clear();
+    fullNames.clear();
+
+    residueIndices.clear();
+}
+
 MolecularStructure::MolecularStructure() = default;
 
 size_t MolecularStructure::getAtomCount() const { return atoms_.positions.size(); }
@@ -102,6 +118,31 @@ std::optional<size_t> MolecularStructure::getAtomIndex(const std::string& fullAt
         }
     }
     return std::nullopt;
+}
+
+void MolecularStructure::updateStructure() {
+    atoms_.residueIndices.clear();
+
+    for (size_t i = 0; i < atoms_.size(); ++i) {
+        const auto resId = atoms_.residueIds[i];
+        const auto chainId = atoms_.chainIds[i];
+        auto it = util::find_if(residues_, [id = resId](const Residue& r) { return r.id == id; });
+        if (it == residues_.end()) {
+            throw Exception(fmt::format("Invalid residue ID '{}'", resId), IVW_CONTEXT);
+        }
+        IVW_ASSERT(chainId == it->chainId, "Chain ID mismatch");
+
+        it->atoms.insert(i);
+        const auto residueIndex = std::distance(residues_.begin(), it);
+        atoms_.residueIndices.push_back(static_cast<int>(residueIndex));
+
+        auto chainIt =
+            util::find_if(chains_, [id = chainId](const Chain& c) { return c.id == id; });
+        if (chainIt == chains_.end()) {
+            throw Exception(fmt::format("Invalid chain ID '{}'", chainId));
+        }
+        chainIt->residues.insert(residueIndex);
+    }
 }
 
 }  // namespace molvis

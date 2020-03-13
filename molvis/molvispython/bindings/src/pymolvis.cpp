@@ -52,6 +52,9 @@ void exposeMolVis(pybind11::module& m) {
     py::class_<Atoms, std::shared_ptr<Atoms>>(m, "Atoms")
         .def(py::init())
         .def("updateAtomNumbers", &Atoms::updateAtomNumbers)
+        .def("empty", &Atoms::empty)
+        .def("size", &Atoms::size)
+        .def("clear", &Atoms::clear)
         .def_readwrite("positions", &Atoms::positions)
         //.def_readwrite("structureids", &Atoms::structureIds)
         .def_readwrite("modelids", &Atoms::modelIds)
@@ -59,11 +62,16 @@ void exposeMolVis(pybind11::module& m) {
         .def_readwrite("residueids", &Atoms::residueIds)
         .def_readwrite("atomnumbers", &Atoms::atomNumbers)
         .def_readwrite("fullnames", &Atoms::fullNames)
-        .def("__repr__",
-             [](Atoms& a) { return fmt::format("<Atoms: {} entries>", a.atomNumbers.size()); });
+        .def("__len__", [](Atoms& a) { return a.size(); })
+        .def("__repr__", [](Atoms& a) { return fmt::format("<Atoms: {} entries>", a.size()); });
 
     py::class_<Residue, std::shared_ptr<Residue>>(m, "Residue")
         .def(py::init())
+        .def(py::init([](size_t id, const std::string& name, const std::string& fullname,
+                         size_t chainid) -> Residue {
+                 return {id, name, fullname, chainid, {}};
+             }),
+             py::arg("id"), py::arg("name"), py::arg("fullname"), py::arg("chainid"))
         .def_readwrite("id", &Residue::id)
         .def_readwrite("name", &Residue::name)
         .def_readwrite("fullname", &Residue::fullName)
@@ -76,6 +84,10 @@ void exposeMolVis(pybind11::module& m) {
 
     py::class_<Chain, std::shared_ptr<Chain>>(m, "Chain")
         .def(py::init())
+        .def(py::init([](size_t id, const std::string& name) -> Chain {
+                 return {id, name, {}};
+             }),
+             py::arg("id"), py::arg("name"))
         .def_readwrite("id", &Chain::id)
         .def_readwrite("name", &Chain::name)
         .def_readwrite("residues", &Chain::residues)
@@ -98,6 +110,7 @@ void exposeMolVis(pybind11::module& m) {
         .def("getResidue", &MolecularStructure::getResidue)
         .def("getChain", &MolecularStructure::getChain)
         .def("getAtomIndex", &MolecularStructure::getAtomIndex)
+        .def("updateStructure", &MolecularStructure::updateStructure)
 
         .def("__repr__", [](const MolecularStructure& s) {
             std::string str =
