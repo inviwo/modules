@@ -220,6 +220,9 @@ constexpr Element fromFullName(std::string_view fullAtomName) {
 
 }  // namespace element
 
+bool IVW_MODULE_MOLVISBASE_API covalentBondHeuristics(Element element1, const dvec3& pos1,
+                                                      Element element2, const dvec3& pos2);
+
 std::shared_ptr<Mesh> IVW_MODULE_MOLVISBASE_API createMesh(const MolecularStructure& s);
 
 }  // namespace molvis
