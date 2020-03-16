@@ -24,6 +24,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    roll.glsl
+    spiral.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
