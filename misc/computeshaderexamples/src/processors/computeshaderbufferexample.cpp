@@ -45,7 +45,7 @@ const ProcessorInfo ComputeShaderBufferExample::processorInfo_{
     "Compute Shader Buffer Example",          // Display name
     "Example",                                // Category
     CodeState::Experimental,                  // Code state
-    Tags::None,                               // Tags
+    Tags::GL,                                 // Tags
 };
 const ProcessorInfo ComputeShaderBufferExample::getProcessorInfo() const { return processorInfo_; }
 
@@ -68,10 +68,7 @@ ComputeShaderBufferExample::ComputeShaderBufferExample()
 void ComputeShaderBufferExample::process() {
     shader_.activate();
 
-    shader_.setUniform("numPoints", numPoints_.get());
-    shader_.setUniform("radius", radius_.get());
-    shader_.setUniform("rotations", rotations_.get());
-    shader_.setUniform("height", height_.get());
+    utilgl::setUniforms(shader_, numPoints_, radius_, rotations_, height_);
 
     TextureUnitContainer cont;
     utilgl::bindAndSetUniforms(shader_, cont, tf_);
@@ -84,7 +81,10 @@ void ComputeShaderBufferExample::process() {
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, bugPosGL->getId());
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, bugColGL->getId());
 
-    glDispatchCompute(numPoints_.get(), 1, 1);
+    GLuint numWorkGroupsX = numPoints_.get();
+    GLuint numWorkGroupsY = 1;
+    GLuint numWorkGroupsZ = 1;
+    glDispatchCompute(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
     glMemoryBarrier(GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT);
 

@@ -34,8 +34,11 @@
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
 #include <modules/opengl/texture/texture2d.h>
-
 #include <modules/opengl/image/layergl.h>
+
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+
 
 namespace inviwo {
 
@@ -45,7 +48,7 @@ const ProcessorInfo ComputeShaderImageExample::processorInfo_{
     "Compute Shader Image Example",          // Display name
     "Example",                               // Category
     CodeState::Experimental,                 // Code state
-    Tags::None,                              // Tags
+    Tags::GL,                                // Tags
 };
 const ProcessorInfo ComputeShaderImageExample::getProcessorInfo() const { return processorInfo_; }
 
@@ -76,7 +79,7 @@ void ComputeShaderImageExample::process() {
     layerGL->setSwizzleMask(swizzlemasks::luminance);
 
     shader_.activate();
-    shader_.setUniform("roll", roll_.get());
+    utilgl::setUniforms(shader_, roll_);
 
     layerGL->getTexture()->bind();
 
