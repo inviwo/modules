@@ -11,6 +11,7 @@ set(HEADER_FILES
 	include/inviwo/vtk/util/vtkoutputlogger.h
     include/inviwo/vtk/processors/vtkdatasetinformation.h
     include/inviwo/vtk/processors/vtkreader.h
+    include/inviwo/vtk/processors/vtktovolume.h
     include/inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h
     include/inviwo/vtk/processors/vtkwriter.h
     include/inviwo/vtk/util/vtkutil.h
@@ -28,6 +29,7 @@ set(SOURCE_FILES
     src/util/vtkoutputlogger.cpp
     src/processors/vtkdatasetinformation.cpp
     src/processors/vtkreader.cpp
+    src/processors/vtktovolume.cpp
     src/processors/vtkunstructuredgridtorectilineargrid.cpp
     src/processors/vtkwriter.cpp
 )

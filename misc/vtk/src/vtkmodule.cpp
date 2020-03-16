@@ -37,6 +37,7 @@
 #include <inviwo/vtk/ports/vtkdatasetport.h>
 #include <inviwo/vtk/processors/vtkdatasetinformation.h>
 #include <inviwo/vtk/processors/vtkreader.h>
+#include <inviwo/vtk/processors/vtktovolume.h>
 #include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
 #include <inviwo/vtk/processors/vtkwriter.h>
 
@@ -50,6 +51,7 @@ VTKModule::VTKModule(InviwoApplication* app)
 
     registerProcessor<VTKDataSetInformation>();
     registerProcessor<VTKReader>();
+    registerProcessor<VTKtoVolume>();
     registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
     registerProcessor<VTKWriter>();
 
