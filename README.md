@@ -20,6 +20,7 @@ See [readme](medvis/readme.md) for detailed instructions.
 * OpenMesh: interface to the [OpenMesh](https://www.openmesh.org) library
 * SpringSystem: implementation of a 3D spring mass system
 * VTK: basic interface with the Visualization Toolkit [VTK](https://vtk.org)
+* ComputeShaderExamples: Contains two example processors on how compute shaders can be used in Inviwo
 
 ## molvis
 Molecular visualizations.
