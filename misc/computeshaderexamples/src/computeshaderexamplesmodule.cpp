@@ -31,21 +31,20 @@
 #include <inviwo/computeshaderexamples/processors/computeshaderbufferexample.h>
 #include <inviwo/computeshaderexamples/processors/computeshaderimageexample.h>
 
-
 #include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-ComputeShaderExamplesModule::ComputeShaderExamplesModule(InviwoApplication* app) : InviwoModule(app, "ComputeShaderExamples") {
+ComputeShaderExamplesModule::ComputeShaderExamplesModule(InviwoApplication* app)
+    : InviwoModule(app, "ComputeShaderExamples") {
     // Add a directory to the search path of the Shadermanager
-     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
 
     // Processors
     registerProcessor<ComputeShaderBufferExample>();
     registerProcessor<ComputeShaderImageExample>();
-
 }
 
 }  // namespace inviwo
