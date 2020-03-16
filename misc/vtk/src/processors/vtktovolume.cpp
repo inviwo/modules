@@ -331,18 +331,18 @@ void VTKtoVolume::convertData() {
         DataFormatBase::get(format->getNumericType(), numTotalComps, format->getSize() * 8);
 
     // Use point bounds
-    Matrix<4, float> worldMatrix(0);
+    Matrix<4, float> modelMatrix(0);
     double bounds[6];
     vtkData->GetBounds(bounds);
     for (size_t x = 0; x < 3; ++x) {
-        worldMatrix[x][x] = (bounds[x * 2 + 1] - bounds[x * 2]) / dimensions[x];
-        worldMatrix[3][x] = bounds[x * 2];
+        modelMatrix[x][x] = (bounds[x * 2 + 1] - bounds[x * 2]) / dimensions[x];
+        modelMatrix[3][x] = bounds[x * 2];
     }
-    worldMatrix[3][3] = 1;
+    modelMatrix[3][3] = 1;
 
     // Create new volume
     auto volume = std::make_shared<Volume>(dimensions, multichannelFormat);
-    volume->setModelMatrix(worldMatrix);
+    volume->setModelMatrix(modelMatrix);
 
     // Create RAM volume
     auto volRAM = createVolumeRAM(dimensions, multichannelFormat);
