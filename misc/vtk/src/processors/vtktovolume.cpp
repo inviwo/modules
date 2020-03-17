@@ -109,27 +109,22 @@ void VTKtoVolume::process() {
 void VTKtoVolume::deserialize(Deserializer &d) {
     reactToChange_ = false;
     Processor::deserialize(d);
-
     dataArrays_.clear();
-    std::string allSelected;
-    d.deserialize("selectedArrays", allSelected, SerializationTarget::Attribute);
-    std::stringstream sstream(allSelected);
-    std::string token;
-    while (std::getline(sstream, token, ';')) formerArraySelection_.push_back(token);
     reactToChange_ = true;
+
+    d.deserialize("selectedArrays", formerArraySelection_);
+    for (auto &name : formerArraySelection_) LogWarn("\tArray " << name);
 }
 
 void VTKtoVolume::serialize(Serializer &s) const {
     Processor::serialize(s);
-
-    std::stringstream allSelected;
-    for (size_t a = 0; a < dataArrays_.size(); ++a) {
-        for (auto *prop : dataArrays_.getProperties()) {
-            BoolProperty *boolProp = dynamic_cast<BoolProperty *>(prop);
-            if (boolProp && boolProp->get()) allSelected << boolProp->getDisplayName() << ';';
-        }
+    std::vector<std::string> arraySelection;
+    auto boolProps = dataArrays_.getPropertiesByType<BoolProperty>();
+    for (auto *prop : boolProps) {
+        if (prop->get()) arraySelection.push_back(prop->getDisplayName());
     }
-    s.serialize("selectedArrays", allSelected.str(), SerializationTarget::Attribute);
+
+    s.serialize("selectedArrays", arraySelection);
 }
 
 void VTKtoVolume::VTKArrayList::addArray(const std::string &name, int numChannels, void *dataPtr) {
