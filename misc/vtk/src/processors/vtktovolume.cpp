@@ -35,7 +35,7 @@
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/formats.h>
-// #include <modules/base/algorithm/dataminmax.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -359,19 +359,19 @@ void VTKtoVolume::convertData() {
     }
 
     volume->addRepresentation(volRAM);
-    double minVal(std::numeric_limits<double>::max()), maxVal(std::numeric_limits<double>::min());
-    for (size_t z = 0; z < dimensions.z; ++z)
-        for (size_t y = 0; y < dimensions.y; ++y)
-            for (size_t x = 0; x < dimensions.x; ++x) {
-                auto data = volRAM->getAsDVec4(size3_t(x, y, z));
-                for (size_t d = 0; d < numTotalComps; ++d) {
-                    minVal = std::min(data[d], minVal);
-                    maxVal = std::max(data[d], maxVal);
-                }
+
+    auto extent = util::volumeMinMax(volume.get());
+    double minVal = extent.first[0];
+    double maxVal = extent.second[0];
+    for (size_t d = 1; d < numTotalComps; ++d) {
+        minVal = std::min(extent.first[d], minVal);
+        maxVal = std::max(extent.second[d], minVal);
             }
 
     volume->dataMap_.valueRange = {minVal, maxVal};
     volume->dataMap_.dataRange = {dataRange_.get().x, dataRange_.get().y};
+    dataRange_.setMinValue(dvec2(std::min(minVal, dataRange_.getMinValue()[0])));
+    dataRange_.setMaxValue(dvec2(std::max(maxVal, dataRange_.getMaxValue()[0])));
     outport_.setData(volume);
 }
 
