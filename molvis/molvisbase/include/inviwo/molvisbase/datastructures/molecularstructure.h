@@ -48,6 +48,7 @@ struct IVW_MODULE_MOLVISBASE_API Atoms {
     void clear();
 
     std::vector<dvec3> positions;
+    std::vector<double> bfactors;
     //std::vector<int> structureIds;
     std::vector<int> modelIds;
     std::vector<int> chainIds;
@@ -79,6 +80,9 @@ public:
     MolecularStructure();
     virtual ~MolecularStructure() = default;
 
+    void setSource(const std::string& source);
+    const std::string& getSource() const;
+
     size_t getAtomCount() const;
     size_t getResidueCount() const;
     size_t getChainCount() const;
@@ -107,6 +111,8 @@ public:
     const std::vector<Bond>& getBonds() const;
 
 private:
+    std::string source_;
+
     Atoms atoms_;
     std::vector<Residue> residues_;
     std::vector<Chain> chains_;
@@ -126,9 +132,11 @@ struct DataTraits<molvis::MolecularStructure> {
         Document doc;
         doc.append("b", "Molecular Structure", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Atoms: "), data.getAtomCount());
-        tb(H("Residues: "), data.getResidueCount());
-        tb(H("Chains: "), data.getChainCount());
+        tb(H("Source"), data.getSource());
+        tb(H("Atoms"), data.getAtomCount());
+        tb(H("Residues"), data.getResidueCount());
+        tb(H("Chains"), data.getChainCount());
+        tb(H("Bonds"), data.getBondCount());
 
         return doc;
     }

@@ -87,7 +87,8 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
 
     // bonds
     if (s.getBondCount() > 0) {
-        indices.resize(s.getBondCount() * 2);
+        indices.clear();
+        indices.reserve(s.getBondCount() * 2);
         for (const auto& bond : s.getBonds()) {
             indices.push_back(static_cast<uint32_t>(bond.first));
             indices.push_back(static_cast<uint32_t>(bond.second));
