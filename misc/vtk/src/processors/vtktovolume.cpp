@@ -28,21 +28,16 @@
  *********************************************************************************/
 
 #include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
-#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/networklock.h>
-#include <inviwo/core/util/clock.h>
 #include <inviwo/core/util/formats.h>
 #include <modules/base/algorithm/dataminmax.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <vtkCallbackCommand.h>
 #include <warn/pop>
 
-#include <vtkInformation.h>
 #include <vtkDataSet.h>
 #include <vtkCellData.h>
 #include <vtkPointData.h>
@@ -50,7 +45,6 @@
 #include <vtkRectilinearGrid.h>
 #include <vtkStructuredGrid.h>
 #include <vtkImageData.h>
-#include <vtkMatrix4x4.h>
 #include <vtkType.h>
 
 #include <fstream>
@@ -146,14 +140,7 @@ void VTKtoVolume::VTKArrayList::addArray(const std::string &name, int numChannel
 }
 
 void VTKtoVolume::VTKArrayList::clear() {
-    std::vector<std::string> identifiers{};
-    for (const auto &property : getProperties()) {
-        identifiers.emplace_back(property->getIdentifier());
-    }
-    for (const auto &identifier : identifiers) {
-        Property *prop = removeProperty(identifier);
-        delete prop;
-    }
+    while (size() > 0) removeProperty(size_t(0));
     numArrayComponents.clear();
     ptrArrayData.clear();
 }
@@ -220,15 +207,17 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
     reactToChange_ = false;
 
     // Remember selected channels
-    std::unordered_set<std::string> formerChannels;
+    std::vector<std::string> formerChannels;
     if (keepSettings) {
         if (!formerArraySelection_.empty()) {
-            for (auto &name : formerArraySelection_) formerChannels.insert(name);
+            formerChannels = formerArraySelection_;
             formerArraySelection_.clear();
         } else {
-            for (auto *prop : dataArrays_.getProperties())
-                if (dynamic_cast<BoolProperty *>(prop)->get())
-                    formerChannels.insert(prop->getDisplayName());
+            for (auto *prop : dataArrays_.getProperties()) {
+                if (dynamic_cast<BoolProperty *>(prop)->get()) {
+                    formerChannels.push_back(prop->getDisplayName());
+                }
+            }
         }
     }
 
@@ -261,14 +250,16 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
         dataArrays_.addArray(arrayName, numComps, array->GetVoidPointer(0));
         if (keepSettings) {
             BoolProperty *prop = dynamic_cast<BoolProperty *>(dataArrays_[dataArrays_.size() - 1]);
-            if (prop && formerChannels.find(prop->getDisplayName()) != formerChannels.end())
+            if (prop && std::find(formerChannels.begin(), formerChannels.end(),
+                                  prop->getDisplayName()) != formerChannels.end())
                 prop->set(true);
         }
     }
-    if (!keepSettings && numTotalComps <= 4)
-        for (auto *prop : dataArrays_.getProperties())
+    if (!keepSettings && numTotalComps <= 4) {
+        for (auto *prop : dataArrays_.getProperties()) {
             if (BoolProperty *boolProp = dynamic_cast<BoolProperty *>(prop)) boolProp->set(true);
-
+        }
+    }
     dataArrays_.selectedFormat = dataFormats_.get();
 
     if (keepSettings) convertData_ = true;
