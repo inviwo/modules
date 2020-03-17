@@ -72,7 +72,6 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    static const DataFormatBase* getFormatFromVtkId(int vtkTypeId, int bitSize);
     virtual void deserialize(Deserializer&) override;
     virtual void serialize(Serializer& s) const override;
 

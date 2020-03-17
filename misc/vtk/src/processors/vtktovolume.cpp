@@ -189,7 +189,7 @@ void VTKtoVolume::updateFormats() {
             continue;
 
         const DataFormatBase *format =
-            getFormatFromVtkId(vtkTypeId, array->GetElementComponentSize() * 8);
+            vtkutil::getFormatFromVtkId(vtkTypeId, array->GetElementComponentSize() * 8);
         if (!format) continue;
 
         insertedValues.push_back(vtkTypeId);
@@ -245,7 +245,7 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
 
         int vtkTypeId = array->GetDataType();
         const DataFormatBase *format =
-            getFormatFromVtkId(vtkTypeId, array->GetElementComponentSize() * 8);
+            vtkutil::getFormatFromVtkId(vtkTypeId, array->GetElementComponentSize() * 8);
         if (format->getId() != selectedFormat) continue;
         int numComps = array->GetNumberOfComponents();
 
@@ -373,34 +373,6 @@ void VTKtoVolume::convertData() {
     dataRange_.setMinValue(dvec2(std::min(minVal, dataRange_.getMinValue()[0])));
     dataRange_.setMaxValue(dvec2(std::max(maxVal, dataRange_.getMaxValue()[0])));
     outport_.setData(volume);
-}
-
-const DataFormatBase *VTKtoVolume::getFormatFromVtkId(int vtkTypeId, int bitSize) {
-    switch (vtkTypeId) {
-        case VTK_CHAR:
-        case VTK_SIGNED_CHAR:
-        case VTK_SHORT:
-        case VTK_INT:
-        case VTK_LONG:
-        case VTK_LONG_LONG:
-        case VTK___INT64:
-            return DataFormatBase::get(NumericType::SignedInteger, 1, bitSize);
-
-        case VTK_UNSIGNED_CHAR:
-        case VTK_UNSIGNED_SHORT:
-        case VTK_UNSIGNED_INT:
-        case VTK_UNSIGNED_LONG:
-        case VTK_UNSIGNED_LONG_LONG:
-        case VTK_UNSIGNED___INT64:
-        case VTK_ID_TYPE:
-            return DataFormatBase::get(NumericType::UnsignedInteger, 1, bitSize);
-
-        case VTK_FLOAT:
-        case VTK_DOUBLE:
-            return DataFormatBase::get(NumericType::Float, 1, bitSize);
-        default:
-            return nullptr;
-    }
 }
 
 }  // namespace inviwo
