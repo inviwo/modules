@@ -54,13 +54,14 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VTKtoVolume, VTKtoVolume}
  * ![](org.inviwo.VTKtoVolume.png?classIdentifier=org.inviwo.VTKtoVolume)
- * Converts a VTK data set to a base volume, assuming that it is axis aligned and uniform.
+ * Converts a VTK data set to an inviwo volume, assuming that it is regular.
  */
 
 /**
- * \brief Convert rectlinear VTK data to base volume
+ * \brief Convert rectlinear VTK data to inviwo volume
  * Builds a new inviwo volume with the data from the given VTK data set.
- * Checks if the underlying grid is regular.
+ * Checks if the underlying grid is regular. If not, no data is generated.
+ * All grids will be interpreted as uniform, so the shape of the grid might be lost.
  */
 class IVW_MODULE_VTK_API VTKtoVolume : public Processor {
 public:
