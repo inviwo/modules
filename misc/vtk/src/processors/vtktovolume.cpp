@@ -70,7 +70,7 @@ VTKtoVolume::VTKtoVolume()
     , useCellData_("useCellData", "Use cell data", false)
     , dataArrays_("availableArrays", "Data Arrays")
     , dataFormats_("existingDataFormats", "Data formats")
-    , convertButton_("triggerConvert", "Convert")
+    , convertButton_("triggerConvert", "Convert", [this]() { convertData_ = true; })
     , dataRange_("dataRange", "Data range", vec2(0, 1))
     , isDirty_(false)
     , convertData_(false)
@@ -93,7 +93,6 @@ VTKtoVolume::VTKtoVolume()
         dataArrays_.clear();
         updateArrays();
     });
-    convertButton_.onChange([this]() { convertData_ = true; });
     dataArrays_.onChange([this]() {
         if (!isDirty_) updateAvailableArrays();
     });
@@ -113,7 +112,6 @@ void VTKtoVolume::deserialize(Deserializer &d) {
     isDirty_ = false;
 
     d.deserialize("selectedArrays", formerArraySelection_);
-    for (auto &name : formerArraySelection_) LogWarn("\tArray " << name);
 }
 
 void VTKtoVolume::serialize(Serializer &s) const {
@@ -157,7 +155,7 @@ void VTKtoVolume::updateFormats() {
     const VTKDataSet &vtkData = *inport_.getData();
     std::optional<size3_t> dimensions = inport_.getData()->getDimensions();
     if (!dimensions) {
-        LogWarn("Input vtk data set is not rectilinear.");
+        LogWarn("Input vtk data set is not regular.");
         return;
     }
 
@@ -186,36 +184,32 @@ void VTKtoVolume::updateFormats() {
         dataFormats_.addOption(format->getString(), format->getString(), format->getId());
     }
 
-    // Try to keep arrays if the new input has arrays of the same type.
-    bool keep = dataFormats_.setSelectedValue(formerFormat);
+    dataFormats_.setSelectedValue(formerFormat);
 
     if (dataFormats_.size())
-        updateArrays(keep);
+        updateArrays();
     else
         dataArrays_.clear();
 
     isDirty_ = false;
 }
 
-void VTKtoVolume::updateArrays(bool keepSettings) {
+void VTKtoVolume::updateArrays() {
     NetworkLock lock;
     isDirty_ = true;
 
     // Remember selected channels
     std::vector<std::string> formerChannels;
-    if (keepSettings) {
-        if (!formerArraySelection_.empty()) {
-            formerChannels = formerArraySelection_;
-            formerArraySelection_.clear();
-        } else {
-            for (auto *prop : dataArrays_.getProperties()) {
-                if (dynamic_cast<BoolProperty *>(prop)->get()) {
-                    formerChannels.push_back(prop->getDisplayName());
-                }
+    if (!formerArraySelection_.empty()) {
+        formerChannels = formerArraySelection_;
+        formerArraySelection_.clear();
+    } else {
+        for (auto *prop : dataArrays_.getPropertiesByType<BoolProperty>()) {
+            if (prop->get()) {
+                formerChannels.push_back(prop->getDisplayName());
             }
         }
     }
-
     dataArrays_.clear();
     if (!dataFormats_.size() || !inport_.hasData()) {
         isDirty_ = false;
@@ -231,6 +225,7 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
         useCellData_.get() ? cellData->GetNumberOfArrays() : pointData->GetNumberOfArrays();
 
     int numTotalComps = 0;
+    size_t numSelectedComps = 0;
     for (int i = 0; i < numArrays; ++i) {
         auto array = useCellData_.get() ? cellData->GetArray(i) : pointData->GetArray(i);
         std::string arrayName(array->GetName());
@@ -243,21 +238,24 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
 
         numTotalComps += numComps;
         dataArrays_.addArray(arrayName, numComps, array->GetVoidPointer(0));
-        if (keepSettings) {
-            BoolProperty *prop = dynamic_cast<BoolProperty *>(dataArrays_[dataArrays_.size() - 1]);
-            if (prop && std::find(formerChannels.begin(), formerChannels.end(),
-                                  prop->getDisplayName()) != formerChannels.end())
-                prop->set(true);
+
+        // Set previous arrays to true if existing.
+        BoolProperty *prop = dynamic_cast<BoolProperty *>(dataArrays_[dataArrays_.size() - 1]);
+        if (prop && std::find(formerChannels.begin(), formerChannels.end(),
+                              prop->getDisplayName()) != formerChannels.end()) {
+            prop->set(true);
+            numSelectedComps++;
         }
     }
-    if (!keepSettings && numTotalComps <= 4) {
+    bool containsAllFormerArrays = (numSelectedComps == formerChannels.size());
+    if (!containsAllFormerArrays && numTotalComps <= 4) {
         for (auto *prop : dataArrays_.getProperties()) {
             if (BoolProperty *boolProp = dynamic_cast<BoolProperty *>(prop)) boolProp->set(true);
         }
     }
     dataArrays_.selectedFormat = dataFormats_.get();
 
-    if (keepSettings) convertData_ = true;
+    if (containsAllFormerArrays) convertData_ = true;
 
     isDirty_ = false;
 }
@@ -278,6 +276,7 @@ void VTKtoVolume::updateAvailableArrays() {
         bool tooMuch = numTotalComps + dataArrays_.numArrayComponents[p] > 4;
         properties[p]->setReadOnly(tooMuch);
     }
+    convertButton_.setDisplayName(numTotalComps > 0 ? "Convert" : "Please Select Arrays");
 
     isDirty_ = false;
 }
@@ -291,7 +290,7 @@ void VTKtoVolume::convertData() {
     // Get dimensions. If none are given, it's not a regular grid.
     std::optional<size3_t> dimensionsOpt = vtkDataPtr->getDimensions();
     if (!dimensionsOpt) {
-        LogWarn("Input vtk data set is not rectilinear.");
+        LogWarn("Input vtk data set is not regular.");
         return;
     }
     size3_t dimensions = *dimensionsOpt;

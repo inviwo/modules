@@ -77,7 +77,7 @@ public:
 
 private:
     void updateFormats();
-    void updateArrays(bool keepSettings = false);
+    void updateArrays();
     void convertData();
     void updateAvailableArrays();
 
