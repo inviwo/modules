@@ -72,7 +72,7 @@ VTKtoVolume::VTKtoVolume()
     , dataFormats_("existingDataFormats", "Data formats")
     , convertButton_("triggerConvert", "Convert")
     , dataRange_("dataRange", "Data range", vec2(0, 1))
-    , reactToChange_(true)
+    , isDirty_(false)
     , convertData_(false)
     , formerArraySelection_() {
 
@@ -85,17 +85,17 @@ VTKtoVolume::VTKtoVolume()
     addProperty(dataRange_);
 
     inport_.onChange([this]() {
-        if (reactToChange_) updateFormats();
+        if (!isDirty_) updateFormats();
     });
     useCellData_.onChange([this]() { updateFormats(); });
     dataFormats_.onChange([this]() {
-        if (!reactToChange_) return;
+        if (isDirty_) return;
         dataArrays_.clear();
         updateArrays();
     });
     convertButton_.onChange([this]() { convertData_ = true; });
     dataArrays_.onChange([this]() {
-        if (reactToChange_) updateAvailableArrays();
+        if (!isDirty_) updateAvailableArrays();
     });
 }
 
@@ -107,10 +107,10 @@ void VTKtoVolume::process() {
 }
 
 void VTKtoVolume::deserialize(Deserializer &d) {
-    reactToChange_ = false;
+    isDirty_ = true;
     Processor::deserialize(d);
     dataArrays_.clear();
-    reactToChange_ = true;
+    isDirty_ = false;
 
     d.deserialize("selectedArrays", formerArraySelection_);
     for (auto &name : formerArraySelection_) LogWarn("\tArray " << name);
@@ -142,7 +142,7 @@ void VTKtoVolume::VTKArrayList::clear() {
 
 void VTKtoVolume::updateFormats() {
     NetworkLock lock;
-    reactToChange_ = false;
+    isDirty_ = true;
 
     DataFormatId formerFormat = DataFormatId::NotSpecialized;
     if (dataFormats_.size()) formerFormat = dataFormats_.getSelectedValue();
@@ -194,12 +194,12 @@ void VTKtoVolume::updateFormats() {
     else
         dataArrays_.clear();
 
-    reactToChange_ = true;
+    isDirty_ = false;
 }
 
 void VTKtoVolume::updateArrays(bool keepSettings) {
     NetworkLock lock;
-    reactToChange_ = false;
+    isDirty_ = true;
 
     // Remember selected channels
     std::vector<std::string> formerChannels;
@@ -218,7 +218,7 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
 
     dataArrays_.clear();
     if (!dataFormats_.size() || !inport_.hasData()) {
-        reactToChange_ = true;
+        isDirty_ = false;
         return;
     }
     const VTKDataSet &vtkData = *inport_.getData();
@@ -259,12 +259,12 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
 
     if (keepSettings) convertData_ = true;
 
-    reactToChange_ = true;
+    isDirty_ = false;
 }
 
 void VTKtoVolume::updateAvailableArrays() {
     NetworkLock lock;
-    reactToChange_ = false;
+    isDirty_ = true;
 
     int numTotalComps = 0;
     auto properties = dataArrays_.getProperties();
@@ -279,7 +279,7 @@ void VTKtoVolume::updateAvailableArrays() {
         properties[p]->setReadOnly(tooMuch);
     }
 
-    reactToChange_ = true;
+    isDirty_ = false;
 }
 
 void VTKtoVolume::convertData() {

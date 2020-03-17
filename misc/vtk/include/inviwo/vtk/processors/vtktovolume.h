@@ -103,7 +103,7 @@ private:
     ButtonProperty convertButton_;
     DoubleVec2Property dataRange_;
 
-    bool reactToChange_;
+    bool isDirty_;
     bool convertData_;
     std::vector<std::string> formerArraySelection_;
 };
