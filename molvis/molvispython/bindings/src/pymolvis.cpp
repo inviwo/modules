@@ -56,6 +56,7 @@ void exposeMolVis(pybind11::module& m) {
         .def("size", &Atoms::size)
         .def("clear", &Atoms::clear)
         .def_readwrite("positions", &Atoms::positions)
+        .def_readwrite("bfactors", &Atoms::bfactors)
         //.def_readwrite("structureids", &Atoms::structureIds)
         .def_readwrite("modelids", &Atoms::modelIds)
         .def_readwrite("chainids", &Atoms::chainIds)
@@ -108,6 +109,8 @@ void exposeMolVis(pybind11::module& m) {
                       &MolecularStructure::setResidues)
         .def_property("chains", &MolecularStructure::getChains, &MolecularStructure::setChains)
         .def_property_readonly("bonds", &MolecularStructure::getBonds)
+
+        .def_property("source", &MolecularStructure::getSource, &MolecularStructure::setSource)
 
         .def("getResidue", &MolecularStructure::getResidue)
         .def("getChain", &MolecularStructure::getChain)

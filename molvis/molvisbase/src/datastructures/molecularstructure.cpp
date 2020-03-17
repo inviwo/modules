@@ -52,6 +52,7 @@ size_t Atoms::size() const { return positions.size(); }
 
 void Atoms::clear() {
     positions.clear();
+    bfactors.clear();
     // structureIds.clear();
     modelIds.clear();
     chainIds.clear();
@@ -63,6 +64,12 @@ void Atoms::clear() {
 }
 
 MolecularStructure::MolecularStructure() = default;
+
+void MolecularStructure::setSource(const std::string& source) {
+    source_ = source;
+}
+
+const std::string& MolecularStructure::getSource() const { return source_; }
 
 size_t MolecularStructure::getAtomCount() const { return atoms_.positions.size(); }
 

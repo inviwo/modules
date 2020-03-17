@@ -86,11 +86,11 @@ class MolecularStructureSource(ivw.Processor):
         structure = parser.get_structure(structureName, filename)
 
         pos = []
+        bfactors = []
         #structureId = []
         modelId = []
         chainId = []
         residueId = []
-        atomNumber = []
         atomFullName = []
 
         modelDict = dict()
@@ -111,6 +111,7 @@ class MolecularStructureSource(ivw.Processor):
         for atom in structure.get_atoms():
             info = atom.get_full_id()
             pos.append(atom.coord)
+            bfactors.append(atom.get_bfactor())
             #structureId.append(info[0])
             if info[1] not in modelDict:
                 modelDict[info[1]] = len(modelDict)
@@ -124,20 +125,18 @@ class MolecularStructureSource(ivw.Processor):
             if info[3][0] not in residueDict:
                 residueDict[info[3][0]] = info[3][1]
             residueId.append(resId)
-            #atomNumber.append()
             atomFullName.append(atom.get_name())
 
         atoms = ivwmolvis.Atoms()
-        #atoms.positions = np.array(pos, dtype=np.double)
         dvec3pos = []
         for p in pos:
             dvec3pos.append(ivw.glm.dvec3(p[0], p[1], p[2]))
         atoms.positions = dvec3pos
+        atoms.bfactors = bfactors
         #atoms.structureids = structureId
         atoms.modelids = modelId
         atoms.chainids = chainId
         atoms.residueids = residueId
-        #atoms.atomNumber = atomNumber
         atoms.fullnames = atomFullName
 
         atoms.updateAtomNumbers()
@@ -154,6 +153,7 @@ class MolecularStructureSource(ivw.Processor):
             chains.append(ivwmolvis.Chain(id=chainDict[chain.get_id()], name=chain.get_id()))
 
         molstruct = ivwmolvis.MolecularStructure()
+        molstruct.source = structureName
         molstruct.atoms = atoms
         molstruct.residues = residues
         molstruct.chains = chains
@@ -173,17 +173,10 @@ class MolecularStructureSource(ivw.Processor):
             modelIndex = (modelIndex + 1) % numColors
             i = 1
             for atom in model.get_atoms():
-                #name = MolecularStructureSource.extractAtomName(atom)
                 name = molvisdata.extractAtomName(atom.get_name())
                 color = molvisdata.color(name)
                 radius = molvisdata.radius(name)
                 modelIndices.append(modelIndex)
-
-                # print("atom {}: '{}' '{}' '{}', resID {}".format(i, atom.get_name(), atom.get_id(), atom.get_full_id(), atom.get_full_id()[3][1]))
-
-                # i = i + 1
-                # if i > 10: 
-                #     break
 
                 positions.append(atom.coord)
                 colors.append(color)
@@ -192,9 +185,6 @@ class MolecularStructureSource(ivw.Processor):
 
         nppos = np.array(positions)
         posBuffer = ivw.data.Buffer(nppos)
-        # normalize colors to '1' and add alpha '1'
-        #colornumpy = np.concatenate((np.array(colors, dtype=np.single) / 255.0, np.ones((len(colors), 1), dtype=np.single)), axis=1)
-        #colorBuffer = ivw.data.Buffer(colornumpy)
         colorBuffer = ivw.data.Buffer(np.array(colors, dtype=np.single))
         radiiBuffer = ivw.data.Buffer(np.array(radii).astype(np.float32))
 
