@@ -104,6 +104,7 @@ private:
     DoubleVec2Property dataRange_;
 
     bool reactToChange_;
+    bool convertData_;
     std::vector<std::string> formerArraySelection_;
 };
 

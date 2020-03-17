@@ -70,13 +70,14 @@ const ProcessorInfo VTKtoVolume::getProcessorInfo() const { return processorInfo
 VTKtoVolume::VTKtoVolume()
     : Processor()
     , outport_("VolumeOutport")
-    , inport_("VTKDataObjectOutport")
+    , inport_("VTKDataObjectInport")
     , useCellData_("useCellData", "Use cell data", false)
     , dataArrays_("availableArrays", "Data Arrays")
     , dataFormats_("existingDataFormats", "Data formats")
     , convertButton_("triggerConvert", "Convert")
     , dataRange_("dataRange", "Data range", vec2(0, 1))
     , reactToChange_(true)
+    , convertData_(false)
     , formerArraySelection_() {
 
     addPort(outport_);
@@ -96,13 +97,18 @@ VTKtoVolume::VTKtoVolume()
         dataArrays_.clear();
         updateArrays();
     });
-    convertButton_.onChange([this]() { convertData(); });
+    convertButton_.onChange([this]() { convertData_ = true; });
     dataArrays_.onChange([this]() {
         if (reactToChange_) updateAvailableArrays();
     });
 }
 
-void VTKtoVolume::process() {}
+void VTKtoVolume::process() {
+    if (convertData_) {
+        convertData();
+        convertData_ = false;
+    }
+}
 
 void VTKtoVolume::deserialize(Deserializer &d) {
     reactToChange_ = false;
@@ -263,7 +269,7 @@ void VTKtoVolume::updateArrays(bool keepSettings) {
 
     dataArrays_.selectedFormat = dataFormats_.get();
 
-    if (keepSettings) convertData();
+    if (keepSettings) convertData_ = true;
 
     reactToChange_ = true;
 }
@@ -292,10 +298,10 @@ void VTKtoVolume::convertData() {
     outport_.setData(nullptr);
     if (!inport_.hasData()) return;
 
-    auto &vtkData = *inport_.getData();
+    auto vtkDataPtr = inport_.getData();
 
-    // Get dimensions. If none are given, it's not a rectilinear grid.
-    std::optional<size3_t> dimensionsOpt = vtkData.getDimensions();
+    // Get dimensions. If none are given, it's not a regular grid.
+    std::optional<size3_t> dimensionsOpt = vtkDataPtr->getDimensions();
     if (!dimensionsOpt) {
         LogWarn("Input vtk data set is not rectilinear.");
         return;
