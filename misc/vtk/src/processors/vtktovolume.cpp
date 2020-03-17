@@ -47,6 +47,8 @@
 #include <vtkCellData.h>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
+#include <vtkRectilinearGrid.h>
+#include <vtkStructuredGrid.h>
 #include <vtkImageData.h>
 #include <vtkMatrix4x4.h>
 #include <vtkType.h>
@@ -336,19 +338,55 @@ void VTKtoVolume::convertData() {
     const DataFormatBase *multichannelFormat =
         DataFormatBase::get(format->getNumericType(), numTotalComps, format->getSize() * 8);
 
-    // Use point bounds
-    Matrix<4, float> modelMatrix(0);
-    double bounds[6];
-    vtkData->GetBounds(bounds);
-    for (size_t x = 0; x < 3; ++x) {
-        modelMatrix[x][x] = (bounds[x * 2 + 1] - bounds[x * 2]) / dimensions[x];
-        modelMatrix[3][x] = bounds[x * 2];
+    // Extrapolate bounds from first cell.
+    std::function<void(int, int, int, double[3])> getPointFromIndex;
+
+    switch ((*vtkDataPtr)->GetDataObjectType()) {
+        case VTK_RECTILINEAR_GRID:
+            getPointFromIndex = [vtkDataPtr](int i, int j, int k, double pointOut[3]) {
+                vtkRectilinearGrid::SafeDownCast(**vtkDataPtr)->GetPoint(i, j, k, pointOut);
+            };
+            break;
+        case VTK_STRUCTURED_GRID:
+            getPointFromIndex = [vtkDataPtr](int i, int j, int k, double pointOut[3]) {
+                vtkStructuredGrid::SafeDownCast(**vtkDataPtr)->GetPoint(i, j, k, pointOut);
+            };
+            break;
+        case VTK_IMAGE_DATA:
+        case VTK_UNIFORM_GRID:
+        case VTK_STRUCTURED_POINTS:
+            getPointFromIndex = [vtkDataPtr](int i, int j, int k, double pointOut[3]) {
+                vtkImageData *grid = vtkImageData::SafeDownCast(**vtkDataPtr);
+                int idxs[3] = {i, j, k};
+                grid->GetPoint(grid->ComputePointId(idxs), pointOut);
+            };
+            break;
+        default:
+            LogError("VTK data not regular.");
+            return;
     }
-    modelMatrix[3][3] = 1;
+
+    dvec3 p0, px, py, pz;
+    getPointFromIndex(0, 0, 0, glm::value_ptr(p0));
+    getPointFromIndex(1, 0, 0, glm::value_ptr(px));
+    getPointFromIndex(0, 1, 0, glm::value_ptr(py));
+    getPointFromIndex(0, 0, 1, glm::value_ptr(pz));
+
+    // world offset vector on the grids x, y, z-axis
+    const auto dx = px - p0;
+    const auto dy = py - p0;
+    const auto dz = pz - p0;
+
+    dmat3 basis = {dx * static_cast<double>(dimensions.x), dy * static_cast<double>(dimensions.y),
+                   dz * static_cast<double>(dimensions.z)};
+
+    // p0 is the center of the voxel, offset needs another half a voxel.
+    dvec3 offset = p0 - (dx + dy + dz) * 0.5;
 
     // Create new volume
     auto volume = std::make_shared<Volume>(dimensions, multichannelFormat);
-    volume->setModelMatrix(modelMatrix);
+    volume->setBasis(basis);
+    volume->setOffset(offset);
 
     // Create RAM volume
     auto volRAM = createVolumeRAM(dimensions, multichannelFormat);
@@ -372,7 +410,7 @@ void VTKtoVolume::convertData() {
     for (size_t d = 1; d < numTotalComps; ++d) {
         minVal = std::min(extent.first[d], minVal);
         maxVal = std::max(extent.second[d], minVal);
-            }
+    }
 
     volume->dataMap_.valueRange = {minVal, maxVal};
     volume->dataMap_.dataRange = {dataRange_.get().x, dataRange_.get().y};
