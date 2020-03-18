@@ -54,11 +54,9 @@ std::optional<size3_t> VTKDataSet::getDimensions() const {
             vtkStructuredGrid::SafeDownCast(dataSet_.GetPointer())
                 ->GetDimensions(glm::value_ptr(dims));
             break;
-        case VTK_STRUCTURED_POINTS:
-            vtkStructuredPoints::SafeDownCast(dataSet_.GetPointer())
-                ->GetDimensions(glm::value_ptr(dims));
-            break;
         case VTK_IMAGE_DATA:
+        case VTK_UNIFORM_GRID:
+        case VTK_STRUCTURED_POINTS:
             vtkImageData::SafeDownCast(dataSet_.GetPointer())->GetDimensions(glm::value_ptr(dims));
             break;
         default:
