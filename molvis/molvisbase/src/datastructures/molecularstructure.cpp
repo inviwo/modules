@@ -65,9 +65,7 @@ void Atoms::clear() {
 
 MolecularStructure::MolecularStructure() = default;
 
-void MolecularStructure::setSource(const std::string& source) {
-    source_ = source;
-}
+void MolecularStructure::setSource(const std::string& source) { source_ = source; }
 
 const std::string& MolecularStructure::getSource() const { return source_; }
 

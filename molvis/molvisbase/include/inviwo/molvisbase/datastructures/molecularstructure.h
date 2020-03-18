@@ -49,7 +49,7 @@ struct IVW_MODULE_MOLVISBASE_API Atoms {
 
     std::vector<dvec3> positions;
     std::vector<double> bfactors;
-    //std::vector<int> structureIds;
+    // std::vector<int> structureIds;
     std::vector<int> modelIds;
     std::vector<int> chainIds;
     std::vector<int> residueIds;
@@ -126,7 +126,7 @@ struct DataTraits<molvis::MolecularStructure> {
     static std::string classIdentifier() { return "org.inviwo.molvis.MolecularStructure"; }
     static std::string dataName() { return "Molecular Structure"; }
     static uvec3 colorCode() { return uvec3(56, 127, 66); }
-    static Document info(const molvis::MolecularStructure &data) {
+    static Document info(const molvis::MolecularStructure& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;
         Document doc;

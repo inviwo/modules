@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,47 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include "utils/structs.glsl"
 
-#include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
+uniform GeometryParameters geometry;
 
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
+uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+uniform float defaultRadius = 0.1;
+uniform sampler2D metaColor;
 
-namespace inviwo {
+uniform float radiusScaling_ = 1.0;
 
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a point mesh, which can be rendered with
- * the SphereRenderer
- */
-class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
-public:
-    MolecularStructureToMesh();
-    virtual ~MolecularStructureToMesh() = default;
+out vec4 worldPosition_;
+out vec4 sphereColor_;
+flat out float sphereRadius_;
+flat out uint pickID_;
+flat out float scalarMeta_;
 
-    virtual void process() override;
+void main(void) {
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
+    scalarMeta_ = in_ScalarMeta;
+    sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
+    sphereColor_ = in_Color;
+    scalarMeta_ = 0.0;
+#else
+    sphereColor_ = defaultColor;
+    scalarMeta_ = 0.0;
+#endif
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+#if defined(HAS_RADII) && !defined(FORCE_RADIUS)
+    sphereRadius_ = in_Radii;
+#else 
+    sphereRadius_ = defaultRadius;
+#endif
+    sphereRadius_ *= radiusScaling_;
 
-private:
-    molvis::MolecularStructureInport inport_;
-    MeshOutport outport_;
-    molvis::MolecularStructureOutport outMol_;
-};
+#if defined(HAS_PICKING)
+    pickID_ = in_Picking;
+#else 
+    pickID_ = 0;
+#endif
 
-}  // namespace inviwo
+    worldPosition_ = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    gl_Position = worldPosition_;
+}

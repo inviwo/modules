@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,17 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/molvisgl/molvisglmodule.h>
+#include <inviwo/molvisgl/processors/molecularrenderer.h>
 
-#include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
-
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a point mesh, which can be rendered with
- * the SphereRenderer
- */
-class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
-public:
-    MolecularStructureToMesh();
-    virtual ~MolecularStructureToMesh() = default;
+MolVisGLModule::MolVisGLModule(InviwoApplication* app) : InviwoModule(app, "MolVisGL") {
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    molvis::MolecularStructureInport inport_;
-    MeshOutport outport_;
-    molvis::MolecularStructureOutport outMol_;
-};
+    registerProcessor<MolecularRenderer>();
+}
 
 }  // namespace inviwo

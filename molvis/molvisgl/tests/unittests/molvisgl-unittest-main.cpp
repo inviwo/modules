@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,40 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+#include <vld.h>
+#endif
+#endif
 
-#include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-namespace inviwo {
+int main(int argc, char** argv) {
+    using namespace inviwo;
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->registerLogger(logger);
 
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a point mesh, which can be rendered with
- * the SphereRenderer
- */
-class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
-public:
-    MolecularStructureToMesh();
-    virtual ~MolecularStructureToMesh() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    molvis::MolecularStructureInport inport_;
-    MeshOutport outport_;
-    molvis::MolecularStructureOutport outMol_;
-};
-
-}  // namespace inviwo
+    int ret = -1;
+    {
+#ifdef IVW_ENABLE_MSVC_MEM_LEAK_TEST
+        VLDDisable();
+        ::testing::InitGoogleTest(&argc, argv);
+        VLDEnable();
+#else
+        ::testing::InitGoogleTest(&argc, argv);
+#endif
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}

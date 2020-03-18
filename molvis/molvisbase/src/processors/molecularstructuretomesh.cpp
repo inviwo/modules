@@ -44,11 +44,7 @@ const ProcessorInfo MolecularStructureToMesh::processorInfo_{
 const ProcessorInfo MolecularStructureToMesh::getProcessorInfo() const { return processorInfo_; }
 
 MolecularStructureToMesh::MolecularStructureToMesh()
-    : Processor()
-    , inport_("inport")
-    , outport_("outport")
-    , outMol_("mol")
-{
+    : Processor(), inport_("inport"), outport_("outport"), outMol_("mol") {
 
     addPort(inport_);
     addPort(outport_);

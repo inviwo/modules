@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,56 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
-
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
-
-namespace inviwo {
-
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a point mesh, which can be rendered with
- * the SphereRenderer
+/*
+ * Initial implemenation from ViaMD by Robin Skånberg, March 2020
+ *
+ * https://github.com/scanberg/viamd
  */
-class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
-public:
-    MolecularStructureToMesh();
-    virtual ~MolecularStructureToMesh() = default;
 
-    virtual void process() override;
+#include "utils/structs.glsl"
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+uniform CameraParameters camera;
+uniform GeometryParameters geometry;
 
-private:
-    molvis::MolecularStructureInport inport_;
-    MeshOutport outport_;
-    molvis::MolecularStructureOutport outMol_;
-};
+uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+uniform sampler2D metaColor;
 
-}  // namespace inviwo
+uniform float radiusScaling_ = 1.0;
+
+out Vertex {
+    smooth vec4 worldPosition;
+    smooth vec4 viewPosition;
+    flat vec4 color;
+    flat uint pickID;
+    flat out float scalarMeta;
+} out_vert;
+
+void main(void) {
+#if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
+    out_vert.scalarMeta = in_ScalarMeta;
+    out_vert.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+#elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
+    out_vert.color = in_Color;
+    out_vert.scalarMeta = 0.0;
+#else
+    out_vert.color = defaultColor;
+    out_vert.scalarMeta = 0.0;
+#endif
+
+// #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
+//     radius_ = in_Radii;
+// #else 
+//     radius_ = defaultRadius;
+// #endif
+//     radius_ *= radiusScaling_;
+
+#if defined(HAS_PICKING)
+    out_vert.pickID = in_Picking;
+#else 
+    out_vert.pickID = 0;
+#endif
+
+    out_vert.worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    out_vert.viewPosition = camera.worldToView * out_vert.worldPosition;
+    gl_Position = out_vert.viewPosition;
+}

@@ -34,40 +34,9 @@
 namespace inviwo {
 
 MolVisBaseModule::MolVisBaseModule(InviwoApplication* app) : InviwoModule(app, "MolVisBase") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
     registerProcessor<MolecularStructureToMesh>();
 
-    // Properties
-    // registerProperty<MolVisBaseProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<MolVisBaseReader>());
-    // registerDataWriter(std::make_unique<MolVisBaseWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<MolVisBaseDisk2RAMConverter>());
-
-    // Ports
     registerDefaultsForDataType<molvis::MolecularStructure>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<MolVisBasePropertyWidget, MolVisBaseProperty>("Default");
-
-    // Dialogs
-    // registerDialog<MolVisBaseDialog>(MolVisBaseOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<MolVisBaseCapabilities>());
-    // registerSettings(std::make_unique<MolVisBaseSettings>());
-    // registerMetaData(std::make_unique<MolVisBaseMetaData>());
-    // registerPortInspector("MolVisBaseOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<MolVisBaseDrawer>());
 }
 
 }  // namespace inviwo
