@@ -102,6 +102,7 @@ private:
     } dataArrays_;
     TemplateOptionProperty<DataFormatId> dataFormats_;
     ButtonProperty convertButton_;
+    BoolProperty autoConvert_;
     DoubleVec2Property dataRange_;
 
     bool isDirty_;

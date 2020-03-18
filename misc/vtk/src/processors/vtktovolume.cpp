@@ -71,6 +71,7 @@ VTKtoVolume::VTKtoVolume()
     , dataArrays_("availableArrays", "Data Arrays")
     , dataFormats_("existingDataFormats", "Data formats")
     , convertButton_("triggerConvert", "Convert", [this]() { convertData_ = true; })
+    , autoConvert_("autoConvert", "Auto-update", false)
     , dataRange_("dataRange", "Data range", vec2(0, 1))
     , isDirty_(false)
     , convertData_(false)
@@ -78,10 +79,11 @@ VTKtoVolume::VTKtoVolume()
 
     addPort(outport_);
     addPort(inport_);
+    addProperty(autoConvert_);
+    addProperty(convertButton_);
     addProperty(useCellData_);
     addProperty(dataFormats_);
     addProperty(dataArrays_);
-    addProperty(convertButton_);
     addProperty(dataRange_);
 
     inport_.onChange([this]() {
@@ -99,7 +101,7 @@ VTKtoVolume::VTKtoVolume()
 }
 
 void VTKtoVolume::process() {
-    if (convertData_) {
+    if (convertData_ || autoConvert_.get()) {
         convertData();
         convertData_ = false;
     }
@@ -247,7 +249,8 @@ void VTKtoVolume::updateArrays() {
             numSelectedComps++;
         }
     }
-    bool containsAllFormerArrays = (numSelectedComps == prevChannels.size());
+    bool containsAllFormerArrays =
+        (numSelectedComps == prevChannels.size()) && prevChannels.size() > 0;
     if (!containsAllFormerArrays && numTotalComps <= 4) {
         for (auto *prop : dataArrays_.getProperties()) {
             if (BoolProperty *boolProp = dynamic_cast<BoolProperty *>(prop)) boolProp->set(true);
