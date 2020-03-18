@@ -74,7 +74,7 @@ VTKtoVolume::VTKtoVolume()
     , dataRange_("dataRange", "Data range", vec2(0, 1))
     , isDirty_(false)
     , convertData_(false)
-    , formerArraySelection_() {
+    , prevArraySelection_() {
 
     addPort(outport_);
     addPort(inport_);
@@ -111,7 +111,7 @@ void VTKtoVolume::deserialize(Deserializer &d) {
     dataArrays_.clear();
     isDirty_ = false;
 
-    d.deserialize("selectedArrays", formerArraySelection_);
+    d.deserialize("selectedArrays", prevArraySelection_);
 }
 
 void VTKtoVolume::serialize(Serializer &s) const {
@@ -142,8 +142,8 @@ void VTKtoVolume::updateFormats() {
     NetworkLock lock;
     isDirty_ = true;
 
-    DataFormatId formerFormat = DataFormatId::NotSpecialized;
-    if (dataFormats_.size()) formerFormat = dataFormats_.getSelectedValue();
+    DataFormatId prevFormat = DataFormatId::NotSpecialized;
+    if (dataFormats_.size()) prevFormat = dataFormats_.getSelectedValue();
 
     dataFormats_.clearOptions();
     if (!inport_.hasData()) {
@@ -184,7 +184,7 @@ void VTKtoVolume::updateFormats() {
         dataFormats_.addOption(format->getString(), format->getString(), format->getId());
     }
 
-    dataFormats_.setSelectedValue(formerFormat);
+    dataFormats_.setSelectedValue(prevFormat);
 
     if (dataFormats_.size())
         updateArrays();
@@ -199,14 +199,14 @@ void VTKtoVolume::updateArrays() {
     isDirty_ = true;
 
     // Remember selected channels
-    std::vector<std::string> formerChannels;
-    if (!formerArraySelection_.empty()) {
-        formerChannels = formerArraySelection_;
-        formerArraySelection_.clear();
+    std::vector<std::string> prevChannels;
+    if (!prevArraySelection_.empty()) {
+        prevChannels = prevArraySelection_;
+        prevArraySelection_.clear();
     } else {
         for (auto *prop : dataArrays_.getPropertiesByType<BoolProperty>()) {
             if (prop->get()) {
-                formerChannels.push_back(prop->getDisplayName());
+                prevChannels.push_back(prop->getDisplayName());
             }
         }
     }
@@ -241,13 +241,13 @@ void VTKtoVolume::updateArrays() {
 
         // Set previous arrays to true if existing.
         BoolProperty *prop = dynamic_cast<BoolProperty *>(dataArrays_[dataArrays_.size() - 1]);
-        if (prop && std::find(formerChannels.begin(), formerChannels.end(),
-                              prop->getDisplayName()) != formerChannels.end()) {
+        if (prop && std::find(prevChannels.begin(), prevChannels.end(), prop->getDisplayName()) !=
+                        prevChannels.end()) {
             prop->set(true);
             numSelectedComps++;
         }
     }
-    bool containsAllFormerArrays = (numSelectedComps == formerChannels.size());
+    bool containsAllFormerArrays = (numSelectedComps == prevChannels.size());
     if (!containsAllFormerArrays && numTotalComps <= 4) {
         for (auto *prop : dataArrays_.getProperties()) {
             if (BoolProperty *boolProp = dynamic_cast<BoolProperty *>(prop)) boolProp->set(true);

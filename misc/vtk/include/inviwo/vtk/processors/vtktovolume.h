@@ -106,7 +106,7 @@ private:
 
     bool isDirty_;
     bool convertData_;
-    std::vector<std::string> formerArraySelection_;
+    std::vector<std::string> prevArraySelection_;
 };
 
 }  // namespace inviwo
