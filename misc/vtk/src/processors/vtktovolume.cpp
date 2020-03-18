@@ -258,6 +258,7 @@ void VTKtoVolume::updateArrays() {
     }
     dataArrays_.selectedFormat = dataFormats_.get();
 
+    convertButton_.setDisplayName(numSelectedComps > 0 ? "Convert" : "Please Select Arrays");
     if (containsAllFormerArrays) convertData_ = true;
 
     isDirty_ = false;
