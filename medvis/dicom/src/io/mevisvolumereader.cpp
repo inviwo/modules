@@ -205,12 +205,14 @@ MevisVolumeRAMLoader *MevisVolumeRAMLoader::clone() const {
     return new MevisVolumeRAMLoader(*this);
 }
 
-std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation() const {
+std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation(
+    const VolumeRepresentation &) const {
     return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
         format_->getId(), *this);
 }
 
-void MevisVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
+void MevisVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                                const VolumeRepresentation &) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
     auto data = volumeDst->getData();
 

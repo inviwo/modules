@@ -719,7 +719,8 @@ GCDMVolumeRAMLoader::GCDMVolumeRAMLoader(std::string file, size3_t dimension,
 
 GCDMVolumeRAMLoader* GCDMVolumeRAMLoader::clone() const { return new GCDMVolumeRAMLoader(*this); }
 
-std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation() const {
+std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
+    const VolumeRepresentation&) const {
     return format_->dispatch(*this);
 }
 
@@ -788,7 +789,8 @@ std::shared_ptr<VolumeRAM> GCDMVolumeRAMLoader::dispatch() const {
     }
 }
 
-void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const {
+void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                               const VolumeRepresentation&) const {
     if (!isPartOfSequence_) {
         gdcm::ImageReader reader;
         reader.SetFileName(file_.c_str());

@@ -114,8 +114,10 @@ public:
     virtual GCDMVolumeRAMLoader* clone() const override;
     virtual ~GCDMVolumeRAMLoader() = default;
 
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
+        const VolumeRepresentation&) const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                      const VolumeRepresentation&) const override;
 
     using type = std::shared_ptr<VolumeRAM>;
 
