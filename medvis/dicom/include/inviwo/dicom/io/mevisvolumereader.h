@@ -71,8 +71,10 @@ public:
     virtual MevisVolumeRAMLoader* clone() const override;
     virtual ~MevisVolumeRAMLoader() = default;
 
-    virtual std::shared_ptr<VolumeRepresentation> createRepresentation() const override;
-    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest) const override;
+    virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
+        const VolumeRepresentation&) const override;
+    virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
+                                      const VolumeRepresentation&) const override;
 
     template <typename Result, typename T>
     std::shared_ptr<VolumeRAM> operator()() const {
