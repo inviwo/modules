@@ -1,6 +1,12 @@
 # Boost is required by TTK
 find_package(Boost REQUIRED)
 
+#TBB is required for parallel STL used in separatrix relaxation processor
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
+    find_package(TBB REQUIRED)
+endif()
+
 #--------------------------------------------------------------------
 # Build TTK
 add_subdirectory(ext/ttk)
@@ -93,7 +99,11 @@ ivw_compile_optimize_on_target(inviwo-module-topologytoolkit)
 target_include_directories(inviwo-module-topologytoolkit PUBLIC 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/ttk>
 )
-target_link_libraries(inviwo-module-topologytoolkit PUBLIC baseAll)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    target_link_libraries(inviwo-module-topologytoolkit PUBLIC baseAll TBB::tbb)
+else()
+    target_link_libraries(inviwo-module-topologytoolkit PUBLIC baseAll)
+endif()
 
 ivw_register_license_file(NAME "Topology ToolKit (TTK)" VERSION 0.9.4 MODULE TopologyToolKit
     URL https://topology-tool-kit.github.io/
