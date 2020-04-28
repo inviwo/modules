@@ -86,7 +86,8 @@ void TensorField3DMetaData::initializeResources() {
 
     NetworkLock l;
 
-    auto comp = getPropertiesByType<CompositeProperty>().front();
+    auto comp =
+        static_cast<CompositeProperty*>(getPropertyByIdentifier("metaDataPropertyContainer"));
     auto props = comp->getProperties();
 
     for (auto prop : props) {
@@ -101,9 +102,8 @@ void TensorField3DMetaData::initializeResources() {
     data such as eigen values and eigen vectors is disabled by setting the respective properties to
     readonly.
     */
-    comp = getPropertiesByType<CompositeProperty>().front();
     props = comp->getProperties();
-    for (size_t i{0}; i < 6; ++i) {
+    for (size_t i{0}; i < TensorField3D::dimensionality * 2; ++i) {
         props[i]->setReadOnly(true);
     }
 }

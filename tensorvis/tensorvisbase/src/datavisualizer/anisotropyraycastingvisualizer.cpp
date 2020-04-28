@@ -107,7 +107,7 @@ std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
 
     TransferFunction tf;
     tf.load(InviwoApplication::getPtr()->getBasePath() +
-            "\\data\\transferfunctions\\matplotlib\\viridis.itf");
+            "/data/transferfunctions/matplotlib/viridis.itf");
 
     volra->getPropertiesByType<IsoTFProperty>().front()->tf_.set(tf);
 

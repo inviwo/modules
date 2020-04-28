@@ -31,22 +31,8 @@
 #include <inviwo/core/datastructures/image/imageram.h>
 
 namespace inviwo {
-TensorField2D::TensorField2D(const sizeN_t& dimensions, const std::vector<matN>& tensors)
-    : TensorField<2, float>(dimensions, tensors) {
-    initializeDefaultMetaData();
-    computeDataMaps();
-    computeNormalizedScreenCoordinates();
-}
-
-TensorField2D::TensorField2D(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors)
-    : TensorField<2, float>(dimensions, tensors) {
-    initializeDefaultMetaData();
-    computeDataMaps();
-    computeNormalizedScreenCoordinates();
-}
-
 TensorField2D::TensorField2D(const sizeN_t& dimensions, const std::vector<matN>& tensors,
-                             const DataFrame& metaData)
+                             std::shared_ptr<DataFrame> metaData)
     : TensorField<2, float>(dimensions, tensors, metaData) {
     initializeDefaultMetaData();
     computeDataMaps();

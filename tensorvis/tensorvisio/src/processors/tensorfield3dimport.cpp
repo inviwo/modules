@@ -44,7 +44,7 @@ namespace inviwo {
 const ProcessorInfo TensorField3DImport::processorInfo_{
     "org.inviwo.TensorField3DImport",  // Class identifier
     "Tensor Field 3D Import",          // Display name
-    "IO",                              // Category
+    "Data Input",                      // Category
     CodeState::Experimental,           // Code state
     tag::OpenTensorVis | Tag::CPU,     // Tags
 };
@@ -52,7 +52,7 @@ const ProcessorInfo TensorField3DImport::getProcessorInfo() const { return proce
 
 TensorField3DImport::TensorField3DImport()
     : Processor()
-    , inFile_("inFile", "File")
+    , inFile_("inFile", "File", "", "tensorfield")
     , outport_("outport")
     , normalizeExtents_("normalizeExtents", "Normalize extents", true)
     , extents_("extents", "Extents", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f),
@@ -78,7 +78,7 @@ TensorField3DImport::TensorField3DImport()
 
     inFile_.set(InviwoApplication::getPtr()->getModuleByType<TensorVisBaseModule>()->getPath(
                     ModulePath::Data) +
-                "\\tensorfields\\two_point_load.tfb");
+                "/tensorfields/two_point_load.tfb");
 }
 
 void TensorField3DImport::initializeResources() {}

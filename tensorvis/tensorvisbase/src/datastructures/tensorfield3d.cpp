@@ -6,20 +6,8 @@
 #include <inviwo/core/util/exception.h>
 
 namespace inviwo {
-TensorField3D::TensorField3D(const sizeN_t &dimensions, const std::vector<matN> &tensors)
-    : TensorField<3, float>(dimensions, tensors) {
-    initializeDefaultMetaData();
-    computeDataMaps();
-}
-
-TensorField3D::TensorField3D(const sizeN_t &dimensions, std::shared_ptr<std::vector<matN>> tensors)
-    : TensorField<3, float>(dimensions, tensors) {
-    initializeDefaultMetaData();
-    computeDataMaps();
-}
-
 TensorField3D::TensorField3D(const sizeN_t &dimensions, const std::vector<matN> &tensors,
-                             const DataFrame &metaData)
+                             std::shared_ptr<DataFrame> metaData)
     : TensorField<3, float>(dimensions, tensors, metaData) {
     initializeDefaultMetaData();
     computeDataMaps();

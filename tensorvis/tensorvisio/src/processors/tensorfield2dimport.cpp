@@ -37,7 +37,7 @@ namespace inviwo {
 const ProcessorInfo TensorField2DImport::processorInfo_{
     "org.inviwo.TensorField2DImport",  // Class identifier
     "Tensor Field 2D Import",          // Display name
-    "IO",                              // Category
+    "Data Input",                      // Category
     CodeState::Experimental,           // Code state
     tag::OpenTensorVis | Tag::CPU,     // Tags
 };
@@ -47,7 +47,7 @@ TensorField2DImport::TensorField2DImport()
     : Processor()
     , inFile_("inFile", "File", "")
     , outport_("outport")
-    , extents_("", "", vec2(1.f), vec2(0.f), vec2(1000.f), vec2(0.0001f))
+    , extents_("extends", "Extends", vec2(1.f), vec2(0.f), vec2(1000.f), vec2(0.0001f))
     , offset_("offset", "Offset", vec2(1.f), vec2(-1000.f), vec2(1000.f), vec2(0.0001f),
               InvalidationLevel::Valid)
     , dimensions_("dimensions", "Dimensions", ivec2(0), ivec2(0), ivec2(1024), ivec2(1),
@@ -57,7 +57,14 @@ TensorField2DImport::TensorField2DImport()
     addProperty(inFile_);
     extents_.setReadOnly(true);
     extents_.setCurrentStateAsDefault();
-    addProperty(extents_);
+
+    offset_.setReadOnly(true);
+    offset_.setCurrentStateAsDefault();
+
+    dimensions_.setReadOnly(true);
+    dimensions_.setCurrentStateAsDefault();
+
+    addProperties(extents_, offset_, dimensions_);
 }
 
 void TensorField2DImport::process() {

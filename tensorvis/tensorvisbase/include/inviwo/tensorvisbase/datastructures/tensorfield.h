@@ -1,3 +1,32 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2016-2020 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/core/common/inviwo.h>
@@ -33,15 +62,14 @@ public:
     using matNb = glm::mat<N + 1, N + 1, precision, glm::defaultp>;
     using vecN = glm::vec<N, precision, glm::defaultp>;
 
+    static constexpr unsigned int dimensionality = N;
+
     TensorField() = delete;
 
-    TensorField(const sizeN_t& dimensions, const std::vector<matN>& tensors);
-    TensorField(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors);
-
     TensorField(const sizeN_t& dimensions, const std::vector<matN>& tensors,
-                const DataFrame& metaData);
+                std::shared_ptr<DataFrame> metaData = nullptr);
     TensorField(const sizeN_t& dimensions, std::shared_ptr<std::vector<matN>> tensors,
-                std::shared_ptr<DataFrame> metaData);
+                std::shared_ptr<DataFrame> metaData = nullptr);
 
     /**
      * NOTE: This method creates a shallow copy, i.e. the tensors and the meta data are
@@ -140,7 +168,7 @@ public:
     bool hasMetaData(const std::string& name) const;
 
     /**
-     * Tensor field meta data is stored in a DataFrame. If avaliable, this method returns the column
+     * Tensor field meta data is stored in a DataFrame. If available, this method returns the column
      * for the meta data specified by T (see attributes.h). Nullopt otherwise.
      */
     template <typename T>
@@ -193,34 +221,18 @@ protected:
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
-                                              const std::vector<matN>& tensors)
-    : StructuredGridEntity<N>()
-    , dimensions_(dimensions)
-    , indexMapper_(util::IndexMapper<N>(dimensions))
-    , tensors_(std::make_shared<std::vector<matN>>(tensors))
-    , size_(glm::compMul(dimensions))
-    , metaData_(std::make_shared<DataFrame>()) {}
-
-template <unsigned int N, typename precision>
-inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
-                                              std::shared_ptr<std::vector<matN>> tensors)
-    : StructuredGridEntity<N>()
-    , dimensions_(dimensions)
-    , indexMapper_(util::IndexMapper<N>(dimensions))
-    , tensors_(std::make_shared<std::vector<matN>>(*tensors))
-    , size_(glm::compMul(dimensions))
-    , metaData_(std::make_shared<DataFrame>()) {}
-
-template <unsigned int N, typename precision>
-inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
                                               const std::vector<matN>& tensors,
-                                              const DataFrame& metaData)
+                                              std::shared_ptr<DataFrame> metaData)
     : StructuredGridEntity<N>()
     , dimensions_(dimensions)
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(tensors))
     , size_(glm::compMul(dimensions))
-    , metaData_(std::make_shared<DataFrame>(metaData)) {}
+    , metaData_(metaData) {
+    if (!metaData_) {
+        metaData_ = std::make_shared<DataFrame>();
+    }
+}
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
@@ -231,7 +243,11 @@ inline TensorField<N, precision>::TensorField(const sizeN_t& dimensions,
     , indexMapper_(util::IndexMapper<N>(dimensions))
     , tensors_(std::make_shared<std::vector<matN>>(*tensors))
     , size_(glm::compMul(dimensions))
-    , metaData_(metaData) {}
+    , metaData_(metaData) {
+    if (!metaData_) {
+        metaData_ = std::make_shared<DataFrame>();
+    }
+}
 
 template <unsigned int N, typename precision>
 inline TensorField<N, precision>::TensorField(const TensorField<N, precision>& tf)

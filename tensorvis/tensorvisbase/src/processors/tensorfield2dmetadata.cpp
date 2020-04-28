@@ -84,7 +84,8 @@ TensorField2DMetaData::TensorField2DMetaData()
 void TensorField2DMetaData::initializeResources() {
     if (!inport_.hasData()) return;
 
-    auto comp = getPropertiesByType<CompositeProperty>().front();
+    auto comp =
+        static_cast<CompositeProperty*>(getPropertyByIdentifier("metaDataPropertyContainer"));
     auto props = comp->getProperties();
 
     NetworkLock l;
@@ -101,9 +102,8 @@ void TensorField2DMetaData::initializeResources() {
     data such as eigen values and eigen vectors is disabled by setting the respective properties to
     readonly.
     */
-    comp = getPropertiesByType<CompositeProperty>().front();
     props = comp->getProperties();
-    for (size_t i{0}; i < 4; ++i) {
+    for (size_t i{0}; i < TensorField2D::dimensionality * 2; ++i) {
         props[i]->setReadOnly(true);
     }
 }
