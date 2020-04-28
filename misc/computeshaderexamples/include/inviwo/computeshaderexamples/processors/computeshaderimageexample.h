@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,50 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/vtkmodule.h>
+#pragma once
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
+#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
-#include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+/** \docpage{org.inviwo.ComputeShaderImageExample, Compute Shader Image Example}
+ * ![](org.inviwo.ComputeShaderImageExample.png?classIdentifier=org.inviwo.ComputeShaderImageExample)
+ *
+ * An processor to show how compute shaders can be utilized to create images. Uses shader
+ * roll.comp to create a simple procedural image.
+ * C++ and glsl source code is havily inspired by http://wili.cc/blog/opengl-cs.html
+ *
+ *
+ * ### Outports
+ *   * __outport__ The produced image.
+ *
+ * ### Properties
+ *   * __Roll__ Used as offset in to the sin function in the shader to create an rolling effect.
+ *
+ */
 
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderImageExample : public Processor {
+public:
+    ComputeShaderImageExample();
+    virtual ~ComputeShaderImageExample() = default;
 
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
+    virtual void process() override;
 
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageOutport outport_;
+    Shader shader_;
+
+    FloatProperty roll_;
+};
 
 }  // namespace inviwo

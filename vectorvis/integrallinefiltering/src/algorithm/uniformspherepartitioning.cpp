@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/vtkmodule.h>
+#include <inviwo/integrallinefiltering/algorithm/uniformspherepartitioning.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
-
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
-#include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
-
-namespace inviwo {
-
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
-
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
-
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
-
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

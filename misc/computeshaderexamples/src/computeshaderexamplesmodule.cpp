@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,24 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/vtkmodule.h>
+#include <inviwo/computeshaderexamples/computeshaderexamplesmodule.h>
+#include <inviwo/computeshaderexamples/processors/computeshaderbufferexample.h>
+#include <inviwo/computeshaderexamples/processors/computeshaderimageexample.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
-
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
-#include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+ComputeShaderExamplesModule::ComputeShaderExamplesModule(InviwoApplication* app)
+    : InviwoModule(app, "ComputeShaderExamples") {
+    // Add a directory to the search path of the Shadermanager
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+    // Register objects that can be shared with the rest of inviwo here:
 
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
-
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
+    // Processors
+    registerProcessor<ComputeShaderBufferExample>();
+    registerProcessor<ComputeShaderImageExample>();
 }
 
 }  // namespace inviwo

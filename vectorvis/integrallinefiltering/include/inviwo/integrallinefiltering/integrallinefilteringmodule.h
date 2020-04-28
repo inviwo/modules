@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2018 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,34 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/vtkmodule.h>
+#ifndef IVW_INTEGRALLINEFILTERINGMODULE_H
+#define IVW_INTEGRALLINEFILTERINGMODULE_H
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
-
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
-#include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
+#include <inviwo/integrallinefiltering/integrallinefilteringmoduledefine.h>
+#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
 
 namespace inviwo {
 
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+class IVW_MODULE_INTEGRALLINEFILTERING_API IntegralLineFilteringModule : public InviwoModule {
+public:
+    IntegralLineFilteringModule(InviwoApplication* app);
+    virtual ~IntegralLineFilteringModule() = default;
 
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
 
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
+private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
 
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
-}
+    private:
+        int version_;
+    };
+};
 
 }  // namespace inviwo
+
+#endif  // IVW_INTEGRALLINEFILTERINGMODULE_H

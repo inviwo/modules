@@ -1,0 +1,2126 @@
+<?xml version="1.0" ?>
+<InviwoWorkspace version="2">
+    <InviwoSetup>
+        <Modules>
+            <Module name="Core" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.Image.outport.metasource" />
+                    <Processor content="org.inviwo.Image.outport.metasink" />
+                    <Processor content="org.inviwo.CompositeProcessor" />
+                    <Processor content="org.inviwo.Mesh.outport.metasink" />
+                    <Processor content="org.inviwo.Mesh.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.outport.metasource" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Volume.shared_ptr.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Buffer.outport.metasink" />
+                    <Processor content="org.inviwo.Buffer.outport.metasource" />
+                    <Processor content="org.inviwo.LightSource.outport.metasink" />
+                    <Processor content="org.inviwo.LightSource.outport.metasource" />
+                    <Processor content="org.inviwo.FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4FLOAT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.INT32.outport.metasink" />
+                    <Processor content="org.inviwo.INT32.outport.metasource" />
+                    <Processor content="org.inviwo.INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.UINT32.outport.metasink" />
+                    <Processor content="org.inviwo.UINT32.outport.metasource" />
+                    <Processor content="org.inviwo.UINT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.UINT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2UINT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2UINT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2UINT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2UINT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3UINT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3UINT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3UINT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3UINT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4UINT32.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4UINT32.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4UINT32.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4UINT32.vector.outport.metasource" />
+                    <Processor content="org.inviwo.INT64.outport.metasink" />
+                    <Processor content="org.inviwo.INT64.outport.metasource" />
+                    <Processor content="org.inviwo.INT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.INT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2INT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2INT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3INT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3INT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4INT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4INT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.UINT64.outport.metasink" />
+                    <Processor content="org.inviwo.UINT64.outport.metasource" />
+                    <Processor content="org.inviwo.UINT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.UINT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2UINT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2UINT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec2UINT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec2UINT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3UINT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3UINT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec3UINT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec3UINT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4UINT64.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4UINT64.outport.metasource" />
+                    <Processor content="org.inviwo.Vec4UINT64.vector.outport.metasink" />
+                    <Processor content="org.inviwo.Vec4UINT64.vector.outport.metasource" />
+                    <Processor content="org.inviwo.CompositeProcessorCgithubmasterrepoinviwoinviwosrcdataworkspacescompositesVolumeRaycasterCompositeinv" />
+                </Processors>
+            </Module>
+            <Module name="Base" version="4">
+                <Processors>
+                    <Processor content="org.inviwo.ConvexHull2DProcessor" />
+                    <Processor content="org.inviwo.CubeProxyGeometry" />
+                    <Processor content="org.inviwo.Diffuselightsource" />
+                    <Processor content="org.inviwo.Directionallightsource" />
+                    <Processor content="org.inviwo.DistanceTransformRAM" />
+                    <Processor content="org.inviwo.GeometrySource" />
+                    <Processor content="org.inviwo.HeightFieldMapper" />
+                    <Processor content="org.inviwo.ImageExport" />
+                    <Processor content="org.inviwo.ImageInformation" />
+                    <Processor content="org.inviwo.ImageSnapshot" />
+                    <Processor content="org.inviwo.ImageSource" />
+                    <Processor content="org.inviwo.ImageSourceSeries" />
+                    <Processor content="org.inviwo.ImageStackVolumeSource" />
+                    <Processor content="org.inviwo.LayerDistanceTransformRAM" />
+                    <Processor content="org.inviwo.MeshClipping" />
+                    <Processor content="org.inviwo.MeshColorFromNormals" />
+                    <Processor content="org.inviwo.MeshCreator" />
+                    <Processor content="org.inviwo.MeshInformation" />
+                    <Processor content="org.inviwo.MeshMapping" />
+                    <Processor content="org.inviwo.MeshPlaneClipping" />
+                    <Processor content="org.inviwo.NoiseProcessor" />
+                    <Processor content="org.inviwo.PixelToBufferProcessor" />
+                    <Processor content="org.inviwo.Pointlightsource" />
+                    <Processor content="org.inviwo.OrdinalPropertyAnimator" />
+                    <Processor content="org.inviwo.Spotlightsource" />
+                    <Processor content="org.inviwo.SurfaceExtraction" />
+                    <Processor content="org.inviwo.VolumeBoundaryPlanes" />
+                    <Processor content="org.inviwo.VolumeSource" />
+                    <Processor content="org.inviwo.VolumeExport" />
+                    <Processor content="org.inviwo.BasisTransformGeometry" />
+                    <Processor content="org.inviwo.BasisTransformVolume" />
+                    <Processor content="org.inviwo.TrianglesToWireframe" />
+                    <Processor content="org.inviwo.TransformMesh" />
+                    <Processor content="org.inviwo.TransformVolume" />
+                    <Processor content="org.inviwo.WorldTransformMeshDeprecated" />
+                    <Processor content="org.inviwo.WorldTransformVolumeDeprecated" />
+                    <Processor content="org.inviwo.VolumeSlice" />
+                    <Processor content="org.inviwo.VolumeSubsample" />
+                    <Processor content="org.inviwo.VolumeSubset" />
+                    <Processor content="org.inviwo.ImageContourProcessor" />
+                    <Processor content="org.inviwo.VolumeVectorSource" />
+                    <Processor content="org.inviwo.TimeStepSelector" />
+                    <Processor content="org.inviwo.ImageTimeStepSelector" />
+                    <Processor content="org.inviwo.MeshTimeStepSelector" />
+                    <Processor content="org.inviwo.VolumeBoundingBox" />
+                    <Processor content="org.inviwo.SingleVoxel" />
+                    <Processor content="org.inviwo.StereoCameraSyncer" />
+                    <Processor content="org.inviwo.VolumeToSpatialSampler" />
+                    <Processor content="org.inviwo.OrientationIndicator" />
+                    <Processor content="org.inviwo.PixelValue" />
+                    <Processor content="org.inviwo.VolumeSequenceToSpatial4DSampler" />
+                    <Processor content="org.inviwo.VolumeGradientCPUProcessor" />
+                    <Processor content="org.inviwo.VolumeCurlCPUProcessor" />
+                    <Processor content="org.inviwo.VolumeDivergenceCPUProcessor" />
+                    <Processor content="org.inviwo.VolumeLaplacianProcessor" />
+                    <Processor content="org.inviwo.MeshExport" />
+                    <Processor content="org.inviwo.RandomMeshGenerator" />
+                    <Processor content="org.inviwo.RandomSphereGenerator" />
+                    <Processor content="org.inviwo.NoiseVolumeProcessor" />
+                    <Processor content="org.inviwo.BufferToMeshProcessor" />
+                    <Processor content="org.inviwo.ImageToSpatialSampler" />
+                    <Processor content="org.inviwo.CameraFrustum" />
+                    <Processor content="org.inviwo.VolumeSequenceSingleTimestepSampler" />
+                    <Processor content="org.inviwo.VolumeCreator" />
+                    <Processor content="org.inviwo.MeshConverter" />
+                    <Processor content="org.inviwo.VolumeInformation" />
+                    <Processor content="org.inviwo.TFSelector" />
+                    <Processor content="org.inviwo.Volume.InputSelector" />
+                    <Processor content="org.inviwo.Mesh.InputSelector" />
+                    <Processor content="org.inviwo.Image.InputSelector" />
+                </Processors>
+            </Module>
+            <Module name="OpenGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CanvasGL" />
+                </Processors>
+            </Module>
+            <Module name="BrushingAndLinking" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.BrushingAndLinkingProcessor" />
+                </Processors>
+            </Module>
+            <Module name="BaseGL" version="4">
+                <Processors>
+                    <Processor content="org.inviwo.AxisAlignedCutPlane" />
+                    <Processor content="org.inviwo.Background" />
+                    <Processor content="org.inviwo.CubeRenderer" />
+                    <Processor content="org.inviwo.DrawLines" />
+                    <Processor content="org.inviwo.DrawPoints" />
+                    <Processor content="org.inviwo.EmbeddedVolumeSlice" />
+                    <Processor content="org.inviwo.EntryExitPoints" />
+                    <Processor content="org.inviwo.FirstIVWProcessor" />
+                    <Processor content="org.inviwo.GeometryEntryExitPoints" />
+                    <Processor content="org.inviwo.HeightFieldRenderGL" />
+                    <Processor content="org.inviwo.ImageCompositeProcessorGL" />
+                    <Processor content="org.inviwo.ImageLayoutGL" />
+                    <Processor content="org.inviwo.ImageMixer" />
+                    <Processor content="org.inviwo.ImageOverlayGL" />
+                    <Processor content="org.inviwo.ISORaycaster" />
+                    <Processor content="org.inviwo.Jacobian2D" />
+                    <Processor content="org.inviwo.LightingRaycaster" />
+                    <Processor content="org.inviwo.LightVolumeGL" />
+                    <Processor content="org.inviwo.LineRenderer" />
+                    <Processor content="org.inviwo.Mesh2DRenderProcessorGL" />
+                    <Processor content="org.inviwo.GeometryPicking" />
+                    <Processor content="org.inviwo.GeometryRenderGL" />
+                    <Processor content="org.inviwo.MultichannelRaycaster" />
+                    <Processor content="org.inviwo.PointRenderer" />
+                    <Processor content="org.inviwo.RedGreenProcessor" />
+                    <Processor content="org.inviwo.SphereRenderer" />
+                    <Processor content="org.inviwo.TubeRendering" />
+                    <Processor content="org.inviwo.VolumeRaycaster" />
+                    <Processor content="org.inviwo.VolumeSliceGL" />
+                    <Processor content="org.inviwo.FindEdges" />
+                    <Processor content="org.inviwo.ImageBinary" />
+                    <Processor content="org.inviwo.ImageChannelCombine" />
+                    <Processor content="org.inviwo.ImageChannelSelect" />
+                    <Processor content="org.inviwo.ImageGamma" />
+                    <Processor content="org.inviwo.ImageGradient" />
+                    <Processor content="org.inviwo.ImageGrayscale" />
+                    <Processor content="org.inviwo.ImageHighPass" />
+                    <Processor content="org.inviwo.ImageInvert" />
+                    <Processor content="org.inviwo.ImageLayer" />
+                    <Processor content="org.inviwo.ImageLowPass" />
+                    <Processor content="org.inviwo.ImageMapping" />
+                    <Processor content="org.inviwo.ImageNormalization" />
+                    <Processor content="org.inviwo.ImageResample" />
+                    <Processor content="org.inviwo.ImageScaling" />
+                    <Processor content="org.inviwo.ImageSubsetGL" />
+                    <Processor content="org.inviwo.SplitImage" />
+                    <Processor content="org.inviwo.VectorMagnitude" />
+                    <Processor content="org.inviwo.VolumeBinary" />
+                    <Processor content="org.inviwo.VolumeCombiner" />
+                    <Processor content="org.inviwo.VolumeDiff" />
+                    <Processor content="org.inviwo.VolumeGradientMagnitude" />
+                    <Processor content="org.inviwo.VolumeGradient" />
+                    <Processor content="org.inviwo.VolumeLowPass" />
+                    <Processor content="org.inviwo.VolumeMapping" />
+                    <Processor content="org.inviwo.VolumeMerger" />
+                    <Processor content="org.inviwo.VolumeShader" />
+                </Processors>
+            </Module>
+            <Module name="CImg" version="0" />
+            <Module name="Animation" version="0" />
+            <Module name="QtWidgets" version="0" />
+            <Module name="AnimationQt" version="0" />
+            <Module name="assimp" version="0" />
+            <Module name="OpenGLQt" version="0" />
+            <Module name="OpenCL" version="0" />
+            <Module name="BaseCL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.EntryExitPointsCL" />
+                    <Processor content="org.inviwo.GrayscaleCL" />
+                    <Processor content="org.inviwo.VolumeFirstHitCL" />
+                    <Processor content="org.inviwo.VolumeMaxCL" />
+                    <Processor content="org.inviwo.VolumeRaycasterCL" />
+                </Processors>
+            </Module>
+            <Module name="JSON" version="0" />
+            <Module name="DataFrame" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CSVSource" />
+                    <Processor content="org.inviwo.DataFrameSource" />
+                    <Processor content="org.inviwo.DataFrameExporter" />
+                    <Processor content="org.inviwo.ImageToDataFrame" />
+                    <Processor content="org.inviwo.SyntheticDataFrame" />
+                    <Processor content="org.inviwo.VolumeToDataFrame" />
+                    <Processor content="org.inviwo.VolumeSequenceToDataFrame" />
+                    <Processor content="org.inviwo.DataFrame.outport.metasink" />
+                    <Processor content="org.inviwo.DataFrame.outport.metasource" />
+                </Processors>
+            </Module>
+            <Module name="Python3" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.PythonExample" />
+                    <Processor content="org.inviwo.NumPyVolume" />
+                    <Processor content="org.inviwo.NumpyMandelbrot" />
+                    <Processor content="org.inviwo.NumPyMeshCreateTest" />
+                    <Processor content="org.inviwo.PythonScriptProcessor" />
+                </Processors>
+            </Module>
+            <Module name="DataFramePython" version="0" />
+            <Module name="DataFrameQt" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.DataFrameTable" />
+                </Processors>
+            </Module>
+            <Module name="EigenUtils" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.EigenMatrixToImage" />
+                    <Processor content="org.inviwo.EigenMix" />
+                    <Processor content="org.inviwo.EigenNormalize" />
+                    <Processor content="org.inviwo.TestMatrix" />
+                    <Processor content="EigenMatrixXf.outport.metasink" />
+                    <Processor content="EigenMatrixXf.outport.metasource" />
+                </Processors>
+            </Module>
+            <Module name="FontRendering" version="3">
+                <Processors>
+                    <Processor content="org.inviwo.TextOverlayGL" />
+                </Processors>
+            </Module>
+            <Module name="Nifti" version="0" />
+            <Module name="Plotting" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.DataFrameColumnToColorVector" />
+                </Processors>
+            </Module>
+            <Module name="UserInterfaceGL" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.CameraWidget" />
+                    <Processor content="org.inviwo.CropWidget" />
+                    <Processor content="org.inviwo.GLUIProcessor" />
+                    <Processor content="org.inviwo.PresentationProcessor" />
+                    <Processor content="org.inviwo.GLUITestProcessor" />
+                </Processors>
+            </Module>
+            <Module name="PlottingGL" version="2">
+                <Processors>
+                    <Processor content="org.inviwo.AxisRenderProcessor" />
+                    <Processor content="org.inviwo.ColorScaleLegend" />
+                    <Processor content="org.inviwo.ImagePlotProcessor" />
+                    <Processor content="org.inviwo.ParallelCoordinates" />
+                    <Processor content="org.inviwo.PersistenceDiagramPlotProcessor" />
+                    <Processor content="org.inviwo.ScatterPlotMatrixProcessor" />
+                    <Processor content="org.inviwo.ScatterPlotProcessor" />
+                    <Processor content="org.inviwo.VolumeAxis" />
+                </Processors>
+            </Module>
+            <Module name="png" version="0" />
+            <Module name="PostProcessing" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.SSAO" />
+                    <Processor content="org.inviwo.FXAA" />
+                    <Processor content="org.inviwo.Fog" />
+                    <Processor content="org.inviwo.Tonemapping" />
+                    <Processor content="org.inviwo.HdrBloom" />
+                    <Processor content="org.inviwo.ImageBrightnessContrast" />
+                    <Processor content="org.inviwo.ImageEdgeDarken" />
+                    <Processor content="org.inviwo.DepthDarkening" />
+                    <Processor content="org.inviwo.ImageHueSaturationLuminance" />
+                    <Processor content="org.inviwo.ImageFilter" />
+                    <Processor content="org.inviwo.ImageOpacity" />
+                </Processors>
+            </Module>
+            <Module name="PVM" version="0" />
+            <Module name="Python3Qt" version="0" />
+            <Module name="VectorFieldVisualization" version="4">
+                <Processors>
+                    <Processor content="org.inviwo.RBFVectorFieldGenerator2D" />
+                    <Processor content="org.inviwo.RBFBased3DVectorFieldGenerator" />
+                    <Processor content="org.inviwo.SeedPointGenerator3D" />
+                    <Processor content="org.inviwo.SeedPointsFromMask" />
+                    <Processor content="org.inviwo.StreamLinesDeprecated" />
+                    <Processor content="org.inviwo.PathLinesDeprecated" />
+                    <Processor content="org.inviwo.StreamRibbonsDeprecated" />
+                    <Processor content="org.inviwo.IntegralLineVectorToMesh" />
+                    <Processor content="org.inviwo.Seed3Dto4D" />
+                    <Processor content="org.inviwo.StreamLines2D" />
+                    <Processor content="org.inviwo.StreamLines3D" />
+                    <Processor content="org.inviwo.PathLines3D" />
+                    <Processor content="org.inviwo.SeedsFromMaskSequence" />
+                    <Processor content="org.inviwo.DiscardShortLines" />
+                    <Processor content="org.inviwo.SeedPointGenerator2D" />
+                    <Processor content="org.inviwo.IntegralLineSetSelector" />
+                    <Processor content="org.inviwo.IntegralLineSet.outport.metasink" />
+                    <Processor content="org.inviwo.IntegralLineSet.outport.metasource" />
+                </Processors>
+            </Module>
+            <Module name="VectorFieldVisualizationGL" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.LorenzSystem" />
+                    <Processor content="org.inviwo.VectorFieldGenerator2D" />
+                    <Processor content="org.inviwo.VectorFieldGenerator3D" />
+                    <Processor content="org.inviwo.LIC2D" />
+                    <Processor content="org.inviwo.HedgeHog2D" />
+                    <Processor content="org.inviwo.Vector2DMagnitude" />
+                    <Processor content="org.inviwo.Vector2DCurl" />
+                    <Processor content="org.inviwo.Vector2DDivergence" />
+                    <Processor content="org.inviwo.LIC3D" />
+                    <Processor content="org.inviwo.Vector3DCurl" />
+                    <Processor content="org.inviwo.Vector3DDivergence" />
+                    <Processor content="org.inviwo.TMIP" />
+                    <Processor content="org.inviwo.VectorFieldGenerator4D" />
+                    <Processor content="org.inviwo.StreamParticles" />
+                </Processors>
+            </Module>
+            <Module name="IntegralLineFiltering" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.IntegralLinesToDataFrame" />
+                </Processors>
+            </Module>
+            <Module name="Clustering" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.KMeans2DProcessor" />
+                    <Processor content="org.inviwo.KMeans3DProcessor" />
+                    <Processor content="org.inviwo.ClusterToMesh" />
+                    <Processor content="org.inviwo.DBSCAN2DProcessor" />
+                    <Processor content="org.inviwo.DBSCAN3DProcessor" />
+                    <Processor content="org.inviwo.Example2DPoints" />
+                    <Processor content="org.inviwo.Cluster2DToVector" />
+                    <Processor content="org.inviwo.DistanceMatrixTest" />
+                    <Processor content="org.inviwo.MatrixReordering" />
+                    <Processor content="org.inviwo.SpectralClustering2D" />
+                </Processors>
+            </Module>
+            <Module name="IntegralLineClustering" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.AgglomerativeClustering" />
+                    <Processor content="org.inviwo.GrowSelection" />
+                    <Processor content="org.inviwo.IntegralLineClusteringProcessor" />
+                    <Processor content="org.inviwo.IntegralLineClusterToLineSet" />
+                    <Processor content="org.inviwo.IntegralLineDistanceMapCL" />
+                    <Processor content="org.inviwo.PathLineDistanceMapCL" />
+                    <Processor content="org.inviwo.BagOfFeautreLineClustering" />
+                    <Processor content="org.inviwo.PointCloud1DDistanceMatrix" />
+                    <Processor content="org.inviwo.PointCloud2DDistanceMatrix" />
+                    <Processor content="org.inviwo.PointCloud3DDistanceMatrix" />
+                    <Processor content="org.inviwo.PointCloud4DDistanceMatrix" />
+                    <Processor content="org.inviwo.SimilarLinesExplorer" />
+                    <Processor content="org.inviwo.DistToSim" />
+                    <Processor content="org.inviwo.LineClusterRepresentative" />
+                    <Processor content="org.inviwo.ClusterInfo" />
+                    <Processor content="org.inviwo.IdealizeDistanceMatrix" />
+                    <Processor content="org.inviwo.LineDataFrameMerger" />
+                    <Processor content="org.inviwo.SpectralClustering" />
+                </Processors>
+            </Module>
+            <Module name="MRI4DFlow" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.HeartModelProcessor" />
+                    <Processor content="org.inviwo.HeartModelMasks" />
+                    <Processor content="org.inviwo.HeartModelSelectorProcessor" />
+                    <Processor content="org.inviwo.HeartModelSequence" />
+                    <Processor content="org.inviwo.AnatomyAware4DSampler" />
+                    <Processor content="org.inviwo.MRILineDensity" />
+                    <Processor content="org.inviwo.PlotVolumeSizes" />
+                    <Processor content="org.inviwo.CircularPathLineDistance" />
+                    <Processor content="org.inviwo.MRIEntryExitFiltering" />
+                    <Processor content="org.inviwo.MRIVentricleLines" />
+                    <Processor content="org.inviwo.TimeStampToIndex" />
+                    <Processor content="org.inviwo.HeartModel.outport.metasink" />
+                    <Processor content="org.inviwo.HeartModel.outport.metasource" />
+                    <Processor content="org.inviwo.CompositeProcessorCgithubmasterrepoinviwomystuffmodulesmri4dflowdatacompositesHeartAnatomyVolumePlotinv" />
+                    <Processor content="org.inviwo.MRIMaskIntersection" />
+                </Processors>
+            </Module>
+            <Module name="VTK" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.VTKDataSetInformation" />
+                    <Processor content="org.inviwo.VTKReader" />
+                    <Processor content="org.inviwo.VTKUnstructuredGridToRectilinearGrid" />
+                    <Processor content="org.inviwo.VTKWriter" />
+                </Processors>
+            </Module>
+            <Module name="MyHacks" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.EvalCounter" />
+                    <Processor content="org.inviwo.ImageCPUResample" />
+                    <Processor content="org.inviwo.ImageSamplerTestProcessor" />
+                    <Processor content="org.inviwo.LineDecimation" />
+                    <Processor content="org.inviwo.LogRendererProcessors" />
+                    <Processor content="org.inviwo.PolyHedra" />
+                    <Processor content="org.inviwo.ShannonEntropy2D" />
+                    <Processor content="org.inviwo.TubeFilter" />
+                    <Processor content="org.inviwo.TwoByTwoTestImage" />
+                    <Processor content="org.inviwo.UniformSpherePartitioning" />
+                </Processors>
+            </Module>
+            <Module name="NanoVGUtils" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.NanoVGExampleProcessor" />
+                    <Processor content="org.inviwo.NanoVGPickingExampleProcessor" />
+                </Processors>
+            </Module>
+            <Module name="MyNanoVG" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.DendogramPlotter" />
+                    <Processor content="org.inviwo.TestDendogram" />
+                </Processors>
+            </Module>
+            <Module name="PlottingPython" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.DataFrameClustering" />
+                </Processors>
+            </Module>
+            <Module name="VTKEnsightReading" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.VTKEnsightGoldReader" />
+                </Processors>
+            </Module>
+            <Module name="ComputeShaderExamples" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.ComputeShaderBufferExample" />
+                    <Processor content="org.inviwo.ComputeShaderImageExample" />
+                </Processors>
+            </Module>
+            <Module name="Experimental" version="3">
+                <Processors>
+                    <Processor content="org.inviwo.AmbientOcclusion" />
+                    <Processor content="org.inviwo.VolumeIllustration" />
+                    <Processor content="org.inviwo.Test2by2by2Volume" />
+                    <Processor content="org.inviwo.GaussianImage" />
+                    <Processor content="org.inviwo.VolumeGLCreate" />
+                    <Processor content="org.inviwo.EggMaker" />
+                    <Processor content="org.inviwo.TestVolume" />
+                    <Processor content="org.inviwo.DensityLineRendering" />
+                    <Processor content="org.inviwo.ColorDepthCombiner" />
+                    <Processor content="org.inviwo.DepthOfFieldBokeh" />
+                    <Processor content="org.inviwo.DepthToColorTextureProcessor" />
+                    <Processor content="org.inviwo.ImageToVolume" />
+                    <Processor content="org.inviwo.BarrelDistortion" />
+                    <Processor content="org.inviwo.MichelsonContrast" />
+                    <Processor content="org.inviwo.SliceBasedVolumeRenderer" />
+                    <Processor content="org.inviwo.DepthOfField" />
+                    <Processor content="org.inviwo.BaderPartition" />
+                    <Processor content="org.inviwo.VolumeDistance" />
+                    <Processor content="org.inviwo.HaloSeeds" />
+                    <Processor content="org.inviwo.HaloGeneration" />
+                    <Processor content="org.inviwo.HaloVolumeRaycaster" />
+                    <Processor content="org.inviwo.Vec3ToMesh" />
+                    <Processor content="org.inviwo.GradientHistProcessor" />
+                    <Processor content="org.inviwo.SciviscolorImport" />
+                    <Processor content="org.inviwo.SingleVolumeToSequence" />
+                    <Processor content="org.inviwo.VolumeSubtractProcessor" />
+                    <Processor content="org.inviwo.TexturedMeshRenderer" />
+                    <Processor content="org.inviwo.MousePosition" />
+                    <Processor content="org.inviwo.DummySinkProcessor" />
+                    <Processor content="org.inviwo.GlyphRenderer" />
+                    <Processor content="org.inviwo.ImagePassThrough" />
+                    <Processor content="org.inviwo.HeightPlot" />
+                    <Processor content="org.inviwo.TriangleMeshToLines" />
+                    <Processor content="org.inviwo.TransferFunctions" />
+                    <Processor content="org.inviwo.VolumeRayExtractor" />
+                    <Processor content="org.inviwo.LayerExtremaExtraction" />
+                    <Processor content="org.inviwo.HydrogenGenerator" />
+                    <Processor content="org.inviwo.CameraAutoAdjuster" />
+                    <Processor content="org.inviwo.GeometrySilhouette" />
+                </Processors>
+            </Module>
+            <Module name="PlottingExperimental" version="0">
+                <Processors>
+                    <Processor content="org.inviwo.DataframeToLines" />
+                    <Processor content="org.inviwo.LinePlotProcessor" />
+                    <Processor content="org.inviwo.ImageHistogram" />
+                    <Processor content="org.inviwo.Histogram.FLOAT16" />
+                    <Processor content="org.inviwo.Histogram.FLOAT32" />
+                    <Processor content="org.inviwo.Histogram.FLOAT64" />
+                    <Processor content="org.inviwo.Histogram.INT8" />
+                    <Processor content="org.inviwo.Histogram.INT16" />
+                    <Processor content="org.inviwo.Histogram.INT32" />
+                    <Processor content="org.inviwo.Histogram.INT64" />
+                    <Processor content="org.inviwo.Histogram.UINT8" />
+                    <Processor content="org.inviwo.Histogram.UINT16" />
+                    <Processor content="org.inviwo.Histogram.UINT32" />
+                    <Processor content="org.inviwo.Histogram.UINT64" />
+                    <Processor content="org.inviwo.Histogram.Vec2FLOAT16" />
+                    <Processor content="org.inviwo.Histogram.Vec2FLOAT32" />
+                    <Processor content="org.inviwo.Histogram.Vec2FLOAT64" />
+                    <Processor content="org.inviwo.Histogram.Vec2INT8" />
+                    <Processor content="org.inviwo.Histogram.Vec2INT16" />
+                    <Processor content="org.inviwo.Histogram.Vec2INT32" />
+                    <Processor content="org.inviwo.Histogram.Vec2INT64" />
+                    <Processor content="org.inviwo.Histogram.Vec2UINT8" />
+                    <Processor content="org.inviwo.Histogram.Vec2UINT16" />
+                    <Processor content="org.inviwo.Histogram.Vec2UINT32" />
+                    <Processor content="org.inviwo.Histogram.Vec2UINT64" />
+                    <Processor content="org.inviwo.Histogram.Vec3FLOAT16" />
+                    <Processor content="org.inviwo.Histogram.Vec3FLOAT32" />
+                    <Processor content="org.inviwo.Histogram.Vec3FLOAT64" />
+                    <Processor content="org.inviwo.Histogram.Vec3INT8" />
+                    <Processor content="org.inviwo.Histogram.Vec3INT16" />
+                    <Processor content="org.inviwo.Histogram.Vec3INT32" />
+                    <Processor content="org.inviwo.Histogram.Vec3INT64" />
+                    <Processor content="org.inviwo.Histogram.Vec3UINT8" />
+                    <Processor content="org.inviwo.Histogram.Vec3UINT16" />
+                    <Processor content="org.inviwo.Histogram.Vec3UINT32" />
+                    <Processor content="org.inviwo.Histogram.Vec3UINT64" />
+                    <Processor content="org.inviwo.Histogram.Vec4FLOAT16" />
+                    <Processor content="org.inviwo.Histogram.Vec4FLOAT32" />
+                    <Processor content="org.inviwo.Histogram.Vec4FLOAT64" />
+                    <Processor content="org.inviwo.Histogram.Vec4INT8" />
+                    <Processor content="org.inviwo.Histogram.Vec4INT16" />
+                    <Processor content="org.inviwo.Histogram.Vec4INT32" />
+                    <Processor content="org.inviwo.Histogram.Vec4INT64" />
+                    <Processor content="org.inviwo.Histogram.Vec4UINT8" />
+                    <Processor content="org.inviwo.Histogram.Vec4UINT16" />
+                    <Processor content="org.inviwo.Histogram.Vec4UINT32" />
+                    <Processor content="org.inviwo.Histogram.Vec4UINT64" />
+                </Processors>
+            </Module>
+            <Module name="VectorFieldVisualizationExperimental" version="1">
+                <Processors>
+                    <Processor content="org.inviwo.ToComputationalSpace2D" />
+                    <Processor content="org.inviwo.VectorGradientProcessor" />
+                    <Processor content="org.inviwo.DFW4D" />
+                    <Processor content="org.inviwo.DFW3D" />
+                    <Processor content="org.inviwo.Resampler" />
+                    <Processor content="org.inviwo.MeanFlow3D" />
+                    <Processor content="org.inviwo.MeanFlow4D" />
+                    <Processor content="org.inviwo.RawImageOut" />
+                </Processors>
+            </Module>
+        </Modules>
+    </InviwoSetup>
+    <ProcessorNetwork>
+        <ProcessorNetworkVersion content="16" />
+        <Processors>
+            <Processor type="org.inviwo.ComputeShaderBufferExample" identifier="Compute Shader Buffer Example" displayName="Compute Shader Buffer Example">
+                <PortGroups>
+                    <PortGroup content="default" key="mesh" />
+                </PortGroups>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Mesh.outport" identifier="mesh" id="ref4" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.IntProperty" identifier="numPoints">
+                        <value content="1307" />
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="radius">
+                        <value content="0.241" />
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="rotations">
+                        <value content="7.6630001" />
+                    </Property>
+                    <Property type="org.inviwo.FloatProperty" identifier="height">
+                        <value content="1.34" />
+                    </Property>
+                    <Property type="org.inviwo.TransferFunctionProperty" identifier="tf">
+                        <MetaDataMap>
+                            <MetaDataItem type="org.inviwo.IntMetaData" key="PropertyEditorWidgetDockStatus">
+                                <MetaData content="0" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetFloating">
+                                <MetaData content="1" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetPosition">
+                                <MetaData x="508" y="247" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.IntVec2MetaData" key="PropertyEditorWidgetSize">
+                                <MetaData x="977" y="495" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetSticky">
+                                <MetaData content="1" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.BoolMetaData" key="PropertyEditorWidgetVisible">
+                                <MetaData content="0" />
+                            </MetaDataItem>
+                            <MetaDataItem type="org.inviwo.StringStringStdUnorderedMapMetaData" key="SavedState" />
+                        </MetaDataMap>
+                        <TransferFunction>
+                            <maskMin content="0" />
+                            <maskMax content="1" />
+                            <type content="0" />
+                            <Points>
+                                <Point>
+                                    <pos content="0" />
+                                    <rgba x="0.050383002" y="0.029803" z="0.52797502" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.003921568900000000149064227628059597918764" />
+                                    <rgba x="0.063536003" y="0.028426001" z="0.53312403" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.007843137700000000697708735231117316288874" />
+                                    <rgba x="0.075352997" y="0.027206" z="0.53800702" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.01176470599999999977480769075555144809186" />
+                                    <rgba x="0.086222" y="0.026125001" z="0.54265797" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.01568627499999999952429163840861292555928" />
+                                    <rgba x="0.096378997" y="0.025165001" z="0.54710299" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.0196078439999999992737755860616744030267" />
+                                    <rgba x="0.10598" y="0.024309" z="0.551368" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.02352941199999999954961538151110289618373" />
+                                    <rgba x="0.115124" y="0.023556" z="0.55546802" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.02745098099999999929909932916416437365115" />
+                                    <rgba x="0.123903" y="0.022878001" z="0.55942303" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.03137255099999999852222742902085883542895" />
+                                    <rgba x="0.13238101" y="0.022258" z="0.56325001" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.03529411899999999879806722447028732858598" />
+                                    <rgba x="0.14060301" y="0.021686999" z="0.56695902" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.0392156879999999985475511721233488060534" />
+                                    <rgba x="0.148607" y="0.021153999" z="0.57056201" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.04313725599999999882339096757277729921043" />
+                                    <rgba x="0.15642101" y="0.020651" z="0.57406503" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.04705882399999999909923076302220579236746" />
+                                    <rgba x="0.16407" y="0.020171" z="0.57747799" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.05098039299999999884871471067526726983488" />
+                                    <rgba x="0.171574" y="0.019706" z="0.58080602" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.05490196099999999912455450612469576299191" />
+                                    <rgba x="0.17895" y="0.019252" z="0.58405399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.05882352999999999887403845377775724045932" />
+                                    <rgba x="0.186213" y="0.018803" z="0.587228" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.06274510199999999704445485804171767085791" />
+                                    <rgba x="0.19337399" y="0.018354001" z="0.59033" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.06666666999999999732029465349114616401494" />
+                                    <rgba x="0.200445" y="0.017902" z="0.593364" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.07058823899999999706977860114420764148235" />
+                                    <rgba x="0.207435" y="0.017441999" z="0.59633303" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.07450980699999999734561839659363613463938" />
+                                    <rgba x="0.21435" y="0.016973" z="0.59923899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.07843137499999999762145819204306462779641" />
+                                    <rgba x="0.22119699" y="0.016496999" z="0.60208303" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.08235294399999999737094213969612610526383" />
+                                    <rgba x="0.227983" y="0.016007001" z="0.60486698" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.08627451199999999764678193514555459842086" />
+                                    <rgba x="0.234715" y="0.015502" z="0.60759199" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.09019608099999999739626588279861607588828" />
+                                    <rgba x="0.241396" y="0.014979" z="0.610259" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.09411764899999999767210567824804456904531" />
+                                    <rgba x="0.248032" y="0.014439" z="0.61286801" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.09803921699999999794794547369747306220233" />
+                                    <rgba x="0.25462699" y="0.013882" z="0.61541897" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1019607899999999955920060301650664769113" />
+                                    <rgba x="0.26118299" y="0.013308" z="0.61791098" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1058823500000000000786926079854310955852" />
+                                    <rgba x="0.267703" y="0.012716" z="0.62034601" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.109803919999999999301820707842125557363" />
+                                    <rgba x="0.27419099" y="0.012109" z="0.62272203" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1137254899999999985249488076988200191408" />
+                                    <rgba x="0.28064799" y="0.011488" z="0.62503803" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1176470599999999977480769075555144809186" />
+                                    <rgba x="0.287076" y="0.010855" z="0.62729502" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1215686299999999969712050074122089426965" />
+                                    <rgba x="0.29347801" y="0.010213" z="0.62949002" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1254901999999999961943331072689034044743" />
+                                    <rgba x="0.29985499" y="0.0095610004" z="0.63162398" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1294117700000000092952490149400546215475" />
+                                    <rgba x="0.30621001" y="0.0089020003" z="0.63369399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1333333399999999946405893069822923280299" />
+                                    <rgba x="0.312543" y="0.0082390001" z="0.63569999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1372549100000000077415052146534435451031" />
+                                    <rgba x="0.318856" y="0.0075759999" z="0.63764" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1411764799999999930868455066956812515855" />
+                                    <rgba x="0.32515001" y="0.0069149998" z="0.639512" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1450980500000000061877614143668324686587" />
+                                    <rgba x="0.33142599" y="0.0062609999" z="0.641316" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1490196099999999967966601843727403320372" />
+                                    <rgba x="0.33768299" y="0.0056179999" z="0.643049" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1529411800000000098975760920438915491104" />
+                                    <rgba x="0.343925" y="0.0049910001" z="0.64471" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1568627499999999952429163840861292555928" />
+                                    <rgba x="0.35014999" y="0.0043819998" z="0.64629799" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.160784320000000008343832291757280472666" />
+                                    <rgba x="0.356359" y="0.003798" z="0.64780998" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1647058899999999936891725837995181791484" />
+                                    <rgba x="0.362553" y="0.003243" z="0.64924502" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1686274600000000067900884914706693962216" />
+                                    <rgba x="0.36873299" y="0.002724" z="0.65060103" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1725490199999999973989872614765772596002" />
+                                    <rgba x="0.374897" y="0.0022450001" z="0.65187597" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1764705900000000104999031691477284766734" />
+                                    <rgba x="0.38104701" y="0.001814" z="0.65306801" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1803921599999999958452434611899661831558" />
+                                    <rgba x="0.38718301" y="0.001434" z="0.65417701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.184313730000000008946159368861117400229" />
+                                    <rgba x="0.39330399" y="0.001114" z="0.65519899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1882352999999999942914996609033551067114" />
+                                    <rgba x="0.39941099" y="0.00085900002" z="0.656133" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1921568700000000073924155685745063237846" />
+                                    <rgba x="0.405503" y="0.00067799998" z="0.656977" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.1960784299999999980013143385804141871631" />
+                                    <rgba x="0.41158" y="0.00057700003" z="0.65772998" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2000000000000000111022302462515654042363" />
+                                    <rgba x="0.417642" y="0.00056399999" z="0.65838999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2039215699999999964475705382938031107187" />
+                                    <rgba x="0.42368901" y="0.00064599997" z="0.65895599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2078431400000000095484864459649543277919" />
+                                    <rgba x="0.429719" y="0.00083099998" z="0.65942502" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2117647099999999948938267380071920342743" />
+                                    <rgba x="0.435734" y="0.001127" z="0.65979701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2156862800000000079947426456783432513475" />
+                                    <rgba x="0.44173199" y="0.00154" z="0.66006899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2196078399999999986036414156842511147261" />
+                                    <rgba x="0.447714" y="0.00208" z="0.66023999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2235294100000000117045573233554023317993" />
+                                    <rgba x="0.453677" y="0.002755" z="0.66030997" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2274509799999999970498976153976400382817" />
+                                    <rgba x="0.45962301" y="0.003574" z="0.66027701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2313725500000000101508135230687912553549" />
+                                    <rgba x="0.46555001" y="0.0045449999" z="0.66013902" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2352941199999999954961538151110289618373" />
+                                    <rgba x="0.471457" y="0.0056779999" z="0.65989703" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2392156900000000085970697227821801789105" />
+                                    <rgba x="0.47734401" y="0.0069800001" z="0.659549" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2431372599999999939424100148244178853929" />
+                                    <rgba x="0.48321" y="0.0084600002" z="0.65909499" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2470588200000000123068844004592392593622" />
+                                    <rgba x="0.48905501" y="0.010127" z="0.65853399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2509804099999999871251077365741366520524" />
+                                    <rgba x="0.49487701" y="0.01199" z="0.65786499" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2549019799999999724704480286163743585348" />
+                                    <rgba x="0.500678" y="0.014055" z="0.65708798" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2588235400000000185904980298801092430949" />
+                                    <rgba x="0.50645399" y="0.016333001" z="0.65620202" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2627451100000000039358383219223469495773" />
+                                    <rgba x="0.51220602" y="0.018833" z="0.655209" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2666666799999999892811786139645846560597" />
+                                    <rgba x="0.51793301" y="0.021562999" z="0.654109" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2705882499999999746265189060068223625422" />
+                                    <rgba x="0.523633" y="0.024532" z="0.65290099" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2745098200000000154830104293068870902061" />
+                                    <rgba x="0.52930599" y="0.027747" z="0.651586" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2784313900000000008283507213491247966886" />
+                                    <rgba x="0.53495198" y="0.031217" z="0.65016502" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2823529499999999914372494913550326600671" />
+                                    <rgba x="0.54057002" y="0.034949999" z="0.64863998" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2862745199999999767825897833972703665495" />
+                                    <rgba x="0.546157" y="0.038954001" z="0.64701003" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2901960900000000176390813066973350942135" />
+                                    <rgba x="0.55171502" y="0.043136001" z="0.64527702" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2941176600000000029844215987395728006959" />
+                                    <rgba x="0.55724299" y="0.047331002" z="0.64344299" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.2980392299999999883297618907818105071783" />
+                                    <rgba x="0.562738" y="0.051545002" z="0.641509" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3019607999999999736751021828240482136607" />
+                                    <rgba x="0.56820101" y="0.055778001" z="0.63947701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3058823600000000197951521840877830982208" />
+                                    <rgba x="0.573632" y="0.060028002" z="0.63734901" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3098039300000000051404924761300208047032" />
+                                    <rgba x="0.57902902" y="0.064296" z="0.63512599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3137254999999999904858327681722585111856" />
+                                    <rgba x="0.584391" y="0.068579003" z="0.63281202" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3176470699999999758311730602144962176681" />
+                                    <rgba x="0.589719" y="0.072878003" z="0.63040799" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3215686400000000166876645835145609453321" />
+                                    <rgba x="0.595011" y="0.077189997" z="0.62791699" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3254902100000000020330048755567986518145" />
+                                    <rgba x="0.60026598" y="0.081515998" z="0.62534201" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.329411769999999992641903645562706515193" />
+                                    <rgba x="0.60548502" y="0.085854001" z="0.62268603" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3333333399999999779872439376049442216754" />
+                                    <rgba x="0.61066699" y="0.090204" z="0.61995101" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3372549100000000188437354609050089493394" />
+                                    <rgba x="0.615812" y="0.094563998" z="0.61714" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3411764800000000041890757529472466558218" />
+                                    <rgba x="0.62091899" y="0.098934002" z="0.61425698" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3450980499999999895344160449894843623042" />
+                                    <rgba x="0.62598699" y="0.103312" z="0.611305" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3490196199999999748797563370317220687866" />
+                                    <rgba x="0.63101703" y="0.107699" z="0.60828698" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3529411900000000157362478603317867964506" />
+                                    <rgba x="0.63600802" y="0.112092" z="0.605205" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3568627500000000063451466303376946598291" />
+                                    <rgba x="0.64095902" y="0.116492" z="0.60206503" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3607843199999999916904869223799323663116" />
+                                    <rgba x="0.645872" y="0.120898" z="0.598867" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.364705889999999977035827214422170072794" />
+                                    <rgba x="0.65074599" y="0.12530901" z="0.595617" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.368627460000000017892318737722234800458" />
+                                    <rgba x="0.65557998" y="0.12972499" z="0.59231699" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3725490300000000032376590297644725069404" />
+                                    <rgba x="0.66037399" y="0.13414399" z="0.58897102" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3764705999999999885829993218067102134228" />
+                                    <rgba x="0.66512901" y="0.138566" z="0.58558202" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3803921599999999791918980918126180768013" />
+                                    <rgba x="0.66984499" y="0.142992" z="0.58215398" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3843137300000000200483896151126828044653" />
+                                    <rgba x="0.67452198" y="0.14741901" z="0.57868803" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3882353000000000053937299071549205109477" />
+                                    <rgba x="0.67916" y="0.151848" z="0.57518899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3921568699999999907390701991971582174301" />
+                                    <rgba x="0.68375802" y="0.156278" z="0.57165998" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.3960784399999999760844104912393959239125" />
+                                    <rgba x="0.68831801" y="0.16070899" z="0.56810302" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4000000100000000169409020145394606515765" />
+                                    <rgba x="0.69283998" y="0.165141" z="0.56452203" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.403921570000000007549800784545368514955" />
+                                    <rgba x="0.69732398" y="0.16957299" z="0.56091899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4078431399999999928951410765876062214375" />
+                                    <rgba x="0.70176899" y="0.174005" z="0.55729598" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4117647099999999782404813686298439279199" />
+                                    <rgba x="0.70617801" y="0.17843699" z="0.553657" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4156862800000000190969728919299086555839" />
+                                    <rgba x="0.710549" y="0.182868" z="0.55000401" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4196078500000000044423131839721463620663" />
+                                    <rgba x="0.71488303" y="0.187299" z="0.54633802" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4235294199999999897876534760143840685487" />
+                                    <rgba x="0.719181" y="0.19172899" z="0.54266298" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4274509799999999803965522460202919319272" />
+                                    <rgba x="0.72344398" y="0.19615801" z="0.53898102" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4313725500000000212530437693203566595912" />
+                                    <rgba x="0.72767001" y="0.20058601" z="0.53529298" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4352941200000000065983840613625943660736" />
+                                    <rgba x="0.73186201" y="0.20501301" z="0.53160101" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.439215689999999991943724353404832072556" />
+                                    <rgba x="0.73601902" y="0.20943899" z="0.52790803" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4431372599999999772890646454470697790384" />
+                                    <rgba x="0.740143" y="0.213864" z="0.524216" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4470588300000000181455561687471345067024" />
+                                    <rgba x="0.744232" y="0.218288" z="0.52052402" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4509804000000000034908964607893722131848" />
+                                    <rgba x="0.74828899" y="0.222711" z="0.51683402" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4549019599999999940997952307952800765634" />
+                                    <rgba x="0.752312" y="0.22713301" z="0.51314902" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4588235299999999794451355228375177830458" />
+                                    <rgba x="0.75630403" y="0.231555" z="0.50946802" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4627451000000000203016270461375825107098" />
+                                    <rgba x="0.76026398" y="0.235976" z="0.50579399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4666666700000000056469673381798202171922" />
+                                    <rgba x="0.764193" y="0.24039599" z="0.50212598" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4705882399999999909923076302220579236746" />
+                                    <rgba x="0.76809001" y="0.244817" z="0.498465" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.474509809999999976337647922264295630157" />
+                                    <rgba x="0.77195799" y="0.249237" z="0.494813" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4784313700000000224576979235280305147171" />
+                                    <rgba x="0.775796" y="0.253658" z="0.491171" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4823529400000000078030382155702682211995" />
+                                    <rgba x="0.77960402" y="0.25807801" z="0.48753899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4862745099999999931483785076125059276819" />
+                                    <rgba x="0.78338301" y="0.26249999" z="0.48391801" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4901960799999999784937187996547436341643" />
+                                    <rgba x="0.78713298" y="0.266922" z="0.48030701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4941176500000000193502103229548083618283" />
+                                    <rgba x="0.79085499" y="0.27134499" z="0.476706" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.4980392200000000046955506149970460683107" />
+                                    <rgba x="0.79454899" y="0.27577001" z="0.47311699" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5019608100000000350249251823697704821825" />
+                                    <rgba x="0.79821599" y="0.28019699" z="0.469538" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5058823799999999648591142431541811674833" />
+                                    <rgba x="0.80185503" y="0.28462601" z="0.46597099" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5098039500000000057156057664542458951473" />
+                                    <rgba x="0.80546701" y="0.28905699" z="0.46241501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5137255200000000465720972897543106228113" />
+                                    <rgba x="0.80905199" y="0.29349101" z="0.45886999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5176470899999999764062863505387213081121" />
+                                    <rgba x="0.812612" y="0.29792801" z="0.455338" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5215686600000000172627778738387860357761" />
+                                    <rgba x="0.81614399" y="0.30236799" z="0.45181599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5254902200000000078716766438446938991547" />
+                                    <rgba x="0.81965101" y="0.30681199" z="0.44830599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5294117900000000487281681671447586268187" />
+                                    <rgba x="0.82313198" y="0.311261" z="0.44480601" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5333333599999999785623572279291693121195" />
+                                    <rgba x="0.82658798" y="0.315714" z="0.44131601" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5372549300000000194188487512292340397835" />
+                                    <rgba x="0.83001798" y="0.32017201" z="0.43783599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5411764999999999492530378120136447250843" />
+                                    <rgba x="0.83342201" y="0.324635" z="0.43436599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5450980699999999901095293353137094527483" />
+                                    <rgba x="0.83680099" y="0.32910499" z="0.43090501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5490196299999999807184281053196173161268" />
+                                    <rgba x="0.84015501" y="0.33357999" z="0.42745501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5529412000000000215749196286196820437908" />
+                                    <rgba x="0.84348398" y="0.33806199" z="0.42401299" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5568627699999999514091086894040927290916" />
+                                    <rgba x="0.84678799" y="0.34255099" z="0.42057899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5607843399999999922656002127041574567556" />
+                                    <rgba x="0.85006601" y="0.34704801" z="0.417153" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5647059100000000331220917360042221844196" />
+                                    <rgba x="0.85331899" y="0.35155299" z="0.41373399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5686274799999999629562807967886328697205" />
+                                    <rgba x="0.856547" y="0.35606599" z="0.41032201" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5725490500000000038127723200886975973845" />
+                                    <rgba x="0.85974997" y="0.36058801" z="0.40691701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.576470609999999994421671090094605460763" />
+                                    <rgba x="0.86292702" y="0.36511901" z="0.403519" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.580392180000000035278162613394670188427" />
+                                    <rgba x="0.86607802" y="0.36965999" z="0.40012601" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5843137499999999651123516741790808737278" />
+                                    <rgba x="0.86920297" y="0.374212" z="0.39673799" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5882353200000000059688431974791456013918" />
+                                    <rgba x="0.87230301" y="0.37877399" z="0.39335501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5921568900000000468253347207792103290558" />
+                                    <rgba x="0.87537599" y="0.383347" z="0.38997599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.5960784599999999766595237815636210143566" />
+                                    <rgba x="0.87842298" y="0.387932" z="0.38659999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6000000199999999672684225515695288777351" />
+                                    <rgba x="0.88144302" y="0.39252901" z="0.38322899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6039215900000000081249140748695936053991" />
+                                    <rgba x="0.88443601" y="0.39713901" z="0.37986001" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6078431600000000489814055981696583330631" />
+                                    <rgba x="0.887402" y="0.40176201" z="0.37649399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.611764729999999978815594658954069018364" />
+                                    <rgba x="0.89033997" y="0.406398" z="0.37312999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6156863000000000196720861822541337460279" />
+                                    <rgba x="0.89324999" y="0.411048" z="0.36976799" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6196078699999999495062752430385444313288" />
+                                    <rgba x="0.89613098" y="0.415712" z="0.36640701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6235294300000000511374764755601063370705" />
+                                    <rgba x="0.89898401" y="0.42039201" z="0.363047" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6274509999999999809716655363445170223713" />
+                                    <rgba x="0.90180701" y="0.425087" z="0.35968801" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6313725700000000218281570596445817500353" />
+                                    <rgba x="0.90460098" y="0.42979699" z="0.35632899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6352941399999999516623461204289924353361" />
+                                    <rgba x="0.90736502" y="0.434524" z="0.35297" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6392157099999999925188376437290571630001" />
+                                    <rgba x="0.91009802" y="0.43926799" z="0.34961" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6431372800000000333753291670291218906641" />
+                                    <rgba x="0.91280001" y="0.444029" z="0.34625101" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6470588400000000239842279370350297540426" />
+                                    <rgba x="0.91547102" y="0.448807" z="0.34288999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6509804099999999538184169978194404393435" />
+                                    <rgba x="0.918109" y="0.453603" z="0.33952901" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6549019799999999946749085211195051670074" />
+                                    <rgba x="0.92071402" y="0.458417" z="0.33616599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6588235500000000355314000444195698946714" />
+                                    <rgba x="0.92328697" y="0.46325099" z="0.33280101" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6627451199999999653655891052039805799723" />
+                                    <rgba x="0.925825" y="0.46810299" z="0.32943499" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6666666900000000062220806285040453076363" />
+                                    <rgba x="0.92832899" y="0.47297499" z="0.326067" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6705882499999999968309793985099531710148" />
+                                    <rgba x="0.93079799" y="0.47786701" z="0.32269701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6745098200000000376874709218100178986788" />
+                                    <rgba x="0.93323201" y="0.48278001" z="0.319325" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6784313899999999675216599825944285839796" />
+                                    <rgba x="0.93563002" y="0.487712" z="0.315952" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6823529600000000083781515058944933116436" />
+                                    <rgba x="0.93799001" y="0.49266699" z="0.31257501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6862745300000000492346430291945580393076" />
+                                    <rgba x="0.94031298" y="0.49764201" z="0.30919701" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6901960999999999790688320899789687246084" />
+                                    <rgba x="0.94259799" y="0.502639" z="0.30581599" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6941176700000000199253236132790334522724" />
+                                    <rgba x="0.94484401" y="0.507658" z="0.30243301" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.6980392300000000105342223832849413156509" />
+                                    <rgba x="0.94705099" y="0.51269901" z="0.29904899" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7019608000000000513907139065850060433149" />
+                                    <rgba x="0.94921702" y="0.51776302" z="0.29566199" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7058823699999999812249029673694167286158" />
+                                    <rgba x="0.95134401" y="0.52284998" z="0.29227501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7098039400000000220813944906694814562798" />
+                                    <rgba x="0.95342797" y="0.52796" z="0.288883" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7137255099999999519155835514538921415806" />
+                                    <rgba x="0.95547003" y="0.53309298" z="0.28549001" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7176470799999999927720750747539568692446" />
+                                    <rgba x="0.95746899" y="0.53825003" z="0.282096" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7215686399999999833809738447598647326231" />
+                                    <rgba x="0.95942402" y="0.54343098" z="0.27870101" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7254902100000000242374653680599294602871" />
+                                    <rgba x="0.96133602" y="0.54863602" z="0.275305" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7294117799999999540716544288443401455879" />
+                                    <rgba x="0.96320301" y="0.55386502" z="0.271909" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7333333499999999949281459521444048732519" />
+                                    <rgba x="0.96502399" y="0.55911797" z="0.26851299" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7372549200000000357846374754444696009159" />
+                                    <rgba x="0.96679801" y="0.56439602" z="0.265118" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7411764899999999656188265362288802862167" />
+                                    <rgba x="0.96852601" y="0.5697" z="0.26172099" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7450980499999999562277253062347881495953" />
+                                    <rgba x="0.97020501" y="0.575028" z="0.25832501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7490196199999999970842168295348528772593" />
+                                    <rgba x="0.97183502" y="0.58038199" z="0.254931" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7529411900000000379407083528349176049232" />
+                                    <rgba x="0.97341597" y="0.58576101" z="0.25154001" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7568627599999999677748974136193282902241" />
+                                    <rgba x="0.97494698" y="0.59116501" z="0.248151" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7607843300000000086313889369193930178881" />
+                                    <rgba x="0.97642797" y="0.59659499" z="0.244767" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7647059000000000494878804602194577455521" />
+                                    <rgba x="0.97785598" y="0.60205102" z="0.24138699" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7686274600000000400967792302253656089306" />
+                                    <rgba x="0.97923303" y="0.60753202" z="0.238013" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7725490299999999699309682910097762942314" />
+                                    <rgba x="0.98055601" y="0.61303902" z="0.23464601" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7764706000000000107874598143098410218954" />
+                                    <rgba x="0.98182601" y="0.618572" z="0.231287" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7803921700000000516439513376099057495594" />
+                                    <rgba x="0.98304099" y="0.62413102" z="0.227937" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7843137399999999814781403983943164348602" />
+                                    <rgba x="0.98419899" y="0.62971801" z="0.224595" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7882353100000000223346319216943811625242" />
+                                    <rgba x="0.98530102" y="0.63533002" z="0.221265" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7921568799999999521688209824787918478251" />
+                                    <rgba x="0.98634499" y="0.64096898" z="0.217948" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.7960784400000000538000222150003537535667" />
+                                    <rgba x="0.98733199" y="0.64663303" z="0.21464799" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8000000099999999836342112757847644388676" />
+                                    <rgba x="0.98825997" y="0.65232497" z="0.211364" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8039215800000000244907027990848291665316" />
+                                    <rgba x="0.98912799" y="0.65804303" z="0.20810001" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8078431499999999543248918598692398518324" />
+                                    <rgba x="0.98993498" y="0.66378701" z="0.204859" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8117647199999999951813833831693045794964" />
+                                    <rgba x="0.99068099" y="0.66955799" z="0.20164201" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8156862900000000360378749064693693071604" />
+                                    <rgba x="0.99136502" y="0.67535502" z="0.19845299" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8196078500000000266467736764752771705389" />
+                                    <rgba x="0.99198502" y="0.68117899" z="0.19529501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8235294199999999564809627372596878558397" />
+                                    <rgba x="0.99254102" y="0.68703002" z="0.19216999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8274509899999999973374542605597525835037" />
+                                    <rgba x="0.99303198" y="0.69290698" z="0.18908399" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8313725600000000381939457838598173111677" />
+                                    <rgba x="0.99345601" y="0.69880998" z="0.186041" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8352941299999999680281348446442279964685" />
+                                    <rgba x="0.99381399" y="0.704741" z="0.183043" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8392157000000000088846263679442927241325" />
+                                    <rgba x="0.99410301" y="0.71069801" z="0.180097" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8431372599999999994935251379502005875111" />
+                                    <rgba x="0.99432403" y="0.716681" z="0.17720801" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8470588300000000403500166612502653151751" />
+                                    <rgba x="0.99447399" y="0.722691" z="0.174381" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8509803999999999701842057220346760004759" />
+                                    <rgba x="0.99455303" y="0.728728" z="0.17162199" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8549019700000000110406972453347407281399" />
+                                    <rgba x="0.99456102" y="0.73479098" z="0.168938" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8588235400000000518971887686348054558039" />
+                                    <rgba x="0.99449497" y="0.74088001" z="0.166335" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8627451099999999817313778294192161411047" />
+                                    <rgba x="0.99435502" y="0.74699497" z="0.163821" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8666666699999999723402765994251240044832" />
+                                    <rgba x="0.99414098" y="0.75313699" z="0.161404" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8705882400000000131967681227251887321472" />
+                                    <rgba x="0.99385101" y="0.75930399" z="0.15909199" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8745098100000000540532596460252534598112" />
+                                    <rgba x="0.99348199" y="0.765499" z="0.156891" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.878431379999999983887448706809664145112" />
+                                    <rgba x="0.99303299" y="0.77171999" z="0.154808" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.882352950000000024743940230109728872776" />
+                                    <rgba x="0.99250501" y="0.77796698" z="0.15285499" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8862745199999999545781292908941395580769" />
+                                    <rgba x="0.99189699" y="0.78423899" z="0.151042" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8901960799999999451870280609000474214554" />
+                                    <rgba x="0.99120897" y="0.790537" z="0.149377" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8941176499999999860435195842001121491194" />
+                                    <rgba x="0.990439" y="0.79685903" z="0.14787" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.8980392200000000269000111075001768767834" />
+                                    <rgba x="0.98958701" y="0.80320501" z="0.146529" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9019607899999999567342001682845875620842" />
+                                    <rgba x="0.988648" y="0.80957901" z="0.145357" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9058823599999999975906916915846522897482" />
+                                    <rgba x="0.98762101" y="0.81597799" z="0.144363" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9098039300000000384471832148847170174122" />
+                                    <rgba x="0.98650903" y="0.82240099" z="0.143557" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.913725499999999968281372275669127702713" />
+                                    <rgba x="0.98531401" y="0.82884598" z="0.14294501" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9176470599999999588902710456750355660915" />
+                                    <rgba x="0.98403102" y="0.83531499" z="0.142528" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9215686299999999997467625689751002937555" />
+                                    <rgba x="0.98265302" y="0.84181201" z="0.142303" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9254902000000000406032540922751650214195" />
+                                    <rgba x="0.98119003" y="0.84832901" z="0.142279" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9294117699999999704374431530595757067204" />
+                                    <rgba x="0.979644" y="0.85486603" z="0.142453" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9333333400000000112939346763596404343843" />
+                                    <rgba x="0.97799498" y="0.86143202" z="0.14280801" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9372549100000000521504261996597051620483" />
+                                    <rgba x="0.97626501" y="0.868016" z="0.143351" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9411764700000000427593249696656130254269" />
+                                    <rgba x="0.97444302" y="0.87462199" z="0.144061" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9450980399999999725935140304500237107277" />
+                                    <rgba x="0.97253001" y="0.88125002" z="0.144923" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9490196100000000134500055537500884383917" />
+                                    <rgba x="0.97053301" y="0.887896" z="0.145919" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9529411800000000543064970770501531660557" />
+                                    <rgba x="0.96844298" y="0.89456397" z="0.14701401" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9568627499999999841406861378345638513565" />
+                                    <rgba x="0.96627098" y="0.90124899" z="0.14817999" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9607843200000000249971776611346285790205" />
+                                    <rgba x="0.96402103" y="0.90794998" z="0.14937" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.964705880000000015606076431140536442399" />
+                                    <rgba x="0.96168101" y="0.91467202" z="0.15052" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9686274499999999454402654919249471276999" />
+                                    <rgba x="0.95927602" y="0.92140698" z="0.151566" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9725490199999999862967570152250118553638" />
+                                    <rgba x="0.95680797" y="0.92815202" z="0.152409" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9764705900000000271532485385250765830278" />
+                                    <rgba x="0.95428699" y="0.93490797" z="0.15292101" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9803921599999999569874375993094872683287" />
+                                    <rgba x="0.95172602" y="0.94167101" z="0.152925" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9843137299999999978439291226095519959927" />
+                                    <rgba x="0.94915098" y="0.94843501" z="0.152178" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9882352899999999884528278926154598593712" />
+                                    <rgba x="0.94660199" y="0.95519" z="0.150328" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.9921568600000000293093194159155245870352" />
+                                    <rgba x="0.944152" y="0.96191603" z="0.146861" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="0.996078429999999959143508476699935272336" />
+                                    <rgba x="0.94189602" y="0.96859002" z="0.140956" w="1" />
+                                </Point>
+                                <Point>
+                                    <pos content="1" />
+                                    <rgba x="0.94001502" y="0.97515798" z="0.131326" w="1" />
+                                </Point>
+                            </Points>
+                        </TransferFunction>
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="475" y="275" />
+                        <visibility content="1" />
+                        <selection content="1" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.Background" identifier="Background" displayName="Background">
+                <PortGroups>
+                    <PortGroup content="default" key="inport" />
+                    <PortGroup content="default" key="outport" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" />
+                </InPorts>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref5" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="backgroundStyle" />
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor1">
+                        <semantics semantics="Color" />
+                        <value x="0.84705883" y="0.84705883" z="0.84705883" w="1" />
+                    </Property>
+                    <Property type="org.inviwo.FloatVec4Property" identifier="bgColor2">
+                        <semantics semantics="Color" />
+                        <value x="0.83529413" y="0.83529413" z="0.83529413" w="1" />
+                    </Property>
+                    <Property type="org.inviwo.IntVec2Property" identifier="checkerBoardSize">
+                        <visible content="0" />
+                    </Property>
+                    <Property type="org.inviwo.ButtonProperty" identifier="switchColors" />
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="blendMode" />
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="500" y="350" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.TubeRendering" identifier="Tube Rendering" displayName="Tube Rendering">
+                <PortGroups>
+                    <PortGroup content="default" key="imageInport" />
+                    <PortGroup content="default" key="mesh" />
+                    <PortGroup content="default" key="outport" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="mesh" id="ref1" />
+                    <InPort type="org.inviwo.Image.inport" identifier="imageInport" id="ref2" />
+                </InPorts>
+                <OutPorts>
+                    <OutPort type="org.inviwo.Image.outport" identifier="outport" id="ref3" />
+                </OutPorts>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="tubeProperties">
+                        <Properties>
+                            <Property type="org.inviwo.BoolProperty" identifier="forceRadius" />
+                            <Property type="org.inviwo.FloatProperty" identifier="defaultRadius">
+                                <value content="0.02189891" />
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="forceColor" />
+                            <Property type="org.inviwo.FloatVec4Property" identifier="defaultColor" />
+                            <Property type="org.inviwo.BoolProperty" identifier="useMetaColor" />
+                            <Property type="org.inviwo.TransferFunctionProperty" identifier="metaColor">
+                                <TransferFunction>
+                                    <maskMin content="0" />
+                                    <maskMax content="1" />
+                                    <type content="0" />
+                                    <Points>
+                                        <Point>
+                                            <pos content="0" />
+                                            <rgba x="0" y="0" z="0" w="0" />
+                                        </Point>
+                                        <Point>
+                                            <pos content="1" />
+                                            <rgba x="1" y="1" z="1" w="1" />
+                                        </Point>
+                                    </Points>
+                                </TransferFunction>
+                            </Property>
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                    <Property type="org.inviwo.CameraProperty" identifier="camera">
+                        <OwnedPropertyIdentifiers>
+                            <PropertyIdentifier content="fov" />
+                        </OwnedPropertyIdentifiers>
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyString" identifier="cameraType" />
+                            <Property type="org.inviwo.ButtonGroupProperty" identifier="actions" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lookFrom">
+                                <value x="-1.619239" y="-1.0070413" z="0.60326952" />
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lookTo" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lookUp">
+                                <value x="0.23263144" y="0.19654298" z="0.95249802" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatio">
+                                <value content="1.2505051" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="near" />
+                            <Property type="org.inviwo.FloatProperty" identifier="far" />
+                            <Property type="org.inviwo.FloatProperty" identifier="fov">
+                                <displayName content="FOV" />
+                                <semantics semantics="Default" />
+                                <usageMode content="1" />
+                                <visible content="1" />
+                                <readonly content="0" />
+                                <minvalue content="10" />
+                                <maxvalue content="180" />
+                                <increment content="0.1" />
+                                <value content="38" />
+                            </Property>
+                            <Property type="org.inviwo.CompositeProperty" identifier="settings">
+                                <Properties>
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setNearFarButton" />
+                                    <Property type="org.inviwo.ButtonProperty" identifier="setLookRangesButton" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateNearFar" />
+                                    <Property type="org.inviwo.BoolProperty" identifier="updateLookRanges" />
+                                    <Property type="org.inviwo.FloatProperty" identifier="fittingRatio" />
+                                </Properties>
+                                <collapsed content="1" />
+                            </Property>
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                    <Property type="org.inviwo.SimpleLightingProperty" identifier="lighting">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyInt" identifier="shadingMode" />
+                            <Property type="org.inviwo.OptionPropertyInt" identifier="referenceFrame" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lightPosition" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lightColorAmbient" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lightColorDiffuse" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lightColorSpecular" />
+                            <Property type="org.inviwo.FloatProperty" identifier="materialShininess" />
+                            <Property type="org.inviwo.BoolProperty" identifier="applyLightAttenuation" />
+                            <Property type="org.inviwo.FloatVec3Property" identifier="lightAttenuation" />
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                    <Property type="org.inviwo.CameraTrackball" identifier="trackball">
+                        <Properties>
+                            <Property type="org.inviwo.OptionPropertyInt" identifier="trackballMethod" />
+                            <Property type="org.inviwo.FloatProperty" identifier="sensitivity" />
+                            <Property type="org.inviwo.FloatProperty" identifier="movementSpeed">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="fixUp">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.OptionPropertyInt" identifier="worldUp">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.FloatVec3Property" identifier="customWup">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.FloatProperty" identifier="verticalAngleLimit">
+                                <visible content="0" />
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="handleEvents" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowHorizontalPanning" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowVerticalPanning" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowZoom" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowWheelZoom" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowHorziontalRotation" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowVerticalRotation" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowViewAxisRotation" />
+                            <Property type="org.inviwo.BoolProperty" identifier="allowRecenterView" />
+                            <Property type="org.inviwo.BoolProperty" identifier="animate" />
+                            <Property type="org.inviwo.EventProperty" identifier="trackballRotate">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="mouseZoom">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="wheelZoom">
+                                <visible content="0" />
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="trackballPan">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="mouseRecenterFocusPoint">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="mouseReset">
+                                <visible content="0" />
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="moveUp">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="moveLeft">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="moveDown">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="moveRight">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="moveForward">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="moveBackward">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepRotateUp">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepRotateLeft">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepRotateDown">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepRotateRight">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepZoomIn">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepZoomOut">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepPanUp">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepPanLeft">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepPanDown">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="stepPanRight">
+                                <Event />
+                            </Property>
+                            <Property type="org.inviwo.EventProperty" identifier="touchGesture">
+                                <visible content="0" />
+                                <Event />
+                            </Property>
+                        </Properties>
+                        <collapsed content="1" />
+                    </Property>
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="475" y="425" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+            <Processor type="org.inviwo.CanvasGL" identifier="Canvas" displayName="Canvas">
+                <PortGroups>
+                    <PortGroup content="default" key="inport" />
+                </PortGroups>
+                <InPorts>
+                    <InPort type="org.inviwo.Image.inport" identifier="inport" id="ref0" />
+                </InPorts>
+                <Properties>
+                    <Property type="org.inviwo.CompositeProperty" identifier="inputSize">
+                        <Properties>
+                            <Property type="org.inviwo.IntSize2Property" identifier="dimensions" />
+                            <Property type="org.inviwo.BoolProperty" identifier="enableCustomInputDimensions" />
+                            <Property type="org.inviwo.IntSize2Property" identifier="customInputDimensions">
+                                <readonly content="1" />
+                                <value x="1238" y="990" />
+                            </Property>
+                            <Property type="org.inviwo.BoolProperty" identifier="keepAspectRatio" />
+                            <Property type="org.inviwo.FloatProperty" identifier="aspectRatioScaling" />
+                        </Properties>
+                        <collapsed content="0" />
+                    </Property>
+                    <Property type="org.inviwo.IntVec2Property" identifier="position">
+                        <value x="-96" y="401" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyEnumChar" identifier="visibleLayer" />
+                    <Property type="org.inviwo.IntProperty" identifier="colorLayer_">
+                        <displayName content="Color Layer ID" />
+                        <semantics semantics="Default" />
+                        <usageMode content="1" />
+                        <visible content="0" />
+                        <readonly content="0" />
+                        <minvalue content="0" />
+                        <maxvalue content="0" />
+                        <increment content="1" />
+                        <value content="0" />
+                    </Property>
+                    <Property type="org.inviwo.DirectoryProperty" identifier="layerDir">
+                        <absolutePath content="" />
+                        <workspaceRelativePath content="" />
+                        <ivwdataRelativePath content="" />
+                        <selectedExtension>
+                            <extension content="" />
+                            <description content="" />
+                        </selectedExtension>
+                        <acceptMode content="0" />
+                        <fileMode content="4" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyFileExtension" identifier="fileExt" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="saveLayer" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="saveLayerToFile" />
+                    <Property type="org.inviwo.BoolProperty" identifier="fullscreen" />
+                    <Property type="org.inviwo.EventProperty" identifier="fullscreenEvent">
+                        <Event />
+                    </Property>
+                    <Property type="org.inviwo.EventProperty" identifier="saveLayerEvent">
+                        <Event />
+                    </Property>
+                    <Property type="org.inviwo.BoolProperty" identifier="allowContextMenu" />
+                </Properties>
+                <MetaDataMap>
+                    <MetaDataItem type="org.inviwo.ProcessorMetaData" key="org.inviwo.ProcessorMetaData">
+                        <position x="475" y="500" />
+                        <visibility content="1" />
+                        <selection content="0" />
+                    </MetaDataItem>
+                    <MetaDataItem type="org.inviwo.ProcessorWidgetMetaData" key="org.inviwo.ProcessorWidgetMetaData">
+                        <position x="-96" y="401" />
+                        <dimensions x="1238" y="990" />
+                        <visibility content="1" />
+                    </MetaDataItem>
+                </MetaDataMap>
+            </Processor>
+        </Processors>
+        <Connections>
+            <Connection>
+                <OutPort type="org.inviwo.Mesh.outport" identifier="mesh" reference="ref4" />
+                <InPort type="org.inviwo.Mesh.flat.multi.inport" identifier="mesh" reference="ref1" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref5" />
+                <InPort type="org.inviwo.Image.inport" identifier="imageInport" reference="ref2" />
+            </Connection>
+            <Connection>
+                <OutPort type="org.inviwo.Image.outport" identifier="outport" reference="ref3" />
+                <InPort type="org.inviwo.Image.inport" identifier="inport" reference="ref0" />
+            </Connection>
+        </Connections>
+    </ProcessorNetwork>
+    <PortInspectors />
+    <WorkspaceAnnotations>
+        <Properties>
+            <Property type="org.inviwo.StringProperty" identifier="title" />
+            <Property type="org.inviwo.StringProperty" identifier="author" />
+            <Property type="org.inviwo.StringProperty" identifier="tags" />
+            <Property type="org.inviwo.StringProperty" identifier="categories" />
+            <Property type="org.inviwo.StringProperty" identifier="description" />
+        </Properties>
+        <Canvases>
+            <CanvasImage>
+                <name content="Canvas" />
+                <size x="320" y="256" />
+                <base64 content="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" />
+            </CanvasImage>
+        </Canvases>
+        <Network>
+            <name content="Network" />
+            <size x="256" y="256" />
+            <base64 content="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" />
+        </Network>
+    </WorkspaceAnnotations>
+    <Animation />
+    <AnimationController>
+        <Properties>
+            <Property type="org.inviwo.CompositeProperty" identifier="PlayOptions">
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="PlayFirstLastTimeOption" />
+                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="PlayFirstLastTime">
+                        <visible content="0" />
+                    </Property>
+                    <Property type="org.inviwo.DoubleProperty" identifier="PlayFramesPerSecond" />
+                    <Property type="org.inviwo.OptionPropertyEnumInt" identifier="PlayMode" />
+                </Properties>
+                <collapsed content="1" />
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="RenderOptions">
+                <Properties>
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="RenderFirstLastTimeOption" />
+                    <Property type="org.inviwo.DoubleMinMaxProperty" identifier="RenderFirstLastTime">
+                        <visible content="0" />
+                    </Property>
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="RenderSizeOptions" />
+                    <Property type="org.inviwo.OptionPropertyInt" identifier="RenderSizeAspectRatio">
+                        <visible content="0" />
+                    </Property>
+                    <Property type="org.inviwo.IntVec2Property" identifier="RenderSize">
+                        <visible content="0" />
+                    </Property>
+                    <Property type="org.inviwo.IntProperty" identifier="RenderNumFrames" />
+                    <Property type="org.inviwo.DirectoryProperty" identifier="RenderLocationDir">
+                        <absolutePath content="" />
+                        <workspaceRelativePath content="" />
+                        <ivwdataRelativePath content="" />
+                        <selectedExtension>
+                            <extension content="" />
+                            <description content="" />
+                        </selectedExtension>
+                        <acceptMode content="0" />
+                        <fileMode content="4" />
+                    </Property>
+                    <Property type="org.inviwo.StringProperty" identifier="RenderLocationBaseName" />
+                    <Property type="org.inviwo.OptionPropertyString" identifier="RenderImageExtension" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="RenderAction" />
+                    <Property type="org.inviwo.ButtonProperty" identifier="RenderActionStop">
+                        <visible content="0" />
+                    </Property>
+                </Properties>
+                <collapsed content="1" />
+            </Property>
+            <Property type="org.inviwo.CompositeProperty" identifier="ControlOptions">
+                <Properties>
+                    <Property type="org.inviwo.ButtonProperty" identifier="ControlInsertPauseFrame" />
+                </Properties>
+                <collapsed content="1" />
+            </Property>
+        </Properties>
+    </AnimationController>
+</InviwoWorkspace>

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,36 +27,20 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/vtkmodule.h>
+//http://wili.cc/blog/opengl-cs.html
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
 
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
-#include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
+uniform float roll = 1;
+writeonly uniform image2D dest;
 
-namespace inviwo {
+layout (local_size_x = 16, local_size_y = 16) in;
+void main(){
+    ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+    vec2 texCoord = vec2(gl_GlobalInvocationID.xy) / 512.0;
 
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+    float localCoef = length(vec2(ivec2(gl_LocalInvocationID.xy)-8)/8.0);
+    float globalCoef = sin(float(gl_WorkGroupID.x+gl_WorkGroupID.y)*0.1 + roll)*0.5;
 
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
-
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
+    imageStore(dest, storePos, vec4(globalCoef*localCoef , 0.0, 0.0, 0.0)); 
 }
-
-}  // namespace inviwo

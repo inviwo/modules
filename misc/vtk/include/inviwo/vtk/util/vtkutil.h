@@ -55,5 +55,34 @@ inline dvec3 extentFromBounds(const double* bounds) {
 inline dvec3 offsetFromBounds(const double* bounds) {
     return dvec3{bounds[0], bounds[2], bounds[4]};
 }
+
+inline const DataFormatBase* getFormatFromVtkId(int vtkTypeId, int bitSize) {
+    switch (vtkTypeId) {
+        case VTK_CHAR:
+        case VTK_SIGNED_CHAR:
+        case VTK_SHORT:
+        case VTK_INT:
+        case VTK_LONG:
+        case VTK_LONG_LONG:
+        case VTK___INT64:
+            return DataFormatBase::get(NumericType::SignedInteger, 1, bitSize);
+
+        case VTK_UNSIGNED_CHAR:
+        case VTK_UNSIGNED_SHORT:
+        case VTK_UNSIGNED_INT:
+        case VTK_UNSIGNED_LONG:
+        case VTK_UNSIGNED_LONG_LONG:
+        case VTK_UNSIGNED___INT64:
+        case VTK_ID_TYPE:
+            return DataFormatBase::get(NumericType::UnsignedInteger, 1, bitSize);
+
+        case VTK_FLOAT:
+        case VTK_DOUBLE:
+            return DataFormatBase::get(NumericType::Float, 1, bitSize);
+        default:
+            return nullptr;
+    }
+}
+
 }  // namespace vtkutil
 }  // namespace inviwo
