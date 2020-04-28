@@ -1,6 +1,7 @@
 #include <inviwo/tensorvisio/processors/flowguifilereader.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodule.h>
+#include <fstream>
 
 namespace inviwo {
 

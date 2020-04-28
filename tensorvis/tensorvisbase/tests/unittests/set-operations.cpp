@@ -2,6 +2,7 @@
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
 #include <warn/pop>
+#include <list>
 
 #include <inviwo/tensorvisbase/util/misc.h>
 
