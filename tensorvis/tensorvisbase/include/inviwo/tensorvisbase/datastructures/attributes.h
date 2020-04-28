@@ -107,7 +107,7 @@ struct MajorEigenVector : VectorBase<N> {
 
     static std::vector<typename VectorBase<N>::value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, typename VectorBase<N>::scalar_type>>>
-        tensors,
+            tensors,
         std::shared_ptr<const DataFrame> metaData);
 };
 
@@ -117,7 +117,7 @@ struct IntermediateEigenVector : VectorBase<N> {
 
     static std::vector<typename VectorBase<N>::value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, typename VectorBase<N>::scalar_type>>>
-        tensors,
+            tensors,
         std::shared_ptr<const DataFrame> metaData);
 };
 
@@ -127,7 +127,7 @@ struct MinorEigenVector : VectorBase<N> {
 
     static std::vector<typename VectorBase<N>::value_type> calculate(
         std::shared_ptr<const std::vector<glm::mat<N, N, typename VectorBase<N>::scalar_type>>>
-        tensors,
+            tensors,
         std::shared_ptr<const DataFrame> metaData);
 };
 
