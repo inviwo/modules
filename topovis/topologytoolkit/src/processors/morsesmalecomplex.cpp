@@ -35,6 +35,7 @@
 #include <inviwo/core/datastructures/geometry/meshram.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
