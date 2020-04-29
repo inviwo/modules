@@ -283,7 +283,7 @@ void Series::sortImages() {
     // TODO: proper volume sorting according to
     // https://nipy.org/nibabel/dicom/spm_dicom.html#spm-volume-sorting
     std::sort(images.begin(), images.end(),
-              [](const auto& a, const auto& b) { return a.zPos > b.zPos; });
+              [](const auto& a, const auto& b) { return a.zPos < b.zPos; });
 }
 
 bool Series::empty() const { return images.empty(); }

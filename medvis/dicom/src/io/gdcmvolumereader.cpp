@@ -140,10 +140,20 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
     dvec3 spacing{series.pixelSpacing};
     dvec3 origin(dicomFront.origin);
 
-    spacing.z = abs(dicomNext.origin.z - dicomFront.origin.z);
-    origin.z = (dicomFront.origin.z + dicomBack.origin.z) / 2.0;
+
+    spacing.z = std::abs(dicomBack.origin.z - dicomFront.origin.z) / (series.dims.z - 1);
+
+
+    const double dicomDelta = 1.0e-4;
+    if (std::abs(spacing.z - std::abs(dicomNext.origin.z - dicomFront.origin.z)) > dicomDelta) {
+        LogWarnCustom("GdcmVolumeReader::getVolumeDescription",
+                      fmt::format("Spacing between slices compared to size of volume differs'{}' ('{}')",
+                                  series.desc, path));
+    }
+    origin.z = std::min(dicomFront.origin.z, dicomBack.origin.z);
 
     // Spacing is set to 1.0 by GDCM if spacing is not known
+    /*
     if (series.pixelSpacing.z == 0.0) {
         if (dicomFront.sliceThickness == 0.0) {
             LogWarnCustom("GdcmVolumeReader::getVolumeDescription",
@@ -154,7 +164,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
         } else {
             spacing.z = dicomFront.sliceThickness;
         }
-    }
+    }*/
 
     dvec3 extent{spacing * dvec3{series.dims}};
 
