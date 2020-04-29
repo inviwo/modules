@@ -134,29 +134,37 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
     // basis and offset computations
 
     // CHECK: can we use origin and direction cosines of refImage instead?
-    const auto& dicomImg = series.images.front();
+    const auto& dicomFront = series.images.front();
+    const auto& dicomNext = series.images.at(1);
+    const auto& dicomBack = series.images.back();
     dvec3 spacing{series.pixelSpacing};
+    dvec3 origin(dicomFront.origin);
+
+    spacing.z = abs(dicomNext.origin.z - dicomFront.origin.z);
+    origin.z = (dicomFront.origin.z + dicomBack.origin.z) / 2.0;
+
+    // Spacing is set to 1.0 by GDCM if spacing is not known
     if (series.pixelSpacing.z == 0.0) {
-        if (dicomImg.sliceThickness == 0.0) {
+        if (dicomFront.sliceThickness == 0.0) {
             LogWarnCustom("GdcmVolumeReader::getVolumeDescription",
                           fmt::format("DICOM series '{}' does not define pixel spacing in z or "
                                       "slice thickness, using 1.0 for z ('{}')",
                                       series.desc, path));
             spacing.z = 1.0;
         } else {
-            spacing.z = dicomImg.sliceThickness;
+            spacing.z = dicomFront.sliceThickness;
         }
     }
 
     dvec3 extent{spacing * dvec3{series.dims}};
 
-    mat3 basis{dicomImg.orientationX * extent.x, dicomImg.orientationY * extent.y,
-               glm::cross(dicomImg.orientationX, dicomImg.orientationY) * extent.z};
+    mat3 basis{dicomFront.orientationX * extent.x, dicomFront.orientationY * extent.y,
+               glm::cross(dicomFront.orientationX, dicomFront.orientationY) * extent.z};
 
     // TODO: do we need to consider the pixel spacing and slice thickness?
 
     volume->setBasis(basis);
-    volume->setOffset(dicomImg.origin);
+    volume->setOffset(origin);
 
     return volume;
 }
