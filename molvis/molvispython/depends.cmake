@@ -4,7 +4,3 @@ set(dependencies
 	InviwoMolVisBaseModule
     InviwoPython3Module
 )
-
-if(PYTHONLIBS_FOUND)
-    set(EnableByDefault ON)
-endif()

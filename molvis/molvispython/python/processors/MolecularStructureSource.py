@@ -1,14 +1,38 @@
 # Name: MolecularStructureSource 
 
+ #################################################################################
+ #
+ # Inviwo - Interactive Visualization Workshop
+ #
+ # Copyright (c) 2020 Inviwo Foundation
+ # All rights reserved.
+ #
+ # Redistribution and use in source and binary forms, with or without
+ # modification, are permitted provided that the following conditions are met:
+ #
+ # 1. Redistributions of source code must retain the above copyright notice, this
+ # list of conditions and the following disclaimer.
+ # 2. Redistributions in binary form must reproduce the above copyright notice,
+ # this list of conditions and the following disclaimer in the documentation
+ # and/or other materials provided with the distribution.
+ #
+ # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ #################################################################################
+
 import inviwopy as ivw
 
-#from inviwopy.properties import *
-#from inviwopy.data import *
 from inviwopy.glm import *
-#from inviwopy.data.formats import *
 import ivwmolvis
-
-import molvisdata
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
@@ -21,7 +45,6 @@ class MolecularStructureSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
         
-        self.addOutport(ivw.data.MeshOutport("mesh"))
         self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
 
         self.filename = ivw.properties.FileProperty("filename", "Structure Filename", "", "molecularstructure")
@@ -55,13 +78,7 @@ class MolecularStructureSource(ivw.Processor):
 
         self.dataset.value = self.filename.value.split("/")[-1]
 
-        mesh, molstruct = self.parseCIF(self.filename.value)
-        self.outports.mesh.setData(mesh)
-        self.outports.molecule.setData(molstruct)
-
-    # @staticmethod
-    # def extractAtomName(atom):
-    #     return molvisdata.extractAtomName(atom.get_name())
+        self.outports.molecule.setData(self.parseCIF(self.filename.value))
 
     @staticmethod
     def parseCIF(filename):
@@ -70,10 +87,8 @@ class MolecularStructureSource(ivw.Processor):
         ext = filename.split(".")[-1]
         if ext == 'gz' or ext == 'bz2':
             ext = filename.split(".")[-2]
-        print(ext)
 
         if (ext.startswith('pdb')):
-            print('pdb...')
             parser = PDBParser(PERMISSIVE=1)
         elif (ext.startswith('cif')):
             # initialize mmcif parser
@@ -87,7 +102,6 @@ class MolecularStructureSource(ivw.Processor):
 
         pos = []
         bfactors = []
-        #structureId = []
         modelId = []
         chainId = []
         residueId = []
@@ -102,17 +116,10 @@ class MolecularStructureSource(ivw.Processor):
                 d[key] = len(d)
             return d[key]
 
-        """def get_full_id(self): 
-        Return the full id of the atom. 
-
-        The full id of an atom is the tuple 
-        (structure id, model id, chain id, residue id, atom name, altloc). 
-        """ 
         for atom in structure.get_atoms():
-            info = atom.get_full_id()
+            info = atom.get_full_id()  # returns tuple (structure id, model id, chain id, residue id, atom name, altloc)
             pos.append(atom.coord)
             bfactors.append(atom.get_bfactor())
-            #structureId.append(info[0])
             if info[1] not in modelDict:
                 modelDict[info[1]] = len(modelDict)
             modelId.append(modelDict[info[1]])
@@ -133,13 +140,12 @@ class MolecularStructureSource(ivw.Processor):
             dvec3pos.append(ivw.glm.dvec3(p[0], p[1], p[2]))
         atoms.positions = dvec3pos
         atoms.bfactors = bfactors
-        #atoms.structureids = structureId
         atoms.modelids = modelId
         atoms.chainids = chainId
         atoms.residueids = residueId
         atoms.fullnames = atomFullName
 
-        atoms.updateAtomNumbers()
+        atoms.atomicnumbers = ivwmolvis.util.getAtomicNumbers(atoms)
 
         ## residues
         residues = []
@@ -152,48 +158,9 @@ class MolecularStructureSource(ivw.Processor):
         for chain in structure.get_chains():
             chains.append(ivwmolvis.Chain(id=chainDict[chain.get_id()], name=chain.get_id()))
 
-        molstruct = ivwmolvis.MolecularStructure()
-        molstruct.source = structureName
-        molstruct.atoms = atoms
-        molstruct.residues = residues
-        molstruct.chains = chains
+        bonds = ivwmolvis.util.computeCovalentBonds(atoms)
 
-        molstruct.updateStructure()
-        molstruct.computeCovalentBonds()
-
-        positions = []
-        colors = []
-        radii = []
-        modelIndices = []
-
-        numColors = 12
-
-        modelIndex = -1;
-        for model in structure:
-            modelIndex = (modelIndex + 1) % numColors
-            i = 1
-            for atom in model.get_atoms():
-                name = molvisdata.extractAtomName(atom.get_name())
-                color = molvisdata.color(name)
-                radius = molvisdata.radius(name)
-                modelIndices.append(modelIndex)
-
-                positions.append(atom.coord)
-                colors.append(color)
-                radii.append(radius)
-                modelIndices.append(modelIndex)
-
-        nppos = np.array(positions)
-        posBuffer = ivw.data.Buffer(nppos)
-        colorBuffer = ivw.data.Buffer(np.array(colors, dtype=np.single))
-        radiiBuffer = ivw.data.Buffer(np.array(radii).astype(np.float32))
-
-        modeldata = np.array(modelIndices).astype(np.float32) / numColors
-        modelBuffer = ivw.data.Buffer(modeldata)
-        
-        mesh.addBuffer(ivw.data.BufferType.PositionAttrib, posBuffer)
-        mesh.addBuffer(ivw.data.BufferType.ColorAttrib, colorBuffer)
-        mesh.addBuffer(ivw.data.BufferType.RadiiAttrib, radiiBuffer)
-        mesh.addBuffer(ivw.data.BufferType.ScalarMetaAttrib, modelBuffer)
-
-        return mesh, molstruct
+        molstruct = ivwmolvis.MolecularStructure(ivwmolvis.MolecularData(source=structureName, atoms=atoms, 
+                                                                         residues=residues, chains=chains, 
+                                                                         bonds=bonds))
+        return molstruct
