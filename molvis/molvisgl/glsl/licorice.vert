@@ -63,13 +63,6 @@ void main(void) {
     out_vert.scalarMeta = 0.0;
 #endif
 
-// #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-//     radius_ = in_Radii;
-// #else 
-//     radius_ = defaultRadius;
-// #endif
-//     radius_ *= radiusScaling_;
-
 #if defined(HAS_PICKING)
     out_vert.pickID = in_Picking;
 #else 

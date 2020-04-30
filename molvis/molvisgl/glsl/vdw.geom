@@ -35,15 +35,8 @@
 uniform GeometryParameters geometry;
 uniform CameraParameters camera;
 
-// define HEXAGON for hexagonal glyphs instead of image-space quads
-//#define HEXAGON
-
 layout(points) in;
-#ifdef HEXAGON
-    layout(triangle_strip, max_vertices = 6) out;
-#else
-    layout(triangle_strip, max_vertices = 4) out;
-#endif
+layout(triangle_strip, max_vertices = 4) out;
 
 in vec4 worldPosition_[];
 in vec4 sphereColor_[];
@@ -104,23 +97,6 @@ void main(void) {
     vec3 camRight = normalize(cross(camDir, camUp));
     camUp = normalize(cross(camDir, camRight));
 
-#ifdef HEXAGON
-
-    float r_hex = 1.15470*radius_; // == 2.0/3.0 * sqrt(3.0)
-    float h_hex = r_hex * 0.86602540; // == 1/2 * sqrt(3.0)
-
-    camRight *= r_hex;
-    vec3 camRight_half = camRight * 0.5;
-    camUp *= h_hex;
-
-    emitvertex(center_.xyz - camRight, glyphDepth);
-    emitvertex(center_.xyz - camRight_half - camUp, glyphDepth);
-    emitvertex(center_.xyz - camRight_half + camUp, glyphDepth);
-    emitvertex(center_.xyz + camRight_half - camUp, glyphDepth);
-    emitvertex(center_.xyz + camRight_half + camUp, glyphDepth);
-    emitvertex(center_.xyz + camRight, glyphDepth);
-
-#else // HEXAGON
     // square:
     camRight *= radius_ * 1.41421356;
     camUp *= radius_ * 1.41421356;
@@ -129,7 +105,6 @@ void main(void) {
     emitvertex(center_.xyz - camRight - camUp, glyphDepth);
     emitvertex(center_.xyz + camRight + camUp, glyphDepth);
     emitvertex(center_.xyz - camRight + camUp, glyphDepth);
-#endif // HEXAGON
 
     EndPrimitive();
 }

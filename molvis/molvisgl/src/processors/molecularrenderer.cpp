@@ -185,8 +185,10 @@ void MolecularRenderer::configureLicoriceShader(Shader& shader) {
     utilgl::addDefines(shader, lighting_);
 
     shader.getFragmentShaderObject()->addShaderExtension("GL_ARB_conservative_depth", true);
-    // shader.getFragmentShaderObject()->addOutDeclaration("gl_FragDepth", "depth_greater",
-    // "float"))
+
+    ShaderObject::OutDeclaration outdecl;
+    outdecl.decl = "layout (depth_greater) out float gl_FragDepth;";
+    shader.getFragmentShaderObject()->addOutDeclaration(outdecl);
 
     shader.build();
 }

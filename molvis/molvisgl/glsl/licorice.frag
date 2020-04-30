@@ -35,6 +35,7 @@
 
 #include "utils/structs.glsl"
 #include "utils/shading.glsl"
+#include "intersection/raycapsule.glsl"
 
 uniform CameraParameters camera;
 uniform LightParameters lighting;
@@ -52,46 +53,6 @@ in Fragment {
 #ifdef GL_EXT_conservative_depth
 //layout (depth_greater) out float gl_FragDepth;
 #endif
-
-// Source from Ingo Quilez (https://www.shadertoy.com/view/Xt3SzX)
-float intersect_capsule(in vec3 ro, in vec3 rd, in vec3 cc, in vec3 ca, float cr,
-                      float ch, out vec3 normal, out float seg_t) {
-    vec3 oc = ro - cc;
-    ch *= 0.5;
-
-    float card = dot(ca, rd);
-    float caoc = dot(ca, oc);
-
-    float a = 1.0 - card * card;
-    float b = dot(oc, rd) - caoc * card;
-    float c = dot(oc, oc) - caoc * caoc - cr * cr;
-    float h = b * b - a * c;
-    if (h < 0.0) return -1.0;
-    float t = (-b - sqrt(h)) / a;
-
-    float y = caoc + t * card;
-    seg_t = clamp(y * 0.5 + 0.5, 0.0, 1.0);
-
-    // body
-    if (abs(y) < ch) {
-        normal = normalize(oc + t * rd - ca * y);
-        return t;
-    }
-
-    // caps
-    float sy = sign(y);
-    oc = ro - (cc + sy * ca * ch);
-    b = dot(rd, oc);
-    c = dot(oc, oc) - cr * cr;
-    h = b * b - c;
-    if (h > 0.0) {
-        t = -b - sqrt(h);
-        normal = normalize(oc + rd * t);
-        return t;
-    }
-
-    return -1.0;
-}
 
 void main() {
 #ifdef ORTHO
