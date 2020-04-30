@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,37 +27,6 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/molvisbase/datastructures/molecularstructuretraits.h>
 
-#include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
-
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
-
-namespace inviwo {
-
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a mesh consisting of point and line meshes. This
- * mesh can be rendered with a MolecularRenderer resulting in various molecular representations or,
- * alternatively, with any Mesh renderer, e.g. a SphereRenderer.
- */
-class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
-public:
-    MolecularStructureToMesh();
-    virtual ~MolecularStructureToMesh() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    molvis::MolecularStructureInport inport_;
-    MeshOutport outport_;
-};
-
-}  // namespace inviwo
+namespace inviwo {}

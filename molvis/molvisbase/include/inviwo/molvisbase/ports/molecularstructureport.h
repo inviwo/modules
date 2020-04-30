@@ -29,12 +29,12 @@
 #pragma once
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
 #include <inviwo/molvisbase/datastructures/molecularstructure.h>
+#include <inviwo/molvisbase/datastructures/molecularstructuretraits.h>
 
 namespace inviwo {
 

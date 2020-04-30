@@ -29,9 +29,8 @@
 #pragma once
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/datastructures/datatraits.h>
-#include <inviwo/core/util/document.h>
+#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/hashcombine.h>
 
 #include <optional>
 
@@ -39,107 +38,188 @@ namespace inviwo {
 
 namespace molvis {
 
-// (structure id, model id, chain id, residue id, atom name, altloc).
-
+/**
+ * \brief represents all atoms of a molecular structure
+ *
+ * This layout is loosely based on the atom data structures used in BioPython.
+ * This structure has no invariants. Invariants are only checked by various helper and utility
+ * functions.
+ *
+ * \see https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
+ */
 struct IVW_MODULE_MOLVISBASE_API Atoms {
-    void updateAtomNumbers();
-    bool empty() const;
-    size_t size() const;
-    void clear();
-
     std::vector<dvec3> positions;
-    std::vector<double> bfactors;
-    // std::vector<int> structureIds;
+    std::vector<double> bFactors;  //<!  Debye–Waller factor (DWF) or temperature factor.
     std::vector<int> modelIds;
     std::vector<int> chainIds;
     std::vector<int> residueIds;
-    std::vector<unsigned char> atomNumbers;
-    std::vector<std::string> fullNames;
-
-    std::vector<int> residueIndices;
+    std::vector<unsigned char> atomicNumbers;
+    std::vector<std::string>
+        fullNames;  //!< full descriptive name, might include spaces and additional identifiers
 };
 
+/**
+ * \brief represents a Residue of a molecular structure
+ *
+ * A residue has a unique identifier and name. It refers to a list of all atoms belonging to this
+ * residue. The full name contains additional information.
+ *
+ * \see https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
+ */
 struct IVW_MODULE_MOLVISBASE_API Residue {
     size_t id;
     std::string name;
-    std::string fullName;
+    std::string fullName;  //!< hetero flag 'H_' plus hetero residue or 'W' for water molecules,
+                           //!< sequence identifier, and insertion code
     size_t chainId;
-    std::set<size_t> atoms;
 };
 
+/**
+ * \brief represents a Chain of a molecular structure
+ *
+ * A chain has a unique identifier and name and refers to a list of all comprised residues.
+ *
+ * \see https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
+ */
 struct IVW_MODULE_MOLVISBASE_API Chain {
     size_t id;
     std::string name;
-    std::set<size_t> residues;
 };
 
+/**
+ * represents a bond between two atoms and refers to the atom indices
+ */
 using Bond = std::pair<size_t, size_t>;
 
+/**
+ * \brief represents molecular data consisting of atoms and optional residue and chain information
+ * as well as bonds
+ *
+ * A MolecularData object requires the atoms to provide at least positions to be considered a valid
+ * molecular structure. Residue and chain information is optional. Information on bonds between
+ * atoms is also optional.
+ *
+ * Molecular data can consists of multiple chains. Chains consist of one or several residues which
+ * in turn contain individual atoms. This data structure assumes that only atoms refer to residues
+ * and chains via IDs. The hierarchical information is extracted in and used by MolecularStructure.
+ *
+ * \see MolecularStructure
+ */
+struct IVW_MODULE_MOLVISBASE_API MolecularData {
+    std::optional<std::string> source;
+
+    Atoms atoms;
+    std::vector<Residue> residues;
+    std::vector<Chain> chains;
+    std::vector<Bond> bonds;
+};
+
+/// residue's ID and chain ID for unique identification
+using ResidueID = std::pair<size_t, size_t>;
+
+}  // namespace molvis
+}  // namespace inviwo
+
+namespace std {
+template <>
+struct hash<inviwo::molvis::ResidueID> {
+    size_t operator()(const inviwo::molvis::ResidueID& resId) const {
+        size_t h = 0;
+        inviwo::util::hash_combine(h, resId.first);
+        inviwo::util::hash_combine(h, resId.second);
+        return h;
+    }
+};
+}  // namespace std
+
+namespace inviwo {
+namespace molvis {
+
+/**
+ * \brief a data structure holding molecular data and its acceleration structures
+ *
+ * A MolecularStructure holds and provides access to the hierarchical information of molecular data,
+ * i.e. chains, residues, and atoms, if existing. Acceleration structures are used for faster
+ * lookups of, e.g. querying all atoms in a particular residue.
+ *
+ * Note: acceleration structures can only be created if the molecular data provides information on
+ * residues or both residues and chains.
+ *
+ * \see MolecularData
+ */
 class IVW_MODULE_MOLVISBASE_API MolecularStructure {
 public:
-    MolecularStructure();
-    virtual ~MolecularStructure() = default;
+    /**
+     * \brief create a MolecularStructure from \p data
+     *
+     * Performs some basic sanity checks like ID consistency, equal size of atom attributes
+     * (positions, IDs, atomic numbers, etc.) and builds acceleration structures.
+     *
+     * @throws Exception if atoms refer to invalid residues/chains, an atom's chain ID mismatches
+     *         the chain ID of the residue, or if attributes stored in atom have different sizes
+     *         (empty attributes are ignored).
+     */
+    MolecularStructure(MolecularData data);
+    MolecularStructure() = delete;
+    ~MolecularStructure() = default;
 
-    void setSource(const std::string& source);
-    const std::string& getSource() const;
+    const MolecularData& get() const;
 
-    size_t getAtomCount() const;
-    size_t getResidueCount() const;
-    size_t getChainCount() const;
-    size_t getBondCount() const;
-
-    void setAtoms(Atoms atoms);
-    void setResidues(std::vector<Residue> residues);
-    void setChains(std::vector<Chain> chains);
-
-    const Atoms& getAtoms() const;
-    const std::vector<Residue>& getResidues() const;
-    const std::vector<Chain>& getChains() const;
-
-    std::optional<Residue> getResidue(size_t residueId, size_t chainId) const;
-    std::optional<Chain> getChain(size_t chainId) const;
-
+    /**
+     * get the global index of an atom. Both \p fullAtomName, \p residueId, and \p chainId
+     * must match. This function will in many cases be faster than getGlobalAtomIndex() since the
+     * atom is located through its residue.
+     *
+     * @return global atom index if found, std::nullopt otherwise
+     *
+     * \see getGlobalAtomIndex
+     */
     std::optional<size_t> getAtomIndex(const std::string& fullAtomName, size_t residueId,
                                        size_t chainId) const;
 
-    /**
-     * \brief update internal state of residues and chains, i.e. contained atoms/residues
-     */
-    void updateStructure();
+    bool hasResidues() const;
+    bool hasResidue(size_t residueId, size_t chainId) const;
+    bool hasChains() const;
+    bool hasChain(size_t chainId) const;
 
-    void computeCovalentBonds();
-    const std::vector<Bond>& getBonds() const;
+    /**
+     * query a residue matching \p residueId and \p chainId for its atoms.
+     *
+     * @return list of atom indices which belong to the residue
+     * @throws Exception if residue does not exist
+     */
+    const std::vector<size_t>& getResidueAtoms(size_t residueId, size_t chainId) const;
+
+    /**
+     * query a chain matching \p chainId for its residues.
+     *
+     * @return list of residue indices which belong to the chain
+     * @throws Exception if chain does not exist
+     */
+    const std::vector<size_t>& getChainResidues(size_t chainId) const;
+
+    /**
+     * returns an index for each atom referring to its parent residue. This provides faster access
+     * to residues through indexing instead of locating a matching residue by ID. The returned list
+     * might be empty if residue information is not available.
+     *
+     * @return list of per-atom residue indices
+     */
+    const std::vector<size_t>& getResidueIndices() const;
 
 private:
-    std::string source_;
+    void verifyData() const;
 
-    Atoms atoms_;
-    std::vector<Residue> residues_;
-    std::vector<Chain> chains_;
-    std::vector<Bond> bonds_;
+    MolecularData data_;
+
+    // mapping chain IDs to a list of global residue indices
+    std::unordered_map<size_t, std::vector<size_t>> chainResidues_;
+    // mapping residue IDs to a list of global atom indices
+    std::unordered_map<ResidueID, std::vector<size_t>> residueAtoms_;
+    // residue index of each atom
+    std::vector<size_t> residueIndices_;
 };
 
 }  // namespace molvis
-
-template <>
-struct DataTraits<molvis::MolecularStructure> {
-    static std::string classIdentifier() { return "org.inviwo.molvis.MolecularStructure"; }
-    static std::string dataName() { return "Molecular Structure"; }
-    static uvec3 colorCode() { return uvec3(56, 127, 66); }
-    static Document info(const molvis::MolecularStructure& data) {
-        using H = utildoc::TableBuilder::Header;
-        using P = Document::PathComponent;
-        Document doc;
-        doc.append("b", "Molecular Structure", {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Source"), data.getSource());
-        tb(H("Atoms"), data.getAtomCount());
-        tb(H("Residues"), data.getResidueCount());
-        tb(H("Chains"), data.getChainCount());
-        tb(H("Bonds"), data.getBondCount());
-
-        return doc;
-    }
-};
 
 }  // namespace inviwo

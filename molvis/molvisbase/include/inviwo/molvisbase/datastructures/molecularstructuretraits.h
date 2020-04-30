@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,38 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/datastructures/datatraits.h>
+#include <inviwo/core/util/document.h>
 
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
+#include <inviwo/molvisbase/datastructures/molecularstructure.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a mesh consisting of point and line meshes. This
- * mesh can be rendered with a MolecularRenderer resulting in various molecular representations or,
- * alternatively, with any Mesh renderer, e.g. a SphereRenderer.
- */
-class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
-public:
-    MolecularStructureToMesh();
-    virtual ~MolecularStructureToMesh() = default;
+template <>
+struct DataTraits<molvis::MolecularStructure> {
+    static std::string classIdentifier() { return "org.inviwo.molvis.MolecularStructure"; }
+    static std::string dataName() { return "Molecular Structure"; }
+    static uvec3 colorCode() { return uvec3(56, 127, 66); }
+    static Document info(const molvis::MolecularStructure& data) {
+        using H = utildoc::TableBuilder::Header;
+        using P = Document::PathComponent;
+        Document doc;
+        doc.append("b", "Molecular Structure", {{"style", "color:white;"}});
+        utildoc::TableBuilder tb(doc.handle(), P::end());
+        const molvis::MolecularData& md = data.get();
+        tb(H("Source"), md.source);
+        tb(H("Atoms"), md.atoms.positions.size());
+        tb(H("Residues"), md.residues.size());
+        tb(H("Chains"), md.chains.size());
+        tb(H("Bonds"), md.bonds.size());
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    molvis::MolecularStructureInport inport_;
-    MeshOutport outport_;
+        return doc;
+    }
 };
 
 }  // namespace inviwo

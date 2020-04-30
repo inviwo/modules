@@ -31,6 +31,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/util/zip.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
 
@@ -40,189 +41,147 @@ namespace inviwo {
 
 namespace molvis {
 
-void Atoms::updateAtomNumbers() {
-    atomNumbers = util::transform(fullNames, [](const std::string& name) {
-        return static_cast<unsigned char>(molvis::element::fromFullName(name));
-    });
-}
+MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(data)} {
+    const size_t atomCount = data_.atoms.positions.size();
 
-bool Atoms::empty() const { return positions.empty(); }
+    if (!data_.atoms.residueIds.empty() && !data_.residues.empty()) {
+        auto atomToStr = [&](size_t index) {
+            std::string str = std::to_string(index);
+            if (!data_.atoms.fullNames.empty()) {
+                str = fmt::format("{} '{}'", str, data_.atoms.fullNames[index]);
+            }
+            return str;
+        };
 
-size_t Atoms::size() const { return positions.size(); }
+        // create index maps from atoms to residues and residues to atoms
+        for (size_t i = 0; i < atomCount; ++i) {
+            const auto resId = data_.atoms.residueIds[i];
+            const auto chainId = data_.atoms.chainIds[i];
+            auto it = util::find_if(data_.residues,
+                                    [id = resId](const Residue& r) { return r.id == id; });
+            if (it == data_.residues.end()) {
+                throw Exception(
+                    fmt::format("Invalid residue ID '{}' in atom {}", resId, atomToStr(i)),
+                    IVW_CONTEXT);
+            }
+            if (chainId != it->chainId) {
+                throw Exception(
+                    fmt::format("Chain ID '{}' of atom {} does not match chain ID '{}' of residue",
+                                chainId, atomToStr(i), it->chainId),
+                    IVW_CONTEXT);
+            }
+            // add atom to residue
+            residueAtoms_[{resId, chainId}].push_back(i);
 
-void Atoms::clear() {
-    positions.clear();
-    bfactors.clear();
-    // structureIds.clear();
-    modelIds.clear();
-    chainIds.clear();
-    residueIds.clear();
-    atomNumbers.clear();
-    fullNames.clear();
+            const auto residueIndex = std::distance(data_.residues.begin(), it);
+            residueIndices_.push_back(residueIndex);
+        }
 
-    residueIndices.clear();
-}
-
-MolecularStructure::MolecularStructure() = default;
-
-void MolecularStructure::setSource(const std::string& source) { source_ = source; }
-
-const std::string& MolecularStructure::getSource() const { return source_; }
-
-size_t MolecularStructure::getAtomCount() const { return atoms_.positions.size(); }
-
-size_t MolecularStructure::getResidueCount() const { return residues_.size(); }
-
-size_t MolecularStructure::getChainCount() const { return chains_.size(); }
-
-size_t MolecularStructure::getBondCount() const { return bonds_.size(); }
-
-void MolecularStructure::setAtoms(Atoms atoms) { atoms_ = std::move(atoms); }
-
-void MolecularStructure::setResidues(std::vector<Residue> residues) {
-    residues_ = std::move(residues);
-}
-
-void MolecularStructure::setChains(std::vector<Chain> chains) { chains_ = std::move(chains); }
-
-const Atoms& MolecularStructure::getAtoms() const { return atoms_; }
-
-const std::vector<Residue>& MolecularStructure::getResidues() const { return residues_; }
-
-const std::vector<Chain>& MolecularStructure::getChains() const { return chains_; }
-
-std::optional<Residue> MolecularStructure::getResidue(size_t residueId, size_t chainId) const {
-    auto it = util::find_if(residues_,
-                            [&](auto& r) { return (r.id == residueId) && (r.chainId == chainId); });
-    if (it != residues_.end()) {
-        return *it;
-    } else {
-        return std::nullopt;
+        if (!data_.chains.empty()) {
+            // update chain information
+            for (auto&& [residueIndex, res] : util::enumerate(data_.residues)) {
+                auto chainIt = util::find_if(
+                    data_.chains, [id = res.chainId](const Chain& c) { return c.id == id; });
+                if (chainIt == data_.chains.end()) {
+                    throw Exception(fmt::format("Invalid chain ID '{}' in residue {} '{}'",
+                                                res.chainId, res.id, res.name));
+                }
+                chainResidues_[res.chainId].push_back(residueIndex);
+            }
+        }
     }
 }
 
-std::optional<Chain> MolecularStructure::getChain(size_t chainId) const {
-    auto it = util::find_if(chains_, [id = chainId](auto& r) { return r.id == id; });
-    if (it != chains_.end()) {
-        return *it;
-    } else {
-        return std::nullopt;
-    }
-}
+const MolecularData& MolecularStructure::get() const { return data_; }
 
 std::optional<size_t> MolecularStructure::getAtomIndex(const std::string& fullAtomName,
                                                        size_t residueId, size_t chainId) const {
-    auto residue = getResidue(residueId, chainId);
-    if (residue) {
-        for (auto i : residue->atoms) {
-            if ((atoms_.fullNames[i] == fullAtomName) && (atoms_.residueIds[i] == residueId) &&
-                (atoms_.chainIds[i] == chainId)) {
-                return i;
-            }
-        }
-    } else {
-        for (size_t i = 0; i < atoms_.fullNames.size(); ++i) {
-            if ((atoms_.fullNames[i] == fullAtomName) && (atoms_.residueIds[i] == residueId) &&
-                (atoms_.chainIds[i] == chainId)) {
-                return i;
-            }
+    if (auto resIt = residueAtoms_.find({residueId, chainId}); resIt != residueAtoms_.end()) {
+        auto pred = [&](size_t i) {
+            return ((data_.atoms.fullNames[i] == fullAtomName) &&
+                    (data_.atoms.residueIds[i] == residueId) &&
+                    (data_.atoms.chainIds[i] == chainId));
+        };
+
+        if (auto atomIt = util::find_if(resIt->second, pred); atomIt != resIt->second.end()) {
+            return std::distance(resIt->second.begin(), atomIt);
         }
     }
     return std::nullopt;
 }
 
-void MolecularStructure::updateStructure() {
-    atoms_.residueIndices.clear();
+bool MolecularStructure::hasResidues() const { return !residueIndices_.empty(); }
 
-    for (size_t i = 0; i < atoms_.size(); ++i) {
-        const auto resId = atoms_.residueIds[i];
-        const auto chainId = atoms_.chainIds[i];
-        auto it = util::find_if(residues_, [id = resId](const Residue& r) { return r.id == id; });
-        if (it == residues_.end()) {
-            throw Exception(fmt::format("Invalid residue ID '{}'", resId), IVW_CONTEXT);
-        }
-        IVW_ASSERT(chainId == it->chainId, "Chain ID mismatch");
+bool MolecularStructure::hasResidue(size_t residueId, size_t chainId) const {
+    return residueAtoms_.find({residueId, chainId}) != residueAtoms_.end();
+}
 
-        it->atoms.insert(i);
-        const auto residueIndex = std::distance(residues_.begin(), it);
-        atoms_.residueIndices.push_back(static_cast<int>(residueIndex));
+bool MolecularStructure::hasChains() const { return !chainResidues_.empty(); }
 
-        auto chainIt =
-            util::find_if(chains_, [id = chainId](const Chain& c) { return c.id == id; });
-        if (chainIt == chains_.end()) {
-            throw Exception(fmt::format("Invalid chain ID '{}'", chainId));
-        }
-        chainIt->residues.insert(residueIndex);
+bool MolecularStructure::hasChain(size_t chainId) const {
+    return chainResidues_.find(chainId) != chainResidues_.end();
+}
+
+const std::vector<size_t>& MolecularStructure::getResidueAtoms(size_t residueId,
+                                                               size_t chainId) const {
+    if (auto it = residueAtoms_.find({residueId, chainId}); it != residueAtoms_.end()) {
+        return it->second;
+    } else {
+        throw Exception(fmt::format("Residue with ID '{}' and chain ID '{}' does not exist",
+                                    residueId, chainId),
+                        IVW_CONTEXT);
     }
 }
 
-void MolecularStructure::computeCovalentBonds() {
-    bonds_.clear();
-    if (atoms_.empty()) return;
-
-    const double maxCovalentBondLength = 4.0;
-    const dvec3 cellSize{maxCovalentBondLength};
-
-    // create uniform grid enclosing all atoms +- 1.0
-    dvec3 min{atoms_.positions.front()};
-    dvec3 max{atoms_.positions.front()};
-    for (size_t i = 0; i < atoms_.size(); ++i) {
-        min = glm::min(min, atoms_.positions[i]);
-        max = glm::max(max, atoms_.positions[i]);
-    }
-    min -= 1.0;
-    max += 1.0;
-
-    const size3_t dims{glm::max(size3_t(1), size3_t((max - min) / cellSize))};
-    const dvec3 cellExt{(max - min) / dvec3{dims}};
-
-    util::IndexMapper3D im(dims);
-
-    std::vector<int> cells(glm::compMul(dims), -1);
-    std::vector<std::vector<size_t>> cellData;
-
-    auto cellCoord = [&](const dvec3& pos) -> size3_t {
-        return glm::clamp(size3_t((pos - min) / cellExt), size3_t(0), dims - size_t{1});
-    };
-
-    for (size_t i = 0; i < atoms_.size(); ++i) {
-        const auto cellIndex = im(cellCoord(atoms_.positions[i]));
-        if (cells[cellIndex] == -1) {
-            cells[cellIndex] = static_cast<int>(cellData.size());
-            cellData.push_back({});
-        }
-        cellData[cells[cellIndex]].push_back(i);
-    }
-
-    auto covalentBond = [&](size_t atom1, size_t atom2) {
-        return covalentBondHeuristics(
-            element::element(atoms_.atomNumbers[atom1]), atoms_.positions[atom1],
-            element::element(atoms_.atomNumbers[atom2]), atoms_.positions[atom2]);
-    };
-
-    for (size_t atom1 = 0; atom1 < atoms_.size(); ++atom1) {
-        const auto pos = atoms_.positions[atom1];
-        const auto minCell = cellCoord(pos - maxCovalentBondLength);
-        const auto maxCell = cellCoord(pos + maxCovalentBondLength);
-
-        for (size_t z = minCell.z; z <= maxCell.z; ++z) {
-            for (size_t y = minCell.y; y <= maxCell.y; ++y) {
-                for (size_t x = minCell.x; x <= maxCell.x; ++x) {
-                    const auto cellIndex = im(size3_t{x, y, z});
-                    if (cells[cellIndex] > -1) {
-                        for (auto atom2 : cellData[cells[cellIndex]]) {
-                            if ((atom1 < atom2) && covalentBond(atom1, atom2)) {
-                                bonds_.push_back({atom1, atom2});
-                            }
-                        }
-                    }
-                }
-            }
-        }
+const std::vector<size_t>& MolecularStructure::getChainResidues(size_t chainId) const {
+    if (auto it = chainResidues_.find(chainId); it != chainResidues_.end()) {
+        return it->second;
+    } else {
+        throw Exception(fmt::format("Chain with chain ID '{}' does not exist", chainId),
+                        IVW_CONTEXT);
     }
 }
 
-const std::vector<Bond>& MolecularStructure::getBonds() const { return bonds_; }
+const std::vector<size_t>& MolecularStructure::getResidueIndices() const { return residueIndices_; }
+
+void MolecularStructure::verifyData() const {
+    const size_t atomCount = data_.atoms.positions.size();
+
+    // attributes of atoms in MolecularData can be either empty or must match the number of atoms
+    auto sizeValid = [atomCount](const auto& v) { return (v.empty() || (v.size() == atomCount)); };
+
+    if (!sizeValid(data_.atoms.bFactors)) {
+        throw Exception(fmt::format("Inconsistent MolecularData: expected {} b Factors, found {}",
+                                    atomCount, data_.atoms.bFactors.size()),
+                        IVW_CONTEXT);
+    }
+    if (!sizeValid(data_.atoms.modelIds)) {
+        throw Exception(fmt::format("Inconsistent MolecularData: expected {} model IDs, found {}",
+                                    atomCount, data_.atoms.modelIds.size()),
+                        IVW_CONTEXT);
+    }
+    if (!sizeValid(data_.atoms.chainIds)) {
+        throw Exception(fmt::format("Inconsistent MolecularData: expected {} chain IDs, found {}",
+                                    atomCount, data_.atoms.chainIds.size()),
+                        IVW_CONTEXT);
+    }
+    if (!sizeValid(data_.atoms.residueIds)) {
+        throw Exception(fmt::format("Inconsistent MolecularData: expected {} residue Ids, found {}",
+                                    atomCount, data_.atoms.residueIds.size()),
+                        IVW_CONTEXT);
+    }
+    if (!sizeValid(data_.atoms.atomicNumbers)) {
+        throw Exception(
+            fmt::format("Inconsistent MolecularData: expected {} atomic numbers, found {}",
+                        atomCount, data_.atoms.atomicNumbers.size()),
+            IVW_CONTEXT);
+    }
+    if (!sizeValid(data_.atoms.fullNames)) {
+        throw Exception(fmt::format("Inconsistent MolecularData: expected {} full names, found {}",
+                                    atomCount, data_.atoms.fullNames.size()),
+                        IVW_CONTEXT);
+    }
+}
 
 }  // namespace molvis
 
