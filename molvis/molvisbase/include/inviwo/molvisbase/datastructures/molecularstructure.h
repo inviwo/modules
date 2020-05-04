@@ -49,7 +49,7 @@ namespace molvis {
  */
 struct IVW_MODULE_MOLVISBASE_API Atoms {
     std::vector<dvec3> positions;
-    std::vector<double> bFactors;  //<!  Debye–Waller factor (DWF) or temperature factor.
+    std::vector<double> bFactors;  //<!  Debye-Waller factor (DWF) or temperature factor.
     std::vector<int> modelIds;
     std::vector<int> chainIds;
     std::vector<int> residueIds;
