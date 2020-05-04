@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 #include <inviwo/core/network/networklock.h>
 
