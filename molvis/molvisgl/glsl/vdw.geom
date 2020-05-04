@@ -27,8 +27,6 @@
  * 
  *********************************************************************************/
 
-// Owned by the SphereRenderer Processor
-
 #include "utils/structs.glsl"
 #include "utils/pickingutils.glsl"
 
