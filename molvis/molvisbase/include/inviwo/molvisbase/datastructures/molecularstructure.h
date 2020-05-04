@@ -32,6 +32,8 @@
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/hashcombine.h>
 
+#include <inviwo/molvisbase/util/atomicelement.h>
+
 #include <optional>
 
 namespace inviwo {
@@ -53,7 +55,7 @@ struct IVW_MODULE_MOLVISBASE_API Atoms {
     std::vector<int> modelIds;
     std::vector<int> chainIds;
     std::vector<int> residueIds;
-    std::vector<unsigned char> atomicNumbers;
+    std::vector<Element> atomicNumbers;
     std::vector<std::string>
         fullNames;  //!< full descriptive name, might include spaces and additional identifiers
 };
@@ -163,7 +165,11 @@ public:
     MolecularStructure() = delete;
     ~MolecularStructure() = default;
 
-    const MolecularData& get() const;
+    const MolecularData& data() const;
+    const Atoms& atoms()const;
+    const std::vector<Residue>& residues() const;
+    const std::vector<Chain>& chains() const;
+    const std::vector<Bond>& bonds() const;
 
     /**
      * get the global index of an atom. Both \p fullAtomName, \p residueId, and \p chainId

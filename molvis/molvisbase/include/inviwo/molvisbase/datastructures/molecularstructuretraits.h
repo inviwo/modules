@@ -47,12 +47,11 @@ struct DataTraits<molvis::MolecularStructure> {
         Document doc;
         doc.append("b", "Molecular Structure", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        const molvis::MolecularData& md = data.get();
-        tb(H("Source"), md.source);
-        tb(H("Atoms"), md.atoms.positions.size());
-        tb(H("Residues"), md.residues.size());
-        tb(H("Chains"), md.chains.size());
-        tb(H("Bonds"), md.bonds.size());
+        tb(H("Source"), data.data().source);
+        tb(H("Atoms"), data.atoms().positions.size());
+        tb(H("Residues"), data.residues().size());
+        tb(H("Chains"), data.chains().size());
+        tb(H("Bonds"), data.bonds().size());
 
         return doc;
     }

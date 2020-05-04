@@ -92,7 +92,15 @@ MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(dat
     }
 }
 
-const MolecularData& MolecularStructure::get() const { return data_; }
+const MolecularData& MolecularStructure::data() const { return data_; }
+
+const Atoms& MolecularStructure::atoms() const { return data_.atoms; }
+
+const std::vector<Residue>& MolecularStructure::residues() const { return data_.residues; }
+
+const std::vector<Chain>& MolecularStructure::chains() const { return data_.chains; }
+
+const std::vector<Bond>& MolecularStructure::bonds() const { return data_.bonds; }
 
 std::optional<size_t> MolecularStructure::getAtomIndex(const std::string& fullAtomName,
                                                        size_t residueId, size_t chainId) const {

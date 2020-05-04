@@ -61,25 +61,28 @@ bool covalentBondHeuristics(Element element1, const dvec3& pos1, Element element
     return (dMinSq < distSq) && (distSq < dMaxSq);
 }
 
-}  // namespace
+template <typename T, typename Pred>
+auto find_if_opt(T& cont, Pred pred) -> std::optional<typename T::value_type> {
+    using std::begin;
+    using std::end;
 
-std::optional<Residue> findResidue(const MolecularData& data, size_t residueId, size_t chainId) {
-    auto it = util::find_if(data.residues,
-                            [&](auto& r) { return (r.id == residueId) && (r.chainId == chainId); });
-    if (it != data.residues.end()) {
+    auto it = std::find_if(begin(cont), end(cont), pred);
+    if (it != end(cont)) {
         return *it;
     } else {
         return std::nullopt;
     }
 }
 
+}  // namespace
+
+std::optional<Residue> findResidue(const MolecularData& data, size_t residueId, size_t chainId) {
+    return find_if_opt(data.residues,
+                       [&](auto& r) { return (r.id == residueId) && (r.chainId == chainId); });
+}
+
 std::optional<Chain> findChain(const MolecularData& data, size_t chainId) {
-    auto it = util::find_if(data.chains, [id = chainId](auto& r) { return r.id == id; });
-    if (it != data.chains.end()) {
-        return *it;
-    } else {
-        return std::nullopt;
-    }
+    return find_if_opt(data.chains, [id = chainId](auto& r) { return r.id == id; });
 }
 
 std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& fullAtomName,
@@ -102,10 +105,9 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& 
     return std::nullopt;
 }
 
-std::vector<unsigned char> getAtomicNumbers(const Atoms& atoms) {
-    return util::transform(atoms.fullNames, [](const std::string& name) {
-        return static_cast<unsigned char>(element::fromFullName(name));
-    });
+std::vector<Element> getAtomicNumbers(const std::vector<std::string>& fullNames) {
+    return util::transform(fullNames,
+                           [](const std::string& name) { return element::fromFullName(name); });
 }
 
 std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
@@ -152,9 +154,8 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     }
 
     auto covalentBond = [&](size_t atom1, size_t atom2) {
-        return covalentBondHeuristics(
-            element::element(atoms.atomicNumbers[atom1]), atoms.positions[atom1],
-            element::element(atoms.atomicNumbers[atom2]), atoms.positions[atom2]);
+        return covalentBondHeuristics(atoms.atomicNumbers[atom1], atoms.positions[atom1],
+                                      atoms.atomicNumbers[atom2], atoms.positions[atom2]);
     };
 
     std::vector<Bond> bonds;
@@ -182,24 +183,22 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
 }
 
 std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
-    if (s.get().atoms.positions.empty()) {
+    if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
 
     std::vector<vec3> positions{
-        util::transform(s.get().atoms.positions, [](auto& p) { return vec3{p}; })};
+        util::transform(s.atoms().positions, [](auto& p) { return vec3{p}; })};
     std::vector<vec4> colors;
     std::vector<float> radius;
     // std::vector<uint32_t> picking;
-    const size_t atomCount = s.get().atoms.positions.size();
+    const size_t atomCount = s.atoms().positions.size();
 
-    for (auto a : s.get().atoms.atomicNumbers) {
-        const auto elem = static_cast<Element>(a);
-
+    for (auto elem : s.atoms().atomicNumbers) {
         colors.emplace_back(element::color(elem));
         radius.emplace_back(static_cast<float>(element::vdwRadius(elem)));
     }
-    if (s.get().atoms.atomicNumbers.empty()) {
+    if (s.atoms().atomicNumbers.empty()) {
         // fall-back if atomic numbers are not available
         colors.resize(atomCount, element::color(Element::Unknown));
         radius.resize(atomCount, static_cast<float>(element::vdwRadius(Element::Unknown)));
@@ -218,10 +217,10 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
                      util::makeIndexBuffer(std::move(indices)));
 
     // bonds
-    if (!s.get().bonds.empty()) {
+    if (!s.bonds().empty()) {
         indices.clear();
-        indices.reserve(s.get().bonds.size() * 2);
-        for (const auto& bond : s.get().bonds) {
+        indices.reserve(s.bonds().size() * 2);
+        for (const auto& bond : s.bonds()) {
             indices.push_back(static_cast<uint32_t>(bond.first));
             indices.push_back(static_cast<uint32_t>(bond.second));
         }

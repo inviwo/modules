@@ -81,15 +81,14 @@ std::optional<size_t> IVW_MODULE_MOLVISBASE_API getGlobalAtomIndex(const Atoms& 
 std::vector<Bond> IVW_MODULE_MOLVISBASE_API computeCovalentBonds(const Atoms& atoms);
 
 /**
- * Determines the atomic numbers of each atom based on the respective full atom names. This function
- * requires the full names to be set.
+ * Determines the atomic numbers of each atom based on the respective \p fullNames.
  *
- * @param atoms   only considers full names of atoms
  * @return list of atomic numbers matching the full names of the input
  *
  * \see element::fromFullName()
  */
-std::vector<unsigned char> IVW_MODULE_MOLVISBASE_API getAtomicNumbers(const Atoms& atoms);
+std::vector<Element> IVW_MODULE_MOLVISBASE_API
+getAtomicNumbers(const std::vector<std::string>& fullNames);
 
 /**
  * \brief creates a mesh from molecular structure \p s
