@@ -178,7 +178,7 @@ void exposeAtomicElement(pybind11::module& m) {
         .value("Ds", Element::Ds)
         .value("Rg", Element::Rg)
         .value("Cn", Element::Cn)
-        .value("Uut", Element::Uut)
+        .value("Nh", Element::Nh)
         .value("Fl", Element::Fl)
         .value("Mc", Element::Mc)
         .value("Lv", Element::Lv)
