@@ -69,6 +69,15 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    const dmat2 T1 = dmat2(dvec2(6, 0), dvec2(0, 2));
+    const dmat2 T2 = dmat2(dvec2(4, -2), dvec2(-2, 4));
+    const dmat2 T3 = dmat2(dvec2(2, 0), dvec2(0, 6));
+    const dmat2 T4 = dmat2(dvec2(4, 2), dvec2(2, 4));
+
+    const dmat2 min = dmat2(-100.0, -100.0, -100.0, -100.0);
+    const dmat2 max = dmat2(100.0, 100.0, 100.0, 100.0);
+    const dmat2 inc = dmat2(0.0001, 0.0001, 0.0001, 0.0001);
+
     OptionPropertyInt singularityPresets_;
 
     CompositeProperty tensors_;
@@ -116,15 +125,6 @@ private:
     DoubleMat2Property collectionRow5T5_;
 
     TensorField2DOutport outport2D_;
-
-    const dmat2 T1 = dmat2(dvec2(6, 0), dvec2(0, 2));
-    const dmat2 T2 = dmat2(dvec2(4, -2), dvec2(-2, 4));
-    const dmat2 T3 = dmat2(dvec2(2, 0), dvec2(0, 6));
-    const dmat2 T4 = dmat2(dvec2(4, 2), dvec2(2, 4));
-
-    const dmat2 min = dmat2(-100.0, -100.0, -100.0, -100.0);
-    const dmat2 max = dmat2(100.0, 100.0, 100.0, 100.0);
-    const dmat2 inc = dmat2(0.0001, 0.0001, 0.0001, 0.0001);
 
     void generate2DField();
 
