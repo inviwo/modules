@@ -121,7 +121,7 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     const double maxCovalentBondLength = 4.0;
     const dvec3 cellSize{maxCovalentBondLength};
 
-    // create uniform grid enclosing all atoms +- 1.0Å
+    // create uniform grid enclosing all atoms +- 1.0Ã…
     dvec3 min{atoms.positions.front()};
     dvec3 max{atoms.positions.front()};
     for (size_t i = 0; i < atoms.positions.size(); ++i) {

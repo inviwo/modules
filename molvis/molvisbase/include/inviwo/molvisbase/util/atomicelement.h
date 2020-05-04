@@ -38,7 +38,7 @@ namespace inviwo {
 namespace molvis {
 
 //
-// element lookup tables and functions taken from mdutils by Robin Skånberg provided under the MIT
+// element lookup tables and functions taken from mdutils by Robin SkÃ¥nberg provided under the MIT
 // license https://github.com/scanberg/mdutils
 //
 
