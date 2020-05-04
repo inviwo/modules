@@ -32,6 +32,7 @@
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
+#include <inviwo/core/common/inviwoapplication.h>
 
 namespace inviwo {
 
