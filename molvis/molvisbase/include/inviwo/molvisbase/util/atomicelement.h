@@ -31,6 +31,8 @@
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
 
 #include <string_view>
+#include <array>
+#include <optional>
 #include <cctype>
 
 namespace inviwo {
@@ -60,7 +62,7 @@ constexpr int num_elements = 119;
 
 namespace detail {
 
-static constexpr const char* names[num_elements] = {
+constexpr std::array<std::string_view, num_elements> names = {
     "Unknown",    "Hydrogen",     "Helium",        "Lithium",     "Beryllium",   "Boron",
     "Carbon",     "Nitrogen",     "Oxygen",        "Fluorine",    "Neon",        "Sodium",
     "Magnesium",  "Aluminium",    "Silicon",       "Phosphorus",  "Sulfur",      "Chlorine",
@@ -83,7 +85,7 @@ static constexpr const char* names[num_elements] = {
     "Flerovium",  "Moscovium",    "Livermorium",   "Tennessine",  "Oganesson",
 };
 
-static constexpr const char* symbols[num_elements] = {
+constexpr std::array<std::string_view, num_elements> symbols = {
     "Xx", "H",  "He", "Li", "Be", "B",  "C",  "N",  "O",  "F",  "Ne", "Na", "Mg", "Al", "Si",
     "P",  "S",  "Cl", "Ar", "K",  "Ca", "Sc", "Ti", "V",  "Cr", "Mn", "Fe", "Co", "Ni", "Cu",
     "Zn", "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y",  "Zr", "Nb", "Mo", "Tc", "Ru",
@@ -95,7 +97,7 @@ static constexpr const char* symbols[num_elements] = {
 };
 
 // http://dx.doi.org/10.1039/b801115j
-static constexpr double covalent_radii[num_elements] = {
+constexpr std::array<double, num_elements> covalent_radii = {
     0.00, 0.31, 0.28, 1.28, 0.96, 0.84, 0.76, 0.71, 0.66, 0.57, 0.58, 1.66, 1.41, 1.21, 1.11,
     1.07, 1.05, 1.02, 1.06, 2.03, 1.76, 1.70, 1.60, 1.53, 1.39, 1.39, 1.32, 1.26, 1.24, 1.32,
     1.22, 1.22, 1.20, 1.19, 1.20, 1.20, 1.16, 2.20, 1.95, 1.90, 1.75, 1.64, 1.54, 1.47, 1.46,
@@ -107,7 +109,7 @@ static constexpr double covalent_radii[num_elements] = {
 };
 
 // https://dx.doi.org/10.1021/jp8111556
-static constexpr double vdw_radii[num_elements] = {
+constexpr std::array<double, num_elements> vdw_radii = {
     1.00, 1.10, 1.40, 1.81, 1.53, 1.92, 1.70, 1.55, 1.52, 1.47, 1.54, 2.27, 1.73, 1.84, 2.10,
     1.80, 1.80, 1.75, 1.88, 2.75, 2.31, 2.30, 2.15, 2.05, 2.05, 2.05, 2.05, 2.00, 2.00, 2.00,
     2.10, 1.87, 2.11, 1.85, 1.90, 1.83, 2.02, 3.03, 2.49, 2.40, 2.30, 2.15, 2.10, 2.05, 2.05,
@@ -120,7 +122,7 @@ static constexpr double vdw_radii[num_elements] = {
 
 // http://chemistry.wikia.com/wiki/List_of_elements_by_atomic_mass
 // last element padded with 295
-static constexpr double atomic_mass[num_elements] = {
+constexpr std::array<double, num_elements> atomic_mass = {
     0,       1.00794,    4.002602,  6.941,       9.012182, 10.811,     12.0107, 14.0067,
     15.9994, 18.9984032, 20.1797,   22.98976928, 24.3050,  26.9815386, 28.0855, 30.973762,
     32.065,  35.453,     39.0983,   39.948,      40.078,   44.955912,  47.867,  50.9415,
@@ -138,9 +140,13 @@ static constexpr double atomic_mass[num_elements] = {
     285,     284,        289,       288,         292,      294,        295,
 };
 
+constexpr glm::vec4 colorFromHex(unsigned int c) {
+    return glm::vec4{(c >> 0) & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff, (c >> 24) & 0xff} / 255.0f;
+}
+
 // http://jmol.sourceforge.net/jscolors/ (stored as RGBA from least to most significant bit)
 // Rasmol colors
-static constexpr unsigned int colorsRasmol[num_elements] = {
+constexpr std::array<unsigned int, num_elements> colorsRasmolHex = {
     0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFF2222B2, 0xFF00FFC2, 0xFFB5B5FF, 0xFFB0B0B0, 0xFFFF8F8F,
     0xFF0000F0, 0xFF50E090, 0xFFF5E3B3, 0xFFF25CAB, 0xFF00FF8A, 0xFF908080, 0xFFA0C8F0, 0xFF00A5FF,
     0xFF32C8FF, 0xFF1FF01F, 0xFFE3D180, 0xFFD4408F, 0xFF908080, 0xFFE6E6E6, 0xFF908080, 0xFFABA6A6,
@@ -159,7 +165,7 @@ static constexpr unsigned int colorsRasmol[num_elements] = {
 };
 
 // Rasmol CPKnew colors
-static constexpr unsigned int colorsRasmolCPKnew[num_elements] = {
+constexpr std::array<unsigned int, num_elements> colorsRasmolCPKnewHex = {
     0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFF2121B2, 0xFF00FFC2, 0xFFB5B5FF, 0xFFD3D3D3, 0xFFE6CE87,
     0xFF0000FF, 0xFF50E090, 0xFFF5E3B3, 0xFFF25CAB, 0xFF00FF8A, 0xFF696969, 0xFFA0C8F0, 0xFF00AAFF,
     0xFF00FFFF, 0xFF1FF01F, 0xFFE3D180, 0xFFD4408F, 0xFF696969, 0xFFE6E6E6, 0xFF696969, 0xFFABA6A6,
@@ -177,67 +183,114 @@ static constexpr unsigned int colorsRasmolCPKnew[num_elements] = {
     0xFF1E00F8, 0xFF1C00FA, 0xFF1A00FC, 0xFF1800FD, 0xFF1600FE, 0xFF1400FF, 0xFF1200FF,
 };
 
+namespace helper {
+// constexpr helpers
+template <class InputIt, class OutputIt, class UnaryOp>
+constexpr OutputIt transform(InputIt first, InputIt last, OutputIt out, UnaryOp unary_op) {
+    for (; first != last; ++first, ++out) {
+        *out = unary_op(*first);
+    }
+    return out;
+}
+
+template <typename T, size_t D, typename F>
+constexpr auto transform(const std::array<T, D>& a, F&& fun) noexcept {
+    using R = decltype(fun(std::declval<T>()));
+    std::array<R, D> res{};
+    helper::transform(a.begin(), a.end(), res.begin(), fun);
+    return res;
+}
+
+template <typename It, typename V>
+constexpr auto find(It begin, It end, V&& val) {
+    for (; begin != end; ++begin) {
+        if (*begin == val) {
+            return begin;
+        }
+    }
+    return end;
+}
+
+template <typename It, typename F>
+constexpr auto find_if(It begin, It end, F&& func) {
+    for (; begin != end; ++begin) {
+        if (func(*begin)) {
+            return begin;
+        }
+    }
+    return end;
+}
+
+}  // namespace helper
+
+constexpr std::array<glm::vec4, num_elements> colorsRasmol =
+    helper::transform(colorsRasmolHex, colorFromHex);
+
+constexpr std::array<glm::vec4, num_elements> colorsRasmolCPKnew =
+    helper::transform(colorsRasmolCPKnewHex, colorFromHex);
+
 }  // namespace detail
 
 // Element functions
 constexpr Element element(int atomicNumber) { return static_cast<Element>(atomicNumber); }
-constexpr const char* name(Element symbol) { return detail::names[(int)symbol]; }
-constexpr const char* symbol(Element symbol) { return detail::symbols[(int)symbol]; }
-constexpr vec4 color(Element symbol) {
-    unsigned int c = detail::colorsRasmolCPKnew[static_cast<int>(symbol)];
-    return vec4{(c >> 0) & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff, (c >> 24) & 0xff} / 255.0f;
+constexpr int atomicNumber(Element symbol) { return static_cast<int>(symbol); }
+constexpr std::string_view name(Element symbol) { return detail::names[atomicNumber(symbol)]; }
+constexpr std::string_view symbol(Element symbol) { return detail::symbols[atomicNumber(symbol)]; }
+constexpr vec4 color(Element symbol) { return detail::colorsRasmolCPKnew[atomicNumber(symbol)]; }
+constexpr double vdwRadius(Element symbol) { return detail::vdw_radii[atomicNumber(symbol)]; }
+constexpr double covalentRadius(Element symbol) {
+    return detail::covalent_radii[atomicNumber(symbol)];
 }
-constexpr double vdwRadius(Element symbol) { return detail::vdw_radii[(int)symbol]; }
-constexpr double covalentRadius(Element symbol) { return detail::covalent_radii[(int)symbol]; }
-constexpr double atomicMass(Element symbol) { return detail::atomic_mass[(int)symbol]; }
+constexpr double atomicMass(Element symbol) { return detail::atomic_mass[atomicNumber(symbol)]; }
+
+constexpr std::string_view trim(std::string_view str) {
+    constexpr auto notSpace = [](char c) { return c != ' ' && c != '\t'; };
+    const auto it1 = detail::helper::find_if(str.begin(), str.end(), notSpace);
+    const auto it2 = detail::helper::find_if(str.rbegin(), str.rend(), notSpace);
+    const size_t start = it1 - str.begin();
+    const size_t size = it2.base() - it1;
+    return str.substr(start, size);
+}
+
+constexpr Element elementFromAbbr(std::string_view abbr) {
+    // create a (linear) hash function for all combinations of single letter and two letter atomic
+    // elements
+    constexpr auto index = [](std::string_view abbr) {
+        if (abbr.size() > 2) return 0;
+        int index = 1;
+        if (abbr.size() > 0) {
+            const char c0 = (abbr[0] >= 'a' && abbr[0] <= 'z') ? abbr[0] - 'a' + 'A' : abbr[0];
+            if (c0 < 'A' || c0 > 'Z') return 0;
+            index += (c0 - 'A') * ('z' - 'a' + 1);
+        }
+        if (abbr.size() > 1) {
+            const int c1 = (abbr[1] >= 'A' && abbr[1] <= 'Z') ? abbr[1] - 'A' + 'a' : abbr[1];
+            if (c1 < 'a' || c1 > 'z') return 0;
+            index += c1 - 'a' + 1;
+        }
+        return index;
+    };
+
+    // create a lookup table for all existing atomic elements, std::nullopt otherwise
+    constexpr auto lookup = [=]() {
+        constexpr int size = 1 + ('Z' - 'A') * ('z' - 'a' + 2);
+        std::array<Element, size> table = {Element::Unknown};
+        for (int i = 0; i < detail::symbols.size(); ++i) {
+            const auto ind = index(detail::symbols[i]);
+            table[ind] = element(i);
+        }
+        return table;
+    }();
+
+    return lookup[index(abbr)];
+}
 
 constexpr Element fromFullName(std::string_view fullAtomName) {
-    if (fullAtomName.empty()) return Element::Unknown;
-
-    // Prune
-    auto it = fullAtomName.begin();
-    while ((it != fullAtomName.end()) && !std::isalpha(*it)) {
-        ++it;
+    const auto trimed = trim(fullAtomName);
+    if (auto elem = elementFromAbbr(trimed.substr(0, 2)); elem != Element::Unknown) {
+        return elem;
     }
-    fullAtomName.remove_prefix(std::distance(fullAtomName.begin(), it));
-
-    if (fullAtomName.empty()) {
-        return Element::Unknown;
-    }
-
-    auto it2 = fullAtomName.rbegin();
-    while ((it2 != fullAtomName.rend()) && !std::isalpha(*it2)) {
-        ++it2;
-    }
-    fullAtomName.remove_suffix(std::distance(fullAtomName.rbegin(), it2));
-
-    // Two or more (Try to match first two)
-    if (fullAtomName.size() > 1) {
-        for (int i = 1; i < num_elements; i++) {
-            if (fullAtomName.compare(0, 2, symbol(static_cast<Element>(i))) == 0) {
-                return static_cast<Element>(i);
-            }
-        }
-    }
-    // Try to match only against first character
-    for (int i = 1; i < num_elements; i++) {
-        std::string_view elem = symbol(static_cast<Element>(i));
-        if (elem.size() == 1 && fullAtomName[0] == elem[0]) {
-            return static_cast<Element>(i);
-        }
-    }
-    // Try to match against two characters with the latter in lower case
-    if (fullAtomName.size() > 1) {
-        for (int i = 1; i < num_elements; i++) {
-            std::string_view elem = symbol(static_cast<Element>(i));
-            if (elem.size() == 2 && fullAtomName[0] == elem[0] &&
-                std::tolower(fullAtomName[1]) == elem[1]) {
-                return static_cast<Element>(i);
-            }
-        }
-    }
-
-    return Element::Unknown;
+    return elementFromAbbr(trimed.substr(0, 1));
 }
 
 }  // namespace element
