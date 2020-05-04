@@ -113,7 +113,7 @@ TensorFieldGenerator::TensorFieldGenerator()
                         inc)
     , outport2D_("outport2d") {
 
-    tensors_.addProperty(T12D_, T22D_, T32D_, T42D_);
+    tensors_.addProperties(T12D_, T22D_, T32D_, T42D_);
 
     collectionRow1_.addProperties(collectionRow1T1_, collectionRow1T2_, collectionRow1T3_,
                                   collectionRow1T4_, collectionRow1T5_);
