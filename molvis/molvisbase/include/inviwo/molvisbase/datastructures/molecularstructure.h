@@ -166,7 +166,7 @@ public:
     ~MolecularStructure() = default;
 
     const MolecularData& data() const;
-    const Atoms& atoms()const;
+    const Atoms& atoms() const;
     const std::vector<Residue>& residues() const;
     const std::vector<Chain>& chains() const;
     const std::vector<Bond>& bonds() const;
