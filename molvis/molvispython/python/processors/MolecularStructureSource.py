@@ -36,7 +36,6 @@ import ivwmolvis
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
-from Bio.PDB import CaPPBuilder
 
 import numpy as np
 
@@ -82,8 +81,6 @@ class MolecularStructureSource(ivw.Processor):
 
     @staticmethod
     def parseCIF(filename):
-        mesh = ivw.data.Mesh()
-
         ext = filename.split(".")[-1]
         if ext == 'gz' or ext == 'bz2':
             ext = filename.split(".")[-2]
@@ -91,11 +88,9 @@ class MolecularStructureSource(ivw.Processor):
         if (ext.startswith('pdb')):
             parser = PDBParser(PERMISSIVE=1)
         elif (ext.startswith('cif')):
-            # initialize mmcif parser
             parser = MMCIFParser()
         else:
-            ivw.LogError("unsupported extension '{}'".format(ext))
-            return mesh
+            raise Exception("unsupported extension '{}'".format(ext))
 
         structureName = filename.split("/")[-1]
         structure = parser.get_structure(structureName, filename)
@@ -106,33 +101,30 @@ class MolecularStructureSource(ivw.Processor):
         chainId = []
         residueId = []
         atomFullName = []
+        elements = []
 
         modelDict = dict()
         chainDict = dict()
         residueDict = dict()
 
-        def addToDict(d, key):
-            if key not in d:
-                d[key] = len(d)
-            return d[key]
-
         for atom in structure.get_atoms():
-            info = atom.get_full_id()  # returns tuple (structure id, model id, chain id, residue id, atom name, altloc)
+            structureid, modelid, chainid, resid, _ = atom.get_full_id()
             pos.append(atom.coord)
             bfactors.append(atom.get_bfactor())
-            if info[1] not in modelDict:
-                modelDict[info[1]] = len(modelDict)
-            modelId.append(modelDict[info[1]])
+            if modelid not in modelDict:
+                modelDict[modelid] = len(modelDict)
+            modelId.append(modelDict[modelid])
 
-            if (info[2] not in chainDict):
-                chainDict[info[2]] = len(chainDict)
-            chainId.append(chainDict[info[2]])
+            if (chainid not in chainDict):
+                chainDict[chainid] = len(chainDict)
+            chainId.append(chainDict[chainid])
 
-            resId = info[3][1]
-            if info[3][0] not in residueDict:
-                residueDict[info[3][0]] = info[3][1]
+            resId = resid[1]
+            if resid[0] not in residueDict:
+                residueDict[resid[0]] = resid[1]
             residueId.append(resId)
             atomFullName.append(atom.get_name())
+            elements.append(ivwmolvis.atomicelement.elementFromAbbr(atom.element))
 
         atoms = ivwmolvis.Atoms()
         dvec3pos = []
@@ -144,8 +136,7 @@ class MolecularStructureSource(ivw.Processor):
         atoms.chainids = chainId
         atoms.residueids = residueId
         atoms.fullnames = atomFullName
-
-        atoms.atomicnumbers = ivwmolvis.util.getAtomicNumbers(atoms)
+        atoms.atomicnumbers = elements
 
         ## residues
         residues = []

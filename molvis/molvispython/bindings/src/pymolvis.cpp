@@ -56,13 +56,19 @@ namespace detail {
 
 void exposeAtomicElement(pybind11::module& m) {
     m.def("element", element::element, py::arg("atomicNumber"))
+        .def("atomicNumber", element::atomicNumber, py::arg("symbol"))
         .def("name", element::name, py::arg("symbol"))
         .def("symbol", element::symbol, py::arg("symbol"))
         .def("color", element::color, py::arg("symbol"))
         .def("vdwRadius", element::vdwRadius, py::arg("symbol"))
         .def("covalentRadius", element::covalentRadius, py::arg("symbol"))
         .def("atomicMass", element::atomicMass, py::arg("symbol"))
+        .def("elementFromAbbr", element::elementFromAbbr, py::arg("abbr"))
         .def("fromFullName", element::fromFullName, py::arg("fullAtomName"));
+
+    auto colors = m.def_submodule("colors", "Various color lookup tables");
+    colors.attr("rasmol") = py::cast(element::detail::colorsRasmol);
+    colors.attr("rasmolCPKnew") = py::cast(element::detail::colorsRasmolCPKnew);
 
     py::enum_<Element>(m, "Element")
         .value("Unknown", Element::Unknown)
@@ -192,7 +198,7 @@ void exposeMolVisUtil(pybind11::module& m) {
         .def("getGlobalAtomIndex", &getGlobalAtomIndex, py::arg("atoms"), py::arg("fullAtomName"),
              py::arg("residueId"), py::arg("chainId"))
         .def("computeCovalentBonds", &computeCovalentBonds, py::arg("atoms"))
-        .def("getAtomicNumbers", &getAtomicNumbers, py::arg("atoms"))
+        .def("getAtomicNumbers", &getAtomicNumbers, py::arg("fullNames"))
         .def("createMesh", &createMesh, py::arg("structure"));
 }
 
@@ -274,6 +280,11 @@ void exposeMolVis(pybind11::module& m) {
     py::class_<MolecularStructure, std::shared_ptr<MolecularStructure>>(m, "MolecularStructure")
         .def(py::init([](MolecularData data) -> MolecularStructure { return {std::move(data)}; }),
              py::arg("data"))
+        .def("data", &MolecularStructure::data)
+        .def("atoms", &MolecularStructure::atoms)
+        .def("residues", &MolecularStructure::residues)
+        .def("chains", &MolecularStructure::chains)
+        .def("bonds", &MolecularStructure::bonds)
         .def("hasResidues", &MolecularStructure::hasResidues)
         .def("hasResidue", &MolecularStructure::hasResidue, py::arg("residueId"),
              py::arg("chainId"))
@@ -286,7 +297,7 @@ void exposeMolVis(pybind11::module& m) {
 
         .def("__repr__", [](const MolecularStructure& s) {
             return fmt::format("<MolecularStructure: {} atom(s), residues {}, chains {}>",
-                               s.get().atoms.positions.size(), s.hasResidues() ? "yes" : "no",
+                               s.atoms().positions.size(), s.hasResidues() ? "yes" : "no",
                                s.hasChains() ? "yes" : "no");
         });
 
