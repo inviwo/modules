@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,52 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dicom/dicommodule.h>
-#include <inviwo/dicom/io/gdcmvolumereader.h>
-#include <inviwo/dicom/io/mevisvolumereader.h>
-#include <inviwo/dicom/processors/dicomtagextractor.h>
+#pragma once
+
+#include <inviwo/dicom/dicommoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 namespace inviwo {
 
-DICOMModule::DICOMModule(InviwoApplication* app) : InviwoModule(app, "DICOM") {
-    registerProcessor<DICOMTagExtractor>();
-    registerDataReader(std::make_unique<GdcmVolumeReader>());
-    registerDataReader(std::make_unique<MevisVolumeReader>());
-}
+/** \docpage{org.inviwo.dicomtagextractor, dicomtagextractor}
+ * ![](org.inviwo.dicomtagextractor.png?classIdentifier=org.inviwo.dicomtagextractor)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+class IVW_MODULE_DICOM_API DICOMTagExtractor : public Processor {
+public:
+    DICOMTagExtractor();
+    virtual ~DICOMTagExtractor() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    FileProperty filename_;
+
+    StringProperty tagGroup_;
+    StringProperty tagElement_;
+
+    BoolProperty useSubTag_;
+    StringProperty subTagGroup_;
+    StringProperty subTagElement_;
+};
 
 }  // namespace inviwo
