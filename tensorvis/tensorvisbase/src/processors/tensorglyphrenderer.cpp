@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisbase/processors/tensorglyphrenderer.h>
 #include <modules/opengl/openglutils.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <inviwo/core/interaction/events/pickingevent.h>

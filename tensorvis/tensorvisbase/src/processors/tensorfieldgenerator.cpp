@@ -44,7 +44,11 @@ const ProcessorInfo TensorFieldGenerator::getProcessorInfo() const { return proc
 
 TensorFieldGenerator::TensorFieldGenerator()
     : Processor()
-    , singularityPresets_("singularityPresets", "Singularity presets")
+    , singularityPresets_("singularityPresets", "Singularity presets",
+                          {{"trisector", "Trisector", Singularities::Trisector},
+                           {"wedgePoint", "Wedge point", Singularities::WedgePoint},
+                           {"collection", "Collection", Singularities::Collection},
+                           {"custom", "Custom", Singularities::Custom}})
     , tensors_("tensors", "Tensors")
     , T12D_("T12D", "Tensor 1")
     , T22D_("T22D", "Tensor 2")
@@ -56,125 +60,76 @@ TensorFieldGenerator::TensorFieldGenerator()
     , collectionRow3_("collectionRow3_", "Row3")
     , collectionRow4_("collectionRow4_", "Row4")
     , collectionRow5_("collectionRow5_", "Row5")
-    , collectionRow1T1_("collectionRow1T1_", "T1", dmat2(dvec2(15., 6.4), dvec2(6.4, 14.)))
-    , collectionRow1T2_("collectionRow1T2_", "T2", dmat2(dvec2(7.5, 3.), dvec2(3., 21.)))
-    , collectionRow1T3_("collectionRow1T3_", "T3", dmat2(dvec2(6.6, 0.3), dvec2(0.4, 22)))
-    , collectionRow1T4_("collectionRow1T4_", "T4", dmat2(dvec2(5.1, 0.4), dvec2(0.2, 23)))
-    , collectionRow1T5_("collectionRow1T5_", "T5", dmat2(dvec2(14, -10.2), dvec2(-10.4, 14)))
+    , collectionRow1T1_("collectionRow1T1_", "T1", dmat2(dvec2(15., 6.4), dvec2(6.4, 14.)), min,
+                        max, inc)
+    , collectionRow1T2_("collectionRow1T2_", "T2", dmat2(dvec2(7.5, 3.), dvec2(3., 21.)), min, max,
+                        inc)
+    , collectionRow1T3_("collectionRow1T3_", "T3", dmat2(dvec2(6.6, 0.3), dvec2(0.4, 22)), min, max,
+                        inc)
+    , collectionRow1T4_("collectionRow1T4_", "T4", dmat2(dvec2(5.1, 0.4), dvec2(0.2, 23)), min, max,
+                        inc)
+    , collectionRow1T5_("collectionRow1T5_", "T5", dmat2(dvec2(14, -10.2), dvec2(-10.4, 14)), min,
+                        max, inc)
 
-    , collectionRow2T1_("collectionRow2T1_", "T1", dmat2(dvec2(23.5, -2.), dvec2(-2., 5.)))
-    , collectionRow2T2_("collectionRow2T2_", "T2", dmat2(dvec2(14, -6.4), dvec2(-6.3, 14)))
-    , collectionRow2T3_("collectionRow2T3_", "T3", dmat2(dvec2(7.3, 0.4), dvec2(0.2, 21)))
-    , collectionRow2T4_("collectionRow2T4_", "T4", dmat2(dvec2(14, 4), dvec2(4, 14)))
-    , collectionRow2T5_("collectionRow2T5_", "T5", dmat2(dvec2(23.5, -2), dvec2(-2, 5)))
+    , collectionRow2T1_("collectionRow2T1_", "T1", dmat2(dvec2(23.5, -2.), dvec2(-2., 5.)), min,
+                        max, inc)
+    , collectionRow2T2_("collectionRow2T2_", "T2", dmat2(dvec2(14, -6.4), dvec2(-6.3, 14)), min,
+                        max, inc)
+    , collectionRow2T3_("collectionRow2T3_", "T3", dmat2(dvec2(7.3, 0.4), dvec2(0.2, 21)), min, max,
+                        inc)
+    , collectionRow2T4_("collectionRow2T4_", "T4", dmat2(dvec2(14, 4), dvec2(4, 14)), min, max, inc)
+    , collectionRow2T5_("collectionRow2T5_", "T5", dmat2(dvec2(23.5, -2), dvec2(-2, 5)), min, max,
+                        inc)
 
-    , collectionRow3T1_("collectionRow3T1_", "T1", dmat2(dvec2(18.1, 3), dvec2(3, 10)))
-    , collectionRow3T2_("collectionRow3T2_", "T2", dmat2(dvec2(18.9, 02), dvec2(0.2, 9)))
-    , collectionRow3T3_("collectionRow3T3_", "T3", dmat2(dvec2(14, -6.3), dvec2(-6.3, 14)))
-    , collectionRow3T4_("collectionRow3T4_", "T4", dmat2(dvec2(21.3, 3), dvec2(3, 7)))
-    , collectionRow3T5_("collectionRow3T5_", "T5", dmat2(dvec2(22.1, 3), dvec2(3, 6)))
+    , collectionRow3T1_("collectionRow3T1_", "T1", dmat2(dvec2(18.1, 3), dvec2(3, 10)), min, max,
+                        inc)
+    , collectionRow3T2_("collectionRow3T2_", "T2", dmat2(dvec2(18.9, 02), dvec2(0.2, 9)), min, max,
+                        inc)
+    , collectionRow3T3_("collectionRow3T3_", "T3", dmat2(dvec2(14, -6.3), dvec2(-6.3, 14)), min,
+                        max, inc)
+    , collectionRow3T4_("collectionRow3T4_", "T4", dmat2(dvec2(21.3, 3), dvec2(3, 7)), min, max,
+                        inc)
+    , collectionRow3T5_("collectionRow3T5_", "T5", dmat2(dvec2(22.1, 3), dvec2(3, 6)), min, max,
+                        inc)
 
-    , collectionRow4T1_("collectionRow4T1_", "T1", dmat2(dvec2(17, -0.2), dvec2(-0.2, 11)))
-    , collectionRow4T2_("collectionRow4T2_", "T2", dmat2(dvec2(14, 4.2), dvec2(4.2, 14)))
-    , collectionRow4T3_("collectionRow4T3_", "T3", dmat2(dvec2(9, 3), dvec2(3, 19)))
-    , collectionRow4T4_("collectionRow4T4_", "T4", dmat2(dvec2(14, 8), dvec2(8, 6)))
-    , collectionRow4T5_("collectionRow4T5_", "T5", dmat2(dvec2(21.2, 3), dvec2(3, 7)))
+    , collectionRow4T1_("collectionRow4T1_", "T1", dmat2(dvec2(17, -0.2), dvec2(-0.2, 11)), min,
+                        max, inc)
+    , collectionRow4T2_("collectionRow4T2_", "T2", dmat2(dvec2(14, 4.2), dvec2(4.2, 14)), min, max,
+                        inc)
+    , collectionRow4T3_("collectionRow4T3_", "T3", dmat2(dvec2(9, 3), dvec2(3, 19)), min, max, inc)
+    , collectionRow4T4_("collectionRow4T4_", "T4", dmat2(dvec2(14, 8), dvec2(8, 6)), min, max, inc)
+    , collectionRow4T5_("collectionRow4T5_", "T5", dmat2(dvec2(21.2, 3), dvec2(3, 7)), min, max,
+                        inc)
 
-    , collectionRow5T1_("collectionRow5T1_", "T1", dmat2(dvec2(14, -1.1), dvec2(-1.1, 14)))
-    , collectionRow5T2_("collectionRow5T2_", "T2", dmat2(dvec2(11.5, 0.1), dvec2(0.1, 17)))
-    , collectionRow5T3_("collectionRow5T3_", "T3", dmat2(dvec2(10, 0.1), dvec2(0.1, 18)))
-    , collectionRow5T4_("collectionRow5T4_", "T4", dmat2(dvec2(9.3, 0.1), dvec2(0.1, 19)))
-    , collectionRow5T5_("collectionRow5T5_", "T5", dmat2(dvec2(14, 6.4), dvec2(6.4, 14)))
+    , collectionRow5T1_("collectionRow5T1_", "T1", dmat2(dvec2(14, -1.1), dvec2(-1.1, 14)), min,
+                        max, inc)
+    , collectionRow5T2_("collectionRow5T2_", "T2", dmat2(dvec2(11.5, 0.1), dvec2(0.1, 17)), min,
+                        max, inc)
+    , collectionRow5T3_("collectionRow5T3_", "T3", dmat2(dvec2(10, 0.1), dvec2(0.1, 18)), min, max,
+                        inc)
+    , collectionRow5T4_("collectionRow5T4_", "T4", dmat2(dvec2(9.3, 0.1), dvec2(0.1, 19)), min, max,
+                        inc)
+    , collectionRow5T5_("collectionRow5T5_", "T5", dmat2(dvec2(14, 6.4), dvec2(6.4, 14)), min, max,
+                        inc)
     , outport2D_("outport2d") {
-    singularityPresets_.addOption("trisector", "Trisector", Singularities::Trisector);
-    singularityPresets_.addOption("wedgePoint", "Wedge point", Singularities::WedgePoint);
-    singularityPresets_.addOption("collection", "Collection", Singularities::Collection);
-    singularityPresets_.addOption("custom", "Custom", Singularities::Custom);
-    singularityPresets_.setSelectedIndex(0);
-    singularityPresets_.setCurrentStateAsDefault();
-    addProperty(singularityPresets_);
 
-    tensors_.addProperty(T12D_);
-    tensors_.addProperty(T22D_);
-    tensors_.addProperty(T32D_);
-    tensors_.addProperty(T42D_);
-    addProperty(tensors_);
+    tensors_.addProperties(T12D_, T22D_, T32D_, T42D_);
 
-    collectionField_.addProperty(collectionRow1_);
-    collectionField_.addProperty(collectionRow2_);
-    collectionField_.addProperty(collectionRow3_);
-    collectionField_.addProperty(collectionRow4_);
-    collectionField_.addProperty(collectionRow5_);
+    collectionRow1_.addProperties(collectionRow1T1_, collectionRow1T2_, collectionRow1T3_,
+                                  collectionRow1T4_, collectionRow1T5_);
+    collectionRow2_.addProperties(collectionRow2T1_, collectionRow2T2_, collectionRow2T3_,
+                                  collectionRow2T4_, collectionRow2T5_);
+    collectionRow3_.addProperties(collectionRow3T1_, collectionRow3T2_, collectionRow3T3_,
+                                  collectionRow3T4_, collectionRow3T5_);
+    collectionRow4_.addProperties(collectionRow4T1_, collectionRow4T2_, collectionRow4T3_,
+                                  collectionRow4T4_, collectionRow4T5_);
+    collectionRow5_.addProperties(collectionRow5T1_, collectionRow5T2_, collectionRow5T3_,
+                                  collectionRow5T4_, collectionRow5T5_);
 
-    collectionRow1_.addProperty(collectionRow1T1_);
-    collectionRow1_.addProperty(collectionRow1T2_);
-    collectionRow1_.addProperty(collectionRow1T3_);
-    collectionRow1_.addProperty(collectionRow1T4_);
-    collectionRow1_.addProperty(collectionRow1T5_);
+    collectionField_.addProperties(collectionRow1_, collectionRow2_, collectionRow3_,
+                                   collectionRow4_, collectionRow5_);
 
-    collectionRow2_.addProperty(collectionRow2T1_);
-    collectionRow2_.addProperty(collectionRow2T2_);
-    collectionRow2_.addProperty(collectionRow2T3_);
-    collectionRow2_.addProperty(collectionRow2T4_);
-    collectionRow2_.addProperty(collectionRow2T5_);
-
-    collectionRow3_.addProperty(collectionRow3T1_);
-    collectionRow3_.addProperty(collectionRow3T2_);
-    collectionRow3_.addProperty(collectionRow3T3_);
-    collectionRow3_.addProperty(collectionRow3T4_);
-    collectionRow3_.addProperty(collectionRow3T5_);
-
-    collectionRow4_.addProperty(collectionRow4T1_);
-    collectionRow4_.addProperty(collectionRow4T2_);
-    collectionRow4_.addProperty(collectionRow4T3_);
-    collectionRow4_.addProperty(collectionRow4T4_);
-    collectionRow4_.addProperty(collectionRow4T5_);
-
-    collectionRow5_.addProperty(collectionRow5T1_);
-    collectionRow5_.addProperty(collectionRow5T2_);
-    collectionRow5_.addProperty(collectionRow5T3_);
-    collectionRow5_.addProperty(collectionRow5T4_);
-    collectionRow5_.addProperty(collectionRow5T5_);
-
-    addProperty(collectionField_);
-
-    auto setMatProperty = [this](const dmat2& mat, DoubleMat2Property& prop) {
-        prop.setMinValue(min);
-        prop.setMaxValue(max);
-        prop.setIncrement(inc);
-        prop.set(mat);
-        prop.setCurrentStateAsDefault();
-    };
-
-    setMatProperty(dmat2(dvec2(15., 6.4), dvec2(6.4, 14.)), collectionRow1T1_);
-    setMatProperty(dmat2(dvec2(7.5, 3.), dvec2(3., 21.)), collectionRow1T2_);
-    setMatProperty(dmat2(dvec2(6.6, 0.3), dvec2(0.4, 22)), collectionRow1T3_);
-    setMatProperty(dmat2(dvec2(5.1, 0.4), dvec2(0.2, 23)), collectionRow1T4_);
-    setMatProperty(dmat2(dvec2(14, -10.2), dvec2(-10.4, 14)), collectionRow1T5_);
-
-    setMatProperty(dmat2(dvec2(23.5, -2.), dvec2(-2., 5.)), collectionRow2T1_);
-    setMatProperty(dmat2(dvec2(14, -6.4), dvec2(-6.3, 14)), collectionRow2T2_);
-    setMatProperty(dmat2(dvec2(7.3, 0.4), dvec2(0.2, 21)), collectionRow2T3_);
-    setMatProperty(dmat2(dvec2(14, 4), dvec2(4, 14)), collectionRow2T4_);
-    setMatProperty(dmat2(dvec2(23.5, -2), dvec2(-2, 5)), collectionRow2T5_);
-
-    setMatProperty(dmat2(dvec2(18.1, 3), dvec2(3, 10)), collectionRow3T1_);
-    setMatProperty(dmat2(dvec2(18.9, 02), dvec2(0.2, 9)), collectionRow3T2_);
-    setMatProperty(dmat2(dvec2(14, -6.3), dvec2(-6.3, 14)), collectionRow3T3_);
-    setMatProperty(dmat2(dvec2(21.3, 3), dvec2(3, 7)), collectionRow3T4_);
-    setMatProperty(dmat2(dvec2(22.1, 3), dvec2(3, 6)), collectionRow3T5_);
-
-    setMatProperty(dmat2(dvec2(17, -0.2), dvec2(-0.2, 11)), collectionRow4T1_);
-    setMatProperty(dmat2(dvec2(14, 4.2), dvec2(4.2, 14)), collectionRow4T2_);
-    setMatProperty(dmat2(dvec2(9, 3), dvec2(3, 19)), collectionRow4T3_);
-    setMatProperty(dmat2(dvec2(14, 8), dvec2(8, 6)), collectionRow4T4_);
-    setMatProperty(dmat2(dvec2(21.2, 3), dvec2(3, 7)), collectionRow4T5_);
-
-    setMatProperty(dmat2(dvec2(14, -1.1), dvec2(-1.1, 14)), collectionRow5T1_);
-    setMatProperty(dmat2(dvec2(11.5, 0.1), dvec2(0.1, 17)), collectionRow5T2_);
-    setMatProperty(dmat2(dvec2(10, 0.1), dvec2(0.1, 18)), collectionRow5T3_);
-    setMatProperty(dmat2(dvec2(9.3, 0.1), dvec2(0.1, 19)), collectionRow5T4_);
-    setMatProperty(dmat2(dvec2(14, 6.4), dvec2(6.4, 14)), collectionRow5T5_);
+    addProperties(singularityPresets_, tensors_, collectionField_);
 
     addPort(outport2D_);
 }

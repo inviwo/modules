@@ -1,6 +1,8 @@
 #include <inviwo/tensorvisio/processors/flowguifilereader.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 
+#include <fstream>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

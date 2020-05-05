@@ -30,6 +30,9 @@
 
 #include <inviwo/integrallinefiltering/integrallinefilteringmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/util/glm.h>
+
+#include <unordered_map>
 
 namespace inviwo {
 
