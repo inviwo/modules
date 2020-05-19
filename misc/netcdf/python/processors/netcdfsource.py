@@ -17,7 +17,8 @@ class NetCDFSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.volumeOutport = ivw.data.VolumeOutport("data3D")
+        self.data = []
+        self.volumeOutport = ivw.data.VolumeSequenceOutport("data3D")
         self.addOutport(self.volumeOutport, owner=False)
 
         self.displayInfo = ButtonProperty("displayInfo", "Log File Info")
@@ -132,7 +133,8 @@ class NetCDFSource(ivw.Processor):
                 print("4D!")
                 timeLength = dims[0]
                 print("Time " + str(timeLength))
-                for timeStep in range(1):  # timeLength:
+                self.data = []
+                for timeStep in range(timeLength):
                     varData = ncVar[timeStep, :, :, :]
                     buffer = numpy.array(varData).astype('float32')
                     # ncVar.datatype)
@@ -148,7 +150,8 @@ class NetCDFSource(ivw.Processor):
                                               vec4(0, dims[2], 0, 0),
                                               vec4(0, 0, dims[1], 0),
                                               vec4(0, 0, 0, 1))
-                    self.volumeOutport.setData(volume)
+                    self.data.append(volume)
+                self.volumeOutport.setData(ivw.data.VolumeSequence(self.data))
 
     def displayDataInfo(self):
         print(self.filePath.value)
