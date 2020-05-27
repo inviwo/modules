@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,19 +27,43 @@
  *
  *********************************************************************************/
 
-#include <inviwo/dicom/dicommodule.h>
-#include <inviwo/dicom/io/gdcmvolumereader.h>
-#include <inviwo/dicom/io/mevisvolumereader.h>
-#include <inviwo/dicom/processors/dicomimageexport.h>
-#include <inviwo/dicom/processors/dicomtagextractor.h>
+#pragma once
+
+#include <inviwo/dicom/dicommoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-DICOMModule::DICOMModule(InviwoApplication* app) : InviwoModule(app, "DICOM") {
-    registerProcessor<DICOMTagExtractor>();
-    registerProcessor<DICOMImageExport>();
-    registerDataReader(std::make_unique<GdcmVolumeReader>());
-    registerDataReader(std::make_unique<MevisVolumeReader>());
-}
+/** \docpage{org.inviwo.dicomimageexport, dicomimageexport}
+ * ![](org.inviwo.dicomimageexport.png?classIdentifier=org.inviwo.dicomimageexport)
+ * Explanation of how to use the processor.
+ *
+ * ### Inports
+ *   * __<Inport1>__ <description>.
+ *
+ * ### Outports
+ *   * __<Outport1>__ <description>.
+ *
+ * ### Properties
+ *   * __<Prop1>__ <description>.
+ *   * __<Prop2>__ <description>
+ */
+class IVW_MODULE_DICOM_API DICOMImageExport : public Processor {
+public:
+    DICOMImageExport();
+    virtual ~DICOMImageExport() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageInport inport_;
+    FloatProperty prop_;
+};
 
 }  // namespace inviwo
