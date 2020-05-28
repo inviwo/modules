@@ -33,6 +33,7 @@
 #include <string>
 
 #include "gdcmWriter.h"
+#include "gdcmReader.h"
 #include "gdcmDataElement.h"
 #include "gdcmDataSet.h"
 #include "gdcmTag.h"
@@ -42,6 +43,7 @@
 #include "gdcmVL.h"
 #include "gdcmVR.h"
 #include "gdcmValue.h"
+#include "gdcmAttribute.h"
 
 namespace inviwo {
 
@@ -66,50 +68,98 @@ void DICOMImageExport::process() {
     const auto& img = inport_.getData();
     const auto& color_layer_ram = img->getColorLayer(0)->getRepresentation<LayerRAM>();
     const auto color_data = static_cast<const char*>(color_layer_ram->getData());
-    const auto dims = ivec2(img->getDimensions());
+    const auto dims = img->getDimensions();
     const auto num_elements = glm::compMul(dims);
-    const auto element_size = color_layer_ram->getDataFormat()->getSize();
+    const auto data_format = color_layer_ram->getDataFormat();
+    const auto num_channels = data_format->getComponents();
+    const auto element_size = data_format->getSize() / num_channels;
 
     LogInfo("dimensions:   " << dims);
     LogInfo("num_elements: " << num_elements);
     LogInfo("element_size: " << element_size);
 
-    gdcm::String filename{"D:/tmp_img.dcm"};
+    const gdcm::String filename{"D:/tmp_img.dcm"};
     gdcm::Writer writer;
-    gdcm::File file;
-    gdcm::DataSet data_set;
-    gdcm::FileMetaInformation meta_info;
-
-    const std::string sop_instance_uid_str{"1.2.3.4.5.6.7.8.9.0"};
-    gdcm::DataElement sop_instance_uid(gdcm::Tag(0x0008, 0x0018));
-    sop_instance_uid.SetVR(gdcm::VR::UI);
-    sop_instance_uid.SetByteValue(sop_instance_uid_str.c_str(), sop_instance_uid_str.length());
-
-    gdcm::DataElement pixel_data(gdcm::Tag(0x7fe0, 0x0010));
-    pixel_data.SetByteValue(color_data, num_elements);
-    pixel_data.SetVR(gdcm::VR::OB_OW);
-
-    gdcm::DataElement image_columns(gdcm::Tag(0x0028, 0x0010));
-    image_columns.SetByteValue(reinterpret_cast<const char*>(&dims.x), gdcm::VL(sizeof(dims.x)));
-    image_columns.SetVR(gdcm::VR::US);
-
-    gdcm::DataElement image_rows(gdcm::Tag(0x0028, 0x0011));
-    image_rows.SetByteValue(reinterpret_cast<const char*>(&dims.y), gdcm::VL(sizeof(dims.y)));
-    image_rows.SetVR(gdcm::VR::US);
-
-    data_set.Insert(pixel_data);
-    data_set.Insert(image_columns);
-    data_set.Insert(image_rows);
-    data_set.Insert(sop_instance_uid);
-
-    meta_info.SetDataSetTransferSyntax(gdcm::TransferSyntax::ImplicitVRLittleEndian);
-    file.SetHeader(meta_info);
-    file.SetDataSet(data_set);
-
     writer.SetFileName(filename);
-    writer.SetFile(file);
-    writer.CheckFileMetaInformationOff();
-    writer.Write();
+    auto& file = writer.GetFile();
+    auto& data_set = file.GetDataSet();
+    auto& meta_info = file.GetHeader();
+    meta_info.SetDataSetTransferSyntax(gdcm::TransferSyntax::ImplicitVRLittleEndian);
+
+    // required attributes by DICOM
+    // meta
+    gdcm::Attribute<0x0002, 0x0003> attr_media_storage_sop_instance_uid = {
+        "attr_media_storage_sop_instance_uid"};
+    // data set
+    gdcm::Attribute<0x0008, 0x0012> attr_instance_creation_date = {"attr_instance_creation_date"};
+    gdcm::Attribute<0x0008, 0x0018> attr_sop_instance_uid = {"attr_sop_instance_uid"};
+    gdcm::Attribute<0x0008, 0x0020> attr_study_date = {"attr_study_date"};
+    gdcm::Attribute<0x0008, 0x0030> attr_study_time = {"attr_study_time"};
+    gdcm::Attribute<0x0008, 0x0050> attr_accession_number = {"attr_accession_number"};
+    gdcm::Attribute<0x0008, 0x0090> attr_ref_phys_name = {"attr_ref_phys_name"};
+    gdcm::Attribute<0x0010, 0x0010> attr_patient_name = {"attr_patient_name"};
+    gdcm::Attribute<0x0010, 0x0020> attr_patient_id = {"attr_patient_id"};
+    gdcm::Attribute<0x0010, 0x0030> attr_patient_dob = {"attr_patient_dob"};
+    gdcm::Attribute<0x0010, 0x0040> attr_patient_sex = {"attr_patient_sex"};
+    gdcm::Attribute<0x0020, 0x0010> attr_study_id = {"attr_study_id"};
+    gdcm::Attribute<0x0020, 0x0011> attr_series_number = {static_cast<int32_t>(0)};
+    gdcm::Attribute<0x0020, 0x0020> attr_patient_orientation = {"attr_patient_orientation"};
+
+    // additional attributes
+    gdcm::Attribute<0x0028, 0x0002> attr_samples_per_pixel = {static_cast<uint16_t>(num_channels)};
+    gdcm::Attribute<0x0028, 0x0010> attr_rows = {static_cast<uint16_t>(dims.y)};
+    gdcm::Attribute<0x0028, 0x0011> attr_columns = {static_cast<uint16_t>(dims.x)};
+    gdcm::Attribute<0x0028, 0x0100> attr_bits_allocated = {static_cast<uint16_t>(element_size * 8)};
+    gdcm::Attribute<0x0028, 0x0101> attr_bits_stored = {static_cast<uint16_t>(element_size * 8)};
+    gdcm::Attribute<0x0028, 0x0102> attr_high_bit = {static_cast<uint16_t>(element_size * 8 - 1)};
+    gdcm::Attribute<0x0028, 0x0103> attr_pixel_representation = {static_cast<uint16_t>(0x0001)};
+    gdcm::Attribute<0x0028, 0x0034> attr_pixel_aspect_ratio = {static_cast<uint16_t>(1),
+                                                               static_cast<uint16_t>(1)};
+
+    // manually build DataElements
+    gdcm::DataElement datel_pixel_data(gdcm::Tag(0x7fe0, 0x0010));
+    datel_pixel_data.SetByteValue(color_data, num_elements);
+    datel_pixel_data.SetVR(gdcm::VR::OW);
+
+    // add all attributes to meta info
+    meta_info.Insert(attr_media_storage_sop_instance_uid.GetAsDataElement());
+
+    // add all attributes to data set
+    data_set.Insert(attr_instance_creation_date.GetAsDataElement());
+    data_set.Insert(attr_sop_instance_uid.GetAsDataElement());
+    data_set.Insert(attr_study_date.GetAsDataElement());
+    data_set.Insert(attr_study_time.GetAsDataElement());
+    data_set.Insert(attr_accession_number.GetAsDataElement());
+    data_set.Insert(attr_ref_phys_name.GetAsDataElement());
+    data_set.Insert(attr_patient_name.GetAsDataElement());
+    data_set.Insert(attr_patient_id.GetAsDataElement());
+    data_set.Insert(attr_patient_dob.GetAsDataElement());
+    data_set.Insert(attr_patient_sex.GetAsDataElement());
+    data_set.Insert(attr_study_id.GetAsDataElement());
+    data_set.Insert(attr_series_number.GetAsDataElement());
+    data_set.Insert(attr_patient_orientation.GetAsDataElement());
+
+    data_set.Insert(attr_samples_per_pixel.GetAsDataElement());
+    data_set.Insert(attr_rows.GetAsDataElement());
+    data_set.Insert(attr_columns.GetAsDataElement());
+    data_set.Insert(attr_bits_allocated.GetAsDataElement());
+    data_set.Insert(attr_bits_stored.GetAsDataElement());
+    data_set.Insert(attr_high_bit.GetAsDataElement());
+    data_set.Insert(attr_pixel_representation.GetAsDataElement());
+    data_set.Insert(attr_pixel_aspect_ratio.GetAsDataElement());
+    data_set.Insert(datel_pixel_data);
+
+    // print data set and meta info
+    std::cout << "meta info:" << std::endl;
+    meta_info.Print(std::cout, " ");
+    std::cout << "data set:" << std::endl;
+    data_set.Print(std::cout, " ");
+
+    // write file
+    // writer.CheckFileMetaInformationOff();
+    if (!writer.Write()) {
+        LogWarn("could not write: " << filename);
+    }
 }
 
 }  // namespace inviwo
