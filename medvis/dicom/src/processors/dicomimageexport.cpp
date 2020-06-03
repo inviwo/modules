@@ -113,19 +113,26 @@ void DICOMImageExport::process() {
     oss << std::put_time(&tm, "%H%M%S");
     const auto study_time = oss.str();
 
+    // ToDo: check for dates and times to be set, also how precise should it be
+    const auto instance_creation_date = study_date;
+    const auto instance_creation_time = study_time;
+
     // meta data
     gdcm::Attribute<0x0002, 0x0002> attr_media_storage_sop_class_uid = {sop_class_uid};
     gdcm::Attribute<0x0002, 0x0003> attr_media_storage_sop_instance_uid = {sop_instance_uid};
 
     // data set
     // general attributes
+    // ToDo: check why direct assignment does not work
     gdcm::Attribute<0x0008, 0x0008> attr_image_type;
-    const std::vector<gdcm::CSComp> image_type_values = {"DERIVED", "SECONDARY", "OTHER"};
-    attr_image_type.SetValues(image_type_values.data(), image_type_values.size());
+    attr_image_type.SetNumberOfValues(3);
+    attr_image_type.SetValue(0, gdcm::CSComp{"DERIVED"});
+    attr_image_type.SetValue(1, gdcm::CSComp{"SECONDARY"});
+    attr_image_type.SetValue(2, gdcm::CSComp{"OTHER"});
     gdcm::Attribute<0x0008, 0x0016> attr_sop_class_uid = {sop_class_uid};
     gdcm::Attribute<0x0008, 0x0018> attr_sop_instance_uid = {sop_instance_uid};
-    gdcm::Attribute<0x0008, 0x0012> attr_instance_creation_date = {"attr_instance_creation_date"};
-    gdcm::Attribute<0x0008, 0x0013> attr_instance_creation_time = {"attr_instance_creation_time"};
+    gdcm::Attribute<0x0008, 0x0012> attr_instance_creation_date = {instance_creation_date};
+    gdcm::Attribute<0x0008, 0x0013> attr_instance_creation_time = {instance_creation_time};
     gdcm::Attribute<0x0008, 0x0020> attr_study_date = {study_date};
     gdcm::Attribute<0x0008, 0x0030> attr_study_time = {study_time};
     gdcm::Attribute<0x0018, 0x1510> attr_primary_angulation = {0.0};
@@ -147,6 +154,7 @@ void DICOMImageExport::process() {
     gdcm::Attribute<0x0020, 0x0011> attr_series_number = {static_cast<int32_t>(42)};
     gdcm::Attribute<0x0020, 0x0012> attr_acquisition_number = {static_cast<int32_t>(42)};
     gdcm::Attribute<0x0020, 0x1040> attr_position_reference_indicator = {"42"};
+    // ToDo: assert num_channels == 1 for XA images
     gdcm::Attribute<0x0028, 0x0002> attr_samples_per_pixel = {static_cast<uint16_t>(num_channels)};
     gdcm::Attribute<0x0028, 0x0004> attr_photometric_interpretation = {"MONOCHROME2"};
     gdcm::Attribute<0x0028, 0x0010> attr_rows = {static_cast<uint16_t>(dims.y)};
@@ -155,9 +163,10 @@ void DICOMImageExport::process() {
     gdcm::Attribute<0x0028, 0x0101> attr_bits_stored = {static_cast<uint16_t>(bpp * 8)};
     gdcm::Attribute<0x0028, 0x0102> attr_high_bit = {static_cast<uint16_t>(bpp * 8 - 1)};
     gdcm::Attribute<0x0028, 0x0103> attr_pixel_representation = {static_cast<uint16_t>(0)};
-    //gdcm::Attribute<0x0028, 0x0034> attr_pixel_aspect_ratio = {static_cast<uint16_t>(1), static_cast<uint16_t>(1)};
     gdcm::Attribute<0x0028, 0x1052> attr_rescale_intercept = {0.0};
     gdcm::Attribute<0x0028, 0x1053> attr_rescale_slope = {0.0};
+    // gdcm::Attribute<0x0028, 0x0034> attr_pixel_aspect_ratio = {static_cast<uint16_t>(1),
+    // static_cast<uint16_t>(1)};
 
     // manually build misc. data elements
     gdcm::DataElement datel_smallest_image_pixel_value(gdcm::Tag(0x0028, 0x0106));
