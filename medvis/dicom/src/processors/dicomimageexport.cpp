@@ -29,6 +29,8 @@
 
 #include <inviwo/dicom/processors/dicomimageexport.h>
 #include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/util/rendercontext.h>
+#include <modules/opengl/texture/texture2d.h>
 
 #include <string>
 #include <memory>
@@ -63,6 +65,10 @@ const ProcessorInfo DICOMImageExport::getProcessorInfo() const { return processo
 void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
                     std::condition_variable& cond_var,
                     std::deque<DICOMImageExport::DataFrame>& data_elements, bool& no_new_data) {
+
+    // make sure to share OpenGL resources across multiple contexts
+    RenderContext::getPtr()->activateLocalRenderContext();
+
     while (true) {
         std::unique_lock<std::mutex> lock(queue_mutex);
         if (cond_var.wait_for(lock, std::chrono::milliseconds(100),
@@ -74,12 +80,13 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             lock.unlock();
 
             // work on data
-            const auto& filename = blob.filename.c_str();
-            const auto& color_layer_ram = blob.img->getColorLayer(0)->getRepresentation<LayerRAM>();
-            const auto color_data = static_cast<const char*>(color_layer_ram->getData());
-            const auto dims = blob.img->getDimensions();
+            const auto filename = blob.filename.c_str();
+            const auto& layer = blob.layer;
+            const auto& tex = layer->getTexture();
+            //const auto& pixel_data = static_cast<const char*>(layer_ram->getData());
+            const auto dims = blob.layer->getDimensions();
             const auto num_elements = glm::compMul(dims);
-            const auto data_format = color_layer_ram->getDataFormat();
+            const auto data_format = layer->getDataFormat();
             const auto num_channels = data_format->getComponents();
             const auto bpp = data_format->getSize();
             const auto bpc = bpp / num_channels;
@@ -200,8 +207,11 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
                 sizeof(decltype(largest_pixel_value_in_series)));
 
             // setup pixel data
+            // download texture
+            std::vector<char> pixel_data(num_elements * bpp);
+            tex->download(pixel_data.data());
             // flip pixel data around y-axis
-            std::vector<char> flipped_color_data(dims.x * dims.y * bpp);
+            std::vector<char> flipped_pixel_data(pixel_data.size());
             for (size_t y = 0; y < dims.y; ++y) {
                 for (size_t x = 0; x < dims.x; ++x) {
                     const auto x_from = flip_pixel_data_x ? dims.x - x - 1 : x;
@@ -211,12 +221,12 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
                     const auto idx_to = (x + y * dims.x) * bpp;
                     // copy all bytes from each pixel
                     for (size_t i = 0; i < bpp; ++i) {
-                        flipped_color_data[idx_to + i] = color_data[idx_from + i];
+                        flipped_pixel_data[idx_to + i] = pixel_data[idx_from + i];
                     }
                 }
             }
             gdcm::DataElement datel_pixel_data(gdcm::Tag(0x7fe0, 0x0010));
-            datel_pixel_data.SetByteValue(flipped_color_data.data(),
+            datel_pixel_data.SetByteValue(flipped_pixel_data.data(),
                                           gdcm::VL(static_cast<uint32_t>(num_elements)));
             datel_pixel_data.SetVR(gdcm::VR::OB);
 
@@ -295,10 +305,7 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
 }
 
 DICOMImageExport::DICOMImageExport()
-    : Processor()
-    , inport_("inport", true)
-    , noNewData_{false}
-    , fileID_{0} {
+    : Processor(), inport_("inport", true), noNewData_{false}, fileID_{0} {
 
     addPort(inport_);
 
@@ -336,6 +343,8 @@ DICOMImageExport::~DICOMImageExport() {
 }
 
 void DICOMImageExport::process() {
+    const auto t0 = std::chrono::steady_clock::now();
+
     const std::string filename =
         "D:/uni/transnav/data/tmp/tmp_img_" + std::to_string(fileID_) + ".dcm";
     fileID_++;
@@ -343,10 +352,18 @@ void DICOMImageExport::process() {
     {
         // add new data frame
         std::lock_guard<std::mutex> guard(dequeMutex_);
-        dataElements_.emplace_back(inport_.getData(), filename);
+        // clone layer to be able to transfer it to another thread, GPU buffers won't work here
+        // ToDo: find a fix for that?
+        dataElements_.emplace_back(
+            std::shared_ptr<LayerGL>(
+                inport_.getData()->getColorLayer(0)->getRepresentation<LayerGL>()->clone()),
+            filename);
     }
     // signale all workers that new data is available
     condVar_.notify_all();
+
+    const auto t1 = std::chrono::steady_clock::now();
+    LogInfo("e: " << std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count());
 }
 
 }  // namespace inviwo

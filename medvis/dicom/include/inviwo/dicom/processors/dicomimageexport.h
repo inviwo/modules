@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <modules/opengl/image/layergl.h>
 
 #include <vector>
 #include <thread>
@@ -69,12 +70,12 @@ public:
     static const ProcessorInfo processorInfo_;
 
     struct DataFrame {
-        std::shared_ptr<const Image> img;
+        std::shared_ptr<LayerGL> layer;
         std::string filename;
 
         DataFrame() = delete;
-        DataFrame(std::shared_ptr<const Image> img, const std::string& filename)
-            : img(img), filename(filename) {}
+        DataFrame(std::shared_ptr<LayerGL> layer, const std::string& filename)
+            : layer(layer), filename(filename) {}
     };
     /*
     gdcm::Attribute<0x0028, 0x0010> attr_image_columns = {};
@@ -93,7 +94,6 @@ public:
     gdcm::Attribute<0x5000, 0x0010> attr_ecg_number_of_points = {};
     gdcm::Attribute<0x5000, 0x3000> attr_ecg_signal = {};
     */
-
 
 private:
     ImageInport inport_;
