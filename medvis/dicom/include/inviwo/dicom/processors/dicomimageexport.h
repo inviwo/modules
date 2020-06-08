@@ -33,7 +33,14 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/imageport.h>
+
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <deque>
+#include <condition_variable>
 
 namespace inviwo {
 
@@ -54,16 +61,34 @@ namespace inviwo {
 class IVW_MODULE_DICOM_API DICOMImageExport : public Processor {
 public:
     DICOMImageExport();
-    virtual ~DICOMImageExport() = default;
+    virtual ~DICOMImageExport();
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    struct DataFrame {
+        std::shared_ptr<const Image> img;
+        std::string filename;
+
+        DataFrame() = delete;
+        DataFrame(std::shared_ptr<const Image> img, const std::string& filename)
+            : img(img), filename(filename) {}
+    };
+
 private:
     ImageInport inport_;
-    FloatProperty prop_;
+    BoolProperty printDataSetInfo_;
+
+    std::vector<std::thread> workers_;
+    std::mutex dequeMutex_;
+    std::mutex consoleMutex_;
+    std::condition_variable condVar_;
+    std::deque<DataFrame> dataElements_;
+    bool noNewData_;
+
+    size_t fileID_;
 };
 
 }  // namespace inviwo
