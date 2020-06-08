@@ -73,14 +73,8 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             // release after data blob is fetched, so main thread can continue to push data
             lock.unlock();
 
-            const auto& filename = blob.filename.c_str();
-            {
-                std::lock_guard<std::mutex> guard(console_mutex);
-                std::cout << "worker " << std::this_thread::get_id()
-                          << " is processing: " << filename << '\n';
-            }
-
             // work on data
+            const auto& filename = blob.filename.c_str();
             const auto& color_layer_ram = blob.img->getColorLayer(0)->getRepresentation<LayerRAM>();
             const auto color_data = static_cast<const char*>(color_layer_ram->getData());
             const auto dims = blob.img->getDimensions();
@@ -226,44 +220,6 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
                                           gdcm::VL(static_cast<uint32_t>(num_elements)));
             datel_pixel_data.SetVR(gdcm::VR::OB);
 
-            /*
-                x-ray data frame attributes:
-                Image Columns	        0x0028, 0x0010
-                Image Rows	            0x0028, 0x0011
-                Primary angulation	    0x0018, 0x1510
-                Secondary angulation	    0x0018, 0x1511
-                Table position in vertical (anteriour/posteriour) direction (z) 0x2003, 0x102E
-               Subtag: 0x300A, 0x0128 Table position in longitudinal (head-feet) direction (y)
-               0x2003, 0x102E	Subtag: 0x300A, 0x0129 Table position in lateral (right-left)
-               direction (x)            0x2003, 0x102E  Subtag: 0x300A, 0x012A Source-to-image
-               distance (SID)	    0x0018, 0x1110 Zoom field (FD)	                    0x2003,
-               0x1003 or 0x2003, 0x1010 Pixel Spacing (x/y)	                0x0018, 0x1164
-                Source-to-patient distance (SPD)	0x0018, 0x1111
-                Cine frame rate	                    0x0018, 0x0040
-                ECG frame rate	                    0x5000, 0x0114
-                ECG number of points	            0x5000, 0x0010
-                ECG signal	                        0x5000, 0x3000
-            */
-            /*
-            {
-                gdcm::Attribute<0x0028, 0x0010> attr_image_columns = {};
-                gdcm::Attribute<0x0028, 0x0011> attr_image_rows = {};
-                gdcm::Attribute<0x0018, 0x1510> attr_primary_angulation = {};
-                gdcm::Attribute<0x0018, 0x1511> attr_secondary_angulation = {};
-                gdcm::Attribute<0x2003, 0x102E> attr_table_pos_vertical = {};      // subtag:
-            0x300A, 0x0128 gdcm::Attribute<0x2003, 0x102E> attr_table_pos_longitudinal = {};  //
-            subtag: 0x300A, 0x0129 gdcm::Attribute<0x2003, 0x102E> attr_table_pos_lateral = {}; //
-            subtag: 0x300A, 0x012A gdcm::Attribute<0x0018, 0x1110> attr_source_to_image_distance =
-            {}; gdcm::Attribute<0x2003, 0x1003> attr_zoom_field = {};  // or: 0x2003, 0x1010
-                gdcm::Attribute<0x0018, 0x1164> attr_pixel_spacing = {};
-                gdcm::Attribute<0x0018, 0x1111> attr_source_to_patient_distance = {};
-                gdcm::Attribute<0x0018, 0x0040> attr_cine_frame_rate = {};
-                gdcm::Attribute<0x5000, 0x0114> attr_ecg_frame_rate = {};
-                gdcm::Attribute<0x5000, 0x0010> attr_ecg_number_of_points = {};
-                gdcm::Attribute<0x5000, 0x3000> attr_ecg_signal = {};
-            }
-            */
-
             // add all attributes to meta info
             meta_info.Insert(attr_media_storage_sop_class_uid.GetAsDataElement());
             meta_info.Insert(attr_media_storage_sop_instance_uid.GetAsDataElement());
@@ -331,7 +287,7 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             // check if thread can be closed
             if (no_new_data && data_elements.empty()) {
                 std::lock_guard<std::mutex> guard(console_mutex);
-                std::cout << "worker " << std::this_thread::get_id() << " returning\n";
+                std::cout << "returning worker: " << std::this_thread::get_id() << '\n';
                 break;
             }
         }
@@ -341,28 +297,27 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
 DICOMImageExport::DICOMImageExport()
     : Processor()
     , inport_("inport", true)
-    , printDataSetInfo_("print_data_set_info", "Print Data Set Info", false)
     , noNewData_{false}
     , fileID_{0} {
 
     addPort(inport_);
-    addProperties(printDataSetInfo_);
 
     const size_t num_threads{4};
     workers_.reserve(num_threads);
     for (size_t idx = 0; idx < num_threads; ++idx) {
+        // adding worker
         workers_.emplace_back(WriteDataFrame, std::ref(dequeMutex_), std::ref(consoleMutex_),
                               std::ref(condVar_), std::ref(dataElements_), std::ref(noNewData_));
         {
             std::lock_guard<std::mutex> guard(consoleMutex_);
-            std::cout << "launched worker: " << workers_.back().get_id() << '\n';
+            std::cout << "created worker: " << workers_.back().get_id() << '\n';
         }
     }
 }
 
 DICOMImageExport::~DICOMImageExport() {
     {
-        // signale that all data has been pushed
+        // signal that all data has been pushed
         std::lock_guard<std::mutex> lock(dequeMutex_);
         noNewData_ = true;
     }
@@ -380,61 +335,18 @@ DICOMImageExport::~DICOMImageExport() {
     }
 }
 
-struct TransNavDataFrame {
-    std::string filename;
-
-    bool flip_pixel_data_x;
-    bool flip_pixel_data_y;
-
-    gdcm::TransferSyntax transfer_syntax;
-    gdcm::UIDs::TSName sop_class_uid;
-
-    std::string study_date;
-    std::string study_time;
-    std::string instance_creation_data;
-    std::string instance_creation_time;
-
-    std::vector<gdcm::CSComp> image_type;
-
-    double angulation_primary;
-    double angulation_secondary;
-
-    std::string accession_number;
-};
-/*
-gdcm::Attribute<0x0028, 0x0010> attr_image_columns = {};
-gdcm::Attribute<0x0028, 0x0011> attr_image_rows = {};
-gdcm::Attribute<0x0018, 0x1510> attr_primary_angulation = {};
-gdcm::Attribute<0x0018, 0x1511> attr_secondary_angulation = {};
-gdcm::Attribute<0x2003, 0x102E> attr_table_pos_vertical = {};      // subtag: 0x300A, 0x0128
-gdcm::Attribute<0x2003, 0x102E> attr_table_pos_longitudinal = {};  // subtag: 0x300A, 0x0129
-gdcm::Attribute<0x2003, 0x102E> attr_table_pos_lateral = {};       // subtag: 0x300A, 0x012A
-gdcm::Attribute<0x0018, 0x1110> attr_source_to_image_distance = {};
-gdcm::Attribute<0x2003, 0x1003> attr_zoom_field = {};  // or: 0x2003, 0x1010
-gdcm::Attribute<0x0018, 0x1164> attr_pixel_spacing = {};
-gdcm::Attribute<0x0018, 0x1111> attr_source_to_patient_distance = {};
-gdcm::Attribute<0x0018, 0x0040> attr_cine_frame_rate = {};
-gdcm::Attribute<0x5000, 0x0114> attr_ecg_frame_rate = {};
-gdcm::Attribute<0x5000, 0x0010> attr_ecg_number_of_points = {};
-gdcm::Attribute<0x5000, 0x3000> attr_ecg_signal = {};
-*/
-
 void DICOMImageExport::process() {
-    const auto t0 = std::chrono::steady_clock::now();
-
     const std::string filename =
         "D:/uni/transnav/data/tmp/tmp_img_" + std::to_string(fileID_) + ".dcm";
     fileID_++;
 
     {
+        // add new data frame
         std::lock_guard<std::mutex> guard(dequeMutex_);
         dataElements_.emplace_back(inport_.getData(), filename);
     }
+    // signale all workers that new data is available
     condVar_.notify_all();
-
-    const auto t1 = std::chrono::steady_clock::now();
-    LogInfo(
-        "added item: " << std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count());
 }
 
 }  // namespace inviwo

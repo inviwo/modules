@@ -76,10 +76,27 @@ public:
         DataFrame(std::shared_ptr<const Image> img, const std::string& filename)
             : img(img), filename(filename) {}
     };
+    /*
+    gdcm::Attribute<0x0028, 0x0010> attr_image_columns = {};
+    gdcm::Attribute<0x0028, 0x0011> attr_image_rows = {};
+    gdcm::Attribute<0x0018, 0x1510> attr_primary_angulation = {};
+    gdcm::Attribute<0x0018, 0x1511> attr_secondary_angulation = {};
+    gdcm::Attribute<0x2003, 0x102E> attr_table_pos_vertical = {};      // subtag: 0x300A, 0x0128
+    gdcm::Attribute<0x2003, 0x102E> attr_table_pos_longitudinal = {};  // subtag: 0x300A, 0x0129
+    gdcm::Attribute<0x2003, 0x102E> attr_table_pos_lateral = {};       // subtag: 0x300A, 0x012A
+    gdcm::Attribute<0x0018, 0x1110> attr_source_to_image_distance = {};
+    gdcm::Attribute<0x2003, 0x1003> attr_zoom_field = {};  // or: 0x2003, 0x1010
+    gdcm::Attribute<0x0018, 0x1164> attr_pixel_spacing = {};
+    gdcm::Attribute<0x0018, 0x1111> attr_source_to_patient_distance = {};
+    gdcm::Attribute<0x0018, 0x0040> attr_cine_frame_rate = {};
+    gdcm::Attribute<0x5000, 0x0114> attr_ecg_frame_rate = {};
+    gdcm::Attribute<0x5000, 0x0010> attr_ecg_number_of_points = {};
+    gdcm::Attribute<0x5000, 0x3000> attr_ecg_signal = {};
+    */
+
 
 private:
     ImageInport inport_;
-    BoolProperty printDataSetInfo_;
 
     std::vector<std::thread> workers_;
     std::mutex dequeMutex_;
