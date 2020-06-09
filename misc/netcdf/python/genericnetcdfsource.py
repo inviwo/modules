@@ -1,26 +1,19 @@
-# Name: NetCDFSource
-
 import inviwopy as ivw
 from inviwopy.properties import IntVec3Property, FileProperty, OptionPropertyString, ButtonProperty, BoolProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
 from inviwopy.glm import dvec2, mat4, vec4
 import netcdfutils
-import genericnetcdfsource
 
 import numpy
 from pathlib import Path
 from netCDF4 import Dataset
 
 
-class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
+class GenericNetCDFSource(ivw.Processor):
 
-    def __init__(self, id, name):
-        self.outputDimension = 3
+    def initGeneric(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
         self.data = []
-        # self.variableSizes = []
-        self.volumeOutport = ivw.data.VolumeOutport("data3D")
-        self.addOutport(self.volumeOutport, owner=False)
 
         self.displayInfo = ButtonProperty("displayInfo", "Log File Info")
 
@@ -54,29 +47,8 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
         self.addProperty(self.overwriteDataRange)
         self.addProperty(self.dataRange)
         self.dataRange.semantics = ivw.properties.PropertySemantics("Text")
-        # self.dataRange.readOnly = True
-
-    @staticmethod
-    def processorInfo():
-        return ivw.ProcessorInfo(
-            classIdentifier="org.inviwo.netcdf.netcdfsource",
-            displayName="NetCDF Source",
-            category="Source",
-            codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("NetCDF"),
-                           ivw.Tag("VolumeSequence")])
-        )
-
-    def getProcessorInfo(self):
-        return NetCDFSource.processorInfo()
-
-    def initializeResources(self):
-        print("initalizing")
-        pass
 
     def process(self):
-        # print("Process called")
-
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
             print("No valid path given")
             return
@@ -95,6 +67,7 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
                             break
 
                 if reloadVariables:
+                    print("reloading Variables")
                     while self.variables.size() > 0:
                         self.variables.removeProperty(
                             self.variables.properties[self.variables.size()-1])
@@ -104,7 +77,7 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
                             self.dimensions.properties[self.dimensions.size()-1])
 
                     for variable in nc.variables:
-                        # At least n dimensions needed for an nD output
+                        # At least n dimensions needed for an nD output.
                         if len(nc.variables[variable].dimensions) < self.outputDimension:
                             continue
                         self.variables.addProperty(
@@ -121,7 +94,7 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
                         1, nc.variables[varProp.identifier].datatype.ndim)
                     numComponents += numVarComps
 
-                    # Collect all dimension names in one list
+                    # Collect all dimension names in one list.
                     for dim in nc.variables[varProp.identifier].get_dims():
                         adjustedDim = self.adjustForStaggered(dim.name)
                         if adjustedDim not in selectedVarDims:
@@ -131,15 +104,12 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
                                 self.dimensions.addProperty(IntMinMaxProperty(
                                     adjustedDim, adjustedDim + ' Range', 0, len(dim)-1, 0, len(dim)-1), True)
 
-                print("Num components: " + str(numComponents) +
-                      "\n\tselectedVarDims:")
-                print(selectedVarDims)
                 for varProp in self.variables.properties:
                     if varProp.value:
                         continue
 
                     # Check whether there is still space to add this variable
-                    # and it stretches over all dimensions  the others do
+                    # and it stretches over all dimensions  the others do.
                     couldBeAdded = True
                     ncVar = nc.variables[varProp.identifier]
                     numVarComps = numpy.amax(1, ncVar.datatype.ndim)
@@ -156,16 +126,16 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
 
                     varProp.readOnly = not couldBeAdded
 
-    def reloadData(self):
+    def reloadData(self, extents):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
-            print("invalid path")
-            return
+            print("Invalid path.")
+            return False
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
             # Actually load data.
             if self.variables.size() <= 0:
                 print("No known variables")
-                return
+                return False
 
             sizeDims = []
             dimRanges = {}
@@ -178,9 +148,8 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
             if len(sizeDims) != self.outputDimension:
                 print("Wrong number of dimensions.\n\tRequire " +
                       str(self.outputDimension) + ", selected " + str(len(sizeDims)))
-                return
+                return False
 
-            # numComponents = ()
             varIDs = []
             self.data = []
             for varProp in self.variables.properties:
@@ -188,35 +157,32 @@ class NetCDFSource(ivw.Processor):  # GenericNetCDFSource):
                     continue
                 varIDs.append(varProp.identifier)
 
-                # Single variable, simply load
+                # Single variable, simply load.
                 ncVar = nc.variables[varIDs[0]]
                 ncDims = ncVar.get_dims()
                 dims = []
                 for ncDim in ncDims:
                     propRange = dimRanges[self.adjustForStaggered(ncDim.name)]
                     dims.append(slice(propRange.x, propRange.y+1))
-
+                print("Dims anke anke: " + str(dims))
                 varData = ncVar[tuple(dims)]
+                print("Resulting shape: " + str(varData.shape))
                 buffer = numpy.array(varData).astype(
                     'float32' if self.toFloat.value else ncVar.datatype)
 
                 buffer.shape = numpy.flip([1] + sizeDims)
                 self.data.append(buffer)
-                # print("Buffer size: " + str(buffer.shape))
 
-            buffer = numpy.concatenate(self.data, axis=3)
-            print("Buffer size: " + str(buffer.shape))
-            minVal = numpy.amin(buffer)
-            maxVal = numpy.amax(buffer)
-            volume = ivw.data.Volume(buffer)
-            volume.dataMap.dataRange = dvec2(minVal, maxVal)
-            volume.dataMap.valueRange = dvec2(-1000, 1000.0)
-            volume.modelMatrix = mat4(
-                vec4(sizeDims[2], 0, 0, 0),
-                vec4(0, sizeDims[1], 0, 0),
-                vec4(0, 0, sizeDims[0], 0),
-                vec4(0, 0, 0, 1))
-        self.volumeOutport.setData(volume)
+            # Assemble data extent.
+            for dim in dimRanges:
+                dimRange = dimRanges[dim]
+                if dimRange.y == dimRange.x:
+                    continue
+                ncVar = nc.variables[dim]
+                cellExt = ncVar[1] - ncVar[0]
+                cellNum = dimRanges[dim].y - dimRanges[dim].x
+                extents.append(cellExt * cellNum)
+        return True
 
     def displayDataInfo(self):
         print(self.filePath.value)
