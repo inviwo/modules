@@ -30,14 +30,12 @@
 #include <inviwo/dicom/dicommodule.h>
 #include <inviwo/dicom/io/gdcmvolumereader.h>
 #include <inviwo/dicom/io/mevisvolumereader.h>
-#include <inviwo/dicom/processors/dicomimageexport.h>
 #include <inviwo/dicom/processors/dicomtagextractor.h>
 
 namespace inviwo {
 
 DICOMModule::DICOMModule(InviwoApplication* app) : InviwoModule(app, "DICOM") {
     registerProcessor<DICOMTagExtractor>();
-    registerProcessor<DICOMImageExport>();
     registerDataReader(std::make_unique<GdcmVolumeReader>());
     registerDataReader(std::make_unique<MevisVolumeReader>());
 }
