@@ -17,7 +17,8 @@ class GenericNetCDFSource(ivw.Processor):
 
         self.displayInfo = ButtonProperty("displayInfo", "Log File Info")
 
-        self.filePath = ivw.properties.FileProperty("filepath", "NetCDF Path")
+        self.filePath = ivw.properties.FileProperty(
+            "filepath", "NetCDF Path", "", "netcdfdata")
         self.variables = CompositeProperty("variables", "Exported Variables")
         self.dimensions = CompositeProperty(
             "dimensions", "Restrict Dimensions")
@@ -51,7 +52,12 @@ class GenericNetCDFSource(ivw.Processor):
 
     def process(self):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
-            print("No valid path given")
+            while self.variables.size() > 0:
+                self.variables.removeProperty(
+                    self.variables.properties[self.variables.size()-1])
+            while self.dimensions.size() > 0:
+                self.dimensions.removeProperty(
+                    self.dimensions.properties[self.dimensions.size()-1])
             return
         self.dataRange.readOnly = not self.overwriteDataRange.value
 
