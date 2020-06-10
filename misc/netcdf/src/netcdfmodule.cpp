@@ -31,7 +31,8 @@
 
 namespace inviwo {
 
-NetCDFModule::NetCDFModule(InviwoApplication* app) : InviwoModule(app, "netcdf")
+NetCDFModule::NetCDFModule(InviwoApplication* app)
+    : InviwoModule(app, "netcdf")
     , scripts_{getPath() + "/python"}
     , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {}
 
