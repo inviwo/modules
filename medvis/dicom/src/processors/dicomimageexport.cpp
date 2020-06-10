@@ -83,7 +83,7 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             const auto filename = blob.filename.c_str();
             const auto& layer = blob.layer;
             const auto& tex = layer->getTexture();
-            //const auto& pixel_data = static_cast<const char*>(layer_ram->getData());
+            // const auto& pixel_data = static_cast<const char*>(layer_ram->getData());
             const auto dims = blob.layer->getDimensions();
             const auto num_elements = glm::compMul(dims);
             const auto data_format = layer->getDataFormat();
@@ -180,6 +180,8 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             gdcm::Attribute<0x0028, 0x1053> attr_rescale_slope = {1.0};
             /*gdcm::Attribute<0x0028, 0x0034> attr_pixel_aspect_ratio = {static_cast<uint16_t>(1),
             static_cast<uint16_t>(1)};*/
+            gdcm::Attribute<0x0018, 0x1164> attr_imager_pixel_spacing = {0.0, 0.0};
+            gdcm::Attribute<0x0018, 0x0040> attr_cine_frame_rate = {static_cast<int32_t>(0)};
 
             // manually build misc. data elements
             gdcm::DataElement datel_smallest_image_pixel_value(gdcm::Tag(0x0028, 0x0106));
@@ -205,6 +207,37 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             datel_largest_pixel_value_in_series.SetByteValue(
                 reinterpret_cast<const char*>(&largest_pixel_value_in_series),
                 sizeof(decltype(largest_pixel_value_in_series)));
+
+            gdcm::DataElement datel_zoom_field(gdcm::Tag(0x2003, 0x1003));
+            datel_zoom_field.SetVR(gdcm::VR::LO);
+            const std::string zoom_field{"FD 48 cm"};
+            datel_zoom_field.SetByteValue(zoom_field.c_str(), zoom_field.size());
+
+            /*gdcm::DataElement datel_ecg_frame_rate(gdcm::Tag(0x5000, 0x0114));
+            gdcm::DataElement datel_ecg_number_of_points(gdcm::Tag(0x5000, 0x0010));
+            gdcm::DataElement datel_ecg_signal(gdcm::Tag(0x5000, 0x3000));*/
+
+            // build nested data sequences
+            // setup table position
+            gdcm::SmartPointer<gdcm::SequenceOfItems> seq_table_position =
+                new gdcm::SequenceOfItems();
+            seq_table_position->SetLengthToUndefined();
+
+            gdcm::Item it_table_pos;
+            it_table_pos.SetVLToUndefined();
+            gdcm::Attribute<0x300A, 0x0128> attr_table_pos_vertical = {0.0};
+            gdcm::Attribute<0x300A, 0x0129> attr_table_pos_longitudinal = {0.0};
+            gdcm::Attribute<0x300A, 0x012a> attr_table_pos_lateral = {0.0};
+            auto& nds_table_pos = it_table_pos.GetNestedDataSet();
+            nds_table_pos.Insert(attr_table_pos_vertical.GetAsDataElement());
+            nds_table_pos.Insert(attr_table_pos_longitudinal.GetAsDataElement());
+            nds_table_pos.Insert(attr_table_pos_lateral.GetAsDataElement());
+            seq_table_position->AddItem(it_table_pos);
+
+            gdcm::DataElement datel_table_position(gdcm::Tag(0x2003, 0x102e));
+            datel_table_position.SetVR(gdcm::VR::SQ);
+            datel_table_position.SetValue(*seq_table_position);
+            datel_table_position.SetVLToUndefined();
 
             // setup pixel data
             // download texture
@@ -271,15 +304,19 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             data_set.Insert(attr_pixel_representation.GetAsDataElement());
             data_set.Insert(attr_rescale_intercept.GetAsDataElement());
             data_set.Insert(attr_rescale_slope.GetAsDataElement());
+            data_set.Insert(attr_imager_pixel_spacing.GetAsDataElement());
+            data_set.Insert(attr_cine_frame_rate.GetAsDataElement());
             // add all data elements to data set
             data_set.Insert(datel_smallest_image_pixel_value);
             data_set.Insert(datel_largest_image_pixel_value);
             data_set.Insert(datel_smallest_pixel_value_in_series);
             data_set.Insert(datel_largest_pixel_value_in_series);
+            data_set.Insert(datel_table_position);
             data_set.Insert(datel_pixel_data);
 
             // print data set and meta info
             /*if (printDataSetInfo_) {
+                std::lock_guard<std::mutex> guard(console_mutex);
                 std::cout << "meta info:" << std::endl;
                 meta_info.Print(std::cout, " ");
                 std::cout << "data set:" << std::endl;
@@ -287,7 +324,6 @@ void WriteDataFrame(std::mutex& queue_mutex, std::mutex& console_mutex,
             }*/
 
             // write file
-            // writer.CheckFileMetaInformationOff();
             if (!writer.Write()) {
                 std::lock_guard<std::mutex> guard(console_mutex);
                 std::cout << "could not write: " << filename << '\n';
@@ -352,8 +388,6 @@ void DICOMImageExport::process() {
     {
         // add new data frame
         std::lock_guard<std::mutex> guard(dequeMutex_);
-        // clone layer to be able to transfer it to another thread, GPU buffers won't work here
-        // ToDo: find a fix for that?
         dataElements_.emplace_back(
             std::shared_ptr<LayerGL>(
                 inport_.getData()->getColorLayer(0)->getRepresentation<LayerGL>()->clone()),
