@@ -44,6 +44,7 @@ class GenericNetCDFSource(ivw.Processor):
 
         self.dataRange = DoubleMinMaxProperty(
             "dataRange", "Data Range", 0.0, 0.0, -1.70e308, 1.79e308)
+        self.dataRange.readOnly = True
         self.addProperty(self.overwriteDataRange)
         self.addProperty(self.dataRange)
         self.dataRange.semantics = ivw.properties.PropertySemantics("Text")
@@ -52,6 +53,7 @@ class GenericNetCDFSource(ivw.Processor):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
             print("No valid path given")
             return
+        self.dataRange.readOnly = not self.overwriteDataRange.value
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
 
@@ -67,7 +69,6 @@ class GenericNetCDFSource(ivw.Processor):
                             break
 
                 if reloadVariables:
-                    print("reloading Variables")
                     while self.variables.size() > 0:
                         self.variables.removeProperty(
                             self.variables.properties[self.variables.size()-1])
@@ -164,9 +165,7 @@ class GenericNetCDFSource(ivw.Processor):
                 for ncDim in ncDims:
                     propRange = dimRanges[self.adjustForStaggered(ncDim.name)]
                     dims.append(slice(propRange.x, propRange.y+1))
-                print("Dims anke anke: " + str(dims))
                 varData = ncVar[tuple(dims)]
-                print("Resulting shape: " + str(varData.shape))
                 buffer = numpy.array(varData).astype(
                     'float32' if self.toFloat.value else ncVar.datatype)
 

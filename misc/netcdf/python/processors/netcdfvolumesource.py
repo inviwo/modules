@@ -40,10 +40,14 @@ class NetCDFVolumeSource(GenericNetCDFSource):
             return
 
         buffer = numpy.concatenate(self.data, axis=3)
-        minVal = numpy.amin(buffer)
-        maxVal = numpy.amax(buffer)
         volume = ivw.data.Volume(buffer)
-        volume.dataMap.dataRange = dvec2(minVal, maxVal)
+        if self.overwriteDataRange.value:
+            volume.dataMap.dataRange = self.dataRange.value
+        else:
+            minVal = numpy.amin(buffer)
+            maxVal = numpy.amax(buffer)
+            volume.dataMap.dataRange = dvec2(minVal, maxVal)
+        volume.dataMap.valueRange = dvec2(-10000, 10000.0)
         volume.dataMap.valueRange = dvec2(-1000, 1000.0)
         volume.modelMatrix = mat4(
             vec4(extents[2], 0, 0, 0),

@@ -39,19 +39,26 @@ class NetCDFVolumeSequenceSource(GenericNetCDFSource):
         if not GenericNetCDFSource.reloadData(self, extents):
             return
 
-        buffer = numpy.concatenate(self.data, axis=4)
         volumeSequence = []
-        print(str(buffer.shape[3]) + " time steps")
-        print("Dims: " + str(buffer.shape))
-        for timeStep in range(buffer.shape[3]):
-            subBuffer = buffer[:, :, :, timeStep, :]
-            print(buffer.shape)
-            print(subBuffer.shape)
-            minVal = numpy.amin(subBuffer)
-            maxVal = numpy.amax(subBuffer)
-            volume = ivw.data.Volume(subBuffer)
-            volume.dataMap.dataRange = dvec2(minVal, maxVal)
-            volume.dataMap.valueRange = dvec2(-1000, 1000.0)
+        for timeStep in range(self.data[0].shape[3]):
+            subData = []
+            for comp in self.data:
+                # A bit brute force, but delivers correct data.
+                numElems = comp.shape[0] * comp.shape[1] * comp.shape[2]
+                subBuffer = comp.flat[(numElems * timeStep): (numElems * (timeStep+1))]
+                subBuffer.shape = (comp.shape[0],
+                                   comp.shape[1], comp.shape[2], 1)
+                subData.append(subBuffer)
+            buffer = numpy.concatenate(subData, axis=3)
+
+            volume = ivw.data.Volume(buffer)
+            if self.overwriteDataRange.value:
+                volume.dataMap.dataRange = self.dataRange.value
+            else:
+                minVal = numpy.amin(buffer)
+                maxVal = numpy.amax(buffer)
+                volume.dataMap.dataRange = dvec2(minVal, maxVal)
+            volume.dataMap.valueRange = dvec2(-10000, 10000.0)
             volume.modelMatrix = mat4(
                 vec4(extents[3], 0, 0, 0),
                 vec4(0, extents[2], 0, 0),
