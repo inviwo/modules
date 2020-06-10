@@ -13,7 +13,6 @@ set(HEADER_FILES
     include/inviwo/dicom/errorlogging.h
     include/inviwo/dicom/io/gdcmvolumereader.h
     include/inviwo/dicom/io/mevisvolumereader.h
-    include/inviwo/dicom/processors/dicomimageexport.h
     include/inviwo/dicom/processors/dicomtagextractor.h
     include/inviwo/dicom/utils/gdcmutils.h
 )
@@ -27,7 +26,6 @@ set(SOURCE_FILES
     src/errorlogging.cpp
     src/io/gdcmvolumereader.cpp
     src/io/mevisvolumereader.cpp
-    src/processors/dicomimageexport.cpp
     src/processors/dicomtagextractor.cpp
     src/utils/gdcmutils.cpp
 )
