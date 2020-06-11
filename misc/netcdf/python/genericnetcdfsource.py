@@ -135,14 +135,12 @@ class GenericNetCDFSource(ivw.Processor):
 
     def reloadData(self, extents):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
-            print("Invalid path.")
-            return False
+            raise Exception("Invalid path.")
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
             # Actually load data.
             if self.variables.size() <= 0:
-                print("No known variables")
-                return False
+                raise Exception("No known variables")
 
             sizeDims = []
             dimRanges = {}
@@ -153,9 +151,8 @@ class GenericNetCDFSource(ivw.Processor):
                     sizeDims.append(dimRange.y - dimRange.x + 1)
 
             if len(sizeDims) != self.outputDimension:
-                print("Wrong number of dimensions.\n\tRequire " +
-                      str(self.outputDimension) + ", selected " + str(len(sizeDims)))
-                return False
+                raise Exception("Wrong number of dimensions.\n\tRequire " +
+                                str(self.outputDimension) + ", selected " + str(len(sizeDims)))
 
             varIDs = []
             self.data = []
@@ -187,7 +184,6 @@ class GenericNetCDFSource(ivw.Processor):
                 cellExt = ncVar[1] - ncVar[0]
                 cellNum = dimRanges[dim].y - dimRanges[dim].x
                 extents.append(cellExt * cellNum)
-        return True
 
     def displayDataInfo(self):
         print(self.filePath.value)

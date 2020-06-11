@@ -36,8 +36,7 @@ class NetCDFImageSource(GenericNetCDFSource):
 
     def reloadData(self):
         extents = []
-        if not GenericNetCDFSource.reloadData(self, extents):
-            return
+        GenericNetCDFSource.reloadData(self, extents)
 
         buffer = numpy.concatenate(self.data, axis=2)
         minVal = numpy.amin(buffer)

@@ -36,8 +36,7 @@ class NetCDFVolumeSequenceSource(GenericNetCDFSource):
 
     def reloadData(self):
         extents = []
-        if not GenericNetCDFSource.reloadData(self, extents):
-            return
+        GenericNetCDFSource.reloadData(self, extents)
 
         volumeSequence = []
         for timeStep in range(self.data[0].shape[3]):
