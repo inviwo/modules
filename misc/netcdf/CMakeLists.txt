@@ -2,7 +2,7 @@
 # Inviwo netcdf Module
 ivw_module(NetCDF)
 
-#Check if numpy exist 
+#Check if netCDF4 python module exist
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
              "try: import netCDF4; print(netCDF4.__version__);\nexcept: print('\tFailed to import NetCDF4 python package. Run pip install NetCDF4')\n"
               RESULT_VARIABLE NETCDF_STATUS
