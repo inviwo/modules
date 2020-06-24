@@ -87,7 +87,7 @@ inline dvec3 offsetFromBounds(const double* bounds) {
     return dvec3{bounds[0], bounds[2], bounds[4]};
 }
 
-inline const NumericType getNumericTypeFomVtkId(int vtkTypeId) {
+inline NumericType getNumericTypeFomVtkId(int vtkTypeId) {
     switch (vtkTypeId) {
         case VTK_CHAR:
         case VTK_SIGNED_CHAR:
