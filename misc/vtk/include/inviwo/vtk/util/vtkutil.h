@@ -4,9 +4,13 @@
 #include <warn/ignore/all>
 #include <vtkObject.h>
 #include <vtkAlgorithm.h>
+#include <vtkStructuredGrid.h>
+#include <vtkPoints.h>
+#include <vtkDataArray.h>
 #include <warn/pop>
 
 #include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/processors/progressbar.h>
 
 /**
@@ -48,6 +52,33 @@ inline void vtkProgressBarCallback(vtkObject* caller, long unsigned int, void* c
 
 namespace inviwo {
 namespace vtkutil {
+
+inline mat4 basisAndOffsetFromStructuredGrid(vtkStructuredGrid& grid) {
+    vtkPoints* points = grid.GetPoints();
+
+    int dimArr[3];
+    grid.GetDimensions(dimArr);
+
+    size3_t dim(dimArr[0], dimArr[1], dimArr[2]);
+
+    util::IndexMapper3D index(dim);
+    dvec3 firstVoxel;
+    dvec3 voxelX, voxelY, voxelZ;
+    points->GetPoint(index(0, 0, 0), glm::value_ptr(firstVoxel));
+    points->GetPoint(index(1, 0, 0), glm::value_ptr(voxelX));
+    points->GetPoint(index(0, 1, 0), glm::value_ptr(voxelY));
+    points->GetPoint(index(0, 0, 1), glm::value_ptr(voxelZ));
+
+    vec3 voxelOffsetX = voxelX - firstVoxel;
+    vec3 voxelOffsetY = voxelY - firstVoxel;
+    vec3 voxelOffsetZ = voxelZ - firstVoxel;
+
+    vec3 offset = vec3(firstVoxel) - (voxelOffsetX + voxelOffsetY + voxelOffsetZ) * 0.5f;
+
+    return mat4{vec4(voxelOffsetX, 0) * dim.x, vec4(voxelOffsetY, 0) * dim.y,
+                vec4(voxelOffsetZ, 0) * dim.z, vec4(offset, 1)};
+}
+
 inline dvec3 extentFromBounds(const double* bounds) {
     return dvec3{bounds[1] - bounds[0], bounds[3] - bounds[2], bounds[5] - bounds[4]};
 }
@@ -56,7 +87,7 @@ inline dvec3 offsetFromBounds(const double* bounds) {
     return dvec3{bounds[0], bounds[2], bounds[4]};
 }
 
-inline const DataFormatBase* getFormatFromVtkId(int vtkTypeId, int bitSize) {
+inline NumericType getNumericTypeFomVtkId(int vtkTypeId) {
     switch (vtkTypeId) {
         case VTK_CHAR:
         case VTK_SIGNED_CHAR:
@@ -64,24 +95,37 @@ inline const DataFormatBase* getFormatFromVtkId(int vtkTypeId, int bitSize) {
         case VTK_INT:
         case VTK_LONG:
         case VTK_LONG_LONG:
+#ifdef VTK___INT64
         case VTK___INT64:
-            return DataFormatBase::get(NumericType::SignedInteger, 1, bitSize);
+#endif
+            return NumericType::SignedInteger;
 
         case VTK_UNSIGNED_CHAR:
         case VTK_UNSIGNED_SHORT:
         case VTK_UNSIGNED_INT:
         case VTK_UNSIGNED_LONG:
         case VTK_UNSIGNED_LONG_LONG:
+#ifdef VTK_UNSIGNED___INT64
         case VTK_UNSIGNED___INT64:
+#endif
         case VTK_ID_TYPE:
-            return DataFormatBase::get(NumericType::UnsignedInteger, 1, bitSize);
+            return NumericType::UnsignedInteger;
 
         case VTK_FLOAT:
         case VTK_DOUBLE:
-            return DataFormatBase::get(NumericType::Float, 1, bitSize);
+            return NumericType::Float;
         default:
-            return nullptr;
+            return NumericType::NotSpecialized;
     }
+}
+
+inline const DataFormatBase* getFormatFromVtkId(int vtkTypeId, int bitSize, int numComps = 1) {
+    return DataFormatBase::get(getNumericTypeFomVtkId(vtkTypeId), numComps, bitSize);
+}
+
+inline const DataFormatBase* getDataFormatOfDataArray(vtkDataArray& arr) {
+    return getFormatFromVtkId(arr.GetDataType(), 8 * arr.GetDataTypeSize(),
+                              arr.GetNumberOfComponents());
 }
 
 }  // namespace vtkutil
