@@ -30,6 +30,8 @@
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
 
+#include <inviwo/core/util/glmvec.h>
+
 #include <string_view>
 #include <array>
 #include <optional>
