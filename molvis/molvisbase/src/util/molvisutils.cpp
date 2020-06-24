@@ -30,6 +30,7 @@
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
@@ -188,7 +189,7 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
     }
 
     std::vector<vec3> positions{
-        util::transform(s.atoms().positions, [](auto& p) { return vec3{p}; })};
+        util::transform(s.atoms().positions, [](const dvec3& p) { return glm::vec3{p}; })};
     std::vector<vec4> colors;
     std::vector<float> radius;
     // std::vector<uint32_t> picking;

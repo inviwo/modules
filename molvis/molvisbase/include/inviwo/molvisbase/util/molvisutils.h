@@ -29,7 +29,6 @@
 #pragma once
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/util/glmvec.h>
 
 #include <inviwo/molvisbase/datastructures/molecularstructure.h>
 
