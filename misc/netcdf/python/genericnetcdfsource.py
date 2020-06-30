@@ -154,15 +154,13 @@ class GenericNetCDFSource(ivw.Processor):
                 raise Exception("Wrong number of dimensions.\n\tRequire " +
                                 str(self.outputDimension) + ", selected " + str(len(sizeDims)))
 
-            varIDs = []
             self.data = []
             for varProp in self.variables.properties:
                 if not varProp.value:
                     continue
-                varIDs.append(varProp.identifier)
 
                 # Single variable, simply load.
-                ncVar = nc.variables[varIDs[0]]
+                ncVar = nc.variables[varProp.identifier]
                 ncDims = ncVar.get_dims()
                 dims = []
                 for ncDim in ncDims:
