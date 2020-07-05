@@ -162,8 +162,8 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     std::vector<Bond> bonds;
     for (auto&& [atom1, pos] : util::enumerate(atoms.positions)) {
         const auto cell = cellCoord(pos);
-        const auto minCell = cell - size3_t(1);
-        const auto maxCell = glm::min(cell + size3_t(1), dims - size3_t{1});
+        const auto minCell = cellCoord(pos - maxCovalentBondLength);
+        const auto maxCell = cellCoord(pos + maxCovalentBondLength);
 
         for (size_t z = minCell.z; z <= maxCell.z; ++z) {
             for (size_t y = minCell.y; y <= maxCell.y; ++y) {
@@ -171,8 +171,11 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
                     const auto cellIndex = im(size3_t{x, y, z});
                     if (cells[cellIndex] > -1) {
                         for (auto atom2 : cellData[cells[cellIndex]]) {
-                            if ((atom1 < atom2) && covalentBond(atom1, atom2)) {
-                                bonds.push_back({atom1, atom2});
+                            if (glm::distance2(atoms.positions[atom1], atoms.positions[atom2]) <
+                                square(maxCovalentBondLength)) {
+                                if ((atom1 < atom2) && covalentBond(atom1, atom2)) {
+                                    bonds.push_back({atom1, atom2});
+                                }
                             }
                         }
                     }

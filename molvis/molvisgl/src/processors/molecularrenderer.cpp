@@ -173,6 +173,15 @@ void MolecularRenderer::process() {
     utilgl::deactivateCurrentTarget();
 }
 
+void MolecularRenderer::initializeResources() {
+    for (auto& item : vdwShaders_.getShaders()) {
+        configureVdWShader(item.second);
+    }
+    for (auto& item : licoriceShaders_.getShaders()) {
+        configureLicoriceShader(item.second);
+    }
+}
+
 void MolecularRenderer::configureVdWShader(Shader& shader) {
     utilgl::addDefines(shader, lighting_);
 

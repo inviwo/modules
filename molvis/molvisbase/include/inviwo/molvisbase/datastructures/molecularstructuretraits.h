@@ -47,7 +47,7 @@ struct DataTraits<molvis::MolecularStructure> {
         Document doc;
         doc.append("b", "Molecular Structure", {{"style", "color:white;"}});
         utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Source"), data.data().source);
+        tb(H("Source"), data.data().source ? data.data().source.value() : "(unknown)");
         tb(H("Atoms"), data.atoms().positions.size());
         tb(H("Residues"), data.residues().size());
         tb(H("Chains"), data.chains().size());
