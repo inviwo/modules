@@ -69,6 +69,14 @@ std::optional<size_t> IVW_MODULE_MOLVISBASE_API getGlobalAtomIndex(const Atoms& 
                                                                    size_t chainId);
 
 /**
+ * determine peptide type of a residue
+ *
+ * @param resName      name of the residue ("GLY", "PRO", ...)
+ * @param nextResName  name of next residue ("GLY", "PRO", ...)
+ */
+PeptideType IVW_MODULE_MOLVISBASE_API getPeptideType(std::string resName, std::string nextResName);
+
+/**
  * Determine covalent bonds based on heuristics. A bond is valid if the distance between two
  * atoms lies in between (r_1 + r_2 - 0.5) and (r_1 + r_2 + 0.3) where r_i is the covalent radius of
  * atom i.

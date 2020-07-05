@@ -106,6 +106,21 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& 
     return std::nullopt;
 }
 
+PeptideType getPeptideType(std::string resName, std::string nextResName) {
+    resName = toUpper(resName);
+    nextResName = toUpper(nextResName);
+
+    if (resName == "GLY") {
+        return PeptideType::Glycine;
+    } else if (resName == "PRO") {
+        return PeptideType::Proline;
+    } else if (nextResName == "PRO") {
+        return PeptideType::PrePro;
+    } else {
+        return PeptideType::General;
+    }
+}
+
 std::vector<Element> getAtomicNumbers(const std::vector<std::string>& fullNames) {
     return util::transform(fullNames,
                            [](const std::string& name) { return element::fromFullName(name); });
