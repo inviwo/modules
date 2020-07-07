@@ -77,6 +77,109 @@ def parseFile(file):
 
     return (volume, pos, elem, nelem, elemtype)
 
+def parseCubeFile(file):
+    file = Path(file)
+    if file.suffix == ".xz":
+        import lzma
+        with lzma.open(file, mode='rt') as f:
+            lines = f.readlines()
+    elif file.suffix == ".bzip2" or file.suffix == ".bz2":
+        import bz2
+        with bz2.open(file, mode='rt') as f:
+            lines = f.readlines()
+    elif file.suffix == ".gz":
+        import gzip
+        with gzip.open(file, mode='rt') as f:
+            lines = f.readlines()
+    else:
+        with open(file, mode='r') as f:
+            lines = f.readlines()
+
+    nVal = 1
+    extraLines = 0
+    splitted = lines[2].strip().split()
+    numAtoms = int(splitted[0])
+    origin = numpy.array(list(map(float, splitted[1:3])))
+    if numAtoms < 0:
+        numAtoms = -numAtoms
+        extraLines = 1
+    if len(splitted) > 4:
+        nVal = int(splitted[4])
+    
+    unitsInAngstrom = False
+    bohrToAngstrom = 0.529177249
+    splitted = lines[3].strip().split()
+    sizeX = int(splitted[0])
+    if sizeX < 0:
+        sizeX = -sizeX
+        unitsInAngstrom = True
+    a1 = sizeX * numpy.array(list(map(float, splitted[1:])))
+
+    splitted = lines[4].strip().split()
+    sizeY = abs(int(splitted[0]))
+    a2 = sizeY * numpy.array(list(map(float, splitted[1:])))
+
+    splitted = lines[5].strip().split()
+    sizeZ = abs(int(splitted[0]))
+    a3 = sizeZ * numpy.array(list(map(float, splitted[1:])))
+
+    basis = numpy.array([a1, a2, a3])
+    if not unitsInAngstrom:
+        basis = bohrToAngstrom * basis
+        origin = bohrToAngstrom * origin
+    offset = -0.5 * (basis[0] + basis[1] + basis[2])
+
+    uniqueAtoms = []
+    atomMap = {}
+    for i in range(numAtoms):
+        splitted = lines[6 + i].strip().split()
+        atomID = int(splitted[0])
+        pos = numpy.array(list(map(float, splitted[1:])))
+        if not unitsInAngstrom:
+            pos = bohrToAngstrom * pos
+        if atomID not in atomMap:
+            uniqueAtoms.append(atomID)
+            atomMap[atomID] = []
+        atomMap[atomID].append(pos)
+
+    elem =[]
+    nelem = []
+    for atomicNum in uniqueAtoms:
+        elem.append(atomdata.atomicSymbol(atomicNum))
+        nelem.append(len(atomMap[atomicNum]))
+
+    pos = []
+    for atomNum in uniqueAtoms:
+        for coord in atomMap[atomNum]:
+            pos.append(coord)
+    pos = numpy.array(pos)
+    
+    chg = []
+    for i in range(6 + numAtoms + extraLines, len(lines)):
+        splitted = lines[i].strip().split()
+        for val in splitted:
+            chg.append(float(val))
+    
+    chgdata = numpy.array(chg).astype(numpy.float32)
+    chosenIdx = 0
+    chgdata = chgdata[0::1]
+    size = (sizeX, sizeY, sizeZ)
+    chgdata = chgdata.reshape(size, order='F')
+
+    volume = ivw.data.Volume(chgdata)
+    volume.data = chgdata
+    volume.dataMap.dataRange = ivw.glm.dvec2(chgdata.min(), chgdata.max())
+    volume.dataMap.valueRange = volume.dataMap.dataRange
+
+    volume.basis = ivw.glm.mat3(basis)
+    volume.offset = ivw.glm.vec3(offset)
+
+    elemtype = []
+    for i, n in enumerate(nelem):
+        for x in range(n):
+            elemtype.append(elem[i])
+
+    return (volume, pos, elem, nelem, elemtype)
 
 def createMesh(pos, elemtype, basis, offset, pm, margin):
     position = []
