@@ -1,4 +1,4 @@
-# Name: ChgcarSource
+# Name: CubeSource
 
 import inviwopy as ivw
 import ivwdataframe as df
@@ -24,7 +24,7 @@ class CubeSource(ivw.Processor):
         self.dataframeOutport = df.DataFrameOutport("atomInformation")
         self.addOutport(self.dataframeOutport)
 
-        self.cubeFilePath = ivw.properties.FileProperty("cube")
+        self.cubeFilePath = ivw.properties.FileProperty("cube", "cube")
         self.addProperty(self.cubeFilePath)
 
         self.dataRange = ivw.properties.DoubleMinMaxProperty(
@@ -43,10 +43,6 @@ class CubeSource(ivw.Processor):
         self.properties.customDataRange.semantics = ivw.properties.PropertySemantics(
             "Text")
 
-        self.margin = ivw.properties.FloatProperty(
-            "margin", "Border Repetition Margin", 0.05, 0.0, 0.5, 0.01)
-        self.addProperty(self.margin)
-
         self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
@@ -55,7 +51,7 @@ class CubeSource(ivw.Processor):
             classIdentifier="org.inviwo.vasp.CubeSource",
             displayName="Cube Source",
             category="Source",
-            codeState=ivw.CodeState.Experimental,
+            codeState=ivw.CodeState.Stable,
             tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("VASP"), ivw.Tag("Cube"), 
                            ivw.Tag("Gaussian"), ivw.Tag("Volume"), ivw.Tag("Mesh")])
         )
@@ -77,14 +73,13 @@ class CubeSource(ivw.Processor):
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = vasputil.createMesh(self.atomPos, self.elemtype,
-                                        self.volume.basis, self.volume.offset, self.pm, self.margin.value)
+        self.mesh = vasputil.createMeshForCube(self.atomPos, self.elemtype,
+                                        self.volume.basis, self.volume.offset, self.pm)
 
-        self.dataframe = vasputil.createDataFrame(self.atomPos, self.elemtype,
-                                                  self.volume.modelMatrix)
+        self.dataframe = vasputil.createDataFrameForCube(self.atomPos, self.elemtype)
 
-        print("Loaded CHGCAR: {}\nDims:  {}\nElem:  {}\nNElem  {}\nRange: {}".format(
-            self.chgcar.value, self.volume.dimensions, self.elem, self.nelem, self.volume.dataMap.dataRange))
+        print("Loaded Cube file: {}\nDims:  {}\nElem:  {}\nNElem  {}\nRange: {}".format(
+            self.cubeFilePath.value, self.volume.dimensions, self.elem, self.nelem, self.volume.dataMap.dataRange))
 
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
@@ -93,8 +88,7 @@ class CubeSource(ivw.Processor):
     def callback(self, pickevent):
         if (pickevent.state == inviwopy.PickingState.Updated):
             i = pickevent.pickedId
-            pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
-            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, self.elemtype[i], pos, self.atomPos[i]))
+            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}".format(
+                i, self.elemtype[i], self.atomPos[i]))
         else:
             pickevent.setToolTip("")
