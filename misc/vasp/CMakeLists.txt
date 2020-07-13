@@ -32,6 +32,8 @@ ivw_add_unittest(${TEST_FILES})
 
 #--------------------------------------------------------------------
 # Create module
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/python)
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/python/processors)
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 #--------------------------------------------------------------------
