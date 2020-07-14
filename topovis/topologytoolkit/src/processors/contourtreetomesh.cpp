@@ -112,8 +112,11 @@ void ContourTreeToMesh::process() {
     for (ttk::ftm::idNode i = 0; i < tree->getNumberOfNodes(); ++i) {
         auto node = tree->getNode(i);
 
-        const bool up = node->getNumberOfUpSuperArcs() > 0;
-        const bool down = node->getNumberOfDownSuperArcs() > 0;
+        const bool up = inport_.getData()->type == topology::TreeType::Split
+                            ? node->getNumberOfUpSuperArcs() > 0 : node->getNumberOfDownSuperArcs() > 0;
+        const bool down = inport_.getData()->type == topology::TreeType::Split
+                              ? node->getNumberOfDownSuperArcs() > 0
+                              : node->getNumberOfUpSuperArcs() > 0;
 
         positions.push_back(triangulation->getPoint(node->getVertexId()));
         colors.push_back(up && down ? saddleColor_ : (up ? localMaximaColor_ : localMinimaColor_));
