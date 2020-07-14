@@ -50,6 +50,7 @@
 #include <inviwo/topologytoolkit/datastructures/triangulationdata.h>
 #include <inviwo/topologytoolkit/ports/persistencediagramport.h>
 
+#include <inviwo/topologytoolkit/processors/trackingfromfields.h>
 #include <inviwo/topologytoolkit/utils/settings.h>
 
 namespace inviwo {
@@ -63,6 +64,7 @@ TopologyToolKitModule::TopologyToolKitModule(InviwoApplication* app)
     registerProcessor<TTKTestProcessor>();
     registerProcessor<MeshToTriangulation>();
     registerProcessor<SeparatrixRefiner>();
+    registerProcessor<TrackingFromFields>();
     registerProcessor<VolumeToTriangulation>();
     registerProcessor<TriangulationToMesh>();
     registerProcessor<PersistenceCurve>();

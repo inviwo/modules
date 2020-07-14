@@ -35,6 +35,7 @@ set(HEADER_FILES
     include/inviwo/topologytoolkit/processors/persistencediagram.h
     include/inviwo/topologytoolkit/processors/separatrixrefiner.h
     include/inviwo/topologytoolkit/processors/topologicalsimplification.h
+    include/inviwo/topologytoolkit/processors/trackingfromfields.h
     include/inviwo/topologytoolkit/processors/triangulationtomesh.h
     include/inviwo/topologytoolkit/processors/triangulationtovolume.h
     include/inviwo/topologytoolkit/processors/ttktestprocessor.h
@@ -69,6 +70,7 @@ set(SOURCE_FILES
     src/processors/persistencediagram.cpp
     src/processors/separatrixrefiner.cpp
     src/processors/topologicalsimplification.cpp
+    src/processors/trackingfromfields.cpp
     src/processors/triangulationtomesh.cpp
     src/processors/triangulationtovolume.cpp
     src/processors/ttktestprocessor.cpp
