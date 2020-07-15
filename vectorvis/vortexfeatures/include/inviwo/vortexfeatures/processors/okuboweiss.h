@@ -30,9 +30,10 @@
 #pragma once
 
 #include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
-#include <inviwo/vortexfeatures/algorithms/calculatemeasure.h>
+#include <inviwo/vortexfeatures/algorithms/measureprocessor.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
@@ -46,25 +47,100 @@ template <unsigned SpatialDims>
 class IVW_MODULE_VORTEXFEATURES_API OkuboWeissProcessor : public MeasureProcessor<SpatialDims> {
 public:
     // Should give warning if not orthogonal!!!
-    OkuboWeissProcessor() {}
+    OkuboWeissProcessor();
     virtual ~OkuboWeissProcessor() = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override { return processorInfo_; }
     static const ProcessorInfo processorInfo_;
+
+protected:
+    enum Measure : int { OW, AltOW, Strain, Vorticity };
+    TemplateOptionProperty<Measure> measure_;
+};
+
+struct FuncOW {
+    template <typename Vec, typename Mat>
+    float operator()(Vec velocity, Mat jacobian) {
+        auto ux = jacobian[0][0];
+        auto uy = jacobian[1][0];
+        auto vx = jacobian[0][1];
+        auto vy = jacobian[1][1];
+
+        auto strain = ux * ux * 2.0 + vy * vy * 2.0 + (uy + vx) * (uy + vx) * 0.5;
+        auto vort = (vx - uy) * (vx - uy) * 0.5;
+        return float(strain - vort);
+    }
+};
+
+struct FuncAltOW {
+    template <typename Vec, typename Mat>
+    float operator()(Vec velocity, Mat jacobian) {
+        auto ux = jacobian[0][0];
+        auto uy = jacobian[1][0];
+        auto vx = jacobian[0][1];
+        auto vy = jacobian[1][1];
+
+        return (ux - vy) * (ux - vy) + (vx + uy) * (vx + uy) - (vx - uy) * (vx - uy);
+    }
+};
+
+struct FuncStrain {
+    template <typename Vec, typename Mat>
+    float operator()(Vec velocity, Mat jacobian) {
+        auto ux = jacobian[0][0];
+        auto uy = jacobian[1][0];
+        auto vx = jacobian[0][1];
+        auto vy = jacobian[1][1];
+
+        return ux * ux * 2.0 + vy * vy * 2.0 + (uy + vx) * (uy + vx) * 0.5;
+    }
+};
+
+struct FuncVorticity {
+    template <typename Vec, typename Mat>
+    float operator()(Vec velocity, Mat jacobian) {
+        auto uy = jacobian[1][0];
+        auto vx = jacobian[0][1];
+
+        return (vx - uy) * (vx - uy) * 0.5;
+    }
 };
 
 template <unsigned SpatialDims>
-void OkuboWeissProcessor<SpatialDims>::process() {
-    LogWarn("Processing OK!");
-    this->template dispatchMeasure<dispatching::filter::Vecs>(
-        [](auto velocity, auto jacobian) -> float {
-            auto shear = jacobian[0][0] * jacobian[1][1];
-            auto vort = jacobian[1][0] * jacobian[0][1];
-            return float(shear * shear - vort * vort);
+OkuboWeissProcessor<SpatialDims>::OkuboWeissProcessor() : measure_("measure", "Measure") {
+    std::vector<OptionPropertyOption<Measure>> options = {
+        {
+            "OW",
+            "Okubo Weiss",
+            Measure::OW,
         },
-        0.0);
+        {"AltOW", "Comp. Okubo Weiss", Measure::AltOW},
+        {"S", "Strain", Measure::Strain},
+        {"Omega", "Vorticity", Measure::Vorticity}};
+    measure_.replaceOptions(options);
+    MeasureProcessor<SpatialDims>::addProperty(measure_);
+}
+
+template <unsigned SpatialDims>
+void OkuboWeissProcessor<SpatialDims>::process() {
+    switch (measure_) {
+        case Measure::OW:
+            this->template dispatchMeasure<dispatching::filter::Vecs>(FuncOW{}, 0.0);
+            break;
+        case Measure::AltOW:
+            this->template dispatchMeasure<dispatching::filter::Vecs>(FuncAltOW{}, 0.0);
+            break;
+        case Measure::Strain:
+            this->template dispatchMeasure<dispatching::filter::Vecs>(FuncStrain{}, 0.0);
+            break;
+        case Measure::Vorticity:
+            this->template dispatchMeasure<dispatching::filter::Vecs>(FuncVorticity{}, 0.0);
+            break;
+        default:
+            LogError("Don't know this " + measure_.getSelectedIdentifier());
+    }
 }
 
 template <unsigned SpatialDims>
@@ -76,7 +152,7 @@ const ProcessorInfo OkuboWeissProcessor<SpatialDims>::processorInfo_{
     Tags::None,                                             // Tags
 };
 
-// using OkuboWeiss2D = OkuboWeissProcessor<2>;
+using OkuboWeiss2D = OkuboWeissProcessor<2>;
 using OkuboWeiss3D = OkuboWeissProcessor<3>;
 
 }  // namespace inviwo

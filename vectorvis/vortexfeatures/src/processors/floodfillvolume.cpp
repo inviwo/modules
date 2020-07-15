@@ -27,24 +27,31 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
 #include <inviwo/vortexfeatures/processors/floodfillvolume.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
 
 namespace inviwo {
 
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo FloodfillVolume::processorInfo_{
+    "org.inviwo.FloodfillVolume",      // Class identifier
+    "Floodfill Volume",                // Display name
+    "Undefined",              // Category
+    CodeState::Experimental,  // Code state
+    Tags::None,               // Tags
+};
+const ProcessorInfo FloodfillVolume::getProcessorInfo() const { return processorInfo_; }
 
-    // Processors
-    registerProcessor<FloodfillImage>();
-    registerProcessor<FloodfillVolume>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<WindingAngle>();
-    // registerProcessor<persistencesegmentation>();
+FloodfillVolume::FloodfillVolume()
+    : Processor()
+    , outport_("outport")
+    , position_("position", "Position", vec3(0.0f), vec3(-100.0f), vec3(100.0f)) {
+
+    addPort(outport_);
+    addProperty(position_);
+}
+
+void FloodfillVolume::process() {
+    // outport_.setData(myImage);
 }
 
 }  // namespace inviwo
