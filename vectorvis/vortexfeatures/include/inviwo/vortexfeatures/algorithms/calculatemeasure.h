@@ -30,9 +30,6 @@
 #pragma once
 
 #include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -46,10 +43,12 @@
 namespace inviwo {
 
 template <unsigned SpatialDims>
-struct DispatchMeasureParallel {
+struct DispatchMeasure {
 public:
     using BaseData = std::conditional_t<(SpatialDims == 3), VolumeRAM, LayerRAM>;
     using BaseDataOwner = typename BaseData::ReprOwner;
+    using BaseDataRep =
+        std::conditional_t<(SpatialDims == 3), VolumeRepresentation, LayerRepresentation>;
     template <typename T>
     using BaseDataPrecision =
         std::conditional_t<(SpatialDims == 3), VolumeRAMPrecision<T>, LayerRAMPrecision<T>>;
@@ -68,15 +67,25 @@ public:
     }
 
     template <typename PrecisionType, typename Callable>
-    auto operator()(const PrecisionType* grid, Callable&& measure, double invalidValue = NAN,
-                    double newInvalidValue = -4242) -> std::shared_ptr<BaseDataOwner>;
+    inline auto operator()(const PrecisionType* grid, Callable&& measure, double invalidValue = NAN)
+        -> std::shared_ptr<BaseDataOwner>;
 };
+
+namespace detail {
+template <typename Data>
+void setExtents(std::shared_ptr<Data> data, dvec2 extent) {}
+
+template <>
+inline void setExtents<Volume>(std::shared_ptr<Volume> data, dvec2 extent) {
+    data->dataMap_.valueRange = extent;
+    data->dataMap_.dataRange = data->dataMap_.valueRange;
+}
+}  // namespace detail
 
 template <unsigned SpatialDims>
 template <typename PrecisionType, typename Callable>
-auto DispatchMeasureParallel<SpatialDims>::operator()(const PrecisionType* grid, Callable&& measure,
-                                                      double invalidValue = NAN,
-                                                      double newInvalidValue = -4242)
+auto DispatchMeasure<SpatialDims>::operator()(const PrecisionType* grid, Callable&& measure,
+                                              double invalidValue)
     -> std::shared_ptr<BaseDataOwner> {
     using Vec = util::PrecisionValueType<decltype(grid)>;  // FormatType;
     constexpr unsigned DataDims = util::extent<Vec>::value;
@@ -87,8 +96,7 @@ auto DispatchMeasureParallel<SpatialDims>::operator()(const PrecisionType* grid,
     // Figure out function signature.
     constexpr bool ComputeJacobian = std::is_invocable_v<Callable, Vec, Mat>;
 
-    static_assert(std::is_invocable_v<Callable, Vec, Mat> || std::is_invocable_v<Callable, Vec> ||
-                      std::is_invocable_v<Callable, Mat>,
+    static_assert(std::is_invocable_v<Callable, Vec, Mat> || std::is_invocable_v<Callable, Vec>,
                   "Can not call the given function with velocity and/or Jacobian.");
     using ReturnVec = typename std::conditional_t<  // Switch return type.
         ComputeJacobian,                            // v and J?
@@ -96,7 +104,7 @@ auto DispatchMeasureParallel<SpatialDims>::operator()(const PrecisionType* grid,
 
     const Vec* rawData = grid->getDataTyped();
     auto gridDims = grid->getDimensions();
-    size3_t gridDims3D(gridDims);
+    size3_t gridDims3D = util::glm_convert<size3_t>(gridDims);
     BaseDataPrecision<ReturnVec>* result = new BaseDataPrecision<ReturnVec>(gridDims);
     ReturnVec* rawDataOut = result->getDataTyped();
 
@@ -108,9 +116,11 @@ auto DispatchMeasureParallel<SpatialDims>::operator()(const PrecisionType* grid,
     }
 
     unsigned long voxelCount = 0;
-    ReturnVec voxelSum(0);
-    auto voxelMin = DataFormat<typename util::value_type<ReturnVec>::type>::max();
-    auto voxelMax = DataFormat<typename util::value_type<ReturnVec>::type>::lowest();
+    // ReturnVec voxelSum(0);
+    using ReturnScalar = typename util::value_type<ReturnVec>::type;
+    auto voxelSum = ReturnScalar(0);
+    auto voxelMin = DataFormat<ReturnScalar>::max();
+    auto voxelMax = DataFormat<ReturnScalar>::lowest();
 
     // Read velocity and compute Jacobian in each data point.
     util::forEachVoxel(gridDims3D, [&](size3_t pos) {
@@ -122,7 +132,6 @@ auto DispatchMeasureParallel<SpatialDims>::operator()(const PrecisionType* grid,
             rawDataOut[linIdx] = ReturnVec(invalidValue);
             return;
         }
-        voxelCount++;
 
         // Compute Jacobian if needed.
         if constexpr (ComputeJacobian) {
@@ -160,79 +169,53 @@ auto DispatchMeasureParallel<SpatialDims>::operator()(const PrecisionType* grid,
             rawDataOut[linIdx] = this->template callMeasure<Callable, Vec, Mat>(
                 std::forward<Callable&&>(measure), velocity, nullptr);
         }
-        voxelSum += rawDataOut[linIdx];
+
+        voxelCount++;
         for (size_t dim = 0; dim < DataDims; ++dim) {
-            voxelMin = std::min(voxelMin, util::glmcomp(rawDataOut[linIdx], dim));
-            voxelMax = std::max(voxelMax, util::glmcomp(rawDataOut[linIdx], dim));
+            auto comp = util::glmcomp(rawDataOut[linIdx], dim);
+            voxelMin = std::min(voxelMin, comp);
+            voxelMax = std::max(voxelMax, comp);
+            voxelSum += comp;
         }
     });
+    auto average = voxelSum / (voxelCount * DataDims);
+    ReturnScalar standardDev = 0;
 
-    std::cout << "Average: " << voxelSum / voxelCount;
-
-    // Set invalid voxels to minimum.
+    // Set invalid voxels to minimum, calculate SD.
     if (!std::isnan(invalidValue)) {
         util::forEachVoxel(gridDims3D, [&](size3_t pos) {
             size_t linIdx = VolumeRAM::posToIndex(pos, gridDims3D);
-            auto val = rawDataOut[linIdx];
+            auto& val = rawDataOut[linIdx];
             if (util::glm_convert<double>(val) == invalidValue) {
-                rawDataOut[linIdx] = ReturnVec(voxelMin);
+                val = ReturnVec(voxelMax + 1);
                 return;
+            } else {
+                for (size_t dim = 0; dim < DataDims; ++dim) {
+                    auto comp = util::glmcomp(val, dim);
+                    standardDev += (comp - average) * (comp - average);
+                }
             }
         });
     }
-    // Assemble statistics.
-    auto volume =
-        std::make_shared<BaseDataOwner>(std::shared_ptr<inviwo::VolumeRepresentation>(result));
+
+    // Compute standard deviation.
+    standardDev /= (voxelCount * DataDims);
+    standardDev = std::sqrt(standardDev);
+    std::cout << "Average: " << average << " - SD: " << standardDev;
+
+    // Center color range.
+    auto center = standardDev * (-0.2);
+    auto range = std::max(voxelMax - center, center - voxelMin);
+    voxelMin = center - range;
+    voxelMax = center + range;
+
+    // Assemble ranges.
+    auto data = std::make_shared<BaseDataOwner>(std::shared_ptr<BaseDataRep>(result));
     // Explicit min/max to account for NAN.
     // auto minVal = voxelMin > invalidValue ? invalidValue : voxelMin;
     // auto maxVal = voxelMax < invalidValue ? invalidValue : voxelMax;
-    volume->dataMap_.valueRange = dvec2(voxelMin, voxelMax);
-    volume->dataMap_.dataRange = volume->dataMap_.valueRange;
-    return volume;
+    detail::setExtents<BaseDataOwner>(data, dvec2(voxelMin, voxelMax));
+    return data;
 }
 
-template <unsigned SpatialDims>
-class IVW_MODULE_VORTEXFEATURES_API MeasureProcessor : public Processor {
-public:
-    using Dispatcher = DispatchMeasureParallel<SpatialDims>;
-    using BaseDataOwner = typename Dispatcher::BaseDataOwner;
-
-    // Should give warning if not orthogonal!!!
-    MeasureProcessor();
-    virtual ~MeasureProcessor() = default;
-
-    template <template <class> class Predicate = dispatching::filter::All, typename Callable>
-    void dispatchMeasure(Callable&& measure, double invalidValue = NAN,
-                         double newInvalidValue = -4242);
-
-private:
-    DataInport<BaseDataOwner> inport_;
-    DataOutport<BaseDataOwner> outport_;
-};
-template <unsigned SpatialDims>
-MeasureProcessor<SpatialDims>::MeasureProcessor() : inport_("dataIn"), outport_("dataOut") {
-    addPort(inport_);
-    addPort(outport_);
-}
-
-template <unsigned SpatialDims>
-template <template <class> class Predicate, typename Callable>
-void MeasureProcessor<SpatialDims>::dispatchMeasure(Callable&& measure, double invalidValue,
-                                                    double newInvalidValue) {
-    if (!inport_.hasData()) {
-        outport_.setData(nullptr);
-        return;
-    }
-    std::shared_ptr<const BaseDataOwner> inData = inport_.getData();
-    const BaseData* baseRep = inData->template getRepresentation<BaseData>();
-
-    DispatchMeasureParallel<SpatialDims> dispatcher;
-
-    auto result = baseRep->template dispatch<std::shared_ptr<BaseDataOwner>, Predicate>(
-        dispatcher, std::forward<Callable&&>(measure), invalidValue, newInvalidValue);
-
-    outport_.setData(result);
-}
-
-// volumeram dispatch->VolumeRAMPrecision<typename Format::type>
 }  // namespace inviwo

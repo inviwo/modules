@@ -27,24 +27,41 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
-#include <inviwo/vortexfeatures/processors/floodfillvolume.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
+#pragma once
+
+#include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/imageport.h>
 
 namespace inviwo {
 
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
+/** \docpage{org.inviwo.FloodfillImage, Floodfill Image}
+ * ![](org.inviwo.FloodfillImage.png?classIdentifier=org.inviwo.FloodfillImage)
+ * Flood-filling an image. Returns the tagged image and a list of extrema.
 
-    // Processors
-    registerProcessor<FloodfillImage>();
-    registerProcessor<FloodfillVolume>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<WindingAngle>();
-    // registerProcessor<persistencesegmentation>();
-}
+ * ### Properties
+ *   * __threshold__ The threshold for segmentation, will be applied to first component.
+ */
+class IVW_MODULE_VORTEXFEATURES_API FloodfillImage : public Processor {
+public:
+    FloodfillImage();
+    virtual ~FloodfillImage() = default;
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    ImageInport inImage_;
+    ImageOutport outImage_;
+    ImageOutport outVis_;
+    DataOutport<std::vector<ivec2>> outMaxima_;
+    DoubleProperty threshold_;
+    BoolProperty absolute_;
+    IntProperty numClusters_;
+};
 
 }  // namespace inviwo
