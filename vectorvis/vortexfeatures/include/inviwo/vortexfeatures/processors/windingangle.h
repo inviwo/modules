@@ -71,6 +71,8 @@ public:
     virtual ~WindingAngle() = default;
 
     virtual void process() override;
+    static IntegralLine* windStreamline(const StreamLine2DTracer& tracer, const dvec2& seed,
+                                        size_t maxTotalSteps);
     void integrateLines();
     bool filterLines();
 
