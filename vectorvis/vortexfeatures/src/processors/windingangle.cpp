@@ -94,12 +94,75 @@ void WindingAngle::process() {
 
     if (!inImage_.hasData()) return;
 
-    bool successfull = false;
     if (integrate_) {
         integrateLines();
     } else if (filter_) {
-        successfull = filterLines();
+        filterLines();
     }
+}
+
+IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, const dvec2& seed,
+                                           size_t maxTotalSteps) {
+    // Assemble winding angle.
+    double windingAngle = 0;
+    auto terminator = IntegralLine::TerminationReason::Steps;
+    bool isClosed = false;
+
+    IntegralLine* fullLine = new IntegralLine();
+
+    std::vector<dvec3>& fullPoints = fullLine->getPositions();
+    std::vector<dvec3>& fullVelocities = fullLine->getMetaData<dvec3>("velocity", true);
+
+    IntegralLine line = tracer.traceFrom(seed);
+    std::vector<dvec3>& points = line.getPositions();
+    std::vector<dvec3>& velocities = line.getMetaData<dvec3>("velocity", true);
+    fullPoints.push_back(util::glm_convert<dvec3>(seed));
+    fullVelocities.push_back(dvec3(0));
+
+    if (points.size() < 1) {
+        delete fullLine;
+        return nullptr;
+    }
+
+    do {
+        for (size_t idx = 1; idx < points.size() - 1; ++idx) {
+            const dvec2 pos = points[idx];
+            const dvec2 before = points[idx - 1];
+            const dvec2 after = points[idx + 1];
+            double angle =
+                glm::orientedAngle(glm::normalize(after - pos), glm::normalize(pos - before));
+            windingAngle += angle;
+
+            // Streamline fulfilled a circle.
+            if (std::abs(windingAngle) >= 2.0 * M_PI) {
+                isClosed = true;
+                fullPoints.insert(fullPoints.end(), points.begin(), points.begin() + idx);
+                fullVelocities.insert(fullVelocities.end(), velocities.begin(),
+                                      velocities.begin() + idx + 1);
+                // Compute closest point on last edge.
+                dvec2 edge = pos - before;
+                dvec2 distToStart = seed - before;
+                dvec2 endPoint = before + glm::dot(edge, distToStart) * glm::normalize(edge);
+                fullPoints.push_back(util::glm_convert<dvec3>(endPoint));
+
+                // Mesh output will be strip adjacency - repeat last point.
+                fullPoints.push_back(fullPoints.back());
+                fullVelocities.push_back(fullVelocities.back());
+                return fullLine;
+            }
+        }
+
+        fullPoints.insert(fullPoints.end(), points.begin(), points.end());
+        fullVelocities.insert(fullVelocities.end(), velocities.begin(), velocities.end());
+
+        line = tracer.traceFrom(fullLine->getPositions().back());
+        // One of { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown }
+        terminator = line.getForwardTerminationReason();
+    } while (terminator == IntegralLine::TerminationReason::Steps && !isClosed &&
+             fullPoints.size() < size_t(maxTotalSteps));
+
+    delete fullLine;
+    return nullptr;
 }
 
 void WindingAngle::integrateLines() {
@@ -129,71 +192,18 @@ void WindingAngle::integrateLines() {
         util::forEachPixelParallel(*layer, [&](size2_t px) {
             if (layer->getAsDouble(px) == 0 || px.x % 10 != 0 || px.y % 10 != 0) return;
 
-            // Assemble winding angle.
-            double windingAngle = 0;
-            auto terminator = IntegralLine::TerminationReason::Steps;
-            bool isClosed = false;
-
-            IntegralLine fullLine;
-
-            std::vector<dvec3>& fullPoints = fullLine.getPositions();
-            std::vector<dvec3>& fullVelocities = fullLine.getMetaData<dvec3>("velocity", true);
-
             dvec2 seed((0.5 + px.x) * invDim.x, (0.5 + px.y) * invDim.y);
-            IntegralLine line = tracer.traceFrom(seed);
-            std::vector<dvec3>& points = line.getPositions();
-            std::vector<dvec3>& velocities = line.getMetaData<dvec3>("velocity", true);
-            fullPoints.push_back(util::glm_convert<dvec3>(seed));
-            fullVelocities.push_back(dvec3(0));
+            IntegralLine* line = windStreamline(tracer, seed, maxTotalSteps);
 
-            if (points.size() < 1) return;
-
-            do {
-                for (size_t idx = 1; idx < points.size() - 1; ++idx) {
-                    const dvec2 pos = points[idx];
-                    const dvec2 before = points[idx - 1];
-                    const dvec2 after = points[idx + 1];
-                    double angle = glm::orientedAngle(glm::normalize(after - pos),
-                                                      glm::normalize(pos - before));
-                    windingAngle += angle;
-
-                    // Streamline fulfilled a circle.
-                    if (std::abs(windingAngle) >= 2.0 * M_PI) {
-                        isClosed = true;
-                        fullPoints.insert(fullPoints.end(), points.begin(), points.begin() + idx);
-                        fullVelocities.insert(fullVelocities.end(), velocities.begin(),
-                                              velocities.begin() + idx + 1);
-                        // Compute closest point on last edge.
-                        dvec2 edge = pos - before;
-                        dvec2 distToStart = seed - before;
-                        dvec2 endPoint =
-                            before + glm::dot(edge, distToStart) * glm::normalize(edge);
-                        fullPoints.push_back(util::glm_convert<dvec3>(endPoint));
-
-                        // Mesh output will be strip adjacency - repeat last point.
-                        fullPoints.push_back(fullPoints.back());
-                        fullVelocities.push_back(fullVelocities.back());
-                        break;
-                    }
+            if (line && line->getPositions().size() > 3) {
+                line->getLength();
+                {
+                    std::lock_guard<std::mutex> lock(lineWriteMutex);
+                    allLines->push_back(std::move(*line), IntegralLineSet::SetIndex::No);
+                    progress(allLines->size(), imgSize.x * imgSize.y / 100);
                 }
-                if (isClosed) {
-                    if (fullPoints.size() > 3) {
-                        fullLine.getLength();
-                        std::lock_guard<std::mutex> lock(lineWriteMutex);
-                        allLines->push_back(std::move(fullLine), IntegralLineSet::SetIndex::No);
-                        progress(allLines->size(), imgSize.x * imgSize.y / 100);
-                    }
-                    return;
-                }
-
-                fullPoints.insert(fullPoints.end(), points.begin(), points.end());
-                fullVelocities.insert(fullVelocities.end(), velocities.begin(), velocities.end());
-
-                line = tracer.traceFrom(fullLine.getPositions().back());
-                // One of { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown }
-                terminator = line.getForwardTerminationReason();
-            } while (terminator == IntegralLine::TerminationReason::Steps && !isClosed &&
-                     fullPoints.size() < size_t(maxTotalSteps));
+                delete line;
+            }
         });
         return allLines;
     };
