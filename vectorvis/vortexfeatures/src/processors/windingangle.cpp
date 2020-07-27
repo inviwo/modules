@@ -34,7 +34,6 @@
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
 #include <modules/vectorfieldvisualization/integrallinetracer.h>
 #include <glm/gtx/vector_angle.hpp>
-#include <random>
 
 namespace inviwo {
 
@@ -51,9 +50,11 @@ const ProcessorInfo WindingAngle::getProcessorInfo() const { return processorInf
 WindingAngle::WindingAngle()
     : PoolProcessor(pool::Option::DelayDispatch)
     , inImage_("inImage", true)
-    , outLines_("outLines")
-    , outAllLines_("outAllLines")
-    , outCenters_("outCenters")
+    , vortexOut_("outVortices")
+    // , timeSlice_("timeSlice", "Time Slice", 0, 0, 1, 1, InvalidationLevel::InvalidOutput,
+    //              PropertySemantics::Text)
+    // , heightSlice_("heightSlice", "Height Slice", 0, 0, 1, 1, InvalidationLevel::InvalidOutput,
+    //                PropertySemantics::Text)
 
     , properties_("properties", "Batch Properties")
     , maxTotalSteps_("maxTotalSteps", "Max Total Steps", 1000, 100, 10000, 10)
@@ -64,9 +65,7 @@ WindingAngle::WindingAngle()
     , maxRadiusRatio_("relativeRadiusThreshold", "Max Radius Ratio", 2.0, 1.0, 20.0, 0.01f) {
 
     addPort(inImage_);
-    addPort(outLines_);
-    addPort(outAllLines_);
-    addPort(outCenters_);
+    addPort(vortexOut_);
     addProperties(properties_, maxTotalSteps_, relativeThreshold_, relativeDistanceThreshold_,
                   absoluteDistanceThreshold_, limitRadiusRatio_, maxRadiusRatio_);
 
@@ -93,10 +92,10 @@ void WindingAngle::process() {
     maxRadiusRatio_.setVisible(limitRadiusRatio_);
 
     if (!inImage_.hasData()) return;
-
     if (integrate_) {
         integrateLines();
-    } else if (filter_) {
+    }
+    if (filter_) {
         filterLines();
     }
 }
@@ -111,13 +110,12 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
     IntegralLine* fullLine = new IntegralLine();
 
     std::vector<dvec3>& fullPoints = fullLine->getPositions();
-    std::vector<dvec3>& fullVelocities = fullLine->getMetaData<dvec3>("velocity", true);
+    // std::vector<dvec3>& fullVelocities = fullLine->getMetaData<dvec3>("velocity", true);
 
     IntegralLine line = tracer.traceFrom(seed);
     std::vector<dvec3>& points = line.getPositions();
-    std::vector<dvec3>& velocities = line.getMetaData<dvec3>("velocity", true);
-    fullPoints.push_back(util::glm_convert<dvec3>(seed));
-    fullVelocities.push_back(dvec3(0));
+    // std::vector<dvec3>& velocities = line.getMetaData<dvec3>("velocity", true);
+    // fullVelocities.push_back(dvec3(0));
 
     if (points.size() < 1) {
         delete fullLine;
@@ -137,23 +135,20 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
             if (std::abs(windingAngle) >= 2.0 * M_PI) {
                 isClosed = true;
                 fullPoints.insert(fullPoints.end(), points.begin(), points.begin() + idx);
-                fullVelocities.insert(fullVelocities.end(), velocities.begin(),
-                                      velocities.begin() + idx + 1);
+                // fullVelocities.insert(fullVelocities.end(), velocities.begin(),
+                //                       velocities.begin() + idx);
                 // Compute closest point on last edge.
                 dvec2 edge = pos - before;
                 dvec2 distToStart = seed - before;
                 dvec2 endPoint = before + glm::dot(edge, distToStart) * glm::normalize(edge);
                 fullPoints.push_back(util::glm_convert<dvec3>(endPoint));
-
-                // Mesh output will be strip adjacency - repeat last point.
-                fullPoints.push_back(fullPoints.back());
-                fullVelocities.push_back(fullVelocities.back());
+                // fullVelocities.push_back(fullVelocities.back());
                 return fullLine;
             }
         }
 
         fullPoints.insert(fullPoints.end(), points.begin(), points.end());
-        fullVelocities.insert(fullVelocities.end(), velocities.begin(), velocities.end());
+        // fullVelocities.insert(fullVelocities.end(), velocities.begin(), velocities.end());
 
         line = tracer.traceFrom(fullLine->getPositions().back());
         // One of { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown }
@@ -190,7 +185,7 @@ void WindingAngle::integrateLines() {
         std::mutex lineWriteMutex;
 
         util::forEachPixelParallel(*layer, [&](size2_t px) {
-            if (layer->getAsDouble(px) == 0 || px.x % 10 != 0 || px.y % 10 != 0) return;
+            if (layer->getAsDouble(px) == 0 || px.x % 3 != 0 || px.y % 3 != 0) return;
 
             dvec2 seed((0.5 + px.x) * invDim.x, (0.5 + px.y) * invDim.y);
             IntegralLine* line = windStreamline(tracer, seed, maxTotalSteps);
@@ -200,7 +195,7 @@ void WindingAngle::integrateLines() {
                 {
                     std::lock_guard<std::mutex> lock(lineWriteMutex);
                     allLines->push_back(std::move(*line), IntegralLineSet::SetIndex::No);
-                    progress(allLines->size(), imgSize.x * imgSize.y / 100);
+                    progress(allLines->size(), imgSize.x * imgSize.y / 9);
                 }
                 delete line;
             }
@@ -214,7 +209,7 @@ void WindingAngle::integrateLines() {
     dispatchOne(integrator, [this](std::shared_ptr<IntegralLineSet> result) {
         allLines_ = result;
 
-        filter_ = (result->size() > 0);
+        filter_ = true;  //(result->size() > 0);
         integrate_ = false;
         invalidate(InvalidationLevel::InvalidOutput);
     });
@@ -222,17 +217,24 @@ void WindingAngle::integrateLines() {
 
 bool WindingAngle::filterLines() {
     filter_ = false;
-    if (!inImage_.hasData() || allLines_->size() == 0) return false;
+    auto vortices =
+        std::make_shared<VortexSet>(allLines_->getModelMatrix(), allLines_->getWorldMatrix());
+    if (!inImage_.hasData() || allLines_->size() == 0) {
+        vortexOut_.setData(vortices);
+        return false;
+    }
 
-    auto selectedLines =
-        std::make_shared<IntegralLineSet>(allLines_->getModelMatrix(), allLines_->getWorldMatrix());
+    // auto selectedLines =
+    //     std::make_shared<IntegralLineSet>(allLines_->getModelMatrix(),
+    //     allLines_->getWorldMatrix());
+    std::vector<Vortex> vortexList;
 
     // Lists of center points, and their estimated radii.
-    std::vector<dvec3> centerPoints;
-    std::vector<double> radii;
-    size_t expectedNumFiltered = allLines_->size() * 0.1;
-    centerPoints.reserve(expectedNumFiltered);
-    radii.reserve(expectedNumFiltered);
+    // std::vector<dvec3> centerPoints;
+    // std::vector<double> radii;
+    // size_t expectedNumFiltered = allLines_->size() * 0.1;
+    // centerPoints.reserve(expectedNumFiltered);
+    // radii.reserve(expectedNumFiltered);
 
     // Parallel filtering.
     std::mutex lineWriteMutex;
@@ -274,50 +276,48 @@ bool WindingAngle::filterLines() {
 
             // Passed all filters, select line.
             std::lock_guard<std::mutex> lock(lineWriteMutex);
-            selectedLines->push_back(line, IntegralLineSet::SetIndex::Yes);
-            centerPoints.push_back(center);
-            radii.push_back(avgRadius);
+            // selectedLines->push_back(line, IntegralLineSet::SetIndex::Yes);
+            // centerPoints.push_back(center);
+            // radii.push_back(avgRadius);
+            vortexList.push_back(Vortex(line, avgRadius, minRadius, maxRadius, 42));
         }
     });
-    outAllLines_.setData(selectedLines);
 
-    if (selectedLines->size() <= 0) return false;
+    if (vortexList.size() <= 0) {
+        vortexOut_.setData(vortices);
+        return false;
+    }
 
     // Mesh setup, center clustering.
-    std::vector<SphereMesh::Vertex> centerPointVerts;
-    centerPointVerts.reserve(centerPoints.size());
-    auto mesh = std::make_shared<SphereMesh>(DrawType::Points, ConnectivityType::None);
+    // std::vector<SphereMesh::Vertex> centerPointVerts;
+    // centerPointVerts.reserve(centerPoints.size());
+    // auto mesh = std::make_shared<SphereMesh>(DrawType::Points, ConnectivityType::None);
 
-    auto outerLines =
-        std::make_shared<IntegralLineSet>(allLines_->getModelMatrix(), allLines_->getWorldMatrix());
-    std::vector<int> clusterId(selectedLines->size());
+    // auto outerLines =
+    //     std::make_shared<IntegralLineSet>(allLines_->getModelMatrix(),
+    //     allLines_->getWorldMatrix());
+    // std::vector<int> clusterId(selectedLines->size());
+    std::sort(vortexList.begin(), vortexList.end(),
+              [](const Vortex& a, const Vortex& b) -> bool { return a.minRadius > b.minRadius; });
+    // std::vector<bool> vortexChosen(vortexList.size());
+    for (auto initVort = vortexList.begin(); initVort != vortexList.end(); ++initVort) {
+        // Use height slice as mark of visiting (all set to 42 on creation).
+        if (initVort->heightSlice == 0) continue;
+        initVort->heightSlice = 0;
+        // Boundary will be moved out, but heightSlice remains for quick skipping.
+        vortices->push_back(*initVort);
 
-    // Random color generation.
-    static std::default_random_engine eng;
-    static std::uniform_real_distribution<float> rndDist(0, 1);
-    for (size_t initIdx = 0; initIdx < selectedLines->size(); ++initIdx) {
-        if (clusterId[initIdx] != 0) continue;
-        vec4 color(rndDist(eng), rndDist(eng), rndDist(eng), 1);
-        centerPointVerts.push_back({centerPoints[initIdx], 0.002, color});
-
-        int id = centerPointVerts.size() + 1;
-        size_t outerIdx = initIdx;
-        clusterId[initIdx] = id;
-        for (size_t neighIdx = initIdx; neighIdx < selectedLines->size(); ++neighIdx) {
-            double dist = glm::distance2(centerPoints[outerIdx], centerPoints[neighIdx]);
-            if (dist < std::max(radii[outerIdx], radii[neighIdx])) {
-                centerPointVerts.push_back({centerPoints[neighIdx], 0.002, color});
-                clusterId[neighIdx] = id;
-                if (radii[neighIdx] > radii[outerIdx]) outerIdx = neighIdx;
-            }
+        for (auto vort = initVort + 1; vort != vortexList.end(); ++vort) {
+            if (vort->heightSlice == 0 || !initVort->containsPoint(vort->center)) continue;
+            vort->heightSlice = 0;
+            vortices->push_back(std::move(*vort));
         }
-        outerLines->push_back(selectedLines->at(outerIdx), IntegralLineSet::SetIndex::Yes);
-        centerPointVerts.push_back({centerPoints[outerIdx], 0.004, color * 1.01});
-    }
-    mesh->addVertices(centerPointVerts);
-    outCenters_.setData(mesh);
-    outLines_.setData(outerLines);
 
+        vortices->startNewGroup();
+    }
+    vortices->mergeLastGroups();
+    // LogWarn("First center: " << ((vortices->size() > 0) ? (*vortices)[0].center : dvec2(0, 0)));
+    vortexOut_.setData(vortices);
     return true;
 }
 }  // namespace inviwo

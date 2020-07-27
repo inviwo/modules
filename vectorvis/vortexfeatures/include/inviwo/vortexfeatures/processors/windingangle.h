@@ -30,6 +30,7 @@
 #pragma once
 
 #include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
+#include <inviwo/vortexfeatures/ports/vortexport.h>
 #include <modules/vectorfieldvisualization/vectorfieldvisualizationmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -63,7 +64,7 @@ namespace inviwo {
  * The resulting lines are clustered based on their center points, and the outmost line is chosen as
  * the eddy boundary.
  *
- * The output are these boundaries, all filtered lines and the eddy centers.
+ * The output are all selected vortices, sorted outest to innermost in groups.
  */
 class IVW_MODULE_VORTEXFEATURES_API WindingAngle : public PoolProcessor {
 public:
@@ -81,12 +82,20 @@ public:
 
 private:
     ImageInport inImage_;
-    /** Largest enclosing lines around center clusters. **/
-    IntegralLineSetOutport outLines_;
-    /** All lines passing the filter. **/
-    IntegralLineSetOutport outAllLines_;
-    /** Point set of clustered center points. **/
-    MeshOutport outCenters_;
+    // /** Largest enclosing lines around center clusters. **/
+    // IntegralLineSetOutport outLines_;
+    // /** All lines passing the filter. **/
+    // IntegralLineSetOutport outAllLines_;
+    // /** Point set of clustered center points. **/
+    // MeshOutport outCenters_;
+
+    /** All vortices. Enclosing boundaries are ordered within groups. **/
+    VortexSetOutport vortexOut_;
+
+    // /** Time slice to pick. Assume connection to volume sequence selection or loader setting. **/
+    // IntSizeTProperty timeSlice_;
+    // /** Height slice to pick. Assume connection to volume slice selection or loader setting. **/
+    // IntSizeTProperty heightSlice_;
 
     /** General integration properties. **/
     IntegralLineProperties properties_;
