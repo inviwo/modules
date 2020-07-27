@@ -27,25 +27,16 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vortexfeatures/processors/assemblewindingangle.h>
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/vortextomesh.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
+#pragma once
+
+#include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
+#include <inviwo/vortexfeatures/datastructures/vortex.h>
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 
 namespace inviwo {
+using VortexSetOutport = DataOutport<VortexSet>;
 
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
-
-    // Processors
-    registerProcessor<AssembleWindingAngle>();
-    registerProcessor<FloodfillImage>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<VortexToMesh>();
-    registerProcessor<WindingAngle>();
-}
+using VortexSetInport = DataInport<VortexSet, 0, true>;
 
 }  // namespace inviwo
