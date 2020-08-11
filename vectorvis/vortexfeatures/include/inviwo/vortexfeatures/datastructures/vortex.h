@@ -37,24 +37,34 @@ namespace inviwo {
 
 /** Simple vortex representations of a boundary and a center point. **/
 struct IVW_MODULE_VORTEXFEATURES_API Vortex {
+    enum class Turning : char { Clockwise = 1, CounterClockwise = 2, Unknown = 0 };
+
     Vortex() {}
     Vortex(const Vortex& vort);
     Vortex(Vortex&& vort);
     Vortex& operator=(const Vortex& vort);
     Vortex& operator=(Vortex&& vort);
     Vortex(const std::vector<dvec2>& boundary, const dvec2& center, double avgRadius = -1,
-           double minRadius = -1, double maxRadius = -1, size_t height = 0, size_t time = 0);
+           double minRadius = -1, double maxRadius = -1, size_t height = 0, size_t time = 0,
+           Turning rotation = Turning::Unknown);
     Vortex(std::vector<dvec2>&& boundary, const dvec2& center, double avgRadius = -1,
-           double minRadius = -1, double maxRadius = -1, size_t height = 0, size_t time = 0);
+           double minRadius = -1, double maxRadius = -1, size_t height = 0, size_t time = 0,
+           Turning rotation = Turning::Unknown);
     Vortex(const IntegralLine& boundary, const dvec2& center, double avgRadius = -1,
-           double minRadius = -1, double maxRadius = -1, size_t height = 0, size_t time = 0);
+           double minRadius = -1, double maxRadius = -1, size_t height = 0, size_t time = 0,
+           Turning rotation = Turning::Unknown);
     /** Calculate center as average boundary position. **/
     Vortex(const IntegralLine& boundary, double avgRadius = -1, double minRadius = -1,
-           double maxRadius = -1, size_t height = 0, size_t time = 0);
+           double maxRadius = -1, size_t height = 0, size_t time = 0,
+           Turning rotation = Turning::Unknown);
 
+    /** Close off the vortex nicely across a specified part of the boundary. **/
+    void roundUpBoundary(double boundaryPart = 0.2);
     /** Sets the radii to the minimal, maximal and average distance of boundary points to the
      * center. **/
     void setRadii();
+    /** Figure out and save the turning direction. **/
+    void setTurning();
     /** Check whether a given point is within the boundary. **/
     bool containsPoint(const dvec2& point) const;
     /** Get the number of point in the boundary. **/
@@ -69,6 +79,10 @@ public:
     double avgRadius, minRadius, maxRadius;
     /** Potential information about the height and time this vortex occurs at. **/
     size_t heightSlice, timeSlice;
+    /** Turning clockwise overall? **/
+    Turning rotation;
+    /** Quality of the vortex. How vortex-like is it? **/
+    mutable double score = -1;
 };
 
 /**
@@ -81,6 +95,8 @@ public:
 struct IVW_MODULE_VORTEXFEATURES_API VortexSet {
     /** A new, empty vortex set. **/
     VortexSet(const mat4& modelMat, const mat4& worldMat);
+    /** A new vortex set taking over vortices from a vector. **/
+    VortexSet(const mat4& modelMat, const mat4& worldMat, std::vector<Vortex>&& vortices);
     /** A new vortex set with integral lines added. **/
     VortexSet(const IntegralLineSet& lineSet);
     /** Add one vortex element to the last group. **/
@@ -99,6 +115,8 @@ struct IVW_MODULE_VORTEXFEATURES_API VortexSet {
     Vortex& back();
     /** Return the last vortex. Fails if empty. **/
     const Vortex& back() const;
+    /** Remove all vortices. **/
+    void clear();
     /** Start a new group of 0 elements. Next vortices added will go in there. **/
     void startNewGroup();
     /** Merge the last two groups into one (or remove an empty trailing group). **/
@@ -119,12 +137,16 @@ struct IVW_MODULE_VORTEXFEATURES_API VortexSet {
     const size2_t& getTimeRange() const { return timeRange_; }
     /** Return the range of height slices present in set. **/
     const size2_t& getHeightRange() const { return heightRange_; }
+    /** Return the range of scores present in set. **/
+    const dvec2& getScoreRange() const { return scoreRange_; }
     /** Return matrix to transform vortex positions to model space. **/
     const mat4& getModelMatrix() const { return modelMatrix_; }
     /** Return matrix to transform vortex positions to world space. **/
     const mat4& getWorldMatrix() const { return worldMatrix_; }
-    /** Update the time and height range. **/
+    /** Update the time, height and score range. **/
     void updateRanges(size_t countFromEnd = 1);
+    /** Update the score range. **/
+    void updateScoreRange(size_t countFromEnd = 1) const;
 
     std::vector<Vortex>::iterator begin();
     std::vector<Vortex>::iterator end();
@@ -147,6 +169,8 @@ private:
     size2_t timeRange_;
     /** Minimum and maximum height slice present in vortices.**/
     size2_t heightRange_;
+    /** Minimum and maximum score of all vortices. **/
+    mutable dvec2 scoreRange_;
 
     /** Trasform from given coordinates to model space. **/
     mat4 modelMatrix_;

@@ -39,7 +39,9 @@ Vortex::Vortex(const Vortex& vort)
     , minRadius(vort.minRadius)
     , maxRadius(vort.maxRadius)
     , heightSlice(vort.heightSlice)
-    , timeSlice(vort.timeSlice) {}
+    , timeSlice(vort.timeSlice)
+    , rotation(vort.rotation)
+    , score(vort.score) {}
 
 Vortex::Vortex(Vortex&& vort)
     : boundary(std::move(vort.boundary))
@@ -48,7 +50,9 @@ Vortex::Vortex(Vortex&& vort)
     , minRadius(vort.minRadius)
     , maxRadius(vort.maxRadius)
     , heightSlice(vort.heightSlice)
-    , timeSlice(vort.timeSlice) {}
+    , timeSlice(vort.timeSlice)
+    , rotation(vort.rotation)
+    , score(vort.score) {}
 
 Vortex& Vortex::operator=(Vortex&& vort) {
     if (&vort == this) return *this;
@@ -59,6 +63,7 @@ Vortex& Vortex::operator=(Vortex&& vort) {
     maxRadius = vort.maxRadius;
     heightSlice = vort.heightSlice;
     timeSlice = vort.timeSlice;
+    rotation = vort.rotation;
     return *this;
 }
 
@@ -71,58 +76,71 @@ Vortex& Vortex::operator=(const Vortex& vort) {
     maxRadius = vort.maxRadius;
     heightSlice = vort.heightSlice;
     timeSlice = vort.timeSlice;
+    rotation = vort.rotation;
+    score = vort.score;
     return *this;
 }
 
 Vortex::Vortex(const std::vector<dvec2>& boundary, const dvec2& center, double avgRadius,
-               double minRadius, double maxRadius, size_t height, size_t time)
+               double minRadius, double maxRadius, size_t height, size_t time, Turning rotation)
     : boundary(boundary)
     , center(center)
     , avgRadius(avgRadius)
     , minRadius(minRadius)
     , maxRadius(maxRadius)
     , heightSlice(height)
-    , timeSlice(time) {
+    , timeSlice(time)
+    , rotation(rotation)
+    , score(-1.0) {
     if (avgRadius < 0 || minRadius < 0 || maxRadius < 0) setRadii();
+    if (rotation == Turning::Unknown) setTurning();
 }
 
 Vortex::Vortex(std::vector<dvec2>&& boundary, const dvec2& center, double avgRadius,
-               double minRadius, double maxRadius, size_t height, size_t time)
+               double minRadius, double maxRadius, size_t height, size_t time, Turning rotation)
     : boundary(std::move(boundary))
     , center(center)
     , avgRadius(avgRadius)
     , minRadius(minRadius)
     , maxRadius(maxRadius)
     , heightSlice(height)
-    , timeSlice(time) {
+    , timeSlice(time)
+    , rotation(rotation)
+    , score(-1.0) {
     if (avgRadius < 0 || minRadius < 0 || maxRadius < 0) setRadii();
+    if (rotation == Turning::Unknown) setTurning();
 }
 
 Vortex::Vortex(const IntegralLine& boundary, const dvec2& center, double avgRadius,
-               double minRadius, double maxRadius, size_t height, size_t time)
+               double minRadius, double maxRadius, size_t height, size_t time, Turning rotation)
     : boundary(boundary.getPositions().size())
     , center(center)
     , avgRadius(avgRadius)
     , minRadius(minRadius)
     , maxRadius(maxRadius)
     , heightSlice(height)
-    , timeSlice(time) {
+    , timeSlice(time)
+    , rotation(rotation)
+    , score(-1.0) {
     const auto& points = boundary.getPositions();
     for (size_t idx = 0; idx < points.size(); ++idx) {
         this->boundary[idx] = {points[idx].x, points[idx].y};
     }
     if (avgRadius < 0 || minRadius < 0 || maxRadius < 0) setRadii();
+    if (rotation == Turning::Unknown) setTurning();
 }
 
 Vortex::Vortex(const IntegralLine& boundary, double avgRadius, double minRadius, double maxRadius,
-               size_t height, size_t time)
+               size_t height, size_t time, Turning rotation)
     : boundary(boundary.getPositions().size())
     , center(0)
     , avgRadius(avgRadius)
     , minRadius(minRadius)
     , maxRadius(maxRadius)
     , heightSlice(height)
-    , timeSlice(time) {
+    , timeSlice(time)
+    , rotation(rotation)
+    , score(-1.0) {
     const auto& points = boundary.getPositions();
     for (size_t idx = 0; idx < points.size(); ++idx) {
         this->boundary[idx] = {points[idx].x, points[idx].y};
@@ -130,6 +148,42 @@ Vortex::Vortex(const IntegralLine& boundary, double avgRadius, double minRadius,
     }
     center /= points.size();
     if (avgRadius < 0 || minRadius < 0 || maxRadius < 0) setRadii();
+    if (rotation == Turning::Unknown) setTurning();
+}
+
+void Vortex::roundUpBoundary(double boundaryPart) {
+    if (size() < 3) return;
+    // Close the circle water tight.
+    dvec2 startVec = glm::normalize(boundary[0] - center);
+    double endAngle = glm::orientedAngle(startVec, glm::normalize(boundary.back() - center));
+    // Is there a gap between the beginning and the end?
+    bool openCircle = ((endAngle > 0) == (rotation == Turning::Clockwise));
+    if (!openCircle) {
+        for (size_t idx = size() - 1; idx > 2; --idx) {
+            endAngle = glm::orientedAngle(startVec, glm::normalize(boundary[idx] - center));
+            openCircle = ((endAngle > 0) == (rotation == Turning::Clockwise));
+            if (openCircle) {
+                boundary.resize(idx);
+                break;
+            }
+        }
+    }
+    if (!openCircle) {
+        std::cout << "Didn't get closure." << std::endl;
+        return;
+    }
+    // Round off the end with a smooth step.
+    size_t numPointsBound = 0.5 + boundaryPart * size();
+    double initOffset = glm::distance(boundary[0], center) - glm::distance(boundary.back(), center);
+
+    size_t tmpSize = size();
+    for (size_t point = tmpSize - numPointsBound + 1; point < tmpSize; ++point) {
+        double offsetScale = glm::smoothstep<double>(tmpSize - numPointsBound, tmpSize - 1, point);
+        boundary[point] =
+            boundary[point] + (glm::normalize(boundary[point] - center) * initOffset * offsetScale);
+    }
+    boundary.push_back(boundary[0]);
+    boundary.push_back(center);
 }
 
 void Vortex::setRadii() {
@@ -137,7 +191,7 @@ void Vortex::setRadii() {
     minRadius = 0;
     maxRadius = 0;
     for (const dvec2& point : boundary) {
-        double radius = glm::distance2(point, center);
+        double radius = glm::distance(point, center);
         avgRadius += radius;
         std::min(minRadius, radius);
         std::max(maxRadius, radius);
@@ -145,8 +199,20 @@ void Vortex::setRadii() {
     avgRadius /= boundary.size();
 }
 
+void Vortex::setTurning() {
+    if (size() < 3) {
+        rotation = Turning::Unknown;
+        return;
+    }
+    dvec2 deciders[3] = {boundary[0], boundary[size() / 3], boundary[(size() * 2) / 3]};
+    double angle = glm::orientedAngle(glm::normalize(deciders[0] - deciders[1]),
+                                      glm::normalize(deciders[2] - deciders[1]));
+    rotation = (angle > 0) ? Turning::Clockwise : Turning::CounterClockwise;
+    if (angle == 0) rotation = Turning::Unknown;
+}
+
 bool Vortex::containsPoint(const dvec2& point) const {
-    double centerDist = glm::distance2(center, point);
+    double centerDist = glm::distance(center, point);
     if (centerDist < minRadius) return true;
     if (centerDist > maxRadius) return false;
 
@@ -159,22 +225,18 @@ bool Vortex::containsPoint(const dvec2& point) const {
     // If between the first two points, compare directly,
     // since the search starts with the second point.
     if (pointAngle * sign > 0 && abs(pointAngle) < M_PI && abs(pointAngle) > abs(sign)) {
-        return glm::distance2(center, boundary[1]) > centerDist;
+        return glm::distance(center, boundary[1]) > centerDist;
     }
     sign = -sign;  //(sign > 0) ? -1 : 1;
     // Brute force - maybe make binary search.
     for (size_t idx = 1; idx < boundary.size(); ++idx) {
         double boundAngle = glm::orientedAngle(initDir, glm::normalize(boundary[idx] - center));
         if (boundAngle * sign > pointAngle * sign) {
-            return glm::distance2(center, boundary[idx]) > centerDist;
+            return glm::distance(center, boundary[idx]) > centerDist;
         }
     }
-    // Did not fulfill a circle? Just take last point.
-    // std::cout << "Noooo, point angle " << pointAngle << " not between " << sign << " < "
-    //           << glm::orientedAngle(initDir, glm::normalize(boundary.back() - center)) <<
-    //           std::endl;
 
-    return glm::distance2(center, boundary.back()) > centerDist;
+    return glm::distance(center, boundary.back()) > centerDist;
 }
 
 // ~~~~~~~ Vortex Set ~~~~~~~ //
@@ -186,6 +248,16 @@ VortexSet::VortexSet(const mat4& modelMat, const mat4& worldMat)
     , worldMatrix_(worldMat) {
     vortexOffsets.push_back(0);
     vortexOffsets.push_back(0);
+}
+
+VortexSet::VortexSet(const mat4& modelMat, const mat4& worldMat, std::vector<Vortex>&& vortices)
+    : vortices(std::move(vortices))
+    , timeRange_(std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::min())
+    , heightRange_(std::numeric_limits<size_t>::max(), std::numeric_limits<size_t>::min())
+    , modelMatrix_(modelMat)
+    , worldMatrix_(worldMat) {
+    vortexOffsets.push_back(0);
+    vortexOffsets.push_back(vortices.size());
 }
 
 VortexSet::VortexSet(const IntegralLineSet& lineSet)
@@ -240,6 +312,13 @@ Vortex& VortexSet::back() { return vortices.back(); }
 
 const Vortex& VortexSet::back() const { return vortices.back(); }
 
+void VortexSet::clear() {
+    vortices.clear();
+    vortexOffsets.clear();
+    vortexOffsets.push_back(0);
+    vortexOffsets.push_back(0);
+}
+
 void VortexSet::startNewGroup() { vortexOffsets.push_back(vortexOffsets.back()); }
 
 void VortexSet::mergeLastGroups() {
@@ -249,7 +328,7 @@ void VortexSet::mergeLastGroups() {
 
 Vortex& VortexSet::operator[](size_t idx) { return vortices[idx]; }
 const Vortex& VortexSet::operator[](size_t idx) const { return vortices[idx]; }
-size_t VortexSet::size() const { return vortexOffsets.size() - 1; }
+size_t VortexSet::size() const { return vortices.size(); }
 size_t VortexSet::sizeGroup(size_t idx) const {
     return vortexOffsets[idx + 1] - vortexOffsets[idx];
 }
@@ -277,22 +356,37 @@ std::vector<Vortex>::const_iterator VortexSet::endGroup(size_t idx) const {
 }
 
 void VortexSet::updateRanges(size_t countFromEnd) {
+    if (size() == 0) return;
     if (countFromEnd == 0 || vortices.size() < countFromEnd || vortices.size() == 0 ||
         vortices.end() - countFromEnd < vortices.begin()) {
         std::cout << "PROBLEM: " << countFromEnd << " from size " << vortices.size();
         LogWarn("PROBLEM: " << countFromEnd << " from size " << vortices.size());
         return;
     }
+    if (countFromEnd == size()) {
+        timeRange_ = {vortices[0].timeSlice, vortices[0].timeSlice};
+        heightRange_ = {vortices[0].heightSlice, vortices[0].heightSlice};
+        scoreRange_ = {vortices[0].score, vortices[0].score};
+    }
     for (auto it = vortices.rbegin(); it != vortices.rbegin() + countFromEnd; ++it) {
-        // if ((void*)it == (void*)0xffffffffffffffc0) {
-        //     std::cout << "PROBLEM: " << countFromEnd << " from size " << vortices.size();
-        //     LogWarn("PROBLEM: " << countFromEnd << " from size " << vortices.size());
-        //     break;
-        // }
         timeRange_.x = std::min(timeRange_.x, it->timeSlice);
         timeRange_.y = std::max(timeRange_.y, it->timeSlice);
         heightRange_.x = std::min(heightRange_.x, it->heightSlice);
         heightRange_.y = std::max(heightRange_.y, it->heightSlice);
+
+        scoreRange_.x = std::min(scoreRange_.x, it->score);
+        scoreRange_.y = std::max(scoreRange_.y, it->score);
+    }
+}
+
+void VortexSet::updateScoreRange(size_t countFromEnd) const {
+    if (size() == 0) return;
+    if (countFromEnd == size()) {
+        scoreRange_ = {vortices[0].score, vortices[0].score};
+    }
+    for (auto it = vortices.rbegin(); it != vortices.rbegin() + countFromEnd; ++it) {
+        scoreRange_.x = std::min(scoreRange_.x, it->score);
+        scoreRange_.y = std::max(scoreRange_.y, it->score);
     }
 }
 

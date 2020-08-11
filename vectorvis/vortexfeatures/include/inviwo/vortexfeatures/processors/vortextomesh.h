@@ -34,6 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/ports/meshport.h>
 
 namespace inviwo {
@@ -62,14 +63,19 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    enum class ShowSlices3D { None, Time, Height };
-    enum class BoundaryRepresentation { Lines, Meshes };
-    enum class CenterRepresentation { Points, Lines };
-    enum class GroupDisplay { All, HighlightFirst, OnlyFirst };
+    static vec4 getTurningColor(Vortex::Turning rotation);
+
+    enum class ShowSlices3D : char { None, Time, Height };
+    enum class BoundaryRepresentation : char { Lines, Meshes };
+    enum class CenterRepresentation : char { Points, Lines };
+    enum class GroupDisplay : char { All, HighlightFirst, OnlyFirst, Score };
+    enum class ColorSource : char { Group, Rotation };
 
 private:
     bool keepVortex(const Vortex& vort) const;
     size_t getPos3D(const Vortex& vort) const;
+    vec4 getColor(bool firstVort, const vec4& groupColor, const Vortex& vort,
+                  const dvec2& scoreRange);
     void createLineBoundaryMesh(const std::vector<vec4>& colors, const mat4& modelMat,
                                 const mat4& worldMat);
     void createSurfaceBoundaryMesh(const std::vector<vec4>& colors, const mat4& modelMat,
@@ -85,12 +91,19 @@ private:
     TemplateOptionProperty<CenterRepresentation> centerRep_;
     TemplateOptionProperty<ShowSlices3D> showSlices3D_;
     TemplateOptionProperty<GroupDisplay> groupDisplay_;
+    TemplateOptionProperty<ColorSource> colorSource_;
 
     IntSizeTProperty timeSlice_;
     IntSizeTProperty heightSlice_;
+    struct SingleGroupProperty : public BoolCompositeProperty {
+        SingleGroupProperty(const std::string& identifier, const std::string& displayName);
+        IntSizeTProperty selectedGroup_;
+    } singleGroupProperty_;
 
     BoolProperty overrideScaleZ_;
     DoubleProperty scaleZ_;
+
+    BoolProperty skipLastGroup_;
 };
 
 }  // namespace inviwo

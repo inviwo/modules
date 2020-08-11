@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/vortexfeatures/processors/windingangle.h>
+#include <inviwo/vortexfeatures/algorithms/vortexutils.h>
 #include <inviwo/core/util/spatialsampler.h>
 #include <inviwo/core/util/imagesampler.h>
 #include <inviwo/core/util/imageramutils.h>
@@ -51,23 +52,19 @@ WindingAngle::WindingAngle()
     : PoolProcessor(pool::Option::DelayDispatch)
     , inImage_("inImage", true)
     , vortexOut_("outVortices")
-    // , timeSlice_("timeSlice", "Time Slice", 0, 0, 1, 1, InvalidationLevel::InvalidOutput,
-    //              PropertySemantics::Text)
-    // , heightSlice_("heightSlice", "Height Slice", 0, 0, 1, 1, InvalidationLevel::InvalidOutput,
-    //                PropertySemantics::Text)
-
     , properties_("properties", "Batch Properties")
     , maxTotalSteps_("maxTotalSteps", "Max Total Steps", 1000, 100, 10000, 10)
     , relativeThreshold_("relativeThresh", "Relative Threshold?", false)
     , relativeDistanceThreshold_("relThresh", "Relative End Threshold", 0.01, 0.0001, 0.1, 0.0001)
     , absoluteDistanceThreshold_("absThresh", "Absolute End Threshold", 0.1, 0.001, 1)
     , limitRadiusRatio_("limitShape", "Limit Radius Ratio", true)
-    , maxRadiusRatio_("relativeRadiusThreshold", "Max Radius Ratio", 2.0, 1.0, 20.0, 0.01f) {
+    , maxRadiusRatio_("relativeRadiusThreshold", "Max Radius Ratio", 2.0, 1.0, 20.0, 0.01f)
+    , scoreProperties_("scoreProps", "Compute Vortex Score") {
 
     addPort(inImage_);
     addPort(vortexOut_);
     addProperties(properties_, maxTotalSteps_, relativeThreshold_, relativeDistanceThreshold_,
-                  absoluteDistanceThreshold_, limitRadiusRatio_, maxRadiusRatio_);
+                  absoluteDistanceThreshold_, limitRadiusRatio_, maxRadiusRatio_, scoreProperties_);
 
     properties_.stepDirection_.set(IntegralLineProperties::Direction::FWD);
     properties_.stepDirection_.setVisible(false);
@@ -76,6 +73,8 @@ WindingAngle::WindingAngle()
 
     auto turnOnIntegrate = [this]() { integrate_ = true; };
     auto turnOnFilter = [this]() { filter_ = true; };
+    auto updateScoresLambda = [&]() { updateScores(); };
+
     inImage_.onChange(turnOnIntegrate);
     properties_.onChange(turnOnIntegrate);
     maxTotalSteps_.onChange(turnOnIntegrate);
@@ -84,6 +83,10 @@ WindingAngle::WindingAngle()
     absoluteDistanceThreshold_.onChange(turnOnFilter);
     limitRadiusRatio_.onChange(turnOnFilter);
     maxRadiusRatio_.onChange(turnOnFilter);
+
+    scoreProperties_.onChange(updateScoresLambda);
+    scoreProperties_.sizeWeight_.onChange(updateScoresLambda);
+    scoreProperties_.roundnessWeight_.onChange(updateScoresLambda);
 }
 
 void WindingAngle::process() {
@@ -110,12 +113,9 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
     IntegralLine* fullLine = new IntegralLine();
 
     std::vector<dvec3>& fullPoints = fullLine->getPositions();
-    // std::vector<dvec3>& fullVelocities = fullLine->getMetaData<dvec3>("velocity", true);
 
     IntegralLine line = tracer.traceFrom(seed);
     std::vector<dvec3>& points = line.getPositions();
-    // std::vector<dvec3>& velocities = line.getMetaData<dvec3>("velocity", true);
-    // fullVelocities.push_back(dvec3(0));
 
     if (points.size() < 1) {
         delete fullLine;
@@ -134,23 +134,18 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
             // Streamline fulfilled a circle.
             if (std::abs(windingAngle) >= 2.0 * M_PI) {
                 isClosed = true;
-                fullPoints.insert(fullPoints.end(), points.begin(), points.begin() + idx);
-                // fullVelocities.insert(fullVelocities.end(), velocities.begin(),
-                //                       velocities.begin() + idx);
-                // Compute closest point on last edge.
-                dvec2 edge = pos - before;
-                dvec2 distToStart = seed - before;
-                dvec2 endPoint = before + glm::dot(edge, distToStart) * glm::normalize(edge);
-                fullPoints.push_back(util::glm_convert<dvec3>(endPoint));
-                // fullVelocities.push_back(fullVelocities.back());
+                fullPoints.insert(fullPoints.end(), points.begin(), points.begin() + idx + 1);
+                // Use the line index to store the rotation direction.
+                fullLine->setIndex(
+                    static_cast<size_t>(((windingAngle > 0) ? Vortex::Turning::Clockwise
+                                                            : Vortex::Turning::CounterClockwise)));
                 return fullLine;
             }
         }
 
-        fullPoints.insert(fullPoints.end(), points.begin(), points.end());
-        // fullVelocities.insert(fullVelocities.end(), velocities.begin(), velocities.end());
+        fullPoints.insert(fullPoints.end(), points.begin(), points.end() - 2);
 
-        line = tracer.traceFrom(fullLine->getPositions().back());
+        line = tracer.traceFrom(points.back());
         // One of { StartPoint, Steps, OutOfBounds, ZeroVelocity, Unknown }
         terminator = line.getForwardTerminationReason();
     } while (terminator == IntegralLine::TerminationReason::Steps && !isClosed &&
@@ -168,7 +163,7 @@ void WindingAngle::integrateLines() {
 
     auto sampler = std::make_shared<ImageSpatialSampler<2, double>>(inImage_.getData());
 
-    const auto integrator = [image = inImage_.getData(), sampler,
+    const auto integrator = [this, image = inImage_.getData(), sampler,
                              tracerConst = StreamLine2DTracer(sampler, properties_),
                              maxTotalSteps = maxTotalSteps_.get()](
                                 pool::Stop stop,
@@ -209,7 +204,7 @@ void WindingAngle::integrateLines() {
     dispatchOne(integrator, [this](std::shared_ptr<IntegralLineSet> result) {
         allLines_ = result;
 
-        filter_ = true;  //(result->size() > 0);
+        filter_ = true;
         integrate_ = false;
         invalidate(InvalidationLevel::InvalidOutput);
     });
@@ -217,24 +212,12 @@ void WindingAngle::integrateLines() {
 
 bool WindingAngle::filterLines() {
     filter_ = false;
-    auto vortices =
+    vortices_ =
         std::make_shared<VortexSet>(allLines_->getModelMatrix(), allLines_->getWorldMatrix());
     if (!inImage_.hasData() || allLines_->size() == 0) {
-        vortexOut_.setData(vortices);
+        vortexOut_.setData(vortices_);
         return false;
     }
-
-    // auto selectedLines =
-    //     std::make_shared<IntegralLineSet>(allLines_->getModelMatrix(),
-    //     allLines_->getWorldMatrix());
-    std::vector<Vortex> vortexList;
-
-    // Lists of center points, and their estimated radii.
-    // std::vector<dvec3> centerPoints;
-    // std::vector<double> radii;
-    // size_t expectedNumFiltered = allLines_->size() * 0.1;
-    // centerPoints.reserve(expectedNumFiltered);
-    // radii.reserve(expectedNumFiltered);
 
     // Parallel filtering.
     std::mutex lineWriteMutex;
@@ -258,13 +241,13 @@ bool WindingAngle::filterLines() {
             center /= numSamples;
 
             // Sample same points again for average radius and extreme radii.
-            double endRadius = glm::distance2(points.back(), center);
+            double endRadius = glm::distance(points.back(), center);
             double avgRadius = endRadius;
             double minRadius = endRadius;
             double maxRadius = endRadius;
 
             for (size_t p = 0; p < points.size(); p += SAMPLE_STEP) {
-                double rad = glm::distance2(points[p], center);
+                double rad = glm::distance(points[p], center);
                 avgRadius += rad;
                 minRadius = std::min(minRadius, rad);
                 maxRadius = std::max(maxRadius, rad);
@@ -273,51 +256,62 @@ bool WindingAngle::filterLines() {
             if (limitRadiusRatio_.get() && (maxRadius / minRadius) > maxRadiusRatio_.get()) {
                 return;
             }
-
+            Vortex::Turning rotation = (static_cast<Vortex::Turning>(line.getIndex()));
             // Passed all filters, select line.
+            Vortex vort(line, center, avgRadius, minRadius, maxRadius, 42, 0, rotation);
+            vort.roundUpBoundary();
             std::lock_guard<std::mutex> lock(lineWriteMutex);
-            // selectedLines->push_back(line, IntegralLineSet::SetIndex::Yes);
-            // centerPoints.push_back(center);
-            // radii.push_back(avgRadius);
-            vortexList.push_back(Vortex(line, avgRadius, minRadius, maxRadius, 42));
+            vortices_->push_back(std::move(vort));
         }
     });
 
-    if (vortexList.size() <= 0) {
-        vortexOut_.setData(vortices);
+    if (vortices_->size() <= 0) {
+        vortexOut_.setData(vortices_);
         return false;
     }
 
-    // Mesh setup, center clustering.
-    // std::vector<SphereMesh::Vertex> centerPointVerts;
-    // centerPointVerts.reserve(centerPoints.size());
-    // auto mesh = std::make_shared<SphereMesh>(DrawType::Points, ConnectivityType::None);
+    *vortices_ = vortexutil::groupVorticesByCenter(*vortices_);
 
-    // auto outerLines =
-    //     std::make_shared<IntegralLineSet>(allLines_->getModelMatrix(),
-    //     allLines_->getWorldMatrix());
-    // std::vector<int> clusterId(selectedLines->size());
-    std::sort(vortexList.begin(), vortexList.end(),
-              [](const Vortex& a, const Vortex& b) -> bool { return a.minRadius > b.minRadius; });
-    // std::vector<bool> vortexChosen(vortexList.size());
-    for (auto initVort = vortexList.begin(); initVort != vortexList.end(); ++initVort) {
-        // Use height slice as mark of visiting (all set to 42 on creation).
-        if (initVort->heightSlice == 0) continue;
-        initVort->heightSlice = 0;
-        // Boundary will be moved out, but heightSlice remains for quick skipping.
-        vortices->push_back(*initVort);
-
-        for (auto vort = initVort + 1; vort != vortexList.end(); ++vort) {
-            if (vort->heightSlice == 0 || !initVort->containsPoint(vort->center)) continue;
-            vort->heightSlice = 0;
-            vortices->push_back(std::move(*vort));
-        }
-
-        vortices->startNewGroup();
-    }
-    vortices->mergeLastGroups();
-    // LogWarn("First center: " << ((vortices->size() > 0) ? (*vortices)[0].center : dvec2(0, 0)));
-    vortexOut_.setData(vortices);
+    updateScores();
+    vortexOut_.setData(vortices_);
     return true;
 }
+
+void WindingAngle::updateScores() {
+    if (!vortices_ || vortices_->size() == 0 || !scoreProperties_) return;
+    scoreProperties_.computeScores(*vortices_);
+}
+
+WindingAngle::ScoreProperty::ScoreProperty(const std::string& identifier,
+                                           const std::string& displayName)
+    : BoolCompositeProperty(identifier, displayName, true)
+    , roundnessWeight_("roundnessWeight", "Roundness Weight", 0.5, 0, 1, 0.01)
+    , sizeWeight_("sizeWeight", "Size Weight", 0.5, 0, 1, 0.01)
+    , maxSize_("maxSize", "Max Size", 3, {0, ConstraintBehavior::Ignore},
+               {10, ConstraintBehavior::Ignore})
+    , accumMaxSize_("accumMaxSize", "Data Max Size", 0, {0, ConstraintBehavior::Ignore},
+                    {0, ConstraintBehavior::Ignore}, 0, InvalidationLevel::Valid,
+                    PropertySemantics::Text) {
+    addProperties(roundnessWeight_, sizeWeight_, maxSize_, accumMaxSize_);
+    accumMaxSize_.setReadOnly(true);
+}
+
+double WindingAngle::ScoreProperty::getScore(const Vortex& vortex) const {
+    double roundness = vortex.minRadius / vortex.maxRadius;  // 0 < q < 1, larger better
+    double size = vortex.avgRadius / *maxSize_;              // 0 < q < 1, larger better
+    return (roundness * roundnessWeight_) + (size * sizeWeight_);
+}
+
+void WindingAngle::ScoreProperty::computeScores(const VortexSet& vortices) {
+    double accMaxSize = *accumMaxSize_;
+    for (const Vortex& vort : vortices) {
+        vort.score = getScore(vort);
+        accMaxSize = (std::max(accMaxSize, vort.avgRadius));
+    }
+    accumMaxSize_.setReadOnly(false);
+    accumMaxSize_.set(accMaxSize);
+    accumMaxSize_.setReadOnly(true);
+    vortices.updateScoreRange(vortices.size());
+}
+
 }  // namespace inviwo

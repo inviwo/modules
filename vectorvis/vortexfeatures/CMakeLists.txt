@@ -6,6 +6,7 @@ ivw_module(VortexFeatures)
 # Add header files
 set(HEADER_FILES
     include/inviwo/vortexfeatures/algorithms/calculatemeasure.h
+    include/inviwo/vortexfeatures/algorithms/vortexutils.h
     include/inviwo/vortexfeatures/datastructures/vortex.h
     include/inviwo/vortexfeatures/ports/vortexport.h
     include/inviwo/vortexfeatures/processors/assemblewindingangle.h
@@ -21,6 +22,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/algorithms/vortexutils.cpp
     src/datastructures/vortex.cpp
     src/ports/vortexport.cpp
     src/processors/assemblewindingangle.cpp
