@@ -37,6 +37,7 @@
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/datainport.h>
@@ -76,26 +77,27 @@ public:
                                         size_t maxTotalSteps);
     void integrateLines();
     bool filterLines();
+    void updateScores();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+public:
+    struct ScoreProperty : public BoolCompositeProperty {
+        ScoreProperty(const std::string& identifier, const std::string& displayName);
+        DoubleProperty roundnessWeight_, sizeWeight_, maxSize_;
+        DoubleProperty accumMaxSize_;
+        double getScore(const Vortex& vortex) const;
+        void computeScores(const VortexSet& vortices);
+    };
+
 private:
     ImageInport inImage_;
-    // /** Largest enclosing lines around center clusters. **/
-    // IntegralLineSetOutport outLines_;
-    // /** All lines passing the filter. **/
-    // IntegralLineSetOutport outAllLines_;
-    // /** Point set of clustered center points. **/
-    // MeshOutport outCenters_;
 
     /** All vortices. Enclosing boundaries are ordered within groups. **/
     VortexSetOutport vortexOut_;
-
-    // /** Time slice to pick. Assume connection to volume sequence selection or loader setting. **/
-    // IntSizeTProperty timeSlice_;
-    // /** Height slice to pick. Assume connection to volume slice selection or loader setting. **/
-    // IntSizeTProperty heightSlice_;
+    /** Mutable version for updating scores. **/
+    std::shared_ptr<VortexSet> vortices_;
 
     /** General integration properties. **/
     IntegralLineProperties properties_;
@@ -117,6 +119,8 @@ private:
 
     /** All lines integrated and closed to 360°. **/
     std::shared_ptr<IntegralLineSet> allLines_;
+
+    ScoreProperty scoreProperties_;
 };
 
 }  // namespace inviwo

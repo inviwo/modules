@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/vortexfeatures/processors/assemblewindingangle.h>
+#include <inviwo/vortexfeatures/algorithms/vortexutils.h>
 
 namespace inviwo {
 
@@ -50,51 +51,77 @@ AssembleWindingAngle::AssembleWindingAngle()
     , exportVortices_("exportVorts", "Export",
                       {{"noMatching", "No Matching", ExportVortices::NoMatching},
                        {"all", "Export All", ExportVortices::ExportAll},
-                       {"first", "Export Only First", ExportVortices::ExportOnlyFirst}}) {
+                       {"first", "Export Only First", ExportVortices::ExportOnlyFirst}})
+    , scoreProperties_("scoreProp", "Override Score")
+    , matchProperties_("matchProperties", "Match Weights") {
 
     addPort(vortexIn_);
     addPort(vortexOut_);
-    addProperties(timeSlice_, heightSlice_, triggerAccumulation_, exportVortices_);
+    addProperties(timeSlice_, heightSlice_, triggerAccumulation_, exportVortices_, scoreProperties_,
+                  matchProperties_);
+
+    auto triggerProcess = [&]() { invalidate(InvalidationLevel::InvalidOutput); };
+
+    vortexIn_.onChange(triggerProcess);
+    exportVortices_.onChange(triggerProcess);
+    matchProperties_.onChange(triggerProcess);
+    matchProperties_.scoreWeight_.onChange(triggerProcess);
+    matchProperties_.sizeDiffWeight_.onChange(triggerProcess);
+    scoreProperties_.getBoolProperty()->onChange(triggerProcess);
+    scoreProperties_.sizeWeight_.onChange(triggerProcess);
+    scoreProperties_.roundnessWeight_.onChange(triggerProcess);
 }
 
 void AssembleWindingAngle::process() {
-    if (!vortexIn_.hasData() || !accumulating_) return;
-    if (!vortexIn_.isChanged()) return;
-    // auto vortices = vortexIn_.getData();
-    if (vortexIn_.getData() == lastVortexSet_) {
-        return;
-    }
+    if (!vortexIn_.hasData()) return;
 
-    lastVortexSet_ = vortexIn_.getData();
-    vortexList_[timeSlice_.get() - 1].push_back(vortexIn_.getData());
+    if (accumulating_) {
+        if (vortexIn_.getData() == lastVortexSet_) {
+            return;
+        }
+        lastVortexSet_ = vortexIn_.getData();
+        vortexList_[timeSlice_.get() - 1].push_back(vortexIn_.getData());
 
-    if (heightSlice_.get() < heightSlice_.getMaxValue()) {
-        heightSlice_.set(heightSlice_.get() + 1);
-        return;
-    } else if (timeSlice_.get() < timeSlice_.getMaxValue()) {
-        timeSlice_.set(timeSlice_.get() + 1);
-        heightSlice_.set(1);
-        return;
+        if (heightSlice_.get() < heightSlice_.getMaxValue()) {
+            heightSlice_.set(heightSlice_.get() + 1);
+            return;
+        } else if (timeSlice_.get() < timeSlice_.getMaxValue()) {
+            timeSlice_.set(timeSlice_.get() + 1);
+            heightSlice_.set(1);
+            return;
+        }
+        // Do the brunt work.
+        accumulating_ = false;
     }
-    // Do the brunt work.
-    accumulating_ = false;
-    auto assembledVortices = std::make_shared<VortexSet>(vortexList_[0][0]->getModelMatrix(),
-                                                         vortexList_[0][0]->getWorldMatrix());
+    assemble();
+}
+
+void AssembleWindingAngle::assemble() {
+    if (vortexList_.size() < 1 || vortexList_[0].size() < 1 || accumulating_) return;
+    if (scoreProperties_.getBoolProperty()->get()) {
+        for (size_t time = 0; time < vortexList_.size(); ++time) {
+            for (size_t height = 0; height < vortexList_[time].size(); ++height) {
+                scoreProperties_.computeScores(*vortexList_[time][height]);
+            }
+        }
+        LogWarn("Score range[0][0]: " << vortexList_[0][0]->getScoreRange());
+    }
+    outVortices_ = std::make_shared<VortexSet>(vortexList_[0][0]->getModelMatrix(),
+                                               vortexList_[0][0]->getWorldMatrix());
     if (exportVortices_.get() == ExportVortices::NoMatching) {
         for (size_t time = 0; time < vortexList_.size(); ++time) {
-            // for (const auto& timeSlice : vortexList_) {
             const auto& timeSlice = vortexList_[time];
             for (size_t height = 0; height < timeSlice.size(); ++height) {
-                // for (const auto& heightSlice : timeSlice) {
                 const auto heightSlice = timeSlice[height];
                 if (heightSlice->size() == 0) continue;
-                size_t numGroupsBefore = assembledVortices->numGroups();
-                assembledVortices->append(*heightSlice);
-                for (auto vort = assembledVortices->beginGroup(numGroupsBefore);
-                     vort != assembledVortices->end(); ++vort) {
+                size_t numGroupsBefore = outVortices_->numGroups();
+                outVortices_->append(*heightSlice);
+                for (auto vort = outVortices_->beginGroup(numGroupsBefore);
+                     vort != outVortices_->end(); ++vort) {
                     vort->timeSlice = time;
                     vort->heightSlice = height;
                 }
+                outVortices_->updateRanges(outVortices_->size());
             }
         }
     } else {
@@ -108,77 +135,90 @@ void AssembleWindingAngle::process() {
         }
 
         // Check whether a vortex overlaps with another from a group.
-        auto findClosestOverlap = [](const Vortex& vort, const VortexSet& set) -> int {
-            std::vector<size_t> closestIDs(set.numGroups());
-            std::iota(closestIDs.begin(), closestIDs.end(), 0);
-            std::sort(closestIDs.begin(), closestIDs.end(), [&](size_t a, size_t b) {
-                double distA = glm::distance2(vort.center, set.beginGroup(a)->center);
-                double distB = glm::distance2(vort.center, set.beginGroup(b)->center);
-                return distA < distB;
-            });
-            for (size_t v : closestIDs) {
-                if (vort.containsPoint(set.beginGroup(v)->center) ||
-                    set.beginGroup(v)->containsPoint(vort.center)) {
-                    return v;
-                }
-            }
-            return -1;
+        auto findClosestOverlap = [&](const Vortex& vort,
+                                      const VortexSet& set) -> std::tuple<const Vortex*, size_t> {
+            int group = vortexutil::matchGroupByCenter(vort, set);
+            if (group < 0) return {nullptr, -1};
+            return {&matchProperties_.bestMatchInGroup(vort, set, group), group};
         };
 
-        auto pushBackGroup = [&](size_t time, size_t height, size_t group) {
+        auto pushBackGroup = [&](size_t time, size_t height, size_t group,
+                                 const Vortex* bestMatch) {
+            groupMatched[time][height][group] = 1;
             const auto vortexSet = vortexList_[time][height];
-            for (auto vort = vortexSet->beginGroup(group); vort != vortexSet->endGroup(group);
-                 ++vort) {
-                assembledVortices->push_back(*vort);
-                assembledVortices->back().timeSlice = time;
-                assembledVortices->back().heightSlice = height;
-                if (exportVortices_.get() == ExportVortices::ExportOnlyFirst) break;
+            if (bestMatch) {
+                outVortices_->push_back(*bestMatch);
+                outVortices_->back().timeSlice = time;
+                outVortices_->back().heightSlice = height;
+            }
+            if (exportVortices_.get() == ExportVortices::ExportAll) {
+                for (auto vort = vortexSet->beginGroup(group); vort != vortexSet->endGroup(group);
+                     ++vort) {
+                    if (&*vort == bestMatch) continue;
+                    outVortices_->push_back(*vort);
+                    outVortices_->back().timeSlice = time;
+                    outVortices_->back().heightSlice = height;
+                }
             }
         };
+
+        size_t seedHeight = std::min(vortexList_[0].size() - 1, size_t(3));
 
         for (size_t time = 0; time < vortexList_.size(); ++time) {
             const auto& heightStack = vortexList_[time];
 
             // Take only eddies: vortices that appear on the surface.
-            const auto vortexSet = heightStack[0];
+            const auto vortexSet = heightStack[seedHeight];
             for (size_t group = 0; group < vortexSet->numGroups(); ++group) {
-                if (groupMatched[time][0][group] != 0) continue;
+                if (groupMatched[time][seedHeight][group] != 0) continue;
 
-                const Vortex* topLayerVortex = &*vortexSet->beginGroup(group);
-                groupMatched[time][0][group] = 1;
-                pushBackGroup(time, 0, group);
+                const Vortex* topLayerVortex = &*std::max_element(
+                    vortexSet->beginGroup(group), vortexSet->endGroup(group),
+                    [](const Vortex& a, const Vortex& b) { return a.score < b.score; });
+
+                pushBackGroup(time, seedHeight, group, topLayerVortex);
 
                 // Go through all heights.
                 for (size_t searchTime = time; searchTime < vortexList_.size(); ++searchTime) {
 
                     // New time slice? Match vortex on top slice.
                     if (searchTime != time) {
-                        int nextInitVortex =
-                            findClosestOverlap(*topLayerVortex, *vortexList_[searchTime][0]);
-                        if (nextInitVortex < 0 ||
-                            groupMatched[searchTime][0][nextInitVortex] != 0) {
-                            // LogWarn("===> Ended after " << searchTime - time << " time steps.");
+
+                        auto nextVortTuple = findClosestOverlap(
+                            *topLayerVortex, *vortexList_[searchTime][seedHeight]);
+                        const Vortex* nextVort = std::get<0>(nextVortTuple);
+                        if (!nextVort) {
                             break;  // No unbroken time-line - vortex stops here.
                         }
-                        pushBackGroup(searchTime, 0, nextInitVortex);
-                        topLayerVortex = &*(vortexList_[searchTime][0])->beginGroup(nextInitVortex);
-                        groupMatched[searchTime][0][nextInitVortex] = 1;
+                        pushBackGroup(searchTime, seedHeight, std::get<1>(nextVortTuple), nextVort);
+                        topLayerVortex = nextVort;
                     }
 
                     const Vortex* lastHeightVortex = topLayerVortex;
                     // Go downward through height.
-                    for (size_t height = 1; height < heightStack.size(); ++height) {
-                        int nextVortex =
+                    for (size_t height = seedHeight + 1; height < heightStack.size(); ++height) {
+                        auto nextVortTuple =
                             findClosestOverlap(*lastHeightVortex, *vortexList_[searchTime][height]);
-                        if (nextVortex < 0 || groupMatched[searchTime][height][nextVortex] != 0) {
-                            // LogWarn("==> " << height << " steps deep.");
-                            break;  // No unbroken height-line - vortex stops here.
+                        const Vortex* nextVort = std::get<0>(nextVortTuple);
+                        if (!nextVort) {
+                            break;  // No unbroken time-line - vortex stops here.
                         }
-                        groupMatched[searchTime][height][nextVortex] = 1;
-                        pushBackGroup(searchTime, height, nextVortex);
+                        pushBackGroup(searchTime, height, std::get<1>(nextVortTuple), nextVort);
+                        lastHeightVortex = nextVort;
+                    }
+                    lastHeightVortex = topLayerVortex;
+                    for (int height = seedHeight - 1; height >= 0; --height) {
+                        auto nextVortTuple =
+                            findClosestOverlap(*lastHeightVortex, *vortexList_[searchTime][height]);
+                        const Vortex* nextVort = std::get<0>(nextVortTuple);
+                        if (!nextVort) {
+                            break;  // No unbroken time-line - vortex stops here.
+                        }
+                        pushBackGroup(searchTime, height, std::get<1>(nextVortTuple), nextVort);
+                        lastHeightVortex = nextVort;
                     }
                 }
-                assembledVortices->startNewGroup();
+                outVortices_->startNewGroup();
             }
         }
 
@@ -187,16 +227,14 @@ void AssembleWindingAngle::process() {
             for (size_t height = 0; height < groupMatched[time].size(); ++height) {
                 for (size_t group = 0; group < groupMatched[time][height].size(); ++group) {
                     if (groupMatched[time][height][group] == 0) {
-                        pushBackGroup(time, height, group);
+                        pushBackGroup(time, height, group, nullptr);
                     }
                 }
             }
         }
-        LogWarn("----> " << assembledVortices->sizeGroup(assembledVortices->numGroups() - 1)
-                         << " vortices left over.");
     }
-    assembledVortices->updateRanges(assembledVortices->size());
-    vortexOut_.setData(assembledVortices);
+    outVortices_->updateRanges(outVortices_->size());
+    vortexOut_.setData(outVortices_);
 }
 
 void AssembleWindingAngle::triggerAccumulate() {
@@ -211,6 +249,31 @@ void AssembleWindingAngle::triggerAccumulate() {
     }
     timeSlice_.set(1);
     heightSlice_.set(1);
+}
+
+AssembleWindingAngle::MatchProperties::MatchProperties(const std::string& identifier,
+                                                       const std::string& displayName)
+    : CompositeProperty(identifier, displayName)
+    , scoreWeight_("scoreWeight", "Score Weight", 0.5, 0, 1, 0.01)
+    , sizeDiffWeight_("sizeDiff", "Size Diff Weight", 0.5, 0, 1, 0.01) {
+    addProperties(scoreWeight_, sizeDiffWeight_);
+}
+
+const Vortex& AssembleWindingAngle::MatchProperties::bestMatchInGroup(const Vortex& seedVort,
+                                                                      const VortexSet& vortices,
+                                                                      size_t group) {
+    dvec2 scoreRange = vortices.getScoreRange();
+    // The smaller, the better.
+    auto scoreVort = [&](const Vortex& vort) -> double {
+        return (scoreRange.y - vort.score) / (scoreRange.y - scoreRange.x) * *scoreWeight_ +
+               (std::abs(seedVort.minRadius - vort.minRadius) / seedVort.minRadius +
+                std::abs(seedVort.avgRadius - vort.avgRadius) / seedVort.avgRadius +
+                std::abs(seedVort.maxRadius - vort.maxRadius) / seedVort.maxRadius) *
+                   *sizeDiffWeight_;
+    };
+    return *std::min_element(
+        vortices.beginGroup(group), vortices.endGroup(group),
+        [&](const Vortex& a, const Vortex& b) { return scoreVort(a) < scoreVort(b); });
 }
 
 }  // namespace inviwo

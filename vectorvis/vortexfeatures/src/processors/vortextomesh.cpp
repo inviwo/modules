@@ -58,21 +58,25 @@ VortexToMesh::VortexToMesh()
                      {"time", "Time", ShowSlices3D::Time},
                      {"height", "Height", ShowSlices3D::Height}})
     , groupDisplay_("groupDisplay", "Group Display",
-                    {
-                        {"all", "All", GroupDisplay::All},
-                        {"hightlightFirst", "Highlight First", GroupDisplay::HighlightFirst},
-                        {"onlyFirst", "Only First", GroupDisplay::OnlyFirst},
-                    })
-    , timeSlice_("timeSlice", "Time Slice", 0, 0, 1, 1)
-    , heightSlice_("heightSlice", "Height Slice", 0, 0, 1, 1)
+                    {{"all", "All", GroupDisplay::All},
+                     {"hightlightFirst", "Highlight First", GroupDisplay::HighlightFirst},
+                     {"onlyFirst", "Only First", GroupDisplay::OnlyFirst},
+                     {"score", "Show Score", GroupDisplay::Score}})
+    , colorSource_(
+          "colorSource", "Color Source",
+          {{"group", "Group", ColorSource::Group}, {"rotation", "Rotation", ColorSource::Rotation}})
+    , timeSlice_("timeSlice", "Time Slice", 1, 1, 1, 1)
+    , heightSlice_("heightSlice", "Height Slice", 1, 1, 1, 1)
+    , singleGroupProperty_("singleGroupProperty", "Single Group?")
     , overrideScaleZ_("overrideScaleZ", "Override Z Scale?", false)
-    , scaleZ_("scaleZ", "Scalze Z", 0.01, 0, 1, 0.001) {
+    , scaleZ_("scaleZ", "Scale Z", 0.01, 0, 1, 0.001)
+    , skipLastGroup_("discardLastGroup", "Skip Last Group", false) {
 
     addPort(vorticesIn_);
     addPort(boundaryOut_);
     addPort(centerOut_);
-    addProperties(boundaryRep_, centerRep_, showSlices3D_, groupDisplay_, timeSlice_, heightSlice_,
-                  overrideScaleZ_, scaleZ_);
+    addProperties(boundaryRep_, centerRep_, showSlices3D_, groupDisplay_, colorSource_, timeSlice_,
+                  heightSlice_, singleGroupProperty_, overrideScaleZ_, scaleZ_, skipLastGroup_);
     timeSlice_.visibilityDependsOn(showSlices3D_,
                                    [](auto& val) { return val != ShowSlices3D::Time; });
     heightSlice_.visibilityDependsOn(showSlices3D_,
@@ -81,9 +85,11 @@ VortexToMesh::VortexToMesh()
     vorticesIn_.onChange([this]() {
         if (!vorticesIn_.hasData()) return;
         auto vortices = vorticesIn_.getData();
-        timeSlice_.set(timeSlice_.get(), vortices->getTimeRange().x, vortices->getTimeRange().y, 1);
-        heightSlice_.set(heightSlice_.get(), vortices->getHeightRange().x,
-                         vortices->getHeightRange().y, 1);
+        timeSlice_.set(timeSlice_.get(), vortices->getTimeRange().x + 1,
+                       vortices->getTimeRange().y + 1, 1);
+        heightSlice_.set(heightSlice_.get(), vortices->getHeightRange().x + 1,
+                         vortices->getHeightRange().y + 1, 1);
+        singleGroupProperty_.selectedGroup_.setMaxValue(vortices->numGroups());
     });
 }
 
@@ -124,14 +130,26 @@ void VortexToMesh::process() {
     }
 }
 
+vec4 VortexToMesh::getTurningColor(Vortex::Turning rotation) {
+    switch (rotation) {
+        case Vortex::Turning::Clockwise:
+            return vec4(1, 0, 0, 1);
+        case Vortex::Turning::CounterClockwise:
+            return vec4(0, 0, 1, 1);
+        default:
+            return vec4(0, 0, 0, 1);
+    }
+}
+
 bool VortexToMesh::keepVortex(const Vortex& vort) const {
     switch (showSlices3D_.get()) {
         case ShowSlices3D::Height:
-            return vort.timeSlice == timeSlice_.get();
+            return vort.timeSlice + 1 == timeSlice_.get();
         case ShowSlices3D::Time:
-            return vort.heightSlice == heightSlice_.get();
+            return vort.heightSlice + 1 == heightSlice_.get();
         default:
-            return vort.timeSlice == timeSlice_.get() && vort.heightSlice == heightSlice_.get();
+            return vort.timeSlice + 1 == timeSlice_.get() &&
+                   vort.heightSlice + 1 == heightSlice_.get();
     }
 }
 
@@ -144,6 +162,20 @@ size_t VortexToMesh::getPos3D(const Vortex& vort) const {
         default:
             return 0;
     }
+}
+
+vec4 VortexToMesh::getColor(bool firstVort, const vec4& groupColor, const Vortex& vort,
+                            const dvec2& scoreRange) {
+    vec4 color =
+        (colorSource_.get() == ColorSource::Group) ? groupColor : getTurningColor(vort.rotation);
+    if (!firstVort && groupDisplay_.get() == GroupDisplay::HighlightFirst) {
+        color *= 0.5;
+        color.a = 1;
+    } else if (groupDisplay_.get() == GroupDisplay::Score) {
+        color *= (vort.score - scoreRange.x) * 0.9 / (scoreRange.y - scoreRange.x) + 0.05;
+        color.a = 1;
+    }
+    return color;
 }
 
 void VortexToMesh::createLineBoundaryMesh(const std::vector<vec4>& colors, const mat4& modelMat,
@@ -161,12 +193,25 @@ void VortexToMesh::createLineBoundaryMesh(const std::vector<vec4>& colors, const
     boundaryMesh->setWorldMatrix(worldMat);
 
     size_t numVerts = 0;
-    for (size_t group = 0; group < vortices->numGroups(); ++group) {
-        bool fullColor = true;
+    size_t numGroups = skipLastGroup_.get() ? vortices->numGroups() - 1 : vortices->numGroups();
+    for (size_t group = 0; group < numGroups; ++group) {
+        if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
+        bool firstVortex = true;
+        size_t time = vortices->getTimeRange().y + 1;
+        size_t height = vortices->getHeightRange().y + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
             if (!keepVortex(*vort)) continue;
-            vec4 color = fullColor ? colors[group] : colors[group] * 0.5;
-            color.a = 1;
+            vec4 color = getColor(firstVortex, colors[group], *vort, vortices->getScoreRange());
+            if (groupDisplay_.get() == GroupDisplay::OnlyFirst && time == vort->timeSlice &&
+                height == vort->heightSlice) {
+                continue;
+            } else if (groupDisplay_.get() == GroupDisplay::HighlightFirst &&
+                       (time != vort->timeSlice || height != vort->heightSlice)) {
+                color = getColor(true, colors[group], *vort, vortices->getScoreRange());
+            }
+            time = vort->timeSlice;
+            height = vort->heightSlice;
+
             size_t valZ = getPos3D(*vort);
             for (const auto& point : vort->boundary) {
                 boundaryVerts.push_back({vec3(point.x, point.y, valZ), color});
@@ -177,10 +222,9 @@ void VortexToMesh::createLineBoundaryMesh(const std::vector<vec4>& colors, const
                 boundaryIndices.push_back(numVerts + line);
             }
             if (groupDisplay_.get() == GroupDisplay::HighlightFirst) {
-                fullColor = false;
+                firstVortex = false;
             }
             numVerts += vort->size();
-            if (groupDisplay_.get() == GroupDisplay::OnlyFirst) break;
         }
     }
     boundaryMesh->addVertices(boundaryVerts);
@@ -189,11 +233,7 @@ void VortexToMesh::createLineBoundaryMesh(const std::vector<vec4>& colors, const
 
 void VortexToMesh::createSurfaceBoundaryMesh(const std::vector<vec4>& colors, const mat4& modelMat,
                                              const mat4& worldMat) {
-    if (!vorticesIn_.hasData()) return;
-    if (groupDisplay_.get() == GroupDisplay::OnlyFirst) {
-        createLineBoundaryMesh(colors, modelMat, worldMat);
-        return;
-    }
+    if (!vorticesIn_.hasData() || vorticesIn_.getData()->size() == 0) return;
     auto vortices = vorticesIn_.getData();
 
     // Boundary mesh.
@@ -205,72 +245,114 @@ void VortexToMesh::createSurfaceBoundaryMesh(const std::vector<vec4>& colors, co
     boundaryMesh->setModelMatrix(modelMat);
     boundaryMesh->setWorldMatrix(worldMat);
 
-    size_t firstVertPreviousLine = 0;
+    size_t firstVertPreviousVort = 0;
     size_t firstVertCurrentLine = 0;
-    for (size_t group = 0; group < vortices->numGroups(); ++group) {
-        vec4 color = colors[group];
-        const Vortex* previousLine = nullptr;
+    size_t numGroups = skipLastGroup_.get() ? vortices->numGroups() - 1 : vortices->numGroups();
+    for (size_t group = 0; group < numGroups; ++group) {
+        if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
+        const Vortex* previousVort = nullptr;
+        std::vector<const Vortex*> orderedVorts;
+        size_t time = vortices->getTimeRange().y + 1;
+        size_t height = vortices->getHeightRange().y + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
             if (!keepVortex(*vort)) continue;
-            color.a = 1;
+            if (groupDisplay_.get() == GroupDisplay::OnlyFirst && time == vort->timeSlice &&
+                height == vort->heightSlice) {
+                continue;
+            }
+            time = vort->timeSlice;
+            height = vort->heightSlice;
+            orderedVorts.push_back(&*vort);
+        }
+        if (orderedVorts.size() == 0) continue;
+        if (showSlices3D_.get() == ShowSlices3D::Height) {
+            std::sort(
+                orderedVorts.begin(), orderedVorts.end(),
+                [](const Vortex* a, const Vortex* b) { return a->heightSlice < b->heightSlice; });
+        } else if (showSlices3D_.get() == ShowSlices3D::Time) {
+            std::sort(orderedVorts.begin(), orderedVorts.end(),
+                      [](const Vortex* a, const Vortex* b) { return a->timeSlice < b->timeSlice; });
+        }
+        for (const Vortex* vort : orderedVorts) {
             size_t valZ = getPos3D(*vort);
+            vec4 color =
+                getColor(vort == orderedVorts[0], colors[group], *vort, vortices->getScoreRange());
             for (const auto& point : vort->boundary) {
                 boundaryVerts.push_back({vec3(point.x, point.y, valZ), color});
             }
 
-            if (color.a == 1 && groupDisplay_.get() == GroupDisplay::HighlightFirst) {
-                color *= 0.5;
-                color.a = 0.99;
-            }
+            // if (orderedVorts.size() >= 2 && vort == orderedVorts[1] &&
+            //     groupDisplay_.get() == GroupDisplay::HighlightFirst) {
+            //     color *= 0.5;
+            //     color.a = 1;
+            // }
 
-            if (!previousLine) continue;
+            if (!previousVort || previousVort->rotation != vort->rotation) {
+                firstVertPreviousVort = firstVertCurrentLine;
+                firstVertCurrentLine = boundaryVerts.size();
+                previousVort = &*vort;
+                if (previousVort->rotation != vort->rotation) LogWarn("Flippedy!");
+                continue;
+            }
             // Connect to last line by strip.
-            size_t initCurrent =
-                std::min_element(vort->boundary.begin(), vort->boundary.end(),
+            size_t initPrev =
+                std::min_element(previousVort->boundary.begin(), previousVort->boundary.end(),
                                  [&](const dvec2& a, const dvec2& b) {
-                                     return glm::distance2(a, previousLine->boundary[0]) <
-                                            glm::distance2(b, previousLine->boundary[0]);
+                                     return glm::distance2(a, vort->boundary[0]) <
+                                            glm::distance2(b, vort->boundary[0]);
                                  }) -
-                vort->boundary.begin();
+                previousVort->boundary.begin();
             size_t currIdx = 0;
-            size_t prevIdx = initCurrent;
+            size_t prevIdx = initPrev;
             size_t currNext = 1;
-            size_t prevNext = (prevIdx + 1) % previousLine->size();
+            size_t prevNext = (prevIdx + 1) % previousVort->size();
             double distCurrNext =
-                glm::distance2(previousLine->boundary[prevIdx], vort->boundary[currNext]);
+                glm::distance2(previousVort->boundary[prevIdx], vort->boundary[currNext]);
             double distPrevNext =
-                glm::distance2(previousLine->boundary[currIdx], vort->boundary[prevNext]);
+                glm::distance2(vort->boundary[currIdx], previousVort->boundary[prevNext]);
+
             do {
-                boundaryIndices.push_back(prevIdx);
-                boundaryIndices.push_back(currIdx);
+                boundaryIndices.push_back(firstVertPreviousVort + prevIdx);
+                boundaryIndices.push_back(firstVertCurrentLine + currIdx);
+
+                if (std::isinf(distCurrNext)) {
+                    LogWarn("Curr is inf! Idx " << currNext << "/" << vort->size());
+                    LogWarn(previousVort->boundary[prevIdx] << " -> " << vort->boundary[currNext]);
+                    break;
+                }
+                if (std::isinf(distPrevNext)) {
+                    LogWarn("Prev is inf! Idx " << prevIdx << "/" << previousVort->size());
+                    LogWarn(vort->boundary[currIdx] << " -> " << previousVort->boundary[prevNext]);
+                    break;
+                }
+
                 if (distCurrNext <= distPrevNext) {
-                    boundaryIndices.push_back(currNext);
+                    boundaryIndices.push_back(firstVertCurrentLine + currNext);
 
                     currIdx = currNext;
                     if (currIdx == 0) {
                         distCurrNext = std::numeric_limits<double>::max();
                     } else {
                         currNext = (currIdx + 1) % vort->size();
-                        distCurrNext = glm::distance2(previousLine->boundary[prevIdx],
+                        distCurrNext = glm::distance2(previousVort->boundary[prevIdx],
                                                       vort->boundary[currNext]);
                     }
                 } else {
-                    boundaryIndices.push_back(prevNext);
+                    boundaryIndices.push_back(firstVertPreviousVort + prevNext);
 
                     prevIdx = prevNext;
-                    if (prevIdx == initCurrent) {
+                    if (prevIdx == initPrev) {
                         distPrevNext = std::numeric_limits<double>::max();
                     } else {
-                        prevNext = (prevIdx + 1) % previousLine->size();
-                        distPrevNext = glm::distance2(previousLine->boundary[currIdx],
-                                                      vort->boundary[prevNext]);
+                        prevNext = (prevIdx + 1) % previousVort->size();
+                        distPrevNext = glm::distance2(vort->boundary[currIdx],
+                                                      previousVort->boundary[prevNext]);
                     }
                 }
-            } while (currIdx != 0 && prevIdx != initCurrent);
-
-            firstVertPreviousLine = firstVertCurrentLine;
-            firstVertCurrentLine = boundaryIndices.size();
-            previousLine = &*vort;
+            } while (currIdx != currNext || prevIdx != prevNext);
+            firstVertPreviousVort = firstVertCurrentLine;
+            firstVertCurrentLine = boundaryVerts.size();
+            previousVort = &*vort;
         }
     }
     boundaryMesh->addVertices(boundaryVerts);
@@ -288,19 +370,28 @@ void VortexToMesh::createPointCenterMesh(const std::vector<vec4>& colors, const 
     centerMesh->setModelMatrix(modelMat);
     centerMesh->setWorldMatrix(worldMat);
 
-    for (size_t group = 0; group < vortices->numGroups(); ++group) {
+    size_t numGroups = skipLastGroup_.get() ? vortices->numGroups() - 1 : vortices->numGroups();
+    for (size_t group = 0; group < numGroups; ++group) {
+        if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
         size_t numVorts = 0;
+        bool firstVortex = true;
+        size_t time = vortices->getTimeRange().y + 1;
+        size_t height = vortices->getHeightRange().y + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
             if (!keepVortex(*vort)) continue;
+            if (groupDisplay_.get() == GroupDisplay::OnlyFirst && time == vort->timeSlice &&
+                height == vort->heightSlice) {
+                continue;
+            }
+            time = vort->timeSlice;
+            height = vort->heightSlice;
             numVorts++;
             size_t valZ = getPos3D(*vort);
             // for (const auto& point : vort->boundary) {
             centerPointVerts.push_back(
-                {vec3(vort->center.x, vort->center.y, valZ), 0.002, colors[group]});
-            if (groupDisplay_.get() == GroupDisplay::OnlyFirst) break;
-        }
-        if (groupDisplay_.get() == GroupDisplay::HighlightFirst) {
-            std::get<1>(centerPointVerts[centerPointVerts.size() - numVorts]) *= 2;
+                {vec3(vort->center.x, vort->center.y, valZ), 0.002,
+                 getColor(firstVortex, colors[group], *vort, vortices->getScoreRange())});
+            firstVortex = false;
         }
     }
     centerMesh->addVertices(centerPointVerts);
@@ -321,23 +412,41 @@ void VortexToMesh::createLineCenterMesh(const std::vector<vec4>& colors, const m
     centerMesh->setModelMatrix(modelMat);
     centerMesh->setWorldMatrix(worldMat);
 
-    size_t numCenters = 0;
-    bool isFirst = true;
-    for (size_t group = 0; group < vortices->numGroups(); ++group) {
+    size_t numGroups = skipLastGroup_.get() ? vortices->numGroups() - 1 : vortices->numGroups();
+    for (size_t group = 0; group < numGroups; ++group) {
+        if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
+        bool firstVortex = true;
+        size_t time = vortices->getTimeRange().y + 1;
+        size_t height = vortices->getHeightRange().y + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
             if (!keepVortex(*vort)) continue;
-            if (!isFirst) {
-                centerIndices.push_back(numCenters);
-                centerIndices.push_back(++numCenters);
+            if (groupDisplay_.get() == GroupDisplay::OnlyFirst && time == vort->timeSlice &&
+                height == vort->heightSlice) {
+                continue;
             }
+            time = vort->timeSlice;
+            height = vort->heightSlice;
+
             size_t valZ = getPos3D(*vort);
-            // for (const auto& point : vort->boundary) {
-            centerPointVerts.push_back({vec3(vort->center.x, vort->center.y, valZ), colors[group]});
-            isFirst = false;
+            centerPointVerts.push_back(
+                {vec3(vort->center.x, vort->center.y, valZ),
+                 getColor(true, colors[group], *vort, vortices->getScoreRange())});
+            if (!firstVortex) {
+                centerIndices.push_back(centerPointVerts.size());
+                centerIndices.push_back(centerPointVerts.size() + 1);
+            }
+            firstVortex = false;
         }
-        numCenters++;
     }
     centerMesh->addVertices(centerPointVerts);
     centerOut_.setData(centerMesh);
 }
+
+VortexToMesh::SingleGroupProperty::SingleGroupProperty(const std::string& identifier,
+                                                       const std::string& displayName)
+    : BoolCompositeProperty(identifier, displayName, false)
+    , selectedGroup_("selectedGroup", "Group", 0, 0, 1) {
+    addProperty(selectedGroup_);
+}
+
 }  // namespace inviwo

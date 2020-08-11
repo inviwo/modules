@@ -31,6 +31,7 @@
 
 #include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
 #include <inviwo/vortexfeatures/ports/vortexport.h>
+#include <inviwo/vortexfeatures/processors/windingangle.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -70,22 +71,17 @@ public:
 
     virtual void process() override;
     void triggerAccumulate();
+    void assemble();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    // /** All winding angle lines that are sufficiently closed. **/
-    // IntegralLineSetInport inAllLines_;
-    // /** Point set of clustered center points. **/
-    // MeshInport inAllCenters_;
-    // /** Eddy boundaries and centers over height for the selected time slice. **/
-    // IntegralLineSetInport inAllLines_;
-    // IntSizeTProperty outputTimeSlice_;
     enum class ExportVortices { NoMatching, ExportAll, ExportOnlyFirst };
 
     VortexSetInport vortexIn_;
     VortexSetOutport vortexOut_;
+    std::shared_ptr<VortexSet> outVortices_;
 
     /** Time slice to pick. Assume connection to volume sequence selection or loader setting. **/
     IntSizeTProperty timeSlice_;
@@ -95,6 +91,14 @@ private:
     ButtonProperty triggerAccumulation_;
 
     TemplateOptionProperty<ExportVortices> exportVortices_;
+    WindingAngle::ScoreProperty scoreProperties_;
+
+    struct MatchProperties : public CompositeProperty {
+        MatchProperties(const std::string& identifier, const std::string& displayName);
+        DoubleProperty scoreWeight_, sizeDiffWeight_;
+        const Vortex& bestMatchInGroup(const Vortex& seedVort, const VortexSet& vortices,
+                                       size_t group);
+    } matchProperties_;
 
     /** For each time step, one vortex set per height. **/
     std::vector<std::vector<std::shared_ptr<const VortexSet>>> vortexList_;
