@@ -74,7 +74,7 @@ VortexSetToVolumes::VortexSetToVolumes()
     inVolumes_.onChange([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
     // Overwrite first binding position to int.
-    shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0, "int");
+    // shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0, "int");
     shader_.build();
 }
 
@@ -92,8 +92,8 @@ void VortexSetToVolumes::process() {
     }
 
     if (floatVolume_.isModified()) {
-        shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0,
-                                                             floatVolume_ ? "float" : "int");
+        // shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0,
+        //                                                      floatVolume_ ? "float" : "int");
         shader_.build();
         LogWarn("Shader ID: " << shader_.getID());
     }
@@ -103,8 +103,9 @@ void VortexSetToVolumes::process() {
     if (volumeSize_.isModified() || floatVolume_.isModified()) {
         volumes_ = std::make_shared<VolumeSequence>();
         const DataFormatBase* dataFormat =
-            floatVolume_ ? static_cast<const DataFormatBase*>(DataFloat32::get())
-                         : static_cast<const DataFormatBase*>(DataInt32::get());
+            // floatVolume_ ? static_cast<const DataFormatBase*>(DataFloat32::get())
+            //              : static_cast<const DataFormatBase*>(DataInt32::get());
+            DataVec4Float32::get();
         for (size_t time = 0; time < volumeSize_->w; ++time) {
             volumes_->push_back(
                 std::make_shared<Volume>(util::glm_convert<size3_t>(*volumeSize_), dataFormat));
@@ -141,7 +142,7 @@ void VortexSetToVolumes::process() {
         // We always need to ask for a editable representation
         // this will invalidate any other representations
         VolumeGL* outVolumeGL = volumes_->at(time)->getEditableRepresentation<VolumeGL>();
-        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0, false, 0);
 
         // auto transform = CompositeTransform(mesh->getModelMatrix(),
         //                                     mesh->getWorldMatrix() * worldMatrixTransform);
@@ -153,12 +154,6 @@ void VortexSetToVolumes::process() {
 
         glMultiDrawArrays(GL_TRIANGLE_FAN, fanStarts_[time].data(), fanCounts_[time].data(),
                           fanCounts_[time].size());
-
-        // All these 3 work:
-        // MeshDrawerGL::DrawObject drawer{meshGL, meshes_[time].getDefaultMeshInfo()};
-        // drawer.draw();
-        // glDrawElements(GL_TRIANGLE_FAN, fanCounts_[time].back(), GL_UNSIGNED_INT,
-        //                reinterpret_cast<void*>(fanStarts_[time].data()));
 
         fbo_.deactivate();
     }
@@ -197,10 +192,10 @@ void VortexSetToVolumes::createMesh() {
             size_t time = vort->timeSlice - timeSize.x;
             std::vector<VortexMesh::Vertex> verts;
 
-            verts.push_back({util::glm_convert<vec3>(vort->center), uint32_t(groupID)});
             auto pushVert = [&](const dvec2& pos) {
                 verts.push_back({vec3(pos.x, pos.y, float(vort->heightSlice)), uint32_t(groupID)});
             };
+            pushVert(vort->center);
 
             // Always add in CCW order.
             if (vort->rotation == Vortex::Turning::CounterClockwise) {
@@ -208,8 +203,8 @@ void VortexSetToVolumes::createMesh() {
             } else {
                 for (int idx = vort->size() - 1; idx >= 0; --idx) pushVert(vort->boundary[idx]);
             }
-            fanStarts_[time].push_back(fanStarts_[time].back() + vort->size());
-            fanCounts_[time].push_back(vort->size());
+            fanStarts_[time].push_back(fanStarts_[time].back() + vort->size() + 1);
+            fanCounts_[time].push_back(vort->size() + 1);
             meshes_[time].addVertices(verts);
         }
     }
