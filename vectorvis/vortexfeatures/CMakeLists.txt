@@ -12,6 +12,7 @@ set(HEADER_FILES
     include/inviwo/vortexfeatures/processors/assemblewindingangle.h
     include/inviwo/vortexfeatures/processors/floodfillimage.h
     include/inviwo/vortexfeatures/processors/okuboweiss.h
+    include/inviwo/vortexfeatures/processors/vortexsettovolumes.h
     include/inviwo/vortexfeatures/processors/vortextomesh.h
     include/inviwo/vortexfeatures/processors/windingangle.h
     include/inviwo/vortexfeatures/vortexfeaturesmodule.h
@@ -28,6 +29,7 @@ set(SOURCE_FILES
     src/processors/assemblewindingangle.cpp
     src/processors/floodfillimage.cpp
     src/processors/okuboweiss.cpp
+    src/processors/vortexsettovolumes.cpp
     src/processors/vortextomesh.cpp
     src/processors/windingangle.cpp
     src/vortexfeaturesmodule.cpp
@@ -37,6 +39,9 @@ ivw_group("Source Files" ${SOURCE_FILES})
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
+    glsl/vortexraster.vert
+    glsl/vortexraster.geom
+    glsl/vortexraster.frag
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

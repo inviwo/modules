@@ -3,4 +3,5 @@
 set(dependencies
     InviwoVectorFieldVisualizationModule 
     InviwoBaseModule
+    InviwoOpenGLModule
 )

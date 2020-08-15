@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2014-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,29 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vortexfeatures/processors/assemblewindingangle.h>
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
-#include <inviwo/vortexfeatures/processors/vortextomesh.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/debugmessages.h>
+#include "utils/structs.glsl"
+#include "utils/sampler3d.glsl"
 
-namespace inviwo {
+layout(triangles) in;
+layout(triangle_strip, max_vertices = 3) out;
 
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+// uniform VolumeParameters volumeParameters;
 
-    // Processors
-    registerProcessor<AssembleWindingAngle>();
-    registerProcessor<FloodfillImage>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<VortexSetToVolumes>();
-    registerProcessor<VortexToMesh>();
-    registerProcessor<WindingAngle>();
+in uint vortexID_[3];
 
-    utilgl::setOpenGLDebugMode(utilgl::debug::Mode::DebugSynchronous,
-                               utilgl::debug::Severity::Medium);
+flat out int signedVortexID_;
+
+void main() {
+    gl_Layer = 0;  // int(gl_in[0].gl_Position.z);
+    vec2 leg1 = gl_in[1].gl_Position.xy - gl_in[0].gl_Position.xy;
+    vec2 leg2 = gl_in[2].gl_Position.xy - gl_in[0].gl_Position.xy;
+    signedVortexID_ =
+        (leg1.x * leg2.y - leg1.y * leg2.x) > 0 ? int(vortexID_[0]) : -int(vortexID_[0]);
+
+    for (int i = 0; i < 3; ++i) {
+        gl_Position = gl_in[i].gl_Position.xyxy;
+        EmitVertex();
+    }
+
+    EndPrimitive();
 }
-
-}  // namespace inviwo

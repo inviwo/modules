@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2014-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,35 +26,12 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+// uniform GeometryParameters geometry;
+layout(location = 0) in vec3 in_Position;
+layout(location = 1) in uint in_PickId;
+flat out uint vortexID_;
 
-#include <inviwo/vortexfeatures/processors/assemblewindingangle.h>
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
-#include <inviwo/vortexfeatures/processors/vortextomesh.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/debugmessages.h>
-
-namespace inviwo {
-
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Processors
-    registerProcessor<AssembleWindingAngle>();
-    registerProcessor<FloodfillImage>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<VortexSetToVolumes>();
-    registerProcessor<VortexToMesh>();
-    registerProcessor<WindingAngle>();
-
-    utilgl::setOpenGLDebugMode(utilgl::debug::Mode::DebugSynchronous,
-                               utilgl::debug::Severity::Medium);
+void main() {
+    vortexID_ = in_PickId;
+    gl_Position = in_Position.xyzz;
 }
-
-}  // namespace inviwo

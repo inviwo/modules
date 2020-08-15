@@ -9,7 +9,7 @@ class NetCDFImageSource(GenericNetCDFSource):
     def __init__(self, id, name):
         GenericNetCDFSource.__init__(self, id, name, outputDimension=2)
         self.imageOutport = ivw.data.ImageOutport("data3D")
-        self.addOutport(self.imageOutport, owner=False)
+        self.addOutport(self.imageOutport, owner=False, group="NetCDF")
 
     @staticmethod
     def processorInfo():
