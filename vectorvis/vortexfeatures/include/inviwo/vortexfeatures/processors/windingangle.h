@@ -59,7 +59,7 @@ namespace inviwo {
  * "Detection, quantification, and tracking of vortices using streamline geometry"
  * by Saderjon and Post, 2000 (https://doi.org/10.1016/S0097-8493(00)00029-7).
  *
- * Given a 2D vector field as an image, integrate stream lines. Pick out stream lines that fullfill
+ * Given a 2D vector field as an image, integrate stream lines. Pick out stream lines that fulfill
  * a circle (i.e., whose inner angles add up to +-360°).
  * In a second step, we filter them by the end point distance and radius variance.
  * The resulting lines are clustered based on their center points, and the outmost line is chosen as

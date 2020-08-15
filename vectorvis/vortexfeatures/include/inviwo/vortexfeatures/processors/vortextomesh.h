@@ -92,6 +92,7 @@ private:
     TemplateOptionProperty<ShowSlices3D> showSlices3D_;
     TemplateOptionProperty<GroupDisplay> groupDisplay_;
     TemplateOptionProperty<ColorSource> colorSource_;
+    IntSizeTProperty colorSeed_;
 
     IntSizeTProperty timeSlice_;
     IntSizeTProperty heightSlice_;

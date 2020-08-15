@@ -65,6 +65,7 @@ VortexToMesh::VortexToMesh()
     , colorSource_(
           "colorSource", "Color Source",
           {{"group", "Group", ColorSource::Group}, {"rotation", "Rotation", ColorSource::Rotation}})
+    , colorSeed_("colorSeed", "Color Seed", 1, 0, 10000, 1)
     , timeSlice_("timeSlice", "Time Slice", 1, 1, 1, 1)
     , heightSlice_("heightSlice", "Height Slice", 1, 1, 1, 1)
     , singleGroupProperty_("singleGroupProperty", "Single Group?")
@@ -75,8 +76,9 @@ VortexToMesh::VortexToMesh()
     addPort(vorticesIn_);
     addPort(boundaryOut_);
     addPort(centerOut_);
-    addProperties(boundaryRep_, centerRep_, showSlices3D_, groupDisplay_, colorSource_, timeSlice_,
-                  heightSlice_, singleGroupProperty_, overrideScaleZ_, scaleZ_, skipLastGroup_);
+    addProperties(boundaryRep_, centerRep_, showSlices3D_, groupDisplay_, colorSource_, colorSeed_,
+                  timeSlice_, heightSlice_, singleGroupProperty_, overrideScaleZ_, scaleZ_,
+                  skipLastGroup_);
     timeSlice_.visibilityDependsOn(showSlices3D_,
                                    [](auto& val) { return val != ShowSlices3D::Time; });
     heightSlice_.visibilityDependsOn(showSlices3D_,
@@ -103,6 +105,7 @@ void VortexToMesh::process() {
 
     // Random color generation.
     static std::default_random_engine eng;
+    eng.seed(colorSeed_.get());
     static std::uniform_real_distribution<float> rndDist(0, 1);
     std::vector<vec4> colors(vortices->numGroups());
     for (vec4& col : colors) {
