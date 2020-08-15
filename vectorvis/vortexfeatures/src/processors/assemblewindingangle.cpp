@@ -245,7 +245,9 @@ void AssembleWindingAngle::triggerAccumulate() {
     accumulating_ = true;
 
     if (timeSlice_.get() == 1 && heightSlice_.get() == 1) {
-        lastVortexSet_ = nullptr;  // vortexIn_.getData();
+        lastVortexSet_ = nullptr;
+    } else {
+        lastVortexSet_ = vortexIn_.getData();
     }
     timeSlice_.set(1);
     heightSlice_.set(1);
