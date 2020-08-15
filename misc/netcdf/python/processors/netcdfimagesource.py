@@ -18,7 +18,7 @@ class NetCDFImageSource(GenericNetCDFSource):
         GenericNetCDFSource.initGeneric(self, id, name)
 
         self.imageOutport = ivw.data.ImageOutport("data3D")
-        self.addOutport(self.imageOutport, owner=False)
+        self.addOutport(self.imageOutport, owner=False, group="NetCDF")
 
     @staticmethod
     def processorInfo():
@@ -34,13 +34,17 @@ class NetCDFImageSource(GenericNetCDFSource):
     def getProcessorInfo(self):
         return NetCDFImageSource.processorInfo()
 
+    def process(self):
+        GenericNetCDFSource.process(self)
+        if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists() or self.variables.size() <= 0:
+            return
+        self.reloadData()
+
     def reloadData(self):
         extents = []
         GenericNetCDFSource.reloadData(self, extents)
 
         buffer = numpy.concatenate(self.data, axis=2)
-        minVal = numpy.amin(buffer)
-        maxVal = numpy.amax(buffer)
         imageLayer = ivw.data.Layer(buffer)
         image = ivw.data.Image(imageLayer)
         self.imageOutport.setData(image)

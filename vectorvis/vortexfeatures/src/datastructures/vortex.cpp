@@ -183,7 +183,6 @@ void Vortex::roundUpBoundary(double boundaryPart) {
             boundary[point] + (glm::normalize(boundary[point] - center) * initOffset * offsetScale);
     }
     boundary.push_back(boundary[0]);
-    boundary.push_back(center);
 }
 
 void Vortex::setRadii() {

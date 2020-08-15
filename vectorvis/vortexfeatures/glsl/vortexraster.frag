@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2013-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,34 +27,10 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vortexfeatures/processors/assemblewindingangle.h>
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
-#include <inviwo/vortexfeatures/processors/vortextomesh.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/debugmessages.h>
+flat in int signedVortexID_;
 
-namespace inviwo {
-
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Processors
-    registerProcessor<AssembleWindingAngle>();
-    registerProcessor<FloodfillImage>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<VortexSetToVolumes>();
-    registerProcessor<VortexToMesh>();
-    registerProcessor<WindingAngle>();
-
-    utilgl::setOpenGLDebugMode(utilgl::debug::Mode::DebugSynchronous,
-                               utilgl::debug::Severity::Medium);
+void main() {
+    // See volume_binary.frag: use FragData0 as-is, but only 8 bit depth then :/
+    // FragData0 = vec4(vec3(signedVortexID_), 1.0);
+    VortexData = 1000 + signedVortexID_;
 }
-
-}  // namespace inviwo
