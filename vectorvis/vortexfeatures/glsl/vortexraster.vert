@@ -28,7 +28,7 @@
  *********************************************************************************/
 // uniform GeometryParameters geometry;
 layout(location = 0) in vec3 in_Position;
-layout(location = 1) in uint in_PickId;
+layout(location = 7) in uint in_PickId;
 flat out uint vortexID_;
 
 void main() {

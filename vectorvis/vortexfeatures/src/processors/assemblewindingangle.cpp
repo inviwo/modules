@@ -31,6 +31,7 @@
 #include <inviwo/vortexfeatures/algorithms/vortexutils.h>
 
 namespace inviwo {
+const size_t AssembleWindingAngle::SEED_DEPTH = 3;
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo AssembleWindingAngle::processorInfo_{
@@ -48,6 +49,7 @@ AssembleWindingAngle::AssembleWindingAngle()
     , timeSlice_("timeSlice", "Time Slice", 1, 1, 2, 1, InvalidationLevel::Valid)
     , heightSlice_("heightSlice", "Height Slice", 1, 1, 2, 1, InvalidationLevel::Valid)
     , triggerAccumulation_("triggerAccum", "Accumulate", [this]() { triggerAccumulate(); })
+    , autoAccumulate_("autoAccumulate", "Auto Accumulate", false)
     , exportVortices_("exportVorts", "Export",
                       {{"noMatching", "No Matching", ExportVortices::NoMatching},
                        {"all", "Export All", ExportVortices::ExportAll},
@@ -57,23 +59,34 @@ AssembleWindingAngle::AssembleWindingAngle()
 
     addPort(vortexIn_);
     addPort(vortexOut_);
-    addProperties(timeSlice_, heightSlice_, triggerAccumulation_, exportVortices_, scoreProperties_,
-                  matchProperties_);
+    addProperties(timeSlice_, heightSlice_, triggerAccumulation_, autoAccumulate_, exportVortices_,
+                  scoreProperties_, matchProperties_);
 
     auto triggerProcess = [&]() { invalidate(InvalidationLevel::InvalidOutput); };
+    auto triggerAccumulateAndProcess = [&]() {
+        if (!accumulating_ && autoAccumulate_.get()) triggerAccumulate();
+        invalidate(InvalidationLevel::InvalidOutput);
+    };
 
-    vortexIn_.onChange(triggerProcess);
+    vortexIn_.onChange(triggerAccumulateAndProcess);
     exportVortices_.onChange(triggerProcess);
-    matchProperties_.onChange(triggerProcess);
-    matchProperties_.scoreWeight_.onChange(triggerProcess);
-    matchProperties_.sizeDiffWeight_.onChange(triggerProcess);
-    scoreProperties_.getBoolProperty()->onChange(triggerProcess);
-    scoreProperties_.sizeWeight_.onChange(triggerProcess);
-    scoreProperties_.roundnessWeight_.onChange(triggerProcess);
+    matchProperties_.onChange(triggerAccumulateAndProcess);
+    matchProperties_.scoreWeight_.onChange(triggerAccumulateAndProcess);
+    matchProperties_.sizeDiffWeight_.onChange(triggerAccumulateAndProcess);
+    scoreProperties_.getBoolProperty()->onChange(triggerAccumulateAndProcess);
+    scoreProperties_.sizeWeight_.onChange(triggerAccumulateAndProcess);
+    scoreProperties_.roundnessWeight_.onChange(triggerAccumulateAndProcess);
+    autoAccumulate_.onChange([&]() {
+        if (!accumulating_ && autoAccumulate_.get()) triggerAccumulate();
+    });
 }
 
 void AssembleWindingAngle::process() {
     if (!vortexIn_.hasData()) return;
+
+    // if (!accumulating_ &&
+    //     (vortexIn_.isChanged() || scoreProperties_.isModified() ||
+    //     matchProperties_.isModified())) triggerAccumulate();
 
     if (accumulating_) {
         if (vortexIn_.getData() == lastVortexSet_) {
@@ -162,7 +175,7 @@ void AssembleWindingAngle::assemble() {
             }
         };
 
-        size_t seedHeight = std::min(vortexList_[0].size() - 1, size_t(3));
+        size_t seedHeight = std::min(vortexList_[0].size() - 1, SEED_DEPTH);
 
         for (size_t time = 0; time < vortexList_.size(); ++time) {
             const auto& heightStack = vortexList_[time];
