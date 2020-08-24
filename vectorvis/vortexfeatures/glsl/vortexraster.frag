@@ -29,8 +29,4 @@
 
 flat in int signedVortexID_;
 
-void main() {
-    // See volume_binary.frag: use FragData0 as-is, but only 8 bit depth then :/
-    // FragData0 = vec4(vec3(signedVortexID_), 1.0);
-    VortexData = 1000 + signedVortexID_;
-}
+void main() { VortexData = signedVortexID_; }

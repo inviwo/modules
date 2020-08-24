@@ -53,16 +53,6 @@ namespace inviwo {
  * The result of the winding angle processor is then fed into this processors inport.
  * From all incoming centers and winding angle streamlines, a set is chosen that represents the
  * eddy. Candidates are discarded as eddies if they can not be trces over a number of time steps.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 class IVW_MODULE_VORTEXFEATURES_API AssembleWindingAngle : public Processor {
 public:
@@ -75,6 +65,8 @@ public:
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+    static const size_t SEED_DEPTH;
 
 private:
     enum class ExportVortices { NoMatching, ExportAll, ExportOnlyFirst };
@@ -89,6 +81,8 @@ private:
     IntSizeTProperty heightSlice_;
     /** Start moving through time and height slices, accumulating the results. **/
     ButtonProperty triggerAccumulation_;
+    /** Automatically start moving through height and time. **/
+    BoolProperty autoAccumulate_;
 
     TemplateOptionProperty<ExportVortices> exportVortices_;
     WindingAngle::ScoreProperty scoreProperties_;

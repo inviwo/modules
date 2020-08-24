@@ -40,6 +40,8 @@
 #include <modules/opengl/buffer/framebufferobject.h>
 #include <modules/opengl/texture/textureunit.h>
 
+#include <inviwo/core/ports/imageport.h>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.VortexSetToVolume, VortexSet To Volume}
@@ -70,6 +72,7 @@ private:
 
     Shader shader_;
     FrameBufferObject fbo_;
+
     /** One mesh per time slice. **/
     std::vector<VortexMesh> meshes_;
     std::vector<std::vector<GLint>> fanStarts_;

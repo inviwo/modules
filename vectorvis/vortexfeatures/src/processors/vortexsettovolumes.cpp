@@ -36,6 +36,11 @@
 //
 #include <inviwo/core/rendering/meshdrawerfactory.h>
 #include <modules/opengl/rendering/meshdrawergl.h>
+
+#include <modules/opengl/openglutils.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/image/imagegl.h>
+#include <modules/base/algorithm/dataminmax.h>
 //
 
 namespace inviwo {
@@ -71,15 +76,32 @@ VortexSetToVolumes::VortexSetToVolumes()
     addPort(outVolumes_);
     addProperties(volumeSize_, floatVolume_);
 
-    inVolumes_.onChange([&]() { invalidate(InvalidationLevel::InvalidOutput); });
+    auto callProcess = [&]() { invalidate(InvalidationLevel::InvalidOutput); };
 
-    // Overwrite first binding position to int.
-    // shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0, "int");
+    inVolumes_.onChange(callProcess);
+    shader_.onReload(callProcess);
+
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+    utilgl::DepthMaskState depthMask(GL_FALSE);
+    glFrontFace(GL_CCW);
+    utilgl::CullFaceState culling(GL_NONE);
+    utilgl::BlendModeState blendModeState(GL_ONE, GL_ONE);
+    // Overwrite first binding position to float or int.
+    shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0,
+                                                         floatVolume_ ? "float" : "int");
     shader_.build();
 }
 
 void VortexSetToVolumes::process() {
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+    utilgl::DepthMaskState depthMask(GL_FALSE);
+    glFrontFace(GL_CCW);
+    utilgl::CullFaceState culling(GL_NONE);
+    utilgl::BlendModeState blendModeState(GL_ONE, GL_ONE);
+
+    if (!shader_.isReady()) shader_.build();
     if (inVolumes_.isChanged()) {
+        // rebindVolume_ = true;
         if (inVolumes_.hasData() && inVolumes_.getData()->size() > 0) {
 
             const auto volumes = inVolumes_.getData();
@@ -92,29 +114,30 @@ void VortexSetToVolumes::process() {
     }
 
     if (floatVolume_.isModified()) {
-        // shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0,
-        //                                                      floatVolume_ ? "float" : "int");
+        utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
+        shader_.getFragmentShaderObject()->addOutDeclaration("VortexData", 0,
+                                                             floatVolume_ ? "float" : "int");
         shader_.build();
-        LogWarn("Shader ID: " << shader_.getID());
     }
 
     if (!inVortices_.getData() || inVortices_.getData()->size() == 0) return;
     auto vortices = inVortices_.getData();
+
     if (volumeSize_.isModified() || floatVolume_.isModified()) {
         volumes_ = std::make_shared<VolumeSequence>();
         const DataFormatBase* dataFormat =
-            // floatVolume_ ? static_cast<const DataFormatBase*>(DataFloat32::get())
-            //              : static_cast<const DataFormatBase*>(DataInt32::get());
-            DataVec4Float32::get();
+            floatVolume_ ? static_cast<const DataFormatBase*>(DataFloat32::get())
+                         : static_cast<const DataFormatBase*>(DataInt32::get());
         for (size_t time = 0; time < volumeSize_->w; ++time) {
             volumes_->push_back(
                 std::make_shared<Volume>(util::glm_convert<size3_t>(*volumeSize_), dataFormat));
             volumes_->back()->setModelMatrix(vortices->getModelMatrix());
             volumes_->back()->setWorldMatrix(vortices->getWorldMatrix());
-            volumes_->back()->dataMap_.dataRange = {0, 2};   // vortices->numGroups()};
-            volumes_->back()->dataMap_.valueRange = {0, 2};  // vortices->numGroups()};
+            volumes_->back()->dataMap_.dataRange = {0, vortices->numGroups()};
+            volumes_->back()->dataMap_.valueRange = {0, vortices->numGroups()};
         }
     }
+    outVolumes_.setData(volumes_);
     size2_t timeSize = vortices->getTimeRange();
     size2_t heightSize = vortices->getHeightRange();
     timeSize.y = std::min(timeSize.y, volumeSize_->w);
@@ -123,43 +146,29 @@ void VortexSetToVolumes::process() {
     if (newMesh) createMesh();
 
     shader_.activate();
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, false);
-    utilgl::DepthMaskState depthMask(GL_FALSE);
-    glFrontFace(GL_CCW);
-    utilgl::CullFaceState culling(GL_NONE);
-    utilgl::BlendModeState blendModeState(GL_ONE, GL_ZERO);
+    fbo_.activate();
 
-    // BlendModeEquationState
     for (size_t time = 0; time <= timeSize.y - timeSize.x; ++time) {
         if (fanCounts_[time].size() == 0) continue;
-        TextureUnitContainer cont;
 
-        // const size3_t dim{inport_.getData()->getDimensions()};
-        fbo_.activate();
         glViewport(0, 0, static_cast<GLsizei>(volumeSize_->x),
                    static_cast<GLsizei>(volumeSize_->y));
 
-        // We always need to ask for a editable representation
-        // this will invalidate any other representations
+        // We always need to ask for an editable representation
+        // this will invalidate any other representations.
         VolumeGL* outVolumeGL = volumes_->at(time)->getEditableRepresentation<VolumeGL>();
-        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0, false, 0);
-
-        // auto transform = CompositeTransform(mesh->getModelMatrix(),
-        //                                     mesh->getWorldMatrix() * worldMatrixTransform);
-        // utilgl::setShaderUniforms(*shader_, transform, "geometry");
-        // shader_.setUniform("pickingEnabled", meshutil::hasPickIDBuffer(mesh.get()));
+        fbo_.detachAllTextures();
+        fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
+        fbo_.checkStatus();
 
         auto meshGL = meshes_[time].getRepresentation<MeshGL>();
         utilgl::Enable<MeshGL> enable(meshGL);
 
         glMultiDrawArrays(GL_TRIANGLE_FAN, fanStarts_[time].data(), fanCounts_[time].data(),
                           fanCounts_[time].size());
-
-        fbo_.deactivate();
     }
     shader_.deactivate();
-
-    outVolumes_.setData(volumes_);
+    fbo_.deactivate();
 }
 
 void VortexSetToVolumes::createMesh() {
@@ -175,17 +184,11 @@ void VortexSetToVolumes::createMesh() {
     fanCounts_.clear();
     fanCounts_.resize(timeSize.y - timeSize.x + 1);
 
-    for (size_t time = 0; time <= timeSize.y - timeSize.x; ++time) {
+    for (auto& starts : fanStarts_) {
         meshes_.emplace_back(DrawType::Triangles, ConnectivityType::Fan);
-        fanStarts_[time].push_back(0);
+        starts.push_back(0);
     }
 
-    // for (size_t tmpIdx = 0; tmpIdx < vortices->size(); ++tmpIdx) {
-    //     size_t groupID = 1;
-    //     const Vortex* vort = &(*vortices)[tmpIdx];
-    //     std::cout << vort << std::endl;
-    //     std::cout << vort->size() << std::endl;
-    //     {
     for (size_t group = 0; group < vortices->numGroups(); ++group) {
         size_t groupID = group + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
@@ -208,8 +211,8 @@ void VortexSetToVolumes::createMesh() {
             meshes_[time].addVertices(verts);
         }
     }
-    for (size_t time = 0; time < timeSize.y - timeSize.x; ++time) {
-        fanStarts_[time].pop_back();
+    for (auto& starts : fanStarts_) {
+        starts.pop_back();
     }
 }
 
