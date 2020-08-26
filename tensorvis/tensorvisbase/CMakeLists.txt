@@ -5,7 +5,7 @@ ivw_module(TensorVisBase)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
-	  include/inviwo/tensorvisbase/algorithm/tensorfieldslicing.h
+    include/inviwo/tensorvisbase/algorithm/tensorfieldslicing.h
     include/inviwo/tensorvisbase/algorithm/tensorfieldsampling.h
     include/inviwo/tensorvisbase/datastructures/deformablecube.h
     include/inviwo/tensorvisbase/datastructures/deformablecylinder.h
@@ -136,17 +136,6 @@ set(TEST_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/tests/unittests/to-string.cpp
 )
 ivw_add_unittest(${TEST_FILES})
-
-if (NOT OPENMP_FOUND)
-    find_package(OpenMP QUIET)
-    if (OPENMP_FOUND)
-        MESSAGE(STATUS "OpenMP flag set in TensorVisBase module.")
-        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-    endif()
-endif()
-
 
 #--------------------------------------------------------------------
 # Create module
