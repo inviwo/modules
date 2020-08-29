@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2016-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,38 +27,31 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vortexfeatures/processors/assemblewindingangle.h>
-#include <inviwo/vortexfeatures/processors/floodfillimage.h>
-#include <inviwo/vortexfeatures/processors/lineplot.h>
-#include <inviwo/vortexfeatures/processors/okuboweiss.h>
-#include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
-#include <inviwo/vortexfeatures/processors/vortextomesh.h>
-#include <inviwo/vortexfeatures/processors/windingangle.h>
-#include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
-#include <modules/opengl/debugmessages.h>
+#include "plotting/common.glsl"
+#include "utils/structs.glsl"
+#include "utils/sampler2d.glsl"
+#include "utils/pickingutils.glsl"
 
-namespace inviwo {
+layout(location = 7) in uint in_PickId;
 
-VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
-    : InviwoModule(app, "VortexFeatures") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+out vec4 vColor;
+out float vRadius;
+out float vDepth;
+flat out uint pickID_;
 
-    registerProperty<plot::LineAxisProperty>();
+uniform bool pickingEnabled = false;
+uniform float radius = 0.4;
 
-    // Processors
-    registerProcessor<AssembleWindingAngle>();
-    registerProcessor<FloodfillImage>();
-    registerProcessor<plot::LinePlot>();
-    registerProcessor<OkuboWeiss2D>();
-    registerProcessor<OkuboWeiss3D>();
-    registerProcessor<VortexSetToVolumes>();
-    registerProcessor<VortexToMesh>();
-    registerProcessor<WindingAngle>();
-
-    utilgl::setOpenGLDebugMode(utilgl::debug::Mode::DebugSynchronous,
-                               utilgl::debug::Severity::Medium);
+float norm(in float v, in vec2 mm) { 
+    return (v - mm.x) / (mm.y - mm.x); 
 }
 
-}  // namespace inviwo
+void main(void) {
+    vColor = in_Color;
+    vRadius = radius;
+    vDepth = 0.5;
+
+    gl_Position = vec4(in_Vertex.xy, 0.5, 1);
+    
+    pickID_ = pickingEnabled ? in_PickId : 0;
+}
