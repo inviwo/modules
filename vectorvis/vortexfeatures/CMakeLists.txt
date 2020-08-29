@@ -11,6 +11,7 @@ set(HEADER_FILES
     include/inviwo/vortexfeatures/ports/vortexport.h
     include/inviwo/vortexfeatures/processors/assemblewindingangle.h
     include/inviwo/vortexfeatures/processors/floodfillimage.h
+    include/inviwo/vortexfeatures/processors/lineplot.h
     include/inviwo/vortexfeatures/processors/okuboweiss.h
     include/inviwo/vortexfeatures/processors/vortexsettovolumes.h
     include/inviwo/vortexfeatures/processors/vortextomesh.h
@@ -28,6 +29,7 @@ set(SOURCE_FILES
     src/ports/vortexport.cpp
     src/processors/assemblewindingangle.cpp
     src/processors/floodfillimage.cpp
+    src/processors/lineplot.cpp
     src/processors/okuboweiss.cpp
     src/processors/vortexsettovolumes.cpp
     src/processors/vortextomesh.cpp
@@ -42,6 +44,7 @@ set(SHADER_FILES
     glsl/vortexraster.vert
     glsl/vortexraster.geom
     glsl/vortexraster.frag
+    glsl/lineplotdot.vert
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
@@ -58,4 +61,4 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 #--------------------------------------------------------------------
 # Add shader directory to pack
-# ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)

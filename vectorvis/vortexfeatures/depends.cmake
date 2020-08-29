@@ -4,4 +4,7 @@ set(dependencies
     InviwoVectorFieldVisualizationModule 
     InviwoBaseModule
     InviwoOpenGLModule
+    InviwoDataFrameModule
+    InviwoPlottingModule
+    InviwoPlottingGLModule
 )

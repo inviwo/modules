@@ -94,7 +94,7 @@ auto DispatchMeasure<SpatialDims>::operator()(const PrecisionType* grid, Callabl
     using DoubleVec = typename util::glmtype<double, DataDims>::type;
 
     // Figure out function signature.
-    constexpr bool ComputeJacobian = std::is_invocable_v<Callable, Vec, Mat>;
+    static constexpr bool ComputeJacobian = std::is_invocable_v<Callable, Vec, Mat>;
 
     static_assert(std::is_invocable_v<Callable, Vec, Mat> || std::is_invocable_v<Callable, Vec>,
                   "Can not call the given function with velocity and/or Jacobian.");
