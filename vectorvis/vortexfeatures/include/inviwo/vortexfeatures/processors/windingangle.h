@@ -93,6 +93,7 @@ public:
 
 private:
     ImageInport inImage_;
+    IntegralLineSetOutport linesOut_;
 
     /** All vortices. Enclosing boundaries are ordered within groups. **/
     VortexSetOutport vortexOut_;
@@ -103,6 +104,8 @@ private:
     IntegralLineProperties properties_;
     /** How many steps can maximally be taken when integrating? **/
     IntProperty maxTotalSteps_;
+    /** Which sampling step to take for seeding? **/
+    IntProperty samplingStep_;
     /** Use absolute or relative threshold proeprty? **/
     BoolProperty relativeThreshold_;
     /** What is the maximum end point distance relative to the line length? **/
@@ -113,6 +116,8 @@ private:
     BoolProperty limitRadiusRatio_;
     /** How much may the min and max radius deviate from each other? **/
     DoubleProperty maxRadiusRatio_;
+    /** Round the boundary curves? **/
+    BoolProperty roundCurves_;
 
     bool integrate_ = false;
     bool filter_ = false;

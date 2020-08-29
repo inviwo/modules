@@ -80,6 +80,30 @@ int matchGroupByCenter(const Vortex& seedVort, const VortexSet& vortices) {
     return minDistGroup;
 }
 
+VortexSet removeSurroundingVortices(VortexSet& vortices) {
+    VortexSet outSet(vortices.getModelMatrix(), vortices.getWorldMatrix());
+    for (size_t group = 0; group < vortices.numGroups(); ++group) {
+        bool remove = true;
+        for (auto vort = vortices.beginGroup(group); vort != vortices.endGroup(group); ++vort) {
+            if (remove) {
+                remove = false;
+                for (size_t compGroup = group + 1; compGroup < vortices.numGroups(); ++compGroup) {
+                    if (vort->containsPoint(vortices.beginGroup(compGroup)->center)) {
+                        remove = true;
+                        break;
+                    }
+                }
+            }
+            if (!remove) {
+                outSet.push_back(std::move(*vort));
+            }
+        }
+        if (!remove) outSet.startNewGroup();
+    }
+    outSet.mergeLastGroups();
+    return outSet;
+}
+
 }  // namespace vortexutil
 
 }  // namespace inviwo

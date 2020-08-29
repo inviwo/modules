@@ -156,7 +156,8 @@ void AssembleWindingAngle::assemble() {
         };
 
         auto pushBackGroup = [&](size_t time, size_t height, size_t group,
-                                 const Vortex* bestMatch) {
+                                 const Vortex* bestMatch) -> bool {
+            if (groupMatched[time][height][group] != 0) return false;
             groupMatched[time][height][group] = 1;
             const auto vortexSet = vortexList_[time][height];
             if (bestMatch) {
@@ -173,6 +174,7 @@ void AssembleWindingAngle::assemble() {
                     outVortices_->back().heightSlice = height;
                 }
             }
+            return true;
         };
 
         size_t seedHeight = std::min(vortexList_[0].size() - 1, SEED_DEPTH);
@@ -182,6 +184,7 @@ void AssembleWindingAngle::assemble() {
 
             // Take only eddies: vortices that appear on the surface.
             const auto vortexSet = heightStack[seedHeight];
+
             for (size_t group = 0; group < vortexSet->numGroups(); ++group) {
                 if (groupMatched[time][seedHeight][group] != 0) continue;
 
@@ -190,21 +193,38 @@ void AssembleWindingAngle::assemble() {
                     [](const Vortex& a, const Vortex& b) { return a.score < b.score; });
 
                 pushBackGroup(time, seedHeight, group, topLayerVortex);
-
+                bool skippedTime = false;
                 // Go through all heights.
                 for (size_t searchTime = time; searchTime < vortexList_.size(); ++searchTime) {
+                    // Allow the algorithm to skip exactly one time and depth slice.
 
+                    bool skippedDepth = false;
                     // New time slice? Match vortex on top slice.
                     if (searchTime != time) {
 
                         auto nextVortTuple = findClosestOverlap(
                             *topLayerVortex, *vortexList_[searchTime][seedHeight]);
                         const Vortex* nextVort = std::get<0>(nextVortTuple);
-                        if (!nextVort) {
-                            break;  // No unbroken time-line - vortex stops here.
+                        if (!nextVort ||
+                            groupMatched[searchTime][seedHeight][std::get<1>(nextVortTuple)] != 0) {
+                            if (skippedTime) break;  // No unbroken time-line - vortex stops here.
+                            skippedTime = true;
+                            continue;
                         }
-                        pushBackGroup(searchTime, seedHeight, std::get<1>(nextVortTuple), nextVort);
-                        topLayerVortex = nextVort;
+
+                        // Go back one time step to fix the time jump first.
+                        if (skippedTime) {
+                            searchTime--;
+                            outVortices_->push_back(*topLayerVortex);
+                            outVortices_->back().timeSlice = searchTime;
+                            outVortices_->back().heightSlice = seedHeight;
+                            outVortices_->back().score = 10;
+                            skippedTime = false;
+                        } else {
+                            topLayerVortex = nextVort;
+                            pushBackGroup(searchTime, seedHeight, std::get<1>(nextVortTuple),
+                                          nextVort);
+                        }
                     }
 
                     const Vortex* lastHeightVortex = topLayerVortex;
@@ -213,8 +233,19 @@ void AssembleWindingAngle::assemble() {
                         auto nextVortTuple =
                             findClosestOverlap(*lastHeightVortex, *vortexList_[searchTime][height]);
                         const Vortex* nextVort = std::get<0>(nextVortTuple);
-                        if (!nextVort) {
-                            break;  // No unbroken time-line - vortex stops here.
+                        if (!nextVort ||
+                            groupMatched[searchTime][height][std::get<1>(nextVortTuple)] != 0) {
+                            if (skippedDepth)
+                                break;  // No unbroken height-line - vortex stops here.
+                            skippedDepth = true;
+                            continue;
+                        }
+                        if (skippedDepth) {
+                            outVortices_->push_back(*nextVort);
+                            outVortices_->back().timeSlice = time;
+                            outVortices_->back().heightSlice = height - 1;
+                            outVortices_->back().score = 10;
+                            skippedTime = false;
                         }
                         pushBackGroup(searchTime, height, std::get<1>(nextVortTuple), nextVort);
                         lastHeightVortex = nextVort;
@@ -227,7 +258,10 @@ void AssembleWindingAngle::assemble() {
                         if (!nextVort) {
                             break;  // No unbroken time-line - vortex stops here.
                         }
-                        pushBackGroup(searchTime, height, std::get<1>(nextVortTuple), nextVort);
+                        if (!pushBackGroup(searchTime, height, std::get<1>(nextVortTuple),
+                                           nextVort)) {
+                            break;
+                        }
                         lastHeightVortex = nextVort;
                     }
                 }

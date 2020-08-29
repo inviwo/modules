@@ -59,7 +59,7 @@ struct IVW_MODULE_VORTEXFEATURES_API Vortex {
            Turning rotation = Turning::Unknown);
 
     /** Close off the vortex nicely across a specified part of the boundary. **/
-    void roundUpBoundary(double boundaryPart = 0.2);
+    bool roundUpBoundary(double boundaryPart = 0.2);
     /** Sets the radii to the minimal, maximal and average distance of boundary points to the
      * center. **/
     void setRadii();

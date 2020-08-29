@@ -64,6 +64,7 @@ VortexSetToVolumes::VortexSetToVolumes()
                   {ivec4(1, 1, 1, 1), ConstraintBehavior::Immutable},
                   {ivec4(1024, 1024, 1024, 1024), ConstraintBehavior::Ignore})
     , floatVolume_("floatVolume", "Float Volume", false)
+    , skipLastGroup_("skipLastGroup", "Skip Last Group", true)
     , shader_({{ShaderType::Vertex, "vortexraster.vert"},
                {ShaderType::Geometry, "vortexraster.geom"},
                {ShaderType::Fragment, "vortexraster.frag"}},
@@ -74,7 +75,7 @@ VortexSetToVolumes::VortexSetToVolumes()
     addPort(inVolumes_);
     inVolumes_.setOptional(true);
     addPort(outVolumes_);
-    addProperties(volumeSize_, floatVolume_);
+    addProperties(volumeSize_, floatVolume_, skipLastGroup_);
 
     auto callProcess = [&]() { invalidate(InvalidationLevel::InvalidOutput); };
 
@@ -98,6 +99,9 @@ void VortexSetToVolumes::process() {
     glFrontFace(GL_CCW);
     utilgl::CullFaceState culling(GL_NONE);
     utilgl::BlendModeState blendModeState(GL_ONE, GL_ONE);
+    GLint oldBlendEquation;
+    glGetIntegerv(GL_BLEND_EQUATION, &oldBlendEquation);
+    glBlendEquation(GL_MAX);
 
     if (!shader_.isReady()) shader_.build();
     if (inVolumes_.isChanged()) {
@@ -145,9 +149,10 @@ void VortexSetToVolumes::process() {
     bool newMesh = inVortices_.isChanged();
     if (newMesh) createMesh();
 
+    glClearColor(0, 0, 0, 0);
+
     shader_.activate();
     fbo_.activate();
-
     for (size_t time = 0; time <= timeSize.y - timeSize.x; ++time) {
         if (fanCounts_[time].size() == 0) continue;
 
@@ -160,6 +165,7 @@ void VortexSetToVolumes::process() {
         fbo_.detachAllTextures();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
         fbo_.checkStatus();
+        glClear(GL_COLOR_BUFFER_BIT);
 
         auto meshGL = meshes_[time].getRepresentation<MeshGL>();
         utilgl::Enable<MeshGL> enable(meshGL);
@@ -169,6 +175,7 @@ void VortexSetToVolumes::process() {
     }
     shader_.deactivate();
     fbo_.deactivate();
+    glBlendEquation(oldBlendEquation);
 }
 
 void VortexSetToVolumes::createMesh() {
@@ -188,8 +195,8 @@ void VortexSetToVolumes::createMesh() {
         meshes_.emplace_back(DrawType::Triangles, ConnectivityType::Fan);
         starts.push_back(0);
     }
-
-    for (size_t group = 0; group < vortices->numGroups(); ++group) {
+    size_t numGroupsTaken = skipLastGroup_ ? vortices->numGroups() - 1 : vortices->numGroups();
+    for (size_t group = 0; group < numGroupsTaken; ++group) {
         size_t groupID = group + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
             size_t time = vort->timeSlice - timeSize.x;

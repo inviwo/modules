@@ -69,6 +69,7 @@ private:
 
     IntSize4Property volumeSize_;
     BoolProperty floatVolume_;
+    BoolProperty skipLastGroup_;
 
     Shader shader_;
     FrameBufferObject fbo_;

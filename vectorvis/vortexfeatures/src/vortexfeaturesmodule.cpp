@@ -33,6 +33,7 @@
 #include <inviwo/vortexfeatures/processors/okuboweiss.h>
 #include <inviwo/vortexfeatures/processors/vortexselector.h>
 #include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
+#include <inviwo/vortexfeatures/processors/vortexstatistics.h>
 #include <inviwo/vortexfeatures/processors/vortextomesh.h>
 #include <inviwo/vortexfeatures/processors/windingangle.h>
 #include <inviwo/vortexfeatures/vortexfeaturesmodule.h>
@@ -56,6 +57,7 @@ VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
     registerProcessor<OkuboWeiss3D>();
     registerProcessor<VortexSelector>();
     registerProcessor<VortexSetToVolumes>();
+    registerProcessor<VortexStatistics>();
     registerProcessor<VortexToMesh>();
     registerProcessor<WindingAngle>();
 

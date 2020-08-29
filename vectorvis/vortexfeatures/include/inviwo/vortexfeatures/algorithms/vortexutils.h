@@ -40,6 +40,7 @@ IVW_MODULE_VORTEXFEATURES_API bool matchedByCenter(const Vortex& outer, const Vo
 IVW_MODULE_VORTEXFEATURES_API VortexSet groupVorticesByCenter(VortexSet& vortices);
 IVW_MODULE_VORTEXFEATURES_API int matchGroupByCenter(const Vortex& seedVort,
                                                      const VortexSet& groups);
+IVW_MODULE_VORTEXFEATURES_API VortexSet removeSurroundingVortices(VortexSet& vortices);
 
 }  // namespace vortexutil
 
