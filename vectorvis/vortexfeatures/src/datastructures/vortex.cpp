@@ -151,8 +151,8 @@ Vortex::Vortex(const IntegralLine& boundary, double avgRadius, double minRadius,
     if (rotation == Turning::Unknown) setTurning();
 }
 
-void Vortex::roundUpBoundary(double boundaryPart) {
-    if (size() < 3) return;
+bool Vortex::roundUpBoundary(double boundaryPart) {
+    if (size() < 3) return false;
     // Close the circle water tight.
     dvec2 startVec = glm::normalize(boundary[0] - center);
     double endAngle = glm::orientedAngle(startVec, glm::normalize(boundary.back() - center));
@@ -169,8 +169,8 @@ void Vortex::roundUpBoundary(double boundaryPart) {
         }
     }
     if (!openCircle) {
-        std::cout << "Didn't get closure." << std::endl;
-        return;
+        // std::cout << "Didn't get closure." << std::endl;
+        return false;
     }
     // Round off the end with a smooth step.
     size_t numPointsBound = 0.5 + boundaryPart * size();
@@ -183,6 +183,7 @@ void Vortex::roundUpBoundary(double boundaryPart) {
             boundary[point] + (glm::normalize(boundary[point] - center) * initOffset * offsetScale);
     }
     boundary.push_back(boundary[0]);
+    return true;
 }
 
 void Vortex::setRadii() {
@@ -210,32 +211,66 @@ void Vortex::setTurning() {
     if (angle == 0) rotation = Turning::Unknown;
 }
 
+namespace detail {
+bool pointInsideTriangle(const dvec2& point, const dvec2& t0, const dvec2& t1, const dvec2& t2) {
+
+    // Compute vectors
+    dvec2 b = t1 - t0;
+    dvec2 c = t2 - t0;
+    dvec2 p = point - t0;
+
+    // Compute dot products
+    double cc = glm::dot(c, c);
+    double bc = glm::dot(b, c);
+    double pc = glm::dot(c, p);
+    double bb = glm::dot(b, b);
+    double pb = glm::dot(b, p);
+
+    // Compute barycentric coordinates
+    double denom = cc * bb - bc * bc;
+    double u = (bb * pc - bc * pb) / denom;
+    double v = (cc * pb - bc * pc) / denom;
+
+    return u > 0 && v > 0 && u + v < 1;
+}
+}  // namespace detail
+
 bool Vortex::containsPoint(const dvec2& point) const {
     double centerDist = glm::distance(center, point);
     if (centerDist < minRadius) return true;
     if (centerDist > maxRadius) return false;
 
-    // Negative direction from the initial radius.
-    dvec2 initDir = glm::normalize(center - boundary[0]);
-    dvec2 pointDir = glm::normalize(point - center);
-    double sign = glm::orientedAngle(initDir, glm::normalize(boundary[1] - center));
-
-    double pointAngle = glm::orientedAngle(initDir, pointDir);
-    // If between the first two points, compare directly,
-    // since the search starts with the second point.
-    if (pointAngle * sign > 0 && abs(pointAngle) < M_PI && abs(pointAngle) > abs(sign)) {
-        return glm::distance(center, boundary[1]) > centerDist;
-    }
-    sign = -sign;  //(sign > 0) ? -1 : 1;
-    // Brute force - maybe make binary search.
-    for (size_t idx = 1; idx < boundary.size(); ++idx) {
-        double boundAngle = glm::orientedAngle(initDir, glm::normalize(boundary[idx] - center));
-        if (boundAngle * sign > pointAngle * sign) {
-            return glm::distance(center, boundary[idx]) > centerDist;
+    dvec2 pc = point - center;
+    for (size_t tri = 1; tri < size(); ++tri) {
+        const dvec2& a = boundary[tri - 1];
+        const dvec2& b = boundary[tri];
+        if (glm::dot(pc, a - center) * glm::dot(pc, b - center) < 0) {
+            return detail::pointInsideTriangle(point, a, b, center);
         }
     }
+    return false;
 
-    return glm::distance(center, boundary.back()) > centerDist;
+    // // Negative direction from the initial radius.
+    // dvec2 initDir = glm::normalize(center - boundary[0]);
+    // dvec2 pointDir = glm::normalize(point - center);
+    // double sign = glm::orientedAngle(initDir, glm::normalize(boundary[1] - center));
+
+    // double pointAngle = glm::orientedAngle(initDir, pointDir);
+    // // If between the first two points, compare directly,
+    // // since the search starts with the second point.
+    // if (pointAngle * sign > 0 && abs(pointAngle) < M_PI && abs(pointAngle) > abs(sign)) {
+    //     return glm::distance(center, boundary[1]) > centerDist;
+    // }
+    // sign = -sign;  //(sign > 0) ? -1 : 1;
+    // // Brute force - maybe make binary search.
+    // for (size_t idx = 1; idx < boundary.size(); ++idx) {
+    //     double boundAngle = glm::orientedAngle(initDir, glm::normalize(boundary[idx] - center));
+    //     if (boundAngle * sign > pointAngle * sign) {
+    //         return glm::distance(center, boundary[idx]) > centerDist;
+    //     }
+    // }
+
+    // return glm::distance(center, boundary.back()) > centerDist;
 }
 
 // ~~~~~~~ Vortex Set ~~~~~~~ //

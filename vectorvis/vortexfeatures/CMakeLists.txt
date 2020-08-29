@@ -15,6 +15,7 @@ set(HEADER_FILES
     include/inviwo/vortexfeatures/processors/okuboweiss.h
     include/inviwo/vortexfeatures/processors/vortexselector.h
     include/inviwo/vortexfeatures/processors/vortexsettovolumes.h
+    include/inviwo/vortexfeatures/processors/vortexstatistics.h
     include/inviwo/vortexfeatures/processors/vortextomesh.h
     include/inviwo/vortexfeatures/processors/windingangle.h
     include/inviwo/vortexfeatures/vortexfeaturesmodule.h
@@ -34,6 +35,7 @@ set(SOURCE_FILES
     src/processors/okuboweiss.cpp
     src/processors/vortexselector.cpp
     src/processors/vortexsettovolumes.cpp
+    src/processors/vortexstatistics.cpp
     src/processors/vortextomesh.cpp
     src/processors/windingangle.cpp
     src/vortexfeaturesmodule.cpp
@@ -53,7 +55,6 @@ ivw_group("Shader Files" ${SHADER_FILES})
 #--------------------------------------------------------------------
 # Add Unittests
 set(TEST_FILES
-    tests/unittests/vortexfeatures-unittest-main.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 

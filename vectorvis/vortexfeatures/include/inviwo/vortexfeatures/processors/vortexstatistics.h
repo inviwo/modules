@@ -33,6 +33,8 @@
 #include <inviwo/vortexfeatures/ports/vortexport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -62,6 +64,10 @@ private:
     DataOutport<DataFrame> dataOut_, perGroupDataOut_;
 
     CompositeProperty scalarNames_, topScalarNames_;
+    IntSizeTProperty ensembleMember_;
+    BoolProperty skipLastGroup_;
+    ButtonProperty assemble_;
+    bool doAssemble_ = false;
 };
 
 }  // namespace inviwo

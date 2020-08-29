@@ -36,22 +36,16 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+// #include <modules/brushingandlinking/brushingandlinkingmanager.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/core/datastructures/geometry/basicmesh.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.VortexToMesh, Vortex To Mesh}
  * ![](org.inviwo.VortexToMesh.png?classIdentifier=org.inviwo.VortexToMesh)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 class IVW_MODULE_VORTEXFEATURES_API VortexToMesh : public Processor {
 public:
@@ -70,8 +64,13 @@ public:
     enum class CenterRepresentation : char { Points, Lines };
     enum class GroupDisplay : char { All, HighlightFirst, OnlyFirst, Score };
     enum class ColorSource : char { Group, Rotation };
+    enum class SelectionHighlight : char { Ignore, FilterSelect };
 
 private:
+    using PickingMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer,
+                                  buffertraits::PickingBuffer>;
+    // using SurfaceMesh = TypedMesh<buffertraits::PositionsBuffer, buffertraits::PickingBuffer>;
+
     bool keepVortex(const Vortex& vort) const;
     size_t getPos3D(const Vortex& vort) const;
     vec4 getColor(bool firstVort, const vec4& groupColor, const Vortex& vort,
@@ -84,7 +83,10 @@ private:
                                const mat4& worldMat);
     void createLineCenterMesh(const std::vector<vec4>& colors, const mat4& modelMat,
                               const mat4& worldMat);
+    void objectPicked(PickingEvent* p);
+
     VortexSetInport vorticesIn_;
+    BrushingAndLinkingInport selectionIn_;
     MeshOutport boundaryOut_, centerOut_;
 
     TemplateOptionProperty<BoundaryRepresentation> boundaryRep_;
@@ -92,6 +94,7 @@ private:
     TemplateOptionProperty<ShowSlices3D> showSlices3D_;
     TemplateOptionProperty<GroupDisplay> groupDisplay_;
     TemplateOptionProperty<ColorSource> colorSource_;
+    TemplateOptionProperty<SelectionHighlight> selectionHighlight_;
     IntSizeTProperty colorSeed_;
 
     IntSizeTProperty timeSlice_;
@@ -105,6 +108,8 @@ private:
     DoubleProperty scaleZ_;
 
     BoolProperty skipLastGroup_;
+
+    PickingMapper picking_;
 };
 
 }  // namespace inviwo

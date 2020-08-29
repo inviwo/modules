@@ -41,8 +41,8 @@ void main() {
     gl_Layer = int(gl_in[0].gl_Position.z);
     vec2 leg1 = gl_in[1].gl_Position.xy - gl_in[0].gl_Position.xy;
     vec2 leg2 = gl_in[2].gl_Position.xy - gl_in[0].gl_Position.xy;
-    signedVortexID_ =
-        (leg1.x * leg2.y - leg1.y * leg2.x) > 0 ? int(vortexID_[0]) : -int(vortexID_[0]);
+    signedVortexID_ = int(vortexID_[0]);
+    // (leg1.x * leg2.y - leg1.y * leg2.x) > 0 ? int(vortexID_[0]) : -int(vortexID_[0]);
 
     for (int i = 0; i < 3; ++i) {
         gl_Position = vec4(gl_in[i].gl_Position.xy * 2 - 1, 0, 1);
