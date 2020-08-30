@@ -339,9 +339,9 @@ std::shared_ptr<Mesh> LinePlot::createLines() {
             }
         }
 
-        if (colCount < yAxisList_.size()) {
-            throw Exception("column/property count differs", IVW_CONTEXT);
-        }
+        //if (colCount < yAxisList_.size()) {
+        //    throw Exception("column/property count differs", IVW_CONTEXT);
+        //}
 
         mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
         mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
