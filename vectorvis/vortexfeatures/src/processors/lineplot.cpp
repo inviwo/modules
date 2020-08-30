@@ -31,6 +31,7 @@
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/buffer/bufferram.h>
@@ -94,7 +95,10 @@ LineAxisProperty::LineAxisProperty(const LineAxisProperty& rhs)
     column_.onChange([this]() { style_.setCaption(column_.getColumnHeader()); });
 }
 
-auto LineAxisProperty::clone() const -> LineAxisProperty* { return new LineAxisProperty(*this); }
+auto LineAxisProperty::clone() const -> LineAxisProperty* {
+    RenderContext::getPtr()->activateDefaultRenderContext();
+    return new LineAxisProperty(*this);
+}
 
 LinePlot::LinePlot()
     : Processor{}
@@ -339,7 +343,7 @@ std::shared_ptr<Mesh> LinePlot::createLines() {
             }
         }
 
-        //if (colCount < yAxisList_.size()) {
+        // if (colCount < yAxisList_.size()) {
         //    throw Exception("column/property count differs", IVW_CONTEXT);
         //}
 
