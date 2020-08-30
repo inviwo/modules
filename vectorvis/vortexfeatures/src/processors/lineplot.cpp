@@ -69,9 +69,9 @@ LineAxisProperty::LineAxisProperty(std::string identifier, std::string displayNa
     : BoolCompositeProperty{identifier, displayName, true, invalidationLevel, semantics}
     , column_{"column", "Column", false, firstColIndex}
     , color_{"lineColor", "Line Color", util::ordinalColor(0.11f, 0.42f, 0.63f)}
-    , style_{
-          "axisStyle", "Style",
-          vertical ? AxisProperty::Orientation::Vertical : AxisProperty::Orientation::Horizontal} {
+    , style_{"axisStyle", "Style",
+             vertical ? AxisProperty::Orientation::Vertical : AxisProperty::Orientation::Horizontal}
+    , axisRenderer_{style_} {
 
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     if (vertical) {
@@ -85,7 +85,11 @@ LineAxisProperty::LineAxisProperty(std::string identifier, std::string displayNa
 }
 
 LineAxisProperty::LineAxisProperty(const LineAxisProperty& rhs)
-    : BoolCompositeProperty{rhs}, column_{rhs.column_}, color_{rhs.color_}, style_{rhs.style_} {
+    : BoolCompositeProperty{rhs}
+    , column_{rhs.column_}
+    , color_{rhs.color_}
+    , style_{rhs.style_}
+    , axisRenderer_{style_} {
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
     column_.onChange([this]() { style_.setCaption(column_.getColumnHeader()); });
 }
@@ -118,11 +122,19 @@ LinePlot::LinePlot()
     , axisSpacing_{"axisSpacing", "Axis Spacing", 50, 0, 200}
     , hovering_{"hovering", "Enable Hovering", true}
     , lineSettings_{"lineSettings", "Line Settings"}
+    , syncColorsWithCaptions_{"syncColorsWithCaptions", "Sync Captions with Line Colors",
+                              [this]() {
+                                  for (auto p : yAxisList_) {
+                                      if (auto lineProp = dynamic_cast<LineAxisProperty*>(p)) {
+                                          lineProp->style_.captionSettings_.color_.set(
+                                              lineProp->color_.get());
+                                      }
+                                  }
+                              }}
     , keyColumn_{"keyColumn", "Key Column", dataFramePort_, true}
 
     , lineRenderer_{&lineSettings_}
     , pointShader_{"lineplotdot.vert", "scatterplot.geom", "scatterplot.frag"}
-    , xAxisRenderer_{xAxis_.style_}
     , picking_{this, 1, [this](PickingEvent* p) { objectPicked(p); }}
     , camera_{vec3{0.5f, 0.5f, 1.0f},
               vec3{0.5f, 0.5f, 0.0f},
@@ -148,8 +160,9 @@ LinePlot::LinePlot()
     lineSettings_.setCollapsed(true);
     lineSettings_.setCurrentStateAsDefault();
 
-    addProperties(axisStyle_, xAxis_, yAxisList_, dataPoints_, hoverColor_, selectionColor_,
-                  margins_, axisMargin_, axisSpacing_, hovering_, lineSettings_, keyColumn_);
+    addProperties(axisStyle_, xAxis_, yAxisList_, syncColorsWithCaptions_, dataPoints_, hoverColor_,
+                  selectionColor_, margins_, axisMargin_, axisSpacing_, hovering_, lineSettings_,
+                  keyColumn_);
 
     axisStyle_.registerProperty(xAxis_.style_);
     axisStyle_.setCollapsed(true);
@@ -185,27 +198,29 @@ void LinePlot::process() {
     const int padding = static_cast<int>(axisMargin_.get());
 
     // draw horizontal axis
-    xAxisRenderer_.render(dims, lowerLeft + ivec2(padding, 0),
-                          ivec2(upperRight.x - padding, lowerLeft.y));
-    // draw vertical axis
+    xAxis_.axisRenderer_.render(dims, lowerLeft + ivec2(padding, 0),
+                                ivec2(upperRight.x - padding, lowerLeft.y));
+    // draw vertical axes
     int xOffset = 0;
-    for (auto& renderer : yAxisRenderer_) {
-        renderer.render(dims, lowerLeft + ivec2(xOffset, padding),
-                        ivec2(lowerLeft.x + xOffset, upperRight.y - padding));
-        xOffset -= axisSpacing_;
+    for (auto p : yAxisList_) {
+        if (auto lineProp = dynamic_cast<LineAxisProperty*>(p); lineProp && lineProp->isChecked()) {
+            lineProp->axisRenderer_.render(dims, lowerLeft + ivec2(xOffset, padding),
+                                           ivec2(lowerLeft.x + xOffset, upperRight.y - padding));
+            xOffset -= axisSpacing_;
+        }
     }
 
-    // restrict line rendering to plotting area
-    const ivec2 plotDims{upperRight.x - lowerLeft.x - 2 * padding,
-                         upperRight.y - lowerLeft.y - 2 * padding};
-    utilgl::ViewportState viewport(lowerLeft.x + padding, lowerLeft.y + padding, plotDims.x,
-                                   plotDims.y);
-
-    utilgl::singleDrawImagePlaneRect();
-
-    mesh_ = createLines();
+    if (meshDirty_) {
+        mesh_ = createLines();
+        meshDirty_ = false;
+    }
 
     if (mesh_) {
+        // restrict line rendering to plotting area
+        const ivec2 plotDims{upperRight.x - lowerLeft.x - 2 * padding,
+                             upperRight.y - lowerLeft.y - 2 * padding};
+        utilgl::ViewportState viewport(lowerLeft.x + padding, lowerLeft.y + padding, plotDims.x,
+                                       plotDims.y);
         utilgl::BlendModeState blending(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
         lineRenderer_.render(*mesh_.get(), camera_, plotDims, &lineSettings_);
 
@@ -215,44 +230,31 @@ void LinePlot::process() {
     }
 
     utilgl::deactivateCurrentTarget();
-}  // namespace plot
+}
 
 void LinePlot::onDidAddProperty(Property* property, size_t) {
     NetworkLock lock(property);
 
     auto p = static_cast<LineAxisProperty*>(property);
     axisStyle_.registerProperty(p->style_);
-    yAxisRenderer_.emplace_back(p->style_);
 
     p->style_.setCaption(p->getDisplayName());
     p->column_.onChange([this, p]() { onAxisChange(p); });
     p->column_.setOptions(dataFramePort_.getData());
 
+    p->getBoolProperty()->onChange([this]() { meshDirty_ = true; });
+    p->color_.onChange([this]() { meshDirty_ = true; });
+    p->style_.range_.onChange([this]() { meshDirty_ = true; });
+
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
-void LinePlot::onWillRemoveProperty(Property* property, size_t index) {
-    IVW_ASSERT(index < yAxisRenderer_.size(), "invalid axis renderer index");
-
-    // erase will not work as it uses move/copy assignment but AxisRendererBase has a const& member
-    // static_assert(std::is_move_assignable_v<AxisRenderer>);
-    // yAxisRenderer_.erase(std::begin(yAxisRenderer_) + index);
-    std::vector<AxisRenderer> tmp;
-    for (auto&& [i, r] : util::enumerate(yAxisRenderer_)) {
-        if (i != index) {
-            tmp.push_back(std::move(r));
-        }
-    }
-    yAxisRenderer_ = std::move(tmp);
-
+void LinePlot::onWillRemoveProperty(Property* property, size_t) {
     axisStyle_.unregisterProperty(*static_cast<AxisProperty*>(property));
-
     invalidate(InvalidationLevel::InvalidOutput);
 }
 
 void LinePlot::objectPicked(PickingEvent*) {}
-
-void LinePlot::onXAxisChange() {}
 
 void LinePlot::onAxisChange(LineAxisProperty* p) {
     if (dataFramePort_.hasData()) {
@@ -263,6 +265,8 @@ void LinePlot::onAxisChange(LineAxisProperty* p) {
 
         auto minmax = util::bufferMinMax(col->getBuffer().get(), IgnoreSpecialValues::Yes);
         p->style_.setRange(dvec2{minmax.first.x, minmax.second.x});
+
+        meshDirty_ = true;
     }
 }
 
