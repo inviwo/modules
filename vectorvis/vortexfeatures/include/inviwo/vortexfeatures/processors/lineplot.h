@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <inviwo/core/datastructures/camera/orthographiccamera.h>
@@ -79,6 +80,8 @@ public:
     FloatVec4Property color_;
     AxisProperty style_;
 
+    AxisRenderer axisRenderer_;
+
 private:
     auto props() { return std::tie(column_, color_, style_); }
     auto props() const { return std::tie(column_, color_, style_); }
@@ -113,7 +116,6 @@ private:
     virtual void onDidAddProperty(Property* property, size_t index) override;
     virtual void onWillRemoveProperty(Property* property, size_t index) override;
 
-    void onXAxisChange();
     void onAxisChange(LineAxisProperty* p);
 
     std::shared_ptr<Mesh> createLines();
@@ -143,17 +145,18 @@ private:
 
     BoolProperty hovering_;
     LineSettingsProperty lineSettings_;
+    ButtonProperty syncColorsWithCaptions_;
     DataFrameColumnProperty keyColumn_;
 
     algorithm::LineRenderer lineRenderer_;
     Shader pointShader_;
 
-    AxisRenderer xAxisRenderer_;
-    std::vector<AxisRenderer> yAxisRenderer_;
     PickingMapper picking_;
     OrthographicCamera camera_;
 
     std::shared_ptr<Mesh> mesh_;
+
+    bool meshDirty_ = false;
 };
 
 }  // namespace plot
