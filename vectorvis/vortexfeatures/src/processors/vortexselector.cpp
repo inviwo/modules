@@ -229,7 +229,7 @@ void VortexSelector::process() {
     // when dropping rows from second DataFrame (vortices
     auto ensembleDataFrame = detail::applySelection(*inportEnsemble_.getData(), selectedRows);
     ensembleDataFrame = detail::applySelection(
-        *ensembleDataFrame, detail::filterRows(ensembleDataFrame->getColumn(ensembleId_),
+        *ensembleDataFrame, detail::filterRows(ensembleDataFrame->getColumn(keyEnsemble_),
                                                FilterPredicate::Equal, ensembleId_.get()));
 
     const auto key = key_.getColumnHeader();
