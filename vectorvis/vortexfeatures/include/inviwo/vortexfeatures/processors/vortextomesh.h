@@ -40,6 +40,7 @@
 // #include <modules/brushingandlinking/brushingandlinkingmanager.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 #include <inviwo/core/datastructures/geometry/basicmesh.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
@@ -73,6 +74,7 @@ private:
 
     bool keepVortex(const Vortex& vort) const;
     size_t getPos3D(const Vortex& vort) const;
+    size_t getSelectionID(size_t vortexID) const;
     vec4 getColor(bool firstVort, const vec4& groupColor, const Vortex& vort,
                   const dvec2& scoreRange);
     void createLineBoundaryMesh(const std::vector<vec4>& colors, const mat4& modelMat,
@@ -87,6 +89,7 @@ private:
 
     VortexSetInport vorticesIn_;
     BrushingAndLinkingInport selectionIn_;
+    DataInport<DataFrame> dataFrameIn_;
     MeshOutport boundaryOut_, centerOut_;
 
     TemplateOptionProperty<BoundaryRepresentation> boundaryRep_;
@@ -97,6 +100,7 @@ private:
     TemplateOptionProperty<SelectionHighlight> selectionHighlight_;
     IntSizeTProperty colorSeed_;
 
+    IntSizeTProperty ensembleMember_;
     IntSizeTProperty timeSlice_;
     IntSizeTProperty heightSlice_;
     struct SingleGroupProperty : public BoolCompositeProperty {
