@@ -222,15 +222,22 @@ VortexSelector::VortexSelector()
 }
 
 void VortexSelector::process() {
-    std::vector<size_t> selectedRows(brushingPort_.getSelectedIndices().begin(),
-                                     brushingPort_.getSelectedIndices().end());
-    std::sort(selectedRows.begin(), selectedRows.end());
-
     // when dropping rows from second DataFrame (vortices
-    auto ensembleDataFrame = detail::applySelection(*inportEnsemble_.getData(), selectedRows);
-    ensembleDataFrame = detail::applySelection(
-        *ensembleDataFrame, detail::filterRows(ensembleDataFrame->getColumn(keyEnsemble_),
-                                               FilterPredicate::Equal, ensembleId_.get()));
+    auto ensembleDataFrame = [this]() -> std::shared_ptr<const DataFrame> {
+        if (brushingPort_.isConnected() && brushingPort_.isReady()) {
+            std::vector<size_t> selectedRows(brushingPort_.getSelectedIndices().begin(),
+                                             brushingPort_.getSelectedIndices().end());
+            std::sort(selectedRows.begin(), selectedRows.end());
+            return detail::applySelection(*inportEnsemble_.getData(), selectedRows);
+        } else {
+            return inportEnsemble_.getData();
+        }
+    }();
+    if (keyEnsemble_.getSelectedValue() > -1) {
+        ensembleDataFrame = detail::applySelection(
+            *ensembleDataFrame, detail::filterRows(ensembleDataFrame->getColumn(keyEnsemble_),
+                                                   FilterPredicate::Equal, ensembleId_.get()));
+    }
 
     const auto key = key_.getColumnHeader();
 
