@@ -20,16 +20,22 @@ class GenericNetCDFSource(ivw.Processor):
         self.filePath = ivw.properties.FileProperty(
             "filepath", "NetCDF Path", "", "netcdfdata")
         self.variables = CompositeProperty("variables", "Exported Variables")
+        self.variables.setSerializationMode(
+            ivw.properties.PropertySerializationMode.All)
         self.dimensions = CompositeProperty(
             "dimensions", "Restrict Dimensions")
+        self.dimensions.setSerializationMode(
+            ivw.properties.PropertySerializationMode.All)
         self.adjustDimensionsForStaggered = BoolProperty(
             'adjustForStaggered', 'Adjust for staggered climate grid', True)
         self.toFloat = BoolProperty(
             'toFloat', 'Convert to float', True)
 
         self.triggerReload = ButtonProperty("reload", "Reload")
+        self.autoReload = BoolProperty("autoReload", "Auto Reload", False)
 
         self.triggerReload.onChange(self.reloadData)
+        self.autoReload.onChange(self.autoReloadData)
         self.displayInfo.onChange(self.displayDataInfo)
 
         self.addProperty(self.displayInfo)
@@ -39,6 +45,7 @@ class GenericNetCDFSource(ivw.Processor):
         self.addProperty(self.dimensions)
         self.addProperty(self.adjustDimensionsForStaggered)
         self.addProperty(self.triggerReload)
+        self.addProperty(self.autoReload)
 
         self.overwriteDataRange = BoolProperty(
             "overwriteDataRange", "Overwrite Data Range", False)
@@ -49,6 +56,7 @@ class GenericNetCDFSource(ivw.Processor):
         self.addProperty(self.overwriteDataRange)
         self.addProperty(self.dataRange)
         self.dataRange.semantics = ivw.properties.PropertySemantics("Text")
+        self.firstProcess = True
 
     def process(self):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
@@ -58,13 +66,14 @@ class GenericNetCDFSource(ivw.Processor):
             while self.dimensions.size() > 0:
                 self.dimensions.removeProperty(
                     self.dimensions.properties[self.dimensions.size()-1])
+            self.firstProcess = False
             return
         self.dataRange.readOnly = not self.overwriteDataRange.value
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
 
             # Update variables.
-            if self.filePath.isModified:
+            if self.filePath.isModified and not self.firstProcess:
                 # Keep variables as is iff the new data has the same ones.
                 reloadVariables = True
                 if self.variables.size() > 0:
@@ -87,10 +96,14 @@ class GenericNetCDFSource(ivw.Processor):
                         # At least n dimensions needed for an nD output.
                         if len(nc.variables[variable].dimensions) < self.outputDimension:
                             continue
+                        varProp = BoolProperty(
+                            str(variable), str(variable), False)
+                        varProp.setSerializationMode(
+                            ivw.properties.PropertySerializationMode.All)
                         self.variables.addProperty(
-                            BoolProperty(str(variable), str(variable), False), True)
+                            varProp, True)
 
-            if self.variables.isModified:
+            if self.variables.isModified and not self.firstProcess:
                 selectedVarDims = []
                 numComponents = 0
                 for varProp in self.variables.properties:
@@ -108,8 +121,11 @@ class GenericNetCDFSource(ivw.Processor):
                             selectedVarDims.append(adjustedDim)
 
                             if not next((x for x in self.dimensions.properties if x.identifier == adjustedDim), None):
-                                self.dimensions.addProperty(IntMinMaxProperty(
-                                    adjustedDim, adjustedDim + ' Range', 0, len(dim)-1, 0, len(dim)-1), True)
+                                dimProp = IntMinMaxProperty(
+                                    adjustedDim, adjustedDim + ' Range', 0, len(dim)-1, 0, len(dim)-1, False)
+                                dimProp.setSerializationMode(
+                                    ivw.properties.PropertySerializationMode.All)
+                                self.dimensions.addProperty(dimProp, True)
 
                 for varProp in self.variables.properties:
                     if varProp.value:
@@ -132,6 +148,12 @@ class GenericNetCDFSource(ivw.Processor):
                             break
 
                     varProp.readOnly = not couldBeAdded
+                self.autoReloadData()
+        self.firstProcess = False
+
+    def autoReloadData(self):
+        if self.autoReload.value:
+            self.reloadData()
 
     def reloadData(self, extents):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():

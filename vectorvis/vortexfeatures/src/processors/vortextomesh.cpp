@@ -47,6 +47,7 @@ const ProcessorInfo VortexToMesh::getProcessorInfo() const { return processorInf
 VortexToMesh::VortexToMesh()
     : vorticesIn_("vorticesIn")
     , selectionIn_("selection")
+    , dataFrameIn_("dataFrame")
     , boundaryOut_("boundaries")
     , centerOut_("centers")
     , boundaryRep_("boundaryRep", "Boundary Mesh",
@@ -71,6 +72,7 @@ VortexToMesh::VortexToMesh()
                           {{"ignore", "Ignore", SelectionHighlight::Ignore},
                            {"FilterSelect", "Filter & Select", SelectionHighlight::FilterSelect}})
     , colorSeed_("colorSeed", "Color Seed", 1, 0, 10000, 1)
+    , ensembleMember_("ensembleMember", "Member", 1, 1, 50, 1)
     , timeSlice_("timeSlice", "Time Slice", 1, 1, 1, 1)
     , heightSlice_("heightSlice", "Height Slice", 1, 1, 1, 1)
     , singleGroupProperty_("singleGroupProperty", "Single Group?")
@@ -81,12 +83,14 @@ VortexToMesh::VortexToMesh()
 
     addPort(vorticesIn_);
     addPort(selectionIn_);
+    addPort(dataFrameIn_);
     selectionIn_.setOptional(true);
+    dataFrameIn_.setOptional(true);
     addPort(boundaryOut_);
     addPort(centerOut_);
     addProperties(boundaryRep_, centerRep_, showSlices3D_, groupDisplay_, colorSource_,
-                  selectionHighlight_, colorSeed_, timeSlice_, heightSlice_, singleGroupProperty_,
-                  overrideScaleZ_, scaleZ_, skipLastGroup_);
+                  selectionHighlight_, colorSeed_, ensembleMember_, timeSlice_, heightSlice_,
+                  singleGroupProperty_, overrideScaleZ_, scaleZ_, skipLastGroup_);
     timeSlice_.visibilityDependsOn(showSlices3D_,
                                    [](auto& val) { return val != ShowSlices3D::Time; });
     heightSlice_.visibilityDependsOn(showSlices3D_,
@@ -121,7 +125,7 @@ void VortexToMesh::process() {
     for (size_t idx = 0; idx < vortices->numGroups(); ++idx) {
         vec3 baseCol(rndDist(eng) / 2, rndDist(eng), rndDist(eng));
         if (selectionHighlight_.get() == SelectionHighlight::FilterSelect &&
-            selectionIn_.isSelected(idx)) {
+            selectionIn_.isSelected(getSelectionID(idx))) {
             colors[idx] = vec4(0.9f, 0.05f, 0.05f, 1);
         } else {
             baseCol = glm::normalize(baseCol);
@@ -182,6 +186,46 @@ size_t VortexToMesh::getPos3D(const Vortex& vort) const {
     }
 }
 
+size_t VortexToMesh::getSelectionID(size_t vortexID) const {
+    // if (!dataFrameIn_.hasData() || ensembleMember_.get() <= 1) return vortexID;
+    // size_t numRows = dataFrameIn_.getData()->getNumberOfRows();
+    // size_t offsetID =
+    //     dataFrameIn_.getData()->getNumberOfRows() - vorticesIn_.getData()->numGroups() +
+    //     vortexID;
+    // if (offsetID >= numRows) return vortexID;
+    // return offsetID;
+    // if (ensembleMember_.get() > 1) return return vortexID;
+    return vortexID;
+    // Column* colVortexId = nullptr;
+    // Column* colEnsemble = nullptr;
+    // for (auto col : *dataFrameIn_.getData()) {
+    //     if (col->getHeader() == "Vortex ID") {
+    //         colVortexId = col.get();
+    //     }
+    //     if (col->getHeader() == "Ensemble") {
+    //         colEnsemble = col.get();
+    //     }
+    // }
+    // if (!colVortexId || !colEnsemble) {
+    //     LogWarn("Columns Ensemble and Vortex ID expected.");
+    //     return false;
+    // }
+
+    // static bool firstID = false;
+    // for (size_t idx = 0; idx < colVortexId->getSize(); ++idx) {
+    //     if (static_cast<size_t>(colVortexId->getAsDouble(idx)) == vortexID &&
+    //         static_cast<size_t>(colEnsemble->getAsDouble(idx)) == ensembleMember_)
+    //         return idx;
+    //     else if (firstID) {
+    //         LogWarn("Ensemble " << colEnsemble->getAsDouble(idx)
+    //                             << " - Vort: " << colVortexId->getAsDouble(idx));
+    //     }
+    // }
+    // firstID = true;
+    // LogWarn("Did not find eddy in DataFrame.");
+    // return false;
+}
+
 vec4 VortexToMesh::getColor(bool firstVort, const vec4& groupColor, const Vortex& vort,
                             const dvec2& scoreRange) {
     vec4 color =
@@ -216,7 +260,7 @@ void VortexToMesh::createLineBoundaryMesh(const std::vector<vec4>& colors, const
     for (size_t group = 0; group < numGroups; ++group) {
         if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
         if (selectionHighlight_.get() == SelectionHighlight::FilterSelect &&
-            selectionIn_.isFiltered(group))
+            selectionIn_.isFiltered(getSelectionID(group)))
             continue;
         bool firstVortex = true;
         size_t time = vortices->getTimeRange().y + 1;
@@ -274,7 +318,7 @@ void VortexToMesh::createSurfaceBoundaryMesh(const std::vector<vec4>& colors, co
     for (size_t group = 0; group < numGroups; ++group) {
         if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
         if (selectionHighlight_.get() == SelectionHighlight::FilterSelect &&
-            selectionIn_.isFiltered(group))
+            selectionIn_.isFiltered(getSelectionID(group)))
             continue;
         const Vortex* previousVort = nullptr;
         std::vector<const Vortex*> orderedVorts;
@@ -489,7 +533,7 @@ void VortexToMesh::createLineCenterMesh(const std::vector<vec4>& colors, const m
 void VortexToMesh::objectPicked(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
         p->getPressItem() == PickingPressItem::Primary) {
-        selectionIn_.sendSelectionEvent({p->getPickedId()});
+        selectionIn_.sendSelectionEvent({getSelectionID(p->getPickedId())});
     }
 }
 
