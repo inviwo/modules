@@ -135,7 +135,7 @@ LinePlot::LinePlot()
                                       }
                                   }
                               }}
-    , keyColumn_{"keyColumn", "Key Column", dataFramePort_, true}
+    , splitColumn_{"splitColumn", "Split Column", dataFramePort_, true}
 
     , lineRenderer_{&lineSettings_}
     , pointShader_{"lineplotdot.vert", "scatterplot.geom", "scatterplot.frag"}
@@ -166,7 +166,7 @@ LinePlot::LinePlot()
 
     addProperties(axisStyle_, xAxis_, yAxisList_, syncColorsWithCaptions_, dataPoints_, hoverColor_,
                   selectionColor_, margins_, axisMargin_, axisSpacing_, hovering_, lineSettings_,
-                  keyColumn_);
+                  splitColumn_);
 
     axisStyle_.registerProperty(xAxis_.style_);
     axisStyle_.setCollapsed(true);
@@ -185,6 +185,7 @@ LinePlot::LinePlot()
         }
     });
     xAxis_.onChange([this]() { onAxisChange(&xAxis_); });
+    splitColumn_.onChange([this]() { meshDirty_ = true; });
     // add first y axis
     yAxisList_.constructProperty(0);
 
@@ -293,42 +294,68 @@ std::shared_ptr<Mesh> LinePlot::createLines() {
     auto mesh = std::make_shared<Mesh>(DrawType::Lines, ConnectivityType::StripAdjacency);
     auto dataframe = dataFramePort_.getData();
 
-    if (keyColumn_.getSelectedIndex() > -1) {
-        // TODO: filter lines based on additional key columns
-    } else {
-        auto getValues = [](const LineAxisProperty& p) {
-            const vec2 range{p.style_.getRange()};
-            const auto buffer = p.column_.getColumn()->getBuffer()->getRepresentation<BufferRAM>();
-
-            return buffer->dispatch<std::vector<float>, dispatching::filter::Scalars>(
-                [range](auto buf) {
-                    auto& data = buf->getDataContainer();
-                    std::vector<float> dst(data.size(), 0.0f);
-                    std::transform(data.begin(), data.end(), dst.begin(), [range](auto v) {
-                        return (static_cast<float>(v) - range.x) / (range.y - range.x);
-                    });
-                    return dst;
+    const auto lineRowIndices = [this]() -> std::vector<std::vector<size_t>> {
+        if (splitColumn_.getSelectedValue() > -1) {
+            const auto buffer =
+                splitColumn_.getColumn()->getBuffer()->getRepresentation<BufferRAM>();
+            return buffer->dispatch<std::vector<std::vector<size_t>>, dispatching::filter::Scalars>(
+                [](auto buf) {
+                    using ValueType = util::PrecisionValueType<decltype(buf)>;
+                    std::vector<std::vector<size_t>> rows;
+                    std::map<ValueType, size_t> valueIndex;
+                    for (auto&& [row, v] : util::enumerate(buf->getDataContainer())) {
+                        if (auto it = valueIndex.find(v); it != valueIndex.end()) {
+                            rows[it->second].push_back(row);
+                        } else {
+                            valueIndex[v] = rows.size();
+                            rows.emplace_back(1, row);
+                        }
+                    }
+                    return rows;
                 });
-        };
+        } else {
+            std::vector<size_t> rows(dataFramePort_.getData()->getNumberOfRows());
+            std::iota(rows.begin(), rows.end(), 0u);
+            return {std::move(rows)};
+        }
+    }();
 
-        auto xpos = getValues(xAxis_);
+    auto getValues = [](const LineAxisProperty& p) {
+        const vec2 range{p.style_.getRange()};
+        const auto buffer = p.column_.getColumn()->getBuffer()->getRepresentation<BufferRAM>();
 
-        const size_t numValues = xpos.size() * yAxisList_.size();
+        return buffer->dispatch<std::vector<float>, dispatching::filter::Scalars>(
+            [range](auto buf) {
+                auto& data = buf->getDataContainer();
+                std::vector<float> dst(data.size(), 0.0f);
+                std::transform(data.begin(), data.end(), dst.begin(), [range](auto v) {
+                    return (static_cast<float>(v) - range.x) / (range.y - range.x);
+                });
+                return dst;
+            });
+    };
 
-        std::vector<vec2> positions;
-        positions.reserve(numValues);
-        std::vector<vec4> colors;
-        colors.reserve(numValues);
-        // std::vector<uint32_t> pickingIds;
+    auto xpos = getValues(xAxis_);
 
-        size_t colCount = 0;
+    const size_t numValues = xpos.size() * yAxisList_.size();
+
+    std::vector<vec2> positions;
+    positions.reserve(numValues);
+    std::vector<vec4> colors;
+    colors.reserve(numValues);
+    // std::vector<uint32_t> pickingIds;
+
+    for (const auto& rows : lineRowIndices) {
         for (const auto p : yAxisList_) {
             if (const auto lineProp = dynamic_cast<const LineAxisProperty*>(p);
                 lineProp && lineProp->isChecked()) {
                 const auto startIndex = positions.size();
-                for (auto&& [x, y] : util::zip(xpos, getValues(*lineProp))) {
-                    positions.emplace_back(x, y);
-                }
+
+                std::for_each(rows.begin(), rows.end(),
+                              [&positions, xpos, ypos = getValues(*lineProp)](auto row) {
+                                  positions.emplace_back(xpos[row], ypos[row]);
+                              });
+
                 const auto endIndex = positions.size();
                 colors.resize(colors.size() + endIndex - startIndex, lineProp->color_);
                 // pickingIds.resize(pickingIds.size() + endIndex - startIndex, id);
@@ -339,17 +366,12 @@ std::shared_ptr<Mesh> LinePlot::createLines() {
                 indices.back() = indices.back() - 1;
                 mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::StripAdjacency),
                                  util::makeIndexBuffer(std::move(indices)));
-                ++colCount;
             }
         }
-
-        // if (colCount < yAxisList_.size()) {
-        //    throw Exception("column/property count differs", IVW_CONTEXT);
-        //}
-
-        mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
-        mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     }
+
+    mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
+    mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
 
     return mesh;
 }

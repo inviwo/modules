@@ -146,7 +146,7 @@ private:
     BoolProperty hovering_;
     LineSettingsProperty lineSettings_;
     ButtonProperty syncColorsWithCaptions_;
-    DataFrameColumnProperty keyColumn_;
+    DataFrameColumnProperty splitColumn_;
 
     algorithm::LineRenderer lineRenderer_;
     Shader pointShader_;
