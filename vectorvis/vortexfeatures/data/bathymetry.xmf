@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Xdmf xmlns:xi="http://www.w3.org/2001/XInclude" Version="3.0">
+  <Domain>
+    <Grid Name="Grid">
+      <Geometry Origin="" Type="ORIGIN_DXDYDZ">
+        <DataItem DataType="Float" Dimensions="3" Format="XML" Precision="8">0 10.027100000000001 30.027100000000001</DataItem>
+        <DataItem DataType="Float" Dimensions="3" Format="XML" Precision="8">1 0.040000000000000001 0.040000000000000001</DataItem>
+      </Geometry>
+      <Topology Dimensions="1 500 500" Type="3DCoRectMesh"/>
+      <Attribute Center="Node" ElementCell="" ElementDegree="0" ElementFamily="" ItemType="" Name="depth" Type="Scalar">
+        <DataItem DataType="Float" Dimensions="1 500 500" Format="HDF" Precision="4">bathymetry.h5:Data0</DataItem>
+      </Attribute>
+    </Grid>
+  </Domain>
+</Xdmf>
