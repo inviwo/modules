@@ -199,7 +199,8 @@ void exposeMolVisUtil(pybind11::module& m) {
              py::arg("residueId"), py::arg("chainId"))
         .def("computeCovalentBonds", &computeCovalentBonds, py::arg("atoms"))
         .def("getAtomicNumbers", &getAtomicNumbers, py::arg("fullNames"))
-        .def("createMesh", &createMesh, py::arg("structure"));
+        .def("createMesh", &createMesh, py::arg("structure"), py::arg("enablePicking") = false,
+             py::arg("globalStartId") = 0);
 }
 
 }  // namespace detail

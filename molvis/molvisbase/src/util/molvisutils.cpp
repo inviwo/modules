@@ -201,7 +201,8 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     return bonds;
 }
 
-std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
+std::shared_ptr<Mesh> createMesh(const MolecularStructure& s, bool enablePicking,
+                                 uint32_t startId) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -210,7 +211,6 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
         util::transform(s.atoms().positions, [](const dvec3& p) { return glm::vec3{p}; })};
     std::vector<vec4> colors;
     std::vector<float> radius;
-    // std::vector<uint32_t> picking;
     const size_t atomCount = s.atoms().positions.size();
 
     for (auto elem : s.atoms().atomicNumbers) {
@@ -227,7 +227,12 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
-    // mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
+
+    if (enablePicking) {
+        std::vector<uint32_t> picking(atomCount);
+        std::iota(std::begin(picking), std::end(picking), startId);
+        mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
+    }
 
     // atoms
     std::vector<uint32_t> indices(atomCount);

@@ -103,9 +103,18 @@ getAtomicNumbers(const std::vector<std::string>& fullNames);
  * Atoms are encoded as points with a radius attribute. Colors as well as van der Waals radii are
  * obtained for each atom using its atomic number. Bonds between atoms are represented as lines.
  *
+ * @param s               molecular structure
+ * @param enablePicking   if true, the picking attribute will be added to the mesh. Ids are assigned
+ *                        in the same order as the atoms/positions in s
+ * @param startId    global picking ID for first atom (i.e. PickingMapper::getPickingId(0)), do not
+ *                   forget to resize the PickingMapper to the number of atoms
+ * @return mesh containing the molecular structure
+ *
  * \see MolecularStructure, element::color, element::vdwRadius
  */
-std::shared_ptr<Mesh> IVW_MODULE_MOLVISBASE_API createMesh(const MolecularStructure& s);
+std::shared_ptr<Mesh> IVW_MODULE_MOLVISBASE_API createMesh(const MolecularStructure& s,
+                                                           bool enablePicking = false,
+                                                           uint32_t startId = 0);
 
 }  // namespace molvis
 
