@@ -29,13 +29,11 @@
 
 #include <inviwo/devtools/devtoolsmodule.h>
 #include <inviwo/devtools/processors/eventlogger.h>
-#include <inviwo/devtools/processors/logrendererprocessors.h>
 
 namespace inviwo {
 
 DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevTools") {
     registerProcessor<ImageEventLogger>();
-    registerProcessor<LogRendererProcessors>();
     registerProcessor<VolumeEventLogger>();
     registerProcessor<MeshEventLogger>();
     registerProcessor<BrushingAndLinkingEventLogger>();

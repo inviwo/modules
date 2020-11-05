@@ -8,7 +8,6 @@ set(HEADER_FILES
     include/inviwo/devtools/devtoolsmodule.h
     include/inviwo/devtools/devtoolsmoduledefine.h
     include/inviwo/devtools/processors/eventlogger.h
-    include/inviwo/devtools/processors/logrendererprocessors.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -17,7 +16,6 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/devtoolsmodule.cpp
     src/processors/eventlogger.cpp
-    src/processors/logrendererprocessors.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
