@@ -59,7 +59,9 @@ void exposeAtomicElement(pybind11::module& m) {
         .def("atomicNumber", element::atomicNumber, py::arg("symbol"))
         .def("name", element::name, py::arg("symbol"))
         .def("symbol", element::symbol, py::arg("symbol"))
-        .def("color", element::color, py::arg("symbol"))
+        .def("color", py::overload_cast<Element>(element::color), py::arg("symbol"))
+        .def("color", py::overload_cast<Element, Colormap>(element::color), py::arg("symbol"),
+             py::arg("colormap"))
         .def("vdwRadius", element::vdwRadius, py::arg("symbol"))
         .def("covalentRadius", element::covalentRadius, py::arg("symbol"))
         .def("atomicMass", element::atomicMass, py::arg("symbol"))
@@ -69,6 +71,10 @@ void exposeAtomicElement(pybind11::module& m) {
     auto colors = m.def_submodule("colors", "Various color lookup tables");
     colors.attr("rasmol") = py::cast(element::detail::colorsRasmol);
     colors.attr("rasmolCPKnew") = py::cast(element::detail::colorsRasmolCPKnew);
+
+    py::enum_<Colormap>(m, "Colormap")
+        .value("RasmolCPK", Colormap::RasmolCPK)
+        .value("RasmolCPKnew", Colormap::RasmolCPKnew);
 
     py::enum_<Element>(m, "Element")
         .value("Unknown", Element::Unknown)

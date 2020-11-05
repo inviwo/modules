@@ -58,6 +58,8 @@ enum class Element : unsigned char {
 };
 // clang-format on
 
+enum class Colormap { RasmolCPK, RasmolCPKnew };
+
 namespace element {
 
 constexpr int num_elements = 119;
@@ -149,7 +151,7 @@ constexpr glm::vec4 colorFromHex(unsigned int c) {
 // http://jmol.sourceforge.net/jscolors/ (stored as RGBA from least to most significant bit)
 // Rasmol colors
 constexpr std::array<unsigned int, num_elements> colorsRasmolHex = {
-    0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFF2222B2, 0xFF00FFC2, 0xFFB5B5FF, 0xFFB0B0B0, 0xFFFF8F8F,
+    0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFF2222B2, 0xFF00FFC2, 0xFF00FF00, 0xFFC8C8C8, 0xFFFF8F8F,
     0xFF0000F0, 0xFF50E090, 0xFFF5E3B3, 0xFFF25CAB, 0xFF00FF8A, 0xFF908080, 0xFFA0C8F0, 0xFF00A5FF,
     0xFF32C8FF, 0xFF1FF01F, 0xFFE3D180, 0xFFD4408F, 0xFF908080, 0xFFE6E6E6, 0xFF908080, 0xFFABA6A6,
     0xFF908080, 0xFF908080, 0xFF00A5FF, 0xFFA090F0, 0xFF2A2AA5, 0xFF2A2AA5, 0xFF2A2AA5, 0xFF8F8FC2,
@@ -168,7 +170,7 @@ constexpr std::array<unsigned int, num_elements> colorsRasmolHex = {
 
 // Rasmol CPKnew colors
 constexpr std::array<unsigned int, num_elements> colorsRasmolCPKnewHex = {
-    0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFF2121B2, 0xFF00FFC2, 0xFFB5B5FF, 0xFFD3D3D3, 0xFFE6CE87,
+    0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFF2121B2, 0xFF00FFC2, 0xFF00FF00, 0xFFD3D3D3, 0xFFE6CE87,
     0xFF0000FF, 0xFF50E090, 0xFFF5E3B3, 0xFFF25CAB, 0xFF00FF8A, 0xFF696969, 0xFFA0C8F0, 0xFF00AAFF,
     0xFF00FFFF, 0xFF1FF01F, 0xFFE3D180, 0xFFD4408F, 0xFF696969, 0xFFE6E6E6, 0xFF696969, 0xFFABA6A6,
     0xFF696969, 0xFF696969, 0xFF00AAFF, 0xFFA090F0, 0xFF282880, 0xFF282880, 0xFF282880, 0xFF8F8FC2,
@@ -239,6 +241,16 @@ constexpr int atomicNumber(Element symbol) { return static_cast<int>(symbol); }
 constexpr std::string_view name(Element symbol) { return detail::names[atomicNumber(symbol)]; }
 constexpr std::string_view symbol(Element symbol) { return detail::symbols[atomicNumber(symbol)]; }
 constexpr vec4 color(Element symbol) { return detail::colorsRasmolCPKnew[atomicNumber(symbol)]; }
+constexpr vec4 color(Element symbol, Colormap map) {
+    switch (map) {
+        case Colormap::RasmolCPK:
+            return detail::colorsRasmol[atomicNumber(symbol)];
+        case Colormap::RasmolCPKnew:
+            return detail::colorsRasmolCPKnew[atomicNumber(symbol)];
+        default:
+            return detail::colorsRasmolCPKnew[atomicNumber(symbol)];
+    }
+}
 constexpr double vdwRadius(Element symbol) { return detail::vdw_radii[atomicNumber(symbol)]; }
 constexpr double covalentRadius(Element symbol) {
     return detail::covalent_radii[atomicNumber(symbol)];
