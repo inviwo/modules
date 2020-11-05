@@ -4,6 +4,15 @@ import math
 
 from sklearn.preprocessing import RobustScaler
 
+"""
+The following variables `dataframe`, `activeColumnheaders`, `method`, and `numClusters`
+as well as `linkage`, `N`, `e` must be provided by the python environment.
+
+See also dataframeclustering/processors/dataframeclustering.cpp
+
+"""
+
+
 def remapLables(labels):
     """
     Changes the label indices based on the size of each cluster, such that the 

@@ -36,11 +36,11 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming
 // scheme
 const ProcessorInfo DataFrameClustering::processorInfo_{
-    "org.inviwo.DataFrameClustering",  // Class identifier
-    "Data Frame Clustering",           // Display name
-    "Clustering",                      // Category
-    CodeState::Experimental,           // Code state
-    {{Tag::PY, Tag::CPU}}              // Tags
+    "org.inviwo.DataFrameClustering",      // Class identifier
+    "Data Frame Clustering",               // Display name
+    "Clustering",                          // Category
+    CodeState::Stable,                     // Code state
+    {std::vector<Tag>{Tag::PY, Tag::CPU}}  // Tags
 };
 const ProcessorInfo DataFrameClustering::getProcessorInfo() const { return processorInfo_; }
 
