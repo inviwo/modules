@@ -268,7 +268,7 @@ void VTKtoVolume::updateAvailableArrays() {
     NetworkLock lock;
     isDirty_ = true;
 
-    int numTotalComps = 0;
+    size_t numTotalComps = 0;
     auto properties = dataArrays_.getProperties();
     for (size_t p = 0; p < properties.size(); ++p) {
         if (dynamic_cast<BoolProperty *>(properties[p])->get())
