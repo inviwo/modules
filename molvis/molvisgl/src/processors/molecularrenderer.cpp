@@ -98,6 +98,14 @@ MolecularRenderer::MolecularRenderer()
 
     addProperties(representation_, radiusScaling_, forceRadius_, defaultRadius_, camera_, lighting_,
                   trackball_);
+
+    lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
+    lighting_.ambientColor_.set(vec3(0.515f));
+    lighting_.diffuseColor_.set(vec3(0.48f));
+    lighting_.specularColor_.set(vec3(0.09f));
+    lighting_.specularExponent_.set(1.9f);
+
+    lighting_.setCurrentStateAsDefault();
 }
 
 void MolecularRenderer::process() {
