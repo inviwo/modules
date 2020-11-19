@@ -224,27 +224,78 @@ inline double dihedralAngle(const dvec3& p0, const dvec3& p1, const dvec3& p2, c
     return glm::atan(glm::dot(glm::cross(c1, c2), glm::normalize(b2)), glm::dot(c1, c2));
 }
 
+void computeDihedralAngles(
+    std::unordered_map<size_t, std::vector<MolecularStructure::BackboneSegment>>& chainSegments,
+    const std::unordered_map<ResidueID, size_t>& residueIndices, const MolecularData& data) {
+    for (auto& [chainId, segments] : chainSegments) {
+        if (segments.size() < 2) continue;
+
+        auto begin = segments.begin();
+        auto end = segments.end();
+
+        auto pos = [&](auto idx) { return data.atoms.positions[idx]; };
+
+        if (begin->complete()) {
+            begin->psi = detail::dihedralAngle(pos(begin->n.value()), pos(begin->ca.value()),
+                                               pos(begin->c.value()), pos((begin + 1)->n.value()));
+        }
+        if ((end - 1)->complete()) {
+            (end - 1)->phi =
+                detail::dihedralAngle(pos((end - 2)->c.value()), pos((end - 1)->n.value()),
+                                      pos((end - 1)->ca.value()), pos((end - 1)->c.value()));
+        }
+
+        for (auto&& [prev, current, next] :
+             util::zip(util::as_range(begin, end - 2), util::as_range(begin + 1, end - 1),
+                       util::as_range(begin + 2, end))) {
+            if (!current.complete()) {
+                continue;
+            }
+            const dvec3& ca{pos(current.ca.value())};
+            const dvec3& n{pos(current.n.value())};
+            const dvec3& c{pos(current.c.value())};
+
+            if (prev.c.has_value()) {
+                current.phi = detail::dihedralAngle(pos(prev.c.value()), n, ca, c);
+            }
+            if (next.n.has_value()) {
+                current.psi = detail::dihedralAngle(n, ca, c, pos(next.n.value()));
+            }
+        }
+
+        // determine peptide types
+        for (auto&& [current, next] :
+             util::zip(util::as_range(begin, end - 1), util::as_range(begin + 1, end))) {
+            current.type = getPeptideType(
+                data.residues[residueIndices.at({current.resId, current.chainId})].name,
+                data.residues[residueIndices.at({next.resId, next.chainId})].name);
+        }
+        (end - 1)->type = getPeptideType(
+            data.residues[residueIndices.at({(end - 1)->resId, (end - 1)->chainId})].name, "");
+    }
+}
+
 }  // namespace detail
 
-void MolecularStructure::computeBackboneSegments() {
-    chainSegments_.clear();
-    chainSegmentIndices_.resize(data_.atoms.positions.size());
+auto MolecularStructure::computeBackboneSegments() const
+    -> std::pair<std::unordered_map<size_t, std::vector<BackboneSegment>>, std::vector<size_t>> {
+    std::unordered_map<size_t, std::vector<BackboneSegment>> chainSegments;
+    std::vector<size_t> indices(data_.atoms.positions.size());
 
     const size_t minCount = 4;
 
     for (auto& chain : chainResidues_) {
-        size_t invalidCount = 0u;
         std::vector<BackboneSegment> segments;
 
         for (auto& resIdx : chain.second) {
-            const auto res = data_.residues[resIdx];
+            const auto& res = data_.residues[resIdx];
             const auto& resAtoms = getResidueAtoms(res.id, res.chainId);
             BackboneSegment seg;
             seg.resId = res.id;
             seg.chainId = res.chainId;
 
             for (auto& atomIdx : resAtoms) {
-                chainSegmentIndices_[atomIdx] = segments.size();
+                indices[atomIdx] = segments.size();
             }
 
             if (resAtoms.size() < minCount) {
@@ -252,7 +303,6 @@ void MolecularStructure::computeBackboneSegments() {
                 LogWarn(
                     fmt::format("invalid residue with too few atoms (id = {}, chainId = {}, '{}')",
                                 res.id, res.chainId, res.name));
-                ++invalidCount;
                 continue;
             }
 
@@ -276,75 +326,17 @@ void MolecularStructure::computeBackboneSegments() {
                     default:
                         break;
                 }
-                if (seg.valid()) break;
+                if (seg.complete()) break;
             }
 
-            if (!seg.valid()) {
-                ++invalidCount;
-            }
             segments.push_back(seg);
         }
-        chainSegments_.emplace(chain.first, std::move(segments));
+        chainSegments.emplace(chain.first, std::move(segments));
     }
 
-    computeDihedralAngles();
-    determinePeptides();
-}
+    detail::computeDihedralAngles(chainSegments, residueIndices_, data_);
 
-void MolecularStructure::computeDihedralAngles() {
-    for (auto& [chainId, segments] : chainSegments_) {
-        if (segments.size() < 2) continue;
-
-        auto begin = segments.begin();
-        auto end = segments.end();
-
-        auto pos = [&](auto idx) { return data_.atoms.positions[idx]; };
-
-        if (begin->valid()) {
-            begin->psi = detail::dihedralAngle(pos(begin->n.value()), pos(begin->ca.value()),
-                                               pos(begin->c.value()), pos((begin + 1)->n.value()));
-        }
-        if ((end - 1)->valid()) {
-            (end - 1)->phi =
-                detail::dihedralAngle(pos((end - 2)->c.value()), pos((end - 1)->n.value()),
-                                      pos((end - 1)->ca.value()), pos((end - 1)->c.value()));
-        }
-
-        for (auto&& [prev, current, next] :
-             util::zip(util::as_range(begin, end - 2), util::as_range(begin + 1, end - 1),
-                       util::as_range(begin + 2, end))) {
-            if (!current.valid()) {
-                continue;
-            }
-            const dvec3& ca{pos(current.ca.value())};
-            const dvec3& n{pos(current.n.value())};
-            const dvec3& c{pos(current.c.value())};
-
-            if (prev.c.has_value()) {
-                current.phi = detail::dihedralAngle(pos(prev.c.value()), n, ca, c);
-            }
-            if (next.n.has_value()) {
-                current.psi = detail::dihedralAngle(n, ca, c, pos(next.n.value()));
-            }
-        }
-    }
-}
-
-void MolecularStructure::determinePeptides() {
-    for (auto& [chainId, segments] : chainSegments_) {
-        if (segments.size() < 2) continue;
-        auto begin = segments.begin();
-        auto end = segments.end();
-        for (auto&& [current, next] :
-             util::zip(util::as_range(begin, end - 1), util::as_range(begin + 1, end))) {
-            current.type = getPeptideType(
-                data_.residues[residueIndices_[{current.resId, current.chainId}]].name,
-                data_.residues[residueIndices_[{next.resId, next.chainId}]].name);
-        }
-        auto last = end - 1;
-        last->type =
-            getPeptideType(data_.residues[residueIndices_[{last->resId, last->chainId}]].name, "");
-    }
+    return {chainSegments, indices};
 }
 
 }  // namespace molvis

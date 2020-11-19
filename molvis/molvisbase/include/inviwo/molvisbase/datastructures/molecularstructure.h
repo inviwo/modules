@@ -138,7 +138,7 @@ struct hash<inviwo::molvis::ResidueID> {
 namespace inviwo {
 namespace molvis {
 
-enum class PeptideType { General, Glycine, Proline, PrePro };
+enum class PeptideType { Unknown, General, Glycine, Proline, PrePro };
 
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, PeptideType pt) {
@@ -153,8 +153,10 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             ss << "Pre-Pro";
             break;
         case PeptideType::General:
-        default:
             ss << "General";
+        case PeptideType::Unknown:
+        default:
+            ss << "Unknown";
     }
     return ss;
 }
@@ -174,12 +176,19 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 class IVW_MODULE_MOLVISBASE_API MolecularStructure {
 public:
     /**
-     * \brief data structure holding the atom indices of a single backbone segment including
-     * dihedral angles
+     * \brief data structure defining a single backbone segment
+     *
+     * Data structure holding the atom indices of a single backbone segment including
+     * dihedral angles.
+     * A backbone segment may be incomplete if any of the atoms (C, O, N, or Ca) is
+     * missing. Dihedral angles are only valid if the segment is complete.
      */
     struct BackboneSegment {
-        bool valid() const {
+        bool complete() const {
             return ca.has_value() && n.has_value() && c.has_value() && o.has_value();
+        }
+        bool empty() const {
+            return !ca.has_value() && !n.has_value() && !c.has_value() && !o.has_value();
         }
 
         size_t resId;
@@ -191,8 +200,8 @@ public:
         std::optional<size_t> o;
 
         // dihedral angles
-        double phi = 0.0;
-        double psi = 0.0;
+        std::optional<double> phi;
+        std::optional<double> psi;
         PeptideType type = PeptideType::General;
     };
 
@@ -278,9 +287,8 @@ public:
 
 private:
     void verifyData() const;
-    void computeBackboneSegments();
-    void computeDihedralAngles();
-    void determinePeptides();
+    std::pair<std::unordered_map<size_t, std::vector<BackboneSegment>>, std::vector<size_t>>
+    computeBackboneSegments() const;
 
     MolecularData data_;
 
