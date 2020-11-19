@@ -116,6 +116,15 @@ std::shared_ptr<Mesh> IVW_MODULE_MOLVISBASE_API createMesh(const MolecularStruct
                                                            bool enablePicking = false,
                                                            uint32_t startId = 0);
 
+/**
+* \brief create a tool tip for the given \p atom of molecular structure \p s
+* 
+ * @param s      molecular structure
+ * @param atom   index of the atom
+ * @return tool tip with information on atomic element, residue, chain, etc. 
+ */
+std::string IVW_MODULE_MOLVISBASE_API createToolTip(const MolecularStructure& s, int atomIndex);
+
 }  // namespace molvis
 
 }  // namespace inviwo

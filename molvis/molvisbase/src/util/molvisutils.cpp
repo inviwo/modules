@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/document.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
 
@@ -253,6 +254,54 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s, bool enablePicking
     }
 
     return mesh;
+}
+
+std::string createToolTip(const MolecularStructure& s, int atomIndex) {
+    using H = utildoc::TableBuilder::Header;
+    using P = Document::PathComponent;
+    const auto& atoms = s.atoms();
+    Document doc;
+    doc.append("b", fmt::format("Atom {}", atomIndex), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    const auto& pos = atoms.positions[atomIndex];
+    if (!atoms.atomicNumbers.empty()) {
+        if (atoms.fullNames.empty()) {
+            tb(H("Element"), element::symbol(atoms.atomicNumbers[atomIndex]));
+        } else {
+            tb(H("Element"),
+               fmt::format("{} ('{}')", element::symbol(atoms.atomicNumbers[atomIndex]),
+                           atoms.fullNames[atomIndex]));
+        }
+    } else if (!atoms.fullNames.empty()) {
+        tb(H("Full Name"), atoms.fullNames[atomIndex]);
+    }
+    tb(H("Position"), fmt::format("{:.3f}, {:.3f}, {:.3f}", pos.x, pos.y, pos.z));
+    if (!atoms.residueIds.empty()) {
+        const auto resId = atoms.residueIds[atomIndex];
+        if (!atoms.chainIds.empty()) {
+            if (auto res = findResidue(s.data(), resId, atoms.chainIds[atomIndex])) {
+                tb(H("Residue"),
+                   fmt::format("{} ('{}', id: {})", res->name, res->fullName, res->id));
+            }
+        } else {
+            tb(H("Residue"), fmt::format("{}", atoms.residueIds[atomIndex]));
+        }
+    }
+    if (!atoms.chainIds.empty()) {
+        const auto chainId = atoms.chainIds[atomIndex];
+        if (auto chain = findChain(s.data(), chainId)) {
+            tb(H("Chain"), fmt::format("{} (id: {})", s.chains()[chainId].name, chainId));
+        } else {
+            tb(H("Chain"), fmt::format("{}", chainId));
+        }
+    }
+    if (!atoms.modelIds.empty()) {
+        tb(H("Model"), fmt::format("{}", atoms.modelIds[atomIndex]));
+    }
+    if (!atoms.bFactors.empty()) {
+        tb(H("B Factor"), fmt::format("{}", atoms.bFactors[atomIndex]));
+    }
+    return doc;
 }
 
 }  // namespace molvis
