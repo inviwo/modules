@@ -32,9 +32,9 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
-#include <inviwo/core/util/document.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
 
@@ -87,7 +87,7 @@ std::optional<Chain> findChain(const MolecularData& data, size_t chainId) {
     return find_if_opt(data.chains, [id = chainId](auto& r) { return r.id == id; });
 }
 
-std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& fullAtomName,
+std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fullAtomName,
                                          size_t residueId, size_t chainId) {
     if ((atoms.residueIds.size() != atoms.chainIds.size()) ||
         (atoms.residueIds.size() != atoms.fullNames.size())) {
@@ -107,15 +107,12 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& 
     return std::nullopt;
 }
 
-PeptideType getPeptideType(std::string resName, std::string nextResName) {
-    resName = toUpper(resName);
-    nextResName = toUpper(nextResName);
-
-    if (resName == "GLY") {
+PeptideType getPeptideType(std::string_view resName, std::string_view nextResName) {
+    if (iCaseCmp(resName, "GLY")) {
         return PeptideType::Glycine;
-    } else if (resName == "PRO") {
+    } else if (iCaseCmp(resName, "PRO")) {
         return PeptideType::Proline;
-    } else if (nextResName == "PRO") {
+    } else if (iCaseCmp(nextResName, "PRO")) {
         return PeptideType::PrePro;
     } else {
         return PeptideType::General;
@@ -256,7 +253,7 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s, bool enablePicking
     return mesh;
 }
 
-std::string createToolTip(const MolecularStructure& s, int atomIndex) {
+Document createToolTip(const MolecularStructure& s, int atomIndex) {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;
     const auto& atoms = s.atoms();
@@ -284,7 +281,7 @@ std::string createToolTip(const MolecularStructure& s, int atomIndex) {
                    fmt::format("{} ('{}', id: {})", res->name, res->fullName, res->id));
             }
         } else {
-            tb(H("Residue"), fmt::format("{}", atoms.residueIds[atomIndex]));
+            tb(H("Residue"), atoms.residueIds[atomIndex]);
         }
     }
     if (!atoms.chainIds.empty()) {
@@ -292,14 +289,14 @@ std::string createToolTip(const MolecularStructure& s, int atomIndex) {
         if (auto chain = findChain(s.data(), chainId)) {
             tb(H("Chain"), fmt::format("{} (id: {})", s.chains()[chainId].name, chainId));
         } else {
-            tb(H("Chain"), fmt::format("{}", chainId));
+            tb(H("Chain"), chainId);
         }
     }
     if (!atoms.modelIds.empty()) {
-        tb(H("Model"), fmt::format("{}", atoms.modelIds[atomIndex]));
+        tb(H("Model"), atoms.modelIds[atomIndex]);
     }
     if (!atoms.bFactors.empty()) {
-        tb(H("B Factor"), fmt::format("{}", atoms.bFactors[atomIndex]));
+        tb(H("B Factor"), atoms.bFactors[atomIndex]);
     }
     return doc;
 }

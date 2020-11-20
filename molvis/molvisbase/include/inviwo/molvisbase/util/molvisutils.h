@@ -31,6 +31,9 @@
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
 
 #include <inviwo/molvisbase/datastructures/molecularstructure.h>
+#include <inviwo/core/util/document.h>
+
+#include <string_view>
 
 namespace inviwo {
 
@@ -44,7 +47,7 @@ namespace molvis {
  * @param data   only considers the list of residues
  * @return matching residue if found, std::nullopt otherwise
  */
-std::optional<Residue> IVW_MODULE_MOLVISBASE_API findResidue(const MolecularData& data,
+IVW_MODULE_MOLVISBASE_API std::optional<Residue> findResidue(const MolecularData& data,
                                                              size_t residueId, size_t chainId);
 
 /**
@@ -53,7 +56,7 @@ std::optional<Residue> IVW_MODULE_MOLVISBASE_API findResidue(const MolecularData
  * @param data   only considers the list of chains
  * @return matching residue if found, std::nullopt otherwise
  */
-std::optional<Chain> IVW_MODULE_MOLVISBASE_API findChain(const MolecularData& data, size_t chainId);
+IVW_MODULE_MOLVISBASE_API std::optional<Chain> findChain(const MolecularData& data, size_t chainId);
 
 /**
  * get the global index of an atom in \p atoms. Both \p fullAtomName, \p residueId, and \p chainId
@@ -63,8 +66,8 @@ std::optional<Chain> IVW_MODULE_MOLVISBASE_API findChain(const MolecularData& da
  * @return global atom index if found, std::nullopt otherwise
  * @throws Exception if chainIds, residueIds, and fullNames in atoms have different sizes
  */
-std::optional<size_t> IVW_MODULE_MOLVISBASE_API getGlobalAtomIndex(const Atoms& atoms,
-                                                                   const std::string& fullAtomName,
+IVW_MODULE_MOLVISBASE_API std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms,
+                                                                   std::string_view fullAtomName,
                                                                    size_t residueId,
                                                                    size_t chainId);
 
@@ -74,7 +77,8 @@ std::optional<size_t> IVW_MODULE_MOLVISBASE_API getGlobalAtomIndex(const Atoms& 
  * @param resName      name of the residue ("GLY", "PRO", ...)
  * @param nextResName  name of next residue ("GLY", "PRO", ...)
  */
-PeptideType IVW_MODULE_MOLVISBASE_API getPeptideType(std::string resName, std::string nextResName);
+IVW_MODULE_MOLVISBASE_API PeptideType getPeptideType(std::string_view resName,
+                                                     std::string_view nextResName);
 
 /**
  * Determine covalent bonds based on heuristics. A bond is valid if the distance between two
@@ -85,7 +89,7 @@ PeptideType IVW_MODULE_MOLVISBASE_API getPeptideType(std::string resName, std::s
  * @return list of covalent bonds
  * @throws Exception if sizes of positions and atomic numbers do not match
  */
-std::vector<Bond> IVW_MODULE_MOLVISBASE_API computeCovalentBonds(const Atoms& atoms);
+IVW_MODULE_MOLVISBASE_API std::vector<Bond> computeCovalentBonds(const Atoms& atoms);
 
 /**
  * Determines the atomic numbers of each atom based on the respective \p fullNames.
@@ -94,8 +98,8 @@ std::vector<Bond> IVW_MODULE_MOLVISBASE_API computeCovalentBonds(const Atoms& at
  *
  * \see element::fromFullName()
  */
-std::vector<Element> IVW_MODULE_MOLVISBASE_API
-getAtomicNumbers(const std::vector<std::string>& fullNames);
+IVW_MODULE_MOLVISBASE_API std::vector<Element> getAtomicNumbers(
+    const std::vector<std::string>& fullNames);
 
 /**
  * \brief creates a mesh from molecular structure \p s
@@ -112,7 +116,7 @@ getAtomicNumbers(const std::vector<std::string>& fullNames);
  *
  * \see MolecularStructure, element::color, element::vdwRadius
  */
-std::shared_ptr<Mesh> IVW_MODULE_MOLVISBASE_API createMesh(const MolecularStructure& s,
+IVW_MODULE_MOLVISBASE_API std::shared_ptr<Mesh> createMesh(const MolecularStructure& s,
                                                            bool enablePicking = false,
                                                            uint32_t startId = 0);
 
@@ -121,9 +125,9 @@ std::shared_ptr<Mesh> IVW_MODULE_MOLVISBASE_API createMesh(const MolecularStruct
  *
  * @param s      molecular structure
  * @param atom   index of the atom
- * @return tool tip with information on atomic element, residue, chain, etc.
+ * @return Document containing tool tip with information on atomic element, residue, chain, etc.
  */
-std::string IVW_MODULE_MOLVISBASE_API createToolTip(const MolecularStructure& s, int atomIndex);
+IVW_MODULE_MOLVISBASE_API Document createToolTip(const MolecularStructure& s, int atomIndex);
 
 }  // namespace molvis
 

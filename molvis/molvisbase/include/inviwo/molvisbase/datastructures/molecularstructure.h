@@ -36,6 +36,8 @@
 
 #include <optional>
 #include <iostream>
+#include <string_view>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -161,6 +163,35 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
     return ss;
 }
 
+}  // namespace molvis
+}  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::molvis::PeptideType> : fmt::formatter<std::string_view> {
+    template <typename FormatContext>
+    auto format(inviwo::molvis::PeptideType c, FormatContext& ctx) {
+        string_view name = "Unknown";
+        switch (c) {
+            case inviwo::molvis::PeptideType::Glycine:
+                name = "Glycine";
+                break;
+            case inviwo::molvis::PeptideType::Proline:
+                name = "Proline";
+                break;
+            case inviwo::molvis::PeptideType::PrePro:
+                name = "Pre-Pro";
+                break;
+            case inviwo::molvis::PeptideType::General:
+                name = "General";
+                break;
+        }
+        return formatter<string_view>::format(name, ctx);
+    }
+};
+
+namespace inviwo {
+namespace molvis {
+
 /**
  * \brief a data structure holding molecular data and its acceleration structures
  *
@@ -184,10 +215,10 @@ public:
      * missing. Dihedral angles are only valid if the segment is complete.
      */
     struct BackboneSegment {
-        bool complete() const {
+        constexpr bool complete() const noexcept {
             return ca.has_value() && n.has_value() && c.has_value() && o.has_value();
         }
-        bool empty() const {
+        constexpr bool empty() const noexcept {
             return !ca.has_value() && !n.has_value() && !c.has_value() && !o.has_value();
         }
 
@@ -234,7 +265,7 @@ public:
      *
      * \see getGlobalAtomIndex
      */
-    std::optional<size_t> getAtomIndex(const std::string& fullAtomName, size_t residueId,
+    std::optional<size_t> getAtomIndex(std::string_view fullAtomName, size_t residueId,
                                        size_t chainId) const;
 
     bool hasResidues() const;
@@ -286,10 +317,6 @@ public:
     const std::vector<size_t>& getBackboneSegmentIndices() const;
 
 private:
-    void verifyData() const;
-    std::pair<std::unordered_map<size_t, std::vector<BackboneSegment>>, std::vector<size_t>>
-    computeBackboneSegments() const;
-
     MolecularData data_;
 
     // mapping chain IDs to a list of global residue indices
