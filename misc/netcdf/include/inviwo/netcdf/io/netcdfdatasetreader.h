@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2013-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,16 +27,27 @@
  *
  *********************************************************************************/
 
-#include <inviwo/netcdf/netcdfmodule.h>
-#include <inviwo/netcdf/io/netcdfdatasetreader.h>
+#pragma once
+
+#include <inviwo/netcdf/netcdfmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/datareader.h>
+#include <modules/python3/pybindutils.h>
+#include <modules/discretedata/dataset.h>
 
 namespace inviwo {
 
-NetCDFModule::NetCDFModule(InviwoApplication* app)
-    : InviwoModule(app, "netcdf")
-    , scripts_{getPath() + "/python"}
-    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {
-    registerDataReader(std::make_unique<NetCDFDataSetReader>());
-}
+class IVW_MODULE_NETCDF_API NetCDFDataSetReader
+    : public DataReaderType<discretedata::DataSetInitializer> {
+public:
+    NetCDFDataSetReader();
+    NetCDFDataSetReader(const NetCDFDataSetReader& rhs) = default;
+    NetCDFDataSetReader& operator=(const NetCDFDataSetReader& that) = default;
+    virtual NetCDFDataSetReader* clone() const override;
+    virtual ~NetCDFDataSetReader() = default;
+
+    virtual std::shared_ptr<discretedata::DataSetInitializer> readData(
+        const std::string& filePath) override;
+};
 
 }  // namespace inviwo

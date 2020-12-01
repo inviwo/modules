@@ -39,6 +39,7 @@ class NetCDFVolumeSource(GenericNetCDFSource):
         GenericNetCDFSource.reloadData(self, extents)
 
         buffer = numpy.concatenate(self.data, axis=3)
+        print(type(buffer))
         volume = ivw.data.Volume(buffer)
         if self.overwriteDataRange.value:
             volume.dataMap.dataRange = self.dataRange.value

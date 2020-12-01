@@ -127,25 +127,17 @@ struct MakeColumn {
         , numGroupTimeSteps(numGroupTimeStep) {}
 
     template <typename T>
-    std::pair<std::vector<T>*, std::vector<T>*> make(const std::string& name, T initVal = 0) {
-        auto* col = &detail::createColumn<T>(*perEnsembleData, name, numGroups, initVal);
-        auto* seriesCol =
+    VortexStatistics::ColumnPair<T> make(const std::string& name, T initVal = 0) {
+        VortexStatistics::ColumnPair<T> pair;
+        pair.PerGroup = &detail::createColumn<T>(*perEnsembleData, name, numGroups, initVal);
+        pair.PerGroupPerTime =
             &detail::createColumn<T>(*perVortexData, name, numGroupTimeSteps, initVal);
-        return std::make_pair(col, seriesCol);
+        return pair;
     }
 
     std::shared_ptr<DataFrame> perEnsembleData, perVortexData;
     size_t numGroups, numGroupTimeSteps;
 };
-
-// template <typename T>
-// std::vector<T>& createColumns(DataFrame& collective, DataFrame& groups, const std::string& name,
-//                               size_t numGroups, size_t numTimeSteps,
-//                               std::vector<std::vector<T>*>& groupColumns) {
-//     createColumn<T>(groups, fmt::format("{} {}", group, name), numTimeSteps));
-//     }
-//     return createColumn<T>(collective, name, numGroups);
-// }
 }  // namespace detail
 
 void VortexStatistics::process() {
@@ -198,11 +190,7 @@ void VortexStatistics::process() {
     auto& colLifeTime = detail::createColumn<int>(*perEnsembleData, "Life Time", numGroups, 0);
     auto& colStartTime =
         detail::createColumn<int>(*perEnsembleData, "Start Time", numGroups, numTimeSteps);
-    // std::fill(colStartTime.begin(), colStartTime.end(), numTimeSteps);
-    // std::fill(colEnsemble.first->begin(), colEnsemble.first->end(), ensembleMember_.get());
-    // std::fill(colEnsemble.second->begin(), colEnsemble.second->end(), ensembleMember_.get());
-    // auto& colRotation = detail::createColumn<std::string>(*perEnsembleData, "Rotation",
-    // numGroups);
+
     auto columnRotation = perEnsembleData->addCategoricalColumn("Rotation", numGroups);
     auto& colRotation =
         columnRotation->getTypedBuffer()->getEditableRAMRepresentation()->getDataContainer();
@@ -218,32 +206,37 @@ void VortexStatistics::process() {
     auto& colEndY = detail::createColumn<float>(*perEnsembleData, "End Center Y", numGroups);
     auto& colTravel =
         detail::createColumn<float>(*perEnsembleData, "Travelled Distance", numGroups, 0);
+
     // ============ Create scalar columns from given names ============ //
-    std::vector<std::pair<std::vector<float>*, std::vector<float>*>> colScalars;
+    struct ScalarColumns {
+        ColumnPair<float> Surface, Average, Min, Max;
+    };
+    std::vector<ScalarColumns> colScalars;
     for (auto nameProp : scalarNames_.getProperties()) {
         auto nameStringProp = dynamic_cast<StringProperty*>(nameProp);
         if (nameStringProp) {
-            colScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Surface {}", nameStringProp->get()), 0));
-            colScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Avg {}", nameStringProp->get()), 0));
-            colScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Min {}", nameStringProp->get()), 0));
-            colScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Max {}", nameStringProp->get()), 0));
+            ScalarColumns& scalar = colScalars.emplace_back();
+            scalar.Surface =
+                makeColumn.make<float>(fmt::format("Surface {}", nameStringProp->get()), 0);
+            scalar.Average =
+                makeColumn.make<float>(fmt::format("Avg {}", nameStringProp->get()), 0);
+            scalar.Min = makeColumn.make<float>(fmt::format("Min {}", nameStringProp->get()), 0);
+            scalar.Max = makeColumn.make<float>(fmt::format("Max {}", nameStringProp->get()), 0);
         }
     }
 
-    std::vector<std::pair<std::vector<float>*, std::vector<float>*>> colTopScalars;
+    struct SurfaceColumns {
+        ColumnPair<float> Extreme, Min, Max;
+    };
+    std::vector<SurfaceColumns> colTopScalars;
     for (auto nameProp : topScalarNames_.getProperties()) {
         auto nameStringProp = dynamic_cast<StringProperty*>(nameProp);
         if (nameStringProp) {
-            colTopScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Extreme {}", nameStringProp->get()), 0));
-            colTopScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Min {}", nameStringProp->get()), 0));
-            colTopScalars.emplace_back(
-                makeColumn.make<float>(fmt::format("Max {}", nameStringProp->get()), 0));
+            SurfaceColumns surf = colTopScalars.emplace_back();
+            surf.Extreme =
+                makeColumn.make<float>(fmt::format("Extreme {}", nameStringProp->get()), 0);
+            surf.Min = makeColumn.make<float>(fmt::format("Min {}", nameStringProp->get()), 0);
+            surf.Max = makeColumn.make<float>(fmt::format("Max {}", nameStringProp->get()), 0);
         }
     }
 
@@ -272,7 +265,7 @@ void VortexStatistics::process() {
         else if (std::abs(val) > std::abs(vecVal))
             vecVal = val;
     };
-    std::vector<dvec2> centers(numGroups, dvec2(0, 0));
+    std::vector<dvec2> prevCenters(numGroups, dvec2(0, 0));
     const VolumeRAM* firstMask = maskVolumeIn_.getData()->front()->getRepresentation<VolumeRAM>();
 
     firstMask->dispatch<void, dispatching::filter::Scalars>([&](const auto* mask) {
@@ -306,81 +299,69 @@ void VortexStatistics::process() {
                 colLifeTime[group] = time - colStartTime[group];
 
                 // std::lock_guard<std::mutex> lock(groupMutex[group]);
-                colNumVoxels.first->at(group)++;
-                colNumVoxels.second->at(idxGroupTime)++;
-                assignMax(colMaxDepth.first->at(group), int(idx.z));
-                assignMax(colMaxDepth.second->at(idxGroupTime), int(idx.z));
+                colNumVoxels.PerGroup->at(group)++;
+                colNumVoxels.PerGroup->at(idxGroupTime)++;
+                assignMax(colMaxDepth.PerGroup->at(group), int(idx.z));
+                assignMax(colMaxDepth.PerGroupPerTime->at(idxGroupTime), int(idx.z));
 
                 // Sample scalar volume time series.
                 dvec4 scalarSample = scalarVol->getAsDVec4(idx);
                 for (size_t s = 0; s < numScalars; ++s) {
-                    colScalars[s * 4 + 1].first->at(group) += scalarSample[s];
-                    colScalars[s * 4 + 1].second->at(idxGroupTime) += scalarSample[s];
+                    colScalars[s].Average.PerGroup->at(group) += scalarSample[s];
+                    colScalars[s].Average.PerGroupPerTime->at(idxGroupTime) += scalarSample[s];
 
-                    assignMin(colScalars[s * 4 + 2].first->at(group), float(scalarSample[s]));
-                    assignMin(colScalars[s * 4 + 2].second->at(idxGroupTime),
+                    assignMin(colScalars[s].Min.PerGroup->at(group), float(scalarSample[s]));
+                    assignMin(colScalars[s].Min.PerGroupPerTime->at(idxGroupTime),
                               (float(scalarSample[s])));
 
-                    assignMax(colScalars[s * 4 + 3].first->at(group), float(scalarSample[s]));
-                    assignMax(colScalars[s * 4 + 3].second->at(idxGroupTime),
+                    assignMax(colScalars[s].Max.PerGroup->at(group), float(scalarSample[s]));
+                    assignMax(colScalars[s].Max.PerGroupPerTime->at(idxGroupTime),
                               (float(scalarSample[s])));
                 }
 
                 // ============ Surface voxel ============ //
                 if (idx.z != AssembleWindingAngle::SEED_DEPTH) return;
-                colNumTopVoxels.first->at(group)++;
-                colNumTopVoxels.second->at(idxGroupTime)++;
+                colNumTopVoxels.PerGroup->at(group)++;
+                colNumTopVoxels.PerGroupPerTime->at(idxGroupTime)++;
                 for (size_t s = 0; s < numScalars; ++s) {
-                    colScalars[s * 4].first->at(group) += scalarSample[s];
-                    colScalars[s * 4].second->at(idxGroupTime) += scalarSample[s];
+                    colScalars[s].Surface.PerGroup->at(group) += scalarSample[s];
+                    colScalars[s].Surface.PerGroupPerTime->at(idxGroupTime) += scalarSample[s];
                 }
 
                 // Sample surface.
                 scalarSample = topScalarVol->getAsDVec4({idx.x, idx.y, time});
                 for (size_t s = 0; s < numTopScalars; ++s) {
-                    assignExtremum(colTopScalars[s * 3].first->at(group), scalarSample[s]);
-                    assignExtremum(colTopScalars[s * 3].second->at(idxGroupTime), scalarSample[s]);
+                    assignExtremum(colTopScalars[s].Extreme.PerGroup->at(group), scalarSample[s]);
+                    assignExtremum(colTopScalars[s].Extreme.PerGroupPerTime->at(idxGroupTime),
+                                   scalarSample[s]);
 
-                    assignMin(colTopScalars[s * 3 + 1].first->at(group), float(scalarSample[s]));
-                    assignMin(colTopScalars[s * 3 + 1].second->at(idxGroupTime),
+                    assignMin(colTopScalars[s].Min.PerGroup->at(group), float(scalarSample[s]));
+                    assignMin(colTopScalars[s].Min.PerGroupPerTime->at(idxGroupTime),
                               (float(scalarSample[s])));
 
-                    assignMax(colTopScalars[s * 3 + 2].first->at(group), float(scalarSample[s]));
-                    assignMax(colTopScalars[s * 3 + 2].second->at(idxGroupTime),
+                    assignMax(colTopScalars[s].Max.PerGroup->at(group), float(scalarSample[s]));
+                    assignMax(colTopScalars[s].Max.PerGroupPerTime->at(idxGroupTime),
                               float(scalarSample[s]));
                 }
             };
 
             util::forEachVoxel(*maskVolume, indexCallback);
 
-            for (size_t group = 0; group < numGroups; ++group) {
+            for (int group = numGroups - 1; group >= 0; --group) {
                 size_t idxGroupTime = numGroups * time + group;
                 colTimeStep[idxGroupTime] = time;
-                colGroup.second->at(idxGroupTime) = group;
+                colGroup.PerGroupPerTime->at(idxGroupTime) = group;
 
-                // if (colTopNumVoxels.first->at(group) > 0) {
-                //     colTopScalars[s * 4].first->at(group) /=
-                //     colTopNumVoxels.first->at(group);
-                // }
-                // if (colNumVoxels.first->at(group) > 0) {
-                //     colScalars[s * 4 + 1].first->at(group) /= colNumVoxels.first->at(group);
-                // }
-
-                // for (size_t time = 0; time < numTimeSteps; ++time) {
-                if (colNumTopVoxels.second->at(idxGroupTime) > 0) {
-                    // for (size_t s = 0; s < numTopScalars; ++s) {
-                    //     colTopScalars[s * 3].second->at(idxGroupTime) /=
-                    //         colNumTopVoxels.second->at(idxGroupTime);
-                    // }
+                if (colNumTopVoxels.PerGroupPerTime->at(idxGroupTime) > 0) {
                     for (size_t s = 0; s < numScalars; ++s) {
-                        colScalars[s * 4].second->at(idxGroupTime) /=
-                            colNumTopVoxels.second->at(idxGroupTime);
+                        colScalars[s].Surface.PerGroupPerTime->at(idxGroupTime) /=
+                            colNumTopVoxels.PerGroupPerTime->at(idxGroupTime);
                     }
                 }
-                if (colNumVoxels.second->at(idxGroupTime) > 0) {
+                if (colNumVoxels.PerGroupPerTime->at(idxGroupTime) > 0) {
                     for (size_t s = 0; s < numScalars; ++s) {
-                        colScalars[s * 4 + 1].second->at(idxGroupTime) /=
-                            colNumVoxels.second->at(idxGroupTime);
+                        colScalars[s].Average.PerGroupPerTime->at(idxGroupTime) /=
+                            colNumVoxels.PerGroupPerTime->at(idxGroupTime);
                     }
                 }
 
@@ -394,41 +375,79 @@ void VortexStatistics::process() {
                     continue;
                 }
 
-                if (std::isfinite(vortex->maxRadius / vortex->minRadius)) {
-                    // std::cout << "Inf! " << vortex->maxRadius << " / " << vortex->minRadius
-                    //           << std::endl;
-                    colAspectRatio.second->at(idxGroupTime) = vortex->maxRadius / vortex->minRadius;
-                    colAspectRatio.first->at(group) += vortex->maxRadius / vortex->minRadius;
+                // Add sizes to parent volumes.
+                int parentGroup = vortices->getParentGroup(vortex - vortices->begin());
+                if (parentGroup >= 0 && parentGroup < group) {
+                    size_t parentGroupTime = numGroups * time + group;
+                    colNumVoxels.PerGroup->at(parentGroup) +=
+                        colNumVoxels.PerGroupPerTime->at(idxGroupTime);
+                    colNumVoxels.PerGroupPerTime->at(parentGroupTime) +=
+                        colNumVoxels.PerGroupPerTime->at(idxGroupTime);
+                    colNumTopVoxels.PerGroup->at(parentGroup) +=
+                        colNumTopVoxels.PerGroupPerTime->at(idxGroupTime);
+                    colNumTopVoxels.PerGroupPerTime->at(parentGroupTime) +=
+                        colNumTopVoxels.PerGroupPerTime->at(idxGroupTime);
+
+                    // All scalars.
+                    for (size_t s = 0; s < numScalars; ++s) {
+                        colScalars[s].Surface.PerGroup->at(parentGroup) +=
+                            colScalars[s].Surface.PerGroupPerTime->at(idxGroupTime);
+                        colScalars[s].Surface.PerGroupPerTime->at(parentGroupTime) +=
+                            colScalars[s].Surface.PerGroupPerTime->at(idxGroupTime);
+
+                        colScalars[s].Average.PerGroup->at(parentGroup) +=
+                            colScalars[s].Average.PerGroupPerTime->at(idxGroupTime);
+                        colScalars[s].Average.PerGroupPerTime->at(parentGroupTime) +=
+                            colScalars[s].Average.PerGroupPerTime->at(idxGroupTime);
+
+                        assignMin(colScalars[s].Min.PerGroup->at(parentGroup),
+                                  colScalars[s].Min.PerGroup->at(group));
+                        assignMin(colScalars[s].Min.PerGroupPerTime->at(parentGroupTime),
+                                  colScalars[s].Min.PerGroupPerTime->at(idxGroupTime));
+
+                        assignMax(colScalars[s].Max.PerGroup->at(parentGroup),
+                                  colScalars[s].Max.PerGroup->at(group));
+                        assignMax(colScalars[s].Max.PerGroupPerTime->at(parentGroupTime),
+                                  colScalars[s].Max.PerGroupPerTime->at(idxGroupTime));
+
+                        assignExtremum(colTopScalars[s].Extreme.PerGroup->at(parentGroup),
+                                       colTopScalars[s].Extreme.PerGroup->at(group));
+                        assignExtremum(
+                            colTopScalars[s].Extreme.PerGroupPerTime->at(parentGroupTime),
+                            colTopScalars[s].Extreme.PerGroupPerTime->at(idxGroupTime));
+
+                        assignMin(colTopScalars[s].Min.PerGroup->at(parentGroup),
+                                  colTopScalars[s].Min.PerGroup->at(group));
+                        assignMin(colTopScalars[s].Min.PerGroupPerTime->at(parentGroupTime),
+                                  colTopScalars[s].Min.PerGroupPerTime->at(idxGroupTime));
+
+                        assignMax(colTopScalars[s].Max.PerGroup->at(parentGroup),
+                                  colTopScalars[s].Max.PerGroup->at(group));
+                        assignMax(colTopScalars[s].Max.PerGroupPerTime->at(parentGroupTime),
+                                  colTopScalars[s].Max.PerGroupPerTime->at(idxGroupTime));
+                    }
                 }
-                colAvgRadius.second->at(idxGroupTime) = vortex->avgRadius;
-                colAvgRadius.first->at(group) += vortex->avgRadius;
+
+                if (std::isfinite(vortex->maxRadius / vortex->minRadius)) {
+                    colAspectRatio.PerGroupPerTime->at(idxGroupTime) =
+                        vortex->maxRadius / vortex->minRadius;
+                    colAspectRatio.PerGroup->at(group) += vortex->maxRadius / vortex->minRadius;
+                } else {
+                    colAspectRatio.PerGroupPerTime->at(idxGroupTime) = NAN;
+                }
+                colAvgRadius.PerGroupPerTime->at(idxGroupTime) = vortex->avgRadius;
+                colAvgRadius.PerGroup->at(group) += vortex->avgRadius;
 
                 colRotation[group] =
                     (vortex->rotation == Vortex::Turning::Clockwise) ? 0 : 1;  //"CW" : "CCW";
 
-                if (colNumTopVoxels.first->at(group) > 0) {
-                    // for (size_t s = 0; s < numTopScalars; ++s) {
-                    //     colTopScalars[s * 3].first->at(group) /=
-                    //     colNumTopVoxels.first->at(group);
-                    // }
-                    for (size_t s = 0; s < numScalars; ++s) {
-                        colScalars[s * 4 + 0].first->at(group) /= colNumTopVoxels.first->at(group);
-                    }
-                }
-                if (colNumVoxels.first->at(group) > 0) {
-                    for (size_t s = 0; s < numScalars; ++s) {
-                        colScalars[s * 4 + 1].first->at(group) /= colNumVoxels.first->at(group);
-                    }
-                }
-
                 colCenterX[idxGroupTime] = vortex->center.x;
                 colCenterY[idxGroupTime] = vortex->center.y;
                 if (time != colStartTime[group]) {
-                    // size_t idxLastTime = numGroups * (time - 1) + group;
                     colTravel[group] += glm::distance(
-                        vortex->center, centers[group]);  // dvec2(colCenterX[idxLastTime],
-                                                          // colCenterY[idxLastTime]));
-                    centers[group] = vortex->center;
+                        vortex->center, prevCenters[group]);  // dvec2(colCenterX[idxLastTime],
+                                                              // colCenterY[idxLastTime]));
+                    prevCenters[group] = vortex->center;
 
                     colEndX[group] = vortex->center.x;
                     colEndY[group] = vortex->center.y;
@@ -441,10 +460,22 @@ void VortexStatistics::process() {
 
         // Not per time:
         for (size_t group = 0; group < numGroups; ++group) {
-            colGroup.first->at(group) = group;
+            colGroup.PerGroup->at(group) = group;
             if (colLifeTime[group] == 0) continue;
-            colAspectRatio.first->at(group) /= colLifeTime[group];
-            colAvgRadius.first->at(group) /= colLifeTime[group];
+            colAspectRatio.PerGroup->at(group) /= colLifeTime[group];
+            colAvgRadius.PerGroup->at(group) /= colLifeTime[group];
+
+            if (colNumTopVoxels.PerGroup->at(group) > 0) {
+                for (size_t s = 0; s < numScalars; ++s) {
+                    colScalars[s].Surface.PerGroup->at(group) /=
+                        colNumTopVoxels.PerGroup->at(group);
+                }
+            }
+            if (colNumVoxels.PerGroup->at(group) > 0) {
+                for (size_t s = 0; s < numScalars; ++s) {
+                    colScalars[s].Average.PerGroup->at(group) /= colNumVoxels.PerGroup->at(group);
+                }
+            }
         }
     });
     dataOut_.setData(perEnsembleData);

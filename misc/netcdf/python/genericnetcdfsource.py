@@ -1,5 +1,5 @@
 import inviwopy as ivw
-from inviwopy.properties import IntVec3Property, FileProperty, OptionPropertyString, ButtonProperty, BoolProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
+from inviwopy.properties import IntVec3Property, FileProperty, ButtonProperty, BoolProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
 from inviwopy.glm import dvec2, mat4, vec4
 import netcdfutils
 

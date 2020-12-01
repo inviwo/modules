@@ -270,9 +270,6 @@ bool WindingAngle::filterLines() {
             if (limitRadiusRatio_.get() && (maxRadius / minRadius) > maxRadiusRatio_.get()) {
                 return;
             }
-            // if ((relativeThreshold_ && endPointDist < relativeDistanceThreshold_ * avgRadius)) {
-            //     return;
-            // }
             Vortex::Turning rotation = (static_cast<Vortex::Turning>(line.getIndex()));
             // Passed all filters, select line.
             Vortex vort(line, center, avgRadius, minRadius, maxRadius, 42, 0, rotation);

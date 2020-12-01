@@ -280,8 +280,8 @@ std::shared_ptr<Mesh> LinePlot::createLines() {
         return {};
     }
 
-    using LineMesh = TypedMesh<buffertraits::PositionsBuffer1D, buffertraits::ColorsBuffer,
-                               buffertraits::PickingBuffer>;
+    // using LineMesh = TypedMesh<buffertraits::PositionsBuffer1D, buffertraits::ColorsBuffer,
+    //                            buffertraits::PickingBuffer>;
 
     //
     // TODO: reuse x axis values in separate vertex attribute and custom shader?

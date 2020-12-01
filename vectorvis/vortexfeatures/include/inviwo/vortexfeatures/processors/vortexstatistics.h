@@ -48,6 +48,11 @@ namespace inviwo {
  */
 class IVW_MODULE_VORTEXFEATURES_API VortexStatistics : public Processor {
 public:
+    template <typename T>
+    struct ColumnPair {
+        std::vector<T> *PerGroup, *PerGroupPerTime;
+    };
+
     VortexStatistics();
     virtual ~VortexStatistics() = default;
 

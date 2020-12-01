@@ -164,7 +164,7 @@ void FloodfillImage::process() {
             // }
         }
 
-    for (int i = 0; i < maximaIndices->size(); ++i) {
+    for (size_t i = 0; i < maximaIndices->size(); ++i) {
         ivec2 idx = maximaIndices->operator[](i);
         static constexpr int RAD = 5;
         for (int y = -RAD; y <= RAD; ++y)

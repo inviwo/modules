@@ -47,6 +47,7 @@ const ProcessorInfo VortexToMesh::getProcessorInfo() const { return processorInf
 VortexToMesh::VortexToMesh()
     : vorticesIn_("vorticesIn")
     , selectionIn_("selection")
+    , selectionLocalIdIn_("selectionLocalIdIn")
     , dataFrameIn_("dataFrame")
     , boundaryOut_("boundaries")
     , centerOut_("centers")
@@ -83,6 +84,7 @@ VortexToMesh::VortexToMesh()
 
     addPort(vorticesIn_);
     addPort(selectionIn_);
+    addPort(selectionLocalIdIn_);
     addPort(dataFrameIn_);
     selectionIn_.setOptional(true);
     dataFrameIn_.setOptional(true);
@@ -125,7 +127,7 @@ void VortexToMesh::process() {
     for (size_t idx = 0; idx < vortices->numGroups(); ++idx) {
         vec3 baseCol(rndDist(eng) / 2, rndDist(eng), rndDist(eng));
         if (selectionHighlight_.get() == SelectionHighlight::FilterSelect &&
-            selectionIn_.isSelected(getSelectionID(idx))) {
+            (selectionIn_.isSelected(getSelectionID(idx)) || selectionLocalIdIn_.isSelected(idx))) {
             colors[idx] = vec4(0.9f, 0.05f, 0.05f, 1);
         } else {
             baseCol = glm::normalize(baseCol);
@@ -187,15 +189,16 @@ size_t VortexToMesh::getPos3D(const Vortex& vort) const {
 }
 
 size_t VortexToMesh::getSelectionID(size_t vortexID) const {
-    // if (!dataFrameIn_.hasData() || ensembleMember_.get() <= 1) return vortexID;
+    if (!dataFrameIn_.hasData() || ensembleMember_.get() <= 1) return vortexID;
+    return 679 + vortexID;
     // size_t numRows = dataFrameIn_.getData()->getNumberOfRows();
     // size_t offsetID =
     //     dataFrameIn_.getData()->getNumberOfRows() - vorticesIn_.getData()->numGroups() +
     //     vortexID;
     // if (offsetID >= numRows) return vortexID;
     // return offsetID;
-    // if (ensembleMember_.get() > 1) return return vortexID;
-    return vortexID;
+    // if (ensembleMember_.get() > 1) return vortexID;
+    // return vortexID;
     // Column* colVortexId = nullptr;
     // Column* colEnsemble = nullptr;
     // for (auto col : *dataFrameIn_.getData()) {
@@ -534,6 +537,7 @@ void VortexToMesh::objectPicked(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
         p->getPressItem() == PickingPressItem::Primary) {
         selectionIn_.sendSelectionEvent({getSelectionID(p->getPickedId())});
+        selectionLocalIdIn_.sendSelectionEvent({p->getPickedId()});
     }
 }
 
