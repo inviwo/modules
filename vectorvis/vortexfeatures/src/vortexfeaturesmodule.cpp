@@ -31,6 +31,7 @@
 #include <inviwo/vortexfeatures/processors/floodfillimage.h>
 #include <inviwo/vortexfeatures/processors/lineplot.h>
 #include <inviwo/vortexfeatures/processors/okuboweiss.h>
+#include <inviwo/vortexfeatures/processors/samplecoherence.h>
 #include <inviwo/vortexfeatures/processors/vortexselector.h>
 #include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
 #include <inviwo/vortexfeatures/processors/vortexstatistics.h>
@@ -52,6 +53,7 @@ VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
     // Processors
     registerProcessor<AssembleWindingAngle>();
     registerProcessor<FloodfillImage>();
+    registerProcessor<SampleCoherence>();
     registerProcessor<plot::LinePlot>();
     registerProcessor<OkuboWeiss2D>();
     registerProcessor<OkuboWeiss3D>();

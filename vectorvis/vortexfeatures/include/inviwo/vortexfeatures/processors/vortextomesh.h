@@ -88,7 +88,7 @@ private:
     void objectPicked(PickingEvent* p);
 
     VortexSetInport vorticesIn_;
-    BrushingAndLinkingInport selectionIn_;
+    BrushingAndLinkingInport selectionIn_, selectionLocalIdIn_;
     DataInport<DataFrame> dataFrameIn_;
     MeshOutport boundaryOut_, centerOut_;
 

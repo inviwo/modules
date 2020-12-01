@@ -66,8 +66,17 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
     def getProcessorInfo(self):
         return NetCDFVolumeSource.processorInfo()
 
+<<<<<<< HEAD
     def dataLoaded(self, data, extents):
         buffer = numpy.concatenate(data, axis=3)
+=======
+    def reloadData(self):
+        extents = []
+        GenericNetCDFSource.reloadData(self, extents)
+
+        buffer = numpy.concatenate(self.data, axis=3)
+        print(type(buffer))
+>>>>>>> 35eeab5 (WIP)
         volume = ivw.data.Volume(buffer)
         if self.overwriteDataRange.value:
             volume.dataMap.dataRange = self.dataRange.value

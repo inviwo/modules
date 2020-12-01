@@ -1,6 +1,10 @@
 # Name: NetCDFVolumeSequenceSource
 
 import inviwopy as ivw
+<<<<<<< HEAD
+=======
+from inviwopy.properties import IntVec3Property, FileProperty, ButtonProperty, BoolProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
+>>>>>>> 35eeab5 (WIP)
 from inviwopy.glm import dvec2, mat4, vec4
 from inviwopy.properties import BoolProperty, DoubleMinMaxProperty, OptionPropertyInt, \
     FloatMat4Property

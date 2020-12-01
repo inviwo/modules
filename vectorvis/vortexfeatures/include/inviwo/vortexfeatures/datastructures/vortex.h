@@ -148,6 +148,12 @@ struct IVW_MODULE_VORTEXFEATURES_API VortexSet {
     /** Update the score range. **/
     void updateScoreRange(size_t countFromEnd = 1) const;
 
+    /** Update the score range. **/
+    void updateParents() const;
+    /** Return the index of the group enclosing this vortex at the given time and height.
+     * Assuming decreasing size of both representative group vortices and within groups. **/
+    int getParentGroup(size_t vortIdx) const;
+
     std::vector<Vortex>::iterator begin();
     std::vector<Vortex>::iterator end();
     std::vector<Vortex>::const_iterator begin() const;
@@ -176,6 +182,8 @@ private:
     mat4 modelMatrix_;
     /** Trasform from given coordinates to world space. **/
     mat4 worldMatrix_;
+    /** Index if a vortex group representative lies within another larger (earlier) one. **/
+    mutable std::vector<int> parentVortices_;
 };
 
 template <>

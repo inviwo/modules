@@ -424,4 +424,50 @@ void VortexSet::updateScoreRange(size_t countFromEnd) const {
     }
 }
 
+void VortexSet::updateParents() const {
+    parentVortices_.resize(size());
+    std::fill(parentVortices_.begin(), parentVortices_.end(), -1);
+
+    for (int groupIdx = 1; groupIdx < static_cast<int>(parentVortices_.size()); ++groupIdx) {
+        const Vortex* lastRefVortex = nullptr;  //, *refVortex;
+        // int lastParentIdx = -1;
+        for (auto refVortex = beginGroup(groupIdx) + 1; refVortex != endGroup(groupIdx);
+             ++refVortex) {
+            // Same time and height as a vortex already processed? Just copy parent index.
+            if (lastRefVortex && lastRefVortex->timeSlice == refVortex->timeSlice &&
+                lastRefVortex->heightSlice == refVortex->heightSlice) {
+                parentVortices_[refVortex - begin()] = parentVortices_[refVortex - begin() - 1];
+                continue;
+            }
+            lastRefVortex = refVortex.base();
+
+            // Go through all parent groups in size ascending order, find one containing this
+            // vortex.
+            for (int parentIdx = groupIdx - 1; parentIdx >= 0; --parentIdx) {
+                auto parentIt =
+                    std::find_if(beginGroup(parentIdx), endGroup(parentIdx), [&](auto vort) {
+                        return vort.heightSlice == refVortex->heightSlice &&
+                               vort.timeSlice == refVortex->timeSlice;
+                    });
+                if (parentIt == endGroup(parentIdx)) {
+                    continue;
+                }
+
+                // Check whether the potential parent vortex has a larger radius
+                // and contains the center of the potential child.
+                if (parentIt->avgRadius > refVortex->avgRadius &&
+                    parentIt->containsPoint(refVortex->center)) {
+                    parentVortices_[refVortex - begin()] = parentIdx;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+int VortexSet::getParentGroup(size_t vortIdx) const {
+    if (parentVortices_.size() < size()) updateParents();
+    return parentVortices_[vortIdx];
+}
+
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2013-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,50 +29,25 @@
 
 #pragma once
 
-#include <inviwo/vortexfeatures/vortexfeaturesmoduledefine.h>
-#include <inviwo/vortexfeatures/ports/vortexport.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/netcdf/netcdfmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/io/datareader.h>
+#include <modules/python3/pybindutils.h>
+#include <modules/discretedata/dataset.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VortexStatistics, Vortex Statistics}
- * ![](org.inviwo.VortexStatistics.png?classIdentifier=org.inviwo.VortexStatistics)
- * Assemble relevant statistics of a vortex set.
- */
-class IVW_MODULE_VORTEXFEATURES_API VortexStatistics : public Processor {
+class IVW_MODULE_NETCDF_API NetCDFDataSetReader
+    : public DataReaderType<discretedata::DataSetInitializer> {
 public:
-    template <typename T>
-    struct ColumnPair {
-        std::vector<T> *PerGroup, *PerGroupPerTime;
-    };
+    NetCDFDataSetReader();
+    NetCDFDataSetReader(const NetCDFDataSetReader& rhs) = default;
+    NetCDFDataSetReader& operator=(const NetCDFDataSetReader& that) = default;
+    virtual NetCDFDataSetReader* clone() const override;
+    virtual ~NetCDFDataSetReader() = default;
 
-    VortexStatistics();
-    virtual ~VortexStatistics() = default;
-
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeSequenceInport maskVolumeIn_;
-    DataInport<VolumeSequence, 0> scalarVolumesIn_;
-    VolumeInport topScalarVolumesIn_;
-    VortexSetInport vorticesIn_;
-    DataOutport<DataFrame> dataOut_, perGroupDataOut_;
-
-    CompositeProperty scalarNames_, topScalarNames_;
-    IntSizeTProperty ensembleMember_;
-    BoolProperty skipLastGroup_;
-    ButtonProperty assemble_;
-    bool doAssemble_ = false;
+    virtual std::shared_ptr<discretedata::DataSetInitializer> readData(
+        const std::string& filePath) override;
 };
 
 }  // namespace inviwo

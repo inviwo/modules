@@ -70,7 +70,7 @@ void addColumns(std::shared_ptr<DataFrame> dst, const DataFrame& srcDataFrame,
             srcCol->getBuffer()->getRepresentation<BufferRAM>()->dispatch<void>(
                 [dst, srcCol, header = srcCol->getHeader(), rows](auto typedBuf) {
                     auto dstData = util::transform(
-                        rows, [&src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
+                        rows, [& src = typedBuf->getDataContainer()](size_t i) { return src[i]; });
                     dst->addColumn(header, std::move(dstData));
                 });
         }

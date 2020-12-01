@@ -28,12 +28,15 @@
  *********************************************************************************/
 
 #include <inviwo/netcdf/netcdfmodule.h>
+#include <inviwo/netcdf/io/netcdfdatasetreader.h>
 
 namespace inviwo {
 
 NetCDFModule::NetCDFModule(InviwoApplication* app)
     : InviwoModule(app, "netcdf")
     , scripts_{getPath() + "/python"}
-    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {}
+    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {
+    registerDataReader(std::make_unique<NetCDFDataSetReader>());
+}
 
 }  // namespace inviwo
