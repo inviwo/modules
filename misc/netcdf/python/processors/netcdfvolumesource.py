@@ -35,8 +35,7 @@ class NetCDFVolumeSource(GenericNetCDFSource):
         return NetCDFVolumeSource.processorInfo()
 
     def reloadData(self):
-        extents = []
-        GenericNetCDFSource.reloadData(self, extents)
+        extents = GenericNetCDFSource.genReloadData(self)
 
         buffer = numpy.concatenate(self.data, axis=3)
         print(type(buffer))

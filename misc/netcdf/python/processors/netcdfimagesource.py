@@ -41,8 +41,7 @@ class NetCDFImageSource(GenericNetCDFSource):
         self.reloadData()
 
     def reloadData(self):
-        extents = []
-        GenericNetCDFSource.reloadData(self, extents)
+        GenericNetCDFSource.genReloadData(self)
 
         buffer = numpy.concatenate(self.data, axis=2)
         imageLayer = ivw.data.Layer(buffer)

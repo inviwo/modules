@@ -23,3 +23,6 @@ def printInfo(filePath):
         print(nc)
         # for dim in nc.dimensions:
         #     print(dim)
+        # for v in nc.variables:
+        #     print(v)
+        #     print('----------')

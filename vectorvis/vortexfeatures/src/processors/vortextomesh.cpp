@@ -107,7 +107,7 @@ VortexToMesh::VortexToMesh()
                          vortices->getHeightRange().y + 1, 1);
         singleGroupProperty_.selectedGroup_.setMaxValue(vortices->numGroups() - 1);
         picking_.resize(vortices->numGroups() + 1);
-        LogWarn("picking_.getPickingId(0)   =   " << picking_.getPickingId(0));
+        // LogWarn("picking_.getPickingId(0)   =   " << picking_.getPickingId(0));
     });
 }
 

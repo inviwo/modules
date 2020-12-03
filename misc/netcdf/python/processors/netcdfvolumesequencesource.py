@@ -35,8 +35,8 @@ class NetCDFVolumeSequenceSource(GenericNetCDFSource):
         return NetCDFVolumeSequenceSource.processorInfo()
 
     def reloadData(self):
-        extents = []
-        GenericNetCDFSource.reloadData(self, extents)
+        # extents = []
+        extents = GenericNetCDFSource.genReloadData(self)
 
         volumeSequence = []
         for timeStep in range(self.data[0].shape[3]):
@@ -44,7 +44,7 @@ class NetCDFVolumeSequenceSource(GenericNetCDFSource):
             for comp in self.data:
                 # A bit brute force, but delivers correct data.
                 numElems = comp.shape[0] * comp.shape[1] * comp.shape[2]
-                subBuffer = comp.flat[(numElems * timeStep): (numElems * (timeStep+1))]
+                subBuffer = comp.flat[(numElems * timeStep)                                      : (numElems * (timeStep+1))]
                 subBuffer.shape = (comp.shape[0],
                                    comp.shape[1], comp.shape[2], 1)
                 subData.append(subBuffer)

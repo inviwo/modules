@@ -53,7 +53,7 @@ SampleCoherence::SampleCoherence()
 
     , integratorSettings_("integratorSettings", "Integrator Settings")
     , samplingStep_("samplingStep", "Sampling Step", 2, 1, 20)
-    , lineOutputHeightStep_("lineOutputHeightStep", "Output Line Height Step", 0,
+    , lineOutputHeightStep_("lineOutputHeightStep", "Height Step Line Output", 0,
                             {0, ConstraintBehavior::Immutable}, {0, ConstraintBehavior::Mutable})
     , singleGroup_("singleGroup", "Single Group?", false)
     , group_("selectedGroup", "Group", 0, 0, 0)
@@ -68,7 +68,7 @@ SampleCoherence::SampleCoherence()
     addPort(velocityIn_);
     addPort(coherenceOut_);
     addPort(linesOut_);
-    addProperties(integratorSettings_, samplingStep_, lineOutputTimeStep_, singleGroup_, group_,
+    addProperties(integratorSettings_, samplingStep_, lineOutputHeightStep_, singleGroup_, group_,
                   averageCoherence_, weightedCoherence_);
     group_.visibilityDependsOn(singleGroup_, [](auto p) { return p.get(); });
 
@@ -115,7 +115,7 @@ bool detail::ComputeCoherenceHelper::isInside(const VolumeRAM& mask, dvec3 pos, 
     double interpolated =
         // onSide ? Interpolation<Vector<DataDims, T>, P>::bilinear(samples, dvec2(interpolants)) :
         Interpolation<double>::trilinear(samples, interpolants);
-    return interpolated >= 0.5;
+    return interpolated >= 0.9;
 }
 
 void SampleCoherence::process() {
@@ -125,19 +125,22 @@ void SampleCoherence::process() {
                                            //     velocityIn_.getData()->at(0)->getDimensions()
 
     ) {
+        // LogWarn("==> Input not good enough for Coherence?!?!");
         return;
     }
 
-    timeLineSets_.clear();
+    // timeLineSets_.clear();
     auto sampler = std::make_shared<VolumeSequenceSampler>(velocityIn_.getData(), false);
     integratorSettings_.stepDirection_.set(IntegralLineProperties::Direction::FWD);
     PathLine3DTracer fwd(sampler, integratorSettings_);
     integratorSettings_.stepDirection_.set(IntegralLineProperties::Direction::BWD);
     PathLine3DTracer bwd(sampler, integratorSettings_);
 
-    detail::ComputeCoherenceHelper coherenceHelper(velocityIn_.getData(), maskVolumeIn_.getData(),
-                                                   sampler, std::move(fwd), std::move(bwd),
-                                                   singleGroup_.get(), group_.get());
+    // LogWarn("Calculating Coherence");
+
+    detail::ComputeCoherenceHelper coherenceHelper(
+        velocityIn_.getData(), maskVolumeIn_.getData(), sampler, std::move(fwd), std::move(bwd),
+        singleGroup_.get(), group_.get(), samplingStep_.get());
 
     // Dispatch the calculation to the thread pool. The second argument is a callback
     // that will get evaluated on the main thread after the calculation is done. The callback
@@ -149,14 +152,13 @@ void SampleCoherence::process() {
 }
 
 detail::CoherenceInfo* detail::ComputeCoherenceHelper::operator()() {
-    // const pool::Stop& stop, const pool::Progress& progress) const {
-    // if (stop) return nullptr;
+
     size4_t volSize = {velocities_->at(0)->getDimensions(), velocities_->size()};
     vec4 invDim = vec4(1.0f) / vec4(volSize);
 
     CoherenceInfo* result = new CoherenceInfo();
 
-    std::mutex lineWriteMutex;
+    // std::mutex lineWriteMutex;
 
     // size_t sampledPortion = samplingStep_.get() * samplingStep_.get();
     size_t numTimes = velocities_->size();
@@ -164,7 +166,7 @@ detail::CoherenceInfo* detail::ComputeCoherenceHelper::operator()() {
     for (size_t time = 0; time < numTimes; ++time) {
         timeNumGroups[time] =
             static_cast<size_t>(util::volumeMinMax(masks_->at(time).get()).second.x);
-        std::cout << time << " num Groups: " << timeNumGroups[time] << std::endl;
+        // std::cout << time << " num Groups: " << timeNumGroups[time] << std::endl;
     }
 
     size_t numGroups =
@@ -174,116 +176,149 @@ detail::CoherenceInfo* detail::ComputeCoherenceHelper::operator()() {
                           ) -
         1;
 
-    enum ShouldIntegrate { NotYet, StartNext, Yes };
-    std::vector<ShouldIntegrate> timeStatus(numGroups, ShouldIntegrate::NotYet);
+    // enum ShouldIntegrate { NotYet, StartNext, Yes };
+    // std::vector<ShouldIntegrate> timeStatus(numGroups, ShouldIntegrate::NotYet);
     std::vector<size_t> timeNumSteps(numGroups, 0);
 
-    std::vector<size_t> timeNumVoxels(numGroups, 0);
-    std::vector<double> timeCoherence(numGroups, 0);
+    // std::vector<size_t> timeNumVoxels(numGroups, 0);
+    // std::vector<double> timeCoherenceFwd(numGroups, 0), timeCoherenceBwd(numGroups, 0);
     result->CoherencePerGroup.resize(numGroups, 0);
     result->SizePerGroup.resize(numGroups, 0);
+    result->LinesByHeight.resize(
+        volSize.z,
+        std::make_shared<IntegralLineSet>(sampler_->getModelMatrix(), sampler_->getWorldMatrix()));
+
+    std::vector<size_t> startTime(numGroups, size_t(-1));
+    std::vector<size_t> endTime(numGroups, 0);
+    std::vector<MetaLine> allLines;
+    // std::vector<double> coherenceForward(numGroups, 0), numLinesBwd(numGroups, 0);
 
     // Calculate coherence per time.
-    for (int time = numTimes - 1; time >= 0; --time) {
-        auto timeLines = std::make_shared<IntegralLineSet>(sampler_->getModelMatrix(),
-                                                           sampler_->getWorldMatrix());
-        size_t numVoxels = 0;
+    // for (int time = numTimes - 1; time >= 0; --time) {
+    for (size_t time = 0; time < numTimes; ++time) {
+        // auto heightLines = std::make_shared<IntegralLineSet>(sampler_->getModelMatrix(),
+        //                                                      sampler_->getWorldMatrix());
+
+        // size_t numVoxels = 0;
         auto mask = masks_->at(time)->getRepresentation<VolumeRAM>();
 
         util::forEachVoxel(*mask, [&](size3_t idx) {
             double maskSample = mask->getAsDouble(idx);
-            if (maskSample == 0)
-                //  || idx.x % samplingStep_.get() != 0 ||
-                //     idx.y % samplingStep_.get() != 0)
+            if (maskSample == 0 || (std::rand() % seedStep_) != 0)
+                // idx.x % seedStep_ != 0 || idx.y % seedStep_ != 0)
                 return;
-            // std::cout << "Not 0!" << std::endl;
-            if (singleGroup_ && ((maskSample - 1) != group_)) return;
-            // std::cout << "Correct Group!" << std::endl;
+            size_t group = maskSample - 1;
 
-            // switch (timeStatus[maskSample - 1]) {
-            //     case ShouldIntegrate::NotYet:
-            //         timeStatus[maskSample - 1] = ShouldIntegrate::StartNext;
-            //         return;
-            //     case ShouldIntegrate::StartNext:
-            //         return;
-            //     default:
-            //         break;
-            // }
-            if (maskSample - 1 != 0) numVoxels++;
-            timeNumVoxels[maskSample - 1]++;
+            if (singleGroup_ && (group != group_)) return;
+
+            startTime[group] = std::min(startTime[group], time);
+            endTime[group] = std::max(endTime[group], time);
+
+            // timeNumVoxels[maskSample - 1]++;
             dvec4 seed((0.5 + idx.x) * invDim.x, (0.5 + idx.y) * invDim.y, (0.5 + idx.z) * invDim.z,
                        (0.5 + time) * invDim.w);
 
             // Integrate pathline.
 
-            IntegralLine line = tracer_.traceFrom(seed);
+            std::array<MetaLine, 2> lines = {
+                MetaLine(group, time, idx.z, IntegralLineProperties::Direction::FWD,
+                         std::move(tracerFwd_.traceFrom(seed))),
+                MetaLine(group, time, idx.z, IntegralLineProperties::Direction::BWD,
+                         std::move(tracerBwd_.traceFrom(seed)))};
+            auto pointsBwd = lines[1].Line.getPositions();
+            std::reverse(pointsBwd.begin(), pointsBwd.end());
+
             // result->Lines->push_back(std::move(line), IntegralLineSet::SetIndex::No);
-            std::vector<dvec3>& points = line.getPositions();
-            auto& velocities = line.getMetaData<dvec3>("velocity", true);
-            velocities.reserve(points.size());
+            double mult = 0.5;
+            for (auto& line : lines) {
+                std::vector<dvec3>& points = line.Line.getPositions();
+                auto& velocities = line.Line.getMetaData<dvec3>("velocity", true);
+                auto& timestamp = line.Line.getMetaData<double>("timestamp", false);
+                velocities.resize(points.size(), dvec3(0.5 + mult));
 
-            if (points.size() > 0) timeCoherence[maskSample - 1] += 1.0;
+                if (points.size() < 2) continue;
+                // timeCoherence[maskSample - 1] += 1.0;
+                // double coherence = 1.0;
+                line.Coherence = 1.0;
 
-            for (size_t p = 0; p < points.size(); ++p) {
-                // for (auto& point : points) {
-                auto& point = points[p];
-                double interp = double(p) / (points.size() - 1);
-                if (!isInside(*mask, point, maskSample)) {
-                    timeCoherence[maskSample - 1] -= (1.0 - interp);
-                    // for (; p < points.size(); ++p) {
-                    //     velocities.push_back({0, 0, 0});
-                    // }
-                    break;
+                for (size_t p = 0; p < points.size(); ++p) {
+                    // for (auto& point : points) {
+                    auto& point = points[p];
+                    double interp = double(p) / (points.size() - 1);
+                    if (!isInside(*mask, point, maskSample)) {
+                        // timeCoherence[maskSample - 1] -= (1.0 - interp);
+                        line.Coherence = interp;
+                        // for (; p < points.size(); ++p) {
+                        //     velocities.push_back({0, 0, 0});
+                        // }
+                        // velocities[p] = {0.5 + mult, 0, 0};
+                        break;
+                    }
+                    velocities[p] = {0.5 + 0.5 * interp * mult, 0, 0};
                 }
-                velocities.push_back({1.0 - interp, 0, 0});
-            }
-
-            if (points.size() > 1) {
-                // line->getLength();
-                {
-                    std::lock_guard<std::mutex> lock(lineWriteMutex);
-                    timeLines->push_back(std::move(line), IntegralLineSet::SetIndex::No);
+                for (size_t p = 0; p < points.size(); ++p) {
+                    std::swap(points[p].z, timestamp[p]);
                 }
+
+                // std::lock_guard<std::mutex> lock(lineWriteMutex);
+                // timeLines->push_back(std::move(line), IntegralLineSet::SetIndex::No);
+                allLines.emplace_back(std::move(line));
+                mult = -0.5;
             }
         });
-        std::cout << "Did all voxels at time " << time << "!\n\t" << numVoxels << " voxels."
-                  << std::endl;
-        for (size_t group = 0; group < numGroups; ++group) {
-            if (timeCoherence[group] > 0) {
-                result->CoherencePerGroup[group] += timeCoherence[group] / timeNumVoxels[group];
-                timeNumSteps[group]++;
-                result->SizePerGroup[group] += timeNumVoxels[group];
-            }
-            if (timeStatus[group] == ShouldIntegrate::StartNext)
-                timeStatus[group] = ShouldIntegrate::Yes;
-            timeCoherence[group] = 0;
-            timeNumVoxels[group] = 0;
-        }
-        if (timeLines->size() > 0) {
-            result->Lines.push_back(timeLines);
-            std::cout << "\tSize " << timeLines->back().getPositions().size() << std::endl;
-        }
-        std::cout << "Added lines!" << std::endl;
-        // progress(time + 1, numTimes);
+        // std::cout << "Did all voxels at time " << time << "!\n\t" << numVoxels << " voxels."
+        //           << std::endl;
+        // for (size_t group = 0; group < numGroups; ++group) {
+        //     if (timeCoherence[group] > 0) {
+        //         result->CoherencePerGroup[group] += timeCoherence[group] / timeNumVoxels[group];
+        //         timeNumSteps[group]++;
+        //         result->SizePerGroup[group] += timeNumVoxels[group];
+        //     }
+        //     if (timeStatus[group] == ShouldIntegrate::StartNext)
+        //         timeStatus[group] = ShouldIntegrate::Yes;
+        //     timeCoherence[group] = 0;
+        //     timeNumVoxels[group] = 0;
+        // }
+        // if (timeLines->size() > 0) {
+        //     result->Lines.push_back(timeLines);
+        //     std::cout << "\tSize " << timeLines->back().getPositions().size() << std::endl;
+        // }
+        // std::cout << "Added lines!" << std::endl;
+        // // progress(time + 1, numTimes);
     }
 
-    for (size_t group = 0; group < numGroups; ++group) {
-        result->CoherencePerGroup[group] /= timeNumSteps[group];
+    // for (size_t group = 0; group < numGroups; ++group) {
+    //     result->CoherencePerGroup[group] /= timeNumSteps[group];
+    // }
+    for (auto& line : allLines) {
+        // Trying to integrate outside this group's time range?
+        if (line.Dir == IntegralLineProperties::Direction::FWD) {
+            if (line.Time + 1 > endTime[line.Group]) continue;
+        } else {
+            if (line.Time - 1 < startTime[line.Group]) continue;
+        }
+
+        result->CoherencePerGroup[line.Group] += line.Coherence;
+        result->SizePerGroup[line.Group]++;
+        result->LinesByHeight[line.Height]->push_back(line.Line, IntegralLineSet::SetIndex::No);
     }
+    // LogWarn("num lines at height 0: " << result->LinesByHeight[0]->size());
     return result;
 }
 
 void SampleCoherence::postProcessCoherence(detail::CoherenceInfo* result) {
-    if (!result) throw Exception("No result form coherence computation");
-    lineOutputTimeStep_.setMaxValue(result->Lines.size());
-    timeLineSets_ = std::move(result->Lines);
-    if (timeLineSets_.size() > lineOutputTimeStep_.get()) {
-        linesOut_.setData(timeLineSets_[lineOutputTimeStep_.get()]);
+    if (!result) throw Exception("No result from coherence computation");
+    lineOutputHeightStep_.setMaxValue(result->LinesByHeight.size());
+    heightLineSets_ = std::move(result->LinesByHeight);
+    if (lineOutputHeightStep_.get() < heightLineSets_.size()) {
+        linesOut_.setData(heightLineSets_[lineOutputHeightStep_.get()]);
         std::cout << "Output lines" << std::endl;
     } else {
+        // LogWarn("heightLineSet is too small?! " << lineOutputHeightStep_.get() << " not smaller "
+        //                                         << heightLineSets_.size());
         linesOut_.setData(nullptr);
     }
-
+    // LogWarn("Exporting stuff.");
     double coherence = 0;
     double weightedCoherence = 0;
     double totalSize = 0;
@@ -292,13 +327,19 @@ void SampleCoherence::postProcessCoherence(detail::CoherenceInfo* result) {
     for (size_t group = 0; group < result->CoherencePerGroup.size(); ++group) {
         if (result->SizePerGroup[group] == 0) continue;
         numValidGroups++;
-        LogWarn("Coherence #" << group << " \t=" << result->CoherencePerGroup[group]);
-        coherence += result->CoherencePerGroup[group];
-        weightedCoherence += result->CoherencePerGroup[group] * result->SizePerGroup[group];
+        // LogWarn("Coherence #" << group << " \t="
+        //                       << (result->CoherencePerGroup[group] /
+        //                       result->SizePerGroup[group]));
+        coherence += result->CoherencePerGroup[group] / result->SizePerGroup[group];
+        weightedCoherence += result->CoherencePerGroup[group];
         totalSize += result->SizePerGroup[group];
     }
-    coherence /= numValidGroups;
-    weightedCoherence /= totalSize;
+    if (numValidGroups > 0) {
+        coherence /= numValidGroups;
+        weightedCoherence /= totalSize;
+    }
+    std::cout << "coherence: " << coherence << std::endl;
+    std::cout << "weighted coherence: " << weightedCoherence << std::endl;
     averageCoherence_.set(coherence);
     weightedCoherence_.set(weightedCoherence);
 }
