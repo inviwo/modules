@@ -71,8 +71,7 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
         buffer = numpy.concatenate(data, axis=3)
 =======
     def reloadData(self):
-        extents = []
-        GenericNetCDFSource.reloadData(self, extents)
+        extents = GenericNetCDFSource.genReloadData(self)
 
         buffer = numpy.concatenate(self.data, axis=3)
         print(type(buffer))

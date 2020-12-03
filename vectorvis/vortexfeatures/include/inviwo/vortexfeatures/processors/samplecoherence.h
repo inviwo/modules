@@ -43,9 +43,19 @@ namespace inviwo {
 
 namespace detail {
 struct CoherenceInfo {
-    std::vector<std::shared_ptr<IntegralLineSet>> Lines;
+    std::vector<std::shared_ptr<IntegralLineSet>> LinesByHeight;
     std::vector<double> CoherencePerGroup;
     std::vector<size_t> SizePerGroup;
+};
+
+struct MetaLine {
+    MetaLine(size_t group, size_t time, size_t height, IntegralLineProperties::Direction dir,
+             IntegralLine&& line)
+        : Group(group), Time(time), Height(height), Dir(dir), Line(line), Coherence(0) {}
+    size_t Group, Time, Height;
+    IntegralLineProperties::Direction Dir;
+    IntegralLine Line;
+    double Coherence;
 };
 
 class ComputeCoherenceHelper {
@@ -54,19 +64,27 @@ public:
                            std::shared_ptr<const VolumeSequence> masks,
                            std::shared_ptr<VolumeSequenceSampler> sampler,
                            PathLine3DTracer&& tracerFwd, PathLine3DTracer&& tracerBwd,
-                           bool singleGroup, size_t group)
+                           bool singleGroup, size_t group, size_t seedStep)
         : velocities_(velocities)
         , masks_(masks)
         , sampler_(sampler)
         , tracerFwd_(std::move(tracerFwd))
         , tracerBwd_(std::move(tracerBwd))
         , singleGroup_(singleGroup)
-        , group_(group) {}
+        , group_(group)
+        , seedStep_(seedStep) {}
 
     detail::CoherenceInfo* operator()();
     // const pool::Stop& stop, const pool::Progress& progress) const;
 
     static bool isInside(const VolumeRAM& mask, dvec3 pos, double maskOrigin);
+    // struct LineCompare {
+    //     bool operator()(const std::pair<std::string, GridPrimitive>& u,
+    //                     const std::pair<std::string, GridPrimitive>& v) const {
+    //         return (u.second < v.second) || (u.second == v.second && u.first.compare(v.first) <
+    //         0);
+    //     }
+    // };
 
 private:
     std::shared_ptr<const VolumeSequence> velocities_, masks_;
@@ -74,6 +92,7 @@ private:
     PathLine3DTracer tracerFwd_, tracerBwd_;
     bool singleGroup_;
     size_t group_;
+    size_t seedStep_;
 };
 }  // namespace detail
 
@@ -109,7 +128,7 @@ private:
     DoubleProperty averageCoherence_;
     DoubleProperty weightedCoherence_;
 
-    std::vector<std::shared_ptr<IntegralLineSet>> timeLineSets_;
+    std::vector<std::shared_ptr<IntegralLineSet>> heightLineSets_;
 };
 
 }  // namespace inviwo

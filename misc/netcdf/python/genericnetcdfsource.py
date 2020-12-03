@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+import inviwopy as ivw
+from inviwopy.properties import IntVec3Property, FileProperty, ButtonProperty, BoolProperty, DoubleProperty, CompositeProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
+from inviwopy.glm import dvec2, mat4, vec4
+import netcdfutils
+
+>>>>>>> ea95e44 (WIP 2)
 import numpy
 import inspect
 from pathlib import Path
@@ -21,14 +29,42 @@ class GenericNetCDFSource(ivw.Processor):
         self.displayInfo = ButtonProperty("displayInfo", "Log File Info")
         self.filePath = FileProperty("filepath", "NetCDF Path", "", "netcdfdata")
         self.variables = CompositeProperty("variables", "Exported Variables")
+<<<<<<< HEAD
         self.dimensions = CompositeProperty("dimensions", "Restrict Dimensions")
         self.ignoreDimNames = BoolProperty('ignoreDimNames', 'Ignore Dim Names', False)
         self.toFloat = BoolProperty('toFloat', 'Convert to float', True)
         self.triggerLoad = ButtonProperty("load", "Load")
+=======
+        self.variables.setSerializationMode(
+            ivw.properties.PropertySerializationMode.All)
+        self.dimensions = CompositeProperty(
+            "dimensions", "Restrict Dimensions")
+        self.dimensions.setSerializationMode(
+            ivw.properties.PropertySerializationMode.All)
+        self.adjustDimensionsForStaggered = BoolProperty(
+            'adjustForStaggered', 'Adjust for staggered climate grid', True)
+        self.toFloat = BoolProperty(
+            'toFloat', 'Convert to float', True)
+        self.doScale = BoolProperty("doScale", "Scale Values?", False)
+        self.scale = CompositeProperty("scale", "Scale Values")
+
+        self.triggerReload = ButtonProperty("reload", "Reload")
+        self.autoReload = BoolProperty("autoReload", "Auto Reload", False)
+
+        self.triggerReload.onChange(self.reloadData)
+        self.autoReload.onChange(self.autoReloadData)
+        self.displayInfo.onChange(self.displayDataInfo)
+>>>>>>> ea95e44 (WIP 2)
 
         self.addProperty(self.filePath)
         self.addProperty(self.displayInfo)
         self.addProperty(self.variables)
+<<<<<<< HEAD
+=======
+        self.addProperty(self.toFloat)
+        self.addProperty(self.doScale)
+        self.addProperty(self.scale)
+>>>>>>> ea95e44 (WIP 2)
         self.addProperty(self.dimensions)
         self.addProperty(self.toFloat)
         self.addProperty(self.ignoreDimNames)
@@ -95,8 +131,12 @@ class GenericNetCDFSource(ivw.Processor):
         self.variables.addProperty(enabled, True)
 
     def process(self):
+<<<<<<< HEAD
         first = self.firstRun
         self.firstRun = False
+=======
+        self.scale.visible = self.doScale.value
+>>>>>>> ea95e44 (WIP 2)
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
             self.variables.clear()
             self.dimensions.clear()
@@ -104,6 +144,7 @@ class GenericNetCDFSource(ivw.Processor):
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
             # Update variables.
+<<<<<<< HEAD
             if self.filePath.isModified:
                 if self.variables.empty() or any(var.displayName not in nc.variables
                                                  for var in self.variables.properties):
@@ -114,6 +155,51 @@ class GenericNetCDFSource(ivw.Processor):
                         self.addMinMaxProperties(variable.get_dims())
 
             if self.variables.isModified:
+=======
+            if self.filePath.isModified and not self.firstProcess:
+                # Keep variables as is iff the new data has the same ones.
+                reloadVariables = True
+                if self.variables.size() > 0:
+                    reloadVariables = False
+                    for variable in self.variables.properties:
+                        if variable not in nc.variables:
+                            reloadVariables = True
+                            break
+
+                if reloadVariables:
+                    while self.variables.size() > 0:
+                        self.variables.removeProperty(
+                            self.variables.properties[self.variables.size()-1])
+
+                    while self.dimensions.size() > 0:
+                        self.dimensions.removeProperty(
+                            self.dimensions.properties[self.dimensions.size()-1])
+
+                    while self.scale.size() > 0:
+                        self.scale.removeProperty(
+                            self.scale.properties[self.scale.size()-1])
+
+                    for variable in nc.variables:
+                        # At least n dimensions needed for an nD output.
+                        if len(nc.variables[variable].dimensions) < self.outputDimension:
+                            continue
+                        varProp = BoolProperty(
+                            str(variable), str(variable), False)
+                        varProp.setSerializationMode(
+                            ivw.properties.PropertySerializationMode.All)
+                        self.variables.addProperty(
+                            varProp, True)
+
+                        # Add scale.
+                        scProp = DoubleProperty(
+                            str(variable) + "Scale", str(variable) + " Scale", 1.0, 0, 100)
+                        scProp.setSerializationMode(
+                            ivw.properties.PropertySerializationMode.All)
+                        self.scale.addProperty(scProp, True)
+
+            if self.variables.isModified and not self.firstProcess:
+                selectedVarDims = []
+>>>>>>> ea95e44 (WIP 2)
                 numComponents = 0
                 showMinMax: list[IntMinMaxProperty] = []
                 for var in filter(self.enabled, self.variables.properties):
@@ -187,6 +273,7 @@ class GenericNetCDFSource(ivw.Processor):
 
                 self.dataLoaded(data, extents)  # implemented in child
 
+<<<<<<< HEAD
     def displayDataInfo(self):
         if len(self.filePath.value) == 0:
             self.log("File name empty")
@@ -198,11 +285,95 @@ class GenericNetCDFSource(ivw.Processor):
         def attrs(item, indent=0):
             for attr in item.ncattrs():
                 self.log(f"{indent*' '}{attr}: {getattr(item, attr)}")
+=======
+    def autoReloadData(self):
+
+        if self.autoReload.value:
+            print("Disabled Auto Reload!")
+        #     self.reloadData()
+
+    def reloadData(self):
+        return
+
+    def genReloadData(self):
+        if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
+            raise Exception("Invalid path.")
+>>>>>>> ea95e44 (WIP 2)
 
         self.log(f"File: {self.filePath.value}")
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
+<<<<<<< HEAD
             attrs(nc)
             self.log(f"Dimensions: {', '.join(nc.dimensions)}")
             for name, var in nc.variables.items():
                 self.log(f"{name}, {var.dimensions}, {var.shape}, {var.datatype}")
                 attrs(var, 4)
+=======
+            # Actually load data.
+            if self.variables.size() <= 0:
+                # raise Exception("No known variables")
+                self.invalidate(ivw.properties.InvalidationLevel.InvalidOutput)
+                self.firstProcess = True
+
+            sizeDims = []
+            dimRanges = {}
+            for dimProp in self.dimensions.properties:
+                dimRange = dimProp.value
+                dimRanges[dimProp.identifier] = dimRange
+                if dimRange.x != dimRange.y:
+                    sizeDims.append(dimRange.y - dimRange.x + 1)
+
+            if len(sizeDims) != self.outputDimension:
+                raise Exception("Wrong number of dimensions.\n\tRequire " +
+                                str(self.outputDimension) + ", selected " + str(len(sizeDims)))
+
+            self.data = []
+            numProps = 0
+            doScale = self.doScale.value
+            for varProp in self.variables.properties:
+                if not varProp.value:
+                    continue
+
+                # Single variable, simply load.
+                ncVar = nc.variables[varProp.identifier]
+                ncDims = ncVar.get_dims()
+                dims = []
+                for ncDim in ncDims:
+                    propRange = dimRanges[self.adjustForStaggered(ncDim.name)]
+                    dims.append(slice(propRange.x, propRange.y+1))
+                varData = ncVar[tuple(dims)]
+                buffer = numpy.array(varData).astype(
+                    'float32' if self.toFloat.value else ncVar.datatype)
+
+                buffer.shape = numpy.flip([1] + sizeDims)
+                if (doScale):
+                    for sc in self.scale.properties:
+                        if(sc.identifier == varProp.identifier + "Scale"):
+                            buffer *= sc.value
+                            print("Scaled ", varProp.identifier,
+                                  " by ", sc.value)
+                            break
+                self.data.append(buffer)
+                numProps += 1
+
+            # Assemble data extent.
+            extents = []
+            for dim in dimRanges:
+                dimRange = dimRanges[dim]
+                if dimRange.y == dimRange.x:
+                    continue
+                ncVar = nc.variables[dim]
+                cellExt = ncVar[1] - ncVar[0]
+                cellNum = dimRanges[dim].y - dimRanges[dim].x
+                extents.append(cellExt * cellNum)
+            return extents
+
+    def displayDataInfo(self):
+        print(self.filePath.value)
+        netcdfutils.printInfo(self.filePath.value)
+
+    def adjustForStaggered(self, dim):
+        if self.adjustDimensionsForStaggered.value and len(dim) == 2 and dim[1] == 'G' and (dim[0] == 'X' or dim[0] == 'Y'):
+            return str(dim[0]) + 'C'
+        return dim
+>>>>>>> ea95e44 (WIP 2)
