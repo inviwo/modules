@@ -239,7 +239,7 @@ def createMeshForCube(pos, elemtype, basis, offset, pm):
 
     for i, p in enumerate(pos):
         c = atomdata.color(elemtype[i])
-        r = atomdata.radius(elemtype[i]) / 10.0
+        r = atomdata.radius(elemtype[i])
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
