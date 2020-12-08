@@ -293,12 +293,14 @@ def createDataFrameForCube(pos, elemtype):
     cx = dataframe.addFloatColumn("x")
     cy = dataframe.addFloatColumn("y")
     cz = dataframe.addFloatColumn("z")
+    r = dataframe.addFloatColumn("r")
 
     for et, p in zip(elemtype, pos):
         ct.add(et)
         cx.add(p[0])
         cy.add(p[1])
         cz.add(p[2])
+        r.add(atomdata.radius(et))
 
     dataframe.updateIndex()
 
