@@ -41,8 +41,8 @@ def parseFile(file):
         pos.append(list(map(float, line.strip().split())))
     pos = numpy.array(pos).astype(numpy.float32)
 
-    factor = scale if scale >= 0.0 else np.power(
-        -scale / np.dot(a3, np.cross(a2, a1)), 1/3)
+    factor = scale if scale >= 0.0 else numpy.power(
+        -scale / numpy.dot(a3, numpy.cross(a2, a1)), 1/3)
     basis = numpy.array([a1, a2, a3]) * factor
     offset = -0.5 * (basis[0] + basis[1] + basis[2])
     if not direct:
@@ -239,7 +239,7 @@ def createMeshForCube(pos, elemtype, basis, offset, pm):
 
     for i, p in enumerate(pos):
         c = atomdata.color(elemtype[i])
-        r = atomdata.radius(elemtype[i]) / 10.0
+        r = atomdata.radius(elemtype[i])
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
@@ -293,12 +293,14 @@ def createDataFrameForCube(pos, elemtype):
     cx = dataframe.addFloatColumn("x")
     cy = dataframe.addFloatColumn("y")
     cz = dataframe.addFloatColumn("z")
+    r = dataframe.addFloatColumn("r")
 
     for et, p in zip(elemtype, pos):
         ct.add(et)
         cx.add(p[0])
         cy.add(p[1])
         cz.add(p[2])
+        r.add(atomdata.radius(et))
 
     dataframe.updateIndex()
 
