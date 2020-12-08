@@ -42,7 +42,7 @@ def parseFile(file):
     pos = numpy.array(pos).astype(numpy.float32)
 
     factor = scale if scale >= 0.0 else numpy.power(
-        -scale / np.dot(a3, np.cross(a2, a1)), 1/3)
+        -scale / numpy.dot(a3, numpy.cross(a2, a1)), 1/3)
     basis = numpy.array([a1, a2, a3]) * factor
     offset = -0.5 * (basis[0] + basis[1] + basis[2])
     if not direct:
