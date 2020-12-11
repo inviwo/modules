@@ -287,10 +287,10 @@ void verifyData(const MolecularData& data) {
 }  // namespace detail
 
 MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(data)} {
-    detail::verifyData(data);
+    detail::verifyData(data_);
 
-    if (!data.atoms.residueIds.empty() && !data.residues.empty()) {
-        auto state = detail::createInternalState(data);
+    if (!data_.atoms.residueIds.empty() && !data_.residues.empty() && !data_.atoms.chainIds.empty()) {
+        auto state = detail::createInternalState(data_);
         chainResidues_ = std::move(state.chainResidues);
         residueAtoms_ = std::move(state.residueAtoms);
         residueIndices_ = std::move(state.residueIndices);
