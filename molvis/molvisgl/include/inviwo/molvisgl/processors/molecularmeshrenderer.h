@@ -45,8 +45,8 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MolecularRenderer, Molecular Renderer}
- * ![](org.inviwo.MolecularRenderer.png?classIdentifier=org.inviwo.MolecularRenderer)
+/** \docpage{org.inviwo.MolecularMeshRenderer, Molecular Mesh Renderer}
+ * ![](org.inviwo.MolecularMeshRenderer.png?classIdentifier=org.inviwo.MolecularMeshRenderer)
  * Renders the input mesh in a molecular representation. The input mesh is expected to contain
  * molecular data, that is points representing individual atoms (including their radius) and lines
  * indicating bonds.
@@ -65,10 +65,10 @@ namespace inviwo {
  * ### Outports
  *   * __outport__ output image containing the moleculare rendering of the input
  */
-class IVW_MODULE_MOLVISGL_API MolecularRenderer : public Processor {
+class IVW_MODULE_MOLVISGL_API MolecularMeshRenderer : public Processor {
 public:
-    MolecularRenderer();
-    virtual ~MolecularRenderer() = default;
+    MolecularMeshRenderer();
+    virtual ~MolecularMeshRenderer() = default;
 
     virtual void process() override;
 

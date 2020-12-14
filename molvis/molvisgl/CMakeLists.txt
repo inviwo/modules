@@ -7,7 +7,7 @@ ivw_module(MolVisGL)
 set(HEADER_FILES
     include/inviwo/molvisgl/molvisglmodule.h
     include/inviwo/molvisgl/molvisglmoduledefine.h
-    include/inviwo/molvisgl/processors/molecularrenderer.h
+    include/inviwo/molvisgl/processors/molecularmeshrenderer.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -15,7 +15,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/molvisglmodule.cpp
-    src/processors/molecularrenderer.cpp
+    src/processors/molecularmeshrenderer.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

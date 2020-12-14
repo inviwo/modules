@@ -1,3 +1,3 @@
 # MolVisGL Module
 
-This module provides functionality for rendering molecular structure with OpenGL.
+This module provides functionality for rendering molecular structures with OpenGL.

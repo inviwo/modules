@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/molvisgl/molvisglmodule.h>
-#include <inviwo/molvisgl/processors/molecularrenderer.h>
+#include <inviwo/molvisgl/processors/molecularmeshrenderer.h>
 
 #include <modules/opengl/shader/shadermanager.h>
 
@@ -37,7 +37,7 @@ namespace inviwo {
 MolVisGLModule::MolVisGLModule(InviwoApplication* app) : InviwoModule(app, "MolVisGL") {
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    registerProcessor<MolecularRenderer>();
+    registerProcessor<MolecularMeshRenderer>();
 }
 
 }  // namespace inviwo

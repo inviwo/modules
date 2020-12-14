@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/molvisgl/processors/molecularrenderer.h>
+#include <inviwo/molvisgl/processors/molecularmeshrenderer.h>
 
 #include <modules/opengl/rendering/meshdrawergl.h>
 #include <modules/opengl/shader/shaderutils.h>
@@ -38,16 +38,16 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo MolecularRenderer::processorInfo_{
-    "org.inviwo.molvis.MolecularRenderer",  // Class identifier
-    "Molecular Renderer",                   // Display name
+const ProcessorInfo MolecularMeshRenderer::processorInfo_{
+    "org.inviwo.molvis.MolecularMeshRenderer",  // Class identifier
+    "Molecular Mesh Renderer",                   // Display name
     "MolVis",                               // Category
     CodeState::Experimental,                // Code state
     "GL, MolVis",                           // Tags
 };
-const ProcessorInfo MolecularRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo MolecularMeshRenderer::getProcessorInfo() const { return processorInfo_; }
 
-MolecularRenderer::MolecularRenderer()
+MolecularMeshRenderer::MolecularMeshRenderer()
     : Processor()
     , inport_("geometry")
     , imageInport_("imageInport")
@@ -108,7 +108,7 @@ MolecularRenderer::MolecularRenderer()
     lighting_.setCurrentStateAsDefault();
 }
 
-void MolecularRenderer::process() {
+void MolecularMeshRenderer::process() {
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     auto drawMesh = [](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
@@ -181,7 +181,7 @@ void MolecularRenderer::process() {
     utilgl::deactivateCurrentTarget();
 }
 
-void MolecularRenderer::initializeResources() {
+void MolecularMeshRenderer::initializeResources() {
     for (auto& item : vdwShaders_.getShaders()) {
         configureVdWShader(item.second);
     }
@@ -190,7 +190,7 @@ void MolecularRenderer::initializeResources() {
     }
 }
 
-void MolecularRenderer::configureVdWShader(Shader& shader) {
+void MolecularMeshRenderer::configureVdWShader(Shader& shader) {
     utilgl::addDefines(shader, lighting_);
 
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
@@ -198,7 +198,7 @@ void MolecularRenderer::configureVdWShader(Shader& shader) {
     shader.build();
 }
 
-void MolecularRenderer::configureLicoriceShader(Shader& shader) {
+void MolecularMeshRenderer::configureLicoriceShader(Shader& shader) {
     utilgl::addDefines(shader, lighting_);
 
     shader.getFragmentShaderObject()->addShaderExtension("GL_ARB_conservative_depth", true);
