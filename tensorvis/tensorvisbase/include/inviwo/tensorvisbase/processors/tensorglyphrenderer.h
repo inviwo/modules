@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHENDERER_H
-#define IVW_TENSORGLYPHENDERER_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 
@@ -58,24 +57,8 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.TensorGlyphRenderer, Tensor Glyph Renderer}
  * ![](org.inviwo.TensorGlyphRenderer.png?classIdentifier=org.inviwo.TensorGlyphRenderer)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \class TensorGlyphRenderer
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISBASE_API TensorGlyphRenderer : public Processor {
 public:
     TensorGlyphRenderer();
@@ -92,10 +75,10 @@ public:
 private:
     DataInport<std::vector<std::shared_ptr<Mesh>>> meshInport_;
     TensorField3DInport tensorFieldInport_;
-    DataInport<size_t> offsetInport_;
+    DataInport<unsigned int> offsetInport_;
     ImageInport imageInport_;
     MeshOutport selectedMeshOutport_;
-    DataOutport<size_t> indexOutport_;
+    DataOutport<unsigned int> indexOutport_;
 
     ImageOutport outport_;
 
@@ -127,5 +110,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHENDERER_H
