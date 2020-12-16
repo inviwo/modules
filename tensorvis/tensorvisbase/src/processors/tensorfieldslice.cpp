@@ -68,7 +68,7 @@ TensorFieldSlice::TensorFieldSlice()
     addPort(planeOutport_);
     addPort(offsetOutport_);
 
-    offsetOutport_.setData(std::make_shared<size_t>(0));
+    offsetOutport_.setData(std::make_shared<unsigned int>(0));
 
     addProperty(sliceAlongAxis_);
     addProperty(sliceNr_);
@@ -160,7 +160,7 @@ void TensorFieldSlice::process() {
     }
 
     auto offset = offsetDimensions.x * offsetDimensions.y * (sliceNr_.get());
-    offsetOutport_.setData(std::make_shared<size_t>(offset));
+    offsetOutport_.setData(std::make_shared<unsigned int>(static_cast<unsigned int>(offset)));
 
     outport2D_.setData(slice<2>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
     outport3D_.setData(slice<3>(inport_.getData(), sliceAlongAxis_.get(), sliceNr_.get()));
