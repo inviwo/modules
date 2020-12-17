@@ -35,6 +35,9 @@
 #include <inviwo/molvisbase/util/atomicelement.h>
 
 #include <optional>
+#include <iostream>
+#include <string_view>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -137,6 +140,58 @@ struct hash<inviwo::molvis::ResidueID> {
 namespace inviwo {
 namespace molvis {
 
+enum class PeptideType { Unknown, General, Glycine, Proline, PrePro };
+
+template <class Elem, class Traits>
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss, PeptideType pt) {
+    switch (pt) {
+        case PeptideType::Glycine:
+            ss << "Glycine";
+            break;
+        case PeptideType::Proline:
+            ss << "Proline";
+            break;
+        case PeptideType::PrePro:
+            ss << "Pre-Pro";
+            break;
+        case PeptideType::General:
+            ss << "General";
+        case PeptideType::Unknown:
+        default:
+            ss << "Unknown";
+    }
+    return ss;
+}
+
+}  // namespace molvis
+}  // namespace inviwo
+
+template <>
+struct fmt::formatter<inviwo::molvis::PeptideType> : fmt::formatter<std::string_view> {
+    template <typename FormatContext>
+    auto format(inviwo::molvis::PeptideType c, FormatContext& ctx) {
+        string_view name = "Unknown";
+        switch (c) {
+            case inviwo::molvis::PeptideType::Glycine:
+                name = "Glycine";
+                break;
+            case inviwo::molvis::PeptideType::Proline:
+                name = "Proline";
+                break;
+            case inviwo::molvis::PeptideType::PrePro:
+                name = "Pre-Pro";
+                break;
+            case inviwo::molvis::PeptideType::General:
+                name = "General";
+                break;
+        }
+        return formatter<string_view>::format(name, ctx);
+    }
+};
+
+namespace inviwo {
+namespace molvis {
+
 /**
  * \brief a data structure holding molecular data and its acceleration structures
  *
@@ -151,6 +206,36 @@ namespace molvis {
  */
 class IVW_MODULE_MOLVISBASE_API MolecularStructure {
 public:
+    /**
+     * \brief data structure defining a single backbone segment
+     *
+     * Data structure holding the atom indices of a single backbone segment including
+     * dihedral angles.
+     * A backbone segment may be incomplete if any of the atoms (C, O, N, or Ca) is
+     * missing. Dihedral angles are only valid if the segment is complete.
+     */
+    struct BackboneSegment {
+        constexpr bool complete() const noexcept {
+            return ca.has_value() && n.has_value() && c.has_value() && o.has_value();
+        }
+        constexpr bool empty() const noexcept {
+            return !ca.has_value() && !n.has_value() && !c.has_value() && !o.has_value();
+        }
+
+        size_t resId;
+        size_t chainId;
+
+        std::optional<size_t> ca;
+        std::optional<size_t> n;
+        std::optional<size_t> c;
+        std::optional<size_t> o;
+
+        // dihedral angles
+        std::optional<double> phi;
+        std::optional<double> psi;
+        PeptideType type = PeptideType::General;
+    };
+
     /**
      * \brief create a MolecularStructure from \p data
      *
@@ -180,7 +265,7 @@ public:
      *
      * \see getGlobalAtomIndex
      */
-    std::optional<size_t> getAtomIndex(const std::string& fullAtomName, size_t residueId,
+    std::optional<size_t> getAtomIndex(std::string_view fullAtomName, size_t residueId,
                                        size_t chainId) const;
 
     bool hasResidues() const;
@@ -205,6 +290,14 @@ public:
     const std::vector<size_t>& getChainResidues(size_t chainId) const;
 
     /**
+     * query a chain matching \p chainId for its backbone segments.
+     *
+     * @return list of backbone segments which belong to the chain
+     * @throws Exception if chain does not exist
+     */
+    const std::vector<BackboneSegment>& getBackboneSegments(size_t chainId) const;
+
+    /**
      * returns an index for each atom referring to its parent residue. This provides faster access
      * to residues through indexing instead of locating a matching residue by ID. The returned list
      * might be empty if residue information is not available.
@@ -213,17 +306,32 @@ public:
      */
     const std::vector<size_t>& getResidueIndices() const;
 
-private:
-    void verifyData() const;
+    /**
+     * returns an index for each atom referring to its parent backbone segment. This provides faster
+     * access to backbone segments through indexing instead of locating a matching backbone by
+     * residue and chain ID. The returned list might be empty if residue and chain information is
+     * not available.
+     *
+     * @return list of per-atom backbone indices
+     */
+    const std::vector<size_t>& getBackboneSegmentIndices() const;
 
+private:
     MolecularData data_;
 
     // mapping chain IDs to a list of global residue indices
     std::unordered_map<size_t, std::vector<size_t>> chainResidues_;
     // mapping residue IDs to a list of global atom indices
     std::unordered_map<ResidueID, std::vector<size_t>> residueAtoms_;
+    // mapping residue IDs to global residue indices
+    std::unordered_map<ResidueID, size_t> residueIndices_;
     // residue index of each atom
-    std::vector<size_t> residueIndices_;
+    std::vector<size_t> atomResidueIndices_;
+
+    // mapping chain IDs to a list of backbone segments
+    std::unordered_map<size_t, std::vector<BackboneSegment>> chainSegments_;
+    // backbone segment index of each atom
+    std::vector<size_t> chainSegmentIndices_;
 };
 
 }  // namespace molvis

@@ -32,6 +32,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
 
@@ -86,7 +87,7 @@ std::optional<Chain> findChain(const MolecularData& data, size_t chainId) {
     return find_if_opt(data.chains, [id = chainId](auto& r) { return r.id == id; });
 }
 
-std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& fullAtomName,
+std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fullAtomName,
                                          size_t residueId, size_t chainId) {
     if ((atoms.residueIds.size() != atoms.chainIds.size()) ||
         (atoms.residueIds.size() != atoms.fullNames.size())) {
@@ -104,6 +105,18 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, const std::string& 
         }
     }
     return std::nullopt;
+}
+
+PeptideType getPeptideType(std::string_view resName, std::string_view nextResName) {
+    if (iCaseCmp(resName, "GLY")) {
+        return PeptideType::Glycine;
+    } else if (iCaseCmp(resName, "PRO")) {
+        return PeptideType::Proline;
+    } else if (iCaseCmp(nextResName, "PRO")) {
+        return PeptideType::PrePro;
+    } else {
+        return PeptideType::General;
+    }
 }
 
 std::vector<Element> getAtomicNumbers(const std::vector<std::string>& fullNames) {
@@ -162,8 +175,8 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     std::vector<Bond> bonds;
     for (auto&& [atom1, pos] : util::enumerate(atoms.positions)) {
         const auto cell = cellCoord(pos);
-        const auto minCell = cell - size3_t(1);
-        const auto maxCell = glm::min(cell + size3_t(1), dims - size3_t{1});
+        const auto minCell = cellCoord(pos - maxCovalentBondLength);
+        const auto maxCell = cellCoord(pos + maxCovalentBondLength);
 
         for (size_t z = minCell.z; z <= maxCell.z; ++z) {
             for (size_t y = minCell.y; y <= maxCell.y; ++y) {
@@ -171,8 +184,11 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
                     const auto cellIndex = im(size3_t{x, y, z});
                     if (cells[cellIndex] > -1) {
                         for (auto atom2 : cellData[cells[cellIndex]]) {
-                            if ((atom1 < atom2) && covalentBond(atom1, atom2)) {
-                                bonds.push_back({atom1, atom2});
+                            if (glm::distance2(atoms.positions[atom1], atoms.positions[atom2]) <
+                                square(maxCovalentBondLength)) {
+                                if ((atom1 < atom2) && covalentBond(atom1, atom2)) {
+                                    bonds.push_back({atom1, atom2});
+                                }
                             }
                         }
                     }
@@ -183,7 +199,8 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     return bonds;
 }
 
-std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
+std::shared_ptr<Mesh> createMesh(const MolecularStructure& s, bool enablePicking,
+                                 uint32_t startId) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -192,7 +209,6 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
         util::transform(s.atoms().positions, [](const dvec3& p) { return glm::vec3{p}; })};
     std::vector<vec4> colors;
     std::vector<float> radius;
-    // std::vector<uint32_t> picking;
     const size_t atomCount = s.atoms().positions.size();
 
     for (auto elem : s.atoms().atomicNumbers) {
@@ -209,7 +225,12 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radius)));
-    // mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
+
+    if (enablePicking) {
+        std::vector<uint32_t> picking(atomCount);
+        std::iota(std::begin(picking), std::end(picking), startId);
+        mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
+    }
 
     // atoms
     std::vector<uint32_t> indices(atomCount);
@@ -230,6 +251,54 @@ std::shared_ptr<Mesh> createMesh(const MolecularStructure& s) {
     }
 
     return mesh;
+}
+
+Document createToolTip(const MolecularStructure& s, int atomIndex) {
+    using H = utildoc::TableBuilder::Header;
+    using P = Document::PathComponent;
+    const auto& atoms = s.atoms();
+    Document doc;
+    doc.append("b", fmt::format("Atom {}", atomIndex), {{"style", "color:white;"}});
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+    const auto& pos = atoms.positions[atomIndex];
+    if (!atoms.atomicNumbers.empty()) {
+        if (atoms.fullNames.empty()) {
+            tb(H("Element"), element::symbol(atoms.atomicNumbers[atomIndex]));
+        } else {
+            tb(H("Element"),
+               fmt::format("{} ('{}')", element::symbol(atoms.atomicNumbers[atomIndex]),
+                           atoms.fullNames[atomIndex]));
+        }
+    } else if (!atoms.fullNames.empty()) {
+        tb(H("Full Name"), atoms.fullNames[atomIndex]);
+    }
+    tb(H("Position"), fmt::format("{:.3f}, {:.3f}, {:.3f}", pos.x, pos.y, pos.z));
+    if (!atoms.residueIds.empty()) {
+        const auto resId = atoms.residueIds[atomIndex];
+        if (!atoms.chainIds.empty()) {
+            if (auto res = findResidue(s.data(), resId, atoms.chainIds[atomIndex])) {
+                tb(H("Residue"),
+                   fmt::format("{} ('{}', id: {})", res->name, res->fullName, res->id));
+            }
+        } else {
+            tb(H("Residue"), atoms.residueIds[atomIndex]);
+        }
+    }
+    if (!atoms.chainIds.empty()) {
+        const auto chainId = atoms.chainIds[atomIndex];
+        if (auto chain = findChain(s.data(), chainId)) {
+            tb(H("Chain"), fmt::format("{} (id: {})", s.chains()[chainId].name, chainId));
+        } else {
+            tb(H("Chain"), chainId);
+        }
+    }
+    if (!atoms.modelIds.empty()) {
+        tb(H("Model"), atoms.modelIds[atomIndex]);
+    }
+    if (!atoms.bFactors.empty()) {
+        tb(H("B Factor"), atoms.bFactors[atomIndex]);
+    }
+    return doc;
 }
 
 }  // namespace molvis

@@ -72,6 +72,8 @@ public:
 
     virtual void process() override;
 
+    virtual void initializeResources() override;
+
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
