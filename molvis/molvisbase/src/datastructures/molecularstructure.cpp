@@ -289,7 +289,8 @@ void verifyData(const MolecularData& data) {
 MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(data)} {
     detail::verifyData(data_);
 
-    if (!data_.atoms.residueIds.empty() && !data_.residues.empty() && !data_.atoms.chainIds.empty()) {
+    if (!data_.atoms.residueIds.empty() && !data_.residues.empty() &&
+        !data_.atoms.chainIds.empty()) {
         auto state = detail::createInternalState(data_);
         chainResidues_ = std::move(state.chainResidues);
         residueAtoms_ = std::move(state.residueAtoms);
