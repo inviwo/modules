@@ -11,7 +11,9 @@ set(HEADER_FILES
     include/inviwo/molvisbase/molvisbasemoduledefine.h
     include/inviwo/molvisbase/ports/molecularstructureport.h
     include/inviwo/molvisbase/processors/molecularstructuretomesh.h
+    include/inviwo/molvisbase/util/aminoacid.h
     include/inviwo/molvisbase/util/atomicelement.h
+    include/inviwo/molvisbase/util/chain.h
     include/inviwo/molvisbase/util/molvisutils.h
     include/inviwo/molvisbase/util/utilities.h
 )
@@ -25,7 +27,9 @@ set(SOURCE_FILES
     src/molvisbasemodule.cpp
     src/ports/molecularstructureport.cpp
     src/processors/molecularstructuretomesh.cpp
+    src/util/aminoacid.cpp
     src/util/atomicelement.cpp
+    src/util/chain.cpp
     src/util/molvisutils.cpp
     src/util/utilities.cpp
 )

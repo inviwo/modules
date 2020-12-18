@@ -74,8 +74,18 @@ IVW_MODULE_MOLVISBASE_API std::optional<size_t> getGlobalAtomIndex(const Atoms& 
 /**
  * determine peptide type of a residue
  *
+ * @param residue      type of the residue
+ * @param nextResidue  type of next next residue
+ * @return type of peptide
+ */
+IVW_MODULE_MOLVISBASE_API PeptideType getPeptideType(AminoAcid residue, AminoAcid nextResidue);
+
+/**
+ * determine peptide type of a residue
+ *
  * @param resName      name of the residue ("GLY", "PRO", ...)
  * @param nextResName  name of next residue ("GLY", "PRO", ...)
+ * @return type of peptide
  */
 IVW_MODULE_MOLVISBASE_API PeptideType getPeptideType(std::string_view resName,
                                                      std::string_view nextResName);

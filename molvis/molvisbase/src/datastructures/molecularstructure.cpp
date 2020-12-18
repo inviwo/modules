@@ -98,11 +98,12 @@ void computeDihedralAngles(
         for (auto&& [current, next] :
              util::zip(util::as_range(begin, end - 1), util::as_range(begin + 1, end))) {
             current.type = getPeptideType(
-                data.residues[residueIndices.at({current.resId, current.chainId})].name,
-                data.residues[residueIndices.at({next.resId, next.chainId})].name);
+                data.residues[residueIndices.at({current.resId, current.chainId})].aminoacid,
+                data.residues[residueIndices.at({next.resId, next.chainId})].aminoacid);
         }
         (end - 1)->type = getPeptideType(
-            data.residues[residueIndices.at({(end - 1)->resId, (end - 1)->chainId})].name, "");
+            data.residues[residueIndices.at({(end - 1)->resId, (end - 1)->chainId})].aminoacid,
+            AminoAcid::Unknown);
     }
 }
 
@@ -140,7 +141,7 @@ computeBackboneSegments(const MolecularData& data,
                 LogWarnCustom(
                     "MolecularStructure computeBackboneSegments()",
                     fmt::format("invalid residue with too few atoms (id = {}, chainId = {}, '{}')",
-                                res.id, res.chainId, res.name));
+                                res.id, res.chainId, aminoacid::symbol(res.aminoacid)));
                 continue;
             }
 
@@ -228,7 +229,7 @@ InternalState createInternalState(const MolecularData& data) {
                                          [id = res.chainId](const Chain& c) { return c.id == id; });
             if (chainIt == data.chains.end()) {
                 throw Exception(fmt::format("Invalid chain ID '{}' in residue {} '{}'", res.chainId,
-                                            res.id, res.name),
+                                            res.id, aminoacid::symbol(res.aminoacid)),
                                 IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
             }
             state.chainResidues[res.chainId].push_back(residueIndex);

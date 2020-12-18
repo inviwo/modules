@@ -37,6 +37,7 @@
 #include <inviwo/core/util/zip.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
+#include <inviwo/molvisbase/util/aminoacid.h>
 
 #include <fmt/format.h>
 
@@ -105,6 +106,18 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fu
         }
     }
     return std::nullopt;
+}
+
+PeptideType getPeptideType(AminoAcid residue, AminoAcid nextResidue) {
+    if (residue == AminoAcid::Gly) {
+        return PeptideType::Glycine;
+    } else if (residue == AminoAcid::Pro) {
+        return PeptideType::Proline;
+    } else if (nextResidue == AminoAcid::Pro) {
+        return PeptideType::PrePro;
+    } else {
+        return PeptideType::General;
+    }
 }
 
 PeptideType getPeptideType(std::string_view resName, std::string_view nextResName) {
@@ -277,8 +290,8 @@ Document createToolTip(const MolecularStructure& s, int atomIndex) {
         const auto resId = atoms.residueIds[atomIndex];
         if (!atoms.chainIds.empty()) {
             if (auto res = findResidue(s.data(), resId, atoms.chainIds[atomIndex])) {
-                tb(H("Residue"),
-                   fmt::format("{} ('{}', id: {})", res->name, res->fullName, res->id));
+                tb(H("Residue"), fmt::format("{} ('{}', id: {})", aminoacid::symbol(res->aminoacid),
+                                             res->fullName, res->id));
             }
         } else {
             tb(H("Residue"), atoms.residueIds[atomIndex]);

@@ -33,6 +33,7 @@
 #include <inviwo/core/util/hashcombine.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
+#include <inviwo/molvisbase/util/aminoacid.h>
 
 #include <optional>
 #include <iostream>
@@ -72,8 +73,8 @@ struct IVW_MODULE_MOLVISBASE_API Atoms {
  * \see https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
  */
 struct IVW_MODULE_MOLVISBASE_API Residue {
-    std::string name;
     int id;
+    AminoAcid aminoacid;
     std::string fullName;  //!< hetero flag 'H_' plus hetero residue or 'W' for water molecules,
                            //!< sequence identifier, and insertion code
     int chainId;
