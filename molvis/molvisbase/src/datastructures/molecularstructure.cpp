@@ -138,10 +138,6 @@ computeBackboneSegments(const MolecularData& data,
 
             if (resAtoms.size() < minCount) {
                 segments.push_back(seg);
-                LogWarnCustom(
-                    "MolecularStructure computeBackboneSegments()",
-                    fmt::format("invalid residue with too few atoms (id = {}, chainId = {}, '{}')",
-                                res.id, res.chainId, aminoacid::symbol(res.aminoacid)));
                 continue;
             }
 
