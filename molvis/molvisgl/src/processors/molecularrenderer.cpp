@@ -34,6 +34,7 @@
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/openglutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/molvisbase/util/chain.h>
@@ -46,7 +47,7 @@ const ProcessorInfo MolecularRenderer::processorInfo_{
     "org.inviwo.molvis.MolecularRenderer",  // Class identifier
     "Molecular Renderer",                   // Display name
     "MolVis",                               // Category
-    CodeState::Experimental,                // Code state
+    CodeState::Stable,                      // Code state
     "GL, MolVis",                           // Tags
 };
 const ProcessorInfo MolecularRenderer::getProcessorInfo() const { return processorInfo_; }
@@ -82,6 +83,7 @@ MolecularRenderer::MolecularRenderer()
     , radiusScaling_("radiusScaling", "Radius Scaling", 1.0f, 0.0f, 2.0f)
     , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
     , defaultRadius_("defaultRadius", "Default Radius", 0.15f, 0.00001f, 2.0f, 0.01f)
+    , enableTooltips_("enableTooltips", "Enable Tooltips", true)
     , camera_("camera", "Camera", molvis::boundingBox(inport_))
     , lighting_("lighting", "Lighting", &camera_)
     , trackball_(&camera_)
@@ -100,18 +102,19 @@ MolecularRenderer::MolecularRenderer()
                           [this]() { invalidate(InvalidationLevel::InvalidResources); });
                       configureVdWShader(shader);
                   }}
-    , licoriceShaders_{
-          {{ShaderType::Vertex, std::string{"licorice.vert"}},
-           {ShaderType::Geometry, std::string{"licorice.geom"}},
-           {ShaderType::Fragment, std::string{"licorice.frag"}}},
-          {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-           {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
-           {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+    , licoriceShaders_{{{ShaderType::Vertex, std::string{"licorice.vert"}},
+                        {ShaderType::Geometry, std::string{"licorice.geom"}},
+                        {ShaderType::Fragment, std::string{"licorice.frag"}}},
+                       {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                        {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                        {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
 
-          [&](Shader& shader) -> void {
-              shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-              configureLicoriceShader(shader);
-          }} {
+                       [&](Shader& shader) -> void {
+                           shader.onReload(
+                               [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                           configureLicoriceShader(shader);
+                       }}
+    , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
     addPort(inport_);
     addPort(imageInport_);
@@ -127,18 +130,22 @@ MolecularRenderer::MolecularRenderer()
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Residues; });
 
     addProperties(representation_, coloring_, fixedColor_, atomColormap_, aminoColormap_,
-                  radiusScaling_, forceRadius_, defaultRadius_, camera_, lighting_, trackball_);
+                  radiusScaling_, forceRadius_, defaultRadius_, enableTooltips_, camera_, lighting_,
+                  trackball_);
 
     lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
     lighting_.ambientColor_.set(vec3(0.515f));
     lighting_.diffuseColor_.set(vec3(0.48f));
     lighting_.specularColor_.set(vec3(0.09f));
     lighting_.specularExponent_.set(1.9f);
+    lighting_.setCollapsed(true);
 
     lighting_.setCurrentStateAsDefault();
 }
 
 void MolecularRenderer::process() {
+    atomPicking_.resize(inport_.getData()->atoms().positions.size());
+
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
     auto drawMesh = [](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
@@ -304,11 +311,10 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radii)));
 
-    // if (enablePicking) {
-    //    std::vector<uint32_t> picking(atomCount);
-    //    std::iota(std::begin(picking), std::end(picking), startId);
-    //    mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
-    //}
+    std::vector<uint32_t> picking(atomCount);
+    std::iota(std::begin(picking), std::end(picking),
+              static_cast<uint32_t>(atomPicking_.getPickingId(0)));
+    mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
 
     // atoms
     std::vector<uint32_t> indices(atomCount);
@@ -329,6 +335,20 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
     }
 
     return mesh;
+}
+
+void MolecularRenderer::handlePicking(PickingEvent* p) {
+    const uint32_t atomId = static_cast<uint32_t>(p->getPickedId());
+
+    // Show tooltip for current item
+    if (enableTooltips_ && p->getPressState() == PickingPressState::None) {
+        if (p->getHoverState() == PickingHoverState::Move ||
+            p->getHoverState() == PickingHoverState::Enter) {
+            p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
+            p->setToolTip("");
+        }
+    }
 }
 
 }  // namespace inviwo

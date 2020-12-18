@@ -40,10 +40,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo MolecularMeshRenderer::processorInfo_{
     "org.inviwo.molvis.MolecularMeshRenderer",  // Class identifier
-    "Molecular Mesh Renderer",                   // Display name
-    "MolVis",                               // Category
-    CodeState::Experimental,                // Code state
-    "GL, MolVis",                           // Tags
+    "Molecular Mesh Renderer",                  // Display name
+    "MolVis",                                   // Category
+    CodeState::Stable,                          // Code state
+    "GL, MolVis",                               // Tags
 };
 const ProcessorInfo MolecularMeshRenderer::getProcessorInfo() const { return processorInfo_; }
 
@@ -104,6 +104,7 @@ MolecularMeshRenderer::MolecularMeshRenderer()
     lighting_.diffuseColor_.set(vec3(0.48f));
     lighting_.specularColor_.set(vec3(0.09f));
     lighting_.specularExponent_.set(1.9f);
+    lighting_.setCollapsed(true);
 
     lighting_.setCurrentStateAsDefault();
 }

@@ -38,12 +38,15 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
 #include <inviwo/molvisbase/util/aminoacid.h>
 
 namespace inviwo {
+
+class PickingEvent;
 
 /** \docpage{org.inviwo.MolecularRenderer, Molecular Renderer}
  * ![](org.inviwo.MolecularRenderer.png?classIdentifier=org.inviwo.MolecularRenderer)
@@ -77,6 +80,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void handlePicking(PickingEvent* p);
+
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };
     enum class Coloring { Atoms, Residues, Chains, Fixed };
 
@@ -101,6 +106,8 @@ private:
     FloatProperty radiusScaling_;
     BoolProperty forceRadius_;
     FloatProperty defaultRadius_;
+    
+    BoolProperty enableTooltips_;
 
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
@@ -108,6 +115,7 @@ private:
 
     MeshShaderCache vdwShaders_;
     MeshShaderCache licoriceShaders_;
+    PickingMapper atomPicking_;
 };
 
 }  // namespace inviwo

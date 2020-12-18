@@ -33,11 +33,15 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
 
 namespace inviwo {
+
+class PickingEvent;
 
 /** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
  * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
@@ -56,8 +60,14 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void handlePicking(PickingEvent* p);
+
     molvis::MolecularStructureInport inport_;
     MeshOutport outport_;
+    
+    BoolProperty enableTooltips_;
+
+    PickingMapper atomPicking_;
 };
 
 }  // namespace inviwo

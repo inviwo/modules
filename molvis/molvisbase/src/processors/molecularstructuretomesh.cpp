@@ -29,6 +29,8 @@
 
 #include <inviwo/molvisbase/processors/molecularstructuretomesh.h>
 
+#include <inviwo/core/interaction/events/pickingevent.h>
+
 #include <inviwo/molvisbase/util/molvisutils.h>
 
 namespace inviwo {
@@ -38,21 +40,44 @@ const ProcessorInfo MolecularStructureToMesh::processorInfo_{
     "org.inviwo.molvis.MolecularStructureToMesh",  // Class identifier
     "Molecular Structure To Mesh",                 // Display name
     "MolVis",                                      // Category
-    CodeState::Experimental,                       // Code state
-    "CPU, MolVis",                                 // Tags
+    CodeState::Stable,                             // Code state
+    "CPU, MolVis, Mesh",                           // Tags
 };
 const ProcessorInfo MolecularStructureToMesh::getProcessorInfo() const { return processorInfo_; }
 
 MolecularStructureToMesh::MolecularStructureToMesh()
-    : Processor(), inport_("inport"), outport_("outport") {
+    : Processor()
+    , inport_("inport")
+    , outport_("outport")
+    , enableTooltips_("enableTooltips", "Enable Tooltips", true)
+    , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
     addPort(inport_);
     addPort(outport_);
+
+    addProperty(enableTooltips_);
 }
 
 void MolecularStructureToMesh::process() {
-    auto mesh = molvis::createMesh(*inport_.getData());
+    atomPicking_.resize(inport_.getData()->atoms().positions.size());
+
+    auto mesh = molvis::createMesh(*inport_.getData(), enableTooltips_,
+                                   static_cast<uint32_t>(atomPicking_.getPickingId(0)));
     outport_.setData(mesh);
+}
+
+void MolecularStructureToMesh::handlePicking(PickingEvent* p) {
+    const uint32_t atomId = static_cast<uint32_t>(p->getPickedId());
+
+    // Show tooltip for current item
+    if (enableTooltips_ && p->getPressState() == PickingPressState::None) {
+        if (p->getHoverState() == PickingHoverState::Move ||
+            p->getHoverState() == PickingHoverState::Enter) {
+            p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
+            p->setToolTip("");
+        }
+    }
 }
 
 }  // namespace inviwo
