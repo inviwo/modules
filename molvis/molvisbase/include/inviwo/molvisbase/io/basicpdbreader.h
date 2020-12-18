@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,22 +26,37 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/molvisbase/molvisbasemodule.h>
-#include <inviwo/molvisbase/processors/molecularstructuretomesh.h>
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
-#include <inviwo/molvisbase/io/basicpdbreader.h>
-#include <inviwo/molvisbase/processors/molecularstructuresource.h>
+#include <inviwo/molvisbase/molvisbasemoduledefine.h>
+#include <inviwo/core/io/datareader.h>
+#include <inviwo/molvisbase/datastructures/molecularstructure.h>
+
+#include <string>
 
 namespace inviwo {
 
-MolVisBaseModule::MolVisBaseModule(InviwoApplication* app) : InviwoModule(app, "MolVisBase") {
-    registerProcessor<MolecularStructureToMesh>();
-    registerProcessor<MolecularStructureSource>();
+/**
+ * \ingroup dataio
+ *
+ * Basic reader for Protein Databank (PDB) files. Will only interpret ATOM and HETATM data.
+ *
+ * \see https://www.wwpdb.org/documentation/file-format-content/format33/sect9.html#ATOM
+ */
+class IVW_MODULE_MOLVISBASE_API BasicPDBReader
+    : public DataReaderType<molvis::MolecularStructure> {
+public:
+    BasicPDBReader();
+    BasicPDBReader(const BasicPDBReader&) = default;
+    BasicPDBReader(BasicPDBReader&&) noexcept = default;
+    BasicPDBReader& operator=(const BasicPDBReader&) = default;
+    BasicPDBReader& operator=(BasicPDBReader&&) noexcept = default;
+    virtual BasicPDBReader* clone() const override;
+    virtual ~BasicPDBReader() = default;
+    using DataReaderType<molvis::MolecularStructure>::readData;
 
-    registerDefaultsForDataType<molvis::MolecularStructure>();
-
-    registerDataReader(std::make_unique<BasicPDBReader>());
-}
+    virtual std::shared_ptr<molvis::MolecularStructure> readData(
+        const std::string& fileName) override;
+};
 
 }  // namespace inviwo

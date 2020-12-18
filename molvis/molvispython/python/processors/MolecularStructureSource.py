@@ -58,8 +58,8 @@ class MolecularStructureSource(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-            classIdentifier = "org.inviwo.MolecularStructureSource", 
-            displayName = "Molecular Structure Source",
+            classIdentifier = "org.inviwo.MolecularStructureSourcePython", 
+            displayName = "MolecularStructure Source Python",
             category = "Data Input",
             codeState = ivw.CodeState.Stable,
             tags = ivw.Tags("PY, MolVis, Source, PDB, mmCIF")

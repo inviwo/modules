@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,22 @@
  *
  *********************************************************************************/
 
-#include <inviwo/molvisbase/molvisbasemodule.h>
-#include <inviwo/molvisbase/processors/molecularstructuretomesh.h>
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
-#include <inviwo/molvisbase/io/basicpdbreader.h>
 #include <inviwo/molvisbase/processors/molecularstructuresource.h>
 
 namespace inviwo {
 
-MolVisBaseModule::MolVisBaseModule(InviwoApplication* app) : InviwoModule(app, "MolVisBase") {
-    registerProcessor<MolecularStructureToMesh>();
-    registerProcessor<MolecularStructureSource>();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo MolecularStructureSource::processorInfo_{
+    "org.inviwo.MolecularStructureSource",  // Class identifier
+    "MolecularStructure Source",            // Display name
+    "Data Input",                           // Category
+    CodeState::Stable,                      // Code state
+    "MolVis, Source, PDB"                   // Tags
+};
+const ProcessorInfo MolecularStructureSource::getProcessorInfo() const { return processorInfo_; }
 
-    registerDefaultsForDataType<molvis::MolecularStructure>();
-
-    registerDataReader(std::make_unique<BasicPDBReader>());
-}
+MolecularStructureSource::MolecularStructureSource(InviwoApplication* app, const std::string& file)
+    : DataSource<molvis::MolecularStructure, molvis::MolecularStructureOutport>(
+          app, file, "molecularstructure") {}
 
 }  // namespace inviwo

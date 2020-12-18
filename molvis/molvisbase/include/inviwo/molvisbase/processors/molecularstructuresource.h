@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,21 +27,34 @@
  *
  *********************************************************************************/
 
-#include <inviwo/molvisbase/molvisbasemodule.h>
-#include <inviwo/molvisbase/processors/molecularstructuretomesh.h>
+#pragma once
+
+#include <inviwo/molvisbase/molvisbasemoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <modules/base/processors/datasource.h>
+
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
-#include <inviwo/molvisbase/io/basicpdbreader.h>
-#include <inviwo/molvisbase/processors/molecularstructuresource.h>
 
 namespace inviwo {
 
-MolVisBaseModule::MolVisBaseModule(InviwoApplication* app) : InviwoModule(app, "MolVisBase") {
-    registerProcessor<MolecularStructureToMesh>();
-    registerProcessor<MolecularStructureSource>();
+/** \docpage{org.inviwo.MolecularStructureSource, MolecularStructureSource}
+ * ![](org.inviwo.MolecularStructureSource.png?classIdentifier=org.inviwo.MolecularStructureSource)
+ * Loads a molecular structures/atoms and creates a MolecularStructure object.
+ *
+ * ### Outports
+ *   * __outport__  molecular structure
+ *
+ * ### Properties
+ *   * __File name__ File to load.
+ */
+class IVW_MODULE_MOLVISBASE_API MolecularStructureSource
+    : public DataSource<molvis::MolecularStructure, molvis::MolecularStructureOutport> {
+public:
+    MolecularStructureSource(InviwoApplication* app, const std::string& file = "");
+    virtual ~MolecularStructureSource() = default;
 
-    registerDefaultsForDataType<molvis::MolecularStructure>();
-
-    registerDataReader(std::make_unique<BasicPDBReader>());
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+};
 
 }  // namespace inviwo
