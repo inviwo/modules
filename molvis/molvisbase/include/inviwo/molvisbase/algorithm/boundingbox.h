@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,21 +29,50 @@
 #pragma once
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
+#include <inviwo/molvisbase/ports/molecularstructureport.h>
 
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/util/glm.h>
 
-#include <inviwo/molvisbase/datastructures/molecularstructure.h>
-#include <inviwo/molvisbase/datastructures/molecularstructuretraits.h>
+#include <functional>
+#include <optional>
 
 namespace inviwo {
 
+class Inport;
+
 namespace molvis {
 
-using MolecularStructureOutport = DataOutport<MolecularStructure>;
-using MolecularStructureInport = DataInport<MolecularStructure>;
-using MolecularStructureMultiInport = DataInport<MolecularStructure, 0>;
-using MolecularStructureFlatMultiInport = DataInport<MolecularStructure, 0, true>;
+class MolecularStructure;
+
+/**
+ * Calculate a bounding box of the molecular \p structure using the atom positions. The bounding box
+ * is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z
+ * are between 0 and 1. Atom radii are not considered.
+ */
+IVW_MODULE_MOLVISBASE_API mat4 boundingBox(const MolecularStructure& structure);
+
+/**
+ * Calculate a bounding box of all molecular \p structures using the atom positions. The bounding
+ * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y,
+ * and z are between 0 and 1. Atom radii are not considered.
+ */
+IVW_MODULE_MOLVISBASE_API mat4
+boundingBox(const std::vector<std::shared_ptr<const MolecularStructure>>& structures);
+
+/**
+ * Constructs a function that returns the bounding box of the molecular structure in the port. If
+ * the port is empty the function should return std::nullopt;
+ */
+/**@{*/
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+    const MolecularStructureInport& structure);
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+    const MolecularStructureMultiInport& structures);
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+    const MolecularStructureFlatMultiInport& structures);
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+    const MolecularStructureOutport& structure);
+/**@*/
 
 }  // namespace molvis
 
