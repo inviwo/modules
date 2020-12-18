@@ -78,17 +78,17 @@ auto find_if_opt(T& cont, Pred pred) -> std::optional<typename T::value_type> {
 
 }  // namespace
 
-std::optional<Residue> findResidue(const MolecularData& data, size_t residueId, size_t chainId) {
+std::optional<Residue> findResidue(const MolecularData& data, int residueId, int chainId) {
     return find_if_opt(data.residues,
                        [&](auto& r) { return (r.id == residueId) && (r.chainId == chainId); });
 }
 
-std::optional<Chain> findChain(const MolecularData& data, size_t chainId) {
+std::optional<Chain> findChain(const MolecularData& data, int chainId) {
     return find_if_opt(data.chains, [id = chainId](auto& r) { return r.id == id; });
 }
 
 std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fullAtomName,
-                                         size_t residueId, size_t chainId) {
+                                         int residueId, int chainId) {
     if ((atoms.residueIds.size() != atoms.chainIds.size()) ||
         (atoms.residueIds.size() != atoms.fullNames.size())) {
         throw Exception(
@@ -287,7 +287,7 @@ Document createToolTip(const MolecularStructure& s, int atomIndex) {
     if (!atoms.chainIds.empty()) {
         const auto chainId = atoms.chainIds[atomIndex];
         if (auto chain = findChain(s.data(), chainId)) {
-            tb(H("Chain"), fmt::format("{} (id: {})", s.chains()[chainId].name, chainId));
+            tb(H("Chain"), fmt::format("{} (id: {})", chain->name, chain->id));
         } else {
             tb(H("Chain"), chainId);
         }

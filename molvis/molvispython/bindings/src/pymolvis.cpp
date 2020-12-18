@@ -60,21 +60,21 @@ void exposeAtomicElement(pybind11::module& m) {
         .def("name", element::name, py::arg("symbol"))
         .def("symbol", element::symbol, py::arg("symbol"))
         .def("color", py::overload_cast<Element>(element::color), py::arg("symbol"))
-        .def("color", py::overload_cast<Element, Colormap>(element::color), py::arg("symbol"),
-             py::arg("colormap"))
+        .def("color", py::overload_cast<Element, element::Colormap>(element::color),
+             py::arg("symbol"), py::arg("colormap"))
         .def("vdwRadius", element::vdwRadius, py::arg("symbol"))
         .def("covalentRadius", element::covalentRadius, py::arg("symbol"))
         .def("atomicMass", element::atomicMass, py::arg("symbol"))
-        .def("elementFromAbbr", element::elementFromAbbr, py::arg("abbr"))
-        .def("fromFullName", element::fromFullName, py::arg("fullAtomName"));
+        .def("fromAbbr", element::fromAbbr, py::arg("abbr"))
+        .def("fromFullName", element::fromFullName, py::arg("fullName"));
 
     auto colors = m.def_submodule("colors", "Various color lookup tables");
     colors.attr("rasmol") = py::cast(element::detail::colorsRasmol);
     colors.attr("rasmolCPKnew") = py::cast(element::detail::colorsRasmolCPKnew);
 
-    py::enum_<Colormap>(m, "Colormap")
-        .value("RasmolCPK", Colormap::RasmolCPK)
-        .value("RasmolCPKnew", Colormap::RasmolCPKnew);
+    py::enum_<element::Colormap>(m, "Colormap")
+        .value("RasmolCPK", element::Colormap::RasmolCPK)
+        .value("RasmolCPKnew", element::Colormap::RasmolCPKnew);
 
     py::enum_<Element>(m, "Element")
         .value("Unknown", Element::Unknown)
@@ -200,7 +200,7 @@ void exposeAtomicElement(pybind11::module& m) {
 
 void exposeMolVisUtil(pybind11::module& m) {
     m.def("findResidue", &findResidue, py::arg("data"), py::arg("residueId"), py::arg("chainId"))
-        .def("findChain", &findChain, py::arg("data"), py::arg("chainId"))
+        .def("findChainId", &findChain, py::arg("data"), py::arg("chainId"))
         .def("getGlobalAtomIndex", &getGlobalAtomIndex, py::arg("atoms"), py::arg("fullAtomName"),
              py::arg("residueId"), py::arg("chainId"))
         .def("computeCovalentBonds", &computeCovalentBonds, py::arg("atoms"))
@@ -238,9 +238,9 @@ void exposeMolVis(pybind11::module& m) {
 
     py::class_<Residue, std::shared_ptr<Residue>>(m, "Residue")
         .def(py::init())
-        .def(py::init([](size_t id, const std::string& name, const std::string& fullname,
-                         size_t chainid) -> Residue {
-                 return {id, name, fullname, chainid};
+        .def(py::init([](int id, const std::string& name, const std::string& fullname,
+                         int chainid) -> Residue {
+                 return {id, aminoacid::fromAbbr(name), fullname, chainid};
              }),
              py::arg("id"), py::arg("name"), py::arg("fullname"), py::arg("chainid"))
         .def_readwrite("id", &Residue::id)
@@ -254,7 +254,7 @@ void exposeMolVis(pybind11::module& m) {
 
     py::class_<Chain, std::shared_ptr<Chain>>(m, "Chain")
         .def(py::init())
-        .def(py::init([](size_t id, const std::string& name) -> Chain {
+        .def(py::init([](int id, const std::string& name) -> Chain {
                  return {id, name};
              }),
              py::arg("id"), py::arg("name"))

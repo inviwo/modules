@@ -31,11 +31,13 @@
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
 
 #include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stringconversion.h>
+#include <inviwo/molvisbase/util/utilities.h>
 
 #include <string_view>
 #include <array>
 #include <optional>
-#include <cctype>
 
 namespace inviwo {
 
@@ -58,9 +60,9 @@ enum class Element : unsigned char {
 };
 // clang-format on
 
-enum class Colormap { RasmolCPK, RasmolCPKnew };
-
 namespace element {
+
+enum class Colormap { RasmolCPK, RasmolCPKnew };
 
 constexpr int num_elements = 119;
 
@@ -144,10 +146,6 @@ constexpr std::array<double, num_elements> atomic_mass = {
     285,     284,        289,       288,         292,      294,        295,
 };
 
-constexpr glm::vec4 colorFromHex(unsigned int c) {
-    return glm::vec4{(c >> 0) & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff, (c >> 24) & 0xff} / 255.0f;
-}
-
 // http://jmol.sourceforge.net/jscolors/ (stored as RGBA from least to most significant bit)
 // Rasmol colors
 constexpr std::array<unsigned int, num_elements> colorsRasmolHex = {
@@ -187,86 +185,47 @@ constexpr std::array<unsigned int, num_elements> colorsRasmolCPKnewHex = {
     0xFF1E00F8, 0xFF1C00FA, 0xFF1A00FC, 0xFF1800FD, 0xFF1600FE, 0xFF1400FF, 0xFF1200FF,
 };
 
-namespace helper {
-// constexpr helpers
-template <class InputIt, class OutputIt, class UnaryOp>
-constexpr OutputIt transform(InputIt first, InputIt last, OutputIt out, UnaryOp unary_op) {
-    for (; first != last; ++first, ++out) {
-        *out = unary_op(*first);
-    }
-    return out;
-}
+constexpr std::array<glm::vec4, num_elements> colorsRasmol = util::make_array<num_elements>(
+    [](auto index) { return molvisutil::colorFromHex(colorsRasmolHex[index]); });
 
-template <typename T, size_t D, typename F>
-constexpr auto transform(const std::array<T, D>& a, F&& fun) noexcept {
-    using R = decltype(fun(std::declval<T>()));
-    std::array<R, D> res{};
-    helper::transform(a.begin(), a.end(), res.begin(), fun);
-    return res;
-}
-
-template <typename It, typename V>
-constexpr auto find(It begin, It end, V&& val) {
-    for (; begin != end; ++begin) {
-        if (*begin == val) {
-            return begin;
-        }
-    }
-    return end;
-}
-
-template <typename It, typename F>
-constexpr auto find_if(It begin, It end, F&& func) {
-    for (; begin != end; ++begin) {
-        if (func(*begin)) {
-            return begin;
-        }
-    }
-    return end;
-}
-
-}  // namespace helper
-
-constexpr std::array<glm::vec4, num_elements> colorsRasmol =
-    helper::transform(colorsRasmolHex, colorFromHex);
-
-constexpr std::array<glm::vec4, num_elements> colorsRasmolCPKnew =
-    helper::transform(colorsRasmolCPKnewHex, colorFromHex);
+constexpr std::array<glm::vec4, num_elements> colorsRasmolCPKnew = util::make_array<num_elements>(
+    [](auto index) { return molvisutil::colorFromHex(colorsRasmolCPKnewHex[index]); });
 
 }  // namespace detail
 
 // Element functions
-constexpr Element element(int atomicNumber) { return static_cast<Element>(atomicNumber); }
-constexpr int atomicNumber(Element symbol) { return static_cast<int>(symbol); }
-constexpr std::string_view name(Element symbol) { return detail::names[atomicNumber(symbol)]; }
-constexpr std::string_view symbol(Element symbol) { return detail::symbols[atomicNumber(symbol)]; }
-constexpr vec4 color(Element symbol) { return detail::colorsRasmolCPKnew[atomicNumber(symbol)]; }
-constexpr vec4 color(Element symbol, Colormap map) {
+constexpr Element element(int atomicNumber) noexcept { return static_cast<Element>(atomicNumber); }
+constexpr int atomicNumber(Element symbol) noexcept { return static_cast<int>(symbol); }
+constexpr std::string_view name(Element symbol) noexcept {
+    return detail::names[atomicNumber(symbol)];
+}
+constexpr std::string_view symbol(Element symbol) noexcept {
+    return detail::symbols[atomicNumber(symbol)];
+}
+constexpr vec4 color(Element symbol) noexcept {
+    return detail::colorsRasmolCPKnew[atomicNumber(symbol)];
+}
+constexpr vec4 color(Element symbol, Colormap map) noexcept {
     switch (map) {
         case Colormap::RasmolCPK:
             return detail::colorsRasmol[atomicNumber(symbol)];
         case Colormap::RasmolCPKnew:
             return detail::colorsRasmolCPKnew[atomicNumber(symbol)];
         default:
-            return detail::colorsRasmolCPKnew[atomicNumber(symbol)];
+            return color(symbol);
     }
 }
-constexpr double vdwRadius(Element symbol) { return detail::vdw_radii[atomicNumber(symbol)]; }
-constexpr double covalentRadius(Element symbol) {
+constexpr double vdwRadius(Element symbol) noexcept {
+    return detail::vdw_radii[atomicNumber(symbol)];
+}
+constexpr double covalentRadius(Element symbol) noexcept {
     return detail::covalent_radii[atomicNumber(symbol)];
 }
-constexpr double atomicMass(Element symbol) { return detail::atomic_mass[atomicNumber(symbol)]; }
-
-constexpr std::string_view trim(std::string_view str) {
-    constexpr auto notSpace = [](char c) { return c != ' ' && c != '\t'; };
-    const auto it1 = detail::helper::find_if(str.begin(), str.end(), notSpace);
-    const auto it2 = detail::helper::find_if(str.rbegin(), str.rend(), notSpace);
-    const size_t start = it1 - str.begin();
-    const size_t size = it2.base() - it1;
-    return str.substr(start, size);
+constexpr double atomicMass(Element symbol) noexcept {
+    return detail::atomic_mass[atomicNumber(symbol)];
 }
 
-constexpr Element elementFromAbbr(std::string_view abbr) {
+constexpr Element fromAbbr(std::string_view abbr) noexcept {
     // create a (linear) hash function for all combinations of single letter and two letter atomic
     // elements
     constexpr auto index = [](std::string_view abbr) {
@@ -299,12 +258,12 @@ constexpr Element elementFromAbbr(std::string_view abbr) {
     return lookup[index(abbr)];
 }
 
-constexpr Element fromFullName(std::string_view fullAtomName) {
-    const auto trimed = trim(fullAtomName);
-    if (auto elem = elementFromAbbr(trimed.substr(0, 2)); elem != Element::Unknown) {
+constexpr Element fromFullName(std::string_view fullAtomName) noexcept {
+    const auto trimmed = util::trim(fullAtomName);
+    if (auto elem = fromAbbr(trimmed.substr(0, 2)); elem != Element::Unknown) {
         return elem;
     }
-    return elementFromAbbr(trimed.substr(0, 1));
+    return fromAbbr(trimmed.substr(0, 1));
 }
 
 }  // namespace element

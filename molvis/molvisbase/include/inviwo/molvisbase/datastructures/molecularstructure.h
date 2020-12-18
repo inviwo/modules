@@ -72,11 +72,11 @@ struct IVW_MODULE_MOLVISBASE_API Atoms {
  * \see https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
  */
 struct IVW_MODULE_MOLVISBASE_API Residue {
-    size_t id;
     std::string name;
+    int id;
     std::string fullName;  //!< hetero flag 'H_' plus hetero residue or 'W' for water molecules,
                            //!< sequence identifier, and insertion code
-    size_t chainId;
+    int chainId;
 };
 
 /**
@@ -87,7 +87,7 @@ struct IVW_MODULE_MOLVISBASE_API Residue {
  * \see https://biopython.org/wiki/The_Biopython_Structural_Bioinformatics_FAQ
  */
 struct IVW_MODULE_MOLVISBASE_API Chain {
-    size_t id;
+    int id;
     std::string name;
 };
 
@@ -222,8 +222,8 @@ public:
             return !ca.has_value() && !n.has_value() && !c.has_value() && !o.has_value();
         }
 
-        size_t resId;
-        size_t chainId;
+        int resId;
+        int chainId;
 
         std::optional<size_t> ca;
         std::optional<size_t> n;
@@ -265,13 +265,14 @@ public:
      *
      * \see getGlobalAtomIndex
      */
-    std::optional<size_t> getAtomIndex(std::string_view fullAtomName, size_t residueId,
-                                       size_t chainId) const;
+    std::optional<size_t> getAtomIndex(std::string_view fullAtomName, int residueId,
+                                       int chainId) const;
 
+    bool hasAtoms() const;
     bool hasResidues() const;
-    bool hasResidue(size_t residueId, size_t chainId) const;
+    bool hasResidue(int residueId, int chainId) const;
     bool hasChains() const;
-    bool hasChain(size_t chainId) const;
+    bool hasChain(int chainId) const;
 
     /**
      * query a residue matching \p residueId and \p chainId for its atoms.
@@ -279,7 +280,7 @@ public:
      * @return list of atom indices which belong to the residue
      * @throws Exception if residue does not exist
      */
-    const std::vector<size_t>& getResidueAtoms(size_t residueId, size_t chainId) const;
+    const std::vector<size_t>& getResidueAtoms(int residueId, int chainId) const;
 
     /**
      * query a chain matching \p chainId for its residues.
@@ -287,7 +288,7 @@ public:
      * @return list of residue indices which belong to the chain
      * @throws Exception if chain does not exist
      */
-    const std::vector<size_t>& getChainResidues(size_t chainId) const;
+    const std::vector<size_t>& getChainResidues(int chainId) const;
 
     /**
      * query a chain matching \p chainId for its backbone segments.
@@ -295,7 +296,7 @@ public:
      * @return list of backbone segments which belong to the chain
      * @throws Exception if chain does not exist
      */
-    const std::vector<BackboneSegment>& getBackboneSegments(size_t chainId) const;
+    const std::vector<BackboneSegment>& getBackboneSegments(int chainId) const;
 
     /**
      * returns an index for each atom referring to its parent residue. This provides faster access
@@ -320,7 +321,7 @@ private:
     MolecularData data_;
 
     // mapping chain IDs to a list of global residue indices
-    std::unordered_map<size_t, std::vector<size_t>> chainResidues_;
+    std::unordered_map<int, std::vector<size_t>> chainResidues_;
     // mapping residue IDs to a list of global atom indices
     std::unordered_map<ResidueID, std::vector<size_t>> residueAtoms_;
     // mapping residue IDs to global residue indices
@@ -329,7 +330,7 @@ private:
     std::vector<size_t> atomResidueIndices_;
 
     // mapping chain IDs to a list of backbone segments
-    std::unordered_map<size_t, std::vector<BackboneSegment>> chainSegments_;
+    std::unordered_map<int, std::vector<BackboneSegment>> chainSegments_;
     // backbone segment index of each atom
     std::vector<size_t> chainSegmentIndices_;
 };

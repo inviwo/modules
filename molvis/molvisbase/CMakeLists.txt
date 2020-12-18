@@ -13,6 +13,7 @@ set(HEADER_FILES
     include/inviwo/molvisbase/processors/molecularstructuretomesh.h
     include/inviwo/molvisbase/util/atomicelement.h
     include/inviwo/molvisbase/util/molvisutils.h
+    include/inviwo/molvisbase/util/utilities.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -26,6 +27,7 @@ set(SOURCE_FILES
     src/processors/molecularstructuretomesh.cpp
     src/util/atomicelement.cpp
     src/util/molvisutils.cpp
+    src/util/utilities.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
