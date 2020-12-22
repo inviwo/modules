@@ -32,6 +32,9 @@
 #include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
+#include <inviwo/molvisbase/util/aminoacid.h>
+#include <inviwo/molvisbase/util/atomicelement.h>
+#include <inviwo/molvisbase/util/chain.h>
 
 namespace inviwo {
 
@@ -49,13 +52,39 @@ MolecularStructureToMesh::MolecularStructureToMesh()
     : Processor()
     , inport_("inport")
     , outport_("outport")
+    , coloring_{"coloring",
+                "Coloring",
+                {{"default", "Default (atoms)", Coloring::Default},
+                 {"fixed", "Fixed", Coloring::Fixed},
+                 {"atoms", "Atoms", Coloring::Atoms},
+                 {"residues", "Residues", Coloring::Residues},
+                 {"chains", "Chains", Coloring::Chains}},
+                0}
+    , atomColormap_{"atomColormap",
+                    "Colormap",
+                    {{"cpk", "Rasmol CPK", molvis::element::Colormap::RasmolCPK},
+                     {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew}},
+                    1}
+    , aminoColormap_{"aminoColormap",
+                     "Colormap",
+                     {{"amino", "Amino", molvis::aminoacid::Colormap::Amino},
+                      {"shapely", "Shapely", molvis::aminoacid::Colormap::Shapely},
+                      {"ugene", "Ugene (multiple alignment)", molvis::aminoacid::Colormap::Ugene}}}
+    , fixedColor_("fixedColor", "Color", util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f))
     , enableTooltips_("enableTooltips", "Enable Tooltips", true)
     , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
     addPort(inport_);
     addPort(outport_);
 
-    addProperty(enableTooltips_);
+    fixedColor_.visibilityDependsOn(
+        coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Fixed; });
+    atomColormap_.visibilityDependsOn(
+        coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Atoms; });
+    aminoColormap_.visibilityDependsOn(
+        coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Residues; });
+
+    addProperties(coloring_, fixedColor_, atomColormap_, aminoColormap_, enableTooltips_);
 }
 
 void MolecularStructureToMesh::process() {
@@ -63,6 +92,14 @@ void MolecularStructureToMesh::process() {
 
     auto mesh = molvis::createMesh(*inport_.getData(), enableTooltips_,
                                    static_cast<uint32_t>(atomPicking_.getPickingId(0)));
+
+    if (coloring_ != Coloring::Default) {
+        if (auto buf = mesh->findBuffer(BufferType::ColorAttrib); buf.first) {
+            mesh->removeBuffer(buf.first);
+        }
+        mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors())));
+    }
+
     outport_.setData(mesh);
 }
 
@@ -77,6 +114,54 @@ void MolecularStructureToMesh::handlePicking(PickingEvent* p) {
         } else if (p->getHoverState() == PickingHoverState::Exit) {
             p->setToolTip("");
         }
+    }
+}
+
+std::vector<vec4> MolecularStructureToMesh::colors() const {
+    auto s = inport_.getData();
+    const size_t atomCount = s->atoms().positions.size();
+
+    using namespace molvis;
+
+    switch (coloring_) {
+        case Coloring::Atoms:
+            if (!s->atoms().atomicNumbers.empty()) {
+                std::vector<vec4> colors;
+                for (auto elem : s->atoms().atomicNumbers) {
+                    colors.emplace_back(element::color(elem, atomColormap_));
+                }
+                return colors;
+            } else {
+                return std::vector<vec4>(atomCount,
+                                         element::color(Element::Unknown, atomColormap_));
+            }
+        case Coloring::Residues:
+            if (s->hasResidues()) {
+                std::vector<vec4> colors;
+                const auto& residues = s->residues();
+                for (auto resIndex : s->getResidueIndices()) {
+                    colors.emplace_back(
+                        aminoacid::color(residues[resIndex].aminoacid, aminoColormap_));
+                }
+                return colors;
+            } else {
+                return std::vector<vec4>(atomCount,
+                                         aminoacid::color(AminoAcid::Unknown, aminoColormap_));
+            }
+        case Coloring::Chains:
+            if (s->hasChains()) {
+                std::vector<vec4> colors;
+                for (auto chainId : s->atoms().chainIds) {
+                    colors.emplace_back(chain::color(chainId));
+                }
+                return colors;
+            } else {
+                return std::vector<vec4>(atomCount, chain::color(ChainId::Unknown));
+            }
+        case Coloring::Fixed:
+        case Coloring::Default:
+        default:
+            return std::vector<vec4>(atomCount, fixedColor_);
     }
 }
 
