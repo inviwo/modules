@@ -107,6 +107,7 @@ MolecularRenderer::MolecularRenderer()
                         {ShaderType::Fragment, std::string{"licorice.frag"}}},
                        {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                         {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                        {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
                         {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
 
                        [&](Shader& shader) -> void {
