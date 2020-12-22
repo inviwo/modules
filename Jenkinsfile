@@ -16,6 +16,7 @@ node {
     util.config(this)
 
     def modulePaths = ["${env.WORKSPACE}/modules/misc", 
+                       "${env.WORKSPACE}/modules/molvis"
                        "${env.WORKSPACE}/modules/tensorvis", 
                        "${env.WORKSPACE}/modules/topovis",
                        "${env.WORKSPACE}/modules/vectorvis"]
@@ -26,6 +27,7 @@ node {
             modulePaths: modulePaths, 
             onModules: ["TOPOLOGYTOOLKIT", "OPENMESH", "SPRINGSYSTEM", "VASP", 
                         "NANOVGUTILS", "TENSORVISBASE", "INTEGRALLINEFILTERING",
+                        "MOLVISBASE", "MOLVISGL", "MOLVISPYTHON",
                         "DATAFRAMECLUSTERING"],
             offModules: ["ABUFFERGL", "VTK", "TENSORVISIO"],   
             opts: [:]
