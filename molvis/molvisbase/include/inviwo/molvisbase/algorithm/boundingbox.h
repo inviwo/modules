@@ -45,16 +45,16 @@ namespace molvis {
 class MolecularStructure;
 
 /**
- * Calculate a bounding box of the molecular \p structure using the atom positions. The bounding box
- * is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y, and z
- * are between 0 and 1. Atom radii are not considered.
+ * Calculate a bounding box of the molecular \p structure using the atom positions and van der Waals
+ * radii. The bounding box is represented using a mat4, where all positions are between `bbox *
+ * (x,y,z,1) where x, y, and z are between 0 and 1. 
  */
 IVW_MODULE_MOLVISBASE_API mat4 boundingBox(const MolecularStructure& structure);
 
 /**
- * Calculate a bounding box of all molecular \p structures using the atom positions. The bounding
- * box is represented using a mat4, where all positions are between `bbox * (x,y,z,1) where x, y,
- * and z are between 0 and 1. Atom radii are not considered.
+ * Calculate a bounding box of all molecular \p structures using the atom positions and van der
+ * Waals radii. The bounding box is represented using a mat4, where all positions are between `bbox
+ * * (x,y,z,1) where x, y, and z are between 0 and 1. 
  */
 IVW_MODULE_MOLVISBASE_API mat4
 boundingBox(const std::vector<std::shared_ptr<const MolecularStructure>>& structures);

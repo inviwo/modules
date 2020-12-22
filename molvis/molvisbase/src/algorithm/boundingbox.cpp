@@ -31,6 +31,7 @@
 
 #include <inviwo/molvisbase/datastructures/molecularstructure.h>
 
+#include <inviwo/core/util/zip.h>
 #include <numeric>
 #include <utility>
 
@@ -43,9 +44,19 @@ mat4 boundingBox(const MolecularStructure& structure) {
     dvec3 worldMax(std::numeric_limits<double>::lowest());
 
     if (structure.hasAtoms()) {
-        for (const auto& pos : structure.atoms().positions) {
-            worldMin = glm::min(worldMin, pos);
-            worldMax = glm::max(worldMax, pos);
+        if (!structure.atoms().atomicNumbers.empty()) {
+            for (auto&& [pos, element] :
+                 util::zip(structure.atoms().positions, structure.atoms().atomicNumbers)) {
+                const dvec3 radius{element::vdwRadius(element)};
+                worldMin = glm::min(worldMin, pos - radius);
+                worldMax = glm::max(worldMax, pos + radius);
+            }
+        } else {
+            for (const auto& pos : structure.atoms().positions) {
+                const dvec3 radius{element::vdwRadius(Element::Unknown)};
+                worldMin = glm::min(worldMin, pos - radius);
+                worldMax = glm::max(worldMax, pos + radius);
+            }
         }
     } else {
         worldMin = worldMax = dvec3(0.0, 0.0, 0.0);
