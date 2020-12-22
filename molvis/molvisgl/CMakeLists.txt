@@ -5,6 +5,8 @@ ivw_module(MolVisGL)
 #--------------------------------------------------------------------
 # Add header files
 set(HEADER_FILES
+    include/inviwo/molvisgl/datavisualizer/molecularmeshrendervisualizer.h
+    include/inviwo/molvisgl/datavisualizer/molecularstructurevisualizer.h
     include/inviwo/molvisgl/molvisglmodule.h
     include/inviwo/molvisgl/molvisglmoduledefine.h
     include/inviwo/molvisgl/processors/molecularmeshrenderer.h
@@ -15,6 +17,8 @@ ivw_group("Header Files" ${HEADER_FILES})
 #--------------------------------------------------------------------
 # Add source files
 set(SOURCE_FILES
+    src/datavisualizer/molecularmeshrendervisualizer.cpp
+    src/datavisualizer/molecularstructurevisualizer.cpp
     src/molvisglmodule.cpp
     src/processors/molecularmeshrenderer.cpp
     src/processors/molecularrenderer.cpp

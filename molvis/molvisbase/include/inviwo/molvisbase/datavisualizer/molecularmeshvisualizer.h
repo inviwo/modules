@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,27 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+#pragma once
 
-#include <inviwo/molvisbase/molvisbasemodule.h>
-#include <inviwo/molvisbase/datavisualizer/molecularmeshvisualizer.h>
-#include <inviwo/molvisbase/datavisualizer/molecularsourcevisualizer.h>
-#include <inviwo/molvisbase/processors/molecularstructuresource.h>
-#include <inviwo/molvisbase/processors/molecularstructuretomesh.h>
-#include <inviwo/molvisbase/ports/molecularstructureport.h>
-#include <inviwo/molvisbase/io/basicpdbreader.h>
+#include <inviwo/molvisbase/molvisbasemoduledefine.h>
+
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-MolVisBaseModule::MolVisBaseModule(InviwoApplication* app) : InviwoModule(app, "MolVisBase") {
-    registerProcessor<MolecularStructureSource>();
-    registerProcessor<MolecularStructureToMesh>();
+class IVW_MODULE_MOLVISBASE_API MolecularMeshVisualizer : public DataVisualizer {
+public:
+    MolecularMeshVisualizer(InviwoApplication* app);
+    virtual ~MolecularMeshVisualizer() = default;
 
-    registerDefaultsForDataType<molvis::MolecularStructure>();
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
 
-    registerDataReader(std::make_unique<BasicPDBReader>());
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
 
-    registerDataVisualizer(std::make_unique<MolecularMeshVisualizer>(app));
-    registerDataVisualizer(std::make_unique<MolecularSourceVisualizer>(app));
-}
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
+
+private:
+    InviwoApplication* app_;
+};
 
 }  // namespace inviwo
