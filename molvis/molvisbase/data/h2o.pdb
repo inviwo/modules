@@ -1,0 +1,7 @@
+HETATM    1  O1  UNK A   1     -23.107  18.401 -21.626    10  0.00           O  
+HETATM    2  H1  UNK A   1     -22.157  18.401 -21.626    10  0.00           H  
+HETATM    3  H2  UNK A   1     -23.424  18.401 -20.730    10  0.00           H  
+CONECT    1    2
+CONECT    2    1
+CONECT    2    3
+CONECT    3    2

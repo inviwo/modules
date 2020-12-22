@@ -1,0 +1,13 @@
+HETATM    1  H5  UNK A   1      -0.649   0.513  -0.709    10  0.00           H  
+HETATM    2  C1  UNK A   1       0.000   0.000   0.000    10  0.00           C  
+HETATM    3  H2  UNK A   1      -0.591  -0.692   0.599    10  0.00           H  
+HETATM    4  H3  UNK A   1       0.474   0.733   0.653    10  0.00           H  
+HETATM    5  H4  UNK A   1       0.767  -0.553  -0.543    10  0.00           H  
+CONECT    1    2
+CONECT    2    1
+CONECT    2    3
+CONECT    2    4
+CONECT    2    5
+CONECT    3    2
+CONECT    4    2
+CONECT    5    2
