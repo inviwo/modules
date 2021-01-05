@@ -99,7 +99,7 @@ void TTKTestProcessor::process() {
 
     LogInfo("2. computing the persistence curve");
     ttk::PersistenceCurve curve;
-    std::vector<std::pair<float, ttk::SimplexId> > outputCurve;
+    std::vector<std::pair<float, ttk::SimplexId>> outputCurve;
     curve.setupTriangulation(&ttkData.getTriangulation());
     curve.setInputScalars(height.data());
     curve.setInputOffsets(offsets.data());
@@ -111,7 +111,7 @@ void TTKTestProcessor::process() {
     LogInfo("3. computing the persistence diagram");
     ttk::PersistenceDiagram diagram;
     std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId, ttk::CriticalType,
-                           float, ttk::SimplexId> >
+                           float, ttk::SimplexId>>
         diagramOutput;
     diagram.setupTriangulation(&ttkData.getTriangulation());
     diagram.setInputScalars(height.data());
@@ -136,7 +136,7 @@ void TTKTestProcessor::process() {
     // determine max persistence for threshold
     auto maxIt = std::max_element(
         diagramOutput.begin(), diagramOutput.end(),
-        [](const auto &a, const auto &b) { return std::get<4>(a) < std::get<4>(b); });
+        [](const auto& a, const auto& b) { return std::get<4>(a) < std::get<4>(b); });
     if (maxIt != diagramOutput.end()) {
         threshold_.setMaxValue(std::get<4>(*maxIt));
     }

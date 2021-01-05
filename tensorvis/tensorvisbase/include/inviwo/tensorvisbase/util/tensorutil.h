@@ -72,7 +72,7 @@ enum class YieldCriterion {
 };
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              YieldCriterion yieldCriterion) {
     switch (yieldCriterion) {
         case YieldCriterion::William_Warnke:
@@ -135,7 +135,7 @@ dmat2 IVW_MODULE_TENSORVISBASE_API getProjectedTensor(const dmat3 tensor,
  * is the symmetric part and pair.second the antisymmetric part. See:
  * https://diglib.eg.org/handle/10.1111/v32i1pp049-074
  */
-std::pair<dmat2, dmat2> IVW_MODULE_TENSORVISBASE_API decompose(const dmat2 &tensor,
+std::pair<dmat2, dmat2> IVW_MODULE_TENSORVISBASE_API decompose(const dmat2& tensor,
                                                                Decomposition decomposition);
 
 /*
@@ -145,40 +145,40 @@ std::pair<dmat2, dmat2> IVW_MODULE_TENSORVISBASE_API decompose(const dmat2 &tens
  * is the symmetric part and pair.second the antisymmetric part. See:
  * https://diglib.eg.org/handle/10.1111/v32i1pp049-074
  */
-std::pair<dmat3, dmat3> IVW_MODULE_TENSORVISBASE_API decompose(const dmat3 &tensor,
+std::pair<dmat3, dmat3> IVW_MODULE_TENSORVISBASE_API decompose(const dmat3& tensor,
                                                                Decomposition decomposition);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API reconstruct(const std::array<double, 3> &eigenvalues,
-                                               const std::array<dvec3, 3> &eigenvectors);
+dmat3 IVW_MODULE_TENSORVISBASE_API reconstruct(const std::array<double, 3>& eigenvalues,
+                                               const std::array<dvec3, 3>& eigenvectors);
 
-vec4 IVW_MODULE_TENSORVISBASE_API tensor2DToDvec4(const dmat2 &tensor);
+vec4 IVW_MODULE_TENSORVISBASE_API tensor2DToDvec4(const dmat2& tensor);
 
-double IVW_MODULE_TENSORVISBASE_API trace(const dmat2 &tensor);
+double IVW_MODULE_TENSORVISBASE_API trace(const dmat2& tensor);
 
-double IVW_MODULE_TENSORVISBASE_API trace(const dmat3 &tensor);
+double IVW_MODULE_TENSORVISBASE_API trace(const dmat3& tensor);
 
-double IVW_MODULE_TENSORVISBASE_API calculateI1(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateI2(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateI3(const dmat3 &tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateI1(const dmat3& tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateI2(const dmat3& tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateI3(const dmat3& tensor);
 
-double IVW_MODULE_TENSORVISBASE_API calculateJ1(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateJ2(const dmat3 &tensor);
-double IVW_MODULE_TENSORVISBASE_API calculateJ3(const dmat3 &tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateJ1(const dmat3& tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateJ2(const dmat3& tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateJ3(const dmat3& tensor);
 
-double IVW_MODULE_TENSORVISBASE_API calculateLodeAngle(const dmat3 &tensor);
+double IVW_MODULE_TENSORVISBASE_API calculateLodeAngle(const dmat3& tensor);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API stressDeviatorTensor(const dmat3 &tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API stressDeviatorTensor(const dmat3& tensor);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API meanNormalStressTensor(const dmat3 &tensor);
-dmat3 IVW_MODULE_TENSORVISBASE_API meanHydrostaticStressTensor(const dmat3 &tensor);
-dmat3 IVW_MODULE_TENSORVISBASE_API volumetricStressTensor(const dmat3 &tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API meanNormalStressTensor(const dmat3& tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API meanHydrostaticStressTensor(const dmat3& tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API volumetricStressTensor(const dmat3& tensor);
 
 std::array<std::pair<double, dvec3>, 3> IVW_MODULE_TENSORVISBASE_API
-calculateEigenValuesAndEigenVectors(const dmat3 &tensor);
+calculateEigenValuesAndEigenVectors(const dmat3& tensor);
 
-std::array<double, 3> IVW_MODULE_TENSORVISBASE_API calculateEigenValues(const dmat3 &tensor);
+std::array<double, 3> IVW_MODULE_TENSORVISBASE_API calculateEigenValues(const dmat3& tensor);
 
-dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3 &tensor);
+dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3& tensor);
 
 static const std::string lamda_str{u8"λ"};
 

@@ -77,8 +77,8 @@ private:
     class ArrayInformationProperty : public CompositeProperty {
     public:
         ArrayInformationProperty() = delete;
-        ArrayInformationProperty(const std::string &arrayName, const std::string &identifier,
-                                 const std::string &dataType, const std::string &numberOfComponents)
+        ArrayInformationProperty(const std::string& arrayName, const std::string& identifier,
+                                 const std::string& dataType, const std::string& numberOfComponents)
             : CompositeProperty(identifier, arrayName)
             , dataType_(identifier + "dataType", "Data type", dataType)
             , numberOfComponents_(identifier + "numberOfComponents", "Components",
@@ -89,8 +89,8 @@ private:
             numberOfComponents_.setReadOnly(true);
         }
 
-        const std::string &getDataType() const { return dataType_.get(); }
-        const std::string &getNumberOfComponents() const { return numberOfComponents_.get(); }
+        const std::string& getDataType() const { return dataType_.get(); }
+        const std::string& getNumberOfComponents() const { return numberOfComponents_.get(); }
 
     private:
         StringProperty dataType_;

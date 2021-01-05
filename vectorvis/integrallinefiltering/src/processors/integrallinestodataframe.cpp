@@ -57,7 +57,7 @@ IntegralLinesToDataFrame::MetaDataSettings::MetaDataSettings(std::string identif
 }
 
 IntegralLinesToDataFrame::MetaDataSettings::MetaDataSettings(
-    const IntegralLinesToDataFrame::MetaDataSettings &that)
+    const IntegralLinesToDataFrame::MetaDataSettings& that)
     : BoolCompositeProperty(that)
     , dataType_{that.dataType_}
     , useMagnitude_{that.useMagnitude_}
@@ -82,7 +82,7 @@ IntegralLinesToDataFrame::MetaDataSettings::MetaDataSettings(
     addProperty(percentiles_);
 }
 
-void IntegralLinesToDataFrame::MetaDataSettings::updateDataFormat(const DataFormatBase *df) {
+void IntegralLinesToDataFrame::MetaDataSettings::updateDataFormat(const DataFormatBase* df) {
     const auto c = df->getComponents();
     dataType_.set(df->getString());
     useMagnitude_.setVisible(c > 1);
@@ -93,7 +93,7 @@ void IntegralLinesToDataFrame::MetaDataSettings::updateDataFormat(const DataForm
 }
 
 void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
-    std::vector<MetricCalcFunction> &funcs, const BufferRAM *ram, DataFrame &dataFrame) {
+    std::vector<MetricCalcFunction>& funcs, const BufferRAM* ram, DataFrame& dataFrame) {
 
     if (!isChecked()) {
         return;
@@ -127,7 +127,7 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
         ram->dispatch<void, dispatching::filter::Scalars>([=, &funcs, df = &dataFrame](auto ramT) {
             using T = typename util::PrecisionValueType<decltype(ramT)>;
             createFunction<T>(funcs, *df, percentiles, name,
-                              [=](const T &v) -> float { return static_cast<float>(v); });
+                              [=](const T& v) -> float { return static_cast<float>(v); });
         });
 
     } else {  // vectors
@@ -135,7 +135,7 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
                                                                df = &dataFrame](auto ramT) {
             using T = typename util::PrecisionValueType<decltype(ramT)>;
             if (useMagnitude_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "", [c](const T &v) -> float {
+                createFunction<T>(funcs, *df, percentiles, name + "", [c](const T& v) -> float {
                     float l = 0;
                     for (size_t i = 0; i < c; i++) {
                         l += static_cast<float>(util::glmcomp(v, i) * util::glmcomp(v, i));
@@ -144,22 +144,22 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
                 });
             }
             if (x_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-x", [](const T &v) -> float {
+                createFunction<T>(funcs, *df, percentiles, name + "-x", [](const T& v) -> float {
                     return static_cast<float>(util::glmcomp(v, 0));
                 });
             }
             if (y_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-y", [](const T &v) -> float {
+                createFunction<T>(funcs, *df, percentiles, name + "-y", [](const T& v) -> float {
                     return static_cast<float>(util::glmcomp(v, 1));
                 });
             }
             if (z_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-w", [](const T &v) -> float {
+                createFunction<T>(funcs, *df, percentiles, name + "-w", [](const T& v) -> float {
                     return static_cast<float>(util::glmcomp(v, 2));
                 });
             }
             if (w_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-z", [](const T &v) -> float {
+                createFunction<T>(funcs, *df, percentiles, name + "-z", [](const T& v) -> float {
                     return static_cast<float>(util::glmcomp(v, 3));
                 });
             }
@@ -205,11 +205,11 @@ IntegralLinesToDataFrame::IntegralLinesToDataFrame()
     lines_.onChange([this]() {
         if (auto lines = lines_.getData()) {
             if (lines->size() > 0) {
-                for (const auto &p : metaDataSettings_.getPropertiesByType<MetaDataSettings>()) {
+                for (const auto& p : metaDataSettings_.getPropertiesByType<MetaDataSettings>()) {
                     p->setVisible(false);
                 }
 
-                for (const auto &keyBuf : lines->front().getMetaDataBuffers()) {
+                for (const auto& keyBuf : lines->front().getMetaDataBuffers()) {
                     auto prop = geMetaDataSettings(keyBuf.first);
                     prop->setVisible(true);
                     prop->updateDataFormat(keyBuf.second->getDataFormat());
@@ -221,7 +221,7 @@ IntegralLinesToDataFrame::IntegralLinesToDataFrame()
 
 namespace detail {
 template <typename T>
-std::vector<T> &createColumn(DataFrame &df, std::string name) {
+std::vector<T>& createColumn(DataFrame& df, std::string name) {
     return df.addColumn<T>(name)
         ->getTypedBuffer()
         ->getEditableRAMRepresentation()
@@ -236,44 +236,44 @@ void IntegralLinesToDataFrame::process() {
 
     if (lines->size() > 1) {
 
-        const auto &firstLine = lines->front();
+        const auto& firstLine = lines->front();
 
-        std::vector<std::function<void(const IntegralLine &line)>> funcs;
+        std::vector<std::function<void(const IntegralLine& line)>> funcs;
 
         if (includeLineID_.get()) {
-            auto &ids = detail::createColumn<glm::uint32>(*df, "Line ID");
-            funcs.push_back([&ids](const IntegralLine &line) {
+            auto& ids = detail::createColumn<glm::uint32>(*df, "Line ID");
+            funcs.push_back([&ids](const IntegralLine& line) {
                 ids.emplace_back((glm::uint32)line.getIndex());
             });
         }
 
         if (includeNumberOfPoints_.get()) {
-            auto &numPoints = detail::createColumn<glm::uint32>(*df, "#Points");
-            funcs.push_back([&numPoints](const IntegralLine &line) {
+            auto& numPoints = detail::createColumn<glm::uint32>(*df, "#Points");
+            funcs.push_back([&numPoints](const IntegralLine& line) {
                 numPoints.emplace_back(static_cast<uint32_t>(line.getPositions().size()));
             });
         }
 
         if (includeLineLength_.get()) {
-            auto &lengths = detail::createColumn<float>(*df, "Length");
-            funcs.push_back([&lengths](const IntegralLine &line) {
+            auto& lengths = detail::createColumn<float>(*df, "Length");
+            funcs.push_back([&lengths](const IntegralLine& line) {
                 lengths.push_back(static_cast<float>(line.getLength()));
             });
         }
         if (includeTortuosity_.get()) {
-            auto &tortuosities = detail::createColumn<float>(*df, "Tortuosity");
-            funcs.push_back([&tortuosities](const IntegralLine &line) {
+            auto& tortuosities = detail::createColumn<float>(*df, "Tortuosity");
+            funcs.push_back([&tortuosities](const IntegralLine& line) {
                 double v = glm::length(line.getPositions().front() - line.getPositions().back());
                 tortuosities.emplace_back(static_cast<float>(line.getLength() / v));
             });
         }
 
         if (firstLine.hasMetaData("timestamp")) {
-            auto &startTimes = detail::createColumn<float>(*df, "StartTimes");
-            auto &endTimes = detail::createColumn<float>(*df, "EndTimes");
-            auto &durations = detail::createColumn<float>(*df, "Durations");
+            auto& startTimes = detail::createColumn<float>(*df, "StartTimes");
+            auto& endTimes = detail::createColumn<float>(*df, "EndTimes");
+            auto& durations = detail::createColumn<float>(*df, "Durations");
 
-            funcs.push_back([&startTimes, &endTimes, &durations](const IntegralLine &line) {
+            funcs.push_back([&startTimes, &endTimes, &durations](const IntegralLine& line) {
                 line.getMetaDataBuffer("timestamp")
                     ->getRepresentation<BufferRAM>()
                     ->dispatch<void, dispatching::filter::Scalars>(
@@ -292,7 +292,7 @@ void IntegralLinesToDataFrame::process() {
             auto bwdTarminationReason = df->addCategoricalColumn("Termination Reason (bwd)");
 
             funcs.push_back(
-                [fwd = fwdTarminationReason, bwd = bwdTarminationReason](const IntegralLine &line) {
+                [fwd = fwdTarminationReason, bwd = bwdTarminationReason](const IntegralLine& line) {
                     fwd->add(inviwo::toString(line.getForwardTerminationReason()));
                     bwd->add(inviwo::toString(line.getBackwardTerminationReason()));
                 });
@@ -300,8 +300,8 @@ void IntegralLinesToDataFrame::process() {
 
         if (includeEntropy_.get()) {
             if (firstLine.hasMetaData("velocity")) {
-                auto &entropies = detail::createColumn<float>(*df, "Entropy");
-                funcs.push_back([&](const IntegralLine &line) {
+                auto& entropies = detail::createColumn<float>(*df, "Entropy");
+                funcs.push_back([&](const IntegralLine& line) {
                     entropies.push_back(static_cast<float>(entropy::shannonEntropyDirectional(
                         line.getMetaData<dvec3>("velocity"), 33)));
                 });
@@ -309,11 +309,11 @@ void IntegralLinesToDataFrame::process() {
         }
 
         if (includeStartPositions_.get()) {
-            auto &startXs = detail::createColumn<float>(*df, "StartX");
-            auto &startYs = detail::createColumn<float>(*df, "StartY");
-            auto &startZs = detail::createColumn<float>(*df, "StartZ");
-            funcs.push_back([&](const IntegralLine &line) {
-                const auto &s = line.getPositions().front();
+            auto& startXs = detail::createColumn<float>(*df, "StartX");
+            auto& startYs = detail::createColumn<float>(*df, "StartY");
+            auto& startZs = detail::createColumn<float>(*df, "StartZ");
+            funcs.push_back([&](const IntegralLine& line) {
+                const auto& s = line.getPositions().front();
                 startXs.push_back((float)s.x);
                 startYs.push_back((float)s.y);
                 startZs.push_back((float)s.z);
@@ -321,33 +321,33 @@ void IntegralLinesToDataFrame::process() {
         }
 
         if (includeEndPositions_.get()) {
-            auto &endXs = detail::createColumn<float>(*df, "EndX");
-            auto &endYs = detail::createColumn<float>(*df, "EndY");
-            auto &endZs = detail::createColumn<float>(*df, "EndZ");
-            funcs.push_back([&](const IntegralLine &line) {
-                const auto &e = line.getPositions().back();
+            auto& endXs = detail::createColumn<float>(*df, "EndX");
+            auto& endYs = detail::createColumn<float>(*df, "EndY");
+            auto& endZs = detail::createColumn<float>(*df, "EndZ");
+            funcs.push_back([&](const IntegralLine& line) {
+                const auto& e = line.getPositions().back();
                 endXs.push_back((float)e.x);
                 endYs.push_back((float)e.y);
                 endZs.push_back((float)e.z);
             });
         }
 
-        for (const auto &keyBuf : firstLine.getMetaDataBuffers()) {
+        for (const auto& keyBuf : firstLine.getMetaDataBuffers()) {
             auto prop = geMetaDataSettings(keyBuf.first);
             prop->initFunctions(funcs, keyBuf.second->getRepresentation<BufferRAM>(), *df);
         }
 
-        auto &idBuf = df->getIndexColumn()
+        auto& idBuf = df->getIndexColumn()
                           ->getTypedBuffer()
                           ->getEditableRAMRepresentation()
                           ->getDataContainer();
         idBuf.clear();
-        for (const auto &line : *lines) {
+        for (const auto& line : *lines) {
             if (line.getPositions().size() < 2) {
                 continue;
             }
             idBuf.push_back(static_cast<uint32_t>(line.getIndex()));
-            for (auto &fun : funcs) {
+            for (auto& fun : funcs) {
                 fun(line);
             }
         }
@@ -356,12 +356,12 @@ void IntegralLinesToDataFrame::process() {
     dataframe_.setData(df);
 }
 
-IntegralLinesToDataFrame::MetaDataSettings *IntegralLinesToDataFrame::geMetaDataSettings(
+IntegralLinesToDataFrame::MetaDataSettings* IntegralLinesToDataFrame::geMetaDataSettings(
     std::string key) {
     auto id = util::stripIdentifier(toLower(key));
     auto p = metaDataSettings_.getPropertyByIdentifier(id);
     if (p) {
-        if (auto mdp = dynamic_cast<MetaDataSettings *>(p)) {
+        if (auto mdp = dynamic_cast<MetaDataSettings*>(p)) {
             return mdp;
         }
         throw inviwo::Exception("Not a MetaDataSettings", IvwContext);

@@ -64,7 +64,7 @@ TensorField2DToVTK::TensorField2DToVTK()
 void TensorField2DToVTK::process() {
     const auto tensorField = tensorFieldInport_.getData();
     const auto dimensions = ivec3{tensorField->getDimensions<int>(), 1};
-    const auto &tensors = tensorField->tensors();
+    const auto& tensors = tensorField->tensors();
 
     auto structuredGrid = vtkSmartPointer<vtkStructuredGrid>::New();
     auto points = vtkSmartPointer<vtkPoints>::New();

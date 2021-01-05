@@ -95,7 +95,7 @@ void ComputeShaderBufferExample::process() {
     mesh->addBuffer(BufferType::ColorAttrib, bufCol);
 
     auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
-    auto &vec = ib->getDataContainer();
+    auto& vec = ib->getDataContainer();
     vec.resize(numPoints_.get());
     std::iota(vec.begin(), vec.end(), 0);
 

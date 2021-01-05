@@ -65,7 +65,7 @@ private:
 
     void draw(bool picking);
 
-    void onItemPicked(PickingEvent *pe);
+    void onItemPicked(PickingEvent* pe);
 };
 
 }  // namespace inviwo

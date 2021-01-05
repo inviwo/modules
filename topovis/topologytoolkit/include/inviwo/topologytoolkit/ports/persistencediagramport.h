@@ -50,7 +50,7 @@ namespace topology {
 // See PersistenceDiagram::computeCTPersistenceDiagram
 using PersistenceDiagramData =
     std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId, ttk::CriticalType,
-                           float, ttk::SimplexId> >;
+                           float, ttk::SimplexId>>;
 
 /**
  * \ingroup ports

@@ -72,10 +72,10 @@ public:
 private:
     void processDataFromFile();
 
-    int load(const std::string &inputPath, std::vector<float> &pointSet,
-             std::vector<long long int> &triangleSet);
-    int save(const std::vector<float> &pointSet, const std::vector<long long int> &triangleSet,
-             const std::string &outputPath);
+    int load(const std::string& inputPath, std::vector<float>& pointSet,
+             std::vector<long long int>& triangleSet);
+    int save(const std::vector<float>& pointSet, const std::vector<long long int>& triangleSet,
+             const std::string& outputPath);
 
     MeshInport inport_;
     MeshOutport outport_;

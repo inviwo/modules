@@ -96,7 +96,7 @@ void ContourTreeToDataFrame::process() {
         std::vector<int> valenceDown(numNodes);
         std::vector<PrimitiveType> scalars(numNodes);
 
-        const auto &scalarValues = buffer->getDataContainer();
+        const auto& scalarValues = buffer->getDataContainer();
 
         for (ttk::ftm::idNode i = 0; i < numNodes; ++i) {
             auto node = tree->getNode(i);

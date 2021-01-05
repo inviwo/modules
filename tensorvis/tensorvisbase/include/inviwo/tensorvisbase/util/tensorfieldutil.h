@@ -46,17 +46,17 @@ namespace inviwo {
 namespace tensorutil {
 
 IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(
-    std::shared_ptr<Image> &texture, std::shared_ptr<const TensorField2D> tensorField,
-    Shader &shader, TextureUnitContainer &textureUnits);
+    std::shared_ptr<Image>& texture, std::shared_ptr<const TensorField2D> tensorField,
+    Shader& shader, TextureUnitContainer& textureUnits);
 
-IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
-                                                                TensorField2DInport &inport,
-                                                                Shader &shader,
-                                                                TextureUnitContainer &textureUnits);
+IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
+                                                                TensorField2DInport& inport,
+                                                                Shader& shader,
+                                                                TextureUnitContainer& textureUnits);
 
 IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTextures(
-    std::shared_ptr<const TensorField3D> &tensorField, Shader *shader,
-    TextureUnitContainer &textureUnits);
+    std::shared_ptr<const TensorField3D>& tensorField, Shader* shader,
+    TextureUnitContainer& textureUnits);
 
 std::shared_ptr<TensorField2D> IVW_MODULE_TENSORVISBASE_API
 subsample2D(std::shared_ptr<const TensorField2D> tensorField, size2_t newDimensions,
@@ -93,8 +93,8 @@ std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorFie
 }
 
 template <typename C>
-void forEachVoxel(const TensorField3D &v, C callback) {
-    const auto &dims = v.getDimensions();
+void forEachVoxel(const TensorField3D& v, C callback) {
+    const auto& dims = v.getDimensions();
     size3_t pos;
     for (pos.z = 0; pos.z < dims.z; ++pos.z) {
         for (pos.y = 0; pos.y < dims.y; ++pos.y) {
@@ -106,8 +106,8 @@ void forEachVoxel(const TensorField3D &v, C callback) {
 }
 
 template <typename C>
-void forEachVoxelParallel(const TensorField3D &v, C callback, size_t jobs = 0) {
-    const auto &dims = v.getDimensions();
+void forEachVoxelParallel(const TensorField3D& v, C callback, size_t jobs = 0) {
+    const auto& dims = v.getDimensions();
 
     if (jobs == 0) {
         const auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
@@ -136,14 +136,14 @@ void forEachVoxelParallel(const TensorField3D &v, C callback, size_t jobs = 0) {
         }));
     }
 
-    for (const auto &e : futures) {
+    for (const auto& e : futures) {
         e.wait();
     }
 }
 
 template <typename C>
-void forEachFixel(const TensorField2D &v, C callback) {
-    const auto &dims = v.getDimensions();
+void forEachFixel(const TensorField2D& v, C callback) {
+    const auto& dims = v.getDimensions();
     size2_t pos;
     for (pos.y = 0; pos.y < dims.y; ++pos.y) {
         for (pos.x = 0; pos.x < dims.x; ++pos.x) {
@@ -153,8 +153,8 @@ void forEachFixel(const TensorField2D &v, C callback) {
 }
 
 template <typename C>
-void forEachFixelParallel(const TensorField2D &v, C callback, size_t jobs = 0) {
-    const auto &dims = v.getDimensions();
+void forEachFixelParallel(const TensorField2D& v, C callback, size_t jobs = 0) {
+    const auto& dims = v.getDimensions();
 
     if (jobs == 0) {
         const auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
@@ -181,7 +181,7 @@ void forEachFixelParallel(const TensorField2D &v, C callback, size_t jobs = 0) {
         }));
     }
 
-    for (const auto &e : futures) {
+    for (const auto& e : futures) {
         e.wait();
     }
 }

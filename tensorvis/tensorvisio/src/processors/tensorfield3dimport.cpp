@@ -105,7 +105,7 @@ void TensorField3DImport::initializeResources() {
 
     std::string versionStr;
     size_t size;
-    inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
     versionStr.resize(size);
     inFile.read(&versionStr[0], size);
 
@@ -114,7 +114,7 @@ void TensorField3DImport::initializeResources() {
         return;
     }
 
-    inFile.read(reinterpret_cast<char *>(&version), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&version), sizeof(size_t));
 
     if (version < TFB_CURRENT_VERSION) {
         LogError("Please update the tfb file.");
@@ -122,41 +122,41 @@ void TensorField3DImport::initializeResources() {
         return;
     }
 
-    inFile.read(reinterpret_cast<char *>(&dimensionality), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&rank), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&hasMetaData), sizeof(glm::uint8));
+    inFile.read(reinterpret_cast<char*>(&dimensionality), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&rank), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&hasMetaData), sizeof(glm::uint8));
 
     if (dimensionality != 3) {
         LogError("The loaded file is not a 3D tensor field. Try the 2D reader.");
         return;
     }
 
-    inFile.read(reinterpret_cast<char *>(&dimensions.x), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&dimensions.y), sizeof(size_t));
-    inFile.read(reinterpret_cast<char *>(&dimensions.z), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&dimensions.x), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&dimensions.y), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&dimensions.z), sizeof(size_t));
 
     // Read the extents
 
-    inFile.read(reinterpret_cast<char *>(&extents.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extents.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&extents.z), sizeof(double));
+    inFile.read(reinterpret_cast<char*>(&extents.x), sizeof(double));
+    inFile.read(reinterpret_cast<char*>(&extents.y), sizeof(double));
+    inFile.read(reinterpret_cast<char*>(&extents.z), sizeof(double));
 
-    inFile.read(reinterpret_cast<char *>(&offset.x), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&offset.y), sizeof(double));
-    inFile.read(reinterpret_cast<char *>(&offset.z), sizeof(double));
+    inFile.read(reinterpret_cast<char*>(&offset.x), sizeof(double));
+    inFile.read(reinterpret_cast<char*>(&offset.y), sizeof(double));
+    inFile.read(reinterpret_cast<char*>(&offset.z), sizeof(double));
 
     // Read the data maps
 
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[0].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[1].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenValues[2].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenValues[0].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenValues[1].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenValues[2].dataRange), sizeof(double) * 2);
     dataMapperEigenValues[0].valueRange = dataMapperEigenValues[0].dataRange;
     dataMapperEigenValues[1].valueRange = dataMapperEigenValues[1].dataRange;
     dataMapperEigenValues[2].valueRange = dataMapperEigenValues[2].dataRange;
 
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[0].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[1].dataRange), sizeof(double) * 2);
-    inFile.read(reinterpret_cast<char *>(&dataMapperEigenVectors[2].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenVectors[0].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenVectors[1].dataRange), sizeof(double) * 2);
+    inFile.read(reinterpret_cast<char*>(&dataMapperEigenVectors[2].dataRange), sizeof(double) * 2);
     dataMapperEigenVectors[0].valueRange = dataMapperEigenVectors[0].dataRange;
     dataMapperEigenVectors[1].valueRange = dataMapperEigenVectors[1].dataRange;
     dataMapperEigenVectors[2].valueRange = dataMapperEigenVectors[2].dataRange;
@@ -168,27 +168,27 @@ void TensorField3DImport::initializeResources() {
     data.resize(numValues);
     auto dataRaw = data.data();
 
-    inFile.read(reinterpret_cast<char *>(dataRaw), sizeof(double) * numValues);
+    inFile.read(reinterpret_cast<char*>(dataRaw), sizeof(double) * numValues);
 
     std::vector<dmat3> tensors;
     buildTensors(data, tensors);
 
     glm::uint8 hasMask;
-    inFile.read(reinterpret_cast<char *>(&hasMask), sizeof(glm::uint8));
+    inFile.read(reinterpret_cast<char*>(&hasMask), sizeof(glm::uint8));
 
     if (hasMask) {
         mask.resize(numElements);
         auto maskData = mask.data();
-        inFile.read(reinterpret_cast<char *>(maskData), sizeof(glm::uint8) * numElements);
+        inFile.read(reinterpret_cast<char*>(maskData), sizeof(glm::uint8) * numElements);
     }
 
     if (hasMetaData) {
         size_t numMetaDataEntries;
-        inFile.read(reinterpret_cast<char *>(&numMetaDataEntries), sizeof(size_t));
+        inFile.read(reinterpret_cast<char*>(&numMetaDataEntries), sizeof(size_t));
 
         for (size_t i = 0; i < numMetaDataEntries; i++) {
             uint64_t id;
-            inFile.read(reinterpret_cast<char *>(&id), sizeof(uint64_t));
+            inFile.read(reinterpret_cast<char*>(&id), sizeof(uint64_t));
 
             std::unique_ptr<MetaDataBase> ptr = nullptr;
 
@@ -290,7 +290,7 @@ void TensorField3DImport::initializeResources() {
     }
 
     std::string str;
-    inFile.read(reinterpret_cast<char *>(&size), sizeof(size_t));
+    inFile.read(reinterpret_cast<char*>(&size), sizeof(size_t));
     str.resize(size);
     inFile.read(&str[0], size);
 
@@ -338,8 +338,8 @@ void TensorField3DImport::process() {
     outport_.setData(tensorFieldOut_);
 }
 
-void TensorField3DImport::buildTensors(const std::vector<double> &data,
-                                       std::vector<dmat3> &tensors) const {
+void TensorField3DImport::buildTensors(const std::vector<double>& data,
+                                       std::vector<dmat3>& tensors) const {
     for (size_t i{0}; i < data.size() / 9; i++) {
         size_t offset = i * 9;
         tensors.emplace_back(vec3(data[offset + 0], data[offset + 3], data[offset + 6]),

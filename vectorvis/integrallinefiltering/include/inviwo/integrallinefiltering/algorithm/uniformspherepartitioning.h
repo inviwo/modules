@@ -163,7 +163,7 @@ public:
         collars_.emplace_back(glm::pi<T>(), 1);
 
         size_t count = 0;
-        for (auto &segment : collars_) {
+        for (auto& segment : collars_) {
             segment.startIndex = count;
             count += segment.patches_;
         }
@@ -172,10 +172,10 @@ public:
                    "Code failed to partion the sphere into the right number of segments");
     }
 
-    UniformSpherePartitioning(const UniformSpherePartitioning &) = default;
-    UniformSpherePartitioning(UniformSpherePartitioning &&) = default;
-    UniformSpherePartitioning &operator=(const UniformSpherePartitioning &) = default;
-    UniformSpherePartitioning &operator=(UniformSpherePartitioning &&) = default;
+    UniformSpherePartitioning(const UniformSpherePartitioning&) = default;
+    UniformSpherePartitioning(UniformSpherePartitioning&&) = default;
+    UniformSpherePartitioning& operator=(const UniformSpherePartitioning&) = default;
+    UniformSpherePartitioning& operator=(UniformSpherePartitioning&&) = default;
 
     /**
      * Returns the number of partitions.
@@ -185,7 +185,7 @@ public:
     /**
      * Return the index of the partition for the given direction.
      */
-    size_t getRegionForDirection(const glm::vec<3, T> &in_dir) const {
+    size_t getRegionForDirection(const glm::vec<3, T>& in_dir) const {
         const auto dir = glm::normalize(in_dir);
         const auto it = std::lower_bound(collars_.begin(), collars_.end(), dir.z);
         return it->index(dir.x, dir.y);

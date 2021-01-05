@@ -74,14 +74,14 @@ template <typename T>
 struct BufferConvertHelper {
     using type = Buffer<T>;
     using value_type = T;
-    static T convertValue(const T &v) { return v; }
+    static T convertValue(const T& v) { return v; }
 };
 
 template <typename T, unsigned D>
 struct BufferConvertHelper<OpenMesh::VectorT<T, D>> {
     using type = Buffer<Vector<D, T>>;
     using value_type = Vector<D, T>;
-    static glm::vec<D, T> convertValue(const OpenMesh::VectorT<T, D> &v) {
+    static glm::vec<D, T> convertValue(const OpenMesh::VectorT<T, D>& v) {
         glm::vec<D, T> res;
         for (unsigned i = 0; i < D; i++) {
             res[i] = v[i];
@@ -91,13 +91,13 @@ struct BufferConvertHelper<OpenMesh::VectorT<T, D>> {
 };
 
 template <typename T, typename OM_Mesh, typename Func>
-void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, BufferType bufferType,
+void convertOMtoInviwoBuffer(inviwo::Mesh& ivwMesh, const OM_Mesh& omMesh, BufferType bufferType,
                              Func callback) {
     using Helper = typename detail::BufferConvertHelper<T>;
     auto vertices = std::make_shared<typename Helper::type>();
-    auto &vec = vertices->getEditableRAMRepresentation()->getDataContainer();
+    auto& vec = vertices->getEditableRAMRepresentation()->getDataContainer();
     ivwMesh.addBuffer(bufferType, vertices);
-    for (const OpenMesh::VertexHandle &v_it : omMesh.vertices()) {
+    for (const OpenMesh::VertexHandle& v_it : omMesh.vertices()) {
         vec.push_back(Helper::convertValue(callback(v_it)));
     }
 };
@@ -108,7 +108,7 @@ void convertOMtoInviwoBuffer(inviwo::Mesh &ivwMesh, const OM_Mesh &omMesh, Buffe
  * Convert a mesh from OpenMesh- to Inviwo format
  */
 template <typename OM_Mesh>
-std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
+std::shared_ptr<Mesh> toInviwo(const OM_Mesh& mesh) {
     using namespace std::placeholders;
     auto newmesh = std::make_shared<Mesh>();
 
@@ -142,7 +142,7 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh &mesh) {
 
     auto indicesRam = std::make_shared<IndexBufferRAM>();
     auto indices = std::make_shared<IndexBuffer>(indicesRam);
-    auto &indVec = indicesRam->getDataContainer();
+    auto& indVec = indicesRam->getDataContainer();
     newmesh->addIndices(Mesh::MeshInfo(DrawType::Triangles, ConnectivityType::None), indices);
     size_t skipped = 0;
     for (auto f_it : mesh.faces()) {
@@ -168,7 +168,7 @@ enum class TransformCoordinates { NoTransform, DataToModel, DataToWorld };
  * Convert a mesh from Inviwo- to OpenMesh format
  */
 IVW_MODULE_OPENMESH_API TriMesh
-fromInviwo(const Mesh &inmesh, TransformCoordinates transform = TransformCoordinates::DataToWorld);
+fromInviwo(const Mesh& inmesh, TransformCoordinates transform = TransformCoordinates::DataToWorld);
 
 }  // namespace openmeshutil
 

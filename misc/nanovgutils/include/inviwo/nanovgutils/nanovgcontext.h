@@ -46,10 +46,10 @@ class IVW_MODULE_NANOVGUTILS_API NanoVGContext {
     explicit NanoVGContext();
 
 public:
-    NanoVGContext(const NanoVGContext &) = delete;
-    NanoVGContext(NanoVGContext &&) = delete;
-    NanoVGContext &operator=(const NanoVGContext &) = delete;
-    NanoVGContext &operator=(NanoVGContext &&) = delete;
+    NanoVGContext(const NanoVGContext&) = delete;
+    NanoVGContext(NanoVGContext&&) = delete;
+    NanoVGContext& operator=(const NanoVGContext&) = delete;
+    NanoVGContext& operator=(NanoVGContext&&) = delete;
     virtual ~NanoVGContext();
 
     enum class LineCapMode {
@@ -105,13 +105,13 @@ public:
     // For example, GLFW returns two dimension for an opened window: window size and
     // frame buffer size. In that case you would set windowWidth/Height to the window size
     // devicePixelRatio to: frameBufferWidth / windowWidth.
-    void activate(const size2_t &dimensions, float pixelRatio = 1.f);
+    void activate(const size2_t& dimensions, float pixelRatio = 1.f);
     // Ends drawing flushing remaining render state.
     void deactivate();
     // Cancels drawing the current frame.
     void cancel();
     // Returns the currently active NanoVG context
-    const NVGcontext *getContext() const;
+    const NVGcontext* getContext() const;
 
     /**********************************************************************************************
      * NanoVG states
@@ -146,48 +146,48 @@ public:
     // Can be one of Miter (default), Round, Bevel.
     void lineJoin(LineJoinMode mode = LineJoinMode::Miter);
     // Starts new sub-path with specified point as first point.
-    void moveTo(const vec2 &coordinates);
+    void moveTo(const vec2& coordinates);
     // Adds line segment from the last point in the path to the specified point.
-    void lineTo(const vec2 &coordinates);
+    void lineTo(const vec2& coordinates);
     // Creates new circle shaped sub-path.
-    void circle(const vec2 &coordinates, float radius);
+    void circle(const vec2& coordinates, float radius);
     // Creates new ellipse shaped sub-path.
-    void ellipse(const vec2 &coordinates, float radius1, float radius2);
+    void ellipse(const vec2& coordinates, float radius1, float radius2);
     // Creates new rectangle shaped sub-path.
-    void rect(const vec2 &coordinates, const vec2 &dim);
+    void rect(const vec2& coordinates, const vec2& dim);
     // Creates new rectangle with rounded corners sub-path.
-    void roundedRect(const vec2 &coordinates, const vec2 &dim, float radius);
+    void roundedRect(const vec2& coordinates, const vec2& dim, float radius);
     // Creates new circle arc shaped sub-path. The arc center is at cx,cy, the arc radius is r,
     // and the arc is drawn from angle a0 to a1, and swept in direction dir (NVG_CCW, or NVG_CW).
     // Angles are specified in radians.
-    void arc(const vec2 &center, float radius, float angle1, float angle2, int direction);
+    void arc(const vec2& center, float radius, float angle1, float angle2, int direction);
     // Adds an arc segment at the corner defined by the last path point, and two specified points.
-    void arcTo(const vec2 &point1, const vec2 &point2, float radius);
+    void arcTo(const vec2& point1, const vec2& point2, float radius);
     // Adds cubic bezier segment from last point in the path via two control points to the specified
     // point.
-    void bezierCurveTo(const vec2 &controlPoint1, const vec2 &controlPoint2, const vec2 &endPoint);
+    void bezierCurveTo(const vec2& controlPoint1, const vec2& controlPoint2, const vec2& endPoint);
     // Adds quadratic bezier segment from last point in the path via a control point to the
     // specified point.
-    void quadraticCurveTo(const vec2 &controlPoint, const vec2 &endPoint);
+    void quadraticCurveTo(const vec2& controlPoint, const vec2& endPoint);
 
     /**********************************************************************************************
      * NanoVG coloring
      **********************************************************************************************/
 
     // Sets current fill style to a solid color.
-    void fillColor(const vec4 &color);
+    void fillColor(const vec4& color);
     // Fills the current path with current fill style.
     void fill();
     // Sets current stroke style to a solid color.
-    void strokeColor(const vec4 &color);
+    void strokeColor(const vec4& color);
     // Sets the stroke width of the stroke style.
     void strokeWidth(float width);
     // Fills the current path with current stroke style.
     void stroke();
     // Sets current stroke style to a paint, which can be a one of the gradients or a pattern.
-    void strokePaint(const NVGpaint &paint);
+    void strokePaint(const NVGpaint& paint);
     // Sets current fill style to a paint, which can be a one of the gradients or a pattern.
-    void fillPaint(const NVGpaint &paint);
+    void fillPaint(const NVGpaint& paint);
 
     /**********************************************************************************************
      * NanoVG fonts and text
@@ -196,7 +196,7 @@ public:
     // Sets the font size of current text style.
     void fontSize(float size);
     // Sets the font face based on specified name of current text style.
-    void fontFace(const std::string &name);
+    void fontFace(const std::string& name);
     // Sets the text align of current text style.
     // Horizontal align
     // NVG_ALIGN_LEFT = 1 << 0,	// Default, align text horizontally to left.
@@ -214,26 +214,26 @@ public:
     void fontBlur(float blur);
     // Draws text string at specified location. If end is specified only the sub-string up to the
     // end is drawn.
-    void text(const ivec2 &coordinates, const std::string &text, size_t text_cutoff = 0);
+    void text(const ivec2& coordinates, const std::string& text, size_t text_cutoff = 0);
     // Draws multi-line text string at specified location wrapped at the specified width. If end is
     // specified only the sub-string up to the end is drawn. White space is stripped at the
     // beginning of the rows, the text is split at word boundaries or when new-line characters are
     // encountered. Words longer than the max width are slit at nearest character (i.e. no
     // hyphenation).
-    void textBox(const ivec2 &coordinates, float textBoxWidth, const std::string &text,
+    void textBox(const ivec2& coordinates, float textBoxWidth, const std::string& text,
                  size_t text_cutoff = 0);
     // Creates font by loading it from the disk from specified file name.
     // Returns handle to the font.
-    int createFont(const std::string &name, const std::string &filename);
+    int createFont(const std::string& name, const std::string& filename);
     // Measures the specified text string. Parameter bounds should be a pointer to float[4],
     // if the bounding box of the text should be returned. The bounds value are [xmin,ymin,
     // xmax,ymax] Returns the horizontal advance of the measured text (i.e. where the next character
     // should drawn). Measured values are returned in local coordinate space.
-    vec4 textBounds(const ivec2 &position, const std::string &string);
+    vec4 textBounds(const ivec2& position, const std::string& string);
     // Measures the specified multi-text string. Parameter bounds should be a pointer to float[4],
     // if the bounding box of the text should be returned. The bounds value are [xmin,ymin,
     // xmax,ymax] Measured values are returned in local coordinate space.
-    vec4 textBoxBounds(const ivec2 &position, float textBoxWidth, const std::string &text);
+    vec4 textBoxBounds(const ivec2& position, float textBoxWidth, const std::string& text);
     // Finds a loaded font of specified name, and returns handle to it, or -1 if the font is not
     // found.
 
@@ -249,7 +249,7 @@ public:
     // Returns line height of current font and font size
     float textMetricsLineHeight();
 
-    int findFont(const std::string &name);
+    int findFont(const std::string& name);
 
     /**********************************************************************************************
      * NanoVG gradients
@@ -259,8 +259,8 @@ public:
     // coordinates of the linear gradient, startColor specifies the start color and endColor the end
     // color. The gradient is transformed by the current transform when it is passed to
     // fillPaint() or strokePaint().
-    NVGpaint linearGradient(const vec2 &start, const vec2 &end, const vec4 &startColor,
-                            const vec4 &endColor);
+    NVGpaint linearGradient(const vec2& start, const vec2& end, const vec4& startColor,
+                            const vec4& endColor);
 
     // Creates and returns a box gradient. Box gradient is a feathered rounded rectangle, it is
     // useful for rendering drop shadows or highlights for boxes. Parameter origin defines the
@@ -269,15 +269,15 @@ public:
     // Parameter icol specifies the inner color and ocol the outer color of the gradient. The
     // gradient is transformed by the current transform when it is passed to fillPaint() or
     // strokePaint().
-    NVGpaint boxGradient(const vec2 &origin, const vec2 &dimensions, float r, float f,
-                         const vec4 &startColor, const vec4 &endColor);
+    NVGpaint boxGradient(const vec2& origin, const vec2& dimensions, float r, float f,
+                         const vec4& startColor, const vec4& endColor);
 
     // Creates and returns a radial gradient. Parameter center specifies the center, innerRadius and
     // outerRadius specify the inner and outer radius of the gradient, startColor specifies the
     // start color and endColor the end color. The gradient is transformed by the current transform
     // when it is passed to fillPaint() or strokePaint().
-    NVGpaint radialGradient(const vec2 &center, float innerRadius, float outerRadius,
-                            const vec4 &startColor, const vec4 &endColor);
+    NVGpaint radialGradient(const vec2& center, float innerRadius, float outerRadius,
+                            const vec4& startColor, const vec4& endColor);
 
     /**********************************************************************************************
      * NanoVG transformations
@@ -305,7 +305,7 @@ public:
     void skewY(float ky);
 
 private:
-    NVGcontext *activeNanoVGContext_;
+    NVGcontext* activeNanoVGContext_;
 
 };  // NVG
 

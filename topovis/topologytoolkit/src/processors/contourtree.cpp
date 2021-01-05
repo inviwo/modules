@@ -104,7 +104,7 @@ void ContourTree::process() {
         auto tree = std::make_shared<topology::ContourTree>();
 
         tree->setThreadNumber(threadCount);
-        tree->setupTriangulation(const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
+        tree->setupTriangulation(const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
         // tree->setDebugLevel(0);
         tree->setVertexScalars(buffer->getDataContainer().data());
         tree->setVertexSoSoffsets(offsets.data());

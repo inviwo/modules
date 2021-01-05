@@ -81,7 +81,7 @@ private:
     EventProperty hover_;
     DoubleMat2Property tensor_;
 
-    void hoverAction(Event *e);
+    void hoverAction(Event* e);
 };
 
 }  // namespace inviwo

@@ -77,7 +77,7 @@ namespace inviwo {
  */
 class IVW_MODULE_INTEGRALLINEFILTERING_API IntegralLinesToDataFrame : public Processor {
 public:
-    using MetricCalcFunction = std::function<void(const IntegralLine &line)>;
+    using MetricCalcFunction = std::function<void(const IntegralLine& line)>;
     class MetaDataSettings : public BoolCompositeProperty {
     public:
         virtual std::string getClassIdentifier() const override { return classIdentifier; }
@@ -85,11 +85,11 @@ public:
         static const std::string classIdentifier;
 
         MetaDataSettings(std::string identifier, std::string displayName);
-        MetaDataSettings(const MetaDataSettings &that);
+        MetaDataSettings(const MetaDataSettings& that);
 
-        virtual MetaDataSettings *clone() const override { return new MetaDataSettings(*this); }
+        virtual MetaDataSettings* clone() const override { return new MetaDataSettings(*this); }
 
-        void updateDataFormat(const DataFormatBase *df);
+        void updateDataFormat(const DataFormatBase* df);
 
         StringProperty dataType_{"dataType", "Data Type"};
 
@@ -106,14 +106,14 @@ public:
         StringProperty percentiles_{"percentiles",
                                     "Percentiles (space separated, float [0-1] or ints (0-100) )"};
 
-        void initFunctions(std::vector<MetricCalcFunction> &funcs, const BufferRAM *ram,
-                           DataFrame &dataFrame);
+        void initFunctions(std::vector<MetricCalcFunction>& funcs, const BufferRAM* ram,
+                           DataFrame& dataFrame);
 
         template <typename T, typename C>
-        void createFunction(std::vector<MetricCalcFunction> &funcs, DataFrame &dataFrame,
+        void createFunction(std::vector<MetricCalcFunction>& funcs, DataFrame& dataFrame,
                             std::vector<double> percentiles, std::string name, C toFloat) {
-            std::vector<float> *avg = nullptr;
-            std::vector<float> *sds = nullptr;
+            std::vector<float>* avg = nullptr;
+            std::vector<float>* sds = nullptr;
             if (avg_.get()) {
                 avg = &dataFrame.addColumn<float>(name + u8" μ")
                            ->getTypedBuffer()
@@ -126,7 +126,7 @@ public:
                            ->getEditableRAMRepresentation()
                            ->getDataContainer();
             }
-            std::vector<std::vector<float> *> percentilesColumns;
+            std::vector<std::vector<float>*> percentilesColumns;
             for (auto p : percentiles) {
                 percentilesColumns.push_back(
                     &dataFrame.addColumn<float>(name + " (p:" + std::to_string(p) + ")")
@@ -134,11 +134,11 @@ public:
                          ->getEditableRAMRepresentation()
                          ->getDataContainer());
             }
-            funcs.push_back([=](const IntegralLine &line) {
-                auto &vec = line.getMetaData<T>(Property::getDisplayName());
+            funcs.push_back([=](const IntegralLine& line) {
+                auto& vec = line.getMetaData<T>(Property::getDisplayName());
                 std::vector<float> values;
                 std::transform(vec.begin() + 1, vec.end() - 1, std::back_inserter(values),
-                               [&](const auto &v) {
+                               [&](const auto& v) {
                                    if (log_.get()) {
                                        return std::log(1 + toFloat(v));
                                    } else {
@@ -155,7 +155,7 @@ public:
                     if (sds) {
                         float stdev = std::accumulate(
                             values.begin(), values.end(), 0.0f,
-                            [mean](float d, auto &v) { return d + (v - mean) * (v - mean); });
+                            [mean](float d, auto& v) { return d + (v - mean) * (v - mean); });
                         stdev = std::sqrt(stdev / (values.size() - 1));
                         sds->push_back(stdev);
                     }
@@ -180,7 +180,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    MetaDataSettings *geMetaDataSettings(std::string key);
+    MetaDataSettings* geMetaDataSettings(std::string key);
 
     IntegralLineSetInport lines_;
     DataFrameOutport dataframe_;

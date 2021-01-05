@@ -107,7 +107,7 @@ void VTKtoVolume::process() {
     }
 }
 
-void VTKtoVolume::deserialize(Deserializer &d) {
+void VTKtoVolume::deserialize(Deserializer& d) {
     isDirty_ = true;
     Processor::deserialize(d);
     dataArrays_.clear();
@@ -116,22 +116,22 @@ void VTKtoVolume::deserialize(Deserializer &d) {
     d.deserialize("selectedArrays", prevArraySelection_);
 }
 
-void VTKtoVolume::serialize(Serializer &s) const {
+void VTKtoVolume::serialize(Serializer& s) const {
     Processor::serialize(s);
     std::vector<std::string> arraySelection;
     auto boolProps = dataArrays_.getPropertiesByType<BoolProperty>();
-    for (auto *prop : boolProps) {
+    for (auto* prop : boolProps) {
         if (prop->get()) arraySelection.push_back(prop->getDisplayName());
     }
 
     s.serialize("selectedArrays", arraySelection);
 }
 
-void VTKtoVolume::VTKArrayList::addArray(const std::string &name, int numChannels, void *dataPtr) {
+void VTKtoVolume::VTKArrayList::addArray(const std::string& name, int numChannels, void* dataPtr) {
     auto boolProp = new BoolProperty(name, name + " (" + std::to_string(numChannels) + ')', false);
     addProperty(boolProp);
     numArrayComponents.push_back(numChannels);
-    ptrArrayData.push_back(reinterpret_cast<unsigned char *>(dataPtr));
+    ptrArrayData.push_back(reinterpret_cast<unsigned char*>(dataPtr));
 }
 
 void VTKtoVolume::VTKArrayList::clear() {
@@ -154,7 +154,7 @@ void VTKtoVolume::updateFormats() {
     }
 
     // Get dimensions. If none are given, it's not a rectilinear grid.
-    const VTKDataSet &vtkData = *inport_.getData();
+    const VTKDataSet& vtkData = *inport_.getData();
     std::optional<size3_t> dimensions = inport_.getData()->getDimensions();
     if (!dimensions) {
         LogWarn("Input vtk data set is not regular.");
@@ -178,7 +178,7 @@ void VTKtoVolume::updateFormats() {
             insertedValues.end())
             continue;
 
-        const DataFormatBase *format =
+        const DataFormatBase* format =
             vtkutil::getFormatFromVtkId(vtkTypeId, array->GetElementComponentSize() * 8);
         if (!format) continue;
 
@@ -206,7 +206,7 @@ void VTKtoVolume::updateArrays() {
         prevChannels = prevArraySelection_;
         prevArraySelection_.clear();
     } else {
-        for (auto *prop : dataArrays_.getPropertiesByType<BoolProperty>()) {
+        for (auto* prop : dataArrays_.getPropertiesByType<BoolProperty>()) {
             if (prop->get()) {
                 prevChannels.push_back(prop->getDisplayName());
             }
@@ -217,7 +217,7 @@ void VTKtoVolume::updateArrays() {
         isDirty_ = false;
         return;
     }
-    const VTKDataSet &vtkData = *inport_.getData();
+    const VTKDataSet& vtkData = *inport_.getData();
 
     auto selectedFormat = dataFormats_.getSelectedValue();
     auto cellData = vtkData->GetCellData();
@@ -233,7 +233,7 @@ void VTKtoVolume::updateArrays() {
         std::string arrayName(array->GetName());
 
         int vtkTypeId = array->GetDataType();
-        const DataFormatBase *format =
+        const DataFormatBase* format =
             vtkutil::getFormatFromVtkId(vtkTypeId, array->GetElementComponentSize() * 8);
         if (format->getId() != selectedFormat) continue;
         int numComps = array->GetNumberOfComponents();
@@ -242,7 +242,7 @@ void VTKtoVolume::updateArrays() {
         dataArrays_.addArray(arrayName, numComps, array->GetVoidPointer(0));
 
         // Set previous arrays to true if existing.
-        BoolProperty *prop = dynamic_cast<BoolProperty *>(dataArrays_[dataArrays_.size() - 1]);
+        BoolProperty* prop = dynamic_cast<BoolProperty*>(dataArrays_[dataArrays_.size() - 1]);
         if (prop && std::find(prevChannels.begin(), prevChannels.end(), prop->getDisplayName()) !=
                         prevChannels.end()) {
             prop->set(true);
@@ -252,8 +252,8 @@ void VTKtoVolume::updateArrays() {
     bool containsAllFormerArrays =
         (numSelectedComps == prevChannels.size()) && prevChannels.size() > 0;
     if (!containsAllFormerArrays && numTotalComps <= 4) {
-        for (auto *prop : dataArrays_.getProperties()) {
-            if (BoolProperty *boolProp = dynamic_cast<BoolProperty *>(prop)) boolProp->set(true);
+        for (auto* prop : dataArrays_.getProperties()) {
+            if (BoolProperty* boolProp = dynamic_cast<BoolProperty*>(prop)) boolProp->set(true);
         }
     }
     dataArrays_.selectedFormat = dataFormats_.get();
@@ -271,12 +271,12 @@ void VTKtoVolume::updateAvailableArrays() {
     size_t numTotalComps = 0;
     auto properties = dataArrays_.getProperties();
     for (size_t p = 0; p < properties.size(); ++p) {
-        if (dynamic_cast<BoolProperty *>(properties[p])->get())
+        if (dynamic_cast<BoolProperty*>(properties[p])->get())
             numTotalComps += dataArrays_.numArrayComponents[p];
     }
 
     for (size_t p = 0; p < properties.size(); ++p) {
-        if (dynamic_cast<BoolProperty *>(properties[p])->get()) continue;
+        if (dynamic_cast<BoolProperty*>(properties[p])->get()) continue;
         bool tooMuch = numTotalComps + dataArrays_.numArrayComponents[p] > 4;
         properties[p]->setReadOnly(tooMuch);
     }
@@ -302,17 +302,17 @@ void VTKtoVolume::convertData() {
         for (size_t d = 0; d < 3; ++d) dimensions[d]--;
 
     struct RawArrayData {
-        unsigned char *ptr;
+        unsigned char* ptr;
         size_t byteSize;
     };
     std::vector<RawArrayData> arrayDataPointers;
 
     // How many components in total?
-    const DataFormatBase *format = DataFormatBase::get(dataFormats_.getSelectedValue());
+    const DataFormatBase* format = DataFormatBase::get(dataFormats_.getSelectedValue());
     size_t sizeElement = format->getSize();
     size_t numTotalComps = 0;
     for (size_t p = 0; p < dataArrays_.size(); ++p) {
-        BoolProperty *prop = dynamic_cast<BoolProperty *>(dataArrays_[p]);
+        BoolProperty* prop = dynamic_cast<BoolProperty*>(dataArrays_[p]);
         if (prop && prop->get()) {
             arrayDataPointers.push_back(
                 {dataArrays_.ptrArrayData[p], dataArrays_.numArrayComponents[p] * sizeElement});
@@ -324,7 +324,7 @@ void VTKtoVolume::convertData() {
         return;
     }
 
-    const DataFormatBase *multichannelFormat =
+    const DataFormatBase* multichannelFormat =
         DataFormatBase::get(format->getNumericType(), numTotalComps, format->getSize() * 8);
 
     // Extrapolate bounds from first cell.
@@ -345,7 +345,7 @@ void VTKtoVolume::convertData() {
         case VTK_UNIFORM_GRID:
         case VTK_STRUCTURED_POINTS:
             getPointFromIndex = [vtkDataPtr](int i, int j, int k, double pointOut[3]) {
-                vtkImageData *grid = vtkImageData::SafeDownCast(**vtkDataPtr);
+                vtkImageData* grid = vtkImageData::SafeDownCast(**vtkDataPtr);
                 int idxs[3] = {i, j, k};
                 grid->GetPoint(grid->ComputePointId(idxs), pointOut);
             };
@@ -379,12 +379,12 @@ void VTKtoVolume::convertData() {
 
     // Create RAM volume
     auto volRAM = createVolumeRAM(dimensions, multichannelFormat);
-    unsigned char *dataPtr = static_cast<unsigned char *>(volRAM->getData());
+    unsigned char* dataPtr = static_cast<unsigned char*>(volRAM->getData());
 
     // Copy the data from the other volumes to the new multichannel volume
     size_t numElements = dimensions.x * dimensions.y * dimensions.z;
     for (size_t e = 0; e < numElements; e++) {
-        for (auto &arrayData : arrayDataPointers) {
+        for (auto& arrayData : arrayDataPointers) {
             memcpy(dataPtr, arrayData.ptr, arrayData.byteSize);
             dataPtr += arrayData.byteSize;
             arrayData.ptr += arrayData.byteSize;

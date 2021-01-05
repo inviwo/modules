@@ -34,16 +34,16 @@
 
 namespace inviwo {
 namespace tensorutil {
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture,
-                                   std::shared_ptr<const TensorField2D> tensorField, Shader &shader,
-                                   TextureUnitContainer &textureUnits) {
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture,
+                                   std::shared_ptr<const TensorField2D> tensorField, Shader& shader,
+                                   TextureUnitContainer& textureUnits) {
     texture = tensorField->getImageRepresentation();
 
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2DInport &inport,
-                                   Shader &shader, TextureUnitContainer &textureUnits) {
+void bindTensorFieldAsColorTexture(std::shared_ptr<Image>& texture, TensorField2DInport& inport,
+                                   Shader& shader, TextureUnitContainer& textureUnits) {
     auto tensorField = inport.getData();
 
     texture = tensorField->getImageRepresentation();
@@ -51,8 +51,8 @@ void bindTensorFieldAsColorTexture(std::shared_ptr<Image> &texture, TensorField2
     utilgl::bindAndSetUniforms(shader, textureUnits, *texture, "tensorField", ImageType::ColorOnly);
 }
 
-void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D> &, Shader *,
-                                    TextureUnitContainer &) {
+void bindTensorFieldAsColorTextures(std::shared_ptr<const TensorField3D>&, Shader*,
+                                    TextureUnitContainer&) {
     // auto volumes = tensorField->getVolumeRepresentation();
 }
 

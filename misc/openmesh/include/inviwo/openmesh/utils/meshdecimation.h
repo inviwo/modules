@@ -81,7 +81,7 @@ struct VertexFraction {
  * @param faceFraction percentage of faces to keep
  */
 template <typename OMesh>
-void decimate(OMesh &mesh, VertexFraction vertexFraction, FaceFraction faceFraction) {
+void decimate(OMesh& mesh, VertexFraction vertexFraction, FaceFraction faceFraction) {
     using Decimater = typename OpenMesh::Decimater::DecimaterT<OMesh>;
     using HModQuadric = typename OpenMesh::Decimater::ModQuadricT<OMesh>::Handle;
 
@@ -104,7 +104,7 @@ void decimate(OMesh &mesh, VertexFraction vertexFraction, FaceFraction faceFract
  * @param faceFraction percentage of faces to keep
  */
 template <typename Mesh>
-void decimate(Mesh &mesh, FaceFraction faceFraction) {
+void decimate(Mesh& mesh, FaceFraction faceFraction) {
     return decimate(mesh, 0, faceFraction);
 }
 
@@ -116,7 +116,7 @@ void decimate(Mesh &mesh, FaceFraction faceFraction) {
  * @param vertexFraction percentage of vertices to keep
  */
 template <typename Mesh>
-void decimate(Mesh &mesh, VertexFraction vertexFraction) {
+void decimate(Mesh& mesh, VertexFraction vertexFraction) {
     return decimate(mesh, vertexFraction, 0);
 }
 

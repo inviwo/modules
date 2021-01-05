@@ -86,7 +86,7 @@ private:
 
     dvec3 dextents_;
 
-    void buildTensors(const std::vector<double> &data, std::vector<dmat3> &tensors) const;
+    void buildTensors(const std::vector<double>& data, std::vector<dmat3>& tensors) const;
 };
 
 }  // namespace inviwo
