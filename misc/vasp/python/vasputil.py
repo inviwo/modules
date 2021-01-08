@@ -129,8 +129,8 @@ def parseCubeFile(file):
         origin = bohrToAngstrom * origin
     offset = -0.5 * (basis[0] + basis[1] + basis[2])
     
-    uniqueAtoms = []
-    atomMap = {}
+    pos = []
+    atomNo = []
     for i in range(numAtoms):
         splitted = lines[6 + i].strip().split()
         atomID = int(splitted[0])
@@ -138,22 +138,8 @@ def parseCubeFile(file):
         if not unitsInAngstrom:
             atomPos = bohrToAngstrom * atomPos
         atomPos = atomPos - origin 
-        if atomID not in atomMap:
-            uniqueAtoms.append(atomID)
-            atomMap[atomID] = []
-        atomMap[atomID].append(atomPos)
-
-    elem =[]
-    nelem = []
-    for atomicNum in uniqueAtoms:
-        elem.append(atomdata.atomicSymbol(atomicNum))
-        nelem.append(len(atomMap[atomicNum]))
-    
-    pos = []
-    for atomNum in uniqueAtoms:
-        for atomPos in atomMap[atomNum]:
-            pos.append(atomPos)
-    pos = numpy.array(pos).astype(numpy.float32)
+        pos.append(atomPos)
+        atomNo.append(atomdata.atomicSymbol(atomID))
     
     chg = []
     for i in range(6 + numAtoms + extraLines, len(lines)):
@@ -177,12 +163,7 @@ def parseCubeFile(file):
     volume.basis = ivw.glm.mat3(basis)
     volume.offset = ivw.glm.vec3(offset)
 
-    elemtype = []
-    for i, n in enumerate(nelem):
-        for x in range(n):
-            elemtype.append(elem[i])
-
-    return (volume, pos, elem, nelem, elemtype)
+    return (volume, pos, atomNo)
 
 def createMesh(pos, elemtype, basis, offset, pm, margin):
     position = []
