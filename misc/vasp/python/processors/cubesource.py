@@ -66,17 +66,16 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.elemtype = vasputil.parseCubeFile(
-            self.cubeFilePath.value)
+        self.volume, self.atomPos, self.atomType = vasputil.parseCubeFile(self.cubeFilePath.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = vasputil.createMeshForCube(self.atomPos, self.elemtype,
+        self.mesh = vasputil.createMeshForCube(self.atomPos, self.atomType,
                                         self.volume.basis, self.volume.offset, self.pm)
 
-        self.dataframe = vasputil.createDataFrameForCube(self.atomPos, self.elemtype)
+        self.dataframe = vasputil.createDataFrameForCube(self.atomPos, self.atomType)
 
         print("Loaded Cube file: {}\nDims:  {}\nRange: {}".format(
             self.cubeFilePath.value, self.volume.dimensions, self.volume.dataMap.dataRange))

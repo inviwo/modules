@@ -130,7 +130,7 @@ def parseCubeFile(file):
     offset = -0.5 * (basis[0] + basis[1] + basis[2])
     
     pos = []
-    atomNo = []
+    atomType = []
     for i in range(numAtoms):
         splitted = lines[6 + i].strip().split()
         atomID = int(splitted[0])
@@ -139,7 +139,7 @@ def parseCubeFile(file):
             atomPos = bohrToAngstrom * atomPos
         atomPos = atomPos - origin 
         pos.append(atomPos)
-        atomNo.append(atomdata.atomicSymbol(atomID))
+        atomType.append(atomdata.atomicSymbol(atomID))
     
     chg = []
     for i in range(6 + numAtoms + extraLines, len(lines)):
@@ -163,7 +163,7 @@ def parseCubeFile(file):
     volume.basis = ivw.glm.mat3(basis)
     volume.offset = ivw.glm.vec3(offset)
 
-    return (volume, pos, atomNo)
+    return (volume, pos, atomType)
 
 def createMesh(pos, elemtype, basis, offset, pm, margin):
     position = []
