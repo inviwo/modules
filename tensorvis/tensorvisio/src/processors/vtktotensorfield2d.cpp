@@ -95,10 +95,9 @@ void VTKToTensorField2D::process() {
     // Check to see if we need to project the tensor
     if (tensors->GetNumberOfComponents() == 9) {
         // If so, find out onto which plane to project
-        CartesianCoordinateAxis axis =
-            dimensions.z == 1
-                ? CartesianCoordinateAxis::Z
-                : dimensions.y == 1 ? CartesianCoordinateAxis::Y : CartesianCoordinateAxis::X;
+        CartesianCoordinateAxis axis = dimensions.z == 1   ? CartesianCoordinateAxis::Z
+                                       : dimensions.y == 1 ? CartesianCoordinateAxis::Y
+                                                           : CartesianCoordinateAxis::X;
 
         std::vector<dmat3> tensorVector3D;
         tensorVector3D.resize(numberOfElements);

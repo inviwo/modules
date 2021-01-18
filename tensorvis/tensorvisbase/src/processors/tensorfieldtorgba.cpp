@@ -48,8 +48,9 @@ TensorFieldToRGBA::TensorFieldToRGBA()
     , inport_("inport")
     , outport_("outport", DataVec4Float32::get())
     , shader_("tensorfieldtorgba.frag")
-    , hover_("hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
-             MouseState::Move)
+    , hover_(
+          "hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
+          MouseState::Move)
     , tensor_("tensor", "Tensor") {
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 
