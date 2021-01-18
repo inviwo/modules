@@ -66,7 +66,7 @@ TensorGlyphRenderer::TensorGlyphRenderer()
     , picking_(this, 1, [&](PickingEvent* p) { handlePickingEvent(p); })
     , selectedIDProperty_("selectedID", "Selected ID", 0, 0, std::numeric_limits<size_t>::max(), 1,
                           InvalidationLevel::Valid)
-    , shader_("geometryrendering.vert", "tensorglyphpicking.frag", false)
+    , shader_("geometryrendering.vert", "tensorglyphpicking.frag", Shader::Build::No)
     , selectedID_(-1)
     , previouslySelectedID_(-1)
     , selectMode_("selectMode", "Select mode", true)
