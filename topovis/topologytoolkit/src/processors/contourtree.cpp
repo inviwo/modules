@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -104,7 +104,7 @@ void ContourTree::process() {
         auto tree = std::make_shared<topology::ContourTree>();
 
         tree->setThreadNumber(threadCount);
-        tree->setupTriangulation(const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
+        tree->setupTriangulation(const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
         // tree->setDebugLevel(0);
         tree->setVertexScalars(buffer->getDataContainer().data());
         tree->setVertexSoSoffsets(offsets.data());

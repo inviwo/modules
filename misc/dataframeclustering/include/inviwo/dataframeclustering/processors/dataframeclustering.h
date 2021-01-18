@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_DATAFRAMECLUSTERING_API DataFrameClustering : public Processor {
 public:
-    DataFrameClustering(InviwoApplication *app);
+    DataFrameClustering(InviwoApplication* app);
     virtual ~DataFrameClustering() = default;
 
     virtual void process() override;

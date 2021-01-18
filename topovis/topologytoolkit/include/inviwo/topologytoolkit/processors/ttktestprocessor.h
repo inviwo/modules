@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,10 +72,10 @@ public:
 private:
     void processDataFromFile();
 
-    int load(const std::string &inputPath, std::vector<float> &pointSet,
-             std::vector<long long int> &triangleSet);
-    int save(const std::vector<float> &pointSet, const std::vector<long long int> &triangleSet,
-             const std::string &outputPath);
+    int load(const std::string& inputPath, std::vector<float>& pointSet,
+             std::vector<long long int>& triangleSet);
+    int save(const std::vector<float>& pointSet, const std::vector<long long int>& triangleSet,
+             const std::string& outputPath);
 
     MeshInport inport_;
     MeshOutport outport_;

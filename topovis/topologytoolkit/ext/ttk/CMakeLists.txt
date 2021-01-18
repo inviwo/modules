@@ -1,15 +1,4 @@
-find_package(VTK QUIET)
-
-if (TARGET eigen)
-	get_target_property(EIGEN_SOURCE_DIR eigen SOURCE_DIR)
-	message("eigen source dir: ${EIGEN_SOURCE_DIR}")
-endif()
-
-if (VTK_FOUND)
-	include(${VTK_USE_FILE})
-else()
-	option(TTK_BUILD_VTK_WRAPPERS "Build the TTK VTK Wrappers" OFF)
-endif()
+option(TTK_BUILD_VTK_WRAPPERS "Build the TTK VTK Wrappers" OFF)
 option(TTK_BUILD_PARAVIEW_PLUGINS "Build the TTK ParaView Plugins" OFF)
 option(TTK_BUILD_STANDALONE_APPS "Build the TTK Standalone Applications" OFF)
 option(TTK_ENABLE_CPU_OPTIMIZATION "Enable native CPU optimizations" OFF)

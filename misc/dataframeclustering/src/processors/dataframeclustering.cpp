@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ const ProcessorInfo DataFrameClustering::processorInfo_{
 };
 const ProcessorInfo DataFrameClustering::getProcessorInfo() const { return processorInfo_; }
 
-DataFrameClustering::DataFrameClustering(InviwoApplication *app)
+DataFrameClustering::DataFrameClustering(InviwoApplication* app)
     : Processor()
     , dataFrame_("dataFrame")
     , newDataFrame_("newDataFrame")
@@ -99,13 +99,13 @@ DataFrameClustering::DataFrameClustering(InviwoApplication *app)
                   numberOfFoundClusters_);
 
     kmeans_.visibilityDependsOn(
-        method_, [](const auto &p) { return p.getSelectedIdentifier() == "kmeans"; });
+        method_, [](const auto& p) { return p.getSelectedIdentifier() == "kmeans"; });
     dbscan_.visibilityDependsOn(
-        method_, [](const auto &p) { return p.getSelectedIdentifier() == "dbscan"; });
+        method_, [](const auto& p) { return p.getSelectedIdentifier() == "dbscan"; });
     agglomerative_.visibilityDependsOn(
-        method_, [](const auto &p) { return p.getSelectedIdentifier() == "agglo"; });
+        method_, [](const auto& p) { return p.getSelectedIdentifier() == "agglo"; });
     spectral_.visibilityDependsOn(
-        method_, [](const auto &p) { return p.getSelectedIdentifier() == "spectral"; });
+        method_, [](const auto& p) { return p.getSelectedIdentifier() == "spectral"; });
 
     method_.set("agglo");
 
@@ -116,7 +116,7 @@ DataFrameClustering::DataFrameClustering(InviwoApplication *app)
 
 void DataFrameClustering::process() {
     pybind11::list cols;
-    for (auto &p : columns_.getPropertiesByType<BoolProperty>()) {
+    for (auto& p : columns_.getPropertiesByType<BoolProperty>()) {
         if (p->getVisible() && p->get()) {
             cols.append(p->getDisplayName());
         }
@@ -147,15 +147,15 @@ void DataFrameClustering::process() {
 
 void DataFrameClustering::onDataFrameChange() {
     if (auto df = dataFrame_.getData()) {
-        std::unordered_set<Property *> oldProperties{columns_.getProperties().begin(),
-                                                     columns_.getProperties().end()};
+        std::unordered_set<Property*> oldProperties{columns_.getProperties().begin(),
+                                                    columns_.getProperties().end()};
 
         for (size_t i = 0; i < df->getNumberOfColumns(); i++) {
             auto header = df->getHeader(i);
             auto prop = [header, this]() {
                 auto id = util::stripIdentifier(toLower(header));
                 if (auto p = columns_.getPropertyByIdentifier(id)) {
-                    if (auto pp = dynamic_cast<BoolProperty *>(p)) {
+                    if (auto pp = dynamic_cast<BoolProperty*>(p)) {
                         return pp;
                     }
                     throw inviwo::Exception("Property not a BoolProperty", IVW_CONTEXT);
@@ -172,7 +172,7 @@ void DataFrameClustering::onDataFrameChange() {
             oldProperties.erase(prop);
         }
 
-        for (Property *prop : oldProperties) {
+        for (Property* prop : oldProperties) {
             columns_.removeProperty(prop);
         }
     }

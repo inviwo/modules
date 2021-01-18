@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2020 Inviwo Foundation
+ * Copyright (c) 2014-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -94,10 +94,10 @@ MevisVolumeReader::MevisVolumeReader()
     enableTiffLogging(LogVerbosity::Error);
 }
 
-MevisVolumeReader *MevisVolumeReader::clone() const { return new MevisVolumeReader(*this); }
+MevisVolumeReader* MevisVolumeReader::clone() const { return new MevisVolumeReader(*this); }
 
-std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string &filePath) {
-    auto formatErrorMsg = [](const auto &filename, const auto &msg) {
+std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string& filePath) {
+    auto formatErrorMsg = [](const auto& filename, const auto& msg) {
         return fmt::format("{} ('{}')", msg, filename);
     };
 
@@ -106,7 +106,7 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string &filePath)
             filePath, "could not locate associated tif and dcm files to read Mevis DICOM format"));
     }
 
-    TIFF *tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
+    TIFF* tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
     if (!tiffimage) {
         throw DataReaderException(formatErrorMsg(tif_file_, "invalid tif file"));
     }
@@ -165,8 +165,8 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string &filePath)
 
     // to prevent code duplication call our gdcm reader
     GdcmVolumeReader gdcmreader;
-    gdcm::Image &image = reader.GetImage();
-    gdcm::File &file = reader.GetFile();
+    gdcm::Image& image = reader.GetImage();
+    gdcm::File& file = reader.GetFile();
     std::shared_ptr<Volume> volume(gdcmreader.generateVolume(image, file));
 
     // TODO: check that everything else is also freed (reader instance that got cloned in
@@ -198,35 +198,35 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string &filePath)
 }
 
 MevisVolumeRAMLoader::MevisVolumeRAMLoader(std::string file, size3_t dimension,
-                                           const DataFormatBase *format)
+                                           const DataFormatBase* format)
     : tif_file_(file), dimension_(dimension), format_(format) {}
 
-MevisVolumeRAMLoader *MevisVolumeRAMLoader::clone() const {
+MevisVolumeRAMLoader* MevisVolumeRAMLoader::clone() const {
     return new MevisVolumeRAMLoader(*this);
 }
 
 std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation &) const {
+    const VolumeRepresentation&) const {
     return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
         format_->getId(), *this);
 }
 
 void MevisVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                                const VolumeRepresentation &) const {
+                                                const VolumeRepresentation&) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
     auto data = volumeDst->getData();
 
-    readDataInto(reinterpret_cast<void *>(data));
+    readDataInto(reinterpret_cast<void*>(data));
 }
 
-void MevisVolumeRAMLoader::readDataInto(void *destination) const {
+void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     // currently only packed, tiled volume data is supported
 
-    auto formatErrorMsg = [filename = tif_file_](const auto &msg) {
+    auto formatErrorMsg = [filename = tif_file_](const auto& msg) {
         return fmt::format("{} ('{}')", msg, filename);
     };
 
-    TIFF *tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
+    TIFF* tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
     if (!tiffimage) {
         throw DataReaderException(fmt::format("cannot open TIFF: \'{}\'", tif_file_));
     }
@@ -270,7 +270,7 @@ void MevisVolumeRAMLoader::readDataInto(void *destination) const {
         }
     }
 
-    unsigned char *vol = reinterpret_cast<unsigned char *>(destination);
+    unsigned char* vol = reinterpret_cast<unsigned char*>(destination);
     const size_t tilesz = TIFFTileSize(tiffimage);
     const size_t tilerowbytes = TIFFTileRowSize(tiffimage);
     const size_t bytespersample = format_->getSize();
@@ -286,7 +286,7 @@ void MevisVolumeRAMLoader::readDataInto(void *destination) const {
     IVW_ASSERT(tilerowbytes == tilesize.x * bytespersample,
                "tilerowbytes and tilesize.x * bytespersample differ");
 
-    unsigned char *tilebuf = static_cast<unsigned char *>(_TIFFmalloc(tilesz));
+    unsigned char* tilebuf = static_cast<unsigned char*>(_TIFFmalloc(tilesz));
     if (!tilebuf) {
         throw DataReaderException(formatErrorMsg("could not allocate tile buffer"));
     }
@@ -310,10 +310,10 @@ void MevisVolumeRAMLoader::readDataInto(void *destination) const {
 
                 // pointer & offset calculations
                 const size_t pv_off = z0 * dimension_.y * dimension_.x + y0 * dimension_.x + x0;
-                unsigned char *pv = vol + pv_off * bytespersample;
+                unsigned char* pv = vol + pv_off * bytespersample;
 
-                unsigned char *pb = tilebuf;
-                unsigned char *pv_slice_ptr = pv;
+                unsigned char* pb = tilebuf;
+                unsigned char* pv_slice_ptr = pv;
 
                 std::size_t zmin = std::min(tilesize.z, dimension_.z - z0);
                 std::size_t ymin = std::min(tilesize.y, dimension_.y - y0);
@@ -352,8 +352,8 @@ bool MevisVolumeReader::setFilenames(std::string filePath) {
     const std::string basePath = fileDirectory + "/" + filename + ".";
     const auto ext = toLower(filesystem::getFileExtension(filename));
 
-    auto checkForFile = [basePath](const auto &exts) -> std::string {
-        for (auto &e : exts) {
+    auto checkForFile = [basePath](const auto& exts) -> std::string {
+        for (auto& e : exts) {
             if (filesystem::fileExists(basePath + e)) {
                 return basePath + e;
             }

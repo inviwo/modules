@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,7 +81,7 @@ private:
     EventProperty hover_;
     DoubleMat2Property tensor_;
 
-    void hoverAction(Event *e);
+    void hoverAction(Event* e);
 };
 
 }  // namespace inviwo

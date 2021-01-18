@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,7 +68,7 @@ VTKDataSetInformation::VTKDataSetInformation()
 }
 
 void VTKDataSetInformation::process() {
-    const auto &dataSet = *inport_.getData();
+    const auto& dataSet = *inport_.getData();
 
     className_.set(std::string{dataSet->GetClassName()});
 
@@ -79,18 +79,18 @@ void VTKDataSetInformation::process() {
         NetworkLock lock;
 
         std::vector<std::string> identifiers{};
-        for (const auto &property : pointDataArrays_.getProperties()) {
+        for (const auto& property : pointDataArrays_.getProperties()) {
             identifiers.emplace_back(property->getIdentifier());
         }
-        for (const auto &identifier : identifiers) {
+        for (const auto& identifier : identifiers) {
             pointDataArrays_.removeProperty(identifier);
         }
 
         identifiers.clear();
-        for (const auto &property : cellDataArrays_.getProperties()) {
+        for (const auto& property : cellDataArrays_.getProperties()) {
             identifiers.emplace_back(property->getIdentifier());
         }
-        for (const auto &identifier : identifiers) {
+        for (const auto& identifier : identifiers) {
             cellDataArrays_.removeProperty(identifier);
         }
 

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -81,36 +81,36 @@ void TensorField2DExport::exportBinary() const {
 
     std::string versionStr("TFBVersion:");
     size_t size = versionStr.size();
-    outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
     outFile.write(&versionStr[0], size);
 
     size_t version = 2;
-    outFile.write(reinterpret_cast<const char *>(&version), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&version), sizeof(size_t));
 
     size_t dimensionality = tensorField->dimensionality();
-    outFile.write(reinterpret_cast<const char *>(&dimensionality), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&dimensionality), sizeof(size_t));
 
     size_t rank = tensorField->rank();
-    outFile.write(reinterpret_cast<const char *>(&rank), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&rank), sizeof(size_t));
 
     bool hasEigenInfo = includeEigenInfo_.get();
-    outFile.write(reinterpret_cast<const char *>(&hasEigenInfo), sizeof(bool));
+    outFile.write(reinterpret_cast<const char*>(&hasEigenInfo), sizeof(bool));
 
     auto dimensions = tensorField->getDimensions();
-    outFile.write(reinterpret_cast<const char *>(&dimensions), sizeof(size_t) * 2);
+    outFile.write(reinterpret_cast<const char*>(&dimensions), sizeof(size_t) * 2);
 
     auto extents = tensorField->getExtents();
-    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char*>(&extents), sizeof(double) * 2);
 
-    const auto &data = tensorField->tensors();
+    const auto& data = tensorField->tensors();
 
-    for (const auto &val : data) {
+    for (const auto& val : data) {
         // Diagonal
-        outFile.write(reinterpret_cast<const char *>(&val[0][0]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][1]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[0][0]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[1][1]), sizeof(double));
 
         // Symmetric part
-        outFile.write(reinterpret_cast<const char *>(&val[1][0]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[1][0]), sizeof(double));
     }
 
     if (includeEigenInfo_.get()) {
@@ -123,20 +123,20 @@ void TensorField2DExport::exportBinary() const {
 
         auto numItems = tensorField->getSize();
 
-        outFile.write(reinterpret_cast<const char *>(majorEigenValues), sizeof(double) * numItems);
+        outFile.write(reinterpret_cast<const char*>(majorEigenValues), sizeof(double) * numItems);
 
-        outFile.write(reinterpret_cast<const char *>(minorEigenValues), sizeof(double) * numItems);
+        outFile.write(reinterpret_cast<const char*>(minorEigenValues), sizeof(double) * numItems);
 
-        outFile.write(reinterpret_cast<const char *>(majorEigenVectors),
+        outFile.write(reinterpret_cast<const char*>(majorEigenVectors),
                       sizeof(double) * numItems * 2);
 
-        outFile.write(reinterpret_cast<const char *>(minorEigenVectors),
+        outFile.write(reinterpret_cast<const char*>(minorEigenVectors),
                       sizeof(double) * numItems * 2);
     }
 
     std::string str("EOFreached");
     size = str.size();
-    outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
     outFile.write(&str[0], size);
 
     outFile.close();

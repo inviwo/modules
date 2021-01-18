@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,30 +33,30 @@
 
 namespace inviwo {
 namespace tensorutil {
-vec4 tensor2DToDvec4(const dmat2 &tensor) {
+vec4 tensor2DToDvec4(const dmat2& tensor) {
     return vec4(tensor[0][0], tensor[1][0], tensor[1][1], 1.0);
 }
 
 /*
  * Returns the trace of the tensor
  */
-double trace(const dmat2 &tensor) { return tensor[0][0] + tensor[1][1]; }
+double trace(const dmat2& tensor) { return tensor[0][0] + tensor[1][1]; }
 
 /*
  * Returns the trace of the tensor
  */
-double trace(const dmat3 &tensor) { return tensor[0][0] + tensor[1][1] + tensor[2][2]; }
+double trace(const dmat3& tensor) { return tensor[0][0] + tensor[1][1] + tensor[2][2]; }
 /*
  * Returns the first invariant of the tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Principal_stresses_and_stress_invariants
  */
-double calculateI1(const dmat3 &tensor) { return trace(tensor); }
+double calculateI1(const dmat3& tensor) { return trace(tensor); }
 
 /*
  * Returns the second invariant of the tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Principal_stresses_and_stress_invariants
  */
-double calculateI2(const dmat3 &tensor) {
+double calculateI2(const dmat3& tensor) {
     return tensor[0][0] * tensor[1][1] + tensor[1][1] * tensor[2][2] + tensor[0][0] * tensor[2][2] -
            tensor[0][1] * tensor[0][1] - tensor[1][2] * tensor[1][2] - tensor[2][0] * tensor[2][0];
 }
@@ -65,7 +65,7 @@ double calculateI2(const dmat3 &tensor) {
  * Returns the third invariant of the tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Principal_stresses_and_stress_invariants
  */
-double calculateI3(const dmat3 &tensor) {
+double calculateI3(const dmat3& tensor) {
     return tensor[0][0] * tensor[1][1] * tensor[2][2] +
            2. * tensor[0][1] * tensor[1][2] * tensor[2][0] -
            tensor[0][1] * tensor[0][1] * tensor[2][2] - tensor[1][2] * tensor[1][2] * tensor[0][0] -
@@ -76,7 +76,7 @@ double calculateI3(const dmat3 &tensor) {
  * Calculates the first invariant of the stress deviator tensor
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
  */
-double calculateJ1(const dmat3 &) {
+double calculateJ1(const dmat3&) {
     throw Exception("not implemented");
     return 0.0;
 }
@@ -85,7 +85,7 @@ double calculateJ1(const dmat3 &) {
  * Calculates the first invariant of the stress deviator tensor
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
  */
-double calculateJ2(const dmat3 &tensor) {
+double calculateJ2(const dmat3& tensor) {
     const auto i1 = calculateI1(tensor);
     return (1. / 3.) * i1 * i1 - calculateI2(tensor);
 }
@@ -94,12 +94,12 @@ double calculateJ2(const dmat3 &tensor) {
  * Calculates the first invariant of the stress deviator tensor
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Invariants_of_the_stress_deviator_tensor
  */
-double calculateJ3(const dmat3 &tensor) {
+double calculateJ3(const dmat3& tensor) {
     const auto i1 = calculateI1(tensor);
     return (2. / 27.) * i1 * i1 * i1 - (1. / 3.) * i1 * calculateI2(tensor) + calculateI3(tensor);
 }
 
-double calculateLodeAngle(const dmat3 &tensor) {
+double calculateLodeAngle(const dmat3& tensor) {
     const auto a = (3. * std::sqrt(3.)) * .5;
     const auto b = calculateJ3(tensor) / std::pow(calculateJ2(tensor), 1.5);
     return (1. / 3.) * std::acos(a * b);
@@ -109,7 +109,7 @@ double calculateLodeAngle(const dmat3 &tensor) {
  * Calculates the stress deviator part of a tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Stress_deviator_tensor
  */
-dmat3 stressDeviatorTensor(const dmat3 &tensor) {
+dmat3 stressDeviatorTensor(const dmat3& tensor) {
     return tensor - (1. / 3.) * trace(tensor) * dmat3(1.);
 }
 
@@ -117,25 +117,25 @@ dmat3 stressDeviatorTensor(const dmat3 &tensor) {
  * Calculates the mean normal stress part of a tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Stress_deviator_tensor
  */
-dmat3 meanNormalStressTensor(const dmat3 &tensor) { return tensor - stressDeviatorTensor(tensor); }
+dmat3 meanNormalStressTensor(const dmat3& tensor) { return tensor - stressDeviatorTensor(tensor); }
 
 /*
  * Calculates the mean hydrostatic stress part of a tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Stress_deviator_tensor
  */
-dmat3 meanHydrostaticStressTensor(const dmat3 &tensor) { return meanNormalStressTensor(tensor); }
+dmat3 meanHydrostaticStressTensor(const dmat3& tensor) { return meanNormalStressTensor(tensor); }
 
 /*
  * Calculates the volumetric stress part of a tensor, see
  * https://en.wikipedia.org/wiki/Cauchy_stress_tensor#Stress_deviator_tensor
  */
-dmat3 volumetricStressTensor(const dmat3 &tensor) { return meanNormalStressTensor(tensor); }
+dmat3 volumetricStressTensor(const dmat3& tensor) { return meanNormalStressTensor(tensor); }
 
 /*
 Calculates and return 3 pairs of eigenvector and eigenvalue. The array is sorted such that
 lambda1>lambda2>lambda3
 */
-std::array<std::pair<double, dvec3>, 3> calculateEigenValuesAndEigenVectors(const dmat3 &tensor) {
+std::array<std::pair<double, dvec3>, 3> calculateEigenValuesAndEigenVectors(const dmat3& tensor) {
     if (tensor == dmat3(0.0)) {
         return std::array<std::pair<double, dvec3>, 3>{std::pair<double, dvec3>{0, dvec3(0)},
                                                        std::pair<double, dvec3>{0, dvec3(0)},
@@ -161,7 +161,7 @@ std::array<std::pair<double, dvec3>, 3> calculateEigenValuesAndEigenVectors(cons
     sortable[2] = {lambda3, ev3};
 
     std::sort(sortable.begin(), sortable.end(),
-              [](const std::pair<double, dvec3> &pairA, const std::pair<double, dvec3> &pairB) {
+              [](const std::pair<double, dvec3>& pairA, const std::pair<double, dvec3>& pairB) {
                   return pairA.first > pairB.first;
               });
 
@@ -171,7 +171,7 @@ std::array<std::pair<double, dvec3>, 3> calculateEigenValuesAndEigenVectors(cons
 /*
 Calculates and return the eigenvales of the tensor in the form of lambda1>lambda2>lambda3
 */
-std::array<double, 3> calculateEigenValues(const dmat3 &tensor) {
+std::array<double, 3> calculateEigenValues(const dmat3& tensor) {
     if (tensor == dmat3(0.0)) {
         return std::array<double, 3>{0, 0, 0};
     }
@@ -190,7 +190,7 @@ std::array<double, 3> calculateEigenValues(const dmat3 &tensor) {
     return sortable;
 }
 
-dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3 &tensor) {
+dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3& tensor) {
     if (tensor == dmat3(0.0)) {
         return dmat3(0.0);
     }
@@ -214,7 +214,7 @@ dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3 &tensor) {
     sortable[2] = {lambda3, ev3};
 
     std::sort(sortable.begin(), sortable.end(),
-              [](const std::pair<double, dvec3> &pairA, const std::pair<double, dvec3> &pairB) {
+              [](const std::pair<double, dvec3>& pairA, const std::pair<double, dvec3>& pairB) {
                   return pairA.first > pairB.first;
               });
 
@@ -247,7 +247,7 @@ dmat2 getProjectedTensor(const dmat3 tensor, const CartesianCoordinateAxis axis)
     return newTensor;
 }
 
-std::pair<dmat2, dmat2> decompose(const dmat2 &tensor, Decomposition decomposition) {
+std::pair<dmat2, dmat2> decompose(const dmat2& tensor, Decomposition decomposition) {
     dmat2 T1(0.);
     dmat2 T2(0.);
 
@@ -276,7 +276,7 @@ std::pair<dmat2, dmat2> decompose(const dmat2 &tensor, Decomposition decompositi
     return std::make_pair(T1, T2);
 }
 
-std::pair<dmat3, dmat3> decompose(const dmat3 &tensor, Decomposition decomposition) {
+std::pair<dmat3, dmat3> decompose(const dmat3& tensor, Decomposition decomposition) {
     dmat3 T1(0.);
     dmat3 T2(0.);
 
@@ -304,8 +304,8 @@ std::pair<dmat3, dmat3> decompose(const dmat3 &tensor, Decomposition decompositi
     return std::make_pair(T1, T2);
 }
 
-dmat3 reconstruct(const std::array<double, 3> &eigenvalues,
-                  const std::array<dvec3, 3> &eigenvectors) {
+dmat3 reconstruct(const std::array<double, 3>& eigenvalues,
+                  const std::array<dvec3, 3>& eigenvectors) {
     auto lambda = dmat3();
     lambda[0][0] = eigenvalues[0];
     lambda[1][1] = eigenvalues[1];

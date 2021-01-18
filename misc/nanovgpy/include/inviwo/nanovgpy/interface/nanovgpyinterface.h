@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ namespace py = pybind11;
 namespace inviwo {
 namespace nanopy {
 
-void init(pybind11::module ivwmodule, InviwoApplication *app);
+void init(pybind11::module ivwmodule, InviwoApplication* app);
 
 }  // namespace nanopy
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ namespace topology {
 // See PersistenceDiagram::computeCTPersistenceDiagram
 using PersistenceDiagramData =
     std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId, ttk::CriticalType,
-                           float, ttk::SimplexId> >;
+                           float, ttk::SimplexId>>;
 
 /**
  * \ingroup ports

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ private:
 
     void draw(bool picking);
 
-    void onItemPicked(PickingEvent *pe);
+    void onItemPicked(PickingEvent* pe);
 };
 
 }  // namespace inviwo

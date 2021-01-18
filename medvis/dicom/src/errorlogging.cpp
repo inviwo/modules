@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ protected:
             } else if (!Traits::eq_int_type(ch, Traits::eof())) {
                 buffer.push_back(static_cast<CharT>(ch));
             }
-        } catch (std::exception &ex) {
+        } catch (std::exception& ex) {
             // error while logging, print what we've got so far
             inviwo::LogCentral::getPtr()->log("Gdcm Volume Importer", loglevel, LogAudience::User,
                                               "<GDCM library>", "", 0, buffer);
@@ -157,7 +157,7 @@ void enableGdcmLogging(LogVerbosity verbosity) {
     */
 }
 
-void tiffErrorHandler(const char *module, const char *fmt, va_list args) {
+void tiffErrorHandler(const char* module, const char* fmt, va_list args) {
     char buffer[512];
     int res = vsnprintf(buffer, 512, fmt, args);
 
@@ -172,7 +172,7 @@ void tiffErrorHandler(const char *module, const char *fmt, va_list args) {
                                       "<libtiff>", module, 0, err_str);
 }
 
-void tiffWarningHandler(const char *module, const char *fmt, va_list args) {
+void tiffWarningHandler(const char* module, const char* fmt, va_list args) {
     char buffer[512];
     int res = snprintf(buffer, 512, fmt, args);
 

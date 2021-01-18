@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2017-2020 Inviwo Foundation
+ * Copyright (c) 2017-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ void TensorFieldToVolume::process() {
                 // TODO: use type of metadata instead of assuming double!
                 using P = typename util::same_extent<ValueType, double>::type;
 
-                const auto srcData = reinterpret_cast<const P *>(metaData->getDataPtr());
+                const auto srcData = reinterpret_cast<const P*>(metaData->getDataPtr());
 #include <warn/push>
 #include <warn/ignore/conversion>
                 std::transform(srcData, srcData + glm::compMul(repr->getDimensions()), ptr,

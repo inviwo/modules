@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020 Inviwo Foundation
+ * Copyright (c) 2020-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -95,7 +95,7 @@ void ComputeShaderBufferExample::process() {
     mesh->addBuffer(BufferType::ColorAttrib, bufCol);
 
     auto ib = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::StripAdjacency);
-    auto &vec = ib->getDataContainer();
+    auto& vec = ib->getDataContainer();
     vec.resize(numPoints_.get());
     std::iota(vec.begin(), vec.end(), 0);
 

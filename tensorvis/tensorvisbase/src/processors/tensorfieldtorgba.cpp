@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,8 +48,9 @@ TensorFieldToRGBA::TensorFieldToRGBA()
     , inport_("inport")
     , outport_("outport", DataVec4Float32::get())
     , shader_("tensorfieldtorgba.frag")
-    , hover_("hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
-             MouseState::Move)
+    , hover_(
+          "hover", "Hover", [this](Event* e) { hoverAction(e); }, MouseButtons(flags::any),
+          MouseState::Move)
     , tensor_("tensor", "Tensor") {
     shader_.onReload([&]() { invalidate(InvalidationLevel::InvalidOutput); });
 

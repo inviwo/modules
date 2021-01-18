@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,10 +45,10 @@ namespace histogram {
  */
 template <typename T>
 const std::vector<size_t> calculateDirectionalHistogram(
-    const std::vector<glm::vec<2, T>> &directions, const size_t numberOfBins = 20) {
+    const std::vector<glm::vec<2, T>>& directions, const size_t numberOfBins = 20) {
     static_assert(std::is_floating_point_v<T>);
     std::vector<size_t> bins(numberOfBins, 0);
-    for (const auto &dir : directions) {
+    for (const auto& dir : directions) {
         const auto a = atan2(dir.y, dir.x) / glm::two_pi<T>() + 0.5;
         const auto I = std::min(static_cast<size_t>(a * numberOfBins), numberOfBins - 1);
         bins[I]++;
@@ -64,12 +64,12 @@ const std::vector<size_t> calculateDirectionalHistogram(
  */
 template <typename T>
 const std::vector<size_t> calculateDirectionalHistogram(
-    const std::vector<glm::vec<3, T>> &directions, const size_t numberOfBins = 20) {
+    const std::vector<glm::vec<3, T>>& directions, const size_t numberOfBins = 20) {
     static_assert(std::is_floating_point_v<T>);
 
     UniformSpherePartitioning<T> partions(numberOfBins);
     std::vector<size_t> bins(numberOfBins, 0);
-    for (const auto &dir : directions) {
+    for (const auto& dir : directions) {
         bins[partions.getRegionForDirection(dir)]++;
     }
     return bins;

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -37,11 +37,11 @@ namespace inviwo {
 namespace openmeshutil {
 namespace detail {
 
-void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordinates transform) {
-    auto &vertices = inmesh.getVertices()->getRAMRepresentation()->getDataContainer();
-    auto &normals = inmesh.getNormals()->getRAMRepresentation()->getDataContainer();
-    auto &texCoords = inmesh.getTexCoords()->getRAMRepresentation()->getDataContainer();
-    auto &colors = inmesh.getColors()->getRAMRepresentation()->getDataContainer();
+void createVertexBuffers(TriMesh& mesh, const BasicMesh& inmesh, TransformCoordinates transform) {
+    auto& vertices = inmesh.getVertices()->getRAMRepresentation()->getDataContainer();
+    auto& normals = inmesh.getNormals()->getRAMRepresentation()->getDataContainer();
+    auto& texCoords = inmesh.getTexCoords()->getRAMRepresentation()->getDataContainer();
+    auto& colors = inmesh.getColors()->getRAMRepresentation()->getDataContainer();
 
     mat4 m{1.0f};
     if (transform == TransformCoordinates::DataToModel) {
@@ -50,9 +50,9 @@ void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordi
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (const auto &[pos, normal, texCoord, color] :
+    for (const auto& [pos, normal, texCoord, color] :
          util::zip(vertices, normals, texCoords, colors)) {
-        auto i = [&](const auto &pos) {
+        auto i = [&](const auto& pos) {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
             } else {
@@ -67,11 +67,11 @@ void createVertexBuffers(TriMesh &mesh, const BasicMesh &inmesh, TransformCoordi
     }
 }
 
-void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoordinates transform) {
+void createVertexBuffers(TriMesh& mesh, const SimpleMesh& inmesh, TransformCoordinates transform) {
 
-    auto &vertices = inmesh.getVertexList()->getRAMRepresentation()->getDataContainer();
-    auto &texCoords = inmesh.getTexCoordList()->getRAMRepresentation()->getDataContainer();
-    auto &colors = inmesh.getColorList()->getRAMRepresentation()->getDataContainer();
+    auto& vertices = inmesh.getVertexList()->getRAMRepresentation()->getDataContainer();
+    auto& texCoords = inmesh.getTexCoordList()->getRAMRepresentation()->getDataContainer();
+    auto& colors = inmesh.getColorList()->getRAMRepresentation()->getDataContainer();
 
     mat4 m{1.0f};
     if (transform == TransformCoordinates::DataToModel) {
@@ -80,8 +80,8 @@ void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoord
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (const auto &[pos, texCoord, color] : util::zip(vertices, texCoords, colors)) {
-        auto i = [&](const auto &pos) {
+    for (const auto& [pos, texCoord, color] : util::zip(vertices, texCoords, colors)) {
+        auto i = [&](const auto& pos) {
             if (transform == TransformCoordinates::NoTransform) {
                 return mesh.add_vertex({pos.x, pos.y, pos.z});
             } else {
@@ -94,7 +94,7 @@ void createVertexBuffers(TriMesh &mesh, const SimpleMesh &inmesh, TransformCoord
     }
 }
 
-void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates transform) {
+void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates transform) {
 
     mat4 m{1.0f};
     if (transform == TransformCoordinates::DataToModel) {
@@ -103,10 +103,10 @@ void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (auto &buf : inmesh.getBuffers()) {
+    for (auto& buf : inmesh.getBuffers()) {
         if (buf.first.type == BufferType::PositionAttrib) {
             auto loop = [&](auto buf, auto t) {
-                for (auto &v1 : buf->getRAMRepresentation()->getDataContainer()) {
+                for (auto& v1 : buf->getRAMRepresentation()->getDataContainer()) {
                     auto v = t(v1);
                     mesh.add_vertex({v.x, v.y, v.z});
                 }
@@ -127,11 +127,11 @@ void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates
     }
     using VH = OpenMesh::VertexHandle;
     // Make a second loop for other buffers, to make sure the Positions has been added first
-    for (auto &buf : inmesh.getBuffers()) {
+    for (auto& buf : inmesh.getBuffers()) {
         if (buf.first.type == BufferType::NormalAttrib) {
             if (auto b3 = std::dynamic_pointer_cast<const Buffer<vec3>>(buf.second)) {
                 int i = 0;
-                for (auto &n : b3->getRAMRepresentation()->getDataContainer()) {
+                for (auto& n : b3->getRAMRepresentation()->getDataContainer()) {
                     mesh.set_normal(VH(i++), {n.x, n.y, n.z});
                 }
             } else {
@@ -139,9 +139,9 @@ void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates
                                         IvwContextCustom("openmeshutil::meshHelper"));
             }
         } else if (buf.first.type == BufferType::ColorAttrib) {
-            auto loop = [&](auto &buf, auto toVec4) {
+            auto loop = [&](auto& buf, auto toVec4) {
                 int i = 0;
-                for (auto &v : buf->getRAMRepresentation()->getDataContainer()) {
+                for (auto& v : buf->getRAMRepresentation()->getDataContainer()) {
                     auto c = toVec4(v);
                     mesh.set_color(VH(i++), {c.x, c.y, c.z, c.a});
                 }
@@ -162,22 +162,22 @@ void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates
         } else if (buf.first.type == BufferType::TexcoordAttrib) {
             if (auto t1 = std::dynamic_pointer_cast<const Buffer<float>>(buf.second)) {
                 int i = 0;
-                for (auto &v : t1->getRAMRepresentation()->getDataContainer()) {
+                for (auto& v : t1->getRAMRepresentation()->getDataContainer()) {
                     mesh.set_texcoord3D(VH(i++), {v, 0, 0});
                 }
             } else if (auto t2 = std::dynamic_pointer_cast<const Buffer<vec2>>(buf.second)) {
                 int i = 0;
-                for (auto &v : t2->getRAMRepresentation()->getDataContainer()) {
+                for (auto& v : t2->getRAMRepresentation()->getDataContainer()) {
                     mesh.set_texcoord3D(VH(i++), {v.x, v.y, 0});
                 }
             } else if (auto t3 = std::dynamic_pointer_cast<const Buffer<vec3>>(buf.second)) {
                 int i = 0;
-                for (auto &v : t3->getRAMRepresentation()->getDataContainer()) {
+                for (auto& v : t3->getRAMRepresentation()->getDataContainer()) {
                     mesh.set_texcoord3D(VH(i++), {v.x, v.y, v.z});
                 }
             } else if (auto t4 = std::dynamic_pointer_cast<const Buffer<vec4>>(buf.second)) {
                 int i = 0;
-                for (auto &v : t4->getRAMRepresentation()->getDataContainer()) {
+                for (auto& v : t4->getRAMRepresentation()->getDataContainer()) {
                     mesh.set_texcoord3D(VH(i++), {v.x, v.y, v.z});
                 }
             } else {
@@ -190,18 +190,18 @@ void createVertexBuffers(TriMesh &mesh, const Mesh &inmesh, TransformCoordinates
 
 }  // namespace detail
 
-TriMesh fromInviwo(const Mesh &inmesh, TransformCoordinates transform) {
+TriMesh fromInviwo(const Mesh& inmesh, TransformCoordinates transform) {
     TriMesh mesh;
 
-    if (auto bm = dynamic_cast<const BasicMesh *>(&inmesh)) {
+    if (auto bm = dynamic_cast<const BasicMesh*>(&inmesh)) {
         detail::createVertexBuffers(mesh, *bm, transform);
-    } else if (auto sm = dynamic_cast<const SimpleMesh *>(&inmesh)) {
+    } else if (auto sm = dynamic_cast<const SimpleMesh*>(&inmesh)) {
         detail::createVertexBuffers(mesh, *sm, transform);
     } else {
         detail::createVertexBuffers(mesh, inmesh, transform);
     }
 
-    for (auto &ib : inmesh.getIndexBuffers()) {
+    for (auto& ib : inmesh.getIndexBuffers()) {
         if (ib.first.dt == DrawType::Triangles) {
             meshutil::forEachTriangle(ib.first, *ib.second,
                                       [&mesh](uint32_t i0, uint32_t i1, uint32_t i2) {

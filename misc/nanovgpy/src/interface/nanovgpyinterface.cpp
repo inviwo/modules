@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,11 @@ namespace py = pybind11;
 
 namespace inviwo {
 namespace nanopy {
-void init(py::module ivwmodule, InviwoApplication *app) {
+void init(py::module ivwmodule, InviwoApplication* app) {
     auto m = ivwmodule.def_submodule("nvg", "NanoVG Python Interface");
-    m.def("getContext", [app]() -> auto & { return nanovgutil::getContext(app); },
-          py::return_value_policy::reference);
+    m.def(
+        "getContext", [app]() -> auto& { return nanovgutil::getContext(app); },
+        py::return_value_policy::reference);
 
     py::enum_<NanoVGContext::LineCapMode>(m, "ConnectivityType")
         .value("Butt", NanoVGContext::LineCapMode::Butt)
@@ -68,17 +69,18 @@ void init(py::module ivwmodule, InviwoApplication *app) {
         .value("Right_Baseline", NanoVGContext::Alignment::Right_Baseline);
 
     py::class_<NanoVGContext> nanoVGContext(m, "NanoVGContext");
-    nanoVGContext.def("activate",
-                      [](NanoVGContext *self, int windowWidth, int windowHeight, float pixelRatio) {
-                          self->activate(windowWidth, windowHeight, pixelRatio);
-                      },
-                      py::arg("windowWidth"), py::arg("windowHeight"),
-                      py::arg("pixelRatio") = 1.0f);
-    nanoVGContext.def("activate",
-                      [](NanoVGContext *self, size2_t dimensions, float pixelRatio) {
-                          self->activate(dimensions, pixelRatio);
-                      },
-                      py::arg("dimensions"), py::arg("pixelRatio") = 1.0f);
+    nanoVGContext.def(
+        "activate",
+        [](NanoVGContext* self, int windowWidth, int windowHeight, float pixelRatio) {
+            self->activate(windowWidth, windowHeight, pixelRatio);
+        },
+        py::arg("windowWidth"), py::arg("windowHeight"), py::arg("pixelRatio") = 1.0f);
+    nanoVGContext.def(
+        "activate",
+        [](NanoVGContext* self, size2_t dimensions, float pixelRatio) {
+            self->activate(dimensions, pixelRatio);
+        },
+        py::arg("dimensions"), py::arg("pixelRatio") = 1.0f);
 
     nanoVGContext.def("deactivate", &NanoVGContext::deactivate);
     nanoVGContext.def("cancel", &NanoVGContext::cancel);
@@ -132,11 +134,12 @@ void init(py::module ivwmodule, InviwoApplication *app) {
 
     nanoVGContext.def("fontFace", &NanoVGContext::fontFace, py::arg("name"));
 
-    nanoVGContext.def("textAlign", [](NanoVGContext *self, int flags) { self->textAlign(flags); },
-                      py::arg("flags"));
+    nanoVGContext.def(
+        "textAlign", [](NanoVGContext* self, int flags) { self->textAlign(flags); },
+        py::arg("flags"));
     nanoVGContext.def(
         "textAlign",
-        [](NanoVGContext *self, NanoVGContext::Alignment flags) { self->textAlign(flags); },
+        [](NanoVGContext* self, NanoVGContext::Alignment flags) { self->textAlign(flags); },
         py::arg("flags"));
     nanoVGContext.def("fontBlur", &NanoVGContext::fontBlur, py::arg("blur"));
 

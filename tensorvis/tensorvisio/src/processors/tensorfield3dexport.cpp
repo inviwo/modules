@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -84,85 +84,85 @@ void TensorField3DExport::exportBinary() const {
 
     std::string versionStr("TFBVersion:");
     size_t size = versionStr.size();
-    outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
     outFile.write(&versionStr[0], size);
 
     size_t version = TFB_CURRENT_VERSION;
-    outFile.write(reinterpret_cast<const char *>(&version), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&version), sizeof(size_t));
 
     size_t dimensionality = tensorField->dimensionality();
-    outFile.write(reinterpret_cast<const char *>(&dimensionality), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&dimensionality), sizeof(size_t));
 
     size_t rank = tensorField->rank();
-    outFile.write(reinterpret_cast<const char *>(&rank), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&rank), sizeof(size_t));
 
     auto hasMetaData = glm::uint8(includeMetaData_.get());
-    outFile.write(reinterpret_cast<const char *>(&hasMetaData), sizeof(glm::uint8));
+    outFile.write(reinterpret_cast<const char*>(&hasMetaData), sizeof(glm::uint8));
 
     auto dimensions = tensorField->getDimensions();
-    outFile.write(reinterpret_cast<const char *>(&dimensions), sizeof(size_t) * 3);
+    outFile.write(reinterpret_cast<const char*>(&dimensions), sizeof(size_t) * 3);
 
     auto extents = tensorField->getExtents();
-    outFile.write(reinterpret_cast<const char *>(&extents), sizeof(double) * 3);
+    outFile.write(reinterpret_cast<const char*>(&extents), sizeof(double) * 3);
 
     auto offset = tensorField->getOffset();
-    outFile.write(reinterpret_cast<const char *>(&offset), sizeof(double) * 3);
+    outFile.write(reinterpret_cast<const char*>(&offset), sizeof(double) * 3);
 
-    auto &eigenValueDataMaps = tensorField->dataMapEigenValues_;
-    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[0].dataRange),
+    auto& eigenValueDataMaps = tensorField->dataMapEigenValues_;
+    outFile.write(reinterpret_cast<const char*>(&eigenValueDataMaps[0].dataRange),
                   sizeof(double) * 2);
-    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[1].dataRange),
+    outFile.write(reinterpret_cast<const char*>(&eigenValueDataMaps[1].dataRange),
                   sizeof(double) * 2);
-    outFile.write(reinterpret_cast<const char *>(&eigenValueDataMaps[2].dataRange),
-                  sizeof(double) * 2);
-
-    auto &eigenVectorDataMaps = tensorField->dataMapEigenVectors_;
-    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[0].dataRange),
-                  sizeof(double) * 2);
-    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[1].dataRange),
-                  sizeof(double) * 2);
-    outFile.write(reinterpret_cast<const char *>(&eigenVectorDataMaps[2].dataRange),
+    outFile.write(reinterpret_cast<const char*>(&eigenValueDataMaps[2].dataRange),
                   sizeof(double) * 2);
 
-    const auto &data = tensorField->tensors();
+    auto& eigenVectorDataMaps = tensorField->dataMapEigenVectors_;
+    outFile.write(reinterpret_cast<const char*>(&eigenVectorDataMaps[0].dataRange),
+                  sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char*>(&eigenVectorDataMaps[1].dataRange),
+                  sizeof(double) * 2);
+    outFile.write(reinterpret_cast<const char*>(&eigenVectorDataMaps[2].dataRange),
+                  sizeof(double) * 2);
 
-    for (const auto &val : data) {
+    const auto& data = tensorField->tensors();
+
+    for (const auto& val : data) {
         // Upper row
-        outFile.write(reinterpret_cast<const char *>(&val[0][0]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][0]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[2][0]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[0][0]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[1][0]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[2][0]), sizeof(double));
 
         // Middle row
-        outFile.write(reinterpret_cast<const char *>(&val[0][1]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][1]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[2][1]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[0][1]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[1][1]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[2][1]), sizeof(double));
 
         // Bottom row
-        outFile.write(reinterpret_cast<const char *>(&val[0][2]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[1][2]), sizeof(double));
-        outFile.write(reinterpret_cast<const char *>(&val[2][2]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[0][2]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[1][2]), sizeof(double));
+        outFile.write(reinterpret_cast<const char*>(&val[2][2]), sizeof(double));
     }
 
     auto hasMask = glm::uint8(tensorField->hasMask());
-    outFile.write(reinterpret_cast<char *>(&hasMask), sizeof(glm::uint8));
+    outFile.write(reinterpret_cast<char*>(&hasMask), sizeof(glm::uint8));
 
     if (hasMask) {
-        auto &mask = tensorField->getMask();
+        auto& mask = tensorField->getMask();
         auto maskData = mask.data();
-        outFile.write(reinterpret_cast<const char *>(maskData), sizeof(glm::uint8) * mask.size());
+        outFile.write(reinterpret_cast<const char*>(maskData), sizeof(glm::uint8) * mask.size());
     }
 
     if (includeMetaData_.get()) {
         const auto numMetaDataEntries = tensorField->metaData().size();
-        outFile.write(reinterpret_cast<const char *>(&numMetaDataEntries), sizeof(size_t));
+        outFile.write(reinterpret_cast<const char*>(&numMetaDataEntries), sizeof(size_t));
 
-        for (const auto &dataItem : tensorField->metaData()) {
+        for (const auto& dataItem : tensorField->metaData()) {
             dataItem.second->serialize(outFile);
         }
     }
     // We always include eigenvalues and eigenvectors
     else {
-        for (const auto &dataItem : tensorField->metaData()) {
+        for (const auto& dataItem : tensorField->metaData()) {
             auto id = dataItem.first;
 
             switch (id) {
@@ -192,7 +192,7 @@ void TensorField3DExport::exportBinary() const {
 
     std::string str("EOFreached");
     size = str.size();
-    outFile.write(reinterpret_cast<const char *>(&size), sizeof(size_t));
+    outFile.write(reinterpret_cast<const char*>(&size), sizeof(size_t));
     outFile.write(&str[0], size);
 
     outFile.close();

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2020 Inviwo Foundation
+ * Copyright (c) 2019-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -96,7 +96,7 @@ void ContourTreeToDataFrame::process() {
         std::vector<int> valenceDown(numNodes);
         std::vector<PrimitiveType> scalars(numNodes);
 
-        const auto &scalarValues = buffer->getDataContainer();
+        const auto& scalarValues = buffer->getDataContainer();
 
         for (ttk::ftm::idNode i = 0; i < numNodes; ++i) {
             auto node = tree->getNode(i);

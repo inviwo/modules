@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2020 Inviwo Foundation
+ * Copyright (c) 2016-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ private:
 
     dvec3 dextents_;
 
-    void buildTensors(const std::vector<double> &data, std::vector<dmat3> &tensors) const;
+    void buildTensors(const std::vector<double>& data, std::vector<dmat3>& tensors) const;
 };
 
 }  // namespace inviwo

@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2018-2020 Inviwo Foundation
+ * Copyright (c) 2018-2021 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ TopologicalSimplification::TopologicalSimplification()
             auto endIt = std::end(*persistenceInport_.getData());
             auto maxIt = std::max_element(
                 std::begin(*persistenceInport_.getData()), endIt,
-                [](const auto &a, const auto &b) { return std::get<4>(a) < std::get<4>(b); });
+                [](const auto& a, const auto& b) { return std::get<4>(a) < std::get<4>(b); });
             if (maxIt != endIt) {
                 threshold_.setMaxValue(std::get<4>(*maxIt));
             }
@@ -122,7 +122,7 @@ void TopologicalSimplification::process() {
                         // perform topological simplification
                         ttk::TopologicalSimplification simplification;
                         simplification.setupTriangulation(
-                            const_cast<ttk::Triangulation *>(&inportData->getTriangulation()));
+                            const_cast<ttk::Triangulation*>(&inportData->getTriangulation()));
                         simplification.setInputScalarFieldPointer(
                             buffer->getDataContainer().data());
                         simplification.setInputOffsetScalarFieldPointer(offsets.data());
