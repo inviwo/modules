@@ -40,7 +40,7 @@
 #include <utility>
 #include <algorithm>
 
-#if __has_include(<execution>)
+#ifdef __cpp_lib_parallel_algorithm
 #include <execution>
 #endif
 
@@ -96,7 +96,7 @@ constexpr void for_each_index(F&& f) {
 template <typename I1, typename I2, typename F>
 auto for_each_parallel(I1&& begin, I2&& end, F&& fun) {
 
-#if __has_include(<execution>)
+#ifdef __cpp_lib_parallel_algorithm
     return std::for_each(std::execution::par_unseq, std::forward<I1>(begin), std::forward<I2>(end),
                          std::forward<F>(fun));
 #else
