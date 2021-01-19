@@ -53,16 +53,16 @@ class CameraTrajectory(ivw.Processor):
 		self.outCamera.properties.lookUp.semantics = ivw.properties.PropertySemantics.SpinBox
 		self.outCamera.properties.fov.semantics = ivw.properties.PropertySemantics.SpinBox
 
-		points = {"to" : [[1.0,0.0,0.0], [2.0,0.0,0.0], [3.0,0.0,0.0], [4.0,0.0,0.0]],
-				  "from" : [[-100.-100,0.0,0.0], [100.0,-100.0,0.0], [100.0,100.0,0.0], [-100.0,100.0,0.0]],
-				  "up" : [[0.0,0.0,1.0], [0.0,0.0,1.0], [0.0,0.0,1.0], [0.0,0.0,1.0]]}
+		points = {"to" :   [[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0], [4.0, 0.0, 0.0]],
+				  "from" : [[-10.0, -10.0, 0.0], [10.0, -10.0, 0.0], [10.0, 10.0, 0.0], [-10.0, 10.0, 0.0]],
+				  "up" :   [[0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0], [0.0, 0.0, 1.0]]}
 		self.pts = ivw.properties.StringProperty("ctrlPrts", "ControlPoints", json.dumps(points, indent=4,))
 		self.addProperty(self.pts, owner=False)
 		self.pts.semantics = ivw.properties.PropertySemantics.Multiline
 
-		self.fromPm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x, 1))
-		self.toPm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x, 2))
-		self.upPm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x, 3))
+		self.fromPm = ivw.PickingMapper(self, 1, lambda x: self.callback(x, 1))
+		self.toPm = ivw.PickingMapper(self, 1, lambda x: self.callback(x, 2))
+		self.upPm = ivw.PickingMapper(self, 1, lambda x: self.callback(x, 3))
 	
 		self.fromTrack = []
 		self.toTrack = []
@@ -164,16 +164,16 @@ class CameraTrajectory(ivw.Processor):
 			index.append(count + i)
 
 		ctrlpts.addBuffer(ivw.data.BufferType.PositionAttrib, ivw.data.BufferVec3FLOAT32(
-			numpy.array(position).astype(numpy.float32)))
+			np.array(position).astype(np.float32)))
 		ctrlpts.addBuffer(ivw.data.BufferType.ColorAttrib, ivw.data.BufferVec4FLOAT32(
-			numpy.array(color).astype(numpy.float32)))
+			np.array(color).astype(np.float32)))
 		ctrlpts.addBuffer(ivw.data.BufferType.RadiiAttrib, ivw.data.BufferFLOAT32(
-			numpy.array(radius).astype(numpy.float32)))
+			np.array(radius).astype(np.float32)))
 		ctrlpts.addBuffer(ivw.data.BufferType.PickingAttrib, ivw.data.BufferUINT32(
-			numpy.array(picking).astype(numpy.uint32)))
+			np.array(picking).astype(np.uint32)))
 
 		pointsNone = ivw.data.MeshInfo(ivw.data.DrawType.Points, ivw.data.ConnectivityType.None_)
-		ctrlpts.addIndices(pointsNone, ivw.data.IndexBufferUINT32(numpy.array(index).astype(numpy.uint32)))
+		ctrlpts.addIndices(pointsNone, ivw.data.IndexBufferUINT32(np.array(index).astype(np.uint32)))
 
 		return ctrlpts
 
@@ -192,11 +192,15 @@ class CameraTrajectory(ivw.Processor):
 
 		points = json.loads(self.pts.value)
 		
+		print(str(points))
+
 		vert = 3
 		for lookFrom, lookTo, lookUp in zip(self.fromTrack, self.toTrack, self.upTrack):
 			position.append(lookTo)
 			position.append(lookFrom)
-			position.append([lookFrom[0] + scale * lookUp[0], lookFrom[1] + scale * lookUp[1], lookFrom[2]+ scale * lookUp[2]])
+			position.append([lookFrom[0] + scale * lookUp[0], 
+							 lookFrom[1] + scale * lookUp[1], 
+							 lookFrom[2] + scale * lookUp[2]])
 			color.append([1.0, 0.1, 1.0, 1.0])
 			color.append([1.0, 1.0, 0.0, 1.0])
 			color.append([0.0, 1.0, 1.0, 1.0])
@@ -213,17 +217,17 @@ class CameraTrajectory(ivw.Processor):
 		mesh = ivw.data.Mesh()
 
 		mesh.addBuffer(ivw.data.BufferType.PositionAttrib, ivw.data.BufferVec3FLOAT32(
-			numpy.array(position).astype(numpy.float32)))
+			np.array(position).astype(np.float32)))
 		mesh.addBuffer(ivw.data.BufferType.ColorAttrib, ivw.data.BufferVec4FLOAT32(
-			numpy.array(color).astype(numpy.float32)))
+			np.array(color).astype(np.float32)))
 		
 		lineNone = ivw.data.MeshInfo(ivw.data.DrawType.Lines, ivw.data.ConnectivityType.None_)
 		lineStrip = ivw.data.MeshInfo(ivw.data.DrawType.Lines, ivw.data.ConnectivityType.Strip)
-		mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(numpy.array(viewIndex).astype(numpy.uint32)))
-		mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(numpy.array(upIndex).astype(numpy.uint32)))
-		mesh.addIndices(lineStrip, ivw.data.IndexBufferUINT32(numpy.array(toIndex).astype(numpy.uint32)))
-		mesh.addIndices(lineStrip, ivw.data.IndexBufferUINT32(numpy.array(fromIndex).astype(numpy.uint32)))
-		mesh.addIndices(lineStrip, ivw.data.IndexBufferUINT32(numpy.array(upPathIndex).astype(numpy.uint32)))
+		mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(np.array(viewIndex).astype(np.uint32)))
+		mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(np.array(upIndex).astype(np.uint32)))
+		mesh.addIndices(lineStrip, ivw.data.IndexBufferUINT32(np.array(toIndex).astype(np.uint32)))
+		mesh.addIndices(lineStrip, ivw.data.IndexBufferUINT32(np.array(fromIndex).astype(np.uint32)))
+		mesh.addIndices(lineStrip, ivw.data.IndexBufferUINT32(np.array(upPathIndex).astype(np.uint32)))
 		return mesh
 
 	def process(self):	
