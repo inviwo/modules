@@ -1,5 +1,5 @@
 # Boost is required by TTK
-find_package(Boost REQUIRED)
+find_package(Boost COMPONENTS ALL REQUIRED)
 
 #TBB is required for parallel STL used in separatrix relaxation processor
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
