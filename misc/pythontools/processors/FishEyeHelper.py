@@ -1,4 +1,4 @@
-# Name: FishEyeHelper 
+﻿# Name: FishEyeHelper 
 
 #& 'C:\Program Files\ffmpeg\bin\ffmpeg.exe' -framerate 30 -i isabel/fisheye_2K_R_%06d.png -framerate 30 -i isabel/fisheye_2K_L_%06d.png -c:v libx265 -filter_complex hstack isabel2.mp4
 
