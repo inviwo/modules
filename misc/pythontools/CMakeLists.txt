@@ -23,5 +23,4 @@ ivw_add_unittest(${TEST_FILES})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
-# Add shader directory to install package
-#ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
