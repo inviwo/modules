@@ -29,7 +29,7 @@
 
 #include <inviwo/devtools/processors/logrendererprocessors.h>
 #include <modules/opengl/texture/textureutils.h>
-
+#include <inviwo/core/common/inviwoapplication.h>
 #include <fmt/format.h>
 
 #include <inviwo/core/util/stringconversion.h>
