@@ -33,8 +33,16 @@ target_compile_definitions(nanovg PUBLIC
 	FONS_USE_FREETYPE
 )
 
-target_link_libraries(nanovg PUBLIC ${OPENGL_LIBRARIES} GLEW)
-target_link_libraries(nanovg PUBLIC freetype)
+if(NOT IVW_USE_EXTERNAL_GLEW)
+    target_link_libraries(nanovg PUBLIC inviwo::GLEW)
+else()
+    find_package(GLEW REQUIRED)
+    target_link_libraries(nanovg PUBLIC GLEW::GLEW)
+endif()
+target_link_libraries(nanovg PUBLIC 
+    ${OPENGL_LIBRARIES}
+    freetype
+)
 
 #--------------------------------------------------------------------
 # Make package (for other projects to find)

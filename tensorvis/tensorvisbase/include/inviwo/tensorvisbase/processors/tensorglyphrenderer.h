@@ -53,6 +53,8 @@
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/properties/tensorglyphproperty.h>
 
+#include <optional>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.TensorGlyphRenderer, Tensor Glyph Renderer}
@@ -66,6 +68,8 @@ public:
 
     virtual void initializeResources() override;
     virtual void process() override;
+
+    void render();
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -95,7 +99,8 @@ private:
 
     Shader shader_;
 
-    ImageCompositor compositor_;
+    std::optional<ImageCompositor> compositor_;
+    std::optional<Image> tmp_;
 
     int selectedID_;
     int previouslySelectedID_;
