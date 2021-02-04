@@ -168,29 +168,23 @@ void TensorGlyphRenderer::addCommonShaderDefines(Shader& shader) {
 }
 
 void TensorGlyphRenderer::process() {
-    utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
-
-    shader_.activate();
-
-    utilgl::setShaderUniforms(shader_, camera_, "camera");
-    utilgl::setShaderUniforms(shader_, lighting_, "light");
-    shader_.setUniform("pickingColor", picking_.getColor());
-
-    signed long long i = 0;
-    for (auto& drawer : meshDrawers_) {
-        shader_.setUniform("pickingColor", picking_.getColor(i));
-        utilgl::setShaderUniforms(shader_, *(drawer->getMesh()), "geometry");
-        shader_.setUniform("highlight", i == selectedID_);
-        {
-            utilgl::CullFaceState culling1(cullFace_.get());
-            drawer->draw();
+    if (imageInport_.isReady()) {
+        if (!tmp_ || tmp_->getDimensions() != outport_.getDimensions() ||
+            tmp_->getDataFormat() != outport_.getDataFormat()) {
+            tmp_.emplace(outport_.getDimensions(), outport_.getDataFormat());
         }
-        i++;
+        if (!compositor_) {
+            compositor_.emplace();
+        }
+        utilgl::activateAndClearTarget(*tmp_, ImageType::ColorDepthPicking);
+        render();
+        compositor_->composite(*imageInport_.getData(), *tmp_, *outport_.getEditableData(),
+                               ImageType::ColorDepthPicking);
+    } else {
+        utilgl::activateAndClearTarget(outport_, ImageType::ColorDepthPicking);
+        render();
     }
-
-    shader_.deactivate();
     utilgl::deactivateCurrentTarget();
-    if (imageInport_.hasData()) compositor_.composite(imageInport_, outport_, ImageType::AllLayers);
 
     if (selectedID_ != previouslySelectedID_) {
         previouslySelectedID_ = selectedID_;
@@ -212,6 +206,28 @@ void TensorGlyphRenderer::process() {
         selectedMeshOutport_.setData(
             glyphType_.generateQuadric(dmat3(1), dvec3(0), glyphType_.size(), dvec4(1)));
     }
+}
+
+void TensorGlyphRenderer::render() {
+    shader_.activate();
+
+    utilgl::setShaderUniforms(shader_, camera_, "camera");
+    utilgl::setShaderUniforms(shader_, lighting_, "light");
+    shader_.setUniform("pickingColor", picking_.getColor());
+
+    signed long long i = 0;
+    for (auto& drawer : meshDrawers_) {
+        shader_.setUniform("pickingColor", picking_.getColor(i));
+        utilgl::setShaderUniforms(shader_, *(drawer->getMesh()), "geometry");
+        shader_.setUniform("highlight", i == selectedID_);
+        {
+            utilgl::CullFaceState culling1(cullFace_.get());
+            drawer->draw();
+        }
+        i++;
+    }
+
+    shader_.deactivate();
 }
 
 }  // namespace inviwo
