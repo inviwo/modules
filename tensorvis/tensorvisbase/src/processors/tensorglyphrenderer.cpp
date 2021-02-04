@@ -168,7 +168,7 @@ void TensorGlyphRenderer::addCommonShaderDefines(Shader& shader) {
 }
 
 void TensorGlyphRenderer::process() {
-     if (imageInport_.isReady()) {
+    if (imageInport_.isReady()) {
         if (!tmp_ || tmp_->getDimensions() != outport_.getDimensions() ||
             tmp_->getDataFormat() != outport_.getDataFormat()) {
             tmp_.emplace(outport_.getDimensions(), outport_.getDataFormat());
@@ -185,7 +185,7 @@ void TensorGlyphRenderer::process() {
         render();
     }
     utilgl::deactivateCurrentTarget();
-    
+
     if (selectedID_ != previouslySelectedID_) {
         previouslySelectedID_ = selectedID_;
         if (selectedID_ == -1) {
