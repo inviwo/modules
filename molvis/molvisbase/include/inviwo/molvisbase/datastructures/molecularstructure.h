@@ -157,9 +157,11 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
             break;
         case PeptideType::General:
             ss << "General";
+            break;
         case PeptideType::Unknown:
         default:
             ss << "Unknown";
+            break;
     }
     return ss;
 }
