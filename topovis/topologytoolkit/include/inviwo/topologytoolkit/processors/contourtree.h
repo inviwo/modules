@@ -58,20 +58,20 @@ namespace inviwo {
  * ![](org.inviwo.ContourTree.png?classIdentifier=org.inviwo.ContourTree)
  * Computes the contour tree for a given TTK triangulation.
  *
- * \see ttk::PersistenceCurve
+ * \see ttk::FTMTree
  *
  * ### Inports
  *   * __triangulation__   input triangulation
  *
  * ### Outports
- *   * __outport__     DataFrame with critical points
- *   * __meshOutport__ Mesh containing the critical points and associated scalar values
- *                     as spheres and the connecting arcs as lines
+ *   * __Contour Tree__     Contour tree data including the tree, its type and the underlying triangulation
  *
  * ### Properties
- *	 * __Contour Tree__
+ *	 * __Contour Tree Extraction__
  *		+ __Tree Type__ Defines which tree type to calculate
  *		+ __Number of Threads__ Defines how many threads to use when calculating the tree
+ *      + __Segmentation__ 
+ *      + __Normalization__ 
  *
  */
 
