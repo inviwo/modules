@@ -80,8 +80,7 @@ void PersistenceDiagram::process() {
                     std::vector<std::tuple<ttk::SimplexId, ttk::CriticalType, ttk::SimplexId,
                                            ttk::CriticalType, ValueType, ttk::SimplexId>>;
 
-                std::vector<int> offsets(buffer->getSize());
-                std::iota(offsets.begin(), offsets.end(), 0);
+                std::vector<int> offsets(data->getOffsets());
 
                 DiagramOutput output;
                 ttk::PersistenceDiagram diagram;
