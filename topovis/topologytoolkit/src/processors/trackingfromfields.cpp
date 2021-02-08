@@ -50,7 +50,8 @@ struct Track {
                       bool useGeometricSpacing, float spacing, std::string algorithm, float alpha,
                       float tolerance, std::string wasserstein, int threadCount, float PE, float PS,
                       float PX, float PY, float PZ, float mergeSplitThresh,  // Todo: Make Property)
-                      bool overwriteTransform) {
+                      bool overwriteTransform, const vec4 &minColor, const vec4 maxColor,
+                      int outputMode) {
 
         using dataType = Format::type;
 
@@ -122,10 +123,12 @@ struct Track {
 
         progress(0.75f);
         auto mesh = std::make_shared<Mesh>();
+        auto df = std::make_shared<DataFrame>();
 
-        TrackingFromFields::buildMesh<dataType>(trackingsBase, outputMatchings, persistenceDiagrams,
-                                                useGeometricSpacing, spacing, true,
-                                                trackingTupleToMerged, *mesh.get());
+        TrackingFromFields::createOutputFromTracking<dataType>(
+            trackingsBase, outputMatchings, persistenceDiagrams, trackingTupleToMerged,
+            useGeometricSpacing, spacing, true, minColor, maxColor, outputMode, *mesh.get(),
+            *df.get());
 
         if (overwriteTransform) {
             // If offset is the same for both first and last volume, volumes are 3D
@@ -157,7 +160,7 @@ struct Track {
 
         progress(1.0f);
 
-        return mesh;
+        return std::make_pair(mesh, df);
     }
 };
 }  // namespace
@@ -176,6 +179,7 @@ TrackingFromFields::TrackingFromFields()
     : PoolProcessor()
     , scalarsInport_("scalars")
     , outport_("outport")
+    , trackingOutport_("tracking")
     , diagrams_("diagrams", "Persistence Diagrams")
     , timeSampling_("timeSampling", "Time Sampling", 1, 1)
     , persistenceThreshold_("persistenceThreshold", "Persistence Threshold", 1, 0, 100)
@@ -183,7 +187,7 @@ TrackingFromFields::TrackingFromFields()
     , pParameter_("pParameter", "p Parameter (inf, 0, 1..)", "inf")
     , alpha_("alpha", "Alpha", 1, 0, 1)
     , extremumWeight_("extremumWeight", "Extremum Weight", 1, 0, 1)
-    , saddleWeight_("saddleWeight", "Saddle Weight", 1, 0, 1)
+    , saddleWeight_("saddleWeight", "Saddle Weight", 0.01, 0, 1)
     , xWeight_("xWeight", "X Weight", 0, 0, 1)
     , yWeight_("yWeight", "Y Weight", 0, 0, 1)
     , zWeight_("zWeight", "Z Weight", 0, 0, 1)
@@ -191,25 +195,37 @@ TrackingFromFields::TrackingFromFields()
     , forceZTranslation_("forceZTranslation", "Force Z-Translation")
     , zTranslation_("zTranslation", "Z-Translation", 1, 0)
     , overwriteTransform_("overwriteTransform", "Overwrite Transform", false)
+    , colors_("colors", "Colors")
+    , outputMode_("outputMode", "Output Type",
+                  {{"join", "Maxima Tracks", 0},
+                   {"split", "Minima Tracks", 1},
+                   {"contour", "All Tracks", 2}},
+                  2)
     , trackingF_{}
     , tracking_{} {
     addPort(scalarsInport_);
     addPort(outport_);
+    addPort(trackingOutport_);
     addProperties(diagrams_, matching_, output_);
     diagrams_.addProperties(timeSampling_, persistenceThreshold_);
-    matching_.addProperties(pParameter_, alpha_, extremumWeight_, saddleWeight_, xWeight_, yWeight_,
+    // alpha_ is not added because it is actually never used in the TTK implementation
+    matching_.addProperties(pParameter_, extremumWeight_, saddleWeight_, xWeight_, yWeight_,
                             zWeight_);
-    output_.addProperties(forceZTranslation_, zTranslation_, overwriteTransform_);
+    output_.addProperties(forceZTranslation_, zTranslation_, overwriteTransform_, colors_,
+                          outputMode_);
     zTranslation_.visibilityDependsOn(forceZTranslation_, [](const auto &p) { return p.get(); });
 }
 
 void TrackingFromFields::process() {
-    auto compute = [this](pool::Stop stop, pool::Progress progress) -> std::shared_ptr<Mesh> {
+
+    using Result = std::pair<std::shared_ptr<Mesh>, std::shared_ptr<DataFrame>>;
+
+    auto compute = [this](pool::Stop stop, pool::Progress progress) -> Result {
         const auto scalars = scalarsInport_.getData();
 
         if (scalars->size() < 2) {
             LogProcessorInfo("Less then 2 volumes given, nothing to track!");
-            return nullptr;
+            return std::make_pair(nullptr, nullptr);
         }
 
         // Todo: Check if all volumes have the same meta data (dimension, transformation, data type
@@ -233,69 +249,72 @@ void TrackingFromFields::process() {
         float PZ = zWeight_.get();
         float mergeSplitThresh = 0;  // Todo: Make Property
         bool overwriteTransform = overwriteTransform_.get();
+        vec4 minColor = colors_.getColor2D(0);
+        vec4 maxColor = colors_.getColor2D(2);
+        int outputMode = outputMode_.get();
 
         // size_t numberOfFields = scalars->size();
 
-        auto mesh = dispatching::dispatch<std::shared_ptr<Mesh>, dispatching::filter::Float1s>(
+        auto output = dispatching::dispatch<Result, dispatching::filter::Float1s>(
             (*scalars->at(0)).getDataFormat()->getId(), Track{}, progress, trackingF_, tracking_,
             *scalars.get(), useGeometricSpacing, spacing, algorithm, alpha, tolerance, wasserstein,
-            threadCount, PE, PS, PX, PY, PZ, mergeSplitThresh, overwriteTransform);
+            threadCount, PE, PS, PX, PY, PZ, mergeSplitThresh, overwriteTransform, minColor,
+            maxColor, outputMode);
 
-        return mesh;
+        return output;
     };
 
     outport_.setData(nullptr);
-    dispatchOne(compute, [this](std::shared_ptr<Mesh> result) {
-        outport_.setData(result);
+    trackingOutport_.setData(nullptr);
+    dispatchOne(compute, [this](Result result) {
+        outport_.setData(result.first);
+        trackingOutport_.setData(result.second);
         newResults();
     });
 }
 
-// Basically a copy of ttkTrackingFromPersistenceDiagrams::buildMesh
+// Basically a copy of ttkTrackingFromPersistenceDiagrams::buildMesh apart from the dataframe
 template <typename dataType>
-void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
-                                   std::vector<std::vector<matchingTuple>> &outputMatchings,
-                                   std::vector<std::vector<diagramTuple>> &inputPersistenceDiagrams,
-                                   bool useGeometricSpacing, double spacing, bool DoPostProc,
-                                   std::vector<std::set<int>> &trackingTupleToMerged,
-                                   Mesh &outputMesh) {
+void TrackingFromFields::createOutputFromTracking(
+    std::vector<trackingTuple> &trackings, std::vector<std::vector<matchingTuple>> &outputMatchings,
+    std::vector<std::vector<diagramTuple>> &inputPersistenceDiagrams,
+    std::vector<std::set<int>> &trackingTupleToMerged, bool useGeometricSpacing, double spacing,
+    bool DoPostProc, const vec4 &minColor, const vec4 &maxColor, int outputMode, Mesh &outputMesh,
+    DataFrame &outputDf) {
+
     // Containerrs for vertices and lines
+    // (Ommitted in comparison with buildMesh: valueScalars, matchingIdScalars, lengthScalars)
     std::vector<vec3> vertices;
+    std::vector<vec4> colors;
     std::vector<uint32_t> indicesLines;
 
-    /*vtkSmartPointer<vtkDoubleArray> persistenceScalars = vtkSmartPointer<vtkDoubleArray>::New();
-    vtkSmartPointer<vtkDoubleArray> valueScalars = vtkSmartPointer<vtkDoubleArray>::New();
-    vtkSmartPointer<vtkIntArray> matchingIdScalars = vtkSmartPointer<vtkIntArray>::New();
-    vtkSmartPointer<vtkIntArray> lengthScalars = vtkSmartPointer<vtkIntArray>::New();
-    vtkSmartPointer<vtkIntArray> timeScalars = vtkSmartPointer<vtkIntArray>::New();
-    vtkSmartPointer<vtkIntArray> componentIds = vtkSmartPointer<vtkIntArray>::New();
-    vtkSmartPointer<vtkIntArray> pointTypeScalars = vtkSmartPointer<vtkIntArray>::New();
-    persistenceScalars->SetName("Cost");
-    valueScalars->SetName("Scalar");
-    matchingIdScalars->SetName("MatchingIdentifier");
-    lengthScalars->SetName("ComponentLength");
-    timeScalars->SetName("TimeStep");
-    componentIds->SetName("ConnectedComponentId");
-    pointTypeScalars->SetName("CriticalType");*/
+    std::vector<dataType> persistenceScalars;
+    std::vector<int> componentIds;
 
-    //};
+    std::vector<int> timescalars_1;
+    std::vector<int> pointTypeScalars_1;
+    std::vector<ttk::SimplexId> vertexIds_1;
+
+    std::vector<int> timescalars_2;
+    std::vector<int> pointTypeScalars_2;
+    std::vector<ttk::SimplexId> vertexIds_2;
 
     int currentMatching = 0;
     for (unsigned int k = 0; k < trackings.size(); ++k) {
         trackingTuple tt = trackings.at((unsigned long)k);
 
         int numStart = std::get<0>(tt);
-        //     int numEnd = std::get<1>(tt);
+        // int numEnd = std::get<1>(tt);
         std::vector<BIdVertex> chain = std::get<2>(tt);
-        int chainLength = chain.size();
+        int chainLength = (int)chain.size();
 
-        if (chain.size() <= 1) {
+        if (chainLength <= 1) {
             std::cout << "Got an unexpected 0-size chain." << std::endl;
             return;
         }
 
         // Go through one track
-        for (int c = 0; c < (int)chain.size() - 1; ++c) {
+        for (int c = 0; c < chainLength - 1; ++c) {
             std::vector<matchingTuple> &matchings1 = outputMatchings[numStart + c];
             int d1id = numStart + c;
             int d2id = d1id + 1;  // c % 2 == 0 ? d1id + 1 : d1id;
@@ -317,11 +336,32 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                 }
             }
 
+            /*
+            A diagramtuple contains:
+            0  - Id of vertex 1
+            1  - Critical type of vertex 1
+            2  - Id of vertex 2
+            3  - Critical tpye of vertex 1
+            4  - persistence value of pair
+            5  - value between 0 and 2 depending on the source of the pair?
+                0: join tree, 1: split tree, 2: ms complex for saddle-saddle (turned off)
+            6  - scalar value at vertex 1
+            7  - x position at vertex 1
+            8  - y position at vertex 1
+            9  - z position at vertex 1
+            10 - scalar value at vertex 2
+            11 - x position at vertex 2
+            12 - y position at vertex 2
+            13 - z position at vertex 2
+            */
             diagramTuple tuple1 = diagram1[n1];
             diagramTuple tuple2 = diagram2[n2];
 
             double x1, y1, z1, x2, y2, z2;
+            ttk::SimplexId vertexId1, vertexId2;
+            vec4 color1, color2;
 
+            // Which value is the tracked one
             BNodeType point1Type1 = std::get<1>(tuple1);
             BNodeType point1Type2 = std::get<3>(tuple1);
             BNodeType point1Type = point1Type1 == BLocalMax || point1Type2 == BLocalMax
@@ -331,15 +371,21 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                                              : point1Type1 == BSaddle2 || point1Type2 == BSaddle2
                                                    ? BSaddle2
                                                    : BSaddle1;
+            if ((point1Type == BLocalMax && outputMode == 1) ||
+                (point1Type == BLocalMin && outputMode == 0))
+                break;
             bool t11Min = point1Type1 == BLocalMin;
             bool t11Max = point1Type1 == BLocalMax;
             bool t12Min = point1Type2 == BLocalMin;
             bool t12Max = point1Type2 == BLocalMax;
             bool bothEx1 = (t11Min && t12Max) || (t11Max && t12Min);
             if (bothEx1) {
+                // If the second point is the max, take the max
                 x1 = t12Max ? std::get<11>(tuple1) : std::get<7>(tuple1);
                 y1 = t12Max ? std::get<12>(tuple1) : std::get<8>(tuple1);
                 z1 = t12Max ? std::get<13>(tuple1) : std::get<9>(tuple1);
+                vertexId1 = t12Max ? std::get<2>(tuple1) : std::get<0>(tuple1);
+                color1 = t12Max ? maxColor : minColor;
                 if (useGeometricSpacing) z1 += spacing * (numStart + c);
             } else {
                 x1 = t12Max ? std::get<11>(tuple1)
@@ -351,6 +397,9 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                 z1 = t12Max ? std::get<13>(tuple1)
                             : t11Min ? std::get<9>(tuple1)
                                      : (std::get<9>(tuple1) + std::get<13>(tuple1)) / 2;
+                // Not sure why we compute half of a position between two points in the ?
+                vertexId1 = t12Max ? std::get<2>(tuple1) : std::get<0>(tuple1);
+                color1 = t12Max ? maxColor : minColor;
                 if (useGeometricSpacing) z1 += spacing * (numStart + c);
             }
 
@@ -402,6 +451,7 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                             x1 = t12Max ? std::get<11>(tupleN) : std::get<7>(tupleN);
                             y1 = t12Max ? std::get<12>(tupleN) : std::get<8>(tupleN);
                             z1 = t12Max ? std::get<13>(tupleN) : std::get<9>(tupleN);
+                            vertexId1 = t12Max ? std::get<2>(tupleN) : std::get<0>(tupleN);
                             if (useGeometricSpacing) z1 += spacing * (numStart + c);
                         } else {
                             x1 = t12Max ? std::get<11>(tupleN)
@@ -413,6 +463,8 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                             z1 = t12Max ? std::get<13>(tupleN)
                                         : t11Min ? std::get<9>(tupleN)
                                                  : (std::get<9>(tupleN) + std::get<13>(tupleN)) / 2;
+                            vertexId1 = t12Max ? std::get<2>(tupleN) : std::get<0>(tupleN);
+                            color1 = t12Max ? maxColor : minColor;
                             if (useGeometricSpacing) z1 += spacing * (numStart + c);
                         }
                         // std::cout << "xyz " << x1 << ", " << y1 << ", " << z1 <<
@@ -421,12 +473,14 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                 }
             }
 
+            vertexIds_1.push_back(vertexId1);
             vertices.push_back(vec3(x1, y1, z1));
+            colors.push_back(color1);
 
             ids[0] = 2 * currentMatching;
-            // pointTypeScalars->InsertTuple1(ids[0], (double)(int)point1Type);
-            // timeScalars->InsertTuple1(ids[0], (double)numStart + c);
-            // componentIds->InsertTuple1(ids[0], cid);
+            pointTypeScalars_1.push_back((int)point1Type);
+            timescalars_1.push_back(numStart + c);
+            componentIds.push_back(cid);
 
             BNodeType point2Type1 = std::get<1>(tuple2);
             BNodeType point2Type2 = std::get<3>(tuple2);
@@ -444,6 +498,8 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                 x2 = point2Type2 == BLocalMax ? std::get<11>(tuple2) : std::get<7>(tuple2);
                 y2 = point2Type2 == BLocalMax ? std::get<12>(tuple2) : std::get<8>(tuple2);
                 z2 = point2Type2 == BLocalMax ? std::get<13>(tuple2) : std::get<9>(tuple2);
+                vertexId2 = point2Type2 == BLocalMax ? std::get<2>(tuple2) : std::get<0>(tuple2);
+                color2 = point2Type2 == BLocalMax ? maxColor : minColor;
                 if (useGeometricSpacing) z2 += spacing * (numStart + c + 1);
             } else {
                 x2 = t22Ex ? std::get<11>(tuple2)
@@ -455,49 +511,56 @@ void TrackingFromFields::buildMesh(std::vector<trackingTuple> &trackings,
                 z2 = t22Ex ? std::get<13>(tuple2)
                            : t21Ex ? std::get<9>(tuple2)
                                    : (std::get<9>(tuple2) + std::get<13>(tuple2)) / 2;
+                vertexId2 = t22Ex ? std::get<2>(tuple2) : std::get<0>(tuple2);
+                color2 = t22Ex ? maxColor : minColor;
                 if (useGeometricSpacing) z2 += spacing * (numStart + c + 1);
             }
-            // points->InsertNextPoint(x2, y2, z2);
+
+            vertexIds_2.push_back(vertexId2);
             vertices.push_back(vec3(x2, y2, z2));
+            colors.push_back(color2);
             ids[1] = 2 * currentMatching + 1;
-            // pointTypeScalars->InsertTuple1(ids[1], (double)(int)point2Type);
-            // timeScalars->InsertTuple1(ids[1], (double)numStart + c);
 
-            // Postproc component ids.
-            // componentIds->InsertTuple1(ids[1], cid);
+            pointTypeScalars_2.push_back((int)point2Type);
+            timescalars_2.push_back(numStart + c + 1);
 
-            // Eqivalent for: persistenceDiagram->InsertNextCell(VTK_LINE, 2, ids);
+            // No splits being processed??? -> Always same component Id here as for the first point
+            // componentIds_2.push_back(cid);
+
             indicesLines.push_back(static_cast<uint32_t>(ids[0]));
             indicesLines.push_back(static_cast<uint32_t>(ids[1]));
 
-            // persistenceScalars->InsertTuple1(currentMatching, cost);
-            // valueScalars->InsertTuple1(currentMatching,
-            //                           (std::get<10>(tuple1) + std::get<10>(tuple2)) / 2);
-            // matchingIdScalars->InsertTuple1(currentMatching, currentMatching);
-            // lengthScalars->InsertTuple1(currentMatching, chainLength);
+            persistenceScalars.push_back(cost);
 
             currentMatching++;
         }
     }
 
-    /*persistenceDiagram->SetPoints(points);
-    persistenceDiagram->GetCellData()->AddArray(persistenceScalars);
-    persistenceDiagram->GetCellData()->AddArray(valueScalars);
-    persistenceDiagram->GetCellData()->AddArray(matchingIdScalars);
-    persistenceDiagram->GetCellData()->AddArray(lengthScalars);
-    persistenceDiagram->GetPointData()->AddArray(timeScalars);
-    persistenceDiagram->GetPointData()->AddArray(componentIds);
-    persistenceDiagram->GetPointData()->AddArray(pointTypeScalars);*/
-
     // Add Buffers to the mesh
-    auto vertexRAM = std::make_shared<BufferRAMPrecision<vec3>>(std::move(vertices));
     outputMesh.addBuffer(Mesh::BufferInfo(BufferType::PositionAttrib),
-                         std::make_shared<Buffer<vec3>>(vertexRAM));
+                         util::makeBuffer(std::move(vertices)));
+
+    outputMesh.addBuffer(Mesh::BufferInfo(BufferType::ColorAttrib),
+                         util::makeBuffer(std::move(colors)));
 
     if (!indicesLines.empty()) {
         outputMesh.addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                               util::makeIndexBuffer(std::move(indicesLines)));
     }
+
+    // Add buffers to the dataframe
+    outputDf.addColumnFromBuffer("Vertex Id Start", util::makeBuffer<int>(std::move(vertexIds_1)));
+    outputDf.addColumnFromBuffer("Critical Type Start",
+                                 util::makeBuffer<int>(std::move(pointTypeScalars_1)));
+    outputDf.addColumnFromBuffer("Time Start", util::makeBuffer<int>(std::move(timescalars_1)));
+    outputDf.addColumnFromBuffer("Vertex Id End", util::makeBuffer<int>(std::move(vertexIds_2)));
+    outputDf.addColumnFromBuffer("Critical Type End",
+                                 util::makeBuffer<int>(std::move(pointTypeScalars_2)));
+    outputDf.addColumnFromBuffer("Time End", util::makeBuffer<int>(std::move(timescalars_2)));
+    outputDf.addColumnFromBuffer("Cost", util::makeBuffer<dataType>(std::move(persistenceScalars)));
+    outputDf.addColumnFromBuffer("Component Id", util::makeBuffer<int>(std::move(componentIds)));
+
+    outputDf.updateIndexBuffer();
 }
 
 }  // namespace inviwo

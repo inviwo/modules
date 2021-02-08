@@ -31,6 +31,7 @@
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 #include <inviwo/topologytoolkit/ports/triangulationdataport.h>
+#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/poolprocessor.h>
@@ -41,6 +42,7 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -82,7 +84,9 @@ namespace inviwo {
  *      + __<Prop2>__ z weight
  *	 * __output__
  *      + __<Prop2>__ Force z translation
+ *      + __<Prop2>__ z translation value
  *      + __<Prop2>__ Overwrite Transformation
+ *      + __<Prop2>__ Colors in mesh
  */
 class IVW_MODULE_TOPOLOGYTOOLKIT_API TrackingFromFields : public PoolProcessor {
 public:
@@ -95,16 +99,20 @@ public:
     static const ProcessorInfo processorInfo_;
 
     template <typename dataType>
-    static void buildMesh(std::vector<trackingTuple> &trackings,
-                   std::vector<std::vector<matchingTuple>> &outputMatchings,
-                   std::vector<std::vector<diagramTuple>> &inputPersistenceDiagrams,
-                          bool useGeometricSpacing, double spacing, bool DoPostProc,
-                          std::vector<std::set<int>> &trackingTupleToMerged, Mesh &outputMesh);
+    static void createOutputFromTracking(
+        std::vector<trackingTuple> &trackings,
+        std::vector<std::vector<matchingTuple>> &outputMatchings,
+        std::vector<std::vector<diagramTuple>> &inputPersistenceDiagrams,
+        std::vector<std::set<int>> &trackingTupleToMerged, bool useGeometricSpacing, double spacing,
+        bool DoPostProc, const vec4 &minColor, const vec4 &maxColor, int outputMode, Mesh &outputMesh,
+        DataFrame &outputDf);
 
 private:
+    // Todo: Add a triangulation input in order to not do this comutation inside this processor
     VolumeSequenceInport scalarsInport_;
 
     MeshOutport outport_;
+    DataFrameOutport trackingOutport_;
 
     CompositeProperty diagrams_;
     /* Temporal sampling (take every N timestep). */
@@ -120,8 +128,10 @@ private:
     /* Blending coefficient for the cost evaluation of each critical point matching.
     By default (1), only distances in the persistence diagrams are considered between matched
     critical points.
-    When set to 0, only distances in the original 3D domain are considered between matched critical
-    points. */
+    When set to (0), only distances in the original 3D domain are considered between matched
+    critical points. Actually: Alpha is propegated through many functions, but never used anywhere
+    in the code
+    */
     FloatProperty alpha_;
     /* Importance weight for extrema */
     FloatProperty extremumWeight_;
@@ -138,9 +148,12 @@ private:
     This is useful to visualize the matching between the diagrams of two 2D scalar fields. */
     BoolProperty forceZTranslation_;
     FloatProperty zTranslation_;
+
+    TemplateOptionProperty<int> outputMode_;
     // Additional properties on the output could be possible
     // BoolProperty filterByLength_;
     BoolProperty overwriteTransform_;
+    TopologyColorsProperty colors_;
 
     ttk::TrackingFromFields trackingF_;
     ttk::TrackingFromPersistenceDiagrams tracking_;
