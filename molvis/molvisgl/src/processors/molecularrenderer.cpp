@@ -33,12 +33,15 @@
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/shader/shadertype.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/molvisbase/util/chain.h>
 #include <inviwo/molvisbase/algorithm/boundingbox.h>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -236,11 +239,21 @@ void MolecularRenderer::configureVdWShader(Shader& shader) {
 void MolecularRenderer::configureLicoriceShader(Shader& shader) {
     utilgl::addDefines(shader, lighting_);
 
-    shader.getFragmentShaderObject()->addShaderExtension("GL_ARB_conservative_depth", true);
+    const bool arbExt = OpenGLCapabilities::isExtensionSupported("GL_ARB_conservative_depth");
+    const bool extExt = OpenGLCapabilities::isExtensionSupported("GL_EXT_conservative_depth");
+    if (arbExt || extExt) {
+        using namespace std::literals;
+        const std::string_view ext =
+            arbExt ? "GL_ARB_conservative_depth"sv : "GL_EXT_conservative_depth"sv;
+        shader.getFragmentShaderObject()->addShaderExtension(ext, true);
 
-    ShaderObject::OutDeclaration outdecl;
-    outdecl.decl = "layout (depth_greater) out float gl_FragDepth;";
-    shader.getFragmentShaderObject()->addOutDeclaration(outdecl);
+        ShaderObject::OutDeclaration outdecl;
+        // even though the driver might report that the extension is supported, it might not be
+        // available in the shader. Therefore we need to wrap it with an ifdef block.
+        outdecl.decl =
+            fmt::format("#ifdef {}\nlayout (depth_greater) out float gl_FragDepth;\n#endif", ext);
+        shader.getFragmentShaderObject()->addOutDeclaration(outdecl);
+    }
 
     shader.build();
 }
