@@ -43,8 +43,6 @@
 #include <charconv>
 #include <fmt/format.h>
 
-#pragma optimize("", off)
-
 namespace inviwo {
 
 BasicPDBReader::BasicPDBReader() {
@@ -77,13 +75,26 @@ bool fromStr(std::string_view value, T& dest) {
             return false;
         }
     } else {
-        std::istringstream stream{trimmed};
+        std::istringstream stream{std::string{trimmed}};
         stream >> dest;
     }
     return true;
 }
 
 }  // namespace detail
+
+template <typename T>
+T parseSection(std::string_view line, size_t begin, size_t size, std::string_view tag,
+               std::string_view desc, int lineNumber) {
+    T res = T{};
+    if (!detail::fromStr(line.substr(begin, size), res)) {
+        throw DataReaderException(
+            fmt::format("BasicPDBReader: invalid {} entry detected{} ({})\n'{}'", tag,
+                        desc.empty() ? "" : fmt::format(", {}", desc), lineNumber, line),
+            IVW_CONTEXT_CUSTOM("BasicPDBReader"));
+    }
+    return res;
+}
 
 std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::string& fileName) {
     auto file = filesystem::ifstream(fileName);
@@ -106,51 +117,35 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::
     auto parseline = [&](std::string_view line) {
         ++lineNumber;
 
-        auto parseException = [&](std::string_view tag, std::string_view msg) {
-            throw DataReaderException(
-                fmt::format("BasicPDBReader: invalid {} entry detected{} ({})\n'{}'", tag,
-                            msg.empty() ? "" : fmt::format(", {}", msg), lineNumber, line),
-                IVW_CONTEXT);
-        };
-
         if (line.substr(0, 5) == "MODEL") {
-            if (!detail::fromStr(line.substr(10, 4), currentModel)) {
-                parseException("MODEL", "invalid model serial number");
-            }
+            currentModel =
+                parseSection<int>(line, 10, 4, "MODEL", "invalid model serial number", lineNumber);
         } else if ((line.substr(0, 4) == "ATOM") || (line.substr(0, 6) == "HETATM")) {
             const std::string_view tag = util::trim(line.substr(0, 6));
 
-            int serialNumber = -1;
-            if (!detail::fromStr(line.substr(6, 5), serialNumber)) {
-                parseException(tag, "invalid serial number");
-            }
+            [[maybe_unused]] const int serialNumber =
+                parseSection<int>(line, 6, 5, tag, "invalid serial number", lineNumber);
             std::string_view fullName(util::trim(line.substr(12, 4)));
             std::string_view element(util::trim(line.substr(76, 2)));
             std::string_view residueName(util::trim(line.substr(17, 4)));
             std::string_view chainName(util::trim(line.substr(21, 1)));
 
-            int residueId = -1;
-            if (!detail::fromStr(line.substr(22, 4), residueId)) {
-                parseException(tag, "invalid residue sequence number");
-            }
-            dvec3 pos(0.0);
-            if (!detail::fromStr(line.substr(30, 8), pos.x) ||
-                !detail::fromStr(line.substr(38, 8), pos.y) ||
-                !detail::fromStr(line.substr(46, 8), pos.z)) {
-                parseException(tag, "invalid position");
-            }
-            double [[maybe_unused]] occupancy = 0.0;
-            if (!detail::fromStr(line.substr(54, 6), occupancy)) {
-                parseException(tag, "invalid occupancy");
-            }
-            double bFactor = 0.0;
-            if (!detail::fromStr(line.substr(60, 6), bFactor)) {
-                parseException(tag, "invalid temperature factor");
-            }
-            double [[maybe_unused]] charge = 0.0;
+            const int residueId =
+                parseSection<int>(line, 22, 4, tag, "invalid residue sequence number", lineNumber);
+
+            const dvec3 pos{parseSection<double>(line, 30, 8, tag, "invalid position", lineNumber),
+                            parseSection<double>(line, 38, 8, tag, "invalid position", lineNumber),
+                            parseSection<double>(line, 46, 8, tag, "invalid position", lineNumber)};
+
+            const double bFactor =
+                parseSection<double>(line, 60, 6, tag, "invalid temperature factor", lineNumber);
+            [[maybe_unused]] const double occupancy =
+                parseSection<double>(line, 54, 6, tag, "invalid occupancy", lineNumber);
+            // charge is optional and might not exist in PDB file
+            [[maybe_unused]] double charge = 0.0;
             detail::fromStr(line.substr(78, 2), charge);
 
-            molvis::ChainId chain = molvis::chain::fromName(line.substr(21, 1));
+            molvis::ChainId chain = molvis::chain::fromName(chainName);
             int chainId = molvis::chain::id(chain);
             if (!molvis::findChain(data, chainId)) {
                 data.chains.push_back({chainId, std::string(molvis::chain::name(chain))});
@@ -165,7 +160,7 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::
             data.atoms.chainIds.push_back(chainId);
             data.atoms.residueIds.push_back(residueId);
             data.atoms.atomicNumbers.push_back(molvis::element::fromAbbr(element));
-            data.atoms.fullNames.push_back(std::string(fullName));
+            data.atoms.fullNames.emplace_back(fullName);
         }
     };
 

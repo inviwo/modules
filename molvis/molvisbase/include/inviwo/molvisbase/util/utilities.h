@@ -31,6 +31,8 @@
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
 #include <inviwo/core/util/glmvec.h>
 
+#include <glm/ext/scalar_constants.hpp>
+
 #include <string_view>
 
 namespace inviwo {
@@ -47,7 +49,57 @@ constexpr vec4 colorFromHex(unsigned int c) noexcept {
     return vec4{(c >> 0) & 0xff, (c >> 8) & 0xff, (c >> 16) & 0xff, (c >> 24) & 0xff} / 255.0f;
 }
 
-IVW_MODULE_MOLVISBASE_API vec4 colorFromHash(uint64_t hash);
+namespace detail {
+
+constexpr vec3 hclToRgb(vec3 hcl) noexcept {
+    constexpr float hclgamma = 3;
+    constexpr float hcly0 = 100;
+    constexpr float hclmaxL = 0.530454533953517f;  // == exp(hclgamma / hcly0) - 0.5
+
+    vec3 rgb = vec3(0);
+    if (hcl.z != 0) {
+        float H = hcl.x;
+        float C = hcl.y;
+        float L = hcl.z * hclmaxL;
+        float Q = exp((1 - C / (2 * L)) * (hclgamma / hcly0));
+        float U = (2 * L - C) / (2 * Q - 1);
+        float V = C / Q;
+        float T = tan((H + glm::min(glm::fract(2.0f * H) / 4.f, glm::fract(-2.0f * H) / 8.0f)) *
+                      glm::pi<float>() * 2.0f);
+        H *= 6.0f;
+        if (H <= 1) {
+            rgb.r = 1;
+            rgb.g = T / (1 + T);
+        } else if (H <= 2) {
+            rgb.r = (1 + T) / T;
+            rgb.g = 1;
+        } else if (H <= 3) {
+            rgb.g = 1;
+            rgb.b = 1 + T;
+        } else if (H <= 4) {
+            rgb.g = 1 / (1 + T);
+            rgb.b = 1;
+        } else if (H <= 5) {
+            rgb.r = -1 / T;
+            rgb.b = 1;
+        } else {
+            rgb.r = 1;
+            rgb.b = -T;
+        }
+        rgb = rgb * V + U;
+    }
+    return rgb;
+}
+
+}  // namespace detail
+
+constexpr vec4 colorFromHash(uint64_t hash) {
+    const float chroma = 0.8f;
+    const float luminance = 0.90f;
+    const uint64_t mod = 21;
+    const float hue = (hash % mod) / (float)mod;
+    return vec4(detail::hclToRgb({hue, chroma, luminance}), 1.0f);
+}
 
 }  // namespace molvisutil
 

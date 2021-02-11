@@ -143,7 +143,6 @@ computeBackboneSegments(const MolecularData& data,
 
             // locate atoms
             for (auto& atomIdx : resAtoms) {
-                const Element elem = data.atoms.atomicNumbers[atomIdx];
                 switch (data.atoms.atomicNumbers[atomIdx]) {
                     case Element::N:
                         if (!seg.n) seg.n = atomIdx;

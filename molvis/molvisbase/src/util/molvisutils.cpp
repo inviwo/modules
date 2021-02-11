@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -187,7 +188,6 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
 
     std::vector<Bond> bonds;
     for (auto&& [atom1, pos] : util::enumerate(atoms.positions)) {
-        const auto cell = cellCoord(pos);
         const auto minCell = cellCoord(pos - maxCovalentBondLength);
         const auto maxCell = cellCoord(pos + maxCovalentBondLength);
 

@@ -68,8 +68,7 @@ IVW_MODULE_MOLVISBASE_API std::optional<Chain> findChain(const MolecularData& da
  */
 IVW_MODULE_MOLVISBASE_API std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms,
                                                                    std::string_view fullAtomName,
-                                                                   int residueId,
-                                                                   int chainId);
+                                                                   int residueId, int chainId);
 
 /**
  * determine peptide type of a residue

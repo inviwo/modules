@@ -122,8 +122,29 @@ constexpr std::array<glm::vec4, num_aminoacids> colorsUgene = util::make_array<n
 // AminoAcid functions
 constexpr AminoAcid aminoacid(int index) noexcept { return static_cast<AminoAcid>(index); }
 constexpr int index(AminoAcid a) noexcept { return static_cast<int>(a); }
+/**
+ * returns the full name of the given amino acid \p a.
+ * For example `AminoAcid::Asp` will yield `"Aspartic acid"`.
+ *
+ * @param a  amino acid
+ * @return full name of amino acid
+ */
 constexpr std::string_view name(AminoAcid a) noexcept { return detail::names[index(a)]; }
+/**
+ * returns the official single letter representation of the given amino acid \p a. *
+ * For example `AminoAcid::Asp` will yield `"D"`.
+ *
+ * @param a  amino acid
+ * @return single letter representing the amino acid
+ */
 constexpr std::string_view letter(AminoAcid a) noexcept { return {&detail::letter[index(a)], 1}; }
+/**
+ * returns the official three letter name of the given amino acid \p a.
+ * For example `AminoAcid::Asp` will yield `"Asp"`.
+ *
+ * @param a  amino acid
+ * @return three letter name of the amino acid
+ */
 constexpr std::string_view symbol(AminoAcid a) noexcept { return detail::symbols[index(a)]; }
 constexpr vec4 color(AminoAcid a) noexcept { return detail::colorsAmino[index(a)]; }
 constexpr vec4 color(AminoAcid a, Colormap map) noexcept {
@@ -139,6 +160,11 @@ constexpr vec4 color(AminoAcid a, Colormap map) noexcept {
     }
 }
 
+/**
+ * create an AminoAcid from a single letter.
+ *
+ * Returns AminoAcid::Unknown if \p letter does not have a length of 1 or is invalid.
+ */
 constexpr AminoAcid fromLetter(std::string_view letter) noexcept {
     if (letter.size() != 1) return AminoAcid::Unknown;
     const char c = (letter[0] >= 'a' && letter[0] <= 'z') ? letter[0] - 'a' + 'A' : letter[0];
@@ -147,12 +173,16 @@ constexpr AminoAcid fromLetter(std::string_view letter) noexcept {
     return aminoacid(static_cast<int>(it - detail::letter.begin()));
 }
 
+/**
+ * create an AminoAcid from a three letter abbreviation. Returns AminoAcid::Unknown if \p abbr does
+ * not have a length of 3 or is invalid.
+ */
 constexpr AminoAcid fromAbbr(std::string_view abbr) noexcept {
     if (abbr.size() != 3) return AminoAcid::Unknown;
     const std::array<char, 3> str = {
-        (abbr[0] >= 'a' && abbr[0] <= 'z') ? abbr[0] - 'a' + 'A' : abbr[0],
-        (abbr[1] >= 'A' && abbr[1] <= 'Z') ? abbr[1] - 'A' + 'a' : abbr[1],
-        (abbr[2] >= 'A' && abbr[2] <= 'Z') ? abbr[2] - 'A' + 'a' : abbr[2]};
+        (abbr[0] >= 'a' && abbr[0] <= 'z') ? static_cast<char>(abbr[0] - 'a' + 'A') : abbr[0],
+        (abbr[1] >= 'A' && abbr[1] <= 'Z') ? static_cast<char>(abbr[1] - 'A' + 'a') : abbr[1],
+        (abbr[2] >= 'A' && abbr[2] <= 'Z') ? static_cast<char>(abbr[2] - 'A' + 'a') : abbr[2]};
     auto it =
         std::find(detail::symbols.begin(), detail::symbols.end(), std::string_view(str.data(), 3));
     if (it == detail::symbols.end()) {
@@ -161,6 +191,12 @@ constexpr AminoAcid fromAbbr(std::string_view abbr) noexcept {
     return aminoacid(static_cast<int>(it - detail::symbols.begin()));
 }
 
+/**
+ * create an AminoAcid from a string by either interpreting the first three letters as abbreviation
+ * or, if that fails, return an AminoAcid matching the first letter.
+ *
+ * \see fromAbbr, fromLetter
+ */
 constexpr AminoAcid fromFullName(std::string_view fullName) noexcept {
     const auto trimmed = util::trim(fullName);
     if (auto elem = fromAbbr(trimmed.substr(0, 3)); elem != AminoAcid::Unknown) {

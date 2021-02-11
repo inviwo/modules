@@ -37,6 +37,7 @@
 
 #include <optional>
 #include <iostream>
+#include <unordered_map>
 #include <string_view>
 #include <fmt/format.h>
 
@@ -186,6 +187,9 @@ struct fmt::formatter<inviwo::molvis::PeptideType> : fmt::formatter<std::string_
                 break;
             case inviwo::molvis::PeptideType::General:
                 name = "General";
+                break;
+            case inviwo::molvis::PeptideType::Unknown:
+            default:
                 break;
         }
         return formatter<string_view>::format(name, ctx);

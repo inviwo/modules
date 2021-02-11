@@ -106,7 +106,7 @@ private:
     FloatProperty radiusScaling_;
     BoolProperty forceRadius_;
     FloatProperty defaultRadius_;
-    
+
     BoolProperty enableTooltips_;
 
     CameraProperty camera_;

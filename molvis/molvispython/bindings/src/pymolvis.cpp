@@ -216,7 +216,7 @@ void exposeAminoAcid(pybind11::module& m) {
     auto colors = m.def_submodule("colors", "Various color lookup tables");
     colors.attr("amino") = py::cast(aminoacid::detail::colorsAmino);
     colors.attr("shapely") = py::cast(aminoacid::detail::colorsShapely);
-    colors.attr("ugene") = py::cast(aminoacid::detail::colorsUgene);;
+    colors.attr("ugene") = py::cast(aminoacid::detail::colorsUgene);
 
     py::enum_<aminoacid::Colormap>(m, "Colormap")
         .value("Amino", aminoacid::Colormap::Amino)

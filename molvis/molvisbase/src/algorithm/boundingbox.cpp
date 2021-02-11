@@ -67,8 +67,9 @@ mat4 boundingBox(const MolecularStructure& structure) {
     return m;
 }
 
-mat4 boundingBox(const std::vector<std::shared_ptr<const MolecularStructure>>& structures) {
-    if (structures.empty()) return mat4(0.0f);
+template <typename const_iterator>
+mat4 boundingBox(const_iterator begin, const_iterator end) {
+    if (begin == end) return mat4(0.0f);
 
     vec3 worldMin(std::numeric_limits<float>::max());
     vec3 worldMax(std::numeric_limits<float>::lowest());
@@ -77,7 +78,8 @@ mat4 boundingBox(const std::vector<std::shared_ptr<const MolecularStructure>>& s
                                          vec3{0, 1, 0}, vec3{0, 0, 1}, vec3{1, 0, 1},
                                          vec3{1, 1, 1}, vec3{0, 1, 1}};
     bool validBbox = false;
-    for (const auto& structure : structures) {
+    while (begin != end) {
+        auto structure = *begin++;
         if (!structure->hasAtoms()) continue;
         validBbox = true;
         auto bb = boundingBox(*structure);
@@ -109,7 +111,7 @@ std::function<std::optional<mat4>()> boundingBox(const MolecularStructureInport&
 std::function<std::optional<mat4>()> boundingBox(const MolecularStructureMultiInport& structures) {
     return [port = &structures]() -> std::optional<mat4> {
         if (port->hasData()) {
-            return boundingBox(port->getVectorData());
+            return boundingBox(port->begin(), port->end());
         } else {
             return std::nullopt;
         }
@@ -120,7 +122,7 @@ std::function<std::optional<mat4>()> boundingBox(
     const MolecularStructureFlatMultiInport& structures) {
     return [port = &structures]() -> std::optional<mat4> {
         if (port->hasData()) {
-            return boundingBox(port->getVectorData());
+            return boundingBox(port->begin(), port->end());
         } else {
             return std::nullopt;
         }

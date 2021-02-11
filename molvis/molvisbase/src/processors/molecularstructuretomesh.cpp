@@ -97,7 +97,7 @@ void MolecularStructureToMesh::process() {
         if (auto buf = mesh->findBuffer(BufferType::ColorAttrib); buf.first) {
             mesh->removeBuffer(buf.first);
         }
-        mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors())));
+        mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(colors()));
     }
 
     outport_.setData(mesh);

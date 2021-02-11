@@ -248,9 +248,9 @@ constexpr Element fromAbbr(std::string_view abbr) noexcept {
     constexpr auto lookup = [=]() {
         constexpr int size = 1 + ('Z' - 'A') * ('z' - 'a' + 2);
         std::array<Element, size> table = {Element::Unknown};
-        for (int i = 0; i < detail::symbols.size(); ++i) {
+        for (size_t i = 0; i < detail::symbols.size(); ++i) {
             const auto ind = index(detail::symbols[i]);
-            table[ind] = element(i);
+            table[ind] = element(static_cast<int>(i));
         }
         return table;
     }();

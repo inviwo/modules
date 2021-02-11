@@ -43,8 +43,7 @@ namespace inviwo {
  *
  * \see https://www.wwpdb.org/documentation/file-format-content/format33/sect9.html#ATOM
  */
-class IVW_MODULE_MOLVISBASE_API BasicPDBReader
-    : public DataReaderType<molvis::MolecularStructure> {
+class IVW_MODULE_MOLVISBASE_API BasicPDBReader : public DataReaderType<molvis::MolecularStructure> {
 public:
     BasicPDBReader();
     BasicPDBReader(const BasicPDBReader&) = default;
