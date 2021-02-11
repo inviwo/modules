@@ -189,8 +189,31 @@ void MolecularRenderer::process() {
         shader.deactivate();
     };
 
-    for (auto structure : inport_) {
-        auto mesh = createMesh(*structure);
+    const bool updateColorMap = [&]() {
+        if (coloring_.isModified()) return true;
+        switch (coloring_) {
+            case Coloring::Atoms:
+                return atomColormap_.isModified();
+            case Coloring::Residues:
+                return aminoColormap_.isModified();
+            case Coloring::Fixed:
+                return fixedColor_.isModified();
+            case Coloring::Chains:
+            default:
+                return false;
+        }
+    }();
+
+    if (meshes_.empty() || inport_.isChanged() || updateColorMap) {
+        meshes_.clear();
+        for (auto structure : inport_) {
+            meshes_.push_back(createMesh(*structure,
+                                         {coloring_, atomColormap_, aminoColormap_, fixedColor_},
+                                         atomPicking_.getPickingId(0)));
+        }
+    }
+
+    for (auto mesh : meshes_) {
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo()};
         switch (representation_) {
@@ -258,7 +281,8 @@ void MolecularRenderer::configureLicoriceShader(Shader& shader) {
     shader.build();
 }
 
-std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStructure& s) const {
+std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStructure& s,
+                                                    ColorMapping colormap, size_t pickingId) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -270,17 +294,17 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
         util::transform(s.atoms().positions, [](const dvec3& p) { return glm::vec3{p}; })};
 
     std::vector<vec4> colors = [&]() {
-        switch (coloring_) {
+        switch (colormap.coloring) {
             case Coloring::Atoms:
                 if (!s.atoms().atomicNumbers.empty()) {
                     std::vector<vec4> colors;
                     for (auto elem : s.atoms().atomicNumbers) {
-                        colors.emplace_back(element::color(elem, atomColormap_));
+                        colors.emplace_back(element::color(elem, colormap.atoms));
                     }
                     return colors;
                 } else {
                     return std::vector<vec4>(atomCount,
-                                             element::color(Element::Unknown, atomColormap_));
+                                             element::color(Element::Unknown, colormap.atoms));
                 }
             case Coloring::Residues:
                 if (s.hasResidues()) {
@@ -288,12 +312,12 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
                     const auto& residues = s.residues();
                     for (auto resIndex : s.getResidueIndices()) {
                         colors.emplace_back(
-                            aminoacid::color(residues[resIndex].aminoacid, aminoColormap_));
+                            aminoacid::color(residues[resIndex].aminoacid, colormap.aminoacids));
                     }
                     return colors;
                 } else {
-                    return std::vector<vec4>(atomCount,
-                                             aminoacid::color(AminoAcid::Unknown, aminoColormap_));
+                    return std::vector<vec4>(
+                        atomCount, aminoacid::color(AminoAcid::Unknown, colormap.aminoacids));
                 }
             case Coloring::Chains:
                 if (s.hasChains()) {
@@ -307,7 +331,7 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
                 }
             case Coloring::Fixed:
             default:
-                return std::vector<vec4>(atomCount, fixedColor_);
+                return std::vector<vec4>(atomCount, colormap.fixedColor);
         }
     }();
 
@@ -326,8 +350,7 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radii)));
 
     std::vector<uint32_t> picking(atomCount);
-    std::iota(std::begin(picking), std::end(picking),
-              static_cast<uint32_t>(atomPicking_.getPickingId(0)));
+    std::iota(std::begin(picking), std::end(picking), static_cast<uint32_t>(pickingId));
     mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
 
     // atoms

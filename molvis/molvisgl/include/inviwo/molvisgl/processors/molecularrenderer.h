@@ -46,6 +46,7 @@
 
 namespace inviwo {
 
+class Mesh;
 class PickingEvent;
 
 /** \docpage{org.inviwo.MolecularRenderer, Molecular Renderer}
@@ -85,12 +86,20 @@ private:
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };
     enum class Coloring { Atoms, Residues, Chains, Fixed };
 
+    struct ColorMapping {
+        Coloring coloring;
+        molvis::element::Colormap atoms;
+        molvis::aminoacid::Colormap aminoacids;
+        vec4 fixedColor;
+    };
+
     const float BallAndStickVDWScale = 0.3f;
     const float BallAndStickLicoriceScale = 0.5f;
 
     void configureVdWShader(Shader& shader);
     void configureLicoriceShader(Shader& shader);
-    std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s) const;
+    static std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s,
+                                            ColorMapping colormap, size_t pickingId);
 
     molvis::MolecularStructureFlatMultiInport inport_;
     ImageInport imageInport_;
@@ -116,6 +125,8 @@ private:
     MeshShaderCache vdwShaders_;
     MeshShaderCache licoriceShaders_;
     PickingMapper atomPicking_;
+
+    std::vector<std::shared_ptr<Mesh>> meshes_;
 };
 
 }  // namespace inviwo
