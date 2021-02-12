@@ -48,7 +48,7 @@ namespace molvis {
  * @return matching residue if found, std::nullopt otherwise
  */
 IVW_MODULE_MOLVISBASE_API std::optional<Residue> findResidue(const MolecularData& data,
-                                                             size_t residueId, size_t chainId);
+                                                             int residueId, int chainId);
 
 /**
  * find a chain in \p data matching the \p chainId.
@@ -56,7 +56,7 @@ IVW_MODULE_MOLVISBASE_API std::optional<Residue> findResidue(const MolecularData
  * @param data   only considers the list of chains
  * @return matching residue if found, std::nullopt otherwise
  */
-IVW_MODULE_MOLVISBASE_API std::optional<Chain> findChain(const MolecularData& data, size_t chainId);
+IVW_MODULE_MOLVISBASE_API std::optional<Chain> findChain(const MolecularData& data, int chainId);
 
 /**
  * get the global index of an atom in \p atoms. Both \p fullAtomName, \p residueId, and \p chainId
@@ -68,14 +68,23 @@ IVW_MODULE_MOLVISBASE_API std::optional<Chain> findChain(const MolecularData& da
  */
 IVW_MODULE_MOLVISBASE_API std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms,
                                                                    std::string_view fullAtomName,
-                                                                   size_t residueId,
-                                                                   size_t chainId);
+                                                                   int residueId, int chainId);
+
+/**
+ * determine peptide type of a residue
+ *
+ * @param residue      type of the residue
+ * @param nextResidue  type of next next residue
+ * @return type of peptide
+ */
+IVW_MODULE_MOLVISBASE_API PeptideType getPeptideType(AminoAcid residue, AminoAcid nextResidue);
 
 /**
  * determine peptide type of a residue
  *
  * @param resName      name of the residue ("GLY", "PRO", ...)
  * @param nextResName  name of next residue ("GLY", "PRO", ...)
+ * @return type of peptide
  */
 IVW_MODULE_MOLVISBASE_API PeptideType getPeptideType(std::string_view resName,
                                                      std::string_view nextResName);

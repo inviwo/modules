@@ -43,6 +43,7 @@ namespace molvis {
 using MolecularStructureOutport = DataOutport<MolecularStructure>;
 using MolecularStructureInport = DataInport<MolecularStructure>;
 using MolecularStructureMultiInport = DataInport<MolecularStructure, 0>;
+using MolecularStructureFlatMultiInport = DataInport<MolecularStructure, 0, true>;
 
 }  // namespace molvis
 

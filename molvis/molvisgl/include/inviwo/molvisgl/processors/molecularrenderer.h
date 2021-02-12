@@ -30,7 +30,6 @@
 #pragma once
 
 #include <inviwo/molvisgl/molvisglmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/interaction/cameratrackball.h>
@@ -39,31 +38,35 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 #include <modules/basegl/datastructures/meshshadercache.h>
+#include <inviwo/molvisbase/ports/molecularstructureport.h>
+#include <inviwo/molvisbase/util/aminoacid.h>
 
 namespace inviwo {
 
+class Mesh;
+class PickingEvent;
+
 /** \docpage{org.inviwo.MolecularRenderer, Molecular Renderer}
  * ![](org.inviwo.MolecularRenderer.png?classIdentifier=org.inviwo.MolecularRenderer)
- * Renders the input mesh in a molecular representation. The input mesh is expected to contain
- * molecular data, that is points representing individual atoms (including their radius) and lines
- * indicating bonds.
+ * Renders one or more molecular datastructure objects as molecular representation. The molecular
+ * data is colored using standard color maps. If residue or chain information is present, the data
+ * can also be colored according to residues and chains.
  *
  * The result is depending on the chosen molecular representation.
- *    - VDW (van der Waals): considers only points
- *    - Licorice:            considers both points and lines
- *    - Ball & Stick:        considers both points and lines
- * If the mesh does not contain points or lines, the resulting rendering will lack either
- * atoms/spheres or bonds.
+ *    - VDW (van der Waals): considers only atoms
+ *    - Licorice:            considers both atoms and bonds
+ *    - Ball & Stick:        considers both atoms and bonds
  *
  * ### Inports
- *   * __geometry__ input meshes containing molecular data
+ *   * __inport__      Molecular datastructures
  *   * __imageInport__ Optional background image
  *
  * ### Outports
  *   * __outport__ output image containing the moleculare rendering of the input
+ *
  */
 class IVW_MODULE_MOLVISGL_API MolecularRenderer : public Processor {
 public:
@@ -78,23 +81,42 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void handlePicking(PickingEvent* p);
+
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };
+    enum class Coloring { Atoms, Residues, Chains, Fixed };
+
+    struct ColorMapping {
+        Coloring coloring;
+        molvis::element::Colormap atoms;
+        molvis::aminoacid::Colormap aminoacids;
+        vec4 fixedColor;
+    };
 
     const float BallAndStickVDWScale = 0.3f;
     const float BallAndStickLicoriceScale = 0.5f;
 
     void configureVdWShader(Shader& shader);
     void configureLicoriceShader(Shader& shader);
+    static std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s,
+                                            ColorMapping colormap, size_t pickingId);
 
-    MeshFlatMultiInport inport_;
+    molvis::MolecularStructureFlatMultiInport inport_;
     ImageInport imageInport_;
     ImageOutport outport_;
 
     TemplateOptionProperty<Representation> representation_;
+    TemplateOptionProperty<Coloring> coloring_;
+
+    TemplateOptionProperty<molvis::element::Colormap> atomColormap_;
+    TemplateOptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
+    FloatVec4Property fixedColor_;
 
     FloatProperty radiusScaling_;
     BoolProperty forceRadius_;
     FloatProperty defaultRadius_;
+
+    BoolProperty enableTooltips_;
 
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
@@ -102,6 +124,9 @@ private:
 
     MeshShaderCache vdwShaders_;
     MeshShaderCache licoriceShaders_;
+    PickingMapper atomPicking_;
+
+    std::vector<std::shared_ptr<Mesh>> meshes_;
 };
 
 }  // namespace inviwo

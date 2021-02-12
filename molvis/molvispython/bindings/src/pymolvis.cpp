@@ -42,6 +42,8 @@
 #include <inviwo/molvisbase/datastructures/molecularstructuretraits.h>
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/molvisbase/util/atomicelement.h>
+#include <inviwo/molvisbase/util/aminoacid.h>
+#include <inviwo/molvisbase/util/chain.h>
 #include <modules/python3/pyportutils.h>
 
 #include <fmt/format.h>
@@ -60,21 +62,21 @@ void exposeAtomicElement(pybind11::module& m) {
         .def("name", element::name, py::arg("symbol"))
         .def("symbol", element::symbol, py::arg("symbol"))
         .def("color", py::overload_cast<Element>(element::color), py::arg("symbol"))
-        .def("color", py::overload_cast<Element, Colormap>(element::color), py::arg("symbol"),
-             py::arg("colormap"))
+        .def("color", py::overload_cast<Element, element::Colormap>(element::color),
+             py::arg("symbol"), py::arg("colormap"))
         .def("vdwRadius", element::vdwRadius, py::arg("symbol"))
         .def("covalentRadius", element::covalentRadius, py::arg("symbol"))
         .def("atomicMass", element::atomicMass, py::arg("symbol"))
-        .def("elementFromAbbr", element::elementFromAbbr, py::arg("abbr"))
-        .def("fromFullName", element::fromFullName, py::arg("fullAtomName"));
+        .def("fromAbbr", element::fromAbbr, py::arg("abbr"))
+        .def("fromFullName", element::fromFullName, py::arg("fullName"));
 
     auto colors = m.def_submodule("colors", "Various color lookup tables");
     colors.attr("rasmol") = py::cast(element::detail::colorsRasmol);
     colors.attr("rasmolCPKnew") = py::cast(element::detail::colorsRasmolCPKnew);
 
-    py::enum_<Colormap>(m, "Colormap")
-        .value("RasmolCPK", Colormap::RasmolCPK)
-        .value("RasmolCPKnew", Colormap::RasmolCPKnew);
+    py::enum_<element::Colormap>(m, "Colormap")
+        .value("RasmolCPK", element::Colormap::RasmolCPK)
+        .value("RasmolCPKnew", element::Colormap::RasmolCPKnew);
 
     py::enum_<Element>(m, "Element")
         .value("Unknown", Element::Unknown)
@@ -198,9 +200,116 @@ void exposeAtomicElement(pybind11::module& m) {
         .value("Og", Element::Og);
 }
 
+void exposeAminoAcid(pybind11::module& m) {
+    m.def("aminoacid", aminoacid::aminoacid, py::arg("index"))
+        .def("index", aminoacid::index, py::arg("aminoacid"))
+        .def("name", aminoacid::name, py::arg("aminoacid"))
+        .def("letter", aminoacid::letter, py::arg("aminoacid"))
+        .def("symbol", aminoacid::symbol, py::arg("aminoacid"))
+        .def("color", py::overload_cast<AminoAcid>(aminoacid::color), py::arg("aminoacid"))
+        .def("color", py::overload_cast<AminoAcid, aminoacid::Colormap>(aminoacid::color),
+             py::arg("aminoacid"), py::arg("colormap"))
+        .def("fromLetter", aminoacid::fromLetter, py::arg("letter"))
+        .def("fromAbbr", aminoacid::fromAbbr, py::arg("abbr"))
+        .def("fromFullName", aminoacid::fromFullName, py::arg("fullName"));
+
+    auto colors = m.def_submodule("colors", "Various color lookup tables");
+    colors.attr("amino") = py::cast(aminoacid::detail::colorsAmino);
+    colors.attr("shapely") = py::cast(aminoacid::detail::colorsShapely);
+    colors.attr("ugene") = py::cast(aminoacid::detail::colorsUgene);
+
+    py::enum_<aminoacid::Colormap>(m, "Colormap")
+        .value("Amino", aminoacid::Colormap::Amino)
+        .value("Shapely", aminoacid::Colormap::Shapely)
+        .value("Ugene", aminoacid::Colormap::Ugene);
+
+    py::enum_<AminoAcid>(m, "AminoAcid")
+        .value("Unknown", AminoAcid::Unknown)
+        .value("Ala", AminoAcid::Ala)
+        .value("Arg", AminoAcid::Arg)
+        .value("Asn", AminoAcid::Asn)
+        .value("Asp", AminoAcid::Asp)
+        .value("Cys", AminoAcid::Cys)
+        .value("Gln", AminoAcid::Gln)
+        .value("Glu", AminoAcid::Glu)
+        .value("Gly", AminoAcid::Gly)
+        .value("His", AminoAcid::His)
+        .value("Ile", AminoAcid::Ile)
+        .value("Leu", AminoAcid::Leu)
+        .value("Lys", AminoAcid::Lys)
+        .value("Met", AminoAcid::Met)
+        .value("Phe", AminoAcid::Phe)
+        .value("Pro", AminoAcid::Pro)
+        .value("Ser", AminoAcid::Ser)
+        .value("Thr", AminoAcid::Thr)
+        .value("Trp", AminoAcid::Trp)
+        .value("Tyr", AminoAcid::Tyr)
+        .value("Val", AminoAcid::Val)
+        .value("Sec", AminoAcid::Sec)
+        .value("Pyl", AminoAcid::Pyl)
+        .value("Asx", AminoAcid::Asx)
+        .value("Glx", AminoAcid::Glx)
+        .value("Xle", AminoAcid::Xle);
+}
+
+void exposeChainId(pybind11::module& m) {
+    m.def("chain", chain::chain, py::arg("index"))
+        .def("index", chain::index, py::arg("chain"))
+        .def("name", chain::name, py::arg("chain"))
+        .def("fromId", chain::fromId, py::arg("id"))
+        .def("fromName", chain::fromName, py::arg("name"))
+        .def("fromFullName", chain::fromFullName, py::arg("fullName"))
+        .def("color", py::overload_cast<ChainId>(chain::color), py::arg("chain"))
+        .def("color", py::overload_cast<ChainId, chain::Colormap>(chain::color), py::arg("chain"),
+             py::arg("colormap"))
+        .def("color", py::overload_cast<int>(chain::color), py::arg("chainId"))
+        .def("color", py::overload_cast<int, chain::Colormap>(chain::color), py::arg("chainId"),
+             py::arg("colormap"))
+        .def("color", py::overload_cast<std::string_view>(chain::color), py::arg("fullName"))
+        .def("color", py::overload_cast<std::string_view, chain::Colormap>(chain::color),
+             py::arg("fullName"), py::arg("colormap"));
+
+    auto colors = m.def_submodule("colors", "Various color lookup tables");
+    colors.attr("jmol") = py::cast(chain::detail::colorsJmol);
+    colors.attr("jmolhetero") = py::cast(chain::detail::colorsJmolHetero);
+
+    py::enum_<chain::Colormap>(m, "Colormap")
+        .value("Jmol", chain::Colormap::Jmol)
+        .value("JmolHetero", chain::Colormap::JmolHetero);
+
+    py::enum_<ChainId>(m, "ChainId")
+        .value("Unknown", ChainId::Unknown)
+        .value("A", ChainId::A)
+        .value("B", ChainId::B)
+        .value("C", ChainId::C)
+        .value("D", ChainId::D)
+        .value("E", ChainId::E)
+        .value("F", ChainId::F)
+        .value("G", ChainId::G)
+        .value("H", ChainId::H)
+        .value("I", ChainId::I)
+        .value("J", ChainId::J)
+        .value("K", ChainId::K)
+        .value("L", ChainId::L)
+        .value("M", ChainId::M)
+        .value("N", ChainId::N)
+        .value("O", ChainId::O)
+        .value("P", ChainId::P)
+        .value("Q", ChainId::Q)
+        .value("R", ChainId::R)
+        .value("S", ChainId::S)
+        .value("T", ChainId::T)
+        .value("U", ChainId::U)
+        .value("V", ChainId::V)
+        .value("W", ChainId::W)
+        .value("X", ChainId::X)
+        .value("Y", ChainId::Y)
+        .value("Z", ChainId::Z);
+}
+
 void exposeMolVisUtil(pybind11::module& m) {
     m.def("findResidue", &findResidue, py::arg("data"), py::arg("residueId"), py::arg("chainId"))
-        .def("findChain", &findChain, py::arg("data"), py::arg("chainId"))
+        .def("findChainId", &findChain, py::arg("data"), py::arg("chainId"))
         .def("getGlobalAtomIndex", &getGlobalAtomIndex, py::arg("atoms"), py::arg("fullAtomName"),
              py::arg("residueId"), py::arg("chainId"))
         .def("computeCovalentBonds", &computeCovalentBonds, py::arg("atoms"))
@@ -215,6 +324,11 @@ void exposeMolVis(pybind11::module& m) {
     auto mAtomicElement =
         m.def_submodule("atomicelement", "Atomic element lookup tables and functions for MolVis");
     detail::exposeAtomicElement(mAtomicElement);
+    auto mAminoAcid =
+        m.def_submodule("aminoacid", "Amino acid lookup tables and functions for MolVis");
+    detail::exposeAminoAcid(mAminoAcid);
+    auto mChainId = m.def_submodule("chainid", "Chain id lookup tables and functions for MolVis");
+    detail::exposeChainId(mChainId);
     auto mUtil = m.def_submodule("util", "MolVis utils");
     detail::exposeMolVisUtil(mUtil);
 
@@ -238,23 +352,29 @@ void exposeMolVis(pybind11::module& m) {
 
     py::class_<Residue, std::shared_ptr<Residue>>(m, "Residue")
         .def(py::init())
-        .def(py::init([](size_t id, const std::string& name, const std::string& fullname,
-                         size_t chainid) -> Residue {
-                 return {id, name, fullname, chainid};
+        .def(py::init([](int id, AminoAcid aminoacid, const std::string& fullname,
+                         int chainid) -> Residue {
+                 return {id, aminoacid, fullname, chainid};
+             }),
+             py::arg("id"), py::arg("aminoacid"), py::arg("fullname"), py::arg("chainid"))
+        .def(py::init([](int id, const std::string& name, const std::string& fullname,
+                         int chainid) -> Residue {
+                 return {id, aminoacid::fromAbbr(name), fullname, chainid};
              }),
              py::arg("id"), py::arg("name"), py::arg("fullname"), py::arg("chainid"))
         .def_readwrite("id", &Residue::id)
-        .def_readwrite("name", &Residue::name)
+        .def_readwrite("aminoacid", &Residue::aminoacid)
         .def_readwrite("fullname", &Residue::fullName)
         .def_readwrite("chainid", &Residue::chainId)
         .def("__repr__", [](Residue& r) {
-            return fmt::format("<Residue: {}, '{}', '{}', {}>", r.id, r.name, r.fullName,
-                               r.chainId);
+            return fmt::format("<Residue: {}, '{}' ({}), '{}', {}>", r.id,
+                               aminoacid::symbol(r.aminoacid), aminoacid::letter(r.aminoacid),
+                               r.fullName, r.chainId);
         });
 
     py::class_<Chain, std::shared_ptr<Chain>>(m, "Chain")
         .def(py::init())
-        .def(py::init([](size_t id, const std::string& name) -> Chain {
+        .def(py::init([](int id, const std::string& name) -> Chain {
                  return {id, name};
              }),
              py::arg("id"), py::arg("name"))

@@ -1,3 +1,4 @@
+
 /*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
@@ -37,6 +38,7 @@
 #include <inviwo/core/util/zip.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
+#include <inviwo/molvisbase/util/aminoacid.h>
 
 #include <fmt/format.h>
 
@@ -78,17 +80,17 @@ auto find_if_opt(T& cont, Pred pred) -> std::optional<typename T::value_type> {
 
 }  // namespace
 
-std::optional<Residue> findResidue(const MolecularData& data, size_t residueId, size_t chainId) {
+std::optional<Residue> findResidue(const MolecularData& data, int residueId, int chainId) {
     return find_if_opt(data.residues,
                        [&](auto& r) { return (r.id == residueId) && (r.chainId == chainId); });
 }
 
-std::optional<Chain> findChain(const MolecularData& data, size_t chainId) {
+std::optional<Chain> findChain(const MolecularData& data, int chainId) {
     return find_if_opt(data.chains, [id = chainId](auto& r) { return r.id == id; });
 }
 
 std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fullAtomName,
-                                         size_t residueId, size_t chainId) {
+                                         int residueId, int chainId) {
     if ((atoms.residueIds.size() != atoms.chainIds.size()) ||
         (atoms.residueIds.size() != atoms.fullNames.size())) {
         throw Exception(
@@ -105,6 +107,18 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fu
         }
     }
     return std::nullopt;
+}
+
+PeptideType getPeptideType(AminoAcid residue, AminoAcid nextResidue) {
+    if (residue == AminoAcid::Gly) {
+        return PeptideType::Glycine;
+    } else if (residue == AminoAcid::Pro) {
+        return PeptideType::Proline;
+    } else if (nextResidue == AminoAcid::Pro) {
+        return PeptideType::PrePro;
+    } else {
+        return PeptideType::General;
+    }
 }
 
 PeptideType getPeptideType(std::string_view resName, std::string_view nextResName) {
@@ -174,7 +188,6 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
 
     std::vector<Bond> bonds;
     for (auto&& [atom1, pos] : util::enumerate(atoms.positions)) {
-        const auto cell = cellCoord(pos);
         const auto minCell = cellCoord(pos - maxCovalentBondLength);
         const auto maxCell = cellCoord(pos + maxCovalentBondLength);
 
@@ -277,8 +290,8 @@ Document createToolTip(const MolecularStructure& s, int atomIndex) {
         const auto resId = atoms.residueIds[atomIndex];
         if (!atoms.chainIds.empty()) {
             if (auto res = findResidue(s.data(), resId, atoms.chainIds[atomIndex])) {
-                tb(H("Residue"),
-                   fmt::format("{} ('{}', id: {})", res->name, res->fullName, res->id));
+                tb(H("Residue"), fmt::format("{} ('{}', id: {})", aminoacid::symbol(res->aminoacid),
+                                             res->fullName, res->id));
             }
         } else {
             tb(H("Residue"), atoms.residueIds[atomIndex]);
@@ -287,7 +300,7 @@ Document createToolTip(const MolecularStructure& s, int atomIndex) {
     if (!atoms.chainIds.empty()) {
         const auto chainId = atoms.chainIds[atomIndex];
         if (auto chain = findChain(s.data(), chainId)) {
-            tb(H("Chain"), fmt::format("{} (id: {})", s.chains()[chainId].name, chainId));
+            tb(H("Chain"), fmt::format("{} (id: {})", chain->name, chain->id));
         } else {
             tb(H("Chain"), chainId);
         }

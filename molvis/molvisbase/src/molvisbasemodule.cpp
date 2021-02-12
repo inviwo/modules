@@ -28,15 +28,25 @@
  *********************************************************************************/
 
 #include <inviwo/molvisbase/molvisbasemodule.h>
+#include <inviwo/molvisbase/datavisualizer/molecularmeshvisualizer.h>
+#include <inviwo/molvisbase/datavisualizer/molecularsourcevisualizer.h>
+#include <inviwo/molvisbase/processors/molecularstructuresource.h>
 #include <inviwo/molvisbase/processors/molecularstructuretomesh.h>
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
+#include <inviwo/molvisbase/io/basicpdbreader.h>
 
 namespace inviwo {
 
 MolVisBaseModule::MolVisBaseModule(InviwoApplication* app) : InviwoModule(app, "MolVisBase") {
+    registerProcessor<MolecularStructureSource>();
     registerProcessor<MolecularStructureToMesh>();
 
     registerDefaultsForDataType<molvis::MolecularStructure>();
+
+    registerDataReader(std::make_unique<BasicPDBReader>());
+
+    registerDataVisualizer(std::make_unique<MolecularMeshVisualizer>(app));
+    registerDataVisualizer(std::make_unique<MolecularSourceVisualizer>(app));
 }
 
 }  // namespace inviwo

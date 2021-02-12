@@ -58,11 +58,11 @@ class MolecularStructureSource(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-            classIdentifier = "org.inviwo.MolecularStructureSource", 
-            displayName = "Molecular Structure Source",
-            category = "MolVis",
+            classIdentifier = "org.inviwo.MolecularStructureSourcePython", 
+            displayName = "MolecularStructure Source Python",
+            category = "Data Input",
             codeState = ivw.CodeState.Stable,
-            tags = ivw.Tags.PY
+            tags = ivw.Tags("PY, MolVis, Source, PDB, mmCIF")
         )
 
     def getProcessorInfo(self):
@@ -124,7 +124,7 @@ class MolecularStructureSource(ivw.Processor):
                 residueDict[resid[0]] = resid[1]
             residueId.append(resId)
             atomFullName.append(atom.get_name())
-            elements.append(ivwmolvis.atomicelement.elementFromAbbr(atom.element))
+            elements.append(ivwmolvis.atomicelement.fromAbbr(atom.element))
 
         atoms = ivwmolvis.Atoms()
         dvec3pos = []

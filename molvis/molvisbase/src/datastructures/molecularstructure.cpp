@@ -56,7 +56,7 @@ inline double dihedralAngle(const dvec3& p0, const dvec3& p1, const dvec3& p2, c
 }
 
 void computeDihedralAngles(
-    std::unordered_map<size_t, std::vector<MolecularStructure::BackboneSegment>>& chainSegments,
+    std::unordered_map<int, std::vector<MolecularStructure::BackboneSegment>>& chainSegments,
     const std::unordered_map<ResidueID, size_t>& residueIndices, const MolecularData& data) {
     for (auto& [chainId, segments] : chainSegments) {
         if (segments.size() < 2) continue;
@@ -98,21 +98,22 @@ void computeDihedralAngles(
         for (auto&& [current, next] :
              util::zip(util::as_range(begin, end - 1), util::as_range(begin + 1, end))) {
             current.type = getPeptideType(
-                data.residues[residueIndices.at({current.resId, current.chainId})].name,
-                data.residues[residueIndices.at({next.resId, next.chainId})].name);
+                data.residues[residueIndices.at({current.resId, current.chainId})].aminoacid,
+                data.residues[residueIndices.at({next.resId, next.chainId})].aminoacid);
         }
         (end - 1)->type = getPeptideType(
-            data.residues[residueIndices.at({(end - 1)->resId, (end - 1)->chainId})].name, "");
+            data.residues[residueIndices.at({(end - 1)->resId, (end - 1)->chainId})].aminoacid,
+            AminoAcid::Unknown);
     }
 }
 
-std::pair<std::unordered_map<size_t, std::vector<MolecularStructure::BackboneSegment>>,
+std::pair<std::unordered_map<int, std::vector<MolecularStructure::BackboneSegment>>,
           std::vector<size_t>>
 computeBackboneSegments(const MolecularData& data,
-                        std::unordered_map<size_t, std::vector<size_t>> chainResidues,
+                        std::unordered_map<int, std::vector<size_t>> chainResidues,
                         std::unordered_map<ResidueID, std::vector<size_t>> residueAtoms,
                         std::unordered_map<ResidueID, size_t> residueIndices) {
-    std::unordered_map<size_t, std::vector<MolecularStructure::BackboneSegment>> chainSegments;
+    std::unordered_map<int, std::vector<MolecularStructure::BackboneSegment>> chainSegments;
     std::vector<size_t> indices(data.atoms.positions.size());
 
     const size_t minCount = 4;
@@ -137,16 +138,11 @@ computeBackboneSegments(const MolecularData& data,
 
             if (resAtoms.size() < minCount) {
                 segments.push_back(seg);
-                LogWarnCustom(
-                    "MolecularStructure computeBackboneSegments()",
-                    fmt::format("invalid residue with too few atoms (id = {}, chainId = {}, '{}')",
-                                res.id, res.chainId, res.name));
                 continue;
             }
 
             // locate atoms
             for (auto& atomIdx : resAtoms) {
-                const Element elem = data.atoms.atomicNumbers[atomIdx];
                 switch (data.atoms.atomicNumbers[atomIdx]) {
                     case Element::N:
                         if (!seg.n) seg.n = atomIdx;
@@ -178,11 +174,11 @@ computeBackboneSegments(const MolecularData& data,
 }
 
 struct InternalState {
-    std::unordered_map<size_t, std::vector<size_t>> chainResidues;
+    std::unordered_map<int, std::vector<size_t>> chainResidues;
     std::unordered_map<ResidueID, std::vector<size_t>> residueAtoms;
     std::unordered_map<ResidueID, size_t> residueIndices;
     std::vector<size_t> atomResidueIndices;
-    std::unordered_map<size_t, std::vector<MolecularStructure::BackboneSegment>> chainSegments;
+    std::unordered_map<int, std::vector<MolecularStructure::BackboneSegment>> chainSegments;
     std::vector<size_t> chainSegmentIndices;
 };
 
@@ -228,7 +224,7 @@ InternalState createInternalState(const MolecularData& data) {
                                          [id = res.chainId](const Chain& c) { return c.id == id; });
             if (chainIt == data.chains.end()) {
                 throw Exception(fmt::format("Invalid chain ID '{}' in residue {} '{}'", res.chainId,
-                                            res.id, res.name),
+                                            res.id, aminoacid::symbol(res.aminoacid)),
                                 IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
             }
             state.chainResidues[res.chainId].push_back(residueIndex);
@@ -311,8 +307,8 @@ const std::vector<Chain>& MolecularStructure::chains() const { return data_.chai
 
 const std::vector<Bond>& MolecularStructure::bonds() const { return data_.bonds; }
 
-std::optional<size_t> MolecularStructure::getAtomIndex(std::string_view fullAtomName,
-                                                       size_t residueId, size_t chainId) const {
+std::optional<size_t> MolecularStructure::getAtomIndex(std::string_view fullAtomName, int residueId,
+                                                       int chainId) const {
     if (auto resIt = residueAtoms_.find({residueId, chainId}); resIt != residueAtoms_.end()) {
         auto pred = [&](size_t i) {
             return ((data_.atoms.fullNames[i] == fullAtomName) &&
@@ -327,20 +323,21 @@ std::optional<size_t> MolecularStructure::getAtomIndex(std::string_view fullAtom
     return std::nullopt;
 }
 
+bool MolecularStructure::hasAtoms() const { return !data_.atoms.positions.empty(); }
+
 bool MolecularStructure::hasResidues() const { return !atomResidueIndices_.empty(); }
 
-bool MolecularStructure::hasResidue(size_t residueId, size_t chainId) const {
+bool MolecularStructure::hasResidue(int residueId, int chainId) const {
     return residueAtoms_.find({residueId, chainId}) != residueAtoms_.end();
 }
 
 bool MolecularStructure::hasChains() const { return !chainResidues_.empty(); }
 
-bool MolecularStructure::hasChain(size_t chainId) const {
+bool MolecularStructure::hasChain(int chainId) const {
     return chainResidues_.find(chainId) != chainResidues_.end();
 }
 
-const std::vector<size_t>& MolecularStructure::getResidueAtoms(size_t residueId,
-                                                               size_t chainId) const {
+const std::vector<size_t>& MolecularStructure::getResidueAtoms(int residueId, int chainId) const {
     if (auto it = residueAtoms_.find({residueId, chainId}); it != residueAtoms_.end()) {
         return it->second;
     } else {
@@ -350,7 +347,7 @@ const std::vector<size_t>& MolecularStructure::getResidueAtoms(size_t residueId,
     }
 }
 
-const std::vector<size_t>& MolecularStructure::getChainResidues(size_t chainId) const {
+const std::vector<size_t>& MolecularStructure::getChainResidues(int chainId) const {
     if (auto it = chainResidues_.find(chainId); it != chainResidues_.end()) {
         return it->second;
     } else {
@@ -359,7 +356,7 @@ const std::vector<size_t>& MolecularStructure::getChainResidues(size_t chainId) 
     }
 }
 
-auto MolecularStructure::getBackboneSegments(size_t chainId) const
+auto MolecularStructure::getBackboneSegments(int chainId) const
     -> const std::vector<BackboneSegment>& {
     if (auto it = chainSegments_.find(chainId); it != chainSegments_.end()) {
         return it->second;

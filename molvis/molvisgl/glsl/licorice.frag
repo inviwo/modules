@@ -50,10 +50,6 @@ in Fragment {
     flat vec4 capsule_axis_length;
 } in_frag;
 
-#ifdef GL_EXT_conservative_depth
-//layout (depth_greater) out float gl_FragDepth;
-#endif
-
 void main() {
 #ifdef ORTHO
     vec3 ro = vec3(in_frag.view_pos.xy, 0);
