@@ -40,6 +40,9 @@ namespace inviwo {
  * \ingroup dataio
  *
  * Basic reader for Protein Databank (PDB) files. Will only interpret ATOM and HETATM data.
+ * To support large PDB files, atom serial numbers > 99,999 and residue IDs > 9,999 are interpreted
+ * as hexadecimal numbers. This enables support for files generated for example by VMD, but is
+ * non-standard behavior.
  *
  * \see https://www.wwpdb.org/documentation/file-format-content/format33/sect9.html#ATOM
  */

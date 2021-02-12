@@ -247,6 +247,12 @@ void verifyData(const MolecularData& data) {
     // attributes of atoms in MolecularData can be either empty or must match the number of atoms
     auto sizeValid = [atomCount](const auto& v) { return (v.empty() || (v.size() == atomCount)); };
 
+    if (!sizeValid(data.atoms.serialNumbers)) {
+        throw Exception(
+            fmt::format("Inconsistent MolecularData: expected {} serial numbers, found {}",
+                        atomCount, data.atoms.serialNumbers.size()),
+            IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+    }
     if (!sizeValid(data.atoms.bFactors)) {
         throw Exception(fmt::format("Inconsistent MolecularData: expected {} b Factors, found {}",
                                     atomCount, data.atoms.bFactors.size()),
