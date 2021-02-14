@@ -62,20 +62,29 @@ constexpr bool charconv = false;
 }  // namespace config
 
 template <class T>
-bool fromStr(std::string_view value, T& dest) {
+bool fromStr(std::string_view value, T& dest, bool parseHexadecimal = false) {
     std::string_view trimmed = util::trim(value);
     if constexpr (std::is_same_v<std::string, T>) {
         dest = std::string(trimmed);
     } else if constexpr (config::charconv &&
-                         (std::is_same_v<double, T> || std::is_same_v<float, T> ||
-                          (!std::is_same_v<bool, T> && std::is_integral_v<T>))) {
+                         (std::is_same_v<double, T> || std::is_same_v<float, T>)) {
         const auto end = trimmed.data() + trimmed.size();
         if (auto [p, ec] = std::from_chars(trimmed.data(), end, dest);
             ec != std::errc() || p != end) {
             return false;
         }
+    } else if constexpr (config::charconv && (std::is_integral_v<T> && !std::is_same_v<bool, T>)) {
+        const auto end = trimmed.data() + trimmed.size();
+        const int base = parseHexadecimal ? 16 : 10;
+        if (auto [p, ec] = std::from_chars(trimmed.data(), end, dest, base);
+            ec != std::errc() || p != end) {
+            return false;
+        }
     } else {
         std::istringstream stream{std::string{trimmed}};
+        if (std::is_integral_v<T> && parseHexadecimal) {
+            stream >> std::hex;
+        }
         stream >> dest;
     }
     return true;
@@ -85,9 +94,9 @@ bool fromStr(std::string_view value, T& dest) {
 
 template <typename T>
 T parseSection(std::string_view line, size_t begin, size_t size, std::string_view tag,
-               std::string_view desc, int lineNumber) {
+               std::string_view desc, int lineNumber, bool parseHexadecimal = false) {
     T res = T{};
-    if (!detail::fromStr(line.substr(begin, size), res)) {
+    if (!detail::fromStr(line.substr(begin, size), res, parseHexadecimal)) {
         throw DataReaderException(
             fmt::format("BasicPDBReader: invalid {} entry detected{} ({})\n'{}'", tag,
                         desc.empty() ? "" : fmt::format(", {}", desc), lineNumber, line),
@@ -114,6 +123,8 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::
 
     int lineNumber = 0;
     int currentModel = 0;
+    bool serialNoHexBase = false;
+    bool resIdHexBase = false;
     auto parseline = [&](std::string_view line) {
         ++lineNumber;
 
@@ -123,15 +134,22 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::
         } else if ((line.substr(0, 4) == "ATOM") || (line.substr(0, 6) == "HETATM")) {
             const std::string_view tag = util::trim(line.substr(0, 6));
 
-            [[maybe_unused]] const int serialNumber =
-                parseSection<int>(line, 6, 5, tag, "invalid serial number", lineNumber);
+            const int serialNumber = parseSection<int>(line, 6, 5, tag, "invalid serial number",
+                                                       lineNumber, serialNoHexBase);
+            if (serialNumber == 99999) {
+                serialNoHexBase = true;
+            }
+
             std::string_view fullName(util::trim(line.substr(12, 4)));
             std::string_view element(util::trim(line.substr(76, 2)));
             std::string_view residueName(util::trim(line.substr(17, 4)));
             std::string_view chainName(util::trim(line.substr(21, 1)));
 
-            const int residueId =
-                parseSection<int>(line, 22, 4, tag, "invalid residue sequence number", lineNumber);
+            const int residueId = parseSection<int>(
+                line, 22, 4, tag, "invalid residue sequence number", lineNumber, resIdHexBase);
+            if (residueId == 9999) {
+                resIdHexBase = true;
+            }
 
             const dvec3 pos{parseSection<double>(line, 30, 8, tag, "invalid position", lineNumber),
                             parseSection<double>(line, 38, 8, tag, "invalid position", lineNumber),
@@ -155,6 +173,7 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::
                                          std::string(residueName), chainId});
             }
             data.atoms.positions.push_back(pos);
+            data.atoms.serialNumbers.push_back(serialNumber);
             data.atoms.bFactors.push_back(bFactor);
             data.atoms.modelIds.push_back(currentModel);
             data.atoms.chainIds.push_back(chainId);

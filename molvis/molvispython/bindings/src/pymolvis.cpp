@@ -335,6 +335,7 @@ void exposeMolVis(pybind11::module& m) {
     py::class_<Atoms, std::shared_ptr<Atoms>>(m, "Atoms")
         .def(py::init())
         .def_readwrite("positions", &Atoms::positions)
+        .def_readwrite("serialNumbers", &Atoms::serialNumbers)
         .def_readwrite("bfactors", &Atoms::bFactors)
         .def_readwrite("modelids", &Atoms::modelIds)
         .def_readwrite("chainids", &Atoms::chainIds)
@@ -344,10 +345,11 @@ void exposeMolVis(pybind11::module& m) {
         .def("__len__", [](Atoms& a) { return a.positions.size(); })
         .def("__repr__", [](Atoms& a) {
             return fmt::format(
-                "<Atoms: {} positions, {} b Factors, {} model IDs, {} chain IDs, {} residue IDs, "
+                "<Atoms: {} positions, {} serial numbers, {} b factors, {} model IDs, {} chain "
+                "IDs, {} residue IDs, "
                 "{} atomic numbers, {} full names>",
-                a.positions.size(), a.bFactors.size(), a.modelIds.size(), a.chainIds.size(),
-                a.residueIds.size(), a.atomicNumbers.size(), a.fullNames.size());
+                a.positions.size(), a.serialNumbers.size(), a.bFactors.size(), a.modelIds.size(),
+                a.chainIds.size(), a.residueIds.size(), a.atomicNumbers.size(), a.fullNames.size());
         });
 
     py::class_<Residue, std::shared_ptr<Residue>>(m, "Residue")

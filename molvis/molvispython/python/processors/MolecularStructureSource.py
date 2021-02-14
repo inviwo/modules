@@ -37,6 +37,8 @@ import ivwmolvis
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
 
+import xpdb
+
 import numpy as np
 
 
@@ -86,7 +88,7 @@ class MolecularStructureSource(ivw.Processor):
             ext = filename.split(".")[-2]
 
         if (ext.startswith('pdb')):
-            parser = PDBParser(PERMISSIVE=1)
+            parser = PDBParser(PERMISSIVE=1, structure_builder=xpdb.SloppyStructureBuilder())
         elif (ext.startswith('cif')):
             parser = MMCIFParser()
         else:
@@ -96,6 +98,7 @@ class MolecularStructureSource(ivw.Processor):
         structure = parser.get_structure(structureName, filename)
 
         pos = []
+        serialNumbers = []
         bfactors = []
         modelId = []
         chainId = []
@@ -110,6 +113,7 @@ class MolecularStructureSource(ivw.Processor):
         for atom in structure.get_atoms():
             structureid, modelid, chainid, resid, _ = atom.get_full_id()
             pos.append(atom.coord)
+            serialNumbers.append(atom.get_serial_number())
             bfactors.append(atom.get_bfactor())
             if modelid not in modelDict:
                 modelDict[modelid] = len(modelDict)
@@ -131,6 +135,7 @@ class MolecularStructureSource(ivw.Processor):
         for p in pos:
             dvec3pos.append(ivw.glm.dvec3(p[0], p[1], p[2]))
         atoms.positions = dvec3pos
+        atoms.serialNumbers = serialNumbers
         atoms.bfactors = bfactors
         atoms.modelids = modelId
         atoms.chainids = chainId
