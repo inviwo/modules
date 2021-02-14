@@ -21,7 +21,6 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
         self.volumeOutport = ivw.data.VolumeOutport("data3D")
         self.addOutport(self.volumeOutport, owner=False)
 
-
         self.interpolation = OptionPropertyInt(
             "interpolation", "Interpolation", options(ivw.data.InterpolationType), 0)
         self.addProperty(self.interpolation)
@@ -40,17 +39,15 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
         self.dataRange = DoubleMinMaxProperty(
             "dataRange", "Data Range", 0.0, 0.0, -1.70e308, 1.79e308)
         self.addProperty(self.dataRange)
-
-        self.overwriteModel = BoolProperty("overwriteModel", "Overwrite Model Matrix", False)
-        self.addProperty(self.overwriteModel)
-        self.modelMatrix = FloatMat4Property(
-            "modelMatrix", "Model Matrix", mat4(10.0), mat4(0) - 1.70e308, mat4(0) + 1.79e308)
-        self.addProperty(self.modelMatrix)
-
         self.dataRange.readOnly = True
         self.dataRange.semantics = ivw.properties.PropertySemantics("Text")
         self.dataRange.readonlyDependsOn(self.overwriteDataRange, lambda x: not x.value)
 
+        self.overwriteModel = BoolProperty("overwriteModel", "Overwrite Model Matrix", False)
+        self.addProperty(self.overwriteModel)
+        self.modelMatrix = FloatMat4Property(
+            "modelMatrix", "Model Matrix", mat4(10.0), mat4(0) - 10e20, mat4(0) + 10e20)
+        self.addProperty(self.modelMatrix)
         self.modelMatrix.readOnly = True
         self.modelMatrix.semantics = ivw.properties.PropertySemantics("Text")
         self.modelMatrix.readonlyDependsOn(self.overwriteModel, lambda x: not x.value)
@@ -79,6 +76,7 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
             maxVal = numpy.amax(buffer)
             volume.dataMap.dataRange = dvec2(minVal, maxVal)
         volume.dataMap.valueRange = volume.dataMap.dataRange
+        
         if self.overwriteModel:
             volume.modelMatrix = self.modelMatrix.value
         else:

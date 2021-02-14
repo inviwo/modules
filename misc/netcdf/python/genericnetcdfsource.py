@@ -35,6 +35,7 @@ class GenericNetCDFSource(ivw.Processor):
         self.addProperty(self.triggerLoad)
 
         self.displayInfo.onChange(self.displayDataInfo)
+        self.firstRun = True
 
     @staticmethod
     def enabled(prop: BoolCompositeProperty):
@@ -90,6 +91,8 @@ class GenericNetCDFSource(ivw.Processor):
         self.variables.addProperty(enabled, True)
 
     def process(self):
+        first = self.firstRun
+        self.firstRun = False
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
             self.variables.clear()
             self.dimensions.clear()
@@ -151,7 +154,7 @@ class GenericNetCDFSource(ivw.Processor):
                                      f" to be {minmax0} got {minmaxi}")
                             return
 
-            if self.triggerLoad.isModified:
+            if self.triggerLoad.isModified or first:
                 if len(nonZeroDims) == 0:
                     self.log("No variables selected")
                     return
