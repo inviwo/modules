@@ -78,7 +78,6 @@ double calculateI3(const dmat3& tensor) {
  */
 double calculateJ1(const dmat3&) {
     throw Exception("not implemented");
-    return 0.0;
 }
 
 /*
