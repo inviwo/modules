@@ -55,8 +55,12 @@ class GenericNetCDFSource(ivw.Processor):
     def addMinmaxProperty(self, dim: Dimension):
         clean = self.cleanName(dim.name)
         if clean not in self.dimensions.properties:
+            # Create a minmax property to mark the __inclusive__ range to load
+            # If the min == max then the dimensions is __collapsed__ and will not
+            # contribute to the outputDimension i.e. collpsing one dim of a 4D dataset
+            # makes it a 3D dataset.
             minmax = IntMinMaxProperty(clean, dim.name, 0, len(dim) - 1, 0, len(dim) - 1)
-            minmax.visible = False
+            minmax.visible = False  # Only show when a corresponding variable is enabled
             self.dimensions.addProperty(minmax, True)
 
     def addMinMaxProperties(self, dims: list[Dimension]):
@@ -67,7 +71,7 @@ class GenericNetCDFSource(ivw.Processor):
         enabled = BoolCompositeProperty(self.cleanName(variable.name), variable.name, False)
         enabled.readOnly = len(variable.shape) < self.outputDimension
         enabled.collapsed = True
-        dims = StringProperty("dimensions", "Dimensionss",
+        dims = StringProperty("dimensions", "Dimensions",
                               ", ".join(str(d.name) for d in variable.get_dims()))
         dims.readOnly = True
         enabled.addProperty(dims)
@@ -167,7 +171,7 @@ class GenericNetCDFSource(ivw.Processor):
                     varData = var[tuple(dims)]
                     buffer = numpy.array(varData).astype(
                         'float32' if self.toFloat.value else var.datatype)
-                    buffer.shape = numpy.flip([1] + sizeDims)
+                    buffer.shape = numpy.flip([numpy.amax(1, var.datatype.ndim)] + sizeDims)
                     data.append(buffer)
 
                 # Assemble data extent.
