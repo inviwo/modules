@@ -127,7 +127,6 @@ def parseCubeFile(file):
     if not unitsInAngstrom:
         basis = bohrToAngstrom * basis
         origin = bohrToAngstrom * origin
-    offset = -0.5 * (basis[0] + basis[1] + basis[2])
     
     pos = []
     atomType = []
@@ -161,7 +160,7 @@ def parseCubeFile(file):
     volume.dataMap.valueRange = volume.dataMap.dataRange
 
     volume.basis = ivw.glm.mat3(basis)
-    volume.offset = ivw.glm.vec3(offset)
+    volume.offset = ivw.glm.vec3(0.0)
 
     return (volume, pos, atomType)
 
