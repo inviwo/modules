@@ -2,9 +2,6 @@ import inviwopy as ivw
 import ivwdataframe as df
 import atomdata
 
-import functools
-import itertools
-import math
 import numpy
 
 from pathlib import Path
