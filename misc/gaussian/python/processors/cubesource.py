@@ -3,7 +3,7 @@
 import inviwopy as ivw
 import ivwdataframe as df
 import atomdata
-import vasputil
+import gaussianutil
 
 import functools
 import math
@@ -48,11 +48,11 @@ class CubeSource(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-            classIdentifier="org.inviwo.vasp.CubeSource",
+            classIdentifier="org.inviwo.gaussian.CubeSource",
             displayName="Cube Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("VASP"), ivw.Tag("Cube"), 
+            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), 
                            ivw.Tag("Gaussian"), ivw.Tag("Volume"), ivw.Tag("Mesh")])
         )
 
@@ -66,16 +66,16 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atomType = vasputil.parseCubeFile(self.cubeFilePath.value)
+        self.volume, self.atomPos, self.atomType = gaussianutil.parseCubeFile(self.cubeFilePath.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = vasputil.createMeshForCube(self.atomPos, self.atomType,
+        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atomType,
                                         self.volume.basis, self.volume.offset, self.pm)
 
-        self.dataframe = vasputil.createDataFrameForCube(self.atomPos, self.atomType)
+        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atomType)
 
         print("Loaded Cube file: {}\nDims:  {}\nRange: {}".format(
             self.cubeFilePath.value, self.volume.dimensions, self.volume.dataMap.dataRange))
