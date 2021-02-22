@@ -30,6 +30,7 @@
 
 #include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
 
+#include <inviwo/core/metadata/metadataowner.h>
 #include <inviwo/core/datastructures/datatraits.h>
 #include <inviwo/core/util/document.h>
 #include <inviwo/topologytoolkit/datastructures/triangulationdata.h>
@@ -51,7 +52,7 @@ enum class TreeType { Join = 0, Split = 1, Contour = 2, JoinAndSplit = 3 };
 
 using ContourTree = ttk::ftm::FTMTree;
 
-struct IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeData {
+struct IVW_MODULE_TOPOLOGYTOOLKIT_API ContourTreeData : public MetaDataOwner {
     // FIXME: Storing the tree type explicitly is necessary due to a TTK bug!
     //
     // FTMTree stores the type only as parameter which renders FTMTree::isJT() and FTMTree::isST()
