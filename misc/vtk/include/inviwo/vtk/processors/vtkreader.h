@@ -48,6 +48,8 @@
 #include <vtkDataObject.h>
 #include <warn/pop>
 
+#include <optional>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.VTKReader, VTKReader}
@@ -82,7 +84,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class VTKFileType { XML, Legacy, Unknown };
+    enum class VTKFileType { XML_Serial, XML_Parallel, Legacy, Unknown };
 
     FileProperty file_;
     ButtonProperty reloadButton_;
@@ -95,9 +97,19 @@ private:
     vtkSmartPointer<vtkDataSet> dataSet_;
 
     VTKFileType determineFileType(const std::string& fileName) const;
-    bool read(const VTKFileType fileType);
-    void readLegacy();
-    void readXML();
+
+    template <VTKFileType T>
+    std::optional<vtkSmartPointer<vtkDataSet>> read(const std::string path) {
+        using V = std::conditional_t<T == VTKFileType::Legacy, vtkGenericDataObjectReader,
+                                     vtkXMLGenericDataObjectReader>;
+
+        auto reader = vtkSmartPointer<V>::New();
+
+        reader->SetFileName(path.c_str());
+        reader->Update();
+
+        return vtkDataSet::SafeDownCast(V::SafeDownCast(reader.GetPointer())->GetOutput());
+    }
 };
 
 }  // namespace inviwo
