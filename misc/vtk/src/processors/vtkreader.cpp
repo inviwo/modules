@@ -98,8 +98,7 @@ void VTKReader::process() {
         const auto fileType = determineFileType(fileName);
 
         if (fileType == VTKFileType::Unknown) {
-            LogWarn(fmt::format("File type of file {} could not be determined.", fileName))
-            return;
+            LogWarn(fmt::format("File type of file {} could not be determined.", fileName)) return;
         }
         if (fileType == VTKFileType::XML_Parallel) {
             LogWarn("Parallel files are not (yet) supported.");
