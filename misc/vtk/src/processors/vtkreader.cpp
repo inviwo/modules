@@ -103,7 +103,8 @@ void VTKReader::process() {
                 throw DataReaderException("Unknown file type", IVW_CONTEXT);
                 return;
             case VTKFileType::XML_Parallel:
-                throw DataReaderException("Parallel VTK files are not (yet) supported.", IVW_CONTEXT);
+                throw DataReaderException("Parallel VTK files are not (yet) supported.",
+                                          IVW_CONTEXT);
                 return;
             case VTKFileType::Legacy:
                 dataSet_ = read<VTKFileType::Legacy>(std::move(fileName));
