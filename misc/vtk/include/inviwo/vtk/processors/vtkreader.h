@@ -48,8 +48,6 @@
 #include <vtkDataObject.h>
 #include <warn/pop>
 
-#include <optional>
-
 namespace inviwo {
 
 /** \docpage{org.inviwo.VTKReader, VTKReader}
@@ -99,7 +97,7 @@ private:
     VTKFileType determineFileType(const std::string& fileName) const;
 
     template <VTKFileType T>
-    std::optional<vtkSmartPointer<vtkDataSet>> read(const std::string path) {
+    vtkSmartPointer<vtkDataSet> read(const std::string path) {
         using V = std::conditional_t<T == VTKFileType::Legacy, vtkGenericDataObjectReader,
                                      vtkXMLGenericDataObjectReader>;
 

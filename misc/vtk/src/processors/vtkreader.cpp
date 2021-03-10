@@ -31,6 +31,7 @@
 #include <inviwo/core/util/filesystem.h>
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/clock.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -88,7 +89,7 @@ VTKReader::VTKReader()
 
 void VTKReader::process() {
     if (file_.isModified()) {
-        const auto fileName = file_.get();
+        auto fileName = file_.get();
 
         if (!filesystem::fileExists(fileName)) {
             LogError(fmt::format("File {} not found.", fileName));
@@ -97,18 +98,21 @@ void VTKReader::process() {
 
         const auto fileType = determineFileType(fileName);
 
-        if (fileType == VTKFileType::Unknown) {
-            LogWarn(fmt::format("File type of file {} could not be determined.", fileName)) return;
-        }
-        if (fileType == VTKFileType::XML_Parallel) {
-            LogWarn("Parallel files are not (yet) supported.");
-            return;
-        }
-        if (fileType == VTKFileType::Legacy) {
-            dataSet_ = *read<VTKFileType::Legacy>(std::move(fileName));
-        }
-        if (fileType == VTKFileType::XML_Serial || fileType == VTKFileType::XML_Parallel) {
-            dataSet_ = *read<VTKFileType::XML_Serial>(std::move(fileName));
+        switch (fileType) {
+            case VTKFileType::Unknown:
+                throw DataReaderException("Unknown file type", IVW_CONTEXT);
+                return;
+            case VTKFileType::XML_Parallel:
+                throw DataReaderException("Parallel VTK files are not (yet) supported.", IVW_CONTEXT);
+                return;
+            case VTKFileType::Legacy:
+                dataSet_ = read<VTKFileType::Legacy>(std::move(fileName));
+                break;
+            case VTKFileType::XML_Serial:
+                dataSet_ = read<VTKFileType::XML_Serial>(std::move(fileName));
+                break;
+            default:
+                break;
         }
 
         dispatchFront([this]() {
