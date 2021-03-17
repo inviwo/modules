@@ -63,7 +63,7 @@ class GenericNetCDFSource(ivw.Processor):
             minmax.visible = False  # Only show when a corresponding variable is enabled
             self.dimensions.addProperty(minmax, True)
 
-    def addMinMaxProperties(self, dims: [Dimension]):
+    def addMinMaxProperties(self, dims: list[Dimension]):
         for dim in dims:
             self.addMinmaxProperty(dim)
 
