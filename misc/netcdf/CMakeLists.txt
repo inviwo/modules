@@ -2,7 +2,9 @@
 # Inviwo netcdf Module
 ivw_module(NetCDF)
 
-#Check if netCDF4 python module exist
+# Code uses type hinting generics in standard collections (new in 3.9)
+find_package(Python3 3.9 REQUIRED)
+# Check if netCDF4 python module exist
 execute_process(COMMAND "${PYTHON_EXECUTABLE}" "-c"
              "try: import netCDF4; print(netCDF4.__version__);\nexcept: print('\tFailed to import NetCDF4 python package. Run pip install NetCDF4')\n"
               RESULT_VARIABLE NETCDF_STATUS
