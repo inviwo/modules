@@ -31,6 +31,7 @@
 #include <inviwo/molvisgl/datavisualizer/molecularmeshrendervisualizer.h>
 #include <inviwo/molvisgl/datavisualizer/molecularstructurevisualizer.h>
 #include <inviwo/molvisgl/processors/molecularmeshrenderer.h>
+#include <inviwo/molvisgl/processors/molecularrasterizer.h>
 #include <inviwo/molvisgl/processors/molecularrenderer.h>
 #include <modules/opengl/shader/shadermanager.h>
 
@@ -40,6 +41,7 @@ MolVisGLModule::MolVisGLModule(InviwoApplication* app) : InviwoModule(app, "MolV
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     registerProcessor<MolecularMeshRenderer>();
+    registerProcessor<MolecularRasterizer>();
     registerProcessor<MolecularRenderer>();
 
     registerDataVisualizer(std::make_unique<MolecularStructureVisualizer>(app));
