@@ -40,7 +40,7 @@ NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app,
     registerProcessor<NanoVGExampleProcessor>();
     registerProcessor<NanoVGPickingExampleProcessor>();
 
-    auto fonts = util::getAvailableFonts();
+    auto fonts = font::getAvailableFonts();
     for (auto font : fonts) {
         context_.createFont(font.first, font.second);
     }
