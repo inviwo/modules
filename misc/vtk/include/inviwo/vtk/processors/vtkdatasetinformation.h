@@ -40,6 +40,12 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkDataSet.h>
+#include <vtkInformation.h>
+#include <vtkDataSet.h>
+#include <vtkCellData.h>
+#include <vtkPointData.h>
+#include <vtkDataArray.h>
+#include <vtkDoubleArray.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -78,15 +84,37 @@ private:
     public:
         ArrayInformationProperty() = delete;
         ArrayInformationProperty(const std::string& arrayName, const std::string& identifier,
-                                 const std::string& dataType, const std::string& numberOfComponents)
+                                 const vtkDataArray* array)
             : CompositeProperty(identifier, arrayName)
-            , dataType_(identifier + "dataType", "Data type", dataType)
-            , numberOfComponents_(identifier + "numberOfComponents", "Components",
-                                  numberOfComponents) {
-            addProperty(dataType_);
-            addProperty(numberOfComponents_);
+            , dataType_(identifier + "dataType", "Data type")
+            , numberOfComponents_(identifier + "numberOfComponents", "Components")
+            , componentInformation_("componentInformation", "Component info") {
+
+            dataType_.set(std::string{array->GetDataTypeAsString()});
+            numberOfComponents_.set(std::to_string(array->GetNumberOfComponents()));
+
+            addProperties(dataType_, numberOfComponents_, componentInformation_);
+
             dataType_.setReadOnly(true);
             numberOfComponents_.setReadOnly(true);
+
+            for (auto i{0}; i < array->GetNumberOfComponents(); ++i) {
+                auto compInfo = new CompositeProperty(StrBuffer{"component{}", i}.c_str(),
+                                                      StrBuffer{"Component {}", i}.c_str());
+
+                auto name = new StringProperty(StrBuffer{"name{}", i}.c_str(), "Name",
+                                               array->GetComponentName(i));
+                name->setReadOnly(true);
+                auto numValues =
+                    new StringProperty(StrBuffer{"numVal{}", i}.c_str(), "Number of tuples",
+                                       std::to_string(array->GetNumberOfTuples()));
+                numValues->setReadOnly(true);
+
+                compInfo->addProperty(name);
+                compInfo->addProperty(numValues);
+
+                componentInformation_.addProperty(compInfo);
+            }
         }
 
         const std::string& getDataType() const { return dataType_.get(); }
@@ -95,6 +123,7 @@ private:
     private:
         StringProperty dataType_;
         StringProperty numberOfComponents_;
+        CompositeProperty componentInformation_;
     };
 
     VTKDataSetInport inport_;
