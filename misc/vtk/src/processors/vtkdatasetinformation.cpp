@@ -78,21 +78,9 @@ void VTKDataSetInformation::process() {
     {
         NetworkLock lock;
 
-        std::vector<std::string> identifiers{};
-        for (const auto& property : pointDataArrays_.getProperties()) {
-            identifiers.emplace_back(property->getIdentifier());
-        }
-        for (const auto& identifier : identifiers) {
-            pointDataArrays_.removeProperty(identifier);
-        }
+        pointDataArrays_.clear();
 
-        identifiers.clear();
-        for (const auto& property : cellDataArrays_.getProperties()) {
-            identifiers.emplace_back(property->getIdentifier());
-        }
-        for (const auto& identifier : identifiers) {
-            cellDataArrays_.removeProperty(identifier);
-        }
+        cellDataArrays_.clear();
 
         for (int i{0}; i < pointData->GetNumberOfArrays(); ++i) {
             const auto array = pointData->GetArray(i);
@@ -102,9 +90,8 @@ void VTKDataSetInformation::process() {
             replaceInString(identifier, ".", "");
             replaceInString(identifier, " ", "");
 
-            pointDataArrays_.addProperty(new ArrayInformationProperty{
-                arrayName, identifier, std::string{array->GetDataTypeAsString()},
-                std::to_string(array->GetNumberOfComponents())});
+            pointDataArrays_.addProperty(
+                new ArrayInformationProperty{arrayName, identifier, array});
         }
 
         for (int i{0}; i < cellData->GetNumberOfArrays(); ++i) {
@@ -115,9 +102,7 @@ void VTKDataSetInformation::process() {
             replaceInString(identifier, ".", "");
             replaceInString(identifier, " ", "");
 
-            cellDataArrays_.addProperty(new ArrayInformationProperty{
-                arrayName, identifier, std::string{array->GetDataTypeAsString()},
-                std::to_string(array->GetNumberOfComponents())});
+            cellDataArrays_.addProperty(new ArrayInformationProperty{arrayName, identifier, array});
         }
     }
 }
