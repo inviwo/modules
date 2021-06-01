@@ -86,13 +86,11 @@ private:
         ArrayInformationProperty(const std::string& arrayName, const std::string& identifier,
                                  const vtkDataArray* array)
             : CompositeProperty(identifier, arrayName)
-            , dataType_(identifier + "dataType", "Data type")
-            , numberOfComponents_(identifier + "numberOfComponents", "Components")
+            , dataType_(identifier + "dataType", "Data type",
+                        std::string{array->GetDataTypeAsString()})
+            , numberOfComponents_(identifier + "numberOfComponents", "Components",
+                                  std::to_string(array->GetNumberOfComponents()))
             , componentInformation_("componentInformation", "Component info") {
-
-            dataType_.set(std::string{array->GetDataTypeAsString()});
-            numberOfComponents_.set(std::to_string(array->GetNumberOfComponents()));
-
             addProperties(dataType_, numberOfComponents_, componentInformation_);
 
             dataType_.setReadOnly(true);
@@ -105,9 +103,8 @@ private:
                 auto name = new StringProperty(fmt::format("name{}", i), "Name",
                                                array->GetComponentName(i));
                 name->setReadOnly(true);
-                auto numValues =
-                    new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
-                                       std::to_string(array->GetNumberOfTuples()));
+                auto numValues = new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
+                                                    std::to_string(array->GetNumberOfTuples()));
                 numValues->setReadOnly(true);
 
                 compInfo->addProperty(name);
