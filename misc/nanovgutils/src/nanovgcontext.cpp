@@ -184,6 +184,12 @@ vec4 NanoVGContext::textBounds(const ivec2& position, const std::string& string)
     return vec4(bounds[0], bounds[1], bounds[2], bounds[3]);
 }
 
+vec4 NanoVGContext::textBounds(const vec2& position, const std::string& string) {
+    float bounds[4];
+    nvgTextBounds(activeNanoVGContext_, position.x, position.y, string.c_str(), nullptr, bounds);
+    return vec4(bounds[0], bounds[1], bounds[2], bounds[3]);
+}
+
 vec4 NanoVGContext::textBoxBounds(const ivec2& position, float textBoxWidth,
                                   const std::string& string) {
     float bounds[4];
