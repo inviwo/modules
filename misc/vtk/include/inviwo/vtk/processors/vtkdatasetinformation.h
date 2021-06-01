@@ -99,14 +99,14 @@ private:
             numberOfComponents_.setReadOnly(true);
 
             for (auto i{0}; i < array->GetNumberOfComponents(); ++i) {
-                auto compInfo = new CompositeProperty(StrBuffer{"component{}", i}.c_str(),
-                                                      StrBuffer{"Component {}", i}.c_str());
+                auto compInfo = new CompositeProperty(fmt::format("component{}", i),
+                                                      fmt::format("Component {}", i));
 
-                auto name = new StringProperty(StrBuffer{"name{}", i}.c_str(), "Name",
+                auto name = new StringProperty(fmt::format("name{}", i), "Name",
                                                array->GetComponentName(i));
                 name->setReadOnly(true);
                 auto numValues =
-                    new StringProperty(StrBuffer{"numVal{}", i}.c_str(), "Number of tuples",
+                    new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
                                        std::to_string(array->GetNumberOfTuples()));
                 numValues->setReadOnly(true);
 
