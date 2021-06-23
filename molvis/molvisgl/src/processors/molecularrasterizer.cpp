@@ -333,8 +333,8 @@ MolecularRasterization::MolecularRasterization(const MolecularRasterizer& proces
     , radiusScaling_(processor.radiusScaling_)
     , defaultRadius_(processor.defaultRadius_)
     , lighting_(processor.lighting_.getState())
-    , forceOpaque_(processor.forceOpaque_)
     , uniformAlpha_(processor.uniformAlpha_)
+    , forceOpaque_(processor.forceOpaque_)
     , vdwShaders_(processor.vdwShaders_)
     , licoriceShaders_(processor.licoriceShaders_)
     , meshes_(processor.meshes_) {}
