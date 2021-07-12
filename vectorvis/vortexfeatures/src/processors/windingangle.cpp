@@ -59,6 +59,7 @@ WindingAngle::WindingAngle()
     , relativeThreshold_("relativeThresh", "Relative Threshold?", false)
     , relativeDistanceThreshold_("relThresh", "Relative End Threshold", 0.01, 0.0001, 0.1, 0.0001)
     , absoluteDistanceThreshold_("absThresh", "Absolute End Threshold", 0.1, 0.001, 1)
+    , absoluteAngleThreshold_("absAngleThresh", "Abs Angle Threshold", 10, M_PI * 2, M_PI * 4)
     , limitRadiusRatio_("limitShape", "Limit Radius Ratio", true)
     , maxRadiusRatio_("relativeRadiusThreshold", "Max Radius Ratio", 2.0, 1.0, 20.0, 0.01f)
     , roundCurves_("roundCurves", "Round Curves", true)
@@ -68,8 +69,8 @@ WindingAngle::WindingAngle()
     addPort(vortexOut_);
     addPort(linesOut_);
     addProperties(properties_, maxTotalSteps_, samplingStep_, relativeThreshold_,
-                  relativeDistanceThreshold_, absoluteDistanceThreshold_, limitRadiusRatio_,
-                  maxRadiusRatio_, scoreProperties_, roundCurves_);
+                  relativeDistanceThreshold_, absoluteDistanceThreshold_, absoluteAngleThreshold_,
+                  limitRadiusRatio_, maxRadiusRatio_, scoreProperties_, roundCurves_);
 
     properties_.stepDirection_.set(IntegralLineProperties::Direction::FWD);
     properties_.stepDirection_.setVisible(false);
@@ -86,6 +87,7 @@ WindingAngle::WindingAngle()
     relativeThreshold_.onChange(turnOnFilter);
     relativeDistanceThreshold_.onChange(turnOnFilter);
     absoluteDistanceThreshold_.onChange(turnOnFilter);
+    absoluteAngleThreshold_.onChange(turnOnFilter);
     limitRadiusRatio_.onChange(turnOnFilter);
     maxRadiusRatio_.onChange(turnOnFilter);
     roundCurves_.onChange(turnOnFilter);
@@ -113,6 +115,7 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
                                            size_t maxTotalSteps) {
     // Assemble winding angle.
     double windingAngle = 0;
+    double windingAbsAngle = 0;
     auto terminator = IntegralLine::TerminationReason::Steps;
     bool isClosed = false;
 
@@ -139,7 +142,8 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
             double angle =
                 glm::orientedAngle(glm::normalize(after - pos), glm::normalize(pos - before));
             windingAngle += angle;
-            velocities.push_back({std::abs(windingAngle), 0, 0});
+            windingAbsAngle += std::abs(angle);
+            velocities.push_back({std::abs(windingAngle), windingAbsAngle, 0});
 
             // Streamline fulfilled a circle.
             if (std::abs(windingAngle) >= 2.0 * M_PI) {
@@ -237,11 +241,14 @@ bool WindingAngle::filterLines() {
     std::mutex lineWriteMutex;
     util::forEachParallel(*allLines_, [&](const IntegralLine& line, size_t id) {
         const std::vector<dvec3>& points = line.getPositions();
+        const auto& windingAngles = line.getMetaData<dvec3>("velocity");
 
         double endPointDist = glm::distance(points[0], points.back());
-        bool takeLine = (!relativeThreshold_ && endPointDist < absoluteDistanceThreshold_.get());
-        takeLine = takeLine || (relativeThreshold_ &&
-                                endPointDist < relativeDistanceThreshold_ * line.getLength());
+        bool takeLine = ((!relativeThreshold_ && endPointDist < absoluteDistanceThreshold_.get()) ||
+                         (relativeThreshold_ &&
+                          endPointDist < relativeDistanceThreshold_ * line.getLength())) &&
+                        windingAngles.back()[1] < absoluteAngleThreshold_.get();
+
         if (takeLine) {
             // Sample lines for center.
             static constexpr size_t SAMPLE_STEP = 4;
@@ -286,7 +293,6 @@ bool WindingAngle::filterLines() {
     }
 
     *vortices_ = vortexutil::groupVorticesByCenter(*vortices_);
-    // *vortices_ = vortexutil::removeSurroundingVortices(*vortices_);
 
     updateScores();
     vortexOut_.setData(vortices_);

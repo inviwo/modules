@@ -112,6 +112,8 @@ private:
     DoubleProperty relativeDistanceThreshold_;
     /** What is the maximum distance of the start and end point? **/
     DoubleProperty absoluteDistanceThreshold_;
+    /** What is the highest allowed total angle, i.e. how concave may the ring be? **/
+    DoubleProperty absoluteAngleThreshold_;
     /** Limit the ratio between the longest and shortest radius. **/
     BoolProperty limitRadiusRatio_;
     /** How much may the min and max radius deviate from each other? **/
