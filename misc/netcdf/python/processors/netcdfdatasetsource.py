@@ -31,14 +31,17 @@ class NetCDFDataSetSource(ivw.Processor):
         self.variables.setSerializationMode(
             ivw.properties.PropertySerializationMode.All)
 
-        # self.adjustDimensionsForStaggered = BoolProperty(
-        #     'adjustForStaggered', 'Adjust for staggered climate grid', True)
-
         self.dimensions = ivw.properties.OptionPropertyString(
             "dimensions", "dimensions")
 
         self.triggerReload = ButtonProperty("reload", "Reload")
         self.autoReload = BoolProperty("autoReload", "Auto Reload", False)
+        self.gridType = OptionPropertyString("gridType", "Grid Type")
+        self.gridType.addOption(
+            "Curvilinear", "Curvilinear", "Curvilinear")
+        self.gridType.addOption(
+            "Tripolar", "Tripolar", "Tripolar")
+        self.gridType.selectedValue = "Curvilinear"
 
         self.triggerReload.onChange(self.reloadData)
         self.autoReload.onChange(self.autoReloadData)
@@ -48,20 +51,11 @@ class NetCDFDataSetSource(ivw.Processor):
         self.addProperty(self.filePath)
         self.addProperty(self.dimensions)
         self.addProperty(self.variables)
-        # self.addProperty(self.toFloat)
-        # self.addProperty(self.adjustDimensionsForStaggered)
+        self.addProperty(self.gridType)
+
         self.addProperty(self.triggerReload)
         self.addProperty(self.autoReload)
 
-        # self.overwriteDataRange = BoolProperty(
-        #     "overwriteDataRange", "Overwrite Data Range", False)
-
-        # self.dataRange = DoubleMinMaxProperty(
-        #     "dataRange", "Data Range", 0.0, 0.0, -1.70e308, 1.79e308)
-        # self.dataRange.readOnly = True
-        # self.addProperty(self.overwriteDataRange)
-        # self.addProperty(self.dataRange)
-        # self.dataRange.semantics = ivw.properties.PropertySemantics("Text")
         self.firstProcess = True
 
     @staticmethod
@@ -160,20 +154,11 @@ class NetCDFDataSetSource(ivw.Processor):
                 self.updateVariables(nc, self.dimensions.value)
 
             # Potentially auto-reload data if selected variables change.
-            if self.variables.isModified and not self.firstProcess:
+            if (self.variables.isModified or self.gridType.isModified) and not self.firstProcess:
                 self.autoReloadData()
 
         self.firstProcess = False
         print('processed')
-
-        # buffer.shape = numpy.flip([1] + sizeDims)
-
-        # if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
-        #     return
-        # with Dataset(self.filePath.value, "r", format = "NETCDF4") as nc:
-
-        # def getProcessorInfo(self):
-        #     return NetCDFDataSetSource.processorInfo()
 
     def autoReloadData(self):
         if self.autoReload.value:
@@ -203,7 +188,11 @@ class NetCDFDataSetSource(ivw.Processor):
             print("Field size: ", fieldSize)
 
             # numpySize = numpy.array(fieldSize).astype('int32')
-            grid = Connectivity.createStructured(fieldSize)
+            grid = None
+            if (self.gridType.selectedValue == "Tripolar"):
+                grid = Connectivity.createTripolar(fieldSize)
+            else:
+                grid = Connectivity.createStructured(fieldSize)
             dataset = DataSet(grid)
 
             for ncVar in self.variables.properties:
@@ -219,7 +208,6 @@ class NetCDFDataSetSource(ivw.Processor):
 
             self.dataSetOutport.setData(dataset)
 
-        print('reloaded - kinda')
         # Debug!
         # buffer = numpy.array(self.data).astype('float64')
         # print(type(buffer))
@@ -228,7 +216,6 @@ class NetCDFDataSetSource(ivw.Processor):
         # help(DataSet)
         # dataset = DataSet.createFromArray(buffer, 'TestPos')
         # self.dataSetOutport.setData(dataset)
-        print('reloaded - kinda')
         # extents = []
         # GenericNetCDFSource.reloadData(self, extents)
 
