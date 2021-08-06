@@ -398,7 +398,7 @@ void VTKtoVolume::convertData() {
     double maxVal = extent.second[0];
     for (size_t d = 1; d < numTotalComps; ++d) {
         minVal = std::min(extent.first[d], minVal);
-        maxVal = std::max(extent.second[d], minVal);
+        maxVal = std::max(extent.second[d], maxVal);
     }
 
     volume->dataMap_.valueRange = {minVal, maxVal};
