@@ -84,7 +84,7 @@ private:
     public:
         ArrayInformationProperty() = delete;
         ArrayInformationProperty(const std::string& arrayName, const std::string& identifier,
-                                 const vtkDataArray* array)
+                                 vtkDataArray* array)
             : CompositeProperty(identifier, arrayName)
             , dataType_(identifier + "dataType", "Data type",
                         std::string{array->GetDataTypeAsString()})
@@ -99,16 +99,33 @@ private:
             for (auto i{0}; i < array->GetNumberOfComponents(); ++i) {
                 auto compInfo = new CompositeProperty(fmt::format("component{}", i),
                                                       fmt::format("Component {}", i));
-
+                /*
+                 * Name
+                 */
                 auto name = new StringProperty(fmt::format("name{}", i), "Name",
-                                               array->GetComponentName(i));
+                    array->GetComponentName(i) == nullptr ? "NA" : array->GetComponentName(i));
                 name->setReadOnly(true);
+
+                /*
+                 * Number of tuples
+                 */
                 auto numValues = new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
                                                     std::to_string(array->GetNumberOfTuples()));
                 numValues->setReadOnly(true);
 
+                /*
+                 * Range
+                 */
+                auto rangeValues = array->GetRange(i);
+                auto range =
+                    new StringProperty(fmt::format("rangeVal{}", i), "Range",
+                                       fmt::format("[{},{}]", std::to_string(rangeValues[0]),
+                                                   std::to_string(rangeValues[1])));
+                range->setReadOnly(true);
+
                 compInfo->addProperty(name);
                 compInfo->addProperty(numValues);
+                compInfo->addProperty(range);
 
                 componentInformation_.addProperty(compInfo);
             }
