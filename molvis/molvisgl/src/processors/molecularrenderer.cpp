@@ -98,7 +98,7 @@ MolecularRenderer::MolecularRenderer()
                    {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
                    {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
                    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                   {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+                   {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
                   [&](Shader& shader) -> void {
                       shader.onReload(
@@ -111,7 +111,7 @@ MolecularRenderer::MolecularRenderer()
                        {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                         {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
                         {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                        {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+                        {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
                        [&](Shader& shader) -> void {
                            shader.onReload(

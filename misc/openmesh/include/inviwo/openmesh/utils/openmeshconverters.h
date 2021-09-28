@@ -128,15 +128,15 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh& mesh) {
 
     if (mesh.has_vertex_texcoords3D()) {
         detail::convertOMtoInviwoBuffer<typename OM_Mesh::TexCoord3D>(
-            *newmesh, mesh, BufferType::TexcoordAttrib,
+            *newmesh, mesh, BufferType::TexCoordAttrib,
             [m = &mesh](auto it) { return m->texcoord3D(it); });
     } else if (mesh.has_vertex_texcoords2D()) {
         detail::convertOMtoInviwoBuffer<typename OM_Mesh::TexCoord2D>(
-            *newmesh, mesh, BufferType::TexcoordAttrib,
+            *newmesh, mesh, BufferType::TexCoordAttrib,
             [m = &mesh](auto it) { return m->texcoord2D(it); });
     } else if (mesh.has_vertex_texcoords1D()) {
         detail::convertOMtoInviwoBuffer<typename OM_Mesh::TexCoord1D>(
-            *newmesh, mesh, BufferType::TexcoordAttrib,
+            *newmesh, mesh, BufferType::TexCoordAttrib,
             [m = &mesh](auto it) { return m->texcoord1D(it); });
     }
 
