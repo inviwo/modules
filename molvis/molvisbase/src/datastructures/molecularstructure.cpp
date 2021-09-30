@@ -34,6 +34,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/exception.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
 

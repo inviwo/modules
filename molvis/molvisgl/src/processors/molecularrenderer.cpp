@@ -98,7 +98,7 @@ MolecularRenderer::MolecularRenderer()
                    {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
                    {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
                    {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                   {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+                   {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
                   [&](Shader& shader) -> void {
                       shader.onReload(
@@ -111,7 +111,7 @@ MolecularRenderer::MolecularRenderer()
                        {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
                         {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
                         {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-                        {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+                        {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
                        [&](Shader& shader) -> void {
                            shader.onReload(
@@ -148,7 +148,9 @@ MolecularRenderer::MolecularRenderer()
 }
 
 void MolecularRenderer::process() {
-    atomPicking_.resize(inport_.getData()->atoms().positions.size());
+    atomPicking_.resize(std::accumulate(inport_.begin(), inport_.end(), 0u, [](size_t val, auto s) {
+        return val + s->atoms().positions.size();
+    }));
 
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
@@ -206,10 +208,11 @@ void MolecularRenderer::process() {
 
     if (meshes_.empty() || inport_.isChanged() || updateColorMap) {
         meshes_.clear();
+        size_t pickingId = atomPicking_.getPickingId(0);
         for (auto structure : inport_) {
-            meshes_.push_back(createMesh(*structure,
-                                         {coloring_, atomColormap_, aminoColormap_, fixedColor_},
-                                         atomPicking_.getPickingId(0)));
+            meshes_.push_back(createMesh(
+                *structure, {coloring_, atomColormap_, aminoColormap_, fixedColor_}, pickingId));
+            pickingId += structure->atoms().positions.size();
         }
     }
 
