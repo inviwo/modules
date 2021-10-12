@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2021 Inviwo Foundation
+ * Copyright (c) 2018-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,40 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/vtkmodule.h>
+#pragma once
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
-
-#include <inviwo/vtk/datavisualizer/vtktovolumevisualizer.h>
-
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
-#include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
+#include <inviwo/vtk/vtkmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+class IVW_MODULE_VTK_API VTKToVolumeVisualizer : public DataVisualizer {
+public:
+    VTKToVolumeVisualizer(InviwoApplication* app);
+    virtual ~VTKToVolumeVisualizer() = default;
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
 
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
 
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
-
-    registerDataVisualizer(std::make_unique<VTKToVolumeVisualizer>(app));
-}
+private:
+    [[maybe_unused]] InviwoApplication* app_;
+};
 
 }  // namespace inviwo
