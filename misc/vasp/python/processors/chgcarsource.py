@@ -42,7 +42,16 @@ class ChgcarSource(ivw.Processor):
         self.addProperty(self.customDataRange)
         self.properties.customDataRange.semantics = ivw.properties.PropertySemantics(
             "Text")
-
+            
+        self.changeSign = ivw.properties.BoolProperty(
+            "changeSign", "Change the sign of the data", False)
+        self.addProperty(self.changeSign)
+        
+        
+        self.offsetB = ivw.properties.BoolProperty(
+            "Offset", "Offset the data", False)
+        self.addProperty(self.offsetB)
+        
         self.margin = ivw.properties.FloatProperty(
             "margin", "Border Repetition Margin", 0.05, 0.0, 0.5, 0.01)
         self.addProperty(self.margin)
@@ -71,7 +80,7 @@ class ChgcarSource(ivw.Processor):
             return
 
         self.volume, self.atomPos, self.elem, self.nelem, self.elemtype = vasputil.parseFile(
-            self.chgcar.value)
+            self.chgcar.value, self.changeSign.value, self.offsetB.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange

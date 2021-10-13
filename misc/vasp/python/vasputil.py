@@ -9,7 +9,7 @@ import numpy
 
 from pathlib import Path
 
-def parseFile(file):
+def parseFile(file, changeSign, offsetB):
     file = Path(file)
     if file.suffix == ".xz":
         import lzma
@@ -44,7 +44,12 @@ def parseFile(file):
     factor = scale if scale >= 0.0 else numpy.power(
         -scale / numpy.dot(a3, numpy.cross(a2, a1)), 1/3)
     basis = numpy.array([a1, a2, a3]) * factor
-    offset = -0.5 * (basis[0] + basis[1] + basis[2])
+    
+    if offsetB:
+        offset = -0.5 * (basis[0] + basis[1] + basis[2])
+    else:
+        offset = 0
+        
     if not direct:
         inv = numpy.linalg.inv(basis)
         pos = numpy.array([numpy.dot(inv, p) for p in pos])
@@ -57,7 +62,10 @@ def parseFile(file):
     chg = []
     for line in lines[10+ntot:10+ntot+rows]:
         for c in line.strip().split():
-            chg.append(float(c))
+            if changeSign:
+                chg.append(-1*float(c))
+            else:
+                chg.append(float(c))
 
     chgdata = numpy.array(chg).astype(numpy.float32)
     chgdata.shape = [dims[0], dims[1], dims[2]]
