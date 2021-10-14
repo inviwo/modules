@@ -47,7 +47,6 @@ VTKModule::VTKModule(InviwoApplication* app)
     : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
 
     LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
 
     registerProcessor<VTKDataSetInformation>();
     registerProcessor<VTKReader>();
