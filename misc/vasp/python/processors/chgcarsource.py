@@ -49,7 +49,7 @@ class ChgcarSource(ivw.Processor):
         
         
         self.offsetB = ivw.properties.BoolProperty(
-            "Offset", "Offset the data", False)
+            "Offset", "Offset the data", True)
         self.addProperty(self.offsetB)
         
         self.margin = ivw.properties.FloatProperty(
