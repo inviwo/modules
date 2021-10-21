@@ -48,8 +48,6 @@
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 
 #include <fmt/format.h>
 
@@ -89,13 +87,10 @@ private:
 
     static constexpr size_t eventCount = 8;
     static constexpr std::array<const char*, eventCount> events_ = {
-        "Keyboard", "Mouse",  "Wheel",   "Gesture",
-        "Touch",    "Resize", "Picking", "BrushingAndLinking"};
+        "Keyboard", "Mouse", "Wheel", "Gesture", "Touch", "Resize", "Picking"};
     static constexpr std::array<uint64_t, eventCount> eventHash_ = {
-        KeyboardEvent::chash(), MouseEvent::chash(),
-        WheelEvent::chash(),    GestureEvent::chash(),
-        TouchEvent::chash(),    ResizeEvent::chash(),
-        PickingEvent::chash(),  BrushingAndLinkingEvent::chash()};
+        KeyboardEvent::chash(), MouseEvent::chash(),  WheelEvent::chash(),  GestureEvent::chash(),
+        TouchEvent::chash(),    ResizeEvent::chash(), PickingEvent::chash()};
     std::array<BoolProperty, eventCount> enableEvents_;
     const std::unordered_map<uint64_t, std::reference_wrapper<BoolProperty>> eventMap_;
 
@@ -209,21 +204,6 @@ struct ProcessorTraits<MeshEventLogger> {
             "Testing",                     // Category
             CodeState::Stable,             // Code state
             Tags::CPU                      // Tags
-        };
-    }
-};
-
-using BrushingAndLinkingEventLogger =
-    EventLogger<BrushingAndLinkingInport, BrushingAndLinkingOutport>;
-template <>
-struct ProcessorTraits<BrushingAndLinkingEventLogger> {
-    static ProcessorInfo getProcessorInfo() {
-        return {
-            "org.inviwo.BrushingAndLinkingEventLogger",  // Class identifier
-            "BrushingAndLinkingEventLogger",             // Display name
-            "Testing",                                   // Category
-            CodeState::Stable,                           // Code state
-            Tags::CPU                                    // Tags
         };
     }
 };

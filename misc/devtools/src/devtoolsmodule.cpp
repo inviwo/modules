@@ -38,7 +38,6 @@ DevToolsModule::DevToolsModule(InviwoApplication* app) : InviwoModule(app, "DevT
     registerProcessor<LogRendererProcessors>();
     registerProcessor<VolumeEventLogger>();
     registerProcessor<MeshEventLogger>();
-    registerProcessor<BrushingAndLinkingEventLogger>();
 }
 
 }  // namespace inviwo
