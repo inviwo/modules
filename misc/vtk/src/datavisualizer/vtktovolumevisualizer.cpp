@@ -33,7 +33,6 @@
 
 #include <inviwo/core/processors/processorutils.h>
 
-
 #include <inviwo/vtk/ports/vtkdatasetport.h>
 
 #include <inviwo/vtk/processors/vtktovolume.h>
