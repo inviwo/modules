@@ -85,7 +85,7 @@ private:
     BoolCompositeProperty enable_;
     ButtonGroupProperty eventToggle_;
 
-    static constexpr size_t eventCount = 8;
+    static constexpr size_t eventCount = 7;
     static constexpr std::array<const char*, eventCount> events_ = {
         "Keyboard", "Mouse", "Wheel", "Gesture", "Touch", "Resize", "Picking"};
     static constexpr std::array<uint64_t, eventCount> eventHash_ = {
