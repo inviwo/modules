@@ -7,6 +7,7 @@ find_package(VTK REQUIRED)
 # Add header files
 set(HEADER_FILES
     include/inviwo/vtk/datastructures/vtkdataset.h
+    include/inviwo/vtk/datavisualizer/vtktovolumevisualizer.h
     include/inviwo/vtk/ports/vtkdatasetport.h
 	include/inviwo/vtk/util/vtkoutputlogger.h
     include/inviwo/vtk/processors/vtkdatasetinformation.h
@@ -24,6 +25,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 # Add source files
 set(SOURCE_FILES
     src/datastructures/vtkdataset.cpp
+    src/datavisualizer/vtktovolumevisualizer.cpp
     src/ports/vtkdatasetport.cpp
     src/vtkmodule.cpp
     src/util/vtkoutputlogger.cpp
