@@ -159,7 +159,7 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
                 throw inviwo::Exception("Unknown normals buffer type",
                                         IvwContextCustom("openmeshutil::meshHelper"));
             }
-        } else if (buf.first.type == BufferType::TexcoordAttrib) {
+        } else if (buf.first.type == BufferType::TexCoordAttrib) {
             if (auto t1 = std::dynamic_pointer_cast<const Buffer<float>>(buf.second)) {
                 int i = 0;
                 for (auto& v : t1->getRAMRepresentation()->getDataContainer()) {

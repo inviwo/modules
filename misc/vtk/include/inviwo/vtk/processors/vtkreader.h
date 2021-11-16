@@ -52,23 +52,17 @@ namespace inviwo {
 
 /** \docpage{org.inviwo.VTKReader, VTKReader}
  * ![](org.inviwo.VTKReader.png?classIdentifier=org.inviwo.VTKReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
+ * Browse for a VTK file to load it.
  *
  * ### Outports
- *   * __<Outport1>__ <description>.
+ *   * __VTKDataObjectOutport__ Outputs the VTK data object.
  *
  * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
+ *   * __VTK file__ VTK file to load.
+ *   * __Reload Data__ If you have updated the data outside Inviwo, you can use this button to
+ * manually reload the data.
  */
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_VTK_API VTKReader : public Processor,
                                      public ProgressBarOwner,
                                      public ActivityIndicatorOwner {
@@ -82,7 +76,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    enum class VTKFileType { XML, Legacy, Unknown };
+    enum class VTKFileType { XML_Serial, XML_Parallel, Legacy, Unknown };
 
     FileProperty file_;
     ButtonProperty reloadButton_;
@@ -95,9 +89,19 @@ private:
     vtkSmartPointer<vtkDataSet> dataSet_;
 
     VTKFileType determineFileType(const std::string& fileName) const;
-    bool read(const VTKFileType fileType);
-    void readLegacy();
-    void readXML();
+
+    template <VTKFileType T>
+    vtkSmartPointer<vtkDataSet> read(const std::string path) {
+        using V = std::conditional_t<T == VTKFileType::Legacy, vtkGenericDataObjectReader,
+                                     vtkXMLGenericDataObjectReader>;
+
+        auto reader = vtkSmartPointer<V>::New();
+
+        reader->SetFileName(path.c_str());
+        reader->Update();
+
+        return vtkDataSet::SafeDownCast(V::SafeDownCast(reader.GetPointer())->GetOutput());
+    }
 };
 
 }  // namespace inviwo

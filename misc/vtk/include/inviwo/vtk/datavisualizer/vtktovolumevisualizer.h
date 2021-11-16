@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2021 Inviwo Foundation
+ * Copyright (c) 2018-2020 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,32 +27,35 @@
  *
  *********************************************************************************/
 
-#include <inviwo/nanovgutils/nanovgutilsmodule.h>
-#include <inviwo/core/util/rendercontext.h>
-#include <inviwo/nanovgutils/processors/nanovgexampleprocessor.h>
-#include <inviwo/nanovgutils/processors/nanovgpickingexampleprocessor.h>
+#pragma once
 
-#include <modules/fontrendering/util/fontutils.h>
+#include <inviwo/vtk/vtkmoduledefine.h>
+#include <inviwo/core/common/inviwo.h>
+#include <inviwo/core/rendering/datavisualizer.h>
 
 namespace inviwo {
 
-NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app, "NanoVGUtils") {
-    registerProcessor<NanoVGExampleProcessor>();
-    registerProcessor<NanoVGPickingExampleProcessor>();
+class IVW_MODULE_VTK_API VTKToVolumeVisualizer : public DataVisualizer {
+public:
+    VTKToVolumeVisualizer(InviwoApplication* app);
+    virtual ~VTKToVolumeVisualizer() = default;
+    virtual std::string getName() const override;
+    virtual Document getDescription() const override;
+    virtual std::vector<FileExtension> getSupportedFileExtensions() const override;
+    virtual bool isOutportSupported(const Outport* port) const override;
 
-    auto fonts = font::getAvailableFonts();
-    for (auto font : fonts) {
-        context_.createFont(font.first, font.second);
-    }
+    virtual bool hasSourceProcessor() const override;
+    virtual bool hasVisualizerNetwork() const override;
 
-    // If available, set a default font
-    if (fonts.size() > 0) {
-        context_.fontFace(fonts[0].first);
-    }
-}
+    virtual std::pair<Processor*, Outport*> addSourceProcessor(
+        const std::string& filename, ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addVisualizerNetwork(Outport* outport,
+                                                         ProcessorNetwork* network) const override;
+    virtual std::vector<Processor*> addSourceAndVisualizerNetwork(
+        const std::string& filename, ProcessorNetwork* network) const override;
 
-NanoVGUtilsModule::~NanoVGUtilsModule() = default;
-
-NanoVGContext& NanoVGUtilsModule::getNanoVGContext() { return context_; }
+private:
+    [[maybe_unused]] InviwoApplication* app_;
+};
 
 }  // namespace inviwo

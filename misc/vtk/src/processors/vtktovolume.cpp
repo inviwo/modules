@@ -355,22 +355,26 @@ void VTKtoVolume::convertData() {
             return;
     }
 
-    dvec3 p0, px, py, pz;
-    getPointFromIndex(0, 0, 0, glm::value_ptr(p0));
-    getPointFromIndex(1, 0, 0, glm::value_ptr(px));
-    getPointFromIndex(0, 1, 0, glm::value_ptr(py));
-    getPointFromIndex(0, 0, 1, glm::value_ptr(pz));
+    const auto bounds = vtkDataPtr->operator*()->GetBounds();
+
+    const auto p0 = dvec3{bounds[0], bounds[2], bounds[4]};
+    const auto px = dvec3{bounds[1], bounds[2], bounds[4]};
+    const auto py = dvec3{bounds[0], bounds[3], bounds[4]};
+    const auto pz = dvec3{bounds[0], bounds[2], bounds[5]};
+
+    const auto basisVecX = px - p0;
+    const auto basisVecY = py - p0;
+    const auto basisVecZ = pz - p0;
 
     // world offset vector on the grids x, y, z-axis
-    const auto dx = px - p0;
-    const auto dy = py - p0;
-    const auto dz = pz - p0;
+    const auto dx = basisVecX / static_cast<double>(dimensions.x);
+    const auto dy = basisVecX / static_cast<double>(dimensions.x);
+    const auto dz = basisVecX / static_cast<double>(dimensions.x);
 
-    dmat3 basis = {dx * static_cast<double>(dimensions.x), dy * static_cast<double>(dimensions.y),
-                   dz * static_cast<double>(dimensions.z)};
+    const dmat3 basis = {basisVecX, basisVecY, basisVecZ};
 
     // p0 is the center of the voxel, offset needs another half a voxel.
-    dvec3 offset = p0 - (dx + dy + dz) * 0.5;
+    const dvec3 offset = p0 - (dx + dy + dz) * 0.5;
 
     // Create new volume
     auto volume = std::make_shared<Volume>(dimensions, multichannelFormat);
@@ -398,7 +402,7 @@ void VTKtoVolume::convertData() {
     double maxVal = extent.second[0];
     for (size_t d = 1; d < numTotalComps; ++d) {
         minVal = std::min(extent.first[d], minVal);
-        maxVal = std::max(extent.second[d], minVal);
+        maxVal = std::max(extent.second[d], maxVal);
     }
 
     volume->dataMap_.valueRange = {minVal, maxVal};

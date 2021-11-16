@@ -34,6 +34,8 @@
 #include <vtkVersion.h>
 #include <warn/pop>
 
+#include <inviwo/vtk/datavisualizer/vtktovolumevisualizer.h>
+
 #include <inviwo/vtk/ports/vtkdatasetport.h>
 #include <inviwo/vtk/processors/vtkdatasetinformation.h>
 #include <inviwo/vtk/processors/vtkreader.h>
@@ -47,7 +49,6 @@ VTKModule::VTKModule(InviwoApplication* app)
     : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
 
     LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
-    LogInfo("VTK Version: " << vtkVersion::GetVTKSourceVersion());
 
     registerProcessor<VTKDataSetInformation>();
     registerProcessor<VTKReader>();
@@ -57,6 +58,8 @@ VTKModule::VTKModule(InviwoApplication* app)
 
     registerPort<VTKDataSetInport>();
     registerPort<VTKDataSetOutport>();
+
+    registerDataVisualizer(std::make_unique<VTKToVolumeVisualizer>(app));
 }
 
 }  // namespace inviwo

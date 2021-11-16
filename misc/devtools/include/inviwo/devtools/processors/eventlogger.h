@@ -35,9 +35,11 @@
 #include <inviwo/core/processors/processortraits.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/buttongroupproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/network/networklock.h>
 #include <inviwo/core/interaction/events/keyboardevent.h>
 #include <inviwo/core/interaction/events/mouseevent.h>
 #include <inviwo/core/interaction/events/wheelevent.h>
@@ -46,8 +48,6 @@
 #include <inviwo/core/interaction/events/resizeevent.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-#include <modules/brushingandlinking/events/brushingandlinkingevent.h>
 
 #include <fmt/format.h>
 
@@ -83,16 +83,14 @@ private:
     Inport inport_;
     Outport outport_;
     BoolCompositeProperty enable_;
+    ButtonGroupProperty eventToggle_;
 
-    static constexpr size_t eventCount = 8;
+    static constexpr size_t eventCount = 7;
     static constexpr std::array<const char*, eventCount> events_ = {
-        "Keyboard", "Mouse",  "Wheel",   "Gesture",
-        "Touch",    "Resize", "Picking", "BrushingAndLinking"};
+        "Keyboard", "Mouse", "Wheel", "Gesture", "Touch", "Resize", "Picking"};
     static constexpr std::array<uint64_t, eventCount> eventHash_ = {
-        KeyboardEvent::chash(), MouseEvent::chash(),
-        WheelEvent::chash(),    GestureEvent::chash(),
-        TouchEvent::chash(),    ResizeEvent::chash(),
-        PickingEvent::chash(),  BrushingAndLinkingEvent::chash()};
+        KeyboardEvent::chash(), MouseEvent::chash(),  WheelEvent::chash(),  GestureEvent::chash(),
+        TouchEvent::chash(),    ResizeEvent::chash(), PickingEvent::chash()};
     std::array<BoolProperty, eventCount> enableEvents_;
     const std::unordered_map<uint64_t, std::reference_wrapper<BoolProperty>> eventMap_;
 
@@ -104,7 +102,24 @@ EventLogger<Inport, Outport>::EventLogger()
     : Processor()
     , inport_("inport")
     , outport_("outport")
-    , enable_("enable", "enable", true)
+    , enable_("enable", "Enable Logging", true)
+    , eventToggle_("eventToggle", "Toggle Events",
+                   {{"Set All", std::nullopt, "Enable logging of all event types",
+                     [this]() {
+                         NetworkLock lock(this);
+                         for (auto& item : eventMap_) {
+                             item.second.get().set(true);
+                         }
+                         enableOtherEvents_.set(true);
+                     }},
+                    {"Clear", std::nullopt, "Clear all event types",
+                     [this]() {
+                         NetworkLock lock(this);
+                         for (auto& item : eventMap_) {
+                             item.second.get().set(false);
+                         }
+                         enableOtherEvents_.set(false);
+                     }}})
 
     , enableEvents_{util::make_array<eventCount>([&](auto ind) {
         return BoolProperty(fmt::format("enable{}event", events_[ind]),
@@ -122,6 +137,7 @@ EventLogger<Inport, Outport>::EventLogger()
     addPort(inport_);
     addPort(outport_);
     addProperty(enable_);
+    enable_.addProperty(eventToggle_);
 
     for (auto& p : enableEvents_) {
         enable_.addProperty(p);
@@ -188,21 +204,6 @@ struct ProcessorTraits<MeshEventLogger> {
             "Testing",                     // Category
             CodeState::Stable,             // Code state
             Tags::CPU                      // Tags
-        };
-    }
-};
-
-using BrushingAndLinkingEventLogger =
-    EventLogger<BrushingAndLinkingInport, BrushingAndLinkingOutport>;
-template <>
-struct ProcessorTraits<BrushingAndLinkingEventLogger> {
-    static ProcessorInfo getProcessorInfo() {
-        return {
-            "org.inviwo.BrushingAndLinkingEventLogger",  // Class identifier
-            "BrushingAndLinkingEventLogger",             // Display name
-            "Testing",                                   // Category
-            CodeState::Stable,                           // Code state
-            Tags::CPU                                    // Tags
         };
     }
 };
