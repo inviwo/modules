@@ -224,7 +224,7 @@ void Series::updateImageInformation(const std::string& dicompath) {
         imageReader.SetStream(imageInputStream);
 
         if (!imageInputStream.is_open() || !imageReader.CanRead()) {
-            imgInfo.dims = {0u};
+            imgInfo.dims = {0,0,0};
             continue;
         }
         if (!imageReader.Read()) {

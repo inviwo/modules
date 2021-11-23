@@ -128,7 +128,7 @@ void enableGdcmLogging(LogVerbosity verbosity) {
     static IvwGdcmLogStream<LogLevel::Error> error_log_stream;
 
     // reset logging/tracing in gdcm
-    gdcm::Trace::Trace();
+    gdcm::Trace();
 
     switch (verbosity) {
         case LogVerbosity::Info:
