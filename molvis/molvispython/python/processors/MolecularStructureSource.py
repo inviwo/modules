@@ -29,18 +29,16 @@
  #
  #################################################################################
 
+import builtins
 import inviwopy as ivw
 
-from inviwopy.glm import *
 import ivwmolvis
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
-
-import xpdb
-
 import numpy as np
 
+import xpdb
 
 class MolecularStructureSource(ivw.Processor):
     def __init__(self, id, name):
@@ -56,6 +54,7 @@ class MolecularStructureSource(ivw.Processor):
         self.dataset = ivw.properties.StringProperty("dataset", "Data")
         self.addProperty(self.dataset, owner=False)
         self.dataset.readOnly = True
+        self.dataset.invalidationLevel = ivw.properties.InvalidationLevel.Valid
 
     @staticmethod
     def processorInfo():
@@ -79,10 +78,10 @@ class MolecularStructureSource(ivw.Processor):
 
         self.dataset.value = self.filename.value.split("/")[-1]
 
-        self.outports.molecule.setData(self.parseCIF(self.filename.value))
+        self.outports.molecule.setData(self.parseFile(self.filename.value))
 
     @staticmethod
-    def parseCIF(filename):
+    def parseFile(filename):
         ext = filename.split(".")[-1]
         if ext == 'gz' or ext == 'bz2':
             ext = filename.split(".")[-2]
@@ -135,7 +134,8 @@ class MolecularStructureSource(ivw.Processor):
         for p in pos:
             dvec3pos.append(ivw.glm.dvec3(p[0], p[1], p[2]))
         atoms.positions = dvec3pos
-        atoms.serialNumbers = serialNumbers
+        ## check serial numbers, might be None for some CIF structures
+        atoms.serialNumbers = serialNumbers if builtins.all(serialNumbers) else [x for x in range(len(pos))]
         atoms.bfactors = bfactors
         atoms.modelids = modelId
         atoms.chainids = chainId
