@@ -77,6 +77,7 @@ namespace inviwo {
  *	 * __matching__
  *      + __<Prop1>__ p parameter (inf, 2, ...) for Wasserstein metric
  *      + __<Prop1>__ alpha parameter (0 -> geometry, 1 -> persistance diagram distance)
+ *      + __<Prop1>__ merge-split threshold
  *      + __<Prop2>__ extremum weight
  *      + __<Prop1>__ saddle weight
  *      + __<Prop2>__ x weight
@@ -133,6 +134,8 @@ private:
     in the code
     */
     FloatProperty alpha_;
+    /* Threshold for merges and split */
+    FloatProperty mergeSplitThresh_;
     /* Importance weight for extrema */
     FloatProperty extremumWeight_;
     /* Importance weight for saddles */
@@ -143,7 +146,7 @@ private:
     FloatProperty zWeight_;
 
     CompositeProperty output_;
-    /* Translation of the second set of critical points if the persistence diagrams are embedded
+    /* Translation of the next set of critical points if the persistence diagrams are embedded
     in the original domain.
     This is useful to visualize the matching between the diagrams of two 2D scalar fields. */
     BoolProperty forceZTranslation_;

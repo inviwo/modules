@@ -45,13 +45,12 @@ namespace {
 
 struct Track {
     template <typename Result, typename Format>
-    Result operator()(pool::Progress progress, ttk::TrackingFromFields &trackingF,
-                      ttk::TrackingFromPersistenceDiagrams &tracking, const VolumeSequence &scalars,
+    Result operator()(pool::Progress progress, ttk::TrackingFromFields& trackingF,
+                      ttk::TrackingFromPersistenceDiagrams& tracking, const VolumeSequence& scalars,
                       bool useGeometricSpacing, float spacing, std::string algorithm, float alpha,
                       float tolerance, std::string wasserstein, int threadCount, float PE, float PS,
-                      float PX, float PY, float PZ, float mergeSplitThresh,  // Todo: Make Property)
-                      bool overwriteTransform, const vec4 &minColor, const vec4 maxColor,
-                      int outputMode) {
+                      float PX, float PY, float PZ, float mergeSplitThresh, bool overwriteTransform,
+                      const vec4& minColor, const vec4 maxColor, int outputMode) {
 
         using dataType = Format::type;
 
@@ -65,14 +64,14 @@ struct Track {
         // 0. get data
         trackingF.setThreadNumber(threadCount);
         trackingF.setTriangulation(
-            const_cast<ttk::Triangulation *>(&triangulation->getTriangulation()));
+            const_cast<ttk::Triangulation*>(&triangulation->getTriangulation()));
 
         size_t numberOfFields = scalars.size();
-        std::vector<void *> inputFields(numberOfFields);
+        std::vector<void*> inputFields(numberOfFields);
 
         for (size_t i = 0; i < numberOfFields; ++i) {
-            const Volume &volume = *scalars.at(i).get();
-            inputFields[i] = const_cast<void *>(volume.getRepresentation<VolumeRAM>()->getData());
+            const Volume& volume = *scalars.at(i).get();
+            inputFields[i] = const_cast<void*>(volume.getRepresentation<VolumeRAM>()->getData());
         }
 
         trackingF.setInputScalars(inputFields);
@@ -185,6 +184,7 @@ TrackingFromFields::TrackingFromFields()
     , persistenceThreshold_("persistenceThreshold", "Persistence Threshold", 1, 0, 100)
     , matching_("matching", "Matching")
     , pParameter_("pParameter", "p Parameter (inf, 0, 1..)", "inf")
+    , mergeSplitThresh_("mergeSplitThresh", "Merge Split Threshold", 0.0f, 0.0f, 100.0f)
     , alpha_("alpha", "Alpha", 1, 0, 1)
     , extremumWeight_("extremumWeight", "Extremum Weight", 1, 0, 1)
     , saddleWeight_("saddleWeight", "Saddle Weight", 0.01, 0, 1)
@@ -209,11 +209,11 @@ TrackingFromFields::TrackingFromFields()
     addProperties(diagrams_, matching_, output_);
     diagrams_.addProperties(timeSampling_, persistenceThreshold_);
     // alpha_ is not added because it is actually never used in the TTK implementation
-    matching_.addProperties(pParameter_, extremumWeight_, saddleWeight_, xWeight_, yWeight_,
-                            zWeight_);
+    matching_.addProperties(pParameter_, mergeSplitThresh_, extremumWeight_, saddleWeight_,
+                            xWeight_, yWeight_, zWeight_);
     output_.addProperties(forceZTranslation_, zTranslation_, overwriteTransform_, colors_,
                           outputMode_);
-    zTranslation_.visibilityDependsOn(forceZTranslation_, [](const auto &p) { return p.get(); });
+    zTranslation_.visibilityDependsOn(forceZTranslation_, [](const auto& p) { return p.get(); });
 }
 
 void TrackingFromFields::process() {
@@ -247,7 +247,7 @@ void TrackingFromFields::process() {
         float PX = xWeight_.get();
         float PY = yWeight_.get();
         float PZ = zWeight_.get();
-        float mergeSplitThresh = 0;  // Todo: Make Property
+        float mergeSplitThresh = mergeSplitThresh_;
         bool overwriteTransform = overwriteTransform_.get();
         vec4 minColor = colors_.getColor2D(0);
         vec4 maxColor = colors_.getColor2D(2);
@@ -276,11 +276,11 @@ void TrackingFromFields::process() {
 // Basically a copy of ttkTrackingFromPersistenceDiagrams::buildMesh apart from the dataframe
 template <typename dataType>
 void TrackingFromFields::createOutputFromTracking(
-    std::vector<trackingTuple> &trackings, std::vector<std::vector<matchingTuple>> &outputMatchings,
-    std::vector<std::vector<diagramTuple>> &inputPersistenceDiagrams,
-    std::vector<std::set<int>> &trackingTupleToMerged, bool useGeometricSpacing, double spacing,
-    bool DoPostProc, const vec4 &minColor, const vec4 &maxColor, int outputMode, Mesh &outputMesh,
-    DataFrame &outputDf) {
+    std::vector<trackingTuple>& trackings, std::vector<std::vector<matchingTuple>>& outputMatchings,
+    std::vector<std::vector<diagramTuple>>& inputPersistenceDiagrams,
+    std::vector<std::set<int>>& trackingTupleToMerged, bool useGeometricSpacing, double spacing,
+    bool DoPostProc, const vec4& minColor, const vec4& maxColor, int outputMode, Mesh& outputMesh,
+    DataFrame& outputDf) {
 
     // Containerrs for vertices and lines
     // (Ommitted in comparison with buildMesh: valueScalars, matchingIdScalars, lengthScalars)
@@ -315,11 +315,11 @@ void TrackingFromFields::createOutputFromTracking(
 
         // Go through one track
         for (int c = 0; c < chainLength - 1; ++c) {
-            std::vector<matchingTuple> &matchings1 = outputMatchings[numStart + c];
+            std::vector<matchingTuple>& matchings1 = outputMatchings[numStart + c];
             int d1id = numStart + c;
             int d2id = d1id + 1;  // c % 2 == 0 ? d1id + 1 : d1id;
-            std::vector<diagramTuple> &diagram1 = inputPersistenceDiagrams[d1id];
-            std::vector<diagramTuple> &diagram2 = inputPersistenceDiagrams[d2id];
+            std::vector<diagramTuple>& diagram1 = inputPersistenceDiagrams[d1id];
+            std::vector<diagramTuple>& diagram2 = inputPersistenceDiagrams[d2id];
 
             // Insert segments
             int ids[2];
@@ -407,7 +407,7 @@ void TrackingFromFields::createOutputFromTracking(
             int cid = k;
             bool hasMergedFirst = false;
             if (DoPostProc) {
-                std::set<int> &connected = trackingTupleToMerged[k];
+                std::set<int>& connected = trackingTupleToMerged[k];
                 if (!connected.empty()) {
                     int min = *(connected.begin());
                     trackingTuple ttt = trackings.at((unsigned long)min);
@@ -427,7 +427,7 @@ void TrackingFromFields::createOutputFromTracking(
                         // segment.
                         std::vector<BIdVertex> chain3 = std::get<2>(ttt);
                         auto nn = (int)chain3.at(chain3.size() - 1);
-                        std::vector<diagramTuple> &diagramRematch =
+                        std::vector<diagramTuple>& diagramRematch =
                             inputPersistenceDiagrams[numEnd2];
                         diagramTuple tupleN = diagramRematch.at((unsigned long)nn);
 
