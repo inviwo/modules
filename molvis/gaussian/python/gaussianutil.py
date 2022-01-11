@@ -1,6 +1,35 @@
+ #################################################################################
+ #
+ # Inviwo - Interactive Visualization Workshop
+ #
+ # Copyright (c) 2020-2021 Inviwo Foundation
+ # All rights reserved.
+ #
+ # Redistribution and use in source and binary forms, with or without
+ # modification, are permitted provided that the following conditions are met:
+ #
+ # 1. Redistributions of source code must retain the above copyright notice, this
+ # list of conditions and the following disclaimer.
+ # 2. Redistributions in binary form must reproduce the above copyright notice,
+ # this list of conditions and the following disclaimer in the documentation
+ # and/or other materials provided with the distribution.
+ #
+ # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ #################################################################################
+
 import inviwopy as ivw
 import ivwdataframe as df
-import atomdata
+import ivwmolvis
 
 import numpy
 
@@ -67,7 +96,8 @@ def parseCubeFile(file):
             atomPos = bohrToAngstrom * atomPos
         atomPos = atomPos - origin 
         pos.append(atomPos)
-        atomType.append(atomdata.atomicSymbol(atomID))
+        element = ivwmolvis.atomicelement.element(atomID)
+        atomType.append(ivwmolvis.atomicelement.symbol(element))
     
     chg = []
     for i in range(6 + numAtoms + extraLines, len(lines)):
@@ -103,8 +133,9 @@ def createMeshForCube(pos, elemtype, basis, offset, pm):
     pm.resize(len(elemtype))
 
     for i, p in enumerate(pos):
-        c = atomdata.color(elemtype[i])
-        r = atomdata.radius(elemtype[i]) # / 10
+        element = ivwmolvis.atomicelement.fromAbbr(elemtype[i])
+        c = numpy.array(ivwmolvis.atomicelement.color(element))
+        r = ivwmolvis.atomicelement.vdwRadius(element) # / 10
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
@@ -159,11 +190,12 @@ def createDataFrameForCube(pos, elemtype):
     r = dataframe.addFloatColumn("r")
 
     for et, p in zip(elemtype, pos):
+        element = ivwmolvis.atomicelement.fromAbbr(et)
         ct.add(et)
         cx.add(p[0])
         cy.add(p[1])
         cz.add(p[2])
-        r.add(atomdata.radius(et))
+        r.add(ivwmolvis.atomicelement.vdwRadius(element))
 
     dataframe.updateIndex()
 
