@@ -135,7 +135,7 @@ def createMeshForCube(pos, elemtype, basis, offset, pm):
     for i, p in enumerate(pos):
         element = ivwmolvis.atomicelement.fromAbbr(elemtype[i])
         c = numpy.array(ivwmolvis.atomicelement.color(element))
-        r = ivwmolvis.atomicelement.vdwRadius(element) # / 10
+        r = ivwmolvis.atomicelement.vdwRadius(element)
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
