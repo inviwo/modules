@@ -68,6 +68,8 @@ def parseCubeFile(file):
     bohrToAngstrom = 0.529177249
     splitted = lines[3].strip().split()
     sizeX = int(splitted[0])
+    # If sizeX<0 the input cube coordinates are assumed to be in Bohr, otherwise, they are interpreted as Angstroms.
+    # see http://gaussian.com/cubegen/
     if sizeX < 0:
         sizeX = -sizeX
         unitsInAngstrom = True
@@ -87,7 +89,7 @@ def parseCubeFile(file):
         origin = bohrToAngstrom * origin
     
     pos = []
-    atomType = []
+    atoms = []
     for i in range(numAtoms):
         splitted = lines[6 + i].strip().split()
         atomID = int(splitted[0])
@@ -96,8 +98,7 @@ def parseCubeFile(file):
             atomPos = bohrToAngstrom * atomPos
         atomPos = atomPos - origin 
         pos.append(atomPos)
-        element = ivwmolvis.atomicelement.element(atomID)
-        atomType.append(ivwmolvis.atomicelement.symbol(element))
+        atoms.append(ivwmolvis.atomicelement.element(atomID))
     
     chg = []
     for i in range(6 + numAtoms + extraLines, len(lines)):
@@ -118,24 +119,32 @@ def parseCubeFile(file):
     volume.dataMap.dataRange = ivw.glm.dvec2(chgdata.min(), chgdata.max())
     volume.dataMap.valueRange = volume.dataMap.dataRange
 
+    volume.axes[0].name = "x"
+    volume.axes[0].unit = ivw.data.Unit("Angstrom")
+    volume.axes[1].name = "y"
+    volume.axes[1].unit = ivw.data.Unit("Angstrom")
+    volume.axes[2].name = "z"
+    volume.axes[2].unit = ivw.data.Unit("Angstrom" )
+    volume.dataMap.valueAxis.name = "Charge Density"
+    volume.dataMap.valueAxis.unit = ivw.data.Unit("e/Angstrom^3")
+
     volume.basis = ivw.glm.mat3(basis)
     volume.offset = ivw.glm.vec3(0.0)
 
-    return (volume, pos, atomType)
+    return (volume, pos, atoms)
 
-def createMeshForCube(pos, elemtype, basis, offset, pm):
+def createMeshForCube(pos, elements, basis, offset, pm):
     position = []
     color = []
     radius = []
     picking = []
     index = []
 
-    pm.resize(len(elemtype))
+    pm.resize(len(elements))
 
     for i, p in enumerate(pos):
-        element = ivwmolvis.atomicelement.fromAbbr(elemtype[i])
-        c = numpy.array(ivwmolvis.atomicelement.color(element))
-        r = ivwmolvis.atomicelement.vdwRadius(element)
+        c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
+        r = ivwmolvis.atomicelement.vdwRadius(elements[i])
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
@@ -163,39 +172,20 @@ def createMeshForCube(pos, elemtype, basis, offset, pm):
         numpy.array(index).astype(numpy.uint32)))
     return mesh
 
+def createDataFrameForCube(pos, elements):
     dataframe = df.DataFrame()
     ct = dataframe.addCategoricalColumn("type")
-    cx = dataframe.addFloatColumn("x")
-    cy = dataframe.addFloatColumn("y")
-    cz = dataframe.addFloatColumn("z")
+    cx = dataframe.addFloatColumn("x", 0, ivw.data.Unit("Angstrom"))
+    cy = dataframe.addFloatColumn("y", 0, ivw.data.Unit("Angstrom"))
+    cz = dataframe.addFloatColumn("z", 0, ivw.data.Unit("Angstrom"))
+    r = dataframe.addFloatColumn("r", 0, ivw.data.Unit("Angstrom"))
 
-    for et, p in zip(elemtype, pos):
-        mp = modelMat * ivw.glm.vec4(p[0], p[1], p[2], 1.0)
-
-        ct.add(et)
-        cx.add(mp[0])
-        cy.add(mp[1])
-        cz.add(mp[2])
-
-    dataframe.updateIndex()
-
-    return dataframe
-
-def createDataFrameForCube(pos, elemtype):
-    dataframe = df.DataFrame()
-    ct = dataframe.addCategoricalColumn("type")
-    cx = dataframe.addFloatColumn("x")
-    cy = dataframe.addFloatColumn("y")
-    cz = dataframe.addFloatColumn("z")
-    r = dataframe.addFloatColumn("r")
-
-    for et, p in zip(elemtype, pos):
-        element = ivwmolvis.atomicelement.fromAbbr(et)
-        ct.add(et)
+    for elem, p in zip(elements, pos):        
+        ct.add(ivwmolvis.atomicelement.symbol(elem))
         cx.add(p[0])
         cy.add(p[1])
         cz.add(p[2])
-        r.add(ivwmolvis.atomicelement.vdwRadius(element))
+        r.add(ivwmolvis.atomicelement.vdwRadius(elem))
 
     dataframe.updateIndex()
 

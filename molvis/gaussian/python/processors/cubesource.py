@@ -31,6 +31,7 @@
 
 import inviwopy as ivw
 import ivwdataframe as df
+import ivwmolvis
 import gaussianutil
 
 import numpy
@@ -92,16 +93,16 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atomType = gaussianutil.parseCubeFile(self.cubeFilePath.value)
+        self.volume, self.atomPos, self.atoms = gaussianutil.parseCubeFile(self.cubeFilePath.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atomType,
+        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atoms,
                                         self.volume.basis, self.volume.offset, self.pm)
 
-        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atomType)
+        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atoms)
 
         print("Loaded Cube file: {}\nDims:  {}\nRange: {}".format(
             self.cubeFilePath.value, self.volume.dimensions, self.volume.dataMap.dataRange))
@@ -115,6 +116,6 @@ class CubeSource(ivw.Processor):
             i = pickevent.pickedId
             pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
             pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, self.atomType[i], pos, self.atomPos[i]))
+                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
         else:
             pickevent.setToolTip("")

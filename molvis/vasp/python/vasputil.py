@@ -96,29 +96,38 @@ def parseFile(file):
     volume.dataMap.dataRange = ivw.glm.dvec2(chgdata.min(), chgdata.max())
     volume.dataMap.valueRange = volume.dataMap.dataRange
 
+    volume.axes[0].name = "x"
+    volume.axes[0].unit = ivw.data.Unit("Angstrom")
+    volume.axes[1].name = "y"
+    volume.axes[1].unit = ivw.data.Unit("Angstrom")
+    volume.axes[2].name = "z"
+    volume.axes[2].unit = ivw.data.Unit("Angstrom" )
+    volume.dataMap.valueAxis.name = "Charge Density"
+    volume.dataMap.valueAxis.unit = ivw.data.Unit("eV")
+
     volume.basis = ivw.glm.mat3(basis)
     volume.offset = ivw.glm.vec3(offset)
 
-    elemtype = []
+    atoms = []
     for i, n in enumerate(nelem):
+        element = ivwmolvis.atomicelement.fromAbbr(elem[i])
         for x in range(n):
-            elemtype.append(elem[i])
+            atoms.append(element)
 
-    return (volume, pos, elem, nelem, elemtype)
+    return (volume, pos, elem, nelem, atoms)
 
-def createMesh(pos, elemtype, basis, offset, pm, margin):
+def createMesh(pos, elements, basis, offset, pm, margin):
     position = []
     color = []
     radius = []
     picking = []
     index = []
 
-    pm.resize(len(elemtype))
+    pm.resize(len(elements))
 
     for i, p in enumerate(pos):
-        element = ivwmolvis.atomicelement.fromAbbr(elemtype[i])
-        c = numpy.array(ivwmolvis.atomicelement.color(element))
-        r = ivwmolvis.atomicelement.vdwRadius(element)
+        c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
+        r = ivwmolvis.atomicelement.vdwRadius(elements[i])
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
@@ -151,20 +160,22 @@ def createMesh(pos, elemtype, basis, offset, pm, margin):
         numpy.array(index).astype(numpy.uint32)))
     return mesh
 
-def createDataFrame(pos, elemtype, modelMat):
+def createDataFrame(pos, elements, modelMat):
     dataframe = df.DataFrame()
     ct = dataframe.addCategoricalColumn("type")
-    cx = dataframe.addFloatColumn("x")
-    cy = dataframe.addFloatColumn("y")
-    cz = dataframe.addFloatColumn("z")
+    cx = dataframe.addFloatColumn("x", 0, ivw.data.Unit("Angstrom"))
+    cy = dataframe.addFloatColumn("y", 0, ivw.data.Unit("Angstrom"))
+    cz = dataframe.addFloatColumn("z", 0, ivw.data.Unit("Angstrom"))
+    r = dataframe.addFloatColumn("r", 0, ivw.data.Unit("Angstrom"))
 
-    for et, p in zip(elemtype, pos):
+    for elem, p in zip(elements, pos):
         mp = modelMat * ivw.glm.vec4(p[0], p[1], p[2], 1.0)
 
-        ct.add(et)
+        ct.add(ivwmolvis.atomicelement.symbol(elem))
         cx.add(mp[0])
         cy.add(mp[1])
         cz.add(mp[2])
+        r.add(ivwmolvis.atomicelement.vdwRadius(elem))
 
     dataframe.updateIndex()
 

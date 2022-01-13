@@ -31,6 +31,7 @@
 
 import inviwopy as ivw
 import ivwdataframe as df
+import ivwmolvis
 import vasputil
 
 import numpy
@@ -96,17 +97,17 @@ class ChgcarSource(ivw.Processor):
         if len(self.chgcar.value) == 0 or not Path(self.chgcar.value).exists():
             return
 
-        self.volume, self.atomPos, self.elem, self.nelem, self.elemtype = vasputil.parseFile(
+        self.volume, self.atomPos, self.elem, self.nelem, self.atoms = vasputil.parseFile(
             self.chgcar.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = vasputil.createMesh(self.atomPos, self.elemtype,
+        self.mesh = vasputil.createMesh(self.atomPos, self.atoms,
                                         self.volume.basis, self.volume.offset, self.pm, self.margin.value)
 
-        self.dataframe = vasputil.createDataFrame(self.atomPos, self.elemtype,
+        self.dataframe = vasputil.createDataFrame(self.atomPos, self.atoms,
                                                   self.volume.modelMatrix)
 
         print("Loaded CHGCAR: {}\nDims:  {}\nElem:  {}\nNElem  {}\nRange: {}".format(
@@ -121,6 +122,6 @@ class ChgcarSource(ivw.Processor):
             i = pickevent.pickedId
             pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
             pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, self.elemtype[i], pos, self.atomPos[i]))
+                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
         else:
             pickevent.setToolTip("")
