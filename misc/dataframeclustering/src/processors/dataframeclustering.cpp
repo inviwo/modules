@@ -151,7 +151,7 @@ void DataFrameClustering::onDataFrameChange() {
                                                     columns_.getProperties().end()};
 
         for (size_t i = 0; i < df->getNumberOfColumns(); i++) {
-            auto header = df->getHeader(i);
+            auto&& header = df->getColumn(i)->getHeader();
             auto prop = [header, this]() {
                 auto id = util::stripIdentifier(toLower(header));
                 if (auto p = columns_.getPropertyByIdentifier(id)) {
