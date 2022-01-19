@@ -150,9 +150,8 @@ void DataFrameClustering::onDataFrameChange() {
         std::unordered_set<Property*> oldProperties{columns_.getProperties().begin(),
                                                     columns_.getProperties().end()};
 
-        for (size_t i = 0; i < df->getNumberOfColumns(); i++) {
-            auto header = df->getHeader(i);
-            auto prop = [header, this]() {
+        for (const auto& col : *df) {
+            auto prop = [header = col->getHeader(), this]() {
                 auto id = util::stripIdentifier(toLower(header));
                 if (auto p = columns_.getPropertyByIdentifier(id)) {
                     if (auto pp = dynamic_cast<BoolProperty*>(p)) {
