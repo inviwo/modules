@@ -133,7 +133,7 @@ def parseCubeFile(file):
 
     return (volume, pos, atoms)
 
-def createMeshForCube(pos, elements, basis, offset, pm):
+def createMeshForCube(pos, elements, basis, offset, pm, radiusScaling = 1.0):
     position = []
     color = []
     radius = []
@@ -144,7 +144,7 @@ def createMeshForCube(pos, elements, basis, offset, pm):
 
     for i, p in enumerate(pos):
         c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
-        r = ivwmolvis.atomicelement.vdwRadius(elements[i])
+        r = ivwmolvis.atomicelement.vdwRadius(elements[i]) * radiusScaling
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):

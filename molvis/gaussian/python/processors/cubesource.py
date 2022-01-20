@@ -70,6 +70,10 @@ class CubeSource(ivw.Processor):
         self.properties.customDataRange.semantics = ivw.properties.PropertySemantics(
             "Text")
 
+        self.radiusScaling = ivw.properties.FloatProperty(
+            "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
+        self.addProperty(self.radiusScaling)
+
         self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
@@ -100,7 +104,8 @@ class CubeSource(ivw.Processor):
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
         self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atoms,
-                                        self.volume.basis, self.volume.offset, self.pm)
+                                        self.volume.basis, self.volume.offset,
+                                        self.pm, self.radiusScaling.value)
 
         self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atoms)
 

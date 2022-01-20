@@ -74,6 +74,10 @@ class ChgcarSource(ivw.Processor):
             "margin", "Border Repetition Margin", 0.05, 0.0, 0.5, 0.01)
         self.addProperty(self.margin)
 
+        self.radiusScaling = ivw.properties.FloatProperty(
+            "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
+        self.addProperty(self.radiusScaling)
+
         self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
@@ -105,7 +109,9 @@ class ChgcarSource(ivw.Processor):
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
         self.mesh = vasputil.createMesh(self.atomPos, self.atoms,
-                                        self.volume.basis, self.volume.offset, self.pm, self.margin.value)
+                                        self.volume.basis, self.volume.offset, 
+                                        self.pm, self.margin.value,
+                                        self.radiusScaling.value)
 
         self.dataframe = vasputil.createDataFrame(self.atomPos, self.atoms,
                                                   self.volume.modelMatrix)

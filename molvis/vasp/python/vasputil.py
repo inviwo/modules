@@ -116,7 +116,7 @@ def parseFile(file):
 
     return (volume, pos, elem, nelem, atoms)
 
-def createMesh(pos, elements, basis, offset, pm, margin):
+def createMesh(pos, elements, basis, offset, pm, margin, radiusScaling = 1.0):
     position = []
     color = []
     radius = []
@@ -127,7 +127,7 @@ def createMesh(pos, elements, basis, offset, pm, margin):
 
     for i, p in enumerate(pos):
         c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
-        r = ivwmolvis.atomicelement.vdwRadius(elements[i])
+        r = ivwmolvis.atomicelement.vdwRadius(elements[i]) * radiusScaling
         pi = pm.pickingId(i)
 
         def addVertex(vertexpos):
