@@ -178,11 +178,15 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& ss,
                                              const dicomdir::Image& image) {
-    ss << "[ DICOM Image" ss << "\n  Path:         " << image.path
-       << "\n  Orientation: " << image.orientationPatient
-       << "\n  Position:    " << image.positionPatient
-       << "\n  Thickness:   " << image.sliceThickness << "\n  z pos:       " << image.zPos
+    // clang-format off
+    ss << "[ DICOM Image" << "\n  Path:         " << image.path
+       << "\n  OrientationX: " << image.orientationX
+       << "\n  OrientationY: " << image.orientationY
+       << "\n  Origin:       " << image.origin
+       << "\n  Thickness:    " << image.sliceThickness 
+       << "\n  z pos:        " << image.zPos
        << "\n  Window (center, width): " << image.windowCenter << ", " << image.windowWidth << " ]";
+    // clang-format on
     return ss;
 }
 
