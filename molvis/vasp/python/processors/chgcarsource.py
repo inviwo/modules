@@ -1,16 +1,43 @@
 # Name: ChgcarSource
 
+ #################################################################################
+ #
+ # Inviwo - Interactive Visualization Workshop
+ #
+ # Copyright (c) 2020-2021 Inviwo Foundation
+ # All rights reserved.
+ #
+ # Redistribution and use in source and binary forms, with or without
+ # modification, are permitted provided that the following conditions are met:
+ #
+ # 1. Redistributions of source code must retain the above copyright notice, this
+ # list of conditions and the following disclaimer.
+ # 2. Redistributions in binary form must reproduce the above copyright notice,
+ # this list of conditions and the following disclaimer in the documentation
+ # and/or other materials provided with the distribution.
+ #
+ # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ #################################################################################
+
 import inviwopy as ivw
 import ivwdataframe as df
-import atomdata
+import ivwmolvis
 import vasputil
 
-import functools
-import math
 import numpy
 from pathlib import Path
 
-# Descriotion found at https://cms.mpi.univie.ac.at/wiki/index.php/CHGCAR
+# Description found at https://cms.mpi.univie.ac.at/wiki/index.php/CHGCAR
 class ChgcarSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
@@ -47,6 +74,10 @@ class ChgcarSource(ivw.Processor):
             "margin", "Border Repetition Margin", 0.05, 0.0, 0.5, 0.01)
         self.addProperty(self.margin)
 
+        self.radiusScaling = ivw.properties.FloatProperty(
+            "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
+        self.addProperty(self.radiusScaling)
+
         self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
@@ -70,17 +101,19 @@ class ChgcarSource(ivw.Processor):
         if len(self.chgcar.value) == 0 or not Path(self.chgcar.value).exists():
             return
 
-        self.volume, self.atomPos, self.elem, self.nelem, self.elemtype = vasputil.parseFile(
+        self.volume, self.atomPos, self.elem, self.nelem, self.atoms = vasputil.parseFile(
             self.chgcar.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = vasputil.createMesh(self.atomPos, self.elemtype,
-                                        self.volume.basis, self.volume.offset, self.pm, self.margin.value)
+        self.mesh = vasputil.createMesh(self.atomPos, self.atoms,
+                                        self.volume.basis, self.volume.offset, 
+                                        self.pm, self.margin.value,
+                                        self.radiusScaling.value)
 
-        self.dataframe = vasputil.createDataFrame(self.atomPos, self.elemtype,
+        self.dataframe = vasputil.createDataFrame(self.atomPos, self.atoms,
                                                   self.volume.modelMatrix)
 
         print("Loaded CHGCAR: {}\nDims:  {}\nElem:  {}\nNElem  {}\nRange: {}".format(
@@ -95,6 +128,6 @@ class ChgcarSource(ivw.Processor):
             i = pickevent.pickedId
             pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
             pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, self.elemtype[i], pos, self.atomPos[i]))
+                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
         else:
             pickevent.setToolTip("")

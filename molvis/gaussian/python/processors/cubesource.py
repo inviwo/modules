@@ -1,12 +1,39 @@
 # Name: CubeSource
 
+#################################################################################
+ #
+ # Inviwo - Interactive Visualization Workshop
+ #
+ # Copyright (c) 2020-2021 Inviwo Foundation
+ # All rights reserved.
+ #
+ # Redistribution and use in source and binary forms, with or without
+ # modification, are permitted provided that the following conditions are met:
+ #
+ # 1. Redistributions of source code must retain the above copyright notice, this
+ # list of conditions and the following disclaimer.
+ # 2. Redistributions in binary form must reproduce the above copyright notice,
+ # this list of conditions and the following disclaimer in the documentation
+ # and/or other materials provided with the distribution.
+ #
+ # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #
+ #################################################################################
+
 import inviwopy as ivw
 import ivwdataframe as df
-import atomdata
-import vasputil
+import ivwmolvis
+import gaussianutil
 
-import functools
-import math
 import numpy
 from pathlib import Path
 
@@ -43,16 +70,20 @@ class CubeSource(ivw.Processor):
         self.properties.customDataRange.semantics = ivw.properties.PropertySemantics(
             "Text")
 
+        self.radiusScaling = ivw.properties.FloatProperty(
+            "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
+        self.addProperty(self.radiusScaling)
+
         self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-            classIdentifier="org.inviwo.vasp.CubeSource",
+            classIdentifier="org.inviwo.gaussian.CubeSource",
             displayName="Cube Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("VASP"), ivw.Tag("Cube"), 
+            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), 
                            ivw.Tag("Gaussian"), ivw.Tag("Volume"), ivw.Tag("Mesh")])
         )
 
@@ -66,16 +97,17 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atomType = vasputil.parseCubeFile(self.cubeFilePath.value)
+        self.volume, self.atomPos, self.atoms = gaussianutil.parseCubeFile(self.cubeFilePath.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
         self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
 
-        self.mesh = vasputil.createMeshForCube(self.atomPos, self.atomType,
-                                        self.volume.basis, self.volume.offset, self.pm)
+        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atoms,
+                                        self.volume.basis, self.volume.offset,
+                                        self.pm, self.radiusScaling.value)
 
-        self.dataframe = vasputil.createDataFrameForCube(self.atomPos, self.atomType)
+        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atoms)
 
         print("Loaded Cube file: {}\nDims:  {}\nRange: {}".format(
             self.cubeFilePath.value, self.volume.dimensions, self.volume.dataMap.dataRange))
@@ -87,7 +119,8 @@ class CubeSource(ivw.Processor):
     def callback(self, pickevent):
         if (pickevent.state == inviwopy.PickingState.Updated):
             i = pickevent.pickedId
-            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}".format(
-                i, self.elemtype[i], self.atomPos[i]))
+            pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
+            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
+                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
         else:
             pickevent.setToolTip("")
