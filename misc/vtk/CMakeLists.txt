@@ -1,7 +1,7 @@
 #--------------------------------------------------------------------
 # Inviwo VTK Module
 ivw_module(VTK)
-find_package(VTK REQUIRED)
+find_package(vtk CONFIG REQUIRED)
 
 #--------------------------------------------------------------------
 # Add header files
@@ -48,11 +48,13 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-if (VTK_VERSION VERSION_LESS "8.90.0")
-    include(${VTK_USE_FILE})
-    target_link_libraries(${${mod}_target} PUBLIC ${VTK_LIBRARIES})
-    target_include_directories(${${mod}_target} PUBLIC ${VTK_INCLUDE_DIRS})
-else ()
-    target_link_libraries(${${mod}_target} PUBLIC ${VTK_LIBRARIES})
-    vtk_module_autoinit(TARGETS ${${mod}_target} MODULES ${VTK_LIBRARIES})
-endif() 
+target_link_libraries(inviwo-module-vtk PUBLIC ${VTK_LIBRARIES})
+
+#if (VTK_VERSION VERSION_LESS "8.90.0")
+#    include(${VTK_USE_FILE})
+#    target_link_libraries(${${mod}_target} PUBLIC ${VTK_LIBRARIES})
+#    target_include_directories(${${mod}_target} PUBLIC ${VTK_INCLUDE_DIRS})
+#else ()
+#    target_link_libraries(${${mod}_target} PUBLIC ${VTK_LIBRARIES})
+#    vtk_module_autoinit(TARGETS ${${mod}_target} MODULES ${VTK_LIBRARIES})
+#endif() 
