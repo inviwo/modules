@@ -8,6 +8,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from functools import partial
 from collections.abc import Iterable
+from collections import defaultdict
 from typing import Callable, Optional, TypeVar, Union, Tuple
 
 import rich
@@ -44,7 +45,7 @@ def fjoin(iter: Iterable):
 
         def __format__(self, format_spec: str):
             parts = format_spec.split('|', maxsplit=1)
-            spec = f"{{:{parts[0]}}}"
+            spec = parts[0]
             delm = parts[1] if len(parts) > 1 else ", "
             return delm.join(spec.format(i) for i in iter)
 
@@ -65,6 +66,13 @@ def xmlfind(path: str):
 
 def stripEachLine(text: str):
     return ('\n'.join(map(partial(str.strip), text.split('\n')))).strip()
+
+
+def valueOr(value, default):
+    if value is None:
+        return default
+    else:
+        return value
 
 
 @dataclasses.dataclass
@@ -92,9 +100,20 @@ class StringProperty:
 
 
 @dataclasses.dataclass
+class FileProperty:
+    defaultValue: Optional[str]
+
+
+@dataclasses.dataclass
 class IntOptionProperty:
     options: list[Tuple[str, int]] = dataclasses.field(default_factory=list)
     defaultValue: Optional[int] = None
+
+
+@dataclasses.dataclass
+class FieldSelectionProperty:
+    defaultValue: Optional[list[str]]
+    inport: Optional[str]
 
 
 @dataclasses.dataclass
@@ -104,8 +123,22 @@ class FilterPropertyData:
     command: str
     numElem: Optional[int] = None
     kind: Union[IntVecProperty, DoubleVecProperty, IntOptionProperty,
-                StringProperty, BoolProperty, None] = None
+                StringProperty, FileProperty, BoolProperty, FieldSelectionProperty, None] = None
     doc: Optional[str] = None
+
+
+@dataclasses.dataclass
+class InputData:
+    identifier: str
+    dataType: Optional[str]
+    numComp: Optional[int]
+
+
+@dataclasses.dataclass
+class OutputData:
+    identifier: str
+    displayName: str
+    index: int
 
 
 @dataclasses.dataclass
@@ -116,6 +149,10 @@ class FilterData:
     desc: str
     doc: str = dataclasses.field(repr=False)
     props: list[FilterPropertyData] = dataclasses.field(default_factory=list)
+    inports: list[InputData] = dataclasses.field(default_factory=list)
+    outports: list[OutputData] = dataclasses.field(default_factory=list)
+    groups: defaultdict[str, list[str]] \
+        = dataclasses.field(default_factory=lambda: defaultdict(list))
 
 
 def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
@@ -175,8 +212,32 @@ def parseDoubleVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
 
 def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     data = parseHelperProperty(xml)
-    data.kind = StringProperty(
-        defaultValue=xml.attrib.get("default_values", None))
+
+    if data.command == "SetInputArrayToProcess":
+        defaultValue = [0, 0, 0, 0, None]
+        defaults = chain(xml, xmlattr("default_values"), str.split)
+        if defaults is not None:
+            if len(defaults) > 0:
+                defaultValue[0] = int(defaults[0])
+            if len(defaults) > 1:
+                defaultValue[1] = int(defaults[1])
+            if len(defaults) > 2:
+                defaultValue[2] = int(defaults[2])
+            if len(defaults) > 3:
+                defaultValue[3] = int(defaults[3])
+            if len(defaults) > 4:
+                defaultValue[3] = defaults[3]
+        data.kind = FieldSelectionProperty(
+            defaultValue=defaultValue,
+            inport=chain(xml, xmlfind('ArrayListDomain/RequiredProperties/Property'),
+                         xmlattr("name")),
+        )
+    elif xml.find('FileListDomain') is not None:
+        data.kind = FileProperty(
+            defaultValue=xml.attrib.get("default_values", None))
+    else:
+        data.kind = StringProperty(
+            defaultValue=xml.attrib.get("default_values", None))
     return data
 
 
@@ -187,9 +248,25 @@ propertyParsers: dict[str, Callable[[ET.Element], Optional[FilterPropertyData]]]
 }
 
 
-def parse(file: str) -> FilterData:
-    tree = ET.parse(file)
-    proxy = tree.getroot()[0][0]
+def parseInputProperty(xml: ET.Element) -> InputData:
+    return InputData(
+        identifier=xml.attrib["name"],
+        dataType=chain(xml, xmlfind('DataTypeDomain/DataType'), xmlattr("value")),
+        numComp=chain(xml, xmlfind('InputArrayDomain'), xmlattr("number_of_components"), int)
+    )
+
+
+def parseOutport(xml: ET.Element) -> OutputData:
+    return OutputData(
+        identifier=xml.attrib["id"],
+        displayName=xml.attrib["name"],
+        index=int(xml.attrib["index"])
+    )
+
+
+def parse(xmlstr: str) -> FilterData:
+    xml = ET.fromstring(xmlstr)
+    proxy = xml[0][0]
 
     doc = proxy.find('Documentation')
     docShort = re.sub(' +', ' ', doc.attrib['short_help'])
@@ -208,17 +285,31 @@ def parse(file: str) -> FilterData:
                 if (propData := parser(elem)) is not None:
                     data.props.append(propData)
             except Exception as e:
-                print(f"Error parsing {file} \n{e}")
+                print(f"Error parsing {data.identifier} \n{e}")
                 ET.dump(elem)
                 print(traceback.format_exc())
+        elif elem.tag == "InputProperty":
+            data.inports.append(parseInputProperty(elem))
+        elif elem.tag == "OutputPort":
+            data.outports.append(parseOutport(elem))
+        elif elem.tag == "PropertyGroup":
+            group = elem.attrib["label"]
+            members = [i.attrib["name"] for i in elem if i.tag == "Property"]
+            data.groups[group] += members
+
+        elif elem.tag == "Documentation":
+            pass
+        else:
+            print(f"No parser for elem: {elem.tag}")
 
     return data
 
 
 doubleTemplate = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get());
+        return true;
     }}
     DoubleProperty property{{"{identifier}", "{displayName}",
                              {defaultValue[0]},
@@ -229,8 +320,9 @@ struct {structName} {{
 
 doubleVec2Template = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get(0), property.get(1));
+        return true;
     }}
     DoubleVec2Property property{{"{identifier}", "{displayName}",
                                 dvec2{{{defaultValue[0]}, {defaultValue[1]}}},
@@ -241,8 +333,9 @@ struct {structName} {{
 
 doubleVec3Template = """
 struct {structName} {{
-    void set({className}& filter) {{
-        filter.{command}(property.get(0), property.get(1), property.get(2)));
+    bool set({className}& filter) {{
+        filter.{command}(property.get(0), property.get(1), property.get(2));
+        return true;
     }}
     DoubleVec3Property property{{"{identifier}", "{displayName}",
                                 dvec3{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}}},
@@ -253,8 +346,9 @@ struct {structName} {{
 
 intTemplate = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get());
+        return true;
     }}
     IntProperty property{{"{identifier}", "{displayName}",
                          {defaultValue[0]},
@@ -265,8 +359,9 @@ struct {structName} {{
 
 intVec2Template = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get(0), property.get(1));
+        return true;
     }}
     IntVec2Property property{{"{identifier}", "{displayName}",
                             ivec2{{{defaultValue[0]}, {defaultValue[1]}}},
@@ -277,8 +372,9 @@ struct {structName} {{
 
 intVec3Template = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get(0), property.get(1), property.get(2)));
+        return true;
     }}
     IntVec3Property property{{"{identifier}", "{displayName}",
                             ivec3{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}}},
@@ -290,8 +386,9 @@ struct {structName} {{
 
 boolTemplate = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get());
+        return true;
     }}
     BoolProperty property{{"{identifier}", "{displayName}", {defaultValue}}};
 }};
@@ -299,19 +396,46 @@ struct {structName} {{
 
 stringTemplate = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get().c_str());
+        return true;
     }}
     StringProperty property{{"{identifier}", "{displayName}", "{defaultValue}"}};
 }};
 """
 
+fileTemplate = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        if(property.get().empty()) return false;
+        filter.{command}(property.get().c_str());
+        return true;
+    }}
+    FileProperty property{{"{identifier}", "{displayName}", "{defaultValue}"}};
+}};
+"""
+
 optionTemplate = """
 struct {structName} {{
-    void set({className}& filter) {{
+    bool set({className}& filter) {{
         filter.{command}(property.get());
+        return true;
     }}
     OptionPropertyInt property{{"{identifier}", "{displayName}", {{{options}}}, {defaultValue}}};
+}};
+"""
+
+fieldSelectionTemplate = """
+struct {structName} : FieldSelection {{
+    bool set({className}& filter) {{
+        if(property.size() == 0) return false;
+        filter.{command}({defaultValue[0]}, {defaultValue[1]},
+                         {defaultValue[2]}, {defaultValue[3]}, property.get().c_str());
+        return true;
+    }}
+    OptionPropertyString property{{"{identifier}", "{displayName}", {{{defaultoptions}}}, 0}};
+
+    static constexpr std::string_view inport = "{inport}";
 }};
 """
 
@@ -327,8 +451,14 @@ void register{className}(InviwoModule* module);
 sourceTemplate = """
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
 
 #include <tuple>
+#include <array>
 #include <string_view>
 
 #include <warn/push>
@@ -340,13 +470,21 @@ namespace inviwo {{
 namespace ttkwrapper {{
 namespace {{
 
+#include <warn/push>
+#include <warn/ignore/conversion>
+
 {propClasses}
+
+#include <warn/pop>
 
 }}
 template <>
 struct TTKTraits<{className}> {{
     static constexpr std::string_view identifier = "{identifier}";
     static constexpr std::string_view displayName = "{displayName}";
+    inline static std::array<InputData, {nInput}> inports = {{{inputData}}};
+    inline static std::array<OutputData, {nOutput}> outports = {{{outputData}}};
+    inline static std::array<Group, {nGroup}> groups = {{{groupList}}};
     std::tuple<{proplist}> properties;
 }};
 
@@ -387,11 +525,9 @@ void registerTTKFilters(InviwoModule* module) {{
 def generate(data: FilterData) -> str:
     propClasses = ""
     proplist = []
+    extra = {}
 
     for p in data.props:
-        if p.command == 'SetInputArrayToProcess':
-            continue
-
         kind = p.kind
         if isinstance(p.kind, DoubleVecProperty):
             if p.numElem == 1:
@@ -406,7 +542,7 @@ def generate(data: FilterData) -> str:
             kind.minValue = kind.minValue if kind.minValue else 0.0
             kind.maxValue = kind.maxValue if kind.maxValue else 100.0
 
-        if isinstance(p.kind, IntVecProperty):
+        elif isinstance(p.kind, IntVecProperty):
             if p.numElem == 1:
                 template = intTemplate
             elif p.numElem == 2:
@@ -425,12 +561,25 @@ def generate(data: FilterData) -> str:
 
         elif isinstance(p.kind, StringProperty) and p.numElem == 1:
             template = stringTemplate
+            kind.defaultValue = valueOr(kind.defaultValue, "")
+
+        elif isinstance(p.kind, FileProperty) and p.numElem == 1:
+            template = fileTemplate
+            kind.defaultValue = valueOr(kind.defaultValue, "")
 
         elif isinstance(p.kind, BoolProperty) and p.numElem == 1:
             template = boolTemplate
             kind.defaultValue = "true" if kind.defaultValue else "false"
 
+        elif isinstance(p.kind, FieldSelectionProperty):
+            template = fieldSelectionTemplate
+            if len(p.kind.defaultValue) > 4 and p.kind.defaultValue[4] is not None:
+                extra["defaultoptions"] = '{{"{0}","{0}","{0}"}}'.format(p.kind.defaultValue[4])
+            else:
+                extra["defaultoptions"] = ""
         else:
+            print(f"Missing tamplate for {type(p.kind)} in property {p.identifier}"
+                  f" in filter {data.identifier}")
             continue  # WIP:::
 
         structName = f"Wrapper{len(proplist)}"
@@ -440,15 +589,36 @@ def generate(data: FilterData) -> str:
             identifier=p.identifier,
             displayName=p.displayName,
             command=p.command,
-            **dataclasses.asdict(kind)
+            **dataclasses.asdict(kind),
+            **extra
         )
         proplist.append(structName)
 
-    source = sourceTemplate.format(**dataclasses.asdict(data),
-                                   proplist=', '.join(proplist),
-                                   propClasses=propClasses)
+    inputData = ", ".join(
+        f'InputData{{"{d.identifier}", "{valueOr(d.dataType, "")}", {valueOr(d.numComp,-1)}}}'
+        for d in data.inports)
+    outputData = ", ".join(f'OutputData{{"{d.identifier}", "{d.displayName}", {d.index}}}'
+                           for d in data.outports)
 
-    header = headerTemplate.format(**dataclasses.asdict(data))
+    groups = []
+    for name, members in data.groups.items():
+        m = '{:"{{}}"|, }'.format(fjoin(members))
+        groups.append(f'Group{{"{name}", {{{m}}}}}')
+
+    source = sourceTemplate.format(identifier=data.identifier,
+                                   displayName=data.displayName,
+                                   className=data.className,
+                                   proplist=', '.join(proplist),
+                                   propClasses=propClasses,
+                                   nInput=len(data.inports),
+                                   nOutput=len(data.outports),
+                                   nGroup=len(data.groups),
+                                   inputData=inputData,
+                                   outputData=outputData,
+                                   groupList=", ".join(groups)
+                                   )
+
+    header = headerTemplate.format(className=data.className)
 
     return header, source
 
@@ -459,11 +629,45 @@ def formatFile(file: Path):
     subprocess.run([clangFormat, "-i", file])
 
 
+def makeTable(items) -> rich.table.Table:
+    table = rich.table.Table()
+    if len(items) == 0:
+        return table
+    for key in dataclasses.asdict(items[0]).keys():
+        table.add_column(key)
+    for item in items:
+        table.add_row(*map(str, dataclasses.astuple(item)))
+    return table
+
+
+def makeFilterTable(filters: list[FilterData]):
+    table = rich.table.Table()
+    table.add_column("displayName")
+    table.add_column("props")
+    table.add_column("inport/outport")
+    table.add_column("groups")
+    for data in filters:
+        table.add_row(
+            data.displayName,
+            makeTable(data.props),
+            rich.console.RenderGroup(
+                makeTable(data.inports),
+                makeTable(data.outports)
+            )
+        )
+    return table
+
+
 if __name__ == '__main__':
     console = Console()
     parser = makeCmdParser()
     # args = parser.parse_args()
     basedir = Path("C:/Users/petst55.AD/Documents/Inviwo/ttk/paraview")
+    debugWidgetsFile = "C:/Users/petst55.AD/Documents/Inviwo/ttk/CMake/debug_widgets.xml"
+
+    with open(debugWidgetsFile, 'r') as f:
+        debugWidgets = f.read()
+
     denyList = [
         "Compatibility",  # Very odd one
         "Extract",        # Has double prop of dim 6...
@@ -488,30 +692,16 @@ if __name__ == '__main__':
 
     filters = {}
 
-    table = rich.table.Table()
-    table.add_column("displayName")
-    table.add_column("props")
     for file in files:
         try:
-            f = parse(file)
-            filters[file.stem] = f
-
-            propTable = rich.table.Table()
-            propTable.add_column("name")
-            propTable.add_column("kind")
-            propTable.add_column("dim")
-            propTable.add_column("com")
-            for prop in f.props:
-                propTable.add_row(prop.displayName,
-                                  str(prop.kind),
-                                  str(prop.numElem),
-                                  prop.command)
-
-            table.add_row(f.displayName, propTable)
+            with open(file, 'r') as f:
+                xmlstr = f.read().replace("${DEBUG_WIDGETS}", debugWidgets)
+            filters[file.stem] = parse(xmlstr)
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
+            print(traceback.format_exc())
 
-    # console.print(table)
+    console.print(makeFilterTable(filters.values()))
     # rich.inspect(filters["MorseSmaleComplex"])
     # header, source = generate(filters["MorseSmaleComplex"])
     # console.print(Syntax(header, lexer_name='c++', line_numbers=True))

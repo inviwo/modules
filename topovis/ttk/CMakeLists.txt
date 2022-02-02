@@ -23,7 +23,8 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
-file(GLOB ttkWrappers RELATIVE ${CMAKE_CURRENT_LIST_DIR} generated/*)
+file(GLOB ttkWrappers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} generated/*)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/generated PREFIX TTKWrappers FILES ${ttkWrappers})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${ttkWrappers})
 
