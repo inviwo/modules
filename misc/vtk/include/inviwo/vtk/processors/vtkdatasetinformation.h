@@ -100,8 +100,9 @@ private:
                 auto compInfo = new CompositeProperty(fmt::format("component{}", i),
                                                       fmt::format("Component {}", i));
 
-                auto name = new StringProperty(fmt::format("name{}", i), "Name",
-                                               array->GetComponentName(i));
+                const auto componentName = array->HasAComponentName() ? array->GetComponentName(i)
+                                                                : fmt::format("component{}", i + 1);
+                auto name = new StringProperty(fmt::format("name{}", i), "Name", componentName);
                 name->setReadOnly(true);
                 auto numValues = new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
                                                     std::to_string(array->GetNumberOfTuples()));
