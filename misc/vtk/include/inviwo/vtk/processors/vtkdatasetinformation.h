@@ -84,10 +84,9 @@ private:
     public:
         ArrayInformationProperty() = delete;
         ArrayInformationProperty(const std::string& arrayName, const std::string& identifier,
-                                 const vtkDataArray* array)
+                                 vtkDataArray* array)
             : CompositeProperty(identifier, arrayName)
-            , dataType_(identifier + "dataType", "Data type",
-                        std::string{array->GetDataTypeAsString()})
+            , dataType_(identifier + "dataType", "Data type", array->GetDataTypeAsString())
             , numberOfComponents_(identifier + "numberOfComponents", "Components",
                                   std::to_string(array->GetNumberOfComponents()))
             , componentInformation_("componentInformation", "Component info") {
@@ -100,8 +99,9 @@ private:
                 auto compInfo = new CompositeProperty(fmt::format("component{}", i),
                                                       fmt::format("Component {}", i));
 
-                const auto componentName = array->HasAComponentName() ? array->GetComponentName(i)
-                                                                : fmt::format("component{}", i + 1);
+                const auto componentName = array->HasAComponentName()
+                                               ? array->GetComponentName(i)
+                                               : fmt::format("component{}", i + 1);
                 auto name = new StringProperty(fmt::format("name{}", i), "Name", componentName);
                 name->setReadOnly(true);
                 auto numValues = new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
