@@ -106,8 +106,6 @@ T parseSection(std::string_view line, size_t begin, size_t size, std::string_vie
 }
 
 std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(std::string_view fileName) {
-    checkExists(fileName);
-
     auto file = open(fileName);
 
     std::string contents;
