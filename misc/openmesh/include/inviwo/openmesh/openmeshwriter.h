@@ -51,7 +51,7 @@ public:
     virtual OpenMeshWriter* clone() const override;
     virtual ~OpenMeshWriter() = default;
 
-    virtual void writeData(const Mesh* data, const std::string filePath) const override;
+    virtual void writeData(const Mesh* data, std::string_view filePath) const override;
 };
 
 }  // namespace inviwo
