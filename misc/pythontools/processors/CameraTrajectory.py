@@ -172,7 +172,7 @@ class CameraTrajectory(ivw.Processor):
 		ctrlpts.addBuffer(ivw.data.BufferType.PickingAttrib, ivw.data.BufferUINT32(
 			np.array(picking).astype(np.uint32)))
 
-		pointsNone = ivw.data.MeshInfo(ivw.data.DrawType.Points, ivw.data.ConnectivityType.None_)
+		pointsNone = ivw.data.MeshInfo(ivw.data.DrawType.Points, ivw.data.ConnectivityType.Unconnected)
 		ctrlpts.addIndices(pointsNone, ivw.data.IndexBufferUINT32(np.array(index).astype(np.uint32)))
 
 		return ctrlpts
@@ -221,7 +221,7 @@ class CameraTrajectory(ivw.Processor):
 		mesh.addBuffer(ivw.data.BufferType.ColorAttrib, ivw.data.BufferVec4FLOAT32(
 			np.array(color).astype(np.float32)))
 		
-		lineNone = ivw.data.MeshInfo(ivw.data.DrawType.Lines, ivw.data.ConnectivityType.None_)
+		lineNone = ivw.data.MeshInfo(ivw.data.DrawType.Lines, ivw.data.ConnectivityType.Unconnected)
 		lineStrip = ivw.data.MeshInfo(ivw.data.DrawType.Lines, ivw.data.ConnectivityType.Strip)
 		mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(np.array(viewIndex).astype(np.uint32)))
 		mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(np.array(upIndex).astype(np.uint32)))
