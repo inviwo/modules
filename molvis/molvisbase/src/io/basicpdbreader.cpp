@@ -97,21 +97,16 @@ T parseSection(std::string_view line, size_t begin, size_t size, std::string_vie
                std::string_view desc, int lineNumber, bool parseHexadecimal = false) {
     T res = T{};
     if (!detail::fromStr(line.substr(begin, size), res, parseHexadecimal)) {
-        throw DataReaderException(
-            fmt::format("BasicPDBReader: invalid {} entry detected{} ({})\n'{}'", tag,
-                        desc.empty() ? "" : fmt::format(", {}", desc), lineNumber, line),
-            IVW_CONTEXT_CUSTOM("BasicPDBReader"));
+        throw DataReaderException(IVW_CONTEXT_CUSTOM("BasicPDBReader"),
+                                  "BasicPDBReader: invalid {} entry detected{} ({})\n'{}'", tag,
+                                  desc.empty() ? "" : fmt::format(", {}", desc), lineNumber, line);
     }
     return res;
 }
 
-std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(const std::string& fileName) {
-    auto file = filesystem::ifstream(fileName);
+std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(std::string_view fileName) {
+    auto file = open(fileName);
 
-    if (!file.is_open()) {
-        throw FileException(fmt::format("BasicPDBReader: Could not open file '{}'", fileName),
-                            IVW_CONTEXT);
-    }
     std::string contents;
     file.seekg(0, std::ios::end);
     contents.reserve(file.tellg());

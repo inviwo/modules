@@ -59,10 +59,12 @@ OpenMeshReader::OpenMeshReader() : DataReaderType<Mesh>() {
     }
 }
 
-std::shared_ptr<inviwo::Mesh> OpenMeshReader::readData(const std::string& filePath) {
+std::shared_ptr<Mesh> OpenMeshReader::readData(std::string_view filePath) {
+    checkExists(filePath);
+
     TriMesh mesh;
-    if (!OpenMesh::IO::read_mesh(mesh, filePath)) {
-        throw inviwo::Exception("Failed reading mesh from disk " + filePath, IvwContext);
+    if (!OpenMesh::IO::read_mesh(mesh, std::string{filePath})) {
+        throw Exception(IVW_CONTEXT, "Failed reading mesh from disk {}", filePath);
     }
     mesh.request_vertex_normals();
     mesh.request_face_normals();

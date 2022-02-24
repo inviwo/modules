@@ -58,7 +58,7 @@ public:
     using DataReaderType<molvis::MolecularStructure>::readData;
 
     virtual std::shared_ptr<molvis::MolecularStructure> readData(
-        const std::string& fileName) override;
+        std::string_view fileName) override;
 };
 
 }  // namespace inviwo

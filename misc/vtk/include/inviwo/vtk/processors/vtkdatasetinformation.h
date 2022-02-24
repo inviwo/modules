@@ -37,37 +37,16 @@
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/vtk/ports/vtkdatasetport.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkDataSet.h>
-#include <vtkInformation.h>
-#include <vtkDataSet.h>
-#include <vtkCellData.h>
-#include <vtkPointData.h>
-#include <vtkDataArray.h>
-#include <vtkDoubleArray.h>
-#include <warn/pop>
+class vtkDataArray;
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.VTKDataSetInformation, VTKData Set Information}
  * ![](org.inviwo.VTKDataSetInformation.png?classIdentifier=org.inviwo.VTKDataSetInformation)
- * Explanation of how to use the processor.
+ * Shows information like data type and components of a VTK dataset
  *
  * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
+ *   * __inport__  VTK dataset
  */
 class IVW_MODULE_VTK_API VTKDataSetInformation : public Processor {
 public:
@@ -84,38 +63,10 @@ private:
     public:
         ArrayInformationProperty() = delete;
         ArrayInformationProperty(const std::string& arrayName, const std::string& identifier,
-                                 const vtkDataArray* array)
-            : CompositeProperty(identifier, arrayName)
-            , dataType_(identifier + "dataType", "Data type",
-                        std::string{array->GetDataTypeAsString()})
-            , numberOfComponents_(identifier + "numberOfComponents", "Components",
-                                  std::to_string(array->GetNumberOfComponents()))
-            , componentInformation_("componentInformation", "Component info") {
-            addProperties(dataType_, numberOfComponents_, componentInformation_);
+                                 vtkDataArray* array);
 
-            dataType_.setReadOnly(true);
-            numberOfComponents_.setReadOnly(true);
-
-            for (auto i{0}; i < array->GetNumberOfComponents(); ++i) {
-                auto compInfo = new CompositeProperty(fmt::format("component{}", i),
-                                                      fmt::format("Component {}", i));
-
-                auto name = new StringProperty(fmt::format("name{}", i), "Name",
-                                               array->GetComponentName(i));
-                name->setReadOnly(true);
-                auto numValues = new StringProperty(fmt::format("numVal{}", i), "Number of tuples",
-                                                    std::to_string(array->GetNumberOfTuples()));
-                numValues->setReadOnly(true);
-
-                compInfo->addProperty(name);
-                compInfo->addProperty(numValues);
-
-                componentInformation_.addProperty(compInfo);
-            }
-        }
-
-        const std::string& getDataType() const { return dataType_.get(); }
-        const std::string& getNumberOfComponents() const { return numberOfComponents_.get(); }
+        const std::string& getDataType() const;
+        const std::string& getNumberOfComponents() const;
 
     private:
         StringProperty dataType_;
