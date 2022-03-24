@@ -332,7 +332,7 @@ void exposeMolVis(pybind11::module& m) {
     auto mUtil = m.def_submodule("util", "MolVis utils");
     detail::exposeMolVisUtil(mUtil);
 
-    py::class_<Atoms, std::shared_ptr<Atoms>>(m, "Atoms")
+    py::class_<Atoms>(m, "Atoms")
         .def(py::init())
         .def_readwrite("positions", &Atoms::positions)
         .def_readwrite("serialNumbers", &Atoms::serialNumbers)
@@ -352,7 +352,7 @@ void exposeMolVis(pybind11::module& m) {
                 a.chainIds.size(), a.residueIds.size(), a.atomicNumbers.size(), a.fullNames.size());
         });
 
-    py::class_<Residue, std::shared_ptr<Residue>>(m, "Residue")
+    py::class_<Residue>(m, "Residue")
         .def(py::init())
         .def(py::init([](int id, AminoAcid aminoacid, const std::string& fullname,
                          int chainid) -> Residue {
@@ -374,7 +374,7 @@ void exposeMolVis(pybind11::module& m) {
                                r.fullName, r.chainId);
         });
 
-    py::class_<Chain, std::shared_ptr<Chain>>(m, "Chain")
+    py::class_<Chain>(m, "Chain")
         .def(py::init())
         .def(py::init([](int id, const std::string& name) -> Chain {
                  return {id, name};
@@ -384,7 +384,7 @@ void exposeMolVis(pybind11::module& m) {
         .def_readwrite("name", &Chain::name)
         .def("__repr__", [](Chain& c) { return fmt::format("<Chain: {}, '{}'>", c.id, c.name); });
 
-    py::class_<MolecularData, std::shared_ptr<MolecularData>>(m, "MolecularData")
+    py::class_<MolecularData>(m, "MolecularData")
         .def(py::init())
         .def(py::init([](const std::string& source, Atoms atoms,
                          const std::vector<Residue>& residues = {},
@@ -406,7 +406,7 @@ void exposeMolVis(pybind11::module& m) {
                 md.chains.size(), md.bonds.size());
         });
 
-    py::class_<MolecularStructure, std::shared_ptr<MolecularStructure>>(m, "MolecularStructure")
+    py::class_<MolecularStructure>(m, "MolecularStructure")
         .def(py::init([](MolecularData data) -> MolecularStructure { return {std::move(data)}; }),
              py::arg("data"))
         .def("data", &MolecularStructure::data)
