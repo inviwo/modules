@@ -4,9 +4,9 @@
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/nanovgutils/nanovgcontext.h>
+#include <modules/fontrendering/properties/fontfaceoptionproperty.h>
 #include <optional>
 
 namespace inviwo {
@@ -40,7 +40,7 @@ public:
 private:
     FloatProperty fontSize_;
     FloatVec4Property fontColor_;
-    OptionPropertyString fontFace_;
+    FontFaceOptionProperty fontFace_;
     TemplateOptionProperty<NanoVGContext::Alignment> fontAlignment_;
     BoolProperty enableFontBlur_;
     FloatProperty fontBlurIntensity_;
