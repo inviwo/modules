@@ -53,6 +53,42 @@ NanoVGUtilsModule::NanoVGUtilsModule(InviwoApplication* app) : InviwoModule(app,
 
 NanoVGUtilsModule::~NanoVGUtilsModule() = default;
 
+int NanoVGUtilsModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> NanoVGUtilsModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
+
+NanoVGUtilsModule::Converter::Converter(int version) : version_(version) {}
+
+bool NanoVGUtilsModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                std::string key;
+                node->GetValue(&key);
+                if (key != "Property") return true;
+                const auto type = node->GetAttributeOrDefault("type", "");
+                if (type != "org.inviwo.NanoVGFontProperty") {
+                    return true;
+                }
+
+                if (auto elem = xml::getElement(node, "Properties/Property&identifier=fontFace")) {
+                    elem->SetAttribute("type", "org.inviwo.FontFaceOptionProperty");
+                    res = true;
+                }
+                return true;
+            }};
+            conv.convert(root);
+
+            return res;
+        }
+        default:
+            return false;  // No changes
+    }
+}
+
 NanoVGContext& NanoVGUtilsModule::getNanoVGContext() { return context_; }
 
 }  // namespace inviwo

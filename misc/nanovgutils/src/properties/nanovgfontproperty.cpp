@@ -1,6 +1,5 @@
 #include <inviwo/nanovgutils/properties/nanovgfontproperty.h>
 #include <inviwo/nanovgutils/nanovgutils.h>
-#include <modules/fontrendering/util/fontutils.h>
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
@@ -40,12 +39,6 @@ NanoVGFontProperty::NanoVGFontProperty(std::string identifier, std::string displ
     , enableFontBlur_("enableFontBlur", "Enable font blur", true)
     , fontBlurIntensity_("fontBlurIntensity", "Font blur intensity", 3.0f, 0.0f, 16.0f, 0.1f) {
     util::for_each_in_tuple([&](auto& e) { this->addProperty(e); }, props());
-
-    auto fonts = font::getAvailableFonts();
-    for (auto font : fonts) {
-        fontFace_.addOption(font.first, font.first);
-    }
-    fontFace_.setCurrentStateAsDefault();
 
     enableFontBlur_.onChange([this]() {
         NetworkLock lock;
