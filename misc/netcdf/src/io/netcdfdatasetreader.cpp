@@ -79,7 +79,6 @@ std::shared_ptr<DataSetInitializer> NetCDFDataSetReader::readData(const std::str
     script_.run(vars, [this, &data](pybind11::dict results) {
         LogWarn("Hullo!");
         for (auto item : results) {
-            // LogWarn("key: " << item.first << ", value=" << item.second);
             py::print("key: {}, value={}"_s.format(item.first, item.second));
         };
     });

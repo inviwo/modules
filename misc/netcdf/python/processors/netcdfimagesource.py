@@ -1,12 +1,12 @@
 # Name: NetCDFImageSource
 
 import inviwopy as ivw
-<<<<<<< HEAD
-=======
+# <<<<<<< HEAD
+# =======
 from inviwopy.properties import IntVec3Property, FileProperty, ButtonProperty, BoolProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
 from inviwopy.glm import dvec2, mat3, vec3
 import netcdfutils
->>>>>>> 35eeab5 (WIP)
+# >>>>>>> 35eeab5 (WIP)
 from genericnetcdfsource import GenericNetCDFSource
 import numpy
 
@@ -31,10 +31,12 @@ class NetCDFImageSource(GenericNetCDFSource):
     def getProcessorInfo(self):
         return NetCDFImageSource.processorInfo()
 
-<<<<<<< HEAD
-    def dataLoaded(self, data, extents):
-        buffer = numpy.concatenate(data, axis=2)
-=======
+
+# << << << < HEAD
+#    def dataLoaded(self, data, extents):
+#         buffer = numpy.concatenate(data, axis=2)
+# # == == == =
+
     def process(self):
         GenericNetCDFSource.process(self)
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists() or self.variables.size() <= 0:
@@ -45,7 +47,7 @@ class NetCDFImageSource(GenericNetCDFSource):
         GenericNetCDFSource.genReloadData(self)
 
         buffer = numpy.concatenate(self.data, axis=2)
->>>>>>> ea95e44 (WIP 2)
+# >>>>>> > ea95e44 (WIP 2)
         imageLayer = ivw.data.Layer(buffer)
         image = ivw.data.Image(imageLayer)
         self.imageOutport.setData(image)

@@ -21,8 +21,10 @@ We bind functions here to onChange for properties.
 def printInfo(filePath):
     with Dataset(filePath, "r", format="NETCDF4") as nc:
         print(nc)
-        # for dim in nc.dimensions:
-        #     print(dim)
-        # for v in nc.variables:
-        #     print(v)
-        #     print('----------')
+        print("- Dimensions -")
+        for dim in nc.dimensions:
+            print(dim)
+        print("- Variables -")
+        for v in nc.variables:
+            print(v)
+            print('----------')

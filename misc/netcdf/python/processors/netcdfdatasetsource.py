@@ -2,7 +2,7 @@
 
 import inviwopy as ivw
 from ivwdiscretedata import DataSetInitializer, DataSet, GridPrimitive, Channel, DataSetOutport, Connectivity
-from inviwopy.properties import IntVec3Property, FileProperty, OptionPropertyString, ButtonProperty, BoolProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
+from inviwopy.properties import IntVec3Property, FileProperty, OptionPropertyString, ButtonProperty, BoolProperty, CompositeProperty, StringProperty
 from inviwopy.glm import dvec2, mat4, vec4
 import netcdfutils
 from genericnetcdfsource import GenericNetCDFSource
@@ -23,10 +23,12 @@ class NetCDFDataSetSource(ivw.Processor):
         # self.data = []
         self.data = [[0.0, 1.0], [0.0, 1.0]]
 
-        self.displayInfo = ButtonProperty("displayInfo", "Log File Info")
+        self.displayInfo = ButtonProperty(
+            "displayInfo", "Log File Info", ivw.properties.InvalidationLevel.Valid)
 
         self.filePath = ivw.properties.FileProperty(
             "filepath", "NetCDF Path", "", "netcdfdata")
+        self.name = StringProperty("dataName", "Data Name", "NetCDF_Data")
         self.variables = CompositeProperty("variables", "Loaded Variables")
         self.variables.setSerializationMode(
             ivw.properties.PropertySerializationMode.All)
@@ -41,7 +43,12 @@ class NetCDFDataSetSource(ivw.Processor):
             "Curvilinear", "Curvilinear", "Curvilinear")
         self.gridType.addOption(
             "Tripolar", "Tripolar", "Tripolar")
+        self.gridType.addOption(
+            "PointCloud", "Point Cloud", "Point Cloud")
         self.gridType.selectedValue = "Curvilinear"
+
+        self.dimensions = ivw.properties.OptionPropertyString(
+            "dimensions", "dimensions")
 
         self.triggerReload.onChange(self.reloadData)
         self.autoReload.onChange(self.autoReloadData)
@@ -49,6 +56,7 @@ class NetCDFDataSetSource(ivw.Processor):
 
         self.addProperty(self.displayInfo)
         self.addProperty(self.filePath)
+        self.addProperty(self.name)
         self.addProperty(self.dimensions)
         self.addProperty(self.variables)
         self.addProperty(self.gridType)
@@ -173,6 +181,11 @@ class NetCDFDataSetSource(ivw.Processor):
 
     def reloadData(self):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists() or len(self.variables.properties) == 0:
+            print('File path not valid')
+            if len(self.filePath.value) == 0:
+                print('size is 0')
+            if not Path(self.filePath.value).exists():
+                print('path does not exist')
             return
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
@@ -185,15 +198,20 @@ class NetCDFDataSetSource(ivw.Processor):
             for ncDim in ncDims:
                 fieldSize.append(len(ncDim))
                 fieldRange.append(slice(0, len(ncDim)))
-            print("Field size: ", fieldSize)
+            print("Maumau Field size: ", fieldSize)
 
             # numpySize = numpy.array(fieldSize).astype('int32')
             grid = None
             if (self.gridType.selectedValue == "Tripolar"):
+                print("Creating tripolar ", self.gridType.selectedValue)
                 grid = Connectivity.createTripolar(fieldSize)
             else:
-                grid = Connectivity.createStructured(fieldSize)
-            dataset = DataSet(grid)
+                if (self.gridType.selectedValue == "PointCloud"):
+                    print("Creating point cloud ", self.gridType.selectedValue)
+                    grid = Connectivity.createPointCloud(fieldSize)
+                else:
+                    grid = Connectivity.createStructured(fieldSize)
+            dataset = DataSet(self.name.value, grid)
 
             for ncVar in self.variables.properties:
                 if not ncVar.value:
@@ -204,7 +222,10 @@ class NetCDFDataSetSource(ivw.Processor):
 
                 channel = Channel.createChannel(
                     buffer, ncVar.identifier, GridPrimitive.Vertex)
+                channel.setInvalidValue(float.fromhex('-0x1.5af1d8p+66'))
                 dataset.addChannel(channel)
+                print("PYTHON: invalid value should be ",  float.fromhex(
+                    '-0x1.5af1d8p+66'), " - is ", channel.getInvalidValue())
 
             self.dataSetOutport.setData(dataset)
 
