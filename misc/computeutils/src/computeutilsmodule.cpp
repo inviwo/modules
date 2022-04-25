@@ -39,7 +39,7 @@ namespace inviwo {
 
 ComputeUtilsModule::ComputeUtilsModule(InviwoApplication* app) : InviwoModule(app, "ComputeUtils") {
     ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-    
+
     registerProcessor<VolumeChannelSplitGLProcessor>();
     registerProcessor<VolumeMinMaxGLProcessor>();
     registerProcessor<VolumeNormalizationGLProcessor>();

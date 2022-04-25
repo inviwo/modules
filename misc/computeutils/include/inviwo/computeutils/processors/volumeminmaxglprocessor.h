@@ -42,12 +42,12 @@ namespace inviwo {
  * ![](org.inviwo.VolumeMinMaxGLProcessor.png?classIdentifier=org.inviwo.VolumeMinMaxGLProcessor)
  *
  * This method calculates min and max values of a volume. If you need min/max per channel you should
- * look at VolumeReductionGL. The disregarding status indicates whether or not the calculation of the
- * min/max values should disregard a certain value range. This is for example handy for volumes where
- * special regions are marked with voxel values of INT_MAX or the like. Example: Your data array
- * consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the max value. In addition, you
- * know that outliers are marked with a value of INT_MAX so you would like those values to not be
- * considered.
+ * look at VolumeReductionGL. The disregarding status indicates whether or not the calculation of
+ * the min/max values should disregard a certain value range. This is for example handy for volumes
+ * where special regions are marked with voxel values of INT_MAX or the like. Example: Your data
+ * array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the max value. In addition,
+ * you know that outliers are marked with a value of INT_MAX so you would like those values to not
+ * be considered.
  *
  * ### Inputs
  *   * __Volume inport__ Input volume.
