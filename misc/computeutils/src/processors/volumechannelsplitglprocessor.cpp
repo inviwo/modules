@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo VolumeChannelSplitGLProcessor::processorInfo_{
     "org.inviwo.VolumeChannelSplitGLProcessor",  // Class identifier
     "Volume Channel Split Processor",            // Display name
-    "Volume Operation",                             // Category
+    "Volume Operation",                          // Category
     CodeState::Experimental,                     // Code state
     Tags::GL,                                    // Tags
 };
@@ -44,9 +44,7 @@ const ProcessorInfo VolumeChannelSplitGLProcessor::getProcessorInfo() const {
 }
 
 VolumeChannelSplitGLProcessor::VolumeChannelSplitGLProcessor()
-    : Processor()
-    , volumeInport_("volumeInport")
-    , volumeOutport_("volumeOutport"){
+    : Processor(), volumeInport_("volumeInport"), volumeOutport_("volumeOutport") {
 
     addPorts(volumeInport_, volumeOutport_);
 }
@@ -55,7 +53,7 @@ void VolumeChannelSplitGLProcessor::process() {
     if (!volumeInport_.hasData() || !volumeInport_.getData()) {
         return;
     }
-    
+
     volumeOutport_.setData(volumeChannelSplitGl_.split(volumeInport_.getData()));
 }
 

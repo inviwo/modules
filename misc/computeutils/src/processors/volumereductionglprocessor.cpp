@@ -35,7 +35,7 @@ namespace inviwo {
 const ProcessorInfo VolumeReductionGLProcessor::processorInfo_{
     "org.inviwo.VolumeReductionGLProcessor",  // Class identifier
     "Volume Reduction",                       // Display name
-    "Volume Operation",                          // Category
+    "Volume Operation",                       // Category
     CodeState::Experimental,                  // Code state
     Tags::GL,                                 // Tags
 };
@@ -57,7 +57,7 @@ VolumeReductionGLProcessor::VolumeReductionGLProcessor()
 
 void VolumeReductionGLProcessor::process() {
     const auto reduced = gpuReduction_.reduce(volumeInport_.getData(), reductionOperator_.get());
-    
+
     volumeOutport_.setData(reduced);
 }
 

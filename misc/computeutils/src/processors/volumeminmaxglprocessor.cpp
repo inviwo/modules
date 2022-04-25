@@ -35,8 +35,8 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeMinMaxGLProcessor::processorInfo_{
     "org.inviwo.VolumeMinMaxGLProcessor",  // Class identifier
-    "Volume Min Max",         // Display name
-    "Volume Operation",                       // Category
+    "Volume Min Max",                      // Display name
+    "Volume Operation",                    // Category
     CodeState::Experimental,               // Code state
     "range, minmax",                       // Tags
 };
@@ -46,8 +46,9 @@ VolumeMinMaxGLProcessor::VolumeMinMaxGLProcessor()
     : Processor()
     , volumeInport_("volumeInport")
     , volumeOutport_("volumeOutport")
-    , disregardingStatus_("disregardingStatus", "Disregarding status",
-                      {{"off", "Off", DisregardingStatus::Off}, {"on", "On", DisregardingStatus::On}})
+    , disregardingStatus_(
+          "disregardingStatus", "Disregarding status",
+          {{"off", "Off", DisregardingStatus::Off}, {"on", "On", DisregardingStatus::On}})
     , disregardingRange_("range", "Range") {
 
     addPorts(volumeInport_, volumeOutport_);
