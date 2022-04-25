@@ -56,7 +56,7 @@ std::vector<std::shared_ptr<Volume>> VolumeChannelSplitGL::split(
 
     const auto dimensions = volume->getDimensions();
 
-    for (auto i{0};i<4;++i) {
+    for (auto i{0}; i < 4; ++i) {
         shader_.getShaderObject(ShaderType::Compute)
             ->removeShaderDefine(StrBuffer("CHANNEL {}", i));
     }

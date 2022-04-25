@@ -30,8 +30,8 @@
 #include <inviwo/computeutils/algorithm/volumeminmaxgl.h>
 
 namespace inviwo {
-dvec2 VolumeMinMaxGL::minmax(std::shared_ptr<const Volume> volume, DisregardingStatus disregardingStatus,
-                             const vec2& range) {
+dvec2 VolumeMinMaxGL::minmax(std::shared_ptr<const Volume> volume,
+                             DisregardingStatus disregardingStatus, const vec2& range) {
     const auto min =
         volumeReductionGL_.reduce_v(volume, ReductionOperator::Min, disregardingStatus, range);
     const auto max =
