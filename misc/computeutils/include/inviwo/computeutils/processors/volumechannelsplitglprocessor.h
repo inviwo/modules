@@ -62,7 +62,7 @@ private:
     VolumeInport volumeInport_;
 
     VolumeSequenceOutport volumeOutport_;
-    
+
     VolumeChannelSplitGL volumeChannelSplitGl_;
 };
 

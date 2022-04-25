@@ -14,14 +14,11 @@ enum class DistanceMetric { Euclidean, Manhattan, Minkowski, SquaredSum };
  * \return Minkowski distance of order n between points a and b
  */
 template <typename T>
-T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b,
-                    const T order) {
-  IVW_ASSERT(a.size() == b.size(),
-             "Minkowski distance requires equal length vectors");
-  return std::pow(
-      std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
-                         [order](T x, T y) { return std::pow(y - x, order); }),
-      T(1) / order);
+T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b, const T order) {
+    IVW_ASSERT(a.size() == b.size(), "Minkowski distance requires equal length vectors");
+    return std::pow(std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
+                                       [order](T x, T y) { return std::pow(y - x, order); }),
+                    T(1) / order);
 }
 
 /**
@@ -35,7 +32,7 @@ T minkowskiDistance(const std::vector<T>& a, const std::vector<T>& b,
  */
 template <typename T>
 T manhattanDistance(const std::vector<T>& a, const std::vector<T>& b) {
-  return minkowskiDistance(a, b, T(1));
+    return minkowskiDistance(a, b, T(1));
 }
 
 /**
@@ -49,7 +46,7 @@ T manhattanDistance(const std::vector<T>& a, const std::vector<T>& b) {
  */
 template <typename T>
 T euclideanDistance(const std::vector<T>& a, const std::vector<T>& b) {
-  return minkowskiDistance(a, b, T(2));
+    return minkowskiDistance(a, b, T(2));
 }
 
 /**
@@ -63,24 +60,23 @@ T euclideanDistance(const std::vector<T>& a, const std::vector<T>& b) {
  */
 template <typename T>
 T squaredSumDistance(const std::vector<T>& a, const std::vector<T>& b) {
-  IVW_ASSERT(a.size() == b.size(),
-             "Squared sum distance requires equal length vectors");
-  return std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
-                            [](T x, T y) { return std::pow(y - x, T(2)); });
+    IVW_ASSERT(a.size() == b.size(), "Squared sum distance requires equal length vectors");
+    return std::inner_product(a.begin(), a.end(), b.begin(), T(0), std::plus<>(),
+                              [](T x, T y) { return std::pow(y - x, T(2)); });
 }
 
 template <typename T>
 T normalizeValue(const T& val, const T& minVal, const T& maxVal) {
-  if (val >= maxVal) return T(1);
-  if (val <= minVal) return T(0);
-  return (val - minVal) / (maxVal - minVal);
+    if (val >= maxVal) return T(1);
+    if (val <= minVal) return T(0);
+    return (val - minVal) / (maxVal - minVal);
 }
 
 template <typename T>
 T denormalizeValue(const T& val, const T& minVal, const T& maxVal) {
-  if (val <= T(0)) return minVal;
-  if (val >= T(1)) return maxVal;
-  return minVal + val * (maxVal - minVal);
+    if (val <= T(0)) return minVal;
+    if (val >= T(1)) return maxVal;
+    return minVal + val * (maxVal - minVal);
 }
 }  // namespace util
 }  // namespace inviwo

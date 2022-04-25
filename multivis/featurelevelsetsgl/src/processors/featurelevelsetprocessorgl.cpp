@@ -50,7 +50,7 @@ namespace inviwo {
 const ProcessorInfo FeatureLevelSetProcessorGL::processorInfo_{
     "org.inviwo.FeatureLevelSetProcessorGL",  // Class identifier
     "Feature Level Sets",                     // Display name
-    "Volume Operation",                          // Category
+    "Volume Operation",                       // Category
     CodeState::Experimental,                  // Code state
     Tags::GL,                                 // Tags
 };
@@ -618,10 +618,9 @@ void FeatureLevelSetProcessorGL::onWillAddProperty(Property* property, size_t) {
             resizeTraitAllocation();
         }
 
-        //traitProperty->onChange([&, this]() { generateTraitMesh(traitProperty->getIdentifier()); });
+        // traitProperty->onChange([&, this]() { generateTraitMesh(traitProperty->getIdentifier());
+        // });
     }
 }
-
-
 
 }  // namespace inviwo
