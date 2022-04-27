@@ -94,6 +94,16 @@ struct Wrapper6 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper7 {
+    bool set(ttkFiber& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -106,8 +116,10 @@ struct TTKTraits<ttkFiber> {
     inline static std::array<Group, 2> groups = {
         Group{"Input options", {"UComponent", "Uvalue", "VComponent", "Vvalue"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
+        properties;
 };
 
 void registerttkFiber(InviwoModule* module) {

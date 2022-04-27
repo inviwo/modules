@@ -1,10 +1,10 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO topology-tool-kit/ttk
-    REF 2317a20bfcdaf04808d74bf2330be86d2f516a10 
-    SHA512 cda720db8f0601fae934a541f8f8a893eba510e64003a446ddefbfb9fb2cebf3b902258a0349de6317fa55b7e2034e396f6ed60205dd385be734d1147d2539d5
+    REF 66330d056f97c4d6f20486cc7f127db1978e9cfa 
+    SHA512 bb345254e9fd4738ce5475c2222d62ab96e789e9425dc5ecea24544cd2aea68917388ad71f6912fb993c4dcb974f7820614f782cd57580237009644908c6753c
     HEAD_REF master
-    PATCHES "cmake-config-files.patch"
+#    PATCHES "cmake-config-files.patch"
 )
 
 vcpkg_configure_cmake(
@@ -25,19 +25,9 @@ vcpkg_install_cmake()
 vcpkg_copy_pdbs()
 vcpkg_fixup_cmake_targets(
     CONFIG_PATH lib/cmake
-    TARGET_PATH share/topology-tool-kit 
+    TARGET_PATH share
 )
-#vcpkg_fixup_cmake_targets(
-#    CONFIG_PATH lib/cmake/ttkBase 
-#   TARGET_PATH share/topology-tool-kit 
-#    DO_NOT_DELETE_PARENT_CONFIG_PATH
-#)
-#vcpkg_fixup_cmake_targets(
-#    CONFIG_PATH lib/cmake/ttkVTK 
-#    TARGET_PATH share/topology-tool-kit 
-#    DO_NOT_DELETE_PARENT_CONFIG_PATH
-#)
-#file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}lib/cmake" "${CURRENT_PACKAGES_DIR}/debug/lib/cmake")
+
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
 
 file(

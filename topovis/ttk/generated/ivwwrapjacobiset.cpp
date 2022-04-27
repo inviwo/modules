@@ -120,6 +120,16 @@ struct Wrapper9 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper10 {
+    bool set(ttkJacobiSet& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -131,13 +141,14 @@ struct TTKTraits<ttkJacobiSet> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options",
               {"U Component", "V Component", "With predefined offset", "U Offset Field",
                "V Offset Field"}},
         Group{"Output options", {"With edge identifiers", "With vertex scalars"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9>
+               Wrapper8, Wrapper9, Wrapper10>
         properties;
 };
 

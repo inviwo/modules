@@ -114,6 +114,16 @@ struct Wrapper9 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper10 {
+    bool set(ttkQuadrangulationSubdivision& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -121,19 +131,18 @@ template <>
 struct TTKTraits<ttkQuadrangulationSubdivision> {
     static constexpr std::string_view identifier = "ttkQuadrangulationSubdivision";
     static constexpr std::string_view displayName = "TTK QuadrangulationSubdivision";
-    inline static std::array<InputData, 2> inports = {
-        InputData{"mesh", "vtkUnstructuredGrid", -1},
-        InputData{"quadrangles", "vtkUnstructuredGrid", -1}};
+    inline static std::array<InputData, 2> inports = {InputData{"mesh", "vtkDataSet", -1},
+                                                      InputData{"quadrangles", "vtkPolyData", -1}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute",
-               "HausdorffLevel", "ShowResError"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute", "HausdorffLevel", "ShowResError"}},
         Group{"Input options",
               {"SubdivisionLevel", "RelaxationIterations", "LockInputExtrema",
                "LockAllInputVertices", "QuadStatistics"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9>
+               Wrapper8, Wrapper9, Wrapper10>
         properties;
 };
 

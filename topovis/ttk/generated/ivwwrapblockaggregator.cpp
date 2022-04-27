@@ -68,6 +68,16 @@ struct Wrapper4 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper5 {
+    bool set(ttkBlockAggregator& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -79,8 +89,9 @@ struct TTKTraits<ttkBlockAggregator> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
 };
 
 void registerttkBlockAggregator(InviwoModule* module) {

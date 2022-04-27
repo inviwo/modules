@@ -26,13 +26,21 @@ namespace {
 
 struct Wrapper0 {
     bool set(ttkPlanarGraphLayout& filter) {
+        filter.SetInputIsAMergeTree(property.get());
+        return true;
+    }
+    BoolProperty property{"MergeTreePlanarLayout", "Input is a Merge Tree", false};
+};
+
+struct Wrapper1 {
+    bool set(ttkPlanarGraphLayout& filter) {
         filter.SetUseSequences(property.get());
         return true;
     }
     BoolProperty property{"UseSequences", "Use Sequences", true};
 };
 
-struct Wrapper1 : FieldSelection {
+struct Wrapper2 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
         if (property.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, 0, property.get().c_str());
@@ -43,7 +51,7 @@ struct Wrapper1 : FieldSelection {
     static constexpr std::string_view inport = "Input";
 };
 
-struct Wrapper2 {
+struct Wrapper3 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetUseSizes(property.get());
         return true;
@@ -51,7 +59,7 @@ struct Wrapper2 {
     BoolProperty property{"UseSizes", "Use Sizes", false};
 };
 
-struct Wrapper3 : FieldSelection {
+struct Wrapper4 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
         if (property.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, 0, property.get().c_str());
@@ -62,7 +70,7 @@ struct Wrapper3 : FieldSelection {
     static constexpr std::string_view inport = "Input";
 };
 
-struct Wrapper4 {
+struct Wrapper5 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetUseBranches(property.get());
         return true;
@@ -70,7 +78,7 @@ struct Wrapper4 {
     BoolProperty property{"UseBranches", "Use Branches", false};
 };
 
-struct Wrapper5 : FieldSelection {
+struct Wrapper6 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
         if (property.size() == 0) return false;
         filter.SetInputArrayToProcess(2, 0, 0, 0, property.get().c_str());
@@ -81,7 +89,7 @@ struct Wrapper5 : FieldSelection {
     static constexpr std::string_view inport = "Input";
 };
 
-struct Wrapper6 {
+struct Wrapper7 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetUseLevels(property.get());
         return true;
@@ -89,7 +97,7 @@ struct Wrapper6 {
     BoolProperty property{"UseLevels", "Use Levels", false};
 };
 
-struct Wrapper7 : FieldSelection {
+struct Wrapper8 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
         if (property.size() == 0) return false;
         filter.SetInputArrayToProcess(3, 0, 0, 0, property.get().c_str());
@@ -100,7 +108,7 @@ struct Wrapper7 : FieldSelection {
     static constexpr std::string_view inport = "Input";
 };
 
-struct Wrapper8 {
+struct Wrapper9 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetOutputArrayName(property.get().c_str());
         return true;
@@ -108,7 +116,7 @@ struct Wrapper8 {
     StringProperty property{"OutputArrayName", "Output Array Name", "Layout"};
 };
 
-struct Wrapper9 {
+struct Wrapper10 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -116,7 +124,7 @@ struct Wrapper9 {
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper10 {
+struct Wrapper11 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -126,7 +134,7 @@ struct Wrapper10 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper11 {
+struct Wrapper12 {
     bool set(ttkPlanarGraphLayout& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -134,6 +142,16 @@ struct Wrapper11 {
     IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper13 {
+    bool set(ttkPlanarGraphLayout& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
 #include <warn/pop>
@@ -148,13 +166,14 @@ struct TTKTraits<ttkPlanarGraphLayout> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Input Options",
-              {"UseSequences", "SequenceArray", "UseSizes", "SizeArray", "UseBranches",
-               "BranchArray", "UseLevels", "LevelArray"}},
+              {"MergeTreePlanarLayout", "UseSequences", "SequenceArray", "UseSizes", "SizeArray",
+               "UseBranches", "BranchArray", "UseLevels", "LevelArray"}},
         Group{"Output Options", {"OutputArrayName"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13>
         properties;
 };
 

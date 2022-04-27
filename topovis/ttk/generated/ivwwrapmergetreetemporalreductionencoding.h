@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace ttkwrapper {
-void registerttkPeriodicGrid(InviwoModule* module);
+void registerttkMergeTreeTemporalReductionEncoding(InviwoModule* module);
 }  // namespace ttkwrapper
 }  // namespace inviwo

@@ -1,6 +1,6 @@
 {
   "name": "topology-tool-kit",
-  "version-string": "0.9.9",
+  "version-string": "1.0.0",
   "description": "TTK - The Topology ToolKit",
   "homepage": "https://github.com/topology-tool-kit/ttk",
   "dependencies": [
@@ -10,6 +10,8 @@
     "boost-variant",
     "boost-math",
     "boost-interprocess",
+    "boost-algorithm",
+    "boost-property-tree",
     "eigen3", 
     "zlib"
   ]

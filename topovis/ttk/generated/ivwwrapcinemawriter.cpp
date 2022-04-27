@@ -38,17 +38,17 @@ struct Wrapper1 {
         filter.SetCompressionLevel(property.get());
         return true;
     }
-    IntProperty property{"CompressionLevel", "Compression Level", 5,
+    IntProperty property{"CompressionLevel", "CompressionLevel", 5,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{9, ConstraintBehavior::Ignore}};
 };
 
 struct Wrapper2 {
     bool set(ttkCinemaWriter& filter) {
-        filter.SetMode(property.get());
+        filter.SetFormat(property.get());
         return true;
     }
-    OptionPropertyInt property{"Mode",
+    OptionPropertyInt property{"Format",
                                "Store as",
                                {{"VTK File", "VTK File", 0},
                                 {"PNG Image", "PNG Image", 1},
@@ -61,7 +61,7 @@ struct Wrapper3 {
         filter.SetIterateMultiBlock(property.get());
         return true;
     }
-    BoolProperty property{"IterateMultiBlock", "Iterate MultiBlock", false};
+    BoolProperty property{"IterateMultiBlock", "IterateMultiBlock", false};
 };
 
 struct Wrapper4 {
@@ -69,7 +69,7 @@ struct Wrapper4 {
         filter.SetForwardInput(property.get());
         return true;
     }
-    BoolProperty property{"ForwardInput", "Forward Input", true};
+    BoolProperty property{"ForwardInput", "ForwardInput", true};
 };
 
 struct Wrapper5 {
@@ -100,6 +100,16 @@ struct Wrapper7 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper8 {
+    bool set(ttkCinemaWriter& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -110,14 +120,17 @@ struct TTKTraits<ttkCinemaWriter> {
     inline static std::array<InputData, 1> inports = {InputData{"Input", "", -1}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 4> groups = {
-        Group{"Output Options", {"DatabasePath", "CompressionLevel", "Mode", "IterateMultiBlock"}},
+        Group{"Output Options",
+              {"DatabasePath", "CompressionLevel", "Format", "IterateMultiBlock", "ForwardInput"}},
         Group{"Commands", {"DeleteDatabase"}},
         Group{"Topological Compression",
               {"Scalar Field", "CompressionType", "Tolerance", "Subdivide", "MaximumError",
-               "ZFPBitBudget", "ZFPOnly", "UseTopologicalSimplification", "SQMethod"}},
+               "ZFPTolerance", "ZFPOnly", "UseTopologicalSimplification", "SQMethod"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
+               Wrapper8>
         properties;
 };
 

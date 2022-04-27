@@ -71,6 +71,16 @@ struct Wrapper4 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper5 {
+    bool set(ttkHelloWorld& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -81,10 +91,11 @@ struct TTKTraits<ttkHelloWorld> {
     inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", 1}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
-        Group{"Input Options", {"InputArray"}}, Group{"Output Options", {"OutputArrayName"}},
+        Group{"Input options", {"InputArray"}}, Group{"Output options", {"OutputArrayName"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
 };
 
 void registerttkHelloWorld(InviwoModule* module) {

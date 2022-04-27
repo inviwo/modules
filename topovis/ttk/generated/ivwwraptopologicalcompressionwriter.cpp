@@ -61,6 +61,16 @@ struct Wrapper3 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper4 {
+    bool set(ttkTopologicalCompressionWriter& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -73,11 +83,12 @@ struct TTKTraits<ttkTopologicalCompressionWriter> {
     inline static std::array<Group, 4> groups = {
         Group{"Input", {"Scalar Field"}}, Group{"Output", {"FileName"}},
         Group{"Topology aware compression",
-              {"CompressionType", "Tolerance", "Subdivide", "MaximumError", "ZFPBitBudget",
+              {"CompressionType", "Tolerance", "Subdivide", "MaximumError", "ZFPTolerance",
                "ZFPOnly", "UseTopologicalSimplification", "SQMethod"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 };
 
 void registerttkTopologicalCompressionWriter(InviwoModule* module) {

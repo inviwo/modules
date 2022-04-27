@@ -29,7 +29,7 @@ struct Wrapper0 {
         filter.SetNumberOfSubdivisions(property.get());
         return true;
     }
-    IntProperty property{"NumberOfSubdivisions", "Subdivisions", 0,
+    IntProperty property{"NumberOfSubdivisions", "Subdivisions", 2,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -56,7 +56,7 @@ struct Wrapper3 {
         filter.SetComputeNormals(property.get());
         return true;
     }
-    BoolProperty property{"ComputeNormals", "Compute Normals", false};
+    BoolProperty property{"ComputeNormals", "Compute Normals", true};
 };
 
 struct Wrapper4 {
@@ -87,6 +87,16 @@ struct Wrapper6 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper7 {
+    bool set(ttkIcospheresFromPoints& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -100,8 +110,10 @@ struct TTKTraits<ttkIcospheresFromPoints> {
         Group{"Output Options",
               {"NumberOfSubdivisions", "Radius", "CopyPointData", "ComputeNormals"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
+        properties;
 };
 
 void registerttkIcospheresFromPoints(InviwoModule* module) {

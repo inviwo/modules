@@ -319,6 +319,16 @@ struct Wrapper33 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper34 {
+    bool set(ttkReebSpace& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -332,7 +342,8 @@ struct TTKTraits<ttkReebSpace> {
         OutputData{"port2", "2-sheets", 2}, OutputData{"port3", "3-sheets", 3}};
     inline static std::array<Group, 6> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options",
               {"U Component", "V Component", "With predefined offset", "U Offset Field",
                "V Offset Field", "SimplificationCriterion", "SimplificationThreshold",
@@ -350,7 +361,7 @@ struct TTKTraits<ttkReebSpace> {
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
                Wrapper16, Wrapper17, Wrapper18, Wrapper19, Wrapper20, Wrapper21, Wrapper22,
                Wrapper23, Wrapper24, Wrapper25, Wrapper26, Wrapper27, Wrapper28, Wrapper29,
-               Wrapper30, Wrapper31, Wrapper32, Wrapper33>
+               Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34>
         properties;
 };
 

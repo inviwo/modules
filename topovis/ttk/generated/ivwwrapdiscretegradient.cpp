@@ -64,23 +64,13 @@ struct Wrapper3 {
 
 struct Wrapper4 {
     bool set(ttkDiscreteGradient& filter) {
-        filter.SetIterationThreshold(property.get());
-        return true;
-    }
-    IntProperty property{"IterationThreshold", "Iteration Threshold", -1,
-                         std::pair{0, ConstraintBehavior::Ignore},
-                         std::pair{100, ConstraintBehavior::Ignore}};
-};
-
-struct Wrapper5 {
-    bool set(ttkDiscreteGradient& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper6 {
+struct Wrapper5 {
     bool set(ttkDiscreteGradient& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -90,7 +80,7 @@ struct Wrapper6 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper7 {
+struct Wrapper6 {
     bool set(ttkDiscreteGradient& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -98,6 +88,16 @@ struct Wrapper7 {
     IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper7 {
+    bool set(ttkDiscreteGradient& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
 #include <warn/pop>
@@ -112,8 +112,8 @@ struct TTKTraits<ttkDiscreteGradient> {
                                                         OutputData{"port1", "Gradient Glyphs", 1}};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute",
-               "IterationThreshold"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options",
               {"Scalar Field", "ForceInputOffsetScalarField", "Offset Field",
                "ComputeGradientGlyphs"}}};
