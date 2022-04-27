@@ -33,7 +33,8 @@ struct Wrapper0 {
                                "EditorMode",
                                {{"Add Arrays from String", "Add Arrays from String", 0},
                                 {"Add Arrays from Source", "Add Arrays from Source", 1},
-                                {"Edit Array", "Edit Array", 2}},
+                                {"Filter Arrays from Source", "Filter Arrays from Source", 2},
+                                {"Edit Array", "Edit Array", 3}},
                                0};
 };
 
@@ -95,7 +96,7 @@ struct Wrapper6 {
                                "Result Array Type",
                                {{"Automatic", "Automatic", -1},
                                 {"Signed Char", "Signed Char", 15},
-                                {"Unsigned Char", "Unsigned Char", 4},
+                                {"Unsigned Char", "Unsigned Char", 3},
                                 {"Short", "Short", 4},
                                 {"Unsigned Short", "Unsigned Short", 5},
                                 {"Int", "Int", 6},
@@ -146,6 +147,16 @@ struct Wrapper10 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper11 {
+    bool set(ttkArrayEditor& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -165,9 +176,10 @@ struct TTKTraits<ttkArrayEditor> {
                "SourceFieldDataArrays", "SourceVertexDataArrays", "SourceEdgeDataArrays",
                "SourceRowDataArrays", "ReplaceExistingArrays"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11>
         properties;
 };
 

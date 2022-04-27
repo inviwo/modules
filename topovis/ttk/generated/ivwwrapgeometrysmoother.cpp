@@ -36,13 +36,21 @@ struct Wrapper0 {
 
 struct Wrapper1 {
     bool set(ttkGeometrySmoother& filter) {
+        filter.SetUseMaskScalarField(property.get());
+        return true;
+    }
+    BoolProperty property{"UseMaskScalarField", "Use a Scalar Field as Mask", true};
+};
+
+struct Wrapper2 {
+    bool set(ttkGeometrySmoother& filter) {
         filter.SetForceInputMaskScalarField(property.get());
         return true;
     }
     BoolProperty property{"ForceInputMaskScalarField", "Force Input Mask Scalar Field", false};
 };
 
-struct Wrapper2 : FieldSelection {
+struct Wrapper3 : FieldSelection {
     bool set(ttkGeometrySmoother& filter) {
         if (property.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, 0, property.get().c_str());
@@ -53,7 +61,7 @@ struct Wrapper2 : FieldSelection {
     static constexpr std::string_view inport = "Input";
 };
 
-struct Wrapper3 {
+struct Wrapper4 {
     bool set(ttkGeometrySmoother& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -61,7 +69,7 @@ struct Wrapper3 {
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper4 {
+struct Wrapper5 {
     bool set(ttkGeometrySmoother& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -71,7 +79,7 @@ struct Wrapper4 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper5 {
+struct Wrapper6 {
     bool set(ttkGeometrySmoother& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -79,6 +87,16 @@ struct Wrapper5 {
     IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper7 {
+    bool set(ttkGeometrySmoother& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
 #include <warn/pop>
@@ -92,10 +110,13 @@ struct TTKTraits<ttkGeometrySmoother> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Input options",
-              {"Input", "NumberOfIterations", "ForceInputMaskScalarField", "InputMaskNew"}},
+              {"Input", "NumberOfIterations", "UseMaskScalarField", "ForceInputMaskScalarField",
+               "InputMaskNew"}},
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
+        properties;
 };
 
 void registerttkGeometrySmoother(InviwoModule* module) {

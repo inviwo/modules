@@ -162,7 +162,7 @@ struct Wrapper14 {
         filter.Setlle_Method(property.get().c_str());
         return true;
     }
-    StringProperty property{"lle_Method", "Method", "standard"};
+    StringProperty property{"lle_Method", "LLE Method", "standard"};
 };
 
 struct Wrapper15 {
@@ -332,7 +332,7 @@ struct Wrapper32 {
         filter.Settsne_Method(property.get().c_str());
         return true;
     }
-    StringProperty property{"tsne_Method", "Method", "barnes_hut"};
+    StringProperty property{"tsne_Method", "tSNE Method", "barnes_hut"};
 };
 
 struct Wrapper33 {
@@ -390,13 +390,21 @@ struct Wrapper38 {
 
 struct Wrapper39 {
     bool set(ttkDimensionReduction& filter) {
+        filter.Setiso_Metric(property.get().c_str());
+        return true;
+    }
+    StringProperty property{"iso_Metric", "Metric", "euclidean"};
+};
+
+struct Wrapper40 {
+    bool set(ttkDimensionReduction& filter) {
         filter.Setpca_Copy(property.get());
         return true;
     }
     BoolProperty property{"pca_Copy", "Copy", true};
 };
 
-struct Wrapper40 {
+struct Wrapper41 {
     bool set(ttkDimensionReduction& filter) {
         filter.Setpca_Whiten(property.get());
         return true;
@@ -404,7 +412,7 @@ struct Wrapper40 {
     BoolProperty property{"pca_Whiten", "Whiten", false};
 };
 
-struct Wrapper41 {
+struct Wrapper42 {
     bool set(ttkDimensionReduction& filter) {
         filter.Setpca_SVDSolver(property.get().c_str());
         return true;
@@ -412,7 +420,7 @@ struct Wrapper41 {
     StringProperty property{"pca_SVDSolver", "SVD Solver", "auto"};
 };
 
-struct Wrapper42 {
+struct Wrapper43 {
     bool set(ttkDimensionReduction& filter) {
         filter.Setpca_Tolerance(property.get());
         return true;
@@ -422,7 +430,7 @@ struct Wrapper42 {
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper43 {
+struct Wrapper44 {
     bool set(ttkDimensionReduction& filter) {
         filter.Setpca_MaxIteration(property.get().c_str());
         return true;
@@ -430,7 +438,7 @@ struct Wrapper43 {
     StringProperty property{"pca_MaxIteration", "Iteration Threshold", "auto"};
 };
 
-struct Wrapper44 {
+struct Wrapper45 {
     bool set(ttkDimensionReduction& filter) {
         if (property.get().empty()) return false;
         filter.SetModulePath(property.get().c_str());
@@ -439,7 +447,7 @@ struct Wrapper44 {
     FileProperty property{"ModulePath", "Module Path", "default"};
 };
 
-struct Wrapper45 {
+struct Wrapper46 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetModuleName(property.get().c_str());
         return true;
@@ -447,7 +455,7 @@ struct Wrapper45 {
     StringProperty property{"ModuleName", "Module Name", "dimensionReduction"};
 };
 
-struct Wrapper46 {
+struct Wrapper47 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetFunctionName(property.get().c_str());
         return true;
@@ -455,7 +463,7 @@ struct Wrapper46 {
     StringProperty property{"FunctionName", "Function Name", "doIt"};
 };
 
-struct Wrapper47 {
+struct Wrapper48 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetIsDeterministic(property.get());
         return true;
@@ -463,7 +471,7 @@ struct Wrapper47 {
     BoolProperty property{"IsDeterministic", "Is Deterministic", true};
 };
 
-struct Wrapper48 {
+struct Wrapper49 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -471,7 +479,7 @@ struct Wrapper48 {
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper49 {
+struct Wrapper50 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -481,7 +489,7 @@ struct Wrapper49 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper50 {
+struct Wrapper51 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -489,6 +497,16 @@ struct Wrapper50 {
     IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper52 {
+    bool set(ttkDimensionReduction& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
 #include <warn/pop>
@@ -502,8 +520,9 @@ struct TTKTraits<ttkDimensionReduction> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 9> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute",
-               "ModulePath", "ModuleName", "FunctionName", "IsDeterministic"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute", "ModulePath", "ModuleName",
+               "FunctionName", "IsDeterministic"}},
         Group{"Input options", {"SelectFieldsWithRegexp", "ScalarFields", "Regexp"}},
         Group{"Output options",
               {"Method", "NumberOfComponents", "NumberOfNeighbors", "KeepAllDataArrays",
@@ -521,7 +540,7 @@ struct TTKTraits<ttkDimensionReduction> {
                "tsne_Verbose", "tsne_Method", "tsne_Angle"}},
         Group{"Isomap Embedding",
               {"iso_EigenSolver", "iso_Tolerance", "iso_MaxIteration", "iso_PathMethod",
-               "iso_NeighborsAlgorithm"}},
+               "iso_NeighborsAlgorithm", "iso_Metric"}},
         Group{"Principal Component Analysis",
               {"pca_Copy", "pca_Whiten", "pca_SVDSolver", "pca_Tolerance", "pca_MaxIteration"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
@@ -530,7 +549,8 @@ struct TTKTraits<ttkDimensionReduction> {
                Wrapper23, Wrapper24, Wrapper25, Wrapper26, Wrapper27, Wrapper28, Wrapper29,
                Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34, Wrapper35, Wrapper36,
                Wrapper37, Wrapper38, Wrapper39, Wrapper40, Wrapper41, Wrapper42, Wrapper43,
-               Wrapper44, Wrapper45, Wrapper46, Wrapper47, Wrapper48, Wrapper49, Wrapper50>
+               Wrapper44, Wrapper45, Wrapper46, Wrapper47, Wrapper48, Wrapper49, Wrapper50,
+               Wrapper51, Wrapper52>
         properties;
 };
 

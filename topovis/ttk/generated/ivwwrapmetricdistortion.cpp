@@ -1,4 +1,4 @@
-#include "ivwwrapperiodicgrid.h"
+#include "ivwwrapmetricdistortion.h"
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
@@ -14,7 +14,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkPeriodicGrid.h"
+#include "ttkMetricDistortion.h"
 #include <warn/pop>
 
 namespace inviwo {
@@ -25,23 +25,15 @@ namespace {
 #include <warn/ignore/conversion>
 
 struct Wrapper0 {
-    bool set(ttkPeriodicGrid& filter) {
-        filter.SetPeriodicity(property.get());
-        return true;
-    }
-    BoolProperty property{"SetPeriodicity", "Periodicity in all dimensions", true};
-};
-
-struct Wrapper1 {
-    bool set(ttkPeriodicGrid& filter) {
+    bool set(ttkMetricDistortion& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper2 {
-    bool set(ttkPeriodicGrid& filter) {
+struct Wrapper1 {
+    bool set(ttkMetricDistortion& filter) {
         filter.SetThreadNumber(property.get());
         return true;
     }
@@ -50,8 +42,8 @@ struct Wrapper2 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper3 {
-    bool set(ttkPeriodicGrid& filter) {
+struct Wrapper2 {
+    bool set(ttkMetricDistortion& filter) {
         filter.SetDebugLevel(property.get());
         return true;
     }
@@ -60,24 +52,35 @@ struct Wrapper3 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper3 {
+    bool set(ttkMetricDistortion& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPeriodicGrid> {
-    static constexpr std::string_view identifier = "ttkPeriodicGrid";
-    static constexpr std::string_view displayName = "TTK PeriodicGrid";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkImageData", -1}};
+struct TTKTraits<ttkMetricDistortion> {
+    static constexpr std::string_view identifier = "ttkMetricDistortion";
+    static constexpr std::string_view displayName = "TTK MetricDistortion";
+    inline static std::array<InputData, 2> inports = {
+        InputData{"Surface", "vtkPointSet", -1}, InputData{"TableDistanceMatrix", "vtkTable", -1}};
     inline static std::array<OutputData, 0> outports = {};
-    inline static std::array<Group, 2> groups = {
-        Group{"Output Options", {"SetPeriodicity"}},
+    inline static std::array<Group, 1> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}}};
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 };
 
-void registerttkPeriodicGrid(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPeriodicGrid>>();
+void registerttkMetricDistortion(InviwoModule* module) {
+    module->registerProcessor<TTKGenericProcessor<ttkMetricDistortion>>();
 }
 
 }  // namespace ttkwrapper

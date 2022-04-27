@@ -62,6 +62,16 @@ struct Wrapper3 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper4 {
+    bool set(ttkBarycentricSubdivision& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -73,9 +83,10 @@ struct TTKTraits<ttkBarycentricSubdivision> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options", {"SubdivisionLevel"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 };
 
 void registerttkBarycentricSubdivision(InviwoModule* module) {

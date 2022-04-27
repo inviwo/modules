@@ -162,6 +162,16 @@ struct Wrapper14 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
+struct Wrapper15 {
+    bool set(ttkFiberSurface& filter) {
+        filter.SetCompactTriangulationCacheSize(property.get());
+        return true;
+    }
+    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -175,7 +185,8 @@ struct TTKTraits<ttkFiberSurface> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 4> groups = {
         Group{"Testing",
-              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel", "Debug_Execute"}},
+              {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
+               "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options",
               {"Domain U Component", "Domain V Component", "Polygon U Component",
                "Polygon V Component"}},
@@ -184,7 +195,7 @@ struct TTKTraits<ttkFiberSurface> {
               {"WithPointMerge", "PointMergeDistanceThreshold", "WithRangeCoordinates",
                "WithEdgeParameterization", "WithEdgeIds", "WithTetIds", "WithCaseIds"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15>
         properties;
 };
 

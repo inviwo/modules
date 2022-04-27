@@ -21,8 +21,13 @@ def makeCmdParser():
         description="Parse paraview xml",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
-    parser.add_argument('-x', '--xml', nargs='*', action="store", dest="xml",
-                        help='xmlfiles', required=True)
+    parser.add_argument('--ttkrepo', type=Path,
+        help='Path to the ttk repo, needed for paraview xml files', required=True)
+    parser.add_argument('-o', '--output', type=Path,
+        help='Path to output directory for generated files', required=True)
+    parser.add_argument('-c', '--clear', dest="clear",
+        help='Clear any old file in the output directory')
+    return parser
 
 
 T = TypeVar('T')
@@ -661,9 +666,10 @@ def makeFilterTable(filters: list[FilterData]):
 if __name__ == '__main__':
     console = Console()
     parser = makeCmdParser()
-    # args = parser.parse_args()
-    basedir = Path("C:/Users/petst55.AD/Documents/Inviwo/ttk/paraview")
-    debugWidgetsFile = "C:/Users/petst55.AD/Documents/Inviwo/ttk/CMake/debug_widgets.xml"
+    args = parser.parse_args()
+
+    basedir = args.ttkrepo / "paraview" / "xmls"
+    debugWidgetsFile = args.ttkrepo / "CMake" / "debug_widgets.xml"
 
     with open(debugWidgetsFile, 'r') as f:
         debugWidgets = f.read()
@@ -682,16 +688,9 @@ if __name__ == '__main__':
         "TrackingFromPersistenceDiagrams",   # Munkres.h:200 missing include MunkresImpl.h
         "FTRGraph"                           # Missing include
     ]
-    files = (xml for item in basedir.glob('*') for xml in item.glob("*.xml")
-             if xml.stem not in denyList)
 
-    allowList = [
-        "DistanceField", "HelloWorld", "MorseSmaleComplex", "PersistenceCurve"
-    ]
-    # files = (item for item in files if item.stem in allowList)
-
+    files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
     filters = {}
-
     for file in files:
         try:
             with open(file, 'r') as f:
@@ -702,14 +701,20 @@ if __name__ == '__main__':
             print(traceback.format_exc())
 
     console.print(makeFilterTable(filters.values()))
+
+    # some debug logging...
     # rich.inspect(filters["MorseSmaleComplex"])
     # header, source = generate(filters["MorseSmaleComplex"])
     # console.print(Syntax(header, lexer_name='c++', line_numbers=True))
     # console.print(Syntax(source, lexer_name='c++', line_numbers=True))
 
-    gen = Path("C:/Users/petst55.AD/Documents/Inviwo/modules/topovis/ttk/generated")
-    for file in gen.glob('*'):
-        os.unlink(file)
+    # remove all old files
+    gen = Path(args.output)
+    if args.clear:
+        for file in gen.glob('ivwwrap*.h'):
+            os.unlink(file)
+        for file in gen.glob('ivwwrap*.cpp'):
+            os.unlink(file)
 
     includes = []
     register = []
@@ -734,6 +739,8 @@ if __name__ == '__main__':
                 + mainSourceTemplate.format(includes='\n'.join(includes),
                                             register='\n'.join(register)))
 
+
+## Some notes about the structure of the files. 
 #: for i,f in enumerate(files):
 #     r = ET.parse(f).getroot()
 #     print(f"{i}, {len(r)} {r[0].tag} {r[1].tag if len(r)>1 else '-'} {f}")
