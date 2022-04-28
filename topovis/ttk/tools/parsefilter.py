@@ -14,6 +14,7 @@ from typing import Callable, Optional, TypeVar, Union, Tuple
 import rich
 from rich.console import Console
 from rich.syntax import Syntax
+from rich import print
 
 import requests
 
@@ -22,6 +23,7 @@ import requests
 T = TypeVar('T')
 R = TypeVar('R')
 
+console = Console()
 
 def chain(val: Optional[T], *funcs: Callable[[T], R]):
     '''
@@ -106,6 +108,7 @@ class FilterPropertyData:
     displayName: str
     command: str
     numElem: Optional[int] = None
+    informationOnly: bool =False
     kind: Union[IntVecProperty, DoubleVecProperty, IntOptionProperty,
                 StringProperty, FileProperty, BoolProperty, FieldSelectionProperty, None] = None
     doc: Optional[str] = None
@@ -143,9 +146,9 @@ def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
     data = FilterPropertyData(
         identifier=xml.attrib["name"].replace(' ', ''),
         displayName=xml.attrib["label" if "label" in xml.attrib else "name"],
-        command=xml.attrib["command"],
-        numElem=int(xml.attrib["number_of_elements"])
-        if "number_of_elements" in xml.attrib else None
+        command=xml.attrib["command"] if "command" in xml.attrib else "",
+        numElem=int(xml.attrib["number_of_elements"]) if "number_of_elements" in xml.attrib else None,
+        informationOnly = (int(xml.attrib["information_only"]) > 0) if "information_only" in xml.attrib else False
     )
     if (doc := xml.find('Documentation')) is not None:
         data.doc = stripEachLine(doc.text)
@@ -156,7 +159,10 @@ def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
 def parseIntVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     data = parseHelperProperty(xml)
 
-    if xml.find('BooleanDomain') is not None:
+    if data.informationOnly:
+        raise Exception("Unhandled IntProperty informationOnly not handled")
+
+    elif xml.find('BooleanDomain') is not None:
         data.kind = BoolProperty(
             defaultValue=chain(xml, xmlattr("default_values"), int, bool)
         )
@@ -167,7 +173,7 @@ def parseIntVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
         defaultValue = chain(xml, xmlattr("default_values"), int)
         data.kind.defaultValue = next((i for i, v in enumerate(data.kind.options)
                                        if v[1] == defaultValue), None)
-    elif data.numElem >= 0 and data.numElem <= 4:
+    elif data.numElem is not None and data.numElem >= 0 and data.numElem <= 4:
         data.kind = IntVecProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
                                str.split, partial(map, int), tuple),
@@ -182,7 +188,10 @@ def parseIntVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
 def parseDoubleVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     data = parseHelperProperty(xml)
 
-    if data.numElem >= 0 and data.numElem <= 4:
+    if data.informationOnly:
+        raise Exception("Unhandled DoubleProperty informationOnly not handled")
+
+    if data.numElem is not None and data.numElem >= 0 and data.numElem <= 4:
         data.kind = DoubleVecProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
                                str.split, partial(map, float), tuple),
@@ -197,7 +206,10 @@ def parseDoubleVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
 def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     data = parseHelperProperty(xml)
 
-    if data.command == "SetInputArrayToProcess":
+    if data.informationOnly:
+        raise Exception("Unhandled StringVectorProperty informationOnly not handled")
+
+    elif data.command == "SetInputArrayToProcess":
         defaultValue = [0, 0, 0, 0, None]
         defaults = chain(xml, xmlattr("default_values"), str.split)
         if defaults is not None:
@@ -210,7 +222,7 @@ def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
             if len(defaults) > 3:
                 defaultValue[3] = int(defaults[3])
             if len(defaults) > 4:
-                defaultValue[3] = defaults[3]
+                defaultValue[4] = defaults[4]
         data.kind = FieldSelectionProperty(
             defaultValue=defaultValue,
             inport=chain(xml, xmlfind('ArrayListDomain/RequiredProperties/Property'),
@@ -223,14 +235,6 @@ def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
         data.kind = StringProperty(
             defaultValue=xml.attrib.get("default_values", None))
     return data
-
-
-propertyParsers: dict[str, Callable[[ET.Element], Optional[FilterPropertyData]]] = {
-    "IntVectorProperty": parseIntVectorProperty,
-    "StringVectorProperty": parseStringVectorProperty,
-    "DoubleVectorProperty": parseDoubleVectorProperty
-}
-
 
 def parseInputProperty(xml: ET.Element) -> InputData:
     return InputData(
@@ -249,8 +253,6 @@ def parseOutport(xml: ET.Element) -> OutputData:
 
 def parse(xmlstr: str, file: Path) -> list[FilterData]:
     xml = ET.fromstring(xmlstr)
-    if len(xml) != 1:
-        raise Exception(f"Warning: Unexpexted size of 'ServerManagerConfiguration' element: {len(xml)}")
 
     if xml.tag != "ServerManagerConfiguration":
         raise Exception(f"Unexpected element, expected 'ServerManagerConfiguration' found '{xml.tag}'")
@@ -274,16 +276,25 @@ def parseProxyGroup(group: ET.Element, file: Path) -> list[FilterData]:
 def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
 
     doc = proxy.find('Documentation')
-
-    docShort = re.sub(' +', ' ', doc.attrib['short_help']) if 'short_help' in doc.attrib else ""
-    docStr = stripEachLine(doc.text)
+    if doc is None:
+        docShort = ""
+        docStr = ""
+    else:
+        docShort = re.sub(' +', ' ', doc.attrib['short_help']) if 'short_help' in doc.attrib else ""
+        docStr = stripEachLine(doc.text)
     data = FilterData(
         identifier=proxy.attrib["name"],
-        displayName=proxy.attrib["label"],
+        displayName=proxy.attrib["label"] if "label" in proxy.attrib else proxy.attrib["name"],
         className=proxy.attrib["class"],
         desc=docShort,
         doc=docStr
     )
+
+    propertyParsers: dict[str, Callable[[ET.Element], Optional[FilterPropertyData]]] = {
+        "IntVectorProperty": parseIntVectorProperty,
+        "StringVectorProperty": parseStringVectorProperty,
+        "DoubleVectorProperty": parseDoubleVectorProperty
+    }
 
     for elem in proxy:
         if (parser := propertyParsers.get(elem.tag, None)) is not None:
@@ -291,9 +302,9 @@ def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
                 if (propData := parser(elem)) is not None:
                     data.props.append(propData)
             except Exception as e:
-                print(f"Error parsing {data.identifier} \n{e}")
-                ET.dump(elem)
-                print(traceback.format_exc())
+                console.print(f"[bold red]Error parsing {data.identifier}")
+                console.print_exception(extra_lines=1)
+                console.print(ET.tostring(elem, encoding="unicode"))
         elif elem.tag == "InputProperty":
             data.inports.append(parseInputProperty(elem))
         elif elem.tag == "OutputPort":
@@ -313,8 +324,8 @@ def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
             # Just for debug to rerun the fiter, in Inviwo we can just right click and invalidate
             pass
         else:
-            print(f"No parser for elem: {elem.tag} in {file.stem}")
-            ET.dump(elem)
+            console.print(f"[bold red]No parser for elem: {elem.tag} in {file}")
+            console.print(ET.tostring(elem, encoding="unicode"))
 
     return data
 
@@ -687,7 +698,6 @@ def makeCmdParser():
 
 
 if __name__ == '__main__':
-    console = Console()
     parser = makeCmdParser()
     args = parser.parse_args()
 
@@ -724,8 +734,18 @@ if __name__ == '__main__':
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
 
+    paraviewXmls = [
+        "https://github.com/Kitware/ParaView/raw/master/Remoting/Application/Resources/readers_ioxml.xml"
+    ]
+    for url in paraviewXmls:
+        try:
+            response = requests.get(url)
+            xmlstr = response.content
+            filters.extend(parse(xmlstr, url))
+        except Exception as e:
+            print(f"Error parsing {url} \n{e}")
+            print(traceback.format_exc())
 
-    url = 'https://www.python.org/static/img/python-logo@2x.png'
     #myfile = requests.get(url)
 
 
