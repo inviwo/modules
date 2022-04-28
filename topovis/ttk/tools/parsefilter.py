@@ -15,6 +15,8 @@ import rich
 from rich.console import Console
 from rich.syntax import Syntax
 
+import requests
+
 
 # Variables for generic types in type specifiers see chain for example
 T = TypeVar('T')
@@ -245,16 +247,31 @@ def parseOutport(xml: ET.Element) -> OutputData:
         index=int(xml.attrib["index"])
     )
 
-
-def parse(xmlstr: str, file: Path) -> FilterData:
+def parse(xmlstr: str, file: Path) -> list[FilterData]:
     xml = ET.fromstring(xmlstr)
-
     if len(xml) != 1:
-        raise Exception(f"Warning: Unexpexted size of ´ServerManagerConfiguration´ element: {len(xml)}")
-    if len(xml[0]) != 1:
-        raise Exception(f"Warning: Unexpexted size of ´ProxyGroup´ element: {len(xml[0])}")
+        raise Exception(f"Warning: Unexpexted size of 'ServerManagerConfiguration' element: {len(xml)}")
 
-    proxy = xml[0][0]
+    if xml.tag != "ServerManagerConfiguration":
+        raise Exception(f"Unexpected element, expected 'ServerManagerConfiguration' found '{xml.tag}'")
+
+    filters = []
+    for group in xml:
+        if group.tag != "ProxyGroup":
+            raise Exception(f"Unexpected element, expected 'ProxyGroup' found '{group.tag}'")
+        filters.extend(parseProxyGroup(group, file))
+
+    return filters
+
+def parseProxyGroup(group: ET.Element, file: Path) -> list[FilterData]:
+    filters = []
+    for proxy in group:
+        if proxy.tag not in ["SourceProxy", "WriterProxy", "Proxy"]:
+            raise Exception(f"Unexpected element, expected a proxy found '{proxy.tag}'")
+        filters.append(parseProxy(proxy, file))
+    return filters
+
+def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
 
     doc = proxy.find('Documentation')
 
@@ -697,17 +714,23 @@ if __name__ == '__main__':
     ]
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
-    filters = {}
+    filters = []
     for file in files:
         try:
             with open(file, 'r') as f:
                 xmlstr = f.read().replace("${DEBUG_WIDGETS}", debugWidgets)
-            filters[file.stem] = parse(xmlstr, file)
+            filters.extend(parse(xmlstr, file))
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
 
-    console.print(makeFilterTable(filters.values()))
+
+    url = 'https://www.python.org/static/img/python-logo@2x.png'
+    #myfile = requests.get(url)
+
+
+
+    console.print(makeFilterTable(filters))
 
     # some debug logging...
     # rich.inspect(filters["MorseSmaleComplex"])
@@ -718,25 +741,26 @@ if __name__ == '__main__':
     # remove all old files
     gen = Path(args.output)
     if args.clear:
-        for file in gen.glob('ivwwrap*.h'):
+        for file in gen.glob('ivw_*.h'):
             os.unlink(file)
-        for file in gen.glob('ivwwrap*.cpp'):
+        for file in gen.glob('ivw_*.cpp'):
             os.unlink(file)
 
     includes = []
     register = []
-    for name, data in filters.items():
+    for data in filters:
+        name = data.className
         header, source = generate(data)
-        with open(gen / f"ivwwrap{name.lower()}.h", 'w') as f:
+        with open(gen / f"ivw_{name.lower()}.h", 'w') as f:
             f.write(header)
-        with open(gen / f"ivwwrap{name.lower()}.cpp", 'w') as f:
-            f.write(f'#include "ivwwrap{name.lower()}.h"\n{source}')
+        with open(gen / f"ivw_{name.lower()}.cpp", 'w') as f:
+            f.write(f'#include "ivw_{name.lower()}.h"\n{source}')
 
-        includes.append(f'#include "ivwwrap{name.lower()}.h"')
+        includes.append(f'#include "ivw_{name.lower()}.h"')
         register.append(f"    register{data.className}(module);")
 
-        formatFile(gen / f"ivwwrap{name.lower()}.h")
-        formatFile(gen / f"ivwwrap{name.lower()}.cpp")
+        formatFile(gen / f"ivw_{name.lower()}.h")
+        formatFile(gen / f"ivw_{name.lower()}.cpp")
 
     with open(gen / "registerttkfilters.h", 'w') as f:
         f.write(mainHeader)
