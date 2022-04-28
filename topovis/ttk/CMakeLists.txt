@@ -29,7 +29,7 @@ find_package(freetype CONFIG REQUIRED)
 add_library(Freetype::Freetype ALIAS freetype)
 
 
-# vtk workarounds for issues in <build>/vcpkg_installed/x64-windows/share/vtk/FindPEGTL.cmake
+# potential vtk workarounds for issues in <build>/vcpkg_installed/x64-windows/share/vtk/FindPEGTL.cmake
 add_library(PEGTL::PEGTL ALIAS pegtl)
 find_package(PEGTL CONFIG REQUIRED)
 

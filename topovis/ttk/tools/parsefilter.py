@@ -16,45 +16,22 @@ from rich.console import Console
 from rich.syntax import Syntax
 
 
-def makeCmdParser():
-    parser = argparse.ArgumentParser(
-        description="Parse paraview xml",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter
-    )
-    parser.add_argument('--ttkrepo', type=Path,
-        help='Path to the ttk repo, needed for paraview xml files', required=True)
-    parser.add_argument('-o', '--output', type=Path,
-        help='Path to output directory for generated files', required=True)
-    parser.add_argument('-c', '--clear', dest="clear",
-        help='Clear any old file in the output directory')
-    return parser
-
-
+# Variables for generic types in type specifiers see chain for example
 T = TypeVar('T')
 R = TypeVar('R')
 
 
 def chain(val: Optional[T], *funcs: Callable[[T], R]):
+    '''
+        Apply a chain of functions 'funcs' to a value 'val'
+        i.e. fn(fn-1(...(f2(f1(val)))))
+    '''
     if val is None:
         return val
     elif len(funcs) > 1:
         return chain(funcs[0](val), *funcs[1:])
     else:
         return funcs[0](val)
-
-
-def fjoin(iter: Iterable):
-    class formatter:
-        def __init__(self, iter: Iterable):
-            self.iter = iter
-
-        def __format__(self, format_spec: str):
-            parts = format_spec.split('|', maxsplit=1)
-            spec = parts[0]
-            delm = parts[1] if len(parts) > 1 else ", "
-            return delm.join(spec.format(i) for i in iter)
-
-    return formatter(iter)
 
 
 def xmlattr(name: str):
@@ -269,12 +246,19 @@ def parseOutport(xml: ET.Element) -> OutputData:
     )
 
 
-def parse(xmlstr: str) -> FilterData:
+def parse(xmlstr: str, file: Path) -> FilterData:
     xml = ET.fromstring(xmlstr)
+
+    if len(xml) != 1:
+        raise Exception(f"Warning: Unexpexted size of ´ServerManagerConfiguration´ element: {len(xml)}")
+    if len(xml[0]) != 1:
+        raise Exception(f"Warning: Unexpexted size of ´ProxyGroup´ element: {len(xml[0])}")
+
     proxy = xml[0][0]
 
     doc = proxy.find('Documentation')
-    docShort = re.sub(' +', ' ', doc.attrib['short_help'])
+
+    docShort = re.sub(' +', ' ', doc.attrib['short_help']) if 'short_help' in doc.attrib else ""
     docStr = stripEachLine(doc.text)
     data = FilterData(
         identifier=proxy.attrib["name"],
@@ -303,9 +287,17 @@ def parse(xmlstr: str) -> FilterData:
             data.groups[group] += members
 
         elif elem.tag == "Documentation":
+            # Should be mapped the the property help when that is merged in inviwo
+            pass
+        elif elem.tag == "Hints":
+            # Not handled yet. Not the most important maybe.
+            pass
+        elif elem.tag == "Property" and elem.attrib["name"] == "Debug_Execute":
+            # Just for debug to rerun the fiter, in Inviwo we can just right click and invalidate
             pass
         else:
-            print(f"No parser for elem: {elem.tag}")
+            print(f"No parser for elem: {elem.tag} in {file.stem}")
+            ET.dump(elem)
 
     return data
 
@@ -534,7 +526,7 @@ def generate(data: FilterData) -> str:
 
     for p in data.props:
         kind = p.kind
-        if isinstance(p.kind, DoubleVecProperty):
+        if isinstance(kind, DoubleVecProperty):
             if p.numElem == 1:
                 template = doubleTemplate
             elif p.numElem == 2:
@@ -547,7 +539,7 @@ def generate(data: FilterData) -> str:
             kind.minValue = kind.minValue if kind.minValue else 0.0
             kind.maxValue = kind.maxValue if kind.maxValue else 100.0
 
-        elif isinstance(p.kind, IntVecProperty):
+        elif isinstance(kind, IntVecProperty):
             if p.numElem == 1:
                 template = intTemplate
             elif p.numElem == 2:
@@ -560,30 +552,30 @@ def generate(data: FilterData) -> str:
             kind.minValue = kind.minValue if kind.minValue else 0
             kind.maxValue = kind.maxValue if kind.maxValue else 100
 
-        elif isinstance(p.kind, IntOptionProperty) and p.numElem == 1:
+        elif isinstance(kind, IntOptionProperty) and p.numElem == 1:
             template = optionTemplate
             kind.options = ', '.join(f'{{"{n}","{n}",{v}}}' for n, v in kind.options)
 
-        elif isinstance(p.kind, StringProperty) and p.numElem == 1:
+        elif isinstance(kind, StringProperty) and p.numElem == 1:
             template = stringTemplate
             kind.defaultValue = valueOr(kind.defaultValue, "")
 
-        elif isinstance(p.kind, FileProperty) and p.numElem == 1:
+        elif isinstance(kind, FileProperty) and p.numElem == 1:
             template = fileTemplate
             kind.defaultValue = valueOr(kind.defaultValue, "")
 
-        elif isinstance(p.kind, BoolProperty) and p.numElem == 1:
+        elif isinstance(kind, BoolProperty) and p.numElem == 1:
             template = boolTemplate
             kind.defaultValue = "true" if kind.defaultValue else "false"
 
-        elif isinstance(p.kind, FieldSelectionProperty):
+        elif isinstance(kind, FieldSelectionProperty):
             template = fieldSelectionTemplate
             if len(p.kind.defaultValue) > 4 and p.kind.defaultValue[4] is not None:
                 extra["defaultoptions"] = '{{"{0}","{0}","{0}"}}'.format(p.kind.defaultValue[4])
             else:
                 extra["defaultoptions"] = ""
         else:
-            print(f"Missing tamplate for {type(p.kind)} in property {p.identifier}"
+            print(f"Missing template for {type(kind)} in property {p.identifier}"
                   f" in filter {data.identifier}")
             continue  # WIP:::
 
@@ -607,7 +599,7 @@ def generate(data: FilterData) -> str:
 
     groups = []
     for name, members in data.groups.items():
-        m = '{:"{{}}"|, }'.format(fjoin(members))
+        m = ", ".join(f'"{x}"' for x in members)
         groups.append(f'Group{{"{name}", {{{m}}}}}')
 
     source = sourceTemplate.format(identifier=data.identifier,
@@ -663,6 +655,20 @@ def makeFilterTable(filters: list[FilterData]):
     return table
 
 
+def makeCmdParser():
+    parser = argparse.ArgumentParser(
+        description="Parse paraview xml",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+    )
+    parser.add_argument('--ttkrepo', type=Path,
+        help='Path to the ttk repo, needed for paraview xml files', required=True)
+    parser.add_argument('-o', '--output', type=Path,
+        help='Path to output directory for generated files', required=True)
+    parser.add_argument('-c', '--clear', action='store_true',
+        help='Clear any old file in the output directory')
+    return parser
+
+
 if __name__ == '__main__':
     console = Console()
     parser = makeCmdParser()
@@ -675,6 +681,7 @@ if __name__ == '__main__':
         debugWidgets = f.read()
 
     denyList = [
+        "Algorithm"       # Empty? 
         "Compatibility",  # Very odd one
         "Extract",        # Has double prop of dim 6...
 
@@ -695,7 +702,7 @@ if __name__ == '__main__':
         try:
             with open(file, 'r') as f:
                 xmlstr = f.read().replace("${DEBUG_WIDGETS}", debugWidgets)
-            filters[file.stem] = parse(xmlstr)
+            filters[file.stem] = parse(xmlstr, file)
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
