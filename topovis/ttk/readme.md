@@ -24,6 +24,8 @@ For setting stuff up in cmake is use this preset:
       }
     }
 
+I add the path to dumpbin.exe to the environment Path since vtk want to use that while running cmake.
+
 The msvc-dev-vcpkg assumes that that vcpkg is next to the inviwo repo.
 This is the recommended structure
 SomeDir/

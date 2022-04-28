@@ -23,6 +23,7 @@
 #include "ivwwrapendfor.h"
 #include "ivwwrapfiber.h"
 #include "ivwwrapfibersurface.h"
+#include "ivwwrapflattenmultiblock.h"
 #include "ivwwrapforeach.h"
 #include "ivwwrapftmtree.h"
 #include "ivwwrapgaussianpointcloud.h"
@@ -40,9 +41,11 @@
 #include "ivwwrapintegrallines.h"
 #include "ivwwrapjacobiset.h"
 #include "ivwwrapldistance.h"
+#include "ivwwrapldistancematrix.h"
 #include "ivwwrapmandatorycriticalpoints.h"
 #include "ivwwrapmanifoldcheck.h"
 #include "ivwwrapmatrixtoheatmap.h"
+#include "ivwwrapmergeblocktables.h"
 #include "ivwwrapmergetreeclustering.h"
 #include "ivwwrapmergetreedistancematrix.h"
 #include "ivwwrapmergetreetemporalreductiondecoding.h"
@@ -78,6 +81,7 @@
 #include "ivwwrapstringarrayconverter.h"
 #include "ivwwrapsurfacegeometrysmoother.h"
 #include "ivwwraptabledataselector.h"
+#include "ivwwraptabledistancematrix.h"
 #include "ivwwraptexturemapfromfield.h"
 #include "ivwwraptopologicalcompression.h"
 #include "ivwwraptopologicalcompressionreader.h"
@@ -119,6 +123,7 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkEndFor(module);
     registerttkFiber(module);
     registerttkFiberSurface(module);
+    registerttkFlattenMultiBlock(module);
     registerttkForEach(module);
     registerttkFTMTree(module);
     registerttkGaussianPointCloud(module);
@@ -136,9 +141,11 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkIntegralLines(module);
     registerttkJacobiSet(module);
     registerttkLDistance(module);
+    registerttkLDistanceMatrix(module);
     registerttkMandatoryCriticalPoints(module);
     registerttkManifoldCheck(module);
     registerttkMatrixToHeatMap(module);
+    registerttkMergeBlockTables(module);
     registerttkMergeTreeClustering(module);
     registerttkMergeTreeDistanceMatrix(module);
     registerttkMergeTreeTemporalReductionDecoding(module);
@@ -174,6 +181,7 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkStringArrayConverter(module);
     registerttkSurfaceGeometrySmoother(module);
     registerttkTableDataSelector(module);
+    registerttkTableDistanceMatrix(module);
     registerttkTextureMapFromField(module);
     registerttkTopologicalCompression(module);
     registerttkTopologicalCompressionReader(module);
