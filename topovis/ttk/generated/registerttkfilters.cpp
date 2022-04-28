@@ -95,6 +95,45 @@
 #include "ivw_ttktriangulationwriter.h"
 #include "ivw_ttkuncertaindataestimator.h"
 #include "ivw_ttkwebsocketio.h"
+#include "ivw_vtkxmlpolydatareader.h"
+#include "ivw_vtkxmltablereader.h"
+#include "ivw_vtkxmlunstructuredgridreader.h"
+#include "ivw_vtkxmlimagedatareader.h"
+#include "ivw_vtkxmlstructuredgridreader.h"
+#include "ivw_vtkxmlrectilineargridreader.h"
+#include "ivw_vtkxmlppolydatareader.h"
+#include "ivw_vtkxmlpunstructuredgridreader.h"
+#include "ivw_vtkxmlptablereader.h"
+#include "ivw_vtkxmlpimagedatareader.h"
+#include "ivw_vtkxmlpstructuredgridreader.h"
+#include "ivw_vtkxmlprectilineargridreader.h"
+#include "ivw_vtkxmlhierarchicalboxdatareader.h"
+#include "ivw_vtkxmluniformgridamrreader.h"
+#include "ivw_vtkxmlhypertreegridreader.h"
+#include "ivw_vtkxmlphypertreegridreader.h"
+#include "ivw_vtkxmlmultiblockdatareader.h"
+#include "ivw_vtkxmlpartitioneddatasetreader.h"
+#include "ivw_vtkxmlpartitioneddatasetcollectionreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkrtxmlpolydatareader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkfileseriesreader.h"
 
 namespace inviwo {
 namespace ttkwrapper {
@@ -195,6 +234,45 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkTriangulationWriter(module);
     registerttkUncertainDataEstimator(module);
     registerttkWebSocketIO(module);
+    registervtkXMLPolyDataReader(module);
+    registervtkXMLTableReader(module);
+    registervtkXMLUnstructuredGridReader(module);
+    registervtkXMLImageDataReader(module);
+    registervtkXMLStructuredGridReader(module);
+    registervtkXMLRectilinearGridReader(module);
+    registervtkXMLPPolyDataReader(module);
+    registervtkXMLPUnstructuredGridReader(module);
+    registervtkXMLPTableReader(module);
+    registervtkXMLPImageDataReader(module);
+    registervtkXMLPStructuredGridReader(module);
+    registervtkXMLPRectilinearGridReader(module);
+    registervtkXMLHierarchicalBoxDataReader(module);
+    registervtkXMLUniformGridAMRReader(module);
+    registervtkXMLHyperTreeGridReader(module);
+    registervtkXMLPHyperTreeGridReader(module);
+    registervtkXMLMultiBlockDataReader(module);
+    registervtkXMLPartitionedDataSetReader(module);
+    registervtkXMLPartitionedDataSetCollectionReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkRTXMLPolyDataReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
+    registervtkFileSeriesReader(module);
 }
 
 }  // namespace ttkwrapper
