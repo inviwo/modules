@@ -24,7 +24,18 @@ namespace {
 #include <warn/push>
 #include <warn/ignore/conversion>
 
-struct Wrapper0 {
+struct Wrapper0 : FieldSelection {
+    bool set(ttkConnectedComponents& filter) {
+        if (property.size() == 0) return false;
+        filter.SetInputArrayToProcess(0, 0, 0, 0, property.get().c_str());
+        return true;
+    }
+    OptionPropertyString property{"FeatureMask", "FeatureMask", {}, 0};
+
+    static constexpr std::string_view inport = "Segmentation";
+};
+
+struct Wrapper1 {
     bool set(ttkConnectedComponents& filter) {
         filter.SetBackgroundThreshold(property.get());
         return true;
@@ -34,7 +45,7 @@ struct Wrapper0 {
                             std::pair{100.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper1 {
+struct Wrapper2 {
     bool set(ttkConnectedComponents& filter) {
         filter.SetAugmentSegmentationWithComponentSize(property.get());
         return true;
@@ -42,7 +53,7 @@ struct Wrapper1 {
     BoolProperty property{"SegmentationSize", "SegmentationSize", false};
 };
 
-struct Wrapper2 {
+struct Wrapper3 {
     bool set(ttkConnectedComponents& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -50,7 +61,7 @@ struct Wrapper2 {
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper3 {
+struct Wrapper4 {
     bool set(ttkConnectedComponents& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -60,7 +71,7 @@ struct Wrapper3 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper4 {
+struct Wrapper5 {
     bool set(ttkConnectedComponents& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -70,7 +81,7 @@ struct Wrapper4 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper5 {
+struct Wrapper6 {
     bool set(ttkConnectedComponents& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -96,7 +107,7 @@ struct TTKTraits<ttkConnectedComponents> {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
 };
 
 void registerttkConnectedComponents(InviwoModule* module) {

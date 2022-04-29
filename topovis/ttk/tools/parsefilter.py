@@ -1,6 +1,7 @@
 import argparse
 import re
 import os
+import sys
 import dataclasses
 import traceback
 import subprocess
@@ -86,14 +87,36 @@ class StringProperty:
 
 
 @dataclasses.dataclass
+class ReadOnlyStringProperty:
+    pass
+
+
+@dataclasses.dataclass
 class FileProperty:
     defaultValue: Optional[str]
+
+
+@dataclasses.dataclass
+class ButtonProperty:
+    pass
 
 
 @dataclasses.dataclass
 class IntOptionProperty:
     options: list[Tuple[str, int]] = dataclasses.field(default_factory=list)
     defaultValue: Optional[int] = None
+
+
+@dataclasses.dataclass
+class RequiredProperty:
+    function: str
+    name: str
+
+
+@dataclasses.dataclass
+class ExtentProperty:
+    defaultValue: Optional[list[int]]
+    requiredProperties : list[RequiredProperty] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass
@@ -110,7 +133,8 @@ class FilterPropertyData:
     numElem: Optional[int] = None
     informationOnly: bool =False
     kind: Union[IntVecProperty, DoubleVecProperty, IntOptionProperty,
-                StringProperty, FileProperty, BoolProperty, FieldSelectionProperty, None] = None
+                StringProperty, FileProperty, ButtonProperty, BoolProperty, 
+                ExtentProperty, FieldSelectionProperty, None] = None
     doc: Optional[str] = None
 
 
@@ -141,8 +165,12 @@ class FilterData:
     groups: defaultdict[str, list[str]] \
         = dataclasses.field(default_factory=lambda: defaultdict(list))
 
+# Parsers for property like stuff
 
 def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
+    '''
+    Helper that parses information that is in most properties
+    '''
     data = FilterPropertyData(
         identifier=xml.attrib["name"].replace(' ', ''),
         displayName=xml.attrib["label" if "label" in xml.attrib else "name"],
@@ -156,7 +184,7 @@ def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
     return data
 
 
-def parseIntVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
+def parseIntVectorProperty(xml: ET.Element) -> FilterPropertyData:
     data = parseHelperProperty(xml)
 
     if data.informationOnly:
@@ -173,6 +201,20 @@ def parseIntVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
         defaultValue = chain(xml, xmlattr("default_values"), int)
         data.kind.defaultValue = next((i for i, v in enumerate(data.kind.options)
                                        if v[1] == defaultValue), None)
+    elif (extend := xml.find('ExtentDomain')) is not None:
+        ep = ExtentProperty(
+            defaultValue=chain(xml, xmlattr("default_values"),
+                               str.split, partial(map, int), tuple)
+        )
+        if rp := xml.find("RequiredProperties") is not None:
+            for p in rp:
+                ep.requiredProperties.append(RequiredProperty(
+                    function=xml.attrib["function"],
+                    name=xml.attrib["name"]
+                ))
+
+        data.kind = ep 
+
     elif data.numElem is not None and data.numElem >= 0 and data.numElem <= 4:
         data.kind = IntVecProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
@@ -185,7 +227,7 @@ def parseIntVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     return data
 
 
-def parseDoubleVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
+def parseDoubleVectorProperty(xml: ET.Element) -> FilterPropertyData:
     data = parseHelperProperty(xml)
 
     if data.informationOnly:
@@ -203,7 +245,7 @@ def parseDoubleVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     return data
 
 
-def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
+def parseStringVectorProperty(xml: ET.Element) -> FilterPropertyData:
     data = parseHelperProperty(xml)
 
     if data.informationOnly:
@@ -211,8 +253,8 @@ def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
 
     elif data.command == "SetInputArrayToProcess":
         defaultValue = [0, 0, 0, 0, None]
-        defaults = chain(xml, xmlattr("default_values"), str.split)
-        if defaults is not None:
+        if "default_values" in xml.attrib and xml.attrib["default_values"] != "None":
+            defaults = xml.attrib["default_values"].split()
             if len(defaults) > 0:
                 defaultValue[0] = int(defaults[0])
             if len(defaults) > 1:
@@ -236,7 +278,20 @@ def parseStringVectorProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
             defaultValue=xml.attrib.get("default_values", None))
     return data
 
+
+def parseProperty(xml : ET.Element) -> Optional[FilterPropertyData]:
+    data = parseHelperProperty(xml)
+    if "panel_widget" in xml.attrib and xml.attrib["panel_widget"] == "command_button":
+        data.kind = ButtonProperty()
+        return data
+    else:
+        raise Exception("Unhandled Property")
+
+
 def parseInputProperty(xml: ET.Element) -> InputData:
+    '''
+    Parse Input properties, Will be mapped to inviwo Inports
+    '''
     return InputData(
         identifier=xml.attrib["name"],
         dataType=chain(xml, xmlfind('DataTypeDomain/DataType'), xmlattr("value")),
@@ -245,6 +300,9 @@ def parseInputProperty(xml: ET.Element) -> InputData:
 
 
 def parseOutport(xml: ET.Element) -> OutputData:
+    '''
+    Parse Outports, Will be mapped to inviwo Outports
+    '''
     return OutputData(
         identifier=xml.attrib["id"],
         displayName=xml.attrib["name"],
@@ -252,6 +310,9 @@ def parseOutport(xml: ET.Element) -> OutputData:
     )
 
 def parse(xmlstr: str, file: Path) -> list[FilterData]:
+    '''
+    Parse a paraview xml string, returns list of Filterdata
+    '''
     xml = ET.fromstring(xmlstr)
 
     if xml.tag != "ServerManagerConfiguration":
@@ -290,21 +351,22 @@ def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
         doc=docStr
     )
 
-    propertyParsers: dict[str, Callable[[ET.Element], Optional[FilterPropertyData]]] = {
-        "IntVectorProperty": parseIntVectorProperty,
-        "StringVectorProperty": parseStringVectorProperty,
-        "DoubleVectorProperty": parseDoubleVectorProperty
+    propertyParsers: dict[str, Callable[[ET.Element], FilterPropertyData]] = {
+        "IntVectorProperty"    : parseIntVectorProperty,
+        "StringVectorProperty" : parseStringVectorProperty,
+        "DoubleVectorProperty" : parseDoubleVectorProperty,
+        "Property"             : parseProperty
     }
 
     for elem in proxy:
         if (parser := propertyParsers.get(elem.tag, None)) is not None:
             try:
-                if (propData := parser(elem)) is not None:
-                    data.props.append(propData)
+                data.props.append(parser(elem))
             except Exception as e:
                 console.print(f"[bold red]Error parsing {data.identifier}")
                 console.print_exception(extra_lines=1)
                 console.print(ET.tostring(elem, encoding="unicode"))
+                # sys.exit()
         elif elem.tag == "InputProperty":
             data.inports.append(parseInputProperty(elem))
         elif elem.tag == "OutputPort":
@@ -437,6 +499,36 @@ struct {structName} {{
         return true;
     }}
     FileProperty property{{"{identifier}", "{displayName}", "{defaultValue}"}};
+}};
+"""
+
+buttonTemplate = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        filter.{command}();
+        return true;
+    }}
+    ButtonProperty property{{"{identifier}", "{displayName}"}};
+}};
+"""
+
+extentTemplate = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        filter.{command}(x.getStart(), x.getEnd(), y.getStart(), y.getEnd(), z.getStart(), z.getEnd());
+        return true;
+    }
+
+    IntSizeTMinMaxProperty x{{"xExtent", "Y Extent", 0, 100, 0, 1000}};
+    IntSizeTMinMaxProperty y{{"yExtent", "Y Extent", 0, 100, 0, 1000}};
+    IntSizeTMinMaxProperty z{{"zExtent", "X Extent", 0, 100, 0, 1000}};
+
+    CompositeProperty property{{[&](){{
+            CompositeProperty tmp{{"{identifier}", "{displayName}"}};
+            tmp.add_properties(x,y,z);
+            return tmp;
+        }}()
+    }};
 }};
 """
 
@@ -591,6 +683,12 @@ def generate(data: FilterData) -> str:
         elif isinstance(kind, FileProperty) and p.numElem == 1:
             template = fileTemplate
             kind.defaultValue = valueOr(kind.defaultValue, "")
+
+        elif isinstance(kind, ButtonProperty) and p.numElem == 1:
+            template = buttonTemplate
+
+        elif isinstance(kind, ButtonProperty) and p.numElem == 1:
+            template = extentTemplate
 
         elif isinstance(kind, BoolProperty) and p.numElem == 1:
             template = boolTemplate
