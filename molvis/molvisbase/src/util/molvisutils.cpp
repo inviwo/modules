@@ -173,6 +173,10 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
 
     util::IndexMapper3D im(dims);
     for (auto&& [i, pos] : util::enumerate(atoms.positions)) {
+        if (element::isMetallic(atoms.atomicNumbers[i])) {
+            continue;
+        }
+
         const auto cellIndex = im(cellCoord(pos));
         if (cells[cellIndex] == -1) {
             cells[cellIndex] = static_cast<int>(cellData.size());
@@ -188,6 +192,8 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
 
     std::vector<Bond> bonds;
     for (auto&& [atom1, pos] : util::enumerate(atoms.positions)) {
+        if (element::isMetallic(atoms.atomicNumbers[atom1])) continue;
+
         const auto minCell = cellCoord(pos - maxCovalentBondLength);
         const auto maxCell = cellCoord(pos + maxCovalentBondLength);
 

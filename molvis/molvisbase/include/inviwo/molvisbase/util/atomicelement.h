@@ -191,6 +191,12 @@ constexpr std::array<glm::vec4, num_elements> colorsRasmol = util::make_array<nu
 constexpr std::array<glm::vec4, num_elements> colorsRasmolCPKnew = util::make_array<num_elements>(
     [](auto index) { return molvisutil::colorFromHex(colorsRasmolCPKnewHex[index]); });
 
+constexpr std::array<Element, 17> nonmetallic = {
+    Element::H,  Element::He, Element::C, Element::N,  Element::O,  Element::F,
+    Element::Ne, Element::P,  Element::S, Element::Cl, Element::Ar, Element::Se,
+    Element::Br, Element::Kr, Element::I, Element::Xe, Element::Rn,
+};
+
 }  // namespace detail
 
 // Element functions
@@ -224,6 +230,11 @@ constexpr double covalentRadius(Element symbol) noexcept {
 constexpr double atomicMass(Element symbol) noexcept {
     return detail::atomic_mass[atomicNumber(symbol)];
 }
+constexpr bool isNonMetallic(Element symbol) noexcept {
+    return std::find(detail::nonmetallic.begin(), detail::nonmetallic.end(), symbol) !=
+           detail::nonmetallic.end();
+}
+constexpr bool isMetallic(Element symbol) noexcept { return !isNonMetallic(symbol); }
 
 constexpr Element fromAbbr(std::string_view abbr) noexcept {
     // create a (linear) hash function for all combinations of single letter and two letter atomic
