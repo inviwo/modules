@@ -38,7 +38,7 @@ import numpy
 
 from pathlib import Path
 
-def parseFile(file, changeSign=False, offsetData=True):
+def parseFile(file, flipSign=False, centerData=True):
     file = Path(file)
     if file.suffix == ".xz":
         import lzma
@@ -74,7 +74,7 @@ def parseFile(file, changeSign=False, offsetData=True):
         -scale / numpy.dot(a3, numpy.cross(a2, a1)), 1/3)
     basis = numpy.array([a1, a2, a3]) * factor
 
-    offset = -0.5 * (basis[0] + basis[1] + basis[2]) if offsetData else 0
+    offset = -0.5 * (basis[0] + basis[1] + basis[2]) if centerData else 0
 
     if not direct:
         inv = numpy.linalg.inv(basis)
@@ -85,7 +85,7 @@ def parseFile(file, changeSign=False, offsetData=True):
     perrow = len(lines[10+ntot].strip().split())
     rows = math.ceil(voxels/perrow)
 
-    sign = -1.0 if changeSign else 1.0
+    sign = -1.0 if flipSign else 1.0
 
     chg = []
     for line in lines[10+ntot:10+ntot+rows]:
