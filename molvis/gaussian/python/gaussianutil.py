@@ -35,7 +35,7 @@ import numpy
 
 from pathlib import Path
 
-def parseCubeFile(file):
+def parseCubeFile(file, flipSign=False, centerData=True):
     file = Path(file)
     if file.suffix == ".xz":
         import lzma
@@ -87,6 +87,8 @@ def parseCubeFile(file):
     if not unitsInAngstrom:
         basis = bohrToAngstrom * basis
         origin = bohrToAngstrom * origin
+
+    offset = -0.5 * (basis[0] + basis[1] + basis[2]) if centerData else 0
     
     pos = []
     atoms = []
@@ -99,12 +101,14 @@ def parseCubeFile(file):
         atomPos = atomPos - origin 
         pos.append(atomPos)
         atoms.append(ivwmolvis.atomicelement.element(atomID))
-    
+
+    sign = -1.0 if flipSign else 1.0
+
     chg = []
     for i in range(6 + numAtoms + extraLines, len(lines)):
         splitted = lines[i].strip().split()
         for val in splitted:
-            chg.append(float(val))
+            chg.append(sign * float(val))
     
     chgdata = numpy.array(chg).astype(numpy.float32)
     chosenIdx = 0
@@ -129,7 +133,7 @@ def parseCubeFile(file):
     volume.dataMap.valueAxis.unit = ivw.data.Unit("e/Angstrom^3")
 
     volume.basis = ivw.glm.mat3(basis)
-    volume.offset = ivw.glm.vec3(0.0)
+    volume.offset = ivw.glm.vec3(offset)
 
     return (volume, pos, atoms)
 
