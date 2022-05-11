@@ -71,6 +71,14 @@ class CubeSourceMolvis(ivw.Processor):
         self.properties.customDataRange.semantics = ivw.properties.PropertySemantics(
             "Text")
 
+        self.flipSign = ivw.properties.BoolProperty(
+            "flipSign", "Flip Sign of Charge", False)
+        self.addProperty(self.flipSign)
+
+        self.centerData = ivw.properties.BoolProperty(
+            "centerData", "Center Data", True)
+        self.addProperty(self.centerData)
+
         self.pm = ivw.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
@@ -95,7 +103,8 @@ class CubeSourceMolvis(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atomType = gaussianutil.parseCubeFile(self.cubeFilePath.value)
+        self.volume, self.atomPos, self.atomType = gaussianutil.parseCubeFile(
+            self.cubeFilePath.value, self.flipSign.value, self.centerData.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
@@ -111,6 +120,10 @@ class CubeSourceMolvis(ivw.Processor):
 
         for p in self.atomPos:
             dvec3pos.append(ivw.glm.dvec3(p))
+
+        if self.centerData.value:
+            offset = ivw.glm.dvec3(self.volume.offset)
+            dvec3pos = [ x + offset for x in dvec3pos ]
         
         elements = []
         for t in self.atomType:
