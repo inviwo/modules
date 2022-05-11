@@ -34,11 +34,18 @@
  */
 
 #include "utils/structs.glsl"
+#include "colortools.glsl"
+#include "utils/selectioncolor.glsl"
+#include "utils/vertexflags.glsl"
 
 uniform CameraParameters camera;
 uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
+
+uniform SelectionColor showFiltered;
+uniform SelectionColor showSelected;
+uniform SelectionColor showHighlighted;
 uniform sampler2D metaColor;
 
 uniform float radiusScaling_ = 1.0;
@@ -49,9 +56,13 @@ out Vertex {
     flat vec4 color;
     flat uint pickID;
     flat out float scalarMeta;
+    flat out bool visible;
 } out_vert;
 
+
 void main(void) {
+    out_vert.visible = true;
+
 #if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
     out_vert.scalarMeta = in_ScalarMeta;
     out_vert.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
@@ -63,9 +74,23 @@ void main(void) {
     out_vert.scalarMeta = 0.0;
 #endif
 
+#if defined(HAS_TEXCOORD)
+    VertexFlags flags = extractFlags(in_TexCoord);
+
+    out_vert.visible = !flags.filtered || showFiltered.visible;
+
+    if (flags.filtered) {
+        out_vert.color = applySelectionColor(out_vert.color, showFiltered);
+    } else if (flags.highlighted) {
+        out_vert.color = applySelectionColor(out_vert.color, showHighlighted);
+    } else  if (flags.selected) {
+        out_vert.color = applySelectionColor(out_vert.color, showSelected);
+    }
+#endif
+
 #if defined(HAS_PICKING)
     out_vert.pickID = in_Picking;
-#else 
+#else
     out_vert.pickID = 0;
 #endif
 

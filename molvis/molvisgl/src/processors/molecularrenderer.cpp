@@ -40,6 +40,7 @@
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/molvisbase/util/chain.h>
 #include <inviwo/molvisbase/algorithm/boundingbox.h>
+#include <inviwo/molvisgl/util/vertexflags.h>
 
 #include <fmt/format.h>
 
@@ -52,21 +53,43 @@ const ProcessorInfo MolecularRenderer::processorInfo_{
     "MolVis",                               // Category
     CodeState::Stable,                      // Code state
     "GL, MolVis",                           // Tags
-};
+    R"(
+        Renders one or more molecular datastructure objects as molecular representation. The molecular
+        data is colored using standard color maps. If residue or chain information is present, the data
+        can also be colored according to residues and chains.
+        
+        The result is depending on the chosen molecular representation.
+        + VDW (van der Waals): considers only atoms
+        + Licorice:            considers both atoms and bonds
+        + Ball & Stick:        considers both atoms and bonds
+)"_unindentHelp};
 const ProcessorInfo MolecularRenderer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularRenderer::MolecularRenderer()
     : Processor()
-    , inport_("inport")
-    , imageInport_("imageInport")
-    , outport_("outport")
-    , representation_("representation", "Representation",
+    , inport_("inport", "Molecular datastructures"_help)
+    , imageInport_("imageInport", "Optional background image"_help)
+    , brushing_("brushing", "Brushing & Linking"_help)
+    , outport_("outport", "Output image"_help)
+    , representation_("representation", "Representation", R"(
+                        Determines the molecular representation
+                        + *VDW (van der Waals)*: considers only atoms
+                        + *Licorice*:            considers both atoms and bonds
+                        + *Ball & Stick*:        considers both atoms and bonds
+                    )"_unindentHelp,
                       {{"vdw", "VDW", Representation::VDW},
                        {"licorice", "Licorice", Representation::Licorice},
                        {"ballAndStick", "Ball & Stick", Representation::BallAndStick}},
                       0)
     , coloring_{"coloring",
                 "Coloring",
+                R"(
+                    Coloring scheme applied to the molecular structure.
+                    + *Fixed*: use a fixed color for the entire structure
+                    + *Atoms*: applies a colormap (Rasmol CPK, Rasmol CPK new) based on atomic elements
+                    + *Residues*: applies a colormap (Amino, Shapely, Ugene) based on amino acids
+                    + *Chains*: chain IDs are mapped to colors
+                )"_unindentHelp,
                 {{"fixed", "Fixed", Coloring::Fixed},
                  {"atoms", "Atoms", Coloring::Atoms},
                  {"residues", "Residues", Coloring::Residues},
@@ -74,19 +97,39 @@ MolecularRenderer::MolecularRenderer()
                 1}
     , atomColormap_{"atomColormap",
                     "Colormap",
+                    "Colormap for coloring atomic elements"_help,
                     {{"cpk", "Rasmol CPK", molvis::element::Colormap::RasmolCPK},
                      {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew}},
                     1}
     , aminoColormap_{"aminoColormap",
                      "Colormap",
+                     "Colormap for coloring amino acids/residues"_help,
                      {{"amino", "Amino", molvis::aminoacid::Colormap::Amino},
                       {"shapely", "Shapely", molvis::aminoacid::Colormap::Shapely},
                       {"ugene", "Ugene (multiple alignment)", molvis::aminoacid::Colormap::Ugene}}}
-    , fixedColor_("fixedColor", "Color", util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f))
-    , radiusScaling_("radiusScaling", "Radius Scaling", 1.0f, 0.0f, 2.0f)
-    , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
-    , defaultRadius_("defaultRadius", "Default Radius", 0.15f, 0.00001f, 2.0f, 0.01f)
-    , enableTooltips_("enableTooltips", "Enable Tooltips", true)
+    , fixedColor_("fixedColor", "Color",
+                  util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f)
+                      .set("Fixed color for the entire structure"_help))
+    , showHighlighted_("showHighlighted", "Show Highlighted",
+                       "Parameters for color overlay of highlighted data"_help, true,
+                       vec3(0.35f, 0.75f, 0.93f))
+    , showSelected_("showSelected", "Show Selected",
+                    "Parameters for color overlay of a selection"_help, true,
+                    vec3(1.0f, 0.84f, 0.0f))
+    , showFiltered_("showFiltered", "Show Filtered",
+                    "Parameters for color overlay of filtered data"_help, false,
+                    vec3(0.5f, 0.5f, 0.5f))
+    , radiusScaling_("radiusScaling", "Radius Scaling",
+                     "Scaling factor for the van der Waals representation and bonds"_help, 1.0f,
+                     {0.0f, ConstraintBehavior::Immutable}, {2.0f, ConstraintBehavior::Editable})
+    , forceRadius_("forceRadius", "Force Radius", "Use a uniform default radius for all atoms"_help,
+                   false, InvalidationLevel::InvalidResources)
+    , defaultRadius_("defaultRadius", "Default Radius",
+                     "Default radius for all atoms if *Force Radius* is enabled"_help, 0.15f,
+                     {0.00001f, ConstraintBehavior::Immutable},
+                     {2.0f, ConstraintBehavior::Editable}, 0.01f)
+    , enableTooltips_("enableTooltips", "Enable Tooltips",
+                      "Show tooltips with detailed information for atoms"_help, true)
     , camera_("camera", "Camera", molvis::boundingBox(inport_))
     , lighting_("lighting", "Lighting", &camera_)
     , trackball_(&camera_)
@@ -122,9 +165,11 @@ MolecularRenderer::MolecularRenderer()
 
     addPort(inport_);
     addPort(imageInport_);
+    addPort(brushing_);
     addPort(outport_);
 
     imageInport_.setOptional(true);
+    brushing_.setOptional(true);
 
     fixedColor_.visibilityDependsOn(
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Fixed; });
@@ -134,8 +179,12 @@ MolecularRenderer::MolecularRenderer()
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Residues; });
 
     addProperties(representation_, coloring_, fixedColor_, atomColormap_, aminoColormap_,
-                  radiusScaling_, forceRadius_, defaultRadius_, enableTooltips_, camera_, lighting_,
-                  trackball_);
+                  radiusScaling_, forceRadius_, defaultRadius_, showHighlighted_, showSelected_,
+                  showFiltered_, enableTooltips_, camera_, lighting_, trackball_);
+
+    showHighlighted_.setCollapsed(true);
+    showSelected_.setCollapsed(true);
+    showFiltered_.setCollapsed(true);
 
     lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
     lighting_.ambientColor_.set(vec3(0.515f));
@@ -173,7 +222,8 @@ void MolecularRenderer::process() {
         auto& shader = vdwShaders_.getShader(*mesh);
 
         shader.activate();
-        utilgl::setUniforms(shader, camera_, lighting_, defaultRadius_);
+        utilgl::setUniforms(shader, camera_, lighting_, defaultRadius_, showFiltered_,
+                            showSelected_, showHighlighted_);
         shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
                                            2.0f / outport_.getDimensions().y));
         shader.setUniform("radiusScaling_", radius);
@@ -185,7 +235,8 @@ void MolecularRenderer::process() {
                             float radius) {
         auto& shader = licoriceShaders_.getShader(*mesh);
         shader.activate();
-        utilgl::setUniforms(shader, camera_, lighting_, defaultRadius_);
+        utilgl::setUniforms(shader, camera_, lighting_, defaultRadius_, showFiltered_,
+                            showSelected_, showHighlighted_);
         shader.setUniform("radius_", 0.25f * radius);
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
         drawMesh(mesh, drawer, DrawType::Lines);
@@ -207,13 +258,15 @@ void MolecularRenderer::process() {
         }
     }();
 
-    if (meshes_.empty() || inport_.isChanged() || updateColorMap) {
+    if (meshes_.empty() || inport_.isChanged() || updateColorMap || brushing_.isChanged()) {
         meshes_.clear();
-        size_t pickingId = atomPicking_.getPickingId(0);
+        const size_t pickingId = atomPicking_.getPickingId(0);
+        size_t offset = 0;
         for (auto structure : inport_) {
-            meshes_.push_back(createMesh(
-                *structure, {coloring_, atomColormap_, aminoColormap_, fixedColor_}, pickingId));
-            pickingId += structure->atoms().positions.size();
+            meshes_.push_back(createMesh(*structure,
+                                         {coloring_, atomColormap_, aminoColormap_, fixedColor_},
+                                         pickingId, offset));
+            offset += structure->atoms().positions.size();
         }
     }
 
@@ -288,7 +341,8 @@ void MolecularRenderer::configureLicoriceShader(Shader& shader) {
 }
 
 std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStructure& s,
-                                                    ColorMapping colormap, size_t pickingId) {
+                                                    ColorMapping colormap, size_t pickingId,
+                                                    size_t offset) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -359,6 +413,36 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
     std::iota(std::begin(picking), std::end(picking), static_cast<uint32_t>(pickingId));
     mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
 
+    if (brushing_.isConnected()) {
+        auto validIndex = [min = offset, max = offset + atomCount](size_t index) {
+            return (index >= min) && (index < max);
+        };
+
+        std::vector<unsigned char> mask(atomCount, 0);
+        if (showSelected_) {
+            for (auto idx : brushing_.getSelectedIndices()) {
+                if (validIndex(idx)) {
+                    mask[idx] |= util::underlyingValue(VertexFlag::Selected);
+                }
+            }
+        }
+        if (showHighlighted_) {
+            for (auto idx : brushing_.getHighlightedIndices()) {
+                if (validIndex(idx)) {
+                    mask[idx] |= util::underlyingValue(VertexFlag::Highlighted);
+                }
+            }
+        }
+
+        for (auto idx : brushing_.getFilteredIndices()) {
+            if (validIndex(idx)) {
+                mask[idx] |= util::underlyingValue(VertexFlag::Filtered);
+            }
+        }
+
+        mesh->addBuffer(BufferType::TexCoordAttrib, util::makeBuffer(std::move(mask)));
+    }
+
     // atoms
     std::vector<uint32_t> indices(atomCount);
     std::iota(indices.begin(), indices.end(), 0);
@@ -384,12 +468,19 @@ void MolecularRenderer::handlePicking(PickingEvent* p) {
     const uint32_t atomId = static_cast<uint32_t>(p->getPickedId());
 
     // Show tooltip for current item
-    if (enableTooltips_ && p->getPressState() == PickingPressState::None) {
-        if (p->getHoverState() == PickingHoverState::Move ||
-            p->getHoverState() == PickingHoverState::Enter) {
-            p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+    if (p->getPressState() == PickingPressState::None) {
+        if (p->getHoverState() == PickingHoverState::Enter ||
+            (p->getGlobalPickingId() != p->getPreviousGlobalPickingId())) {
+            BitSet b(atomId);
+            brushing_.highlight(b);
+            if (enableTooltips_) {
+                p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+            }
         } else if (p->getHoverState() == PickingHoverState::Exit) {
-            p->setToolTip("");
+            brushing_.highlight({});
+            if (enableTooltips_) {
+                p->setToolTip("");
+            }
         }
     }
 }

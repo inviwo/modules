@@ -36,8 +36,10 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 #include <modules/basegl/datastructures/meshshadercache.h>
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
@@ -46,26 +48,10 @@
 #include <modules/meshrenderinggl/datastructures/rasterization.h>
 #include <modules/meshrenderinggl/ports/rasterizationport.h>
 
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 namespace inviwo {
 
-/** \docpage{org.inviwo.MolecularRasterizer, Molecular Rasterizer}
- * ![](org.inviwo.MolecularRasterizer.png?classIdentifier=org.inviwo.MolecularRasterizer)
- * Create a rasterization object to render one or more molecular datastructure objects in a
- * molecular representation. The molecular data is colored using standard color maps. If residue or
- * chain information is present, the data can also be colored according to residues and chains.
- *
- * The result is depending on the chosen molecular representation.
- *    - VDW (van der Waals): considers only atoms
- *    - Licorice:            considers both atoms and bonds
- *    - Ball & Stick:        considers both atoms and bonds
- *
- * ### Inports
- *   * __inport__      Molecular datastructures
- *
- * ### Outports
- *   * __rasterization__ rasterization functor rendering  the molecule either opaquely or into
- *                    fragment buffer
- */
 class IVW_MODULE_MOLVISGL_API MolecularRasterizer : public Processor {
     friend class MolecularRasterization;
 
@@ -98,10 +84,12 @@ private:
     void configureLicoriceShader(Shader& shader);
     void configureOITShader(Shader& shader);
 
-    static std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s,
-                                            ColorMapping colormap, size_t pickingId);
+    std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s, ColorMapping colormap,
+                                     size_t pickingId, size_t offset);
+    void handlePicking(PickingEvent* p);
 
     molvis::MolecularStructureFlatMultiInport inport_;
+    BrushingAndLinkingInport brushing_;
     RasterizationOutport outport_;
 
     OptionProperty<Representation> representation_;
@@ -110,6 +98,11 @@ private:
     OptionProperty<molvis::element::Colormap> atomColormap_;
     OptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
     FloatVec4Property fixedColor_;
+
+    SelectionColorProperty showHighlighted_;
+    SelectionColorProperty showSelected_;
+    SelectionColorProperty showFiltered_;
+
     BoolProperty forceOpaque_;
     BoolProperty useUniformAlpha_;
     FloatProperty uniformAlpha_;
@@ -125,6 +118,7 @@ private:
 
     std::shared_ptr<MeshShaderCache> vdwShaders_;
     std::shared_ptr<MeshShaderCache> licoriceShaders_;
+    PickingMapper atomPicking_;
 
     std::vector<std::shared_ptr<Mesh>> meshes_;
 };
@@ -149,6 +143,9 @@ protected:
     float radiusScaling_;
     float defaultRadius_;
     LightingState lighting_;
+    SelectionColorState highlighted_;
+    SelectionColorState selected_;
+    SelectionColorState filtered_;
     float uniformAlpha_;
     const bool forceOpaque_;
 

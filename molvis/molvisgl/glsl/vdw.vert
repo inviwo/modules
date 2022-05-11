@@ -28,11 +28,17 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
+#include "utils/selectioncolor.glsl"
+#include "utils/vertexflags.glsl"
 
 uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
 uniform float defaultRadius = 0.1;
+
+uniform SelectionColor showFiltered;
+uniform SelectionColor showSelected;
+uniform SelectionColor showHighlighted;
 uniform sampler2D metaColor;
 
 uniform float radiusScaling_ = 1.0;
@@ -59,6 +65,20 @@ void main(void) {
     sphereRadius_ = in_Radii;
 #else 
     sphereRadius_ = defaultRadius;
+#endif
+
+#if defined(HAS_TEXCOORD)
+    VertexFlags flags = extractFlags(in_TexCoord);
+
+    out_vert.visible = !flags.filtered || showFiltered.visible;
+
+    if (flags.filtered) {
+        out_vert.color = applySelectionColor(out_vert.color, showFiltered);
+    } else if (flags.highlighted) {
+        out_vert.color = applySelectionColor(out_vert.color, showHighlighted);
+    } else  if (flags.selected) {
+        out_vert.color = applySelectionColor(out_vert.color, showSelected);
+    }
 #endif
     sphereRadius_ *= radiusScaling_;
 
