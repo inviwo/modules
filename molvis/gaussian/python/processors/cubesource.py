@@ -70,6 +70,14 @@ class CubeSource(ivw.Processor):
         self.properties.customDataRange.semantics = ivw.properties.PropertySemantics(
             "Text")
 
+        self.flipSign = ivw.properties.BoolProperty(
+            "flipSign", "Flip Sign of Charge", False)
+        self.addProperty(self.flipSign)
+
+        self.centerData = ivw.properties.BoolProperty(
+            "centerData", "Center Data", True)
+        self.addProperty(self.centerData)
+
         self.radiusScaling = ivw.properties.FloatProperty(
             "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
         self.addProperty(self.radiusScaling)
@@ -97,7 +105,8 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atoms = gaussianutil.parseCubeFile(self.cubeFilePath.value)
+        self.volume, self.atomPos, self.atoms = gaussianutil.parseCubeFile(
+            self.cubeFilePath.value, self.flipSign.value, self.centerData.value)
         self.volumeDataRange = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
