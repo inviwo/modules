@@ -34,9 +34,16 @@
 #endif
 #endif
 
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/testutil/configurablegtesteventlistener.h>
+#include <inviwo/core/common/coremodulesharedlibrary.h>
+#include <modules/opengl/openglmodulesharedlibrary.h>
+#include <modules/basegl/baseglmodulesharedlibrary.h>
+#include <modules/base/basemodulesharedlibrary.h>
+#include <modules/meshrenderinggl/meshrenderingglmodulesharedlibrary.h>
+#include <inviwo/molvisbase/molvisbasemodulesharedlibrary.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -49,6 +56,20 @@ int main(int argc, char** argv) {
     auto logger = std::make_shared<ConsoleLogger>();
     LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
     LogCentral::getPtr()->registerLogger(logger);
+    InviwoApplication app(argc, argv, "Inviwo-Unittests-DataFramePython");
+
+    {
+        std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
+        modules.emplace_back(createInviwoCore());
+        modules.emplace_back(createBaseModule());
+        modules.emplace_back(createOpenGLModule());
+        modules.emplace_back(createBaseGLModule());
+        modules.emplace_back(createMeshRenderingGLModule());
+        modules.emplace_back(createMolVisBaseModule());
+        app.registerModules(std::move(modules));
+    }
+
+    app.processFront();
 
     int ret = -1;
     {
