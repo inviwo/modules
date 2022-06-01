@@ -88,7 +88,7 @@ MolecularStructureToMesh::MolecularStructureToMesh()
 }
 
 void MolecularStructureToMesh::process() {
-    atomPicking_.resize(inport_.getData()->atoms().positions.size());
+    atomPicking_.resize(std::max<size_t>(inport_.getData()->atoms().positions.size(), 1));
 
     auto mesh = molvis::createMesh(*inport_.getData(), enableTooltips_,
                                    static_cast<uint32_t>(atomPicking_.getPickingId(0)));
