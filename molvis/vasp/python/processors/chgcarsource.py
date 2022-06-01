@@ -34,7 +34,7 @@ import ivwdataframe as df
 import ivwmolvis
 import vasputil
 
-import numpy
+import numpy as np
 from pathlib import Path
 
 # Description found at https://cms.mpi.univie.ac.at/wiki/index.php/CHGCAR
@@ -51,8 +51,10 @@ class ChgcarSource(ivw.Processor):
         self.dataframeOutport = df.DataFrameOutport("atomInformation")
         self.addOutport(self.dataframeOutport)
 
-        self.chgcar = ivw.properties.FileProperty("chgcar", "CHGCAR")
-        self.addProperty(self.chgcar)
+        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
+
+        self.chgcarFilePath = ivw.properties.FileProperty("chgcar", "CHGCAR", "", "chgcarfile")
+        self.addProperty(self.chgcarFilePath)
 
         self.dataRange = ivw.properties.DoubleMinMaxProperty(
             "dataRange", "Data Range", 0.0, 1.0, -1.70e308, 1.79e308)
@@ -96,7 +98,7 @@ class ChgcarSource(ivw.Processor):
             category="Source",
             codeState=ivw.CodeState.Stable,
             tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("VASP"),
-                           ivw.Tag("Volume"), ivw.Tag("Mesh")])
+                           ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")])
         )
 
     def getProcessorInfo(self):
@@ -106,36 +108,35 @@ class ChgcarSource(ivw.Processor):
         pass
 
     def process(self):
-        if len(self.chgcar.value) == 0 or not Path(self.chgcar.value).exists():
+        if len(self.chgcarFilePath.value) == 0 or not Path(self.chgcarFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.elem, self.nelem, self.atoms = vasputil.parseFile(
-            self.chgcar.value, self.flipSign.value, self.centerData.value)
-        self.volumeDataRange = self.volume.dataMap.dataRange
+        self.volume, self.atomPos, self.elem, self.nelem, self.atomTypes = vasputil.parseFile(
+            self.chgcarFilePath.value, self.flipSign.value, self.centerData.value)
+        self.dataRange.value = self.volume.dataMap.dataRange
 
-        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
-        self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
+        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
+        self.volume.dataMap.valueRange = self.volume.dataMap.dataRange
 
-        self.mesh = vasputil.createMesh(self.atomPos, self.atoms,
+        self.mesh = vasputil.createMesh(self.atomPos, self.atomTypes,
                                         self.volume.basis, self.volume.offset, 
                                         self.pm, self.margin.value,
                                         self.radiusScaling.value)
 
-        self.dataframe = vasputil.createDataFrame(self.atomPos, self.atoms,
-                                                  self.volume.modelMatrix)
+        self.dataframe = vasputil.createDataFrame(self.atomPos, self.atomTypes, self.volume.modelMatrix)
 
-        print("Loaded CHGCAR: {}\nDims:  {}\nElem:  {}\nNElem  {}\nRange: {}".format(
-            self.chgcar.value, self.volume.dimensions, self.elem, self.nelem, self.volume.dataMap.dataRange))
+        offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
+        self.molecule = vasputil.createMolecularStructure(self.atomPos, self.atomTypes, self.margin.value, offset)
 
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
         self.dataframeOutport.setData(self.dataframe)
+        self.outports.molecule.setData(self.molecule)
 
     def callback(self, pickevent):
         if (pickevent.state == inviwopy.PickingState.Updated):
             i = pickevent.pickedId
-            pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
-            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
+            pos = np.dot(np.array(self.volume.basis), self.atomPos[i])
+            pickevent.setToolTip(f"Atom id: {i}\nType: {ivwmolvis.atomicelement.symbol(self.atomTypes[i])}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
         else:
             pickevent.setToolTip("")

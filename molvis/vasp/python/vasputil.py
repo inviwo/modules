@@ -164,6 +164,33 @@ def createMesh(pos, elements, basis, offset, pm, margin, radiusScaling = 1.0):
         numpy.array(index).astype(numpy.uint32)))
     return mesh
 
+def createMolecularStructure(pos, elements, margin, offset):
+    positions = []
+    indices = []
+    atomicnumbers = []
+    for i, p in enumerate(pos):
+        element = elements[i]
+
+        def addAtom(atompos):
+            positions.append(ivw.glm.dvec3(atompos) + offset)
+            indices.append(i)
+            atomicnumbers.append(element)
+
+        if margin > 0.0:
+            for shift in itertools.product([-1, 0, 1], repeat=3):
+                if all([x+s > -margin and x+s < 1 + margin for s, x in zip(shift, p)]):
+                    addAtom([x+s for s, x in zip(shift, p)])
+        else:
+            addAtom(p)
+    atoms = ivwmolvis.Atoms()
+    atoms.positions = positions
+    atoms.serialnumbers = indices
+    atoms.atomicnumbers = atomicnumbers
+    bonds = ivwmolvis.util.computeCovalentBonds(atoms)
+    return ivwmolvis.MolecularStructure(ivwmolvis.MolecularData(source="chgcar_file", atoms=atoms, 
+                                                                residues=[], chains=[], 
+                                                                bonds=bonds))
+
 def createDataFrame(pos, elements, modelMat):
     dataframe = df.DataFrame()
     ct = dataframe.addCategoricalColumn("type")
