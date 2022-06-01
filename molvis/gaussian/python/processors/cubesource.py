@@ -1,6 +1,6 @@
 # Name: CubeSource
 
-#################################################################################
+ #################################################################################
  #
  # Inviwo - Interactive Visualization Workshop
  #
@@ -34,7 +34,7 @@ import ivwdataframe as df
 import ivwmolvis
 import gaussianutil
 
-import numpy
+import numpy as np
 from pathlib import Path
 
 # Description found at https://h5cube-spec.readthedocs.io/en/latest/cubeformat.html
@@ -51,7 +51,9 @@ class CubeSource(ivw.Processor):
         self.dataframeOutport = df.DataFrameOutport("atomInformation")
         self.addOutport(self.dataframeOutport)
 
-        self.cubeFilePath = ivw.properties.FileProperty("cube", "cube")
+        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
+
+        self.cubeFilePath = ivw.properties.FileProperty("cube", "cube", "", "cubefile")
         self.addProperty(self.cubeFilePath)
 
         self.dataRange = ivw.properties.DoubleMinMaxProperty(
@@ -78,6 +80,10 @@ class CubeSource(ivw.Processor):
             "centerData", "Center Data", True)
         self.addProperty(self.centerData)
 
+        self.margin = ivw.properties.FloatProperty(
+            "margin", "Border Repetition Margin", 0.0, 0.0, 0.5, 0.01)
+        self.addProperty(self.margin)
+
         self.radiusScaling = ivw.properties.FloatProperty(
             "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
         self.addProperty(self.radiusScaling)
@@ -91,8 +97,8 @@ class CubeSource(ivw.Processor):
             displayName="Cube Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), 
-                           ivw.Tag("Gaussian"), ivw.Tag("Volume"), ivw.Tag("Mesh")])
+            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), ivw.Tag("Gaussian"), 
+                ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")])
         )
 
     def getProcessorInfo(self):
@@ -105,31 +111,32 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atoms = gaussianutil.parseCubeFile(
+        self.volume, self.atomPos, self.atomTypes = gaussianutil.parseCubeFile(
             self.cubeFilePath.value, self.flipSign.value, self.centerData.value)
-        self.volumeDataRange = self.volume.dataMap.dataRange
+        self.dataRange.value = self.volume.dataMap.dataRange
 
-        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
-        self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
+        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
+        self.volume.dataMap.valueRange = self.volume.dataMap.dataRange
 
-        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atoms,
+        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atomTypes,
                                         self.volume.basis, self.volume.offset,
-                                        self.pm, self.radiusScaling.value)
+                                        self.pm, self.margin.value,
+                                        self.radiusScaling.value)
 
-        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atoms)
+        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atomTypes)
 
-        print("Loaded Cube file: {}\nDims:  {}\nRange: {}".format(
-            self.cubeFilePath.value, self.volume.dimensions, self.volume.dataMap.dataRange))
-
+        offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
+        self.molecule = gaussianutil.createMolecularStructure(self.atomPos, self.atomTypes, self.margin.value, offset)
+        
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
         self.dataframeOutport.setData(self.dataframe)
+        self.outports.molecule.setData(self.molecule)
 
     def callback(self, pickevent):
         if (pickevent.state == inviwopy.PickingState.Updated):
             i = pickevent.pickedId
-            pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
-            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
+            pos = np.dot(np.array(self.volume.basis), self.atomPos[i])
+            pickevent.setToolTip(f"Atom id: {i}\nType: {ivwmolvis.atomicelement.symbol(self.atomTypes[i])}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
         else:
             pickevent.setToolTip("")
