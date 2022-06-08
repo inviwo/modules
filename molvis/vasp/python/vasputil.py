@@ -1,8 +1,8 @@
-#################################################################################
+ #################################################################################
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2020-2021 Inviwo Foundation
+ # Copyright (c) 2020-2022 Inviwo Foundation
  # All rights reserved.
  #
  # Redistribution and use in source and binary forms, with or without
@@ -28,11 +28,9 @@
  #################################################################################
 
 import inviwopy as ivw
-import ivwdataframe as df
 import ivwmolvis
 
 import functools
-import itertools
 import math
 import numpy
 
@@ -67,7 +65,7 @@ def parseFile(file, flipSign=False, centerData=True):
     ntot = functools.reduce(lambda x, y: x + y, nelem)
     pos = []
     for line in lines[8:8+ntot]:
-        pos.append(list(map(float, line.strip().split())))
+        pos.append(numpy.array(list(map(float, line.strip().split()))))
     pos = numpy.array(pos).astype(numpy.float32)
 
     factor = scale if scale >= 0.0 else numpy.power(
@@ -119,96 +117,3 @@ def parseFile(file, flipSign=False, centerData=True):
             atoms.append(element)
 
     return (volume, pos, elem, nelem, atoms)
-
-def createMesh(pos, elements, basis, offset, pm, margin, radiusScaling = 1.0):
-    position = []
-    color = []
-    radius = []
-    picking = []
-    index = []
-
-    pm.resize(len(elements))
-
-    for i, p in enumerate(pos):
-        c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
-        r = ivwmolvis.atomicelement.vdwRadius(elements[i]) * radiusScaling
-        pi = pm.pickingId(i)
-
-        def addVertex(vertexpos):
-            position.append(vertexpos)
-            color.append(c)
-            radius.append(r)
-            picking.append(pi)
-            index.append(i)
-
-        if margin > 0.0:
-            for shift in itertools.product([-1, 0, 1], repeat=3):
-                if all([x+s > -margin and x+s < 1 + margin for s, x in zip(shift, p)]):
-                    addVertex([x+s for s, x in zip(shift, p)])
-        else:
-            addVertex(p)
-
-    mesh = ivw.data.Mesh()
-    mesh.basis = ivw.glm.mat3(basis)
-    mesh.offset = ivw.glm.vec3(offset)
-
-    mesh.addBuffer(ivw.data.BufferType.PositionAttrib, ivw.data.Buffer(
-        numpy.array(position).astype(numpy.float32)))
-    mesh.addBuffer(ivw.data.BufferType.ColorAttrib, ivw.data.Buffer(
-        numpy.array(color).astype(numpy.float32)))
-    mesh.addBuffer(ivw.data.BufferType.RadiiAttrib, ivw.data.Buffer(
-        numpy.array(radius).astype(numpy.float32)))
-    mesh.addBuffer(ivw.data.BufferType.PickingAttrib, ivw.data.Buffer(
-        numpy.array(picking).astype(numpy.uint32)))
-    mesh.addBuffer(ivw.data.BufferType.IndexAttrib, ivw.data.Buffer(
-        numpy.array(index).astype(numpy.uint32)))
-    return mesh
-
-def createMolecularStructure(pos, elements, margin, offset):
-    positions = []
-    indices = []
-    atomicnumbers = []
-    for i, p in enumerate(pos):
-        element = elements[i]
-
-        def addAtom(atompos):
-            positions.append(ivw.glm.dvec3(atompos) + offset)
-            indices.append(i)
-            atomicnumbers.append(element)
-
-        if margin > 0.0:
-            for shift in itertools.product([-1, 0, 1], repeat=3):
-                if all([x+s > -margin and x+s < 1 + margin for s, x in zip(shift, p)]):
-                    addAtom([x+s for s, x in zip(shift, p)])
-        else:
-            addAtom(p)
-    atoms = ivwmolvis.Atoms()
-    atoms.positions = positions
-    atoms.serialnumbers = indices
-    atoms.atomicnumbers = atomicnumbers
-    bonds = ivwmolvis.util.computeCovalentBonds(atoms)
-    return ivwmolvis.MolecularStructure(ivwmolvis.MolecularData(source="chgcar_file", atoms=atoms, 
-                                                                residues=[], chains=[], 
-                                                                bonds=bonds))
-
-def createDataFrame(pos, elements, modelMat):
-    dataframe = df.DataFrame()
-    ct = dataframe.addCategoricalColumn("type")
-    cx = dataframe.addFloatColumn("x", 0, ivw.data.Unit("Angstrom"))
-    cy = dataframe.addFloatColumn("y", 0, ivw.data.Unit("Angstrom"))
-    cz = dataframe.addFloatColumn("z", 0, ivw.data.Unit("Angstrom"))
-    r = dataframe.addFloatColumn("r", 0, ivw.data.Unit("Angstrom"))
-
-    for elem, p in zip(elements, pos):
-        mp = modelMat * ivw.glm.vec4(p[0], p[1], p[2], 1.0)
-
-        ct.add(ivwmolvis.atomicelement.symbol(elem))
-        cx.add(mp[0])
-        cy.add(mp[1])
-        cz.add(mp[2])
-        r.add(ivwmolvis.atomicelement.vdwRadius(elem))
-
-    dataframe.updateIndex()
-
-    return dataframe
-    

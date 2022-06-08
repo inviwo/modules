@@ -4,7 +4,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2020-2021 Inviwo Foundation
+ # Copyright (c) 2020-2022 Inviwo Foundation
  # All rights reserved.
  #
  # Redistribution and use in source and binary forms, with or without
@@ -32,6 +32,7 @@
 import inviwopy as ivw
 import ivwdataframe as df
 import ivwmolvis
+import molviscommon
 import vasputil
 
 import numpy as np
@@ -81,7 +82,9 @@ class ChgcarSource(ivw.Processor):
         self.addProperty(self.centerData)
 
         self.margin = ivw.properties.FloatProperty(
-            "margin", "Border Repetition Margin", 0.05, 0.0, 0.5, 0.01)
+            "margin", "Border Repetition Margin", 0.05, 
+            min=(0.0, ivw.properties.ConstraintBehavior.Immutable), 
+            max=(0.5, ivw.properties.ConstraintBehavior.Editable), increment=0.01)
         self.addProperty(self.margin)
 
         self.radiusScaling = ivw.properties.FloatProperty(
@@ -118,15 +121,17 @@ class ChgcarSource(ivw.Processor):
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
         self.volume.dataMap.valueRange = self.volume.dataMap.dataRange
 
-        self.mesh = vasputil.createMesh(self.atomPos, self.atomTypes,
-                                        self.volume.basis, self.volume.offset, 
-                                        self.pm, self.margin.value,
-                                        self.radiusScaling.value)
+        self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
+                                            basis=self.volume.basis, offset=self.volume.offset,
+                                            pm=self.pm, margin=self.margin.value,
+                                            radiusscaling=self.radiusScaling.value)
 
-        self.dataframe = vasputil.createDataFrame(self.atomPos, self.atomTypes, self.volume.modelMatrix)
+        self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
+                                                      modelmat=self.volume.modelMatrix)
 
         offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
-        self.molecule = vasputil.createMolecularStructure(self.atomPos, self.atomTypes, self.margin.value, offset)
+        self.molecule = molviscommon.createMolecularStructure(pos=self.atomPos, elements=self.atomTypes, 
+                                                              margin=self.margin.value, offset=offset)
 
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
