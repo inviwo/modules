@@ -1,0 +1,25 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        // {
+        //     "label": "build ninja",
+        //     "type": "shell",
+        //     "command": "ninja -j 15 -C ../bin_debug",
+        //     "group": {
+        //         "kind": "build",
+        //         "isDefault": true
+        //     }
+        // },
+        // {
+        //     "label": "run ninja",
+        //     "type": "shell",
+        //     "command": "../bin_debug/bin/Inviwo",
+        //     // "group": {
+        //     //     "kind": "test",
+        //     //     "isDefault": true
+        //     // }
+        // },
+    ]
+}

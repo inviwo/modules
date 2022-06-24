@@ -2,8 +2,8 @@
 
 import inviwopy as ivw
 from ivwdiscretedata import DataSetInitializer, DataSet, GridPrimitive, Channel, DataSetOutport, Connectivity
-from inviwopy.properties import IntVec3Property, FileProperty, OptionPropertyString, ButtonProperty, BoolProperty, CompositeProperty, StringProperty
-from inviwopy.glm import dvec2, mat4, vec4
+from inviwopy.properties import IntVec2Property, IntVec3Property, FileProperty, OptionPropertyString, ButtonProperty, BoolProperty, CompositeProperty, StringProperty, BoolCompositeProperty
+from inviwopy.glm import ivec2, ivec3
 import netcdfutils
 from genericnetcdfsource import GenericNetCDFSource
 
@@ -36,6 +36,8 @@ class NetCDFDataSetSource(ivw.Processor):
         self.dimensions = ivw.properties.OptionPropertyString(
             "dimensions", "dimensions")
 
+        self.gridRange = BoolCompositeProperty("gridRange", "Grid Range", True)
+
         self.triggerReload = ButtonProperty("reload", "Reload")
         self.autoReload = BoolProperty("autoReload", "Auto Reload", False)
         self.gridType = OptionPropertyString("gridType", "Grid Type")
@@ -60,6 +62,7 @@ class NetCDFDataSetSource(ivw.Processor):
         self.addProperty(self.dimensions)
         self.addProperty(self.variables)
         self.addProperty(self.gridType)
+        self.addProperty(self.gridRange)
 
         self.addProperty(self.triggerReload)
         self.addProperty(self.autoReload)
@@ -99,6 +102,10 @@ class NetCDFDataSetSource(ivw.Processor):
         dimString += ')'
         return dimString
 
+    @staticmethod
+    def getDimensionsFromDimensionString(dimString):
+        return (dimString[1:len(dimString)-1]).split(', ')
+
     def updateVariables(self, nc, dimString):
         print('==> Updating Vars!')
 
@@ -123,6 +130,21 @@ class NetCDFDataSetSource(ivw.Processor):
                     ivw.properties.PropertySerializationMode.All)
                 self.variables.addProperty(
                     varProp, True)
+
+        dimList = NetCDFDataSetSource.getDimensionsFromDimensionString(
+            self.dimensions.selectedValue)
+        print(" DIM LIST: ", dimList)
+        for prop in self.gridRange.properties:
+            prop.visible = False
+        for dim in dimList:
+            dimLen = len(nc.dimensions[dim])
+            existingProp = self.gridRange.getPropertyByIdentifier(dim)
+            if (existingProp == None):
+                varDim = IntVec3Property(dim, dim, ivec3(0, dimLen, 1), ivec3(
+                    0, 0, 1), ivec3(dimLen, dimLen, 100))
+                self.gridRange.addProperty(varDim, True)
+            else:
+                existingProp.visible = True
 
     def updateDimensions(self, nc):
         print('=> Updating Dims!')
@@ -196,8 +218,23 @@ class NetCDFDataSetSource(ivw.Processor):
             fieldSize = []
             fieldRange = []
             for ncDim in ncDims:
-                fieldSize.append(len(ncDim))
-                fieldRange.append(slice(0, len(ncDim)))
+                print("DIM we're ON: ", ncDim.name)
+                dimProp = self.gridRange.getPropertyByIdentifier(ncDim.name)
+                if (not self.gridRange or dimProp == None):
+                    fieldRange.append(slice(0, len(ncDim)))
+                    fieldSize.append(len(ncDim))
+                else:
+                    extent = dimProp.value.y - dimProp.value.x
+                    print("Range ", dimProp.value.x, " - ",
+                          dimProp.value.y, " by ", dimProp.value.z,  " in ", ncDim.name)
+                    fieldRange.append(
+                        slice(dimProp.value.x, dimProp.value.y, dimProp.value.z))
+                    if extent == 0:
+                        print("Skipping!")
+                        continue
+                    fieldSize.append(extent)
+                # fieldRange.append(slice(0, len(ncDim)))
+
             print("Maumau Field size: ", fieldSize)
 
             # numpySize = numpy.array(fieldSize).astype('int32')
