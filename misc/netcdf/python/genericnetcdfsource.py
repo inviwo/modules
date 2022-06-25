@@ -1,11 +1,17 @@
-import numpy
-import inspect
-from pathlib import Path
-from netCDF4 import Dataset, Dimension, Variable
-
-import inviwopy as ivw
 from inviwopy.properties import FileProperty, ButtonProperty, BoolProperty, \
     BoolCompositeProperty, CompositeProperty, IntMinMaxProperty, StringProperty
+from netCDF4 import Dataset, Dimension, Variable
+from pathlib import Path
+import inspect
+import numpy
+import netcdfutils
+from inviwopy.glm import dvec2, mat4, vec4
+from inviwopy.properties import IntVec3Property, FileProperty, ButtonProperty, BoolProperty, DoubleProperty, CompositeProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
+import inviwopy as ivw
+<< << << < HEAD
+== == == =
+
+>>>>>> > c6580ae6f8a0b60949f4702d0faa8c87c1815e7f
 
 
 class GenericNetCDFSource(ivw.Processor):
@@ -19,12 +25,9 @@ class GenericNetCDFSource(ivw.Processor):
         self.outputDimension = outputDimension
 
         self.displayInfo = ButtonProperty("displayInfo", "Log File Info")
-        self.filePath = FileProperty("filepath", "NetCDF Path", "", "netcdfdata")
+        self.filePath = FileProperty(
+            "filepath", "NetCDF Path", "", "netcdfdata")
         self.variables = CompositeProperty("variables", "Exported Variables")
-# # <<<<<<< HEAD
-#         self.ignoreDimNames = BoolProperty('ignoreDimNames', 'Ignore Dim Names', False)
-#         self.triggerLoad = ButtonProperty("load", "Load")
-# # =======
         self.variables.setSerializationMode(
             ivw.properties.PropertySerializationMode.All)
         self.dimensions = CompositeProperty(
@@ -44,16 +47,12 @@ class GenericNetCDFSource(ivw.Processor):
         self.triggerReload.onChange(self.reloadData)
         self.autoReload.onChange(self.autoReloadData)
         self.displayInfo.onChange(self.displayDataInfo)
-# >>>>>>> ea95e44 (WIP 2)
 
         self.addProperty(self.filePath)
         self.addProperty(self.displayInfo)
         self.addProperty(self.variables)
-# <<<<<<< HEAD
-# =======
         self.addProperty(self.doScale)
         self.addProperty(self.scale)
-# >>>>>>> ea95e44 (WIP 2)
         self.addProperty(self.dimensions)
         self.addProperty(self.toFloat)
         self.addProperty(self.ignoreDimNames)
@@ -84,7 +83,8 @@ class GenericNetCDFSource(ivw.Processor):
             # If the min == max then the dimensions is __collapsed__ and will not
             # contribute to the outputDimension i.e. collpsing one dim of a 4D dataset
             # makes it a 3D dataset.
-            minmax = IntMinMaxProperty(clean, dim.name, 0, len(dim) - 1, 0, len(dim) - 1)
+            minmax = IntMinMaxProperty(
+                clean, dim.name, 0, len(dim) - 1, 0, len(dim) - 1)
             minmax.visible = False  # Only show when a corresponding variable is enabled
             self.dimensions.addProperty(minmax, True)
 
@@ -93,7 +93,8 @@ class GenericNetCDFSource(ivw.Processor):
             self.addMinmaxProperty(dim)
 
     def addVariablePropery(self, variable: Variable):
-        enabled = BoolCompositeProperty(self.cleanName(variable.name), variable.name, False)
+        enabled = BoolCompositeProperty(
+            self.cleanName(variable.name), variable.name, False)
         enabled.readOnly = len(variable.shape) < self.outputDimension
         enabled.collapsed = True
         dims = StringProperty("dimensions", "Dimensions",
@@ -120,12 +121,7 @@ class GenericNetCDFSource(ivw.Processor):
         self.variables.addProperty(enabled, True)
 
     def process(self):
-# <<<<<<< HEAD
-        # first = self.firstRun
-        # self.firstRun = False
-# =======
         self.scale.visible = self.doScale.value
-# >>>>>>> ea95e44 (WIP 2)
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
             self.variables.clear()
             self.dimensions.clear()
@@ -133,18 +129,6 @@ class GenericNetCDFSource(ivw.Processor):
 
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
             # Update variables.
-# <<<<<<< HEAD
-#             if self.filePath.isModified:
-#                 if self.variables.empty() or any(var.displayName not in nc.variables
-#                                                  for var in self.variables.properties):
-#                     self.variables.clear()
-#                     self.dimensions.clear()
-#                     for name, variable in nc.variables.items():
-#                         self.addVariablePropery(variable)
-#                         self.addMinMaxProperties(variable.get_dims())
-
-#             if self.variables.isModified:
-# =======
             if self.filePath.isModified and not self.firstProcess:
                 # Keep variables as is iff the new data has the same ones.
                 reloadVariables = True
@@ -188,15 +172,16 @@ class GenericNetCDFSource(ivw.Processor):
 
             if self.variables.isModified and not self.firstProcess:
                 selectedVarDims = []
-# >>>>>>> ea95e44 (WIP 2)
                 numComponents = 0
                 showMinMax: list[IntMinMaxProperty] = []
                 for var in filter(self.enabled, self.variables.properties):
-                    comps = numpy.amax(1, nc.variables[var.displayName].datatype.ndim)
+                    comps = numpy.amax(
+                        1, nc.variables[var.displayName].datatype.ndim)
 
                     if numComponents + comps > 4:  # No space left
                         var.checked = False
-                        self.log(f"No channels left, {numComponents} used, {comps} more needed")
+                        self.log(
+                            f"No channels left, {numComponents} used, {comps} more needed")
                         continue
 
                     numComponents += comps
@@ -246,7 +231,8 @@ class GenericNetCDFSource(ivw.Processor):
                     varData = var[tuple(dims)]
                     buffer = numpy.array(varData).astype(
                         'float32' if self.toFloat.value else var.datatype)
-                    buffer.shape = numpy.flip([numpy.amax(1, var.datatype.ndim)] + sizeDims)
+                    buffer.shape = numpy.flip(
+                        [numpy.amax(1, var.datatype.ndim)] + sizeDims)
                     data.append(buffer)
 
                 # Assemble data extent.
@@ -262,24 +248,11 @@ class GenericNetCDFSource(ivw.Processor):
 
                 self.dataLoaded(data, extents)  # implemented in child
 
-# <<<<<<< HEAD
-#     def displayDataInfo(self):
-#         if len(self.filePath.value) == 0:
-#             self.log("File name empty")
-#             return
-#         if not Path(self.filePath.value).exists():
-#             self.log(f"{self.filePath.value} does not exist")
-#             return
-
-#         def attrs(item, indent=0):
-#             for attr in item.ncattrs():
-#                 self.log(f"{indent*' '}{attr}: {getattr(item, attr)}")
-# =======
     def autoReloadData(self):
 
         if self.autoReload.value:
             print("Disabled Auto Reload!")
-        #     self.reloadData()
+            self.reloadData()
 
     def reloadData(self):
         return
@@ -287,17 +260,10 @@ class GenericNetCDFSource(ivw.Processor):
     def genReloadData(self):
         if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
             raise Exception("Invalid path.")
-# >>>>>>> ea95e44 (WIP 2)
 
         self.log(f"File: {self.filePath.value}")
         with Dataset(self.filePath.value, "r", format="NETCDF4") as nc:
-# <<<<<<< HEAD
-#             attrs(nc)
-#             self.log(f"Dimensions: {', '.join(nc.dimensions)}")
-#             for name, var in nc.variables.items():
-#                 self.log(f"{name}, {var.dimensions}, {var.shape}, {var.datatype}")
-#                 attrs(var, 4)
-# =======
+
             # Actually load data.
             if self.variables.size() <= 0:
                 # raise Exception("No known variables")
@@ -365,4 +331,3 @@ class GenericNetCDFSource(ivw.Processor):
         if self.adjustDimensionsForStaggered.value and len(dim) == 2 and dim[1] == 'G' and (dim[0] == 'X' or dim[0] == 'Y'):
             return str(dim[0]) + 'C'
         return dim
-# >>>>>>> ea95e44 (WIP 2)

@@ -20,7 +20,6 @@ class NetCDFDataSetSource(ivw.Processor):
         self.dataSetOutport = DataSetOutport("dataset")
         self.addOutport(self.dataSetOutport, owner=True)
 
-        # self.data = []
         self.data = [[0.0, 1.0], [0.0, 1.0]]
 
         self.displayInfo = ButtonProperty(
@@ -35,9 +34,7 @@ class NetCDFDataSetSource(ivw.Processor):
 
         self.dimensions = ivw.properties.OptionPropertyString(
             "dimensions", "dimensions")
-
         self.gridRange = BoolCompositeProperty("gridRange", "Grid Range", True)
-
         self.triggerReload = ButtonProperty("reload", "Reload")
         self.autoReload = BoolProperty("autoReload", "Auto Reload", False)
         self.gridType = OptionPropertyString("gridType", "Grid Type")
@@ -51,7 +48,6 @@ class NetCDFDataSetSource(ivw.Processor):
 
         self.dimensions = ivw.properties.OptionPropertyString(
             "dimensions", "dimensions")
-
         self.triggerReload.onChange(self.reloadData)
         self.autoReload.onChange(self.autoReloadData)
         self.displayInfo.onChange(self.displayDataInfo)
@@ -233,9 +229,6 @@ class NetCDFDataSetSource(ivw.Processor):
                         print("Skipping!")
                         continue
                     fieldSize.append(extent)
-                # fieldRange.append(slice(0, len(ncDim)))
-
-            print("Maumau Field size: ", fieldSize)
 
             # numpySize = numpy.array(fieldSize).astype('int32')
             grid = None
@@ -265,31 +258,3 @@ class NetCDFDataSetSource(ivw.Processor):
                     '-0x1.5af1d8p+66'), " - is ", channel.getInvalidValue())
 
             self.dataSetOutport.setData(dataset)
-
-        # Debug!
-        # buffer = numpy.array(self.data).astype('float64')
-        # print(type(buffer))
-        # # help(buffer)
-        # print('=====================')
-        # help(DataSet)
-        # dataset = DataSet.createFromArray(buffer, 'TestPos')
-        # self.dataSetOutport.setData(dataset)
-        # extents = []
-        # GenericNetCDFSource.reloadData(self, extents)
-
-        # buffer = numpy.concatenate(self.data, axis=3)
-        # volume = ivw.data.Volume(buffer)
-        # if self.overwriteDataRange.value:
-        #     volume.dataMap.dataRange = self.dataRange.value
-        # else:
-        #     minVal = numpy.amin(buffer)
-        #     maxVal = numpy.amax(buffer)
-        #     volume.dataMap.dataRange = dvec2(minVal, maxVal)
-        # volume.dataMap.valueRange = dvec2(-10000, 10000.0)
-        # volume.dataMap.valueRange = dvec2(-1000, 1000.0)
-        # volume.modelMatrix = mat4(
-        #     vec4(extents[2], 0, 0, 0),
-        #     vec4(0, extents[1], 0, 0),
-        #     vec4(0, 0, extents[0], 0),
-        #     vec4(0, 0, 0, 1))
-        # self.volumeOutport.setData(volume)

@@ -28,10 +28,8 @@
  *********************************************************************************/
 
 #include <inviwo/netcdf/io/netcdfdatasetreader.h>
-// #include <modules/discretedata/connectivity
 #include <modules/discretedata/connectivity/structuredgrid.h>
 #include <inviwo/core/util/filesystem.h>
-// #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datareaderexception.h>
 #include <modules/python3/pythonscript.h>
 
@@ -65,7 +63,6 @@ std::shared_ptr<DataSetInitializer> NetCDFDataSetReader::readData(const std::str
     source.assign((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
 
     PythonScript script_;
-    // std::string sciptSource = "modules/misc/netcdf/python/scripts/netcdfdatasetreader.py"
     script_.setSource(source);
 
     std::unordered_map<std::string, pybind11::object> vars = {
@@ -74,10 +71,9 @@ std::shared_ptr<DataSetInitializer> NetCDFDataSetReader::readData(const std::str
     auto data = std::make_shared<DataSetInitializer>();
     std::array<ind, 3> size = {128, 256, 64};
     auto grid = std::make_shared<StructuredGrid<3>>(size);
-    data->grid_ = grid;  // std::make_shared<StructuredGrid<2>>(3, 3);
+    data->grid_ = grid;
 
     script_.run(vars, [this, &data](pybind11::dict results) {
-        LogWarn("Hullo!");
         for (auto item : results) {
             py::print("key: {}, value={}"_s.format(item.first, item.second));
         };

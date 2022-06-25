@@ -1,13 +1,8 @@
-# import inviwopy
 import numpy
 from pathlib import Path
-# from scipy.io import netcdf
 import sys
 
 from netCDF4 import Dataset
-# from inviwopy.glm import dvec2, vec4, mat4
-# from inviwopy.data import VolumeOutport
-# from inviwopy.data import Volume
 
 
 """
