@@ -1,10 +1,10 @@
 # Name: CubeSource
 
-#################################################################################
+ #################################################################################
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2020-2021 Inviwo Foundation
+ # Copyright (c) 2020-2022 Inviwo Foundation
  # All rights reserved.
  #
  # Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,10 @@
 import inviwopy as ivw
 import ivwdataframe as df
 import ivwmolvis
+import molviscommon
 import gaussianutil
 
-import numpy
+import numpy as np
 from pathlib import Path
 
 # Description found at https://h5cube-spec.readthedocs.io/en/latest/cubeformat.html
@@ -51,7 +52,9 @@ class CubeSource(ivw.Processor):
         self.dataframeOutport = df.DataFrameOutport("atomInformation")
         self.addOutport(self.dataframeOutport)
 
-        self.cubeFilePath = ivw.properties.FileProperty("cube", "cube")
+        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
+
+        self.cubeFilePath = ivw.properties.FileProperty("cube", "cube", "", "cubefile")
         self.addProperty(self.cubeFilePath)
 
         self.dataRange = ivw.properties.DoubleMinMaxProperty(
@@ -91,8 +94,8 @@ class CubeSource(ivw.Processor):
             displayName="Cube Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), 
-                           ivw.Tag("Gaussian"), ivw.Tag("Volume"), ivw.Tag("Mesh")])
+            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), ivw.Tag("Gaussian"), 
+                ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")])
         )
 
     def getProcessorInfo(self):
@@ -105,31 +108,33 @@ class CubeSource(ivw.Processor):
         if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
             return
 
-        self.volume, self.atomPos, self.atoms = gaussianutil.parseCubeFile(
+        self.volume, self.atomPos, self.atomTypes = gaussianutil.parseCubeFile(
             self.cubeFilePath.value, self.flipSign.value, self.centerData.value)
-        self.volumeDataRange = self.volume.dataMap.dataRange
+        self.dataRange.value = self.volume.dataMap.dataRange
 
-        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
-        self.volume.dataMap.valueRange = self.customDataRange.value if self.useCustomRange.value else self.volumeDataRange
+        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
+        self.volume.dataMap.valueRange = self.volume.dataMap.dataRange
 
-        self.mesh = gaussianutil.createMeshForCube(self.atomPos, self.atoms,
-                                        self.volume.basis, self.volume.offset,
-                                        self.pm, self.radiusScaling.value)
+        self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
+                                            basis=self.volume.basis, offset=self.volume.offset,
+                                            pm=self.pm, radiusscaling=self.radiusScaling.value)
 
-        self.dataframe = gaussianutil.createDataFrameForCube(self.atomPos, self.atoms)
+        self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
+                                                      modelmat=self.volume.modelMatrix)
 
-        print("Loaded Cube file: {}\nDims:  {}\nRange: {}".format(
-            self.cubeFilePath.value, self.volume.dimensions, self.volume.dataMap.dataRange))
-
+        offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
+        self.molecule = molviscommon.createMolecularStructure(pos=self.atomPos, elements=self.atomTypes, 
+                                                              offset=offset)
+        
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
         self.dataframeOutport.setData(self.dataframe)
+        self.outports.molecule.setData(self.molecule)
 
     def callback(self, pickevent):
         if (pickevent.state == inviwopy.PickingState.Updated):
             i = pickevent.pickedId
-            pos = numpy.dot(numpy.array(self.volume.basis), self.atomPos[i])
-            pickevent.setToolTip("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}".format(
-                i, ivwmolvis.atomicelement.symbol(self.atoms[i]), pos, self.atomPos[i]))
+            pos = np.dot(np.array(self.volume.basis), self.atomPos[i])
+            pickevent.setToolTip(f"Atom id: {i}\nType: {ivwmolvis.atomicelement.symbol(self.atomTypes[i])}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
         else:
             pickevent.setToolTip("")

@@ -148,9 +148,10 @@ MolecularRenderer::MolecularRenderer()
 }
 
 void MolecularRenderer::process() {
-    atomPicking_.resize(std::accumulate(inport_.begin(), inport_.end(), 0u, [](size_t val, auto s) {
-        return val + s->atoms().positions.size();
-    }));
+    atomPicking_.resize(std::max<size_t>(
+        std::accumulate(inport_.begin(), inport_.end(), 0u,
+                        [](size_t val, auto s) { return val + s->atoms().positions.size(); }),
+        1));
 
     utilgl::activateTargetAndClearOrCopySource(outport_, imageInport_);
 
@@ -217,6 +218,8 @@ void MolecularRenderer::process() {
     }
 
     for (auto mesh : meshes_) {
+        if (mesh->getBuffers().empty()) continue;
+
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo()};
         switch (representation_) {

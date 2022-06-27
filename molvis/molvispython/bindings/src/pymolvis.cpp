@@ -335,7 +335,7 @@ void exposeMolVis(pybind11::module& m) {
     py::class_<Atoms>(m, "Atoms")
         .def(py::init())
         .def_readwrite("positions", &Atoms::positions)
-        .def_readwrite("serialNumbers", &Atoms::serialNumbers)
+        .def_readwrite("serialnumbers", &Atoms::serialNumbers)
         .def_readwrite("bfactors", &Atoms::bFactors)
         .def_readwrite("modelids", &Atoms::modelIds)
         .def_readwrite("chainids", &Atoms::chainIds)

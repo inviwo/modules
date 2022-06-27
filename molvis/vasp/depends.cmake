@@ -3,6 +3,7 @@
 set(dependencies
     InviwoPython3Module
     InviwoDataFramePythonModule
+    InviwoMolVisPythonModule
 )
 
 # Add an alias for this module. Several modules can share an alias. 

@@ -2,7 +2,7 @@
  #
  # Inviwo - Interactive Visualization Workshop
  #
- # Copyright (c) 2020-2021 Inviwo Foundation
+ # Copyright (c) 2020-2022 Inviwo Foundation
  # All rights reserved.
  #
  # Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
  #################################################################################
 
 import inviwopy as ivw
-import ivwdataframe as df
 import ivwmolvis
 
 import numpy
@@ -63,7 +62,7 @@ def parseCubeFile(file, flipSign=False, centerData=True):
         extraLines = 1
     if len(splitted) > 4:
         nVal = int(splitted[4])
-    
+
     unitsInAngstrom = False
     bohrToAngstrom = 0.529177249
     splitted = lines[3].strip().split()
@@ -89,7 +88,7 @@ def parseCubeFile(file, flipSign=False, centerData=True):
         origin = bohrToAngstrom * origin
 
     offset = -0.5 * (basis[0] + basis[1] + basis[2]) if centerData else 0
-    
+
     pos = []
     atoms = []
     for i in range(numAtoms):
@@ -98,7 +97,7 @@ def parseCubeFile(file, flipSign=False, centerData=True):
         atomPos = numpy.array(list(map(float, splitted[2:5])))
         if not unitsInAngstrom:
             atomPos = bohrToAngstrom * atomPos
-        atomPos = atomPos - origin 
+        atomPos = atomPos - origin
         pos.append(atomPos)
         atoms.append(ivwmolvis.atomicelement.element(atomID))
 
@@ -109,7 +108,7 @@ def parseCubeFile(file, flipSign=False, centerData=True):
         splitted = lines[i].strip().split()
         for val in splitted:
             chg.append(sign * float(val))
-    
+
     chgdata = numpy.array(chg).astype(numpy.float32)
     chosenIdx = 0
     chgdata = chgdata[chosenIdx::nVal]
@@ -136,61 +135,3 @@ def parseCubeFile(file, flipSign=False, centerData=True):
     volume.offset = ivw.glm.vec3(offset)
 
     return (volume, pos, atoms)
-
-def createMeshForCube(pos, elements, basis, offset, pm, radiusScaling = 1.0):
-    position = []
-    color = []
-    radius = []
-    picking = []
-    index = []
-
-    pm.resize(len(elements))
-
-    for i, p in enumerate(pos):
-        c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
-        r = ivwmolvis.atomicelement.vdwRadius(elements[i]) * radiusScaling
-        pi = pm.pickingId(i)
-
-        def addVertex(vertexpos):
-            position.append(vertexpos)
-            color.append(c)
-            radius.append(r)
-            picking.append(pi)
-            index.append(i)
-
-        addVertex(p)
-
-    mesh = ivw.data.Mesh()
-    #mesh.basis = ivw.glm.mat3(basis)
-    mesh.offset = ivw.glm.vec3(offset)
-
-    mesh.addBuffer(ivw.data.BufferType.PositionAttrib, ivw.data.Buffer(
-        numpy.array(position).astype(numpy.float32)))
-    mesh.addBuffer(ivw.data.BufferType.ColorAttrib, ivw.data.Buffer(
-        numpy.array(color).astype(numpy.float32)))
-    mesh.addBuffer(ivw.data.BufferType.RadiiAttrib, ivw.data.Buffer(
-        numpy.array(radius).astype(numpy.float32)))
-    mesh.addBuffer(ivw.data.BufferType.PickingAttrib, ivw.data.Buffer(
-        numpy.array(picking).astype(numpy.uint32)))
-    mesh.addBuffer(ivw.data.BufferType.IndexAttrib, ivw.data.Buffer(
-        numpy.array(index).astype(numpy.uint32)))
-    return mesh
-
-def createDataFrameForCube(pos, elements):
-    dataframe = df.DataFrame()
-    ct = dataframe.addCategoricalColumn("type")
-    cx = dataframe.addFloatColumn("x", 0, ivw.data.Unit("Angstrom"))
-    cy = dataframe.addFloatColumn("y", 0, ivw.data.Unit("Angstrom"))
-    cz = dataframe.addFloatColumn("z", 0, ivw.data.Unit("Angstrom"))
-    r = dataframe.addFloatColumn("r", 0, ivw.data.Unit("Angstrom"))
-
-    for elem, p in zip(elements, pos):        
-        ct.add(ivwmolvis.atomicelement.symbol(elem))
-        cx.add(p[0])
-        cy.add(p[1])
-        cz.add(p[2])
-        r.add(ivwmolvis.atomicelement.vdwRadius(elem))
-
-    dataframe.updateIndex()
-
-    return dataframe

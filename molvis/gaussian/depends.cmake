@@ -3,4 +3,5 @@
 set(dependencies
     InviwoPython3Module
     InviwoDataFramePythonModule
+    InviwoMolVisPythonModule
 )

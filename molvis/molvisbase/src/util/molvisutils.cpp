@@ -173,6 +173,10 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
 
     util::IndexMapper3D im(dims);
     for (auto&& [i, pos] : util::enumerate(atoms.positions)) {
+        if (element::isMetallic(atoms.atomicNumbers[i])) {
+            continue;
+        }
+
         const auto cellIndex = im(cellCoord(pos));
         if (cells[cellIndex] == -1) {
             cells[cellIndex] = static_cast<int>(cellData.size());
@@ -186,8 +190,18 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
                                       atoms.atomicNumbers[atom2], atoms.positions[atom2]);
     };
 
+    auto isNobleGas = [](Element symbol) {
+        const std::array<Element, 6> nobleGases = {Element::He, Element::Ne, Element::Ar,
+                                                   Element::Kr, Element::Xe, Element::Rn};
+        return std::find(nobleGases.begin(), nobleGases.end(), symbol) != nobleGases.end();
+    };
+
     std::vector<Bond> bonds;
     for (auto&& [atom1, pos] : util::enumerate(atoms.positions)) {
+        if (element::isMetallic(atoms.atomicNumbers[atom1]) ||
+            isNobleGas(atoms.atomicNumbers[atom1]))
+            continue;
+
         const auto minCell = cellCoord(pos - maxCovalentBondLength);
         const auto maxCell = cellCoord(pos + maxCovalentBondLength);
 
