@@ -36,18 +36,23 @@ uniform CameraParameters camera;
 layout(points) in;
 layout(triangle_strip, max_vertices = 4) out;
 
-in vec4 worldPosition_[];
-in vec4 sphereColor_[];
-flat in float sphereRadius_[];
-flat in uint pickID_[];
-flat in float scalarMeta_[];
+in Vertex {
+    smooth vec4 worldPosition;
+    flat vec4 color;
+    flat float radius;
+    flat uint pickID;
+    flat float scalarMeta;
+    flat bool visible;
+} in_vert[];
 
-out float radius_;
-out vec3 camPos_;
-out vec4 center_;
-out vec4 color_;
-flat out vec4 pickColor_;
-flat out float scalar_;
+out Fragment {
+    flat float radius;
+    flat vec3 camPos;
+    flat vec4 center;
+    flat vec4 color;
+    flat vec4 pickColor;
+    flat float scalar;
+} out_vert;
 
 void emitvertex(vec3 pos, float depth) {
     vec4 projPos = camera.worldToClip * vec4(pos, 1.0);
@@ -57,38 +62,38 @@ void emitvertex(vec3 pos, float depth) {
 }
 
 void main(void) {
-    center_ = worldPosition_[0];
-    radius_ = sphereRadius_[0];
-
-    if (radius_ <= 0 || sphereColor_[0].a <= 0) {
+    if (in_vert[0].radius <= 0 || in_vert[0].color.a <= 0 || !in_vert[0].visible) {
         EndPrimitive();
         return;
     }
+
+    out_vert.center = in_vert[0].worldPosition;
+    out_vert.radius = in_vert[0].radius;
 
     mat4 worldToViewMatrixInv = inverse(camera.worldToView);
 
     vec3 camDir = normalize((worldToViewMatrixInv[2]).xyz);     
     vec3 camPosModel =  worldToViewMatrixInv[3].xyz;
     // calculate cam position (in model space of the sphere)
-    camPos_ = camPosModel - center_.xyz;
+    out_vert.camPos = camPosModel - out_vert.center.xyz;
 
 #ifdef DISCARD_CLIPPED_GLYPHS
-    if (dot(camPos_, camDir) < camera.nearPlane + radius_) {
+    if (dot(out_vert.camPos, camDir) < camera.nearPlane + out_vert.radius) {
         // glyph intersects with the near plane of the camera, discard entire glyph, i.e. no output
         EndPrimitive();
         return;
     }
 #endif // DISCARD_CLIPPED_GLYPHS
 
-    vec4 centerMVP = camera.worldToClip * center_;
+    vec4 centerMVP = camera.worldToClip * out_vert.center;
     float glyphDepth = centerMVP.z / centerMVP.w;
 
     // send color to fragment shader
-    color_ = sphereColor_[0];
+    out_vert.color = in_vert[0].color;
     // set picking color
-    pickColor_ = vec4(pickingIndexToColor(pickID_[0]), pickID_[0] == 0 ? 0.0 : 1.0);
+    out_vert.pickColor = vec4(pickingIndexToColor(in_vert[0].pickID), in_vert[0].pickID == 0 ? 0.0 : 1.0);
 
-    scalar_ = scalarMeta_[0];
+    out_vert.scalar = in_vert[0].scalarMeta;
 
     // camera coordinate system in object space
     vec3 camUp = (worldToViewMatrixInv[1]).xyz;
@@ -96,13 +101,13 @@ void main(void) {
     camUp = normalize(cross(camDir, camRight));
 
     // square:
-    camRight *= radius_ * 1.41421356;
-    camUp *= radius_ * 1.41421356;
+    camRight *= out_vert.radius * 1.41421356;
+    camUp *= out_vert.radius * 1.41421356;
 
-    emitvertex(center_.xyz + camRight - camUp, glyphDepth);
-    emitvertex(center_.xyz - camRight - camUp, glyphDepth);
-    emitvertex(center_.xyz + camRight + camUp, glyphDepth);
-    emitvertex(center_.xyz - camRight + camUp, glyphDepth);
+    emitvertex(out_vert.center.xyz + camRight - camUp, glyphDepth);
+    emitvertex(out_vert.center.xyz - camRight - camUp, glyphDepth);
+    emitvertex(out_vert.center.xyz + camRight + camUp, glyphDepth);
+    emitvertex(out_vert.center.xyz - camRight + camUp, glyphDepth);
 
     EndPrimitive();
 }
