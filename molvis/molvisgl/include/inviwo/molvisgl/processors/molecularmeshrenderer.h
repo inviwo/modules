@@ -90,7 +90,7 @@ private:
     ImageInport imageInport_;
     ImageOutport outport_;
 
-    TemplateOptionProperty<Representation> representation_;
+    OptionProperty<Representation> representation_;
 
     FloatProperty radiusScaling_;
     BoolProperty forceRadius_;

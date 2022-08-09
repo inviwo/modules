@@ -74,9 +74,9 @@ private:
     TensorField3DInport tensorFieldInport_;
     VolumeOutport volumeOutport_;
 
-    TemplateOptionProperty<tensorutil::Anisotropy> anisotropy_;
+    OptionProperty<tensorutil::Anisotropy> anisotropy_;
 
-    TemplateOptionProperty<GLint> interpolationScheme_;
+    OptionProperty<GLint> interpolationScheme_;
 };
 
 }  // namespace inviwo

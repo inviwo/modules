@@ -73,7 +73,7 @@ public:
 private:
     TensorField2DInport tensorFieldInport_;
     ImageOutport outport_;
-    TemplateOptionProperty<tensorutil::Anisotropy> anisotropy_;
+    OptionProperty<tensorutil::Anisotropy> anisotropy_;
 };
 
 }  // namespace inviwo

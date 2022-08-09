@@ -74,7 +74,7 @@ private:
     TensorField2DOutport outport_;
 
     FloatProperty resolutionMultiplier_;
-    TemplateOptionProperty<tensorutil::InterpolationMethod> interpolationMethod_;
+    OptionProperty<tensorutil::InterpolationMethod> interpolationMethod_;
 };
 
 }  // namespace inviwo

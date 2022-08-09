@@ -70,10 +70,10 @@ private:
     molvis::MolecularStructureInport inport_;
     MeshOutport outport_;
 
-    TemplateOptionProperty<Coloring> coloring_;
+    OptionProperty<Coloring> coloring_;
 
-    TemplateOptionProperty<molvis::element::Colormap> atomColormap_;
-    TemplateOptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
+    OptionProperty<molvis::element::Colormap> atomColormap_;
+    OptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
     FloatVec4Property fixedColor_;
 
     BoolProperty enableTooltips_;
