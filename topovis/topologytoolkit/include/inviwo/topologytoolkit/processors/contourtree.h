@@ -93,7 +93,7 @@ private:
     topology::TriangulationInport inport_;
     topology::ContourTreeOutport outport_;
 
-    TemplateOptionProperty<topology::TreeType> treeType_;
+    OptionProperty<topology::TreeType> treeType_;
     IntProperty threadCount_;
     BoolProperty segmentation_;
     BoolProperty normalization_;

@@ -64,7 +64,7 @@ private:
     MeshOutport planeOutport_;
     DataOutport<unsigned int> offsetOutport_;
 
-    TemplateOptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
+    OptionProperty<CartesianCoordinateAxis> sliceAlongAxis_;
     OrdinalProperty<size_t> sliceNr_;
     FloatVec4Property sliceColor_;
     FloatVec4Property planeColor_;

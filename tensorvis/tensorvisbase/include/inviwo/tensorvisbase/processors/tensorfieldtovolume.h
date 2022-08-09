@@ -75,7 +75,7 @@ private:
     TensorField3DInport inport_;
     VolumeOutport outport_;
 
-    TemplateOptionProperty<TensorFeature> feature_;
+    OptionProperty<TensorFeature> feature_;
 
     BoolProperty normalizeVectors_;
 };

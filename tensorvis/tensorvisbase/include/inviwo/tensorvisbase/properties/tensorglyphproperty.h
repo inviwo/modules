@@ -98,7 +98,7 @@ public:
 
 protected:
     // Properties go here
-    TemplateOptionProperty<GlyphType> glyphType_;
+    OptionProperty<GlyphType> glyphType_;
 
     OrdinalProperty<size_t> resolutionTheta_;
     OrdinalProperty<size_t> resolutionPhi_;

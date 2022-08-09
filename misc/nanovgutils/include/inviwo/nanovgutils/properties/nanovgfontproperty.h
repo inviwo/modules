@@ -41,7 +41,7 @@ private:
     FloatProperty fontSize_;
     FloatVec4Property fontColor_;
     FontFaceOptionProperty fontFace_;
-    TemplateOptionProperty<NanoVGContext::Alignment> fontAlignment_;
+    OptionProperty<NanoVGContext::Alignment> fontAlignment_;
     BoolProperty enableFontBlur_;
     FloatProperty fontBlurIntensity_;
 

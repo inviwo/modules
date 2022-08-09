@@ -76,7 +76,7 @@ private:
     TensorField3DOutport outport_;
 
     FloatProperty resolutionMultiplier_;
-    TemplateOptionProperty<tensorutil::InterpolationMethod> interpolationMethod_;
+    OptionProperty<tensorutil::InterpolationMethod> interpolationMethod_;
 
     std::shared_ptr<TensorField3D> tf_;
 

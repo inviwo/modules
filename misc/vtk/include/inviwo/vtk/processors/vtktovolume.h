@@ -100,7 +100,7 @@ private:
         using CompositeProperty::addProperties;
         using CompositeProperty::addProperty;
     } dataArrays_;
-    TemplateOptionProperty<DataFormatId> dataFormats_;
+    OptionProperty<DataFormatId> dataFormats_;
     ButtonProperty convertButton_;
     BoolProperty autoConvert_;
     DoubleVec2Property dataRange_;
