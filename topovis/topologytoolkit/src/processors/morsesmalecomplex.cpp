@@ -34,7 +34,7 @@
 #include <inviwo/core/datastructures/buffer/bufferram.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
-#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/stdfuture.h>
 #include <inviwo/core/util/clock.h>
 
 #include <warn/push>

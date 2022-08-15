@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
-#include <inviwo/core/util/glmvec.h>
+#include <inviwo/core/util/glm.h>
 
 #include <glm/ext/scalar_constants.hpp>
 
