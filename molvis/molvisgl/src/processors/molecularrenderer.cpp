@@ -149,7 +149,7 @@ MolecularRenderer::MolecularRenderer()
 
 void MolecularRenderer::process() {
     atomPicking_.resize(std::max<size_t>(
-        std::accumulate(inport_.begin(), inport_.end(), 0u,
+        std::accumulate(inport_.begin(), inport_.end(), size_t{0u},
                         [](size_t val, auto s) { return val + s->atoms().positions.size(); }),
         1));
 

@@ -40,6 +40,8 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
+#include <future>
+
 namespace inviwo {
 
 /** \docpage{org.inviwo.MorseSmaleComplex, Morse Smale Complex}
