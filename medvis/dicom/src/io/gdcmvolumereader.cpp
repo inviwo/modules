@@ -128,7 +128,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
     volume->dataMap_.valueRange = volume->dataMap_.dataRange * series.slope + series.intercept;
 
     if (series.modality == "CT") {
-        volume->dataMap_.valueUnit = "HU";
+        volume->dataMap_.valueAxis = Axis{"Hounsfield", units::unit_from_string("HU")};
     }
 
     // basis and offset computations
@@ -509,7 +509,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
 /**
  * Entry point of the reader, called from VolumeSource processor
  */
-std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string_view filePath) {
     auto path = filePath;
     if (!filesystem::fileExists(path)) {
         std::string newPath = filesystem::addBasePath(path);
@@ -693,7 +693,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     // TODO: check this heuristics!!!
     if (modality == "CT") {
         // Computed Tomography
-        volume->dataMap_.valueUnit = "HU";  // Hounsfield Unit
+        volume->dataMap_.valueAxis = Axis{"Hounsfield", units::unit_from_string("HU")};
         if (format->getPrecision() == 16) {
             volume->dataMap_.dataRange = {0.0, 4095};
         }
@@ -720,8 +720,30 @@ GCDMVolumeRAMLoader::GCDMVolumeRAMLoader(std::string file, size3_t dimension,
 GCDMVolumeRAMLoader* GCDMVolumeRAMLoader::clone() const { return new GCDMVolumeRAMLoader(*this); }
 
 std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation&) const {
-    return format_->dispatch(*this);
+    const VolumeRepresentation& src) const {
+
+    const std::size_t voxels = dimension_[0] * dimension_[1] * dimension_[2];
+    const auto voxelSize = format_->getSize();
+    auto data = std::make_unique<char[]>(voxels * voxelSize);
+
+    if (!isPartOfSequence_) {
+        gdcm::ImageReader reader;
+        reader.SetFileName(file_.c_str());
+        if (!reader.Read()) {
+            throw DataReaderException(fmt::format("could not read file ('{}')", file_),
+                                      IVW_CONTEXT);
+        }
+        const gdcm::Image& image = reader.GetImage();
+        image.GetBuffer(data.get());
+    } else {
+        getVolumeData(series_, static_cast<void*>(data.get()));
+    }
+    auto volumeRAM =
+        createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
+                        src.getInterpolation(), src.getWrapping());
+    data.release();
+
+    return volumeRAM;
 }
 
 /**
@@ -755,37 +777,6 @@ void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* ou
 
             totalByteCount += image.GetBufferLength();
         }
-    }
-}
-
-template <class T>
-std::shared_ptr<VolumeRAM> GCDMVolumeRAMLoader::dispatch() const {
-    // T is the voxel memory format
-    // F is the corresponding datatype (i.e. the template arg with which the format was created)
-    typedef typename T::type F;
-    const std::size_t size = dimension_[0] * dimension_[1] * dimension_[2];
-    auto data = util::make_unique<F[]>(size);
-    if (!isPartOfSequence_) {
-        gdcm::ImageReader reader;
-        reader.SetFileName(file_.c_str());
-        if (!reader.Read()) {
-            throw DataReaderException(fmt::format("could not read file ('{}')", file_),
-                                      IVW_CONTEXT);
-        }
-
-        const gdcm::Image& image = reader.GetImage();
-        image.GetBuffer(reinterpret_cast<char*>(data.get()));
-        auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimension_);
-        data.release();
-
-        return repr;
-    } else {
-        getVolumeData(series_, (void*)data.get());
-
-        auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimension_);
-        data.release();
-
-        return repr;
     }
 }
 

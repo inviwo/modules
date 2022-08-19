@@ -54,7 +54,7 @@ namespace inviwo {
 class IVW_MODULE_DICOM_API GdcmVolumeReader : public DataReaderType<VolumeSequence> {
 public:
     GdcmVolumeReader();
-    virtual GdcmVolumeReader* clone() const;
+    virtual GdcmVolumeReader* clone() const override;
     virtual ~GdcmVolumeReader() = default;
 
     /**
@@ -68,7 +68,7 @@ public:
     /**
      * Entry point of the reader, called from VolumeSource processor
      */
-    virtual std::shared_ptr<VolumeSequence> readData(const std::string& filePath);
+    virtual std::shared_ptr<VolumeSequence> readData(const std::string_view filePath) override;
 
 private:
     /**
@@ -115,14 +115,9 @@ public:
     virtual ~GCDMVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation&) const override;
+        const VolumeRepresentation& src) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
                                       const VolumeRepresentation&) const override;
-
-    using type = std::shared_ptr<VolumeRAM>;
-
-    template <class T>
-    std::shared_ptr<VolumeRAM> dispatch() const;
 
 private:
     void getVolumeData(const dicomdir::Series& series, void* outData) const;  // static here?
