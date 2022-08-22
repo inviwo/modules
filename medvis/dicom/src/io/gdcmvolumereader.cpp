@@ -791,7 +791,6 @@ void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
         }
 
         const gdcm::Image& image = reader.GetImage();
-        const std::size_t size = dimension_[0] * dimension_[1] * dimension_[2];
         auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
         auto data = volumeDst->getData();
         image.GetBuffer(reinterpret_cast<char*>(data));
