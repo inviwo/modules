@@ -46,13 +46,13 @@ namespace inviwo {
 class IVW_MODULE_DICOM_API MevisVolumeReader : public DataReaderType<Volume> {
 public:
     MevisVolumeReader();
-    virtual MevisVolumeReader* clone() const;
+    virtual MevisVolumeReader* clone() const override;
     virtual ~MevisVolumeReader() = default;
 
     // interface gdcm - mevis reader
-    bool setFilenames(std::string filePath);
+    bool setFilenames(std::string_view filePath);
 
-    virtual std::shared_ptr<Volume> readData(const std::string& filePath);
+    virtual std::shared_ptr<Volume> readData(const std::string_view filePath) override;
 
 private:
     std::string dcm_file_;

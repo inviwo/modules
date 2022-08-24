@@ -96,7 +96,7 @@ MevisVolumeReader::MevisVolumeReader()
 
 MevisVolumeReader* MevisVolumeReader::clone() const { return new MevisVolumeReader(*this); }
 
-std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string& filePath) {
+std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string_view filePath) {
     auto formatErrorMsg = [](const auto& filename, const auto& msg) {
         return fmt::format("{} ('{}')", msg, filename);
     };
@@ -343,7 +343,7 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     }
 }
 
-bool MevisVolumeReader::setFilenames(std::string filePath) {
+bool MevisVolumeReader::setFilenames(std::string_view filePath) {
     dcm_file_.clear();
     tif_file_.clear();
 

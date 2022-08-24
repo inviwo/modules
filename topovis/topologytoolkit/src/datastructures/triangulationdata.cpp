@@ -223,7 +223,6 @@ void TriangulationData::set(std::vector<vec3>&& points, const std::vector<uint32
         }
         case DrawType::Points:
         case DrawType::NotSpecified:
-        case DrawType::NumberOfDrawTypes:
         default:
             std::stringstream ss;
             ss << "Unsupported primitive type " << meshInfo.dt;
@@ -318,7 +317,6 @@ void TriangulationData::addIndices(const std::vector<uint32_t>& indices, Mesh::M
         }
         case DrawType::Points:
         case DrawType::NotSpecified:
-        case DrawType::NumberOfDrawTypes:
         default:
             std::stringstream ss;
             ss << "Unsupported primitive type " << meshInfo.dt;
@@ -510,7 +508,6 @@ std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<ui
             break;
         }
         case ConnectivityType::Loop:
-        case ConnectivityType::NumberOfConnectivityTypes:
         default:
             std::stringstream ss;
             ss << "Unsupported connectivity type " << meshInfo.ct;
@@ -563,7 +560,6 @@ std::vector<uint32_t> TriangulationData::convertToLines(const std::vector<uint32
             }
             break;
         }
-        case ConnectivityType::NumberOfConnectivityTypes:
         default:
             std::stringstream ss;
             ss << "unsupported connectivity type " << meshInfo.ct;
