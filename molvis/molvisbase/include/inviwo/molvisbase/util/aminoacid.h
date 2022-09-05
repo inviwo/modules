@@ -68,7 +68,7 @@ constexpr std::array<std::string_view, num_aminoacids> names = {
     "Glutamine",  "Glutamic acid", "Glycine",       "Histidine",      "Isoleucine",    "Leucine",
     "Lysine",     "Methionine",    "Phenylalanine", "Proline",        "Serine",        "Threonine",
     "Tryptophan", "Tyrosine",      "Valine",        "Selenocysteine", "Pyrrolysine",   
-    "Asparagine or Aspartic acid", "Glutamine or Glutamic acid",  "Leucine or Isoleucine",
+    "Asparagine or Aspartic acid", "Glutamine or Glutamic acid",  "Leucine or Isoleucine",
 };
 
 constexpr std::array<char, num_aminoacids> letter = {
