@@ -99,6 +99,7 @@ void main() {
     glyphColor.rgb = APPLY_LIGHTING(lighting, in_frag.color.rgb, in_frag.color.rgb, vec3(1.0f), intersection,
                                normal, normalize(in_frag.camPos - intersection));
     glyphColor.a = in_frag.color.a;
+    glyphColor.rgb *= glyphColor.a;
 
     // depth correction for glyph
     mat4 mvpTranspose = transpose(camera.worldToClip);

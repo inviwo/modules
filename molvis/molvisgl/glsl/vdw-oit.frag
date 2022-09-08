@@ -114,6 +114,8 @@ void main() {
 #else
     glyphColor.a = in_frag.color.a;
 #endif // UNIFORM_ALPHA
+    glyphColor.rgb *= glyphColor.a;
+
     if (glyphColor.a < 0.01) discard;
 
     // depth correction for glyph
