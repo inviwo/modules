@@ -31,9 +31,11 @@
 
 #include <inviwo/integrallinefiltering/integrallinefilteringmoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/util/assertion.h>
+
+#include <glm/gtc/constants.hpp>
+
+#include <type_traits>
 
 namespace inviwo {
 namespace detail {

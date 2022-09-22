@@ -28,7 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/core/io/datareaderfactory.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
 
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/datavisualizer/anisotropyraycastingvisualizer.h>

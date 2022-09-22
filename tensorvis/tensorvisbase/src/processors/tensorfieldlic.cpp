@@ -28,6 +28,10 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+
 #include <algorithm>
 
 namespace inviwo {

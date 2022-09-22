@@ -27,16 +27,15 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDLIC_H
-#define IVW_TENSORFIELDLIC_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
-#include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
@@ -45,23 +44,8 @@ namespace inviwo {
 /** \docpage{org.inviwo.TensorFieldLIC, TensorFieldLIC}
  * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldLIC)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \class TensorFieldLIC
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorFieldLIC : public Processor {
 public:
     TensorFieldLIC();
@@ -98,5 +82,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDLIC_H

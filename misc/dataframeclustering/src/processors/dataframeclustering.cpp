@@ -31,6 +31,8 @@
 #include <inviwo/dataframeclustering/dataframeclusteringmodule.h>
 #include <modules/python3/pybindutils.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming

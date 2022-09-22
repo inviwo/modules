@@ -33,7 +33,6 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/indexmapper.h>
-#include <modules/opengl/volume/volumegl.h>
 
 namespace inviwo {
 
@@ -188,13 +187,7 @@ void TensorField3DAnisotropy::process() {
         mat3(vec3(extends.x, 0., 0.), vec3(0., extends.y, 0.), vec3(0., 0., extends.z)));
 
     outputVolume->setOffset(tensorField->getOffset());
-
-    // HOTFIX: enable nearest neighbor sampling for volume
-    TextureUnit unit;
-    outputVolume->getRepresentation<VolumeGL>()->bindTexture(unit.getEnum());
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, interpolationScheme_.get());
-    glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, interpolationScheme_.get());
-    outputVolume->getRepresentation<VolumeGL>()->unbindTexture();
+    outputVolume->setInterpolation(InterpolationType::Nearest);
 
     volumeOutport_.setData(outputVolume);
 }

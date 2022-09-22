@@ -32,21 +32,18 @@
 #include <modules/opengl/canvasprocessorgl.h>
 
 #include <inviwo/core/processors/processorutils.h>
-
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-
-#include <inviwo/vtk/processors/vtktovolume.h>
-
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/datastructures/light/lightingstate.h>
 #include <modules/base/processors/cubeproxygeometryprocessor.h>
-
 #include <modules/base/processors/volumeboundingbox.h>
 #include <modules/basegl/processors/background.h>
 #include <modules/basegl/processors/entryexitpointsprocessor.h>
 #include <modules/basegl/processors/linerendererprocessor.h>
 #include <modules/basegl/processors/volumeraycaster.h>
-
 #include <modules/basegl/datavisualizer/volumeraycastvisualizer.h>
+
+#include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <inviwo/vtk/processors/vtktovolume.h>
 
 namespace inviwo {
 
