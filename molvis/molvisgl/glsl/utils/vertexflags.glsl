@@ -38,9 +38,9 @@ struct VertexFlags {
 
 VertexFlags extractFlags(uint v) {
     return VertexFlags(
-        bool(v & 0x01), // filtered
-        bool(v & 0x02), // selected
-        bool(v & 0x04)  // highlighted
+        bool(v & uint(0x01)), // filtered
+        bool(v & uint(0x02)), // selected
+        bool(v & uint(0x04))  // highlighted
     );
 }
 

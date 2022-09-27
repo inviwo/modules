@@ -50,7 +50,7 @@ in Vertex {
     flat vec4 color;
     flat uint pickID;
     flat float scalarMeta;
-    flat bool visible;
+    flat int visible;
 } in_vert[];
 
 out Fragment {
@@ -90,7 +90,7 @@ vec3 get_ortho_vec(vec3 v, vec3 A, vec3 B) {
 
 void main() {
     if ((in_vert[0].color.a == 0 && in_vert[1].color.a == 0) 
-        || (!in_vert[0].visible && !in_vert[1].visible)) {
+        || (in_vert[0].visible == 0 && in_vert[1].visible == 0)) {
         EndPrimitive();
         return;
     }

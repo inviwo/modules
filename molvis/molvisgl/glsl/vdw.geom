@@ -42,7 +42,7 @@ in Vertex {
     flat float radius;
     flat uint pickID;
     flat float scalarMeta;
-    flat bool visible;
+    flat int visible;
 } in_vert[];
 
 out Fragment {
@@ -62,7 +62,7 @@ void emitvertex(vec3 pos, float depth) {
 }
 
 void main(void) {
-    if (in_vert[0].radius <= 0 || in_vert[0].color.a <= 0 || !in_vert[0].visible) {
+    if (in_vert[0].radius <= 0 || in_vert[0].color.a <= 0 || in_vert[0].visible == 0) {
         EndPrimitive();
         return;
     }

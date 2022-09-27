@@ -56,12 +56,12 @@ out Vertex {
     flat vec4 color;
     flat uint pickID;
     flat out float scalarMeta;
-    flat out bool visible;
+    flat out int visible;
 } out_vert;
 
 
 void main(void) {
-    out_vert.visible = true;
+    out_vert.visible = 1;
 
 #if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
     out_vert.scalarMeta = in_ScalarMeta;
@@ -77,7 +77,7 @@ void main(void) {
 #if defined(HAS_TEXCOORD)
     VertexFlags flags = extractFlags(in_TexCoord);
 
-    out_vert.visible = !flags.filtered || showFiltered.visible;
+    out_vert.visible = int(!flags.filtered || showFiltered.visible);
 
     if (flags.filtered) {
         out_vert.color = applySelectionColor(out_vert.color, showFiltered);

@@ -49,10 +49,12 @@ out Vertex {
     flat float radius;
     flat uint pickID;
     flat float scalarMeta;
-    flat bool visible;
+    flat int visible;
 } out_vert;
 
 void main(void) {
+    out_vert.visible = 1;
+    
 #if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
     out_vert.scalarMeta = in_ScalarMeta;
     out_vert.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
