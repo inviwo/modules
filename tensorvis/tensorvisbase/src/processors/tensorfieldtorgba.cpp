@@ -29,6 +29,14 @@
 
 #include <inviwo/tensorvisbase/processors/tensorfieldtorgba.h>
 #include <inviwo/tensorvisbase/algorithm/tensorfieldsampling.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
+
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+
+#include <inviwo/core/interaction/events/mouseevent.h>
 
 namespace inviwo {
 
@@ -77,7 +85,7 @@ void TensorFieldToRGBA::process() {
 
 void TensorFieldToRGBA::hoverAction(Event* e) {
     if (inport_.hasData() && inport_.getData().get()) {
-        if (auto mouseEvent = dynamic_cast<MouseEvent*>(e)) {
+        if (auto mouseEvent = e->getAs<MouseEvent>()) {
             auto tensorField = inport_.getData();
             auto p = mouseEvent->posNormalized();
             auto tensor = sample(tensorField, p, tensorutil::InterpolationMethod::Barycentric);

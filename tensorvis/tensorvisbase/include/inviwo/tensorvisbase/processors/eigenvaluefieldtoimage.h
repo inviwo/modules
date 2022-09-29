@@ -27,42 +27,26 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_EIGENVALUEFIELDTOIMAGE_H
-#define IVW_EIGENVALUEFIELDTOIMAGE_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 
 namespace inviwo {
 
 /** \docpage{org.inviwo.EigenvalueFieldToImage, Eigenvalue Field To Image}
  * ![](org.inviwo.EigenvalueFieldToImage.png?classIdentifier=org.inviwo.EigenvalueFieldToImage)
  * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
  */
 
-/**
- * \class EigenvalueFieldToImage
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISBASE_API EigenvalueFieldToImage : public Processor {
 public:
     EigenvalueFieldToImage();
@@ -102,5 +86,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_EIGENVALUEFIELDTOIMAGE_H

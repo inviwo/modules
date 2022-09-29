@@ -57,6 +57,7 @@
 #include <inviwo/core/util/formatconversion.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/raiiutils.h>
+#include <inviwo/core/util/assertion.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -302,8 +303,8 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
         for (std::size_t y0 = 0; y0 < dimension_[1]; y0 += tilesize.y) {
             for (std::size_t x0 = 0; x0 < dimension_[0]; x0 += tilesize.x) {
                 const auto tiffreadtile_ret = TIFFReadTile(
-                    tiffimage, tilebuf, static_cast<uint32>(x0), static_cast<uint32>(y0),
-                    static_cast<uint32>(z0), static_cast<uint16>(tilesz));
+                    tiffimage, tilebuf, static_cast<uint32_t>(x0), static_cast<uint32_t>(y0),
+                    static_cast<uint32_t>(z0), static_cast<uint16_t>(tilesz));
                 if (0 > tiffreadtile_ret) {
                     throw DataReaderException(formatErrorMsg("error reading tile"));
                 }

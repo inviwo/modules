@@ -30,6 +30,7 @@
 #include <inviwo/openmesh/openmeshreader.h>
 
 #include <inviwo/openmesh/utils/openmeshconverters.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #define _USE_MATH_DEFINES
 #include <warn/push>

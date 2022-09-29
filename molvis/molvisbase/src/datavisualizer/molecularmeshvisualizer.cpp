@@ -34,6 +34,8 @@
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
 
 #include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/io/datareaderfactory.h>
 
 namespace inviwo {

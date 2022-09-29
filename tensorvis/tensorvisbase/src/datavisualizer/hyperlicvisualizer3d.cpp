@@ -29,9 +29,12 @@
 
 #include <inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer3d.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
+
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/base/processors/noiseprocessor.h>
-#include <inviwo/core/processors/processorutils.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>

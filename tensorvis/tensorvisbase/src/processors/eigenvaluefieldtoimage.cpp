@@ -30,6 +30,10 @@
 #include <inviwo/tensorvisbase/processors/eigenvaluefieldtoimage.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/shader/shaderutils.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme

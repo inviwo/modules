@@ -31,13 +31,17 @@
 
 #include <inviwo/nanovgutils/nanovgutilsmodule.h>
 
+#include <inviwo/core/util/moduleutils.h>
+
 namespace inviwo::nanovgutil {
 
 NanoVGContext& getContext(InviwoApplication* app) {
-    return app->getModuleByType<NanoVGUtilsModule>()->getNanoVGContext();
+    return util::getModuleByType<NanoVGUtilsModule>(app)->getNanoVGContext();
 }
 
-NanoVGContext& getContext() { return getContext(util::getInviwoApplication()); }
+NanoVGContext& getContext() {
+    return util::getModuleByType<NanoVGUtilsModule>()->getNanoVGContext();
+}
 
 void arrow(NanoVGContext& ctx, const vec2& from, const vec2& to, float width, float headSize,
            bool normalize) {

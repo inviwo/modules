@@ -150,8 +150,10 @@ void init(py::module ivwmodule, InviwoApplication* app) {
     nanoVGContext.def("createFont", &NanoVGContext::createFont, py::arg("name"),
                       py::arg("filename"));
 
-    nanoVGContext.def("textBounds", &NanoVGContext::textBounds, py::arg("position"),
-                      py::arg("string"));
+    nanoVGContext.def(
+        "textBounds",
+        py::overload_cast<const ivec2&, const std::string&>(&NanoVGContext::textBounds),
+        py::arg("position"), py::arg("string"));
     nanoVGContext.def("textBoxBounds", &NanoVGContext::textBoxBounds, py::arg("position"),
                       py::arg("textBoxWidth"), py::arg("string"));
 

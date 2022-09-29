@@ -29,13 +29,15 @@
 
 #include <inviwo/tensorvisbase/datavisualizer/hyperlicvisualizer2d.h>
 
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/processors/processorutils.h>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/io/datareaderfactory.h>
+
 #include <modules/opengl/canvasprocessorgl.h>
 #include <modules/base/processors/noiseprocessor.h>
-#include <inviwo/core/processors/processorutils.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
-
-#include <inviwo/core/io/datareaderfactory.h>
 
 namespace inviwo {
 
