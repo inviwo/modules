@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/inviwo/vortexfeatures/processors/lineplot.h
     include/inviwo/vortexfeatures/processors/okuboweiss.h
     include/inviwo/vortexfeatures/processors/samplecoherence.h
+    include/inviwo/vortexfeatures/processors/vortexdirectionapproximation.h
     include/inviwo/vortexfeatures/processors/vortexselector.h
     include/inviwo/vortexfeatures/processors/vortexsettovolumes.h
     include/inviwo/vortexfeatures/processors/vortexstatistics.h
@@ -35,6 +36,7 @@ set(SOURCE_FILES
     src/processors/lineplot.cpp
     src/processors/okuboweiss.cpp
     src/processors/samplecoherence.cpp
+    src/processors/vortexdirectionapproximation.cpp
     src/processors/vortexselector.cpp
     src/processors/vortexsettovolumes.cpp
     src/processors/vortexstatistics.cpp

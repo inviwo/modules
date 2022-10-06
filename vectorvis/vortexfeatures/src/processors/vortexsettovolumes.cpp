@@ -164,7 +164,7 @@ void VortexSetToVolumes::process() {
         VolumeGL* outVolumeGL = volumes_->at(time)->getEditableRepresentation<VolumeGL>();
         fbo_.detachAllTextures();
         fbo_.attachColorTexture(outVolumeGL->getTexture().get(), 0);
-        fbo_.checkStatus();
+        fbo_.status();
         glClear(GL_COLOR_BUFFER_BIT);
 
         auto meshGL = meshes_[time].getRepresentation<MeshGL>();

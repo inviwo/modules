@@ -167,6 +167,7 @@ IntegralLine* WindingAngle::windStreamline(const StreamLine2DTracer& tracer, con
 
     delete fullLine;
     return nullptr;
+    // return fullLine;
 }
 
 void WindingAngle::integrateLines() {

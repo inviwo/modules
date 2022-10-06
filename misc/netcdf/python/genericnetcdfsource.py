@@ -8,11 +8,6 @@ import netcdfutils
 from inviwopy.glm import dvec2, mat4, vec4
 from inviwopy.properties import IntVec3Property, FileProperty, ButtonProperty, BoolProperty, DoubleProperty, CompositeProperty, CompositeProperty, DoubleMinMaxProperty, IntMinMaxProperty
 import inviwopy as ivw
-<< << << < HEAD
-== == == =
-
->>>>>> > c6580ae6f8a0b60949f4702d0faa8c87c1815e7f
-
 
 class GenericNetCDFSource(ivw.Processor):
     def log(self, msg):

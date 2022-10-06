@@ -32,6 +32,7 @@
 #include <inviwo/vortexfeatures/processors/lineplot.h>
 #include <inviwo/vortexfeatures/processors/okuboweiss.h>
 #include <inviwo/vortexfeatures/processors/samplecoherence.h>
+#include <inviwo/vortexfeatures/processors/vortexdirectionapproximation.h>
 #include <inviwo/vortexfeatures/processors/vortexselector.h>
 #include <inviwo/vortexfeatures/processors/vortexsettovolumes.h>
 #include <inviwo/vortexfeatures/processors/vortexstatistics.h>
@@ -57,6 +58,7 @@ VortexFeaturesModule::VortexFeaturesModule(InviwoApplication* app)
     registerProcessor<plot::LinePlot>();
     registerProcessor<OkuboWeiss2D>();
     registerProcessor<OkuboWeiss3D>();
+    registerProcessor<VortexDirectionApproximation>();
     registerProcessor<VortexSelector>();
     registerProcessor<VortexSetToVolumes>();
     registerProcessor<VortexStatistics>();

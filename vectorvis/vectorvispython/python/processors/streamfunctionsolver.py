@@ -27,6 +27,7 @@ class StreamFunctionSolver(ivw.Processor):
         self.maxIter = ivw.properties.IntProperty(
             "maxIter", "Max Iterations", 10, 1, 10000)
         self.addProperty(self.maxIter)
+        print('Output works :)')
 
     @staticmethod
     def processorInfo():
@@ -138,6 +139,7 @@ class StreamFunctionSolver(ivw.Processor):
             initalImag = self.initalGuess.getData()
             initalData = initalImag.colorLayers[0].data
             guess = initalData[validCells]
+        print('Gonna solve now')
 
         solved = scipy.sparse.linalg.lsqr(
             gradientMatrix, gradientVector, iter_lim=self.maxIter.value, x0=guess)

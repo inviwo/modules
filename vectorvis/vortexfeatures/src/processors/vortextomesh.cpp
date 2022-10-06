@@ -464,7 +464,6 @@ void VortexToMesh::createPointCenterMesh(const std::vector<vec4>& colors, const 
     size_t numGroups = skipLastGroup_.get() ? vortices->numGroups() - 1 : vortices->numGroups();
     for (size_t group = 0; group < numGroups; ++group) {
         if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
-        size_t numVorts = 0;
         bool firstVortex = true;
         size_t time = vortices->getTimeRange().y + 1;
         size_t height = vortices->getHeightRange().y + 1;
@@ -476,7 +475,6 @@ void VortexToMesh::createPointCenterMesh(const std::vector<vec4>& colors, const 
             }
             time = vort->timeSlice;
             height = vort->heightSlice;
-            numVorts++;
             size_t valZ = getPos3D(*vort);
             // for (const auto& point : vort->boundary) {
             centerPointVerts.push_back(
@@ -507,6 +505,7 @@ void VortexToMesh::createLineCenterMesh(const std::vector<vec4>& colors, const m
     for (size_t group = 0; group < numGroups; ++group) {
         if (singleGroupProperty_ && singleGroupProperty_.selectedGroup_.get() != group) continue;
         bool firstVortex = true;
+        // Keep track of last time/height we appended, ignore directly following vortices with same values.
         size_t time = vortices->getTimeRange().y + 1;
         size_t height = vortices->getHeightRange().y + 1;
         for (auto vort = vortices->beginGroup(group); vort != vortices->endGroup(group); ++vort) {
@@ -521,10 +520,10 @@ void VortexToMesh::createLineCenterMesh(const std::vector<vec4>& colors, const m
             size_t valZ = getPos3D(*vort);
             centerPointVerts.push_back(
                 {vec3(vort->center.x, vort->center.y, valZ),
-                 getColor(true, colors[group], *vort, vortices->getScoreRange())});
+                 getColor(firstVortex, colors[group], *vort, vortices->getScoreRange())});
             if (!firstVortex) {
-                centerIndices.push_back(centerPointVerts.size());
-                centerIndices.push_back(centerPointVerts.size() + 1);
+                centerIndices.push_back(centerPointVerts.size()-2);
+                centerIndices.push_back(centerPointVerts.size()-1);
             }
             firstVortex = false;
         }
