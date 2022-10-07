@@ -76,7 +76,7 @@ void main(void) {
 #if defined(HAS_TEXCOORD)
     VertexFlags flags = extractFlags(in_TexCoord);
 
-    out_vert.visible = !flags.filtered || showFiltered.visible;
+    out_vert.visible = int(!flags.filtered || showFiltered.visible);
 
     if (flags.filtered) {
         out_vert.color = applySelectionColor(out_vert.color, showFiltered);
