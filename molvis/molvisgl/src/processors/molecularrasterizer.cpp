@@ -224,15 +224,25 @@ void MolecularRasterizer::process() {
         }
     }();
 
-    if (meshes_.empty() || inport_.isChanged() || updateColorMap || brushing_.isChanged()) {
+    bool meshCreated = false;
+    if (meshes_.empty() || inport_.isChanged() || updateColorMap) {
         meshes_.clear();
         const size_t pickingId = atomPicking_.getPickingId(0);
         size_t offset = 0;
         for (auto structure : inport_) {
             meshes_.push_back(createMesh(*structure,
                                          {coloring_, atomColormap_, aminoColormap_, fixedColor_},
-                                         pickingId, offset));
+                                         pickingId + offset));
             offset += structure->atoms().positions.size();
+        }
+        meshCreated = true;
+    }
+    if (brushing_.isChanged() || meshCreated) {
+        size_t offset = 0;
+        for (auto& mesh : meshes_) {
+            if (mesh->getBuffers().empty()) continue;
+            updateBrushing(*mesh, offset);
+            offset += mesh->getIndices(0)->getSize();
         }
     }
 
@@ -297,8 +307,7 @@ void MolecularRasterizer::configureOITShader(Shader& shader) {
 }
 
 std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStructure& s,
-                                                      ColorMapping colormap, size_t pickingId,
-                                                      size_t offset) {
+                                                      ColorMapping colormap, size_t pickingId) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -369,36 +378,6 @@ std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStr
     std::iota(std::begin(picking), std::end(picking), static_cast<uint32_t>(pickingId));
     mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(picking)));
 
-    if (brushing_.isConnected()) {
-        auto validIndex = [min = offset, max = offset + atomCount](size_t index) {
-            return (index >= min) && (index < max);
-        };
-
-        std::vector<unsigned char> mask(atomCount, 0);
-        if (showSelected_) {
-            for (auto idx : brushing_.getSelectedIndices()) {
-                if (validIndex(idx)) {
-                    mask[idx] |= util::underlyingValue(VertexFlag::Selected);
-                }
-            }
-        }
-        if (showHighlighted_) {
-            for (auto idx : brushing_.getHighlightedIndices()) {
-                if (validIndex(idx)) {
-                    mask[idx] |= util::underlyingValue(VertexFlag::Highlighted);
-                }
-            }
-        }
-
-        for (auto idx : brushing_.getFilteredIndices()) {
-            if (validIndex(idx)) {
-                mask[idx] |= util::underlyingValue(VertexFlag::Filtered);
-            }
-        }
-
-        mesh->addBuffer(BufferType::TexCoordAttrib, util::makeBuffer(std::move(mask)));
-    }
-
     // atoms
     std::vector<uint32_t> indices(atomCount);
     std::iota(indices.begin(), indices.end(), 0);
@@ -419,6 +398,39 @@ std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStr
     }
 
     return mesh;
+}
+
+void MolecularRasterizer::updateBrushing(Mesh& mesh, size_t offset) {
+    const size_t atomCount = mesh.getIndices(0)->getSize();
+
+    auto validIndex = [min = offset, max = offset + atomCount](size_t index) {
+        return (index >= min) && (index < max);
+    };
+
+    std::vector<unsigned char> mask(atomCount, 0);
+    if (showSelected_) {
+        for (auto idx : brushing_.getSelectedIndices()) {
+            if (validIndex(idx)) {
+                mask[idx] |= util::underlyingValue(VertexFlag::Selected);
+            }
+        }
+    }
+    if (showHighlighted_) {
+        for (auto idx : brushing_.getHighlightedIndices()) {
+            if (validIndex(idx)) {
+                mask[idx] |= util::underlyingValue(VertexFlag::Highlighted);
+            }
+        }
+    }
+
+    for (auto idx : brushing_.getFilteredIndices()) {
+        if (validIndex(idx)) {
+            mask[idx] |= util::underlyingValue(VertexFlag::Filtered);
+        }
+    }
+    mesh.replaceBuffer(mesh.findBuffer(BufferType::TexCoordAttrib).first,
+                       Mesh::BufferInfo(BufferType::TexCoordAttrib),
+                       util::makeBuffer(std::move(mask)));
 }
 
 void MolecularRasterizer::handlePicking(PickingEvent* p) {
