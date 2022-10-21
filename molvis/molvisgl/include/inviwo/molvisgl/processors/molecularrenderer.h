@@ -82,7 +82,6 @@ private:
     void configureLicoriceShader(Shader& shader);
     std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s, ColorMapping colormap,
                                      size_t pickingId);
-    void updateBrushing(Mesh& mesh, size_t offset);
     void handlePicking(PickingEvent* p);
 
     molvis::MolecularStructureFlatMultiInport inport_;

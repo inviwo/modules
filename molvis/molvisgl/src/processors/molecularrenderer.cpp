@@ -41,7 +41,7 @@
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/molvisbase/util/chain.h>
 #include <inviwo/molvisbase/algorithm/boundingbox.h>
-#include <inviwo/molvisgl/util/vertexflags.h>
+#include <inviwo/molvisgl/util/molvisglutils.h>
 
 #include <fmt/format.h>
 
@@ -276,7 +276,8 @@ void MolecularRenderer::process() {
         size_t offset = 0;
         for (auto& mesh : meshes_) {
             if (mesh->getBuffers().empty()) continue;
-            updateBrushing(*mesh, offset);
+            molvis::updateBrushing(brushing_.getManager(), *mesh, offset, showSelected_,
+                                   showHighlighted_);
             offset += mesh->getIndices(0)->getSize();
         }
     }
@@ -442,39 +443,6 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
     }
 
     return mesh;
-}
-
-void MolecularRenderer::updateBrushing(Mesh& mesh, size_t offset) {
-    const size_t atomCount = mesh.getIndices(0)->getSize();
-
-    auto validIndex = [min = offset, max = offset + atomCount](size_t index) {
-        return (index >= min) && (index < max);
-    };
-
-    std::vector<unsigned char> mask(atomCount, 0);
-    if (showSelected_) {
-        for (auto idx : brushing_.getSelectedIndices()) {
-            if (validIndex(idx)) {
-                mask[idx] |= util::underlyingValue(VertexFlag::Selected);
-            }
-        }
-    }
-    if (showHighlighted_) {
-        for (auto idx : brushing_.getHighlightedIndices()) {
-            if (validIndex(idx)) {
-                mask[idx] |= util::underlyingValue(VertexFlag::Highlighted);
-            }
-        }
-    }
-
-    for (auto idx : brushing_.getFilteredIndices()) {
-        if (validIndex(idx)) {
-            mask[idx] |= util::underlyingValue(VertexFlag::Filtered);
-        }
-    }
-    mesh.replaceBuffer(mesh.findBuffer(BufferType::TexCoordAttrib).first,
-                       Mesh::BufferInfo(BufferType::TexCoordAttrib),
-                       util::makeBuffer(std::move(mask)));
 }
 
 void MolecularRenderer::handlePicking(PickingEvent* p) {
