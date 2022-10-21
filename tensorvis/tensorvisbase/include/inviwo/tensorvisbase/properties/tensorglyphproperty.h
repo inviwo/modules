@@ -35,6 +35,7 @@
 #include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {

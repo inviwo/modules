@@ -1,4 +1,5 @@
 #include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <modules/eigenutils/eigenutils.h>
@@ -7,7 +8,7 @@
 
 namespace inviwo {
 
-TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, const vec3 &extent,
+TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, const vec3& extent,
                              float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
@@ -27,8 +28,8 @@ TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, 
         {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
 }
 
-TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double> &data,
-                             const vec3 &extent, float sliceCoord)
+TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>& data,
+                             const vec3& extent, float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
     , indexMapper_(dimensions)
@@ -57,13 +58,13 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
         {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
 }
 
-TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double> &data,
-                             const std::vector<double> &majorEigenValues,
-                             const std::vector<double> &middleEigenValues,
-                             const std::vector<double> &minorEigenValues,
-                             const std::vector<dvec3> &majorEigenVectors,
-                             const std::vector<dvec3> &middleEigenVectors,
-                             const std::vector<dvec3> &minorEigenVectors, const vec3 &extent,
+TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>& data,
+                             const std::vector<double>& majorEigenValues,
+                             const std::vector<double>& middleEigenValues,
+                             const std::vector<double>& minorEigenValues,
+                             const std::vector<dvec3>& majorEigenVectors,
+                             const std::vector<dvec3>& middleEigenVectors,
+                             const std::vector<dvec3>& minorEigenVectors, const vec3& extent,
                              float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
@@ -102,10 +103,10 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
 }
 
 TensorField3D::TensorField3D(
-    const size3_t dimensions, std::vector<dmat3> data, const std::vector<double> &majorEigenValues,
-    const std::vector<double> &middleEigenValues, const std::vector<double> &minorEigenValues,
-    const std::vector<dvec3> &majorEigenVectors, const std::vector<dvec3> &middleEigenVectors,
-    const std::vector<dvec3> &minorEigenVectors, const vec3 &extent, float sliceCoord)
+    const size3_t dimensions, std::vector<dmat3> data, const std::vector<double>& majorEigenValues,
+    const std::vector<double>& middleEigenValues, const std::vector<double>& minorEigenValues,
+    const std::vector<dvec3>& majorEigenVectors, const std::vector<dvec3>& middleEigenVectors,
+    const std::vector<dvec3>& minorEigenVectors, const vec3& extent, float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
     , indexMapper_(dimensions)
@@ -129,7 +130,7 @@ TensorField3D::TensorField3D(
 }
 
 TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             std::vector<dmat3> data, const vec3 &extent, float sliceCoord)
+                             std::vector<dmat3> data, const vec3& extent, float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(size3_t(x, y, z))
     , indexMapper_(size3_t(x, y, z))
@@ -145,7 +146,7 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
 }
 
 TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             const std::vector<double> &data, const vec3 &extent, float sliceCoord)
+                             const std::vector<double>& data, const vec3& extent, float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(size3_t(x, y, z))
     , indexMapper_(size3_t(x, y, z))
@@ -174,7 +175,7 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
         {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
 }
 
-TensorField3D::TensorField3D(size3_t dimensions, const double *data, const vec3 &extent,
+TensorField3D::TensorField3D(size3_t dimensions, const double* data, const vec3& extent,
                              float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
@@ -194,7 +195,7 @@ TensorField3D::TensorField3D(size3_t dimensions, const double *data, const vec3 
         {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
 }
 
-TensorField3D::TensorField3D(size3_t dimensions, const float *data, const vec3 &extent,
+TensorField3D::TensorField3D(size3_t dimensions, const float* data, const vec3& extent,
                              float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
@@ -216,11 +217,11 @@ TensorField3D::TensorField3D(size3_t dimensions, const float *data, const vec3 &
 }
 
 TensorField3D::TensorField3D(
-    const size_t x, const size_t y, const size_t z, const std::vector<double> &data,
-    const std::vector<double> &majorEigenValues, const std::vector<double> &middleEigenValues,
-    const std::vector<double> &minorEigenValues, const std::vector<dvec3> &majorEigenVectors,
-    const std::vector<dvec3> &middleEigenVectors, const std::vector<dvec3> &minorEigenVectors,
-    const vec3 &extent, float sliceCoord)
+    const size_t x, const size_t y, const size_t z, const std::vector<double>& data,
+    const std::vector<double>& majorEigenValues, const std::vector<double>& middleEigenValues,
+    const std::vector<double>& minorEigenValues, const std::vector<dvec3>& majorEigenVectors,
+    const std::vector<dvec3>& middleEigenVectors, const std::vector<dvec3>& minorEigenVectors,
+    const vec3& extent, float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(size3_t(x, y, z))
     , indexMapper_(size3_t(x, y, z))
@@ -258,12 +259,12 @@ TensorField3D::TensorField3D(
 }
 
 TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
-                             std::vector<dmat3> data, const std::vector<double> &majorEigenValues,
-                             const std::vector<double> &middleEigenValues,
-                             const std::vector<double> &minorEigenValues,
-                             const std::vector<dvec3> &majorEigenVectors,
-                             const std::vector<dvec3> &middleEigenVectors,
-                             const std::vector<dvec3> &minorEigenVectors, const vec3 &extent,
+                             std::vector<dmat3> data, const std::vector<double>& majorEigenValues,
+                             const std::vector<double>& middleEigenValues,
+                             const std::vector<double>& minorEigenValues,
+                             const std::vector<dvec3>& majorEigenVectors,
+                             const std::vector<dvec3>& middleEigenVectors,
+                             const std::vector<dvec3>& minorEigenVectors, const vec3& extent,
                              float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(size3_t(x, y, z))
@@ -289,7 +290,7 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
 
 TensorField3D::TensorField3D(
     const size3_t dimensions, std::vector<dmat3> data,
-    const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> &metaData, const vec3 &extent,
+    const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>>& metaData, const vec3& extent,
     float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
@@ -298,7 +299,7 @@ TensorField3D::TensorField3D(
     , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3) {
-    for (auto &dataItem : metaData) {
+    for (auto& dataItem : metaData) {
         metaData_.insert(std::make_pair(dataItem.first, dataItem.second->clone()));
     }
 
@@ -308,7 +309,7 @@ TensorField3D::TensorField3D(
         {vec3{extent[0], 0.0f, 0.0f}, vec3{0.0f, extent[1], 0.0f}, vec3{0.0f, 0.0f, extent[2]}});
 }
 
-TensorField3D::TensorField3D(const TensorField3D &tf)
+TensorField3D::TensorField3D(const TensorField3D& tf)
     : StructuredGridEntity<3>()
     , dataMapEigenValues_(tf.dataMapEigenValues_)
     , dataMapEigenVectors_(tf.dataMapEigenVectors_)
@@ -324,7 +325,7 @@ TensorField3D::TensorField3D(const TensorField3D &tf)
     setOffset(tf.getOffset());
     setBasis(tf.getBasis());
 
-    for (const auto &m : tf.metaData_) {
+    for (const auto& m : tf.metaData_) {
         metaData_.insert(std::make_pair(m.first, m.second->clone()));
     }
 }
@@ -399,56 +400,56 @@ std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> TensorField3D::getVo
     return ret;
 }
 
-std::pair<glm::uint8, dmat3 &> TensorField3D::at(const size3_t position) {
+std::pair<glm::uint8, dmat3&> TensorField3D::at(const size3_t position) {
     glm::uint8 maskVal = 0;
 
     if (hasMask()) maskVal = binaryMask_[indexMapper_(position)];
 
-    return std::pair<glm::uint8, dmat3 &>(maskVal, tensors_[indexMapper_(position)]);
+    return std::pair<glm::uint8, dmat3&>(maskVal, tensors_[indexMapper_(position)]);
 }
 
-std::pair<glm::uint8, dmat3 &> TensorField3D::at(const size_t x, const size_t y, const size_t z) {
+std::pair<glm::uint8, dmat3&> TensorField3D::at(const size_t x, const size_t y, const size_t z) {
     glm::uint8 maskVal = 0;
 
     if (hasMask()) maskVal = binaryMask_[indexMapper_(size3_t(x, y, z))];
 
-    return std::pair<glm::uint8, dmat3 &>(maskVal, tensors_[indexMapper_(size3_t(x, y, z))]);
+    return std::pair<glm::uint8, dmat3&>(maskVal, tensors_[indexMapper_(size3_t(x, y, z))]);
 }
 
-std::pair<glm::uint8, dmat3 &> TensorField3D::at(const size_t index) {
+std::pair<glm::uint8, dmat3&> TensorField3D::at(const size_t index) {
     glm::uint8 maskVal = 0;
 
     if (hasMask()) maskVal = binaryMask_[index];
 
-    return std::pair<glm::uint8, dmat3 &>(maskVal, tensors_[index]);
+    return std::pair<glm::uint8, dmat3&>(maskVal, tensors_[index]);
 }
 
-std::pair<glm::uint8, const dmat3 &> TensorField3D::at(const size3_t position) const {
+std::pair<glm::uint8, const dmat3&> TensorField3D::at(const size3_t position) const {
     glm::uint8 maskVal = 0;
 
     if (hasMask()) maskVal = binaryMask_[indexMapper_(position)];
 
-    return std::pair<glm::uint8, const dmat3 &>(maskVal, tensors_[indexMapper_(position)]);
+    return std::pair<glm::uint8, const dmat3&>(maskVal, tensors_[indexMapper_(position)]);
 }
 
-std::pair<glm::uint8, const dmat3 &> TensorField3D::at(const size_t x, const size_t y,
-                                                       const size_t z) const {
+std::pair<glm::uint8, const dmat3&> TensorField3D::at(const size_t x, const size_t y,
+                                                      const size_t z) const {
     glm::uint8 maskVal = 0;
 
     if (hasMask()) maskVal = binaryMask_[indexMapper_(size3_t(x, y, z))];
 
-    return std::pair<glm::uint8, const dmat3 &>(maskVal, tensors_[indexMapper_(size3_t(x, y, z))]);
+    return std::pair<glm::uint8, const dmat3&>(maskVal, tensors_[indexMapper_(size3_t(x, y, z))]);
 }
 
-std::pair<glm::uint8, const dmat3 &> TensorField3D::at(const size_t index) const {
+std::pair<glm::uint8, const dmat3&> TensorField3D::at(const size_t index) const {
     glm::uint8 maskVal = 0;
 
     if (hasMask()) maskVal = binaryMask_[index];
 
-    return std::pair<glm::uint8, const dmat3 &>(maskVal, tensors_[index]);
+    return std::pair<glm::uint8, const dmat3&>(maskVal, tensors_[index]);
 }
 
-void TensorField3D::setExtents(const vec3 &extents) {
+void TensorField3D::setExtents(const vec3& extents) {
     auto basis = getBasis();
     basis[0] = glm::normalize(basis[0]) * extents[0];
     basis[1] = glm::normalize(basis[1]) * extents[1];
@@ -492,21 +493,21 @@ mat4 TensorField3D::getBasisAndOffset() const {
 
 std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEigenVectorsForTensor(
     const size_t index) const {
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
 
-    const auto &majorEigenValue = majorEigenValues[index];
-    const auto &middleEigenValue = middleEigenValues[index];
-    const auto &minorEigenValue = minorEigenValues[index];
+    const auto& majorEigenValue = majorEigenValues[index];
+    const auto& middleEigenValue = middleEigenValues[index];
+    const auto& minorEigenValue = minorEigenValues[index];
 
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
 
-    const auto &majorEigenVector = majorEigenVectors[index];
-    const auto &middleEigenVector = middleEigenVectors[index];
-    const auto &minorEigenVector = minorEigenVectors[index];
+    const auto& majorEigenVector = majorEigenVectors[index];
+    const auto& middleEigenVector = middleEigenVectors[index];
+    const auto& minorEigenVector = minorEigenVectors[index];
 
     std::array<std::pair<double, dvec3>, 3> ret;
     ret[0] = {majorEigenValue, majorEigenVector};
@@ -520,21 +521,21 @@ std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEi
     const size3_t pos) const {
     auto index = indexMapper_(pos);
 
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
 
-    const auto &majorEigenValue = majorEigenValues[index];
-    const auto &middleEigenValue = middleEigenValues[index];
-    const auto &minorEigenValue = minorEigenValues[index];
+    const auto& majorEigenValue = majorEigenValues[index];
+    const auto& middleEigenValue = middleEigenValues[index];
+    const auto& minorEigenValue = minorEigenValues[index];
 
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
 
-    const auto &majorEigenVector = majorEigenVectors[index];
-    const auto &middleEigenVector = middleEigenVectors[index];
-    const auto &minorEigenVector = minorEigenVectors[index];
+    const auto& majorEigenVector = majorEigenVectors[index];
+    const auto& middleEigenVector = middleEigenVectors[index];
+    const auto& minorEigenVector = minorEigenVectors[index];
 
     std::array<std::pair<double, dvec3>, 3> ret;
     ret[0] = {majorEigenValue, majorEigenVector};
@@ -547,9 +548,9 @@ std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEi
 std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size_t index) const {
     auto ret = std::array<double, 3>();
 
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
 
     ret[0] = majorEigenValues[index];
     ret[1] = middleEigenValues[index];
@@ -557,13 +558,13 @@ std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size_t 
     return ret;
 }
 
-std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size3_t &pos) const {
+std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size3_t& pos) const {
     auto index = indexMapper_(pos);
     auto ret = std::array<double, 3>();
 
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
 
     ret[0] = majorEigenValues[index];
     ret[1] = middleEigenValues[index];
@@ -575,9 +576,9 @@ std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size3_t
 std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size_t index) const {
     auto ret = std::array<dvec3, 3>();
 
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
 
     ret[0] = majorEigenVectors[index];
     ret[1] = middleEigenVectors[index];
@@ -586,13 +587,13 @@ std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size_t 
     return ret;
 }
 
-std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size3_t &pos) const {
+std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size3_t& pos) const {
     auto index = indexMapper_(pos);
     auto ret = std::array<dvec3, 3>();
 
-    const auto &majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto &middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto &minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
 
     ret[0] = majorEigenVectors[index];
     ret[1] = middleEigenVectors[index];
@@ -600,31 +601,31 @@ std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size3_t
     return ret;
 }
 
-const std::vector<dvec3> &TensorField3D::majorEigenVectors() const {
+const std::vector<dvec3>& TensorField3D::majorEigenVectors() const {
     return getMetaData<MajorEigenVectors>();
 }
 
-const std::vector<dvec3> &TensorField3D::middleEigenVectors() const {
+const std::vector<dvec3>& TensorField3D::middleEigenVectors() const {
     return getMetaData<IntermediateEigenVectors>();
 }
 
-const std::vector<dvec3> &TensorField3D::minorEigenVectors() const {
+const std::vector<dvec3>& TensorField3D::minorEigenVectors() const {
     return getMetaData<MinorEigenVectors>();
 }
 
-const std::vector<double> &TensorField3D::majorEigenValues() const {
+const std::vector<double>& TensorField3D::majorEigenValues() const {
     return getMetaData<MajorEigenValues>();
 }
 
-const std::vector<double> &TensorField3D::middleEigenValues() const {
+const std::vector<double>& TensorField3D::middleEigenValues() const {
     return getMetaData<IntermediateEigenValues>();
 }
 
-const std::vector<double> &TensorField3D::minorEigenValues() const {
+const std::vector<double>& TensorField3D::minorEigenValues() const {
     return getMetaData<MinorEigenValues>();
 }
 
-const std::vector<dmat3> &TensorField3D::tensors() const { return tensors_; }
+const std::vector<dmat3>& TensorField3D::tensors() const { return tensors_; }
 
 int TensorField3D::getNumDefinedEntries() const {
     return static_cast<int>(std::count(std::begin(binaryMask_), std::end(binaryMask_), 1));
@@ -693,10 +694,10 @@ bool TensorField3D::hasMetaData(const uint64_t id) const {
     return metaData_.find(id) != metaData_.end();
 }
 
-TensorField3D *TensorField3D::clone() const { return new TensorField3D(*this); }
+TensorField3D* TensorField3D::clone() const { return new TensorField3D(*this); }
 
 void TensorField3D::computeEigenValuesAndEigenVectors() {
-    auto func = [](const dmat3 &tensor) -> std::array<std::pair<double, dvec3>, 3> {
+    auto func = [](const dmat3& tensor) -> std::array<std::pair<double, dvec3>, 3> {
         if (tensor == dmat3(0.0)) {
             return {{std::make_pair(0, dvec3{0}), std::make_pair(0, dvec3{0}),
                      std::make_pair(0, dvec3{0})}};
@@ -782,9 +783,9 @@ void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
 }
 
 void TensorField3D::computeDataMaps() {
-    const auto &majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto &middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto &minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
 
     dataMapEigenValues_[0].dataRange.x = dataMapEigenValues_[0].valueRange.x =
         *std::min_element(majorEigenValues.begin(), majorEigenValues.end());
@@ -799,12 +800,12 @@ void TensorField3D::computeDataMaps() {
     dataMapEigenValues_[2].dataRange.y = dataMapEigenValues_[2].valueRange.y =
         *std::max_element(minorEigenValues.begin(), minorEigenValues.end());
 
-    auto min_f = [](const dvec3 &vec) -> double { return std::min(std::min(vec.x, vec.y), vec.z); };
-    auto max_f = [](const dvec3 &vec) -> double { return std::max(std::max(vec.x, vec.y), vec.z); };
+    auto min_f = [](const dvec3& vec) -> double { return std::min(std::min(vec.x, vec.y), vec.z); };
+    auto max_f = [](const dvec3& vec) -> double { return std::max(std::max(vec.x, vec.y), vec.z); };
 
     auto min = std::numeric_limits<double>::max();
     auto max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaData<MajorEigenVectors>()) {
+    for (const auto& v : getMetaData<MajorEigenVectors>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -813,7 +814,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaData<IntermediateEigenVectors>()) {
+    for (const auto& v : getMetaData<IntermediateEigenVectors>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -822,7 +823,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto &v : getMetaData<MinorEigenVectors>()) {
+    for (const auto& v : getMetaData<MinorEigenVectors>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
