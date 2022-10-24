@@ -135,7 +135,7 @@ class MolecularStructureSource(ivw.Processor):
             dvec3pos.append(ivw.glm.dvec3(p[0], p[1], p[2]))
         atoms.positions = dvec3pos
         ## check serial numbers, might be None for some CIF structures
-        atoms.serialNumbers = serialNumbers if builtins.all(serialNumbers) else [x for x in range(len(pos))]
+        atoms.serialnumbers = serialNumbers if builtins.all(serialNumbers) else [x for x in range(len(pos))]
         atoms.bfactors = bfactors
         atoms.modelids = modelId
         atoms.chainids = chainId

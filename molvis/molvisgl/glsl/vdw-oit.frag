@@ -46,13 +46,14 @@ uniform float uniformAlpha = 1.0;
 uniform vec4 viewport; // holds viewport offset x, offset y, 2 / viewport width, 2 / viewport height
 uniform float clipShadingFactor = 0.9;
 
-in vec4 color_;
-in float radius_;
-in vec3 camPos_;
-in vec4 center_;
-flat in vec4 pickColor_;
-flat in float scalar_;
-
+in Fragment {
+    flat float radius;
+    flat vec3 camPos;
+    flat vec4 center;
+    flat vec4 color;
+    flat vec4 pickColor;
+    flat float scalar;
+} in_frag;
 
 void clipToSolid(in vec4 coord, in vec3 srcColor, out vec4 dstColor, out float dstDepth) { 
     dstDepth = 0.000001;
@@ -63,11 +64,11 @@ void clipToSolid(in vec4 coord, in vec3 srcColor, out vec4 dstColor, out float d
 
     // clip surface is orthogonal to view direction of the camera, use viewDir as normal
     vec3 normal = normalize((camera.viewToWorld[2]).xyz);
-    vec3 shadedColor = color_.rgb * clipShadingFactor;
+    vec3 shadedColor = in_frag.color.rgb * clipShadingFactor;
     dstColor.rgb = APPLY_LIGHTING(lighting, srcColor, srcColor, vec3(1.0f), coord.xyz,
-                           normal, normalize(camPos_ - coord.xyz));
+                           normal, normalize(in_frag.camPos - coord.xyz));
 #else
-    dstColor.rgb = color_.rgb * clipShadingFactor;
+    dstColor.rgb = in_frag.color.rgb * clipShadingFactor;
 #endif // SHADE_CLIPPED_AREA
 }
 
@@ -83,15 +84,15 @@ void main() {
     //coord = gl_ModelViewProjectionMatrixInverse * coord;
     coord = camera.clipToWorld * coord;
     coord /= coord.w;
-    coord -= center_;
+    coord -= in_frag.center;
     // setup viewing ray
-    vec3 ray = normalize(coord.xyz - camPos_);
+    vec3 ray = normalize(coord.xyz - in_frag.camPos);
     
     // calculate sphere-ray intersection
     // start ray at current coordinate and not at the camera
     float d1 = -dot(coord.xyz, ray);
     float d2s = dot(coord.xyz, coord.xyz) - d1*d1;
-    float radicand = radius_*radius_ - d2s;
+    float radicand = in_frag.radius*in_frag.radius - d2s;
     
     if (radicand < 0.0) {
         // no valid intersection found
@@ -101,24 +102,26 @@ void main() {
     // calculate intersection point
     vec3 intersection = (d1 - sqrt(radicand))*ray + coord.xyz;
     
-    vec3 normal = intersection / radius_;
+    vec3 normal = intersection / in_frag.radius;
 
     // shading
     vec4 glyphColor;
-    glyphColor.rgb = APPLY_LIGHTING(lighting, color_.rgb, color_.rgb, vec3(1.0f), intersection,
-                               normal, normalize(camPos_ - intersection));
+    glyphColor.rgb = APPLY_LIGHTING(lighting, in_frag.color.rgb, in_frag.color.rgb, vec3(1.0f), intersection,
+                               normal, normalize(in_frag.camPos - intersection));
 
 #if defined(UNIFORM_ALPHA)
     glyphColor.a = uniformAlpha;
 #else
-    glyphColor.a = color_.a;
+    glyphColor.a = in_frag.color.a;
 #endif // UNIFORM_ALPHA
+    glyphColor.rgb *= glyphColor.a;
+
     if (glyphColor.a < 0.01) discard;
 
     // depth correction for glyph
     mat4 mvpTranspose = transpose(camera.worldToClip);
 
-    vec4 pos = vec4(intersection + center_.xyz, 1.0);
+    vec4 pos = vec4(intersection + in_frag.center.xyz, 1.0);
     float depth = dot(mvpTranspose[2], pos);
     float depthW = dot(mvpTranspose[3], pos);
 
@@ -129,7 +132,7 @@ void main() {
 #ifdef DISCARD_CLIPPED_GLYPHS
         discard;
 #else
-        clipToSolid(coord, color_.rgb * clipShadingFactor, glyphColor, depth);
+        clipToSolid(coord, in_frag.color.rgb * clipShadingFactor, glyphColor, depth);
 #endif // DISCARD_CLIPPED_GLYPHS
     }
 
@@ -143,6 +146,6 @@ void main() {
 #else
     FragData0 = glyphColor;
     gl_FragDepth = depth;
-    PickingData = pickColor_;
+    PickingData = in_frag.pickColor;
 #endif  // USE_FRAGMENT_LIST
 }

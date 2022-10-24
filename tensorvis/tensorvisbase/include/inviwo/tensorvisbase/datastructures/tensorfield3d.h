@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/datamapper.h>
-#include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/util/indexmapper.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfieldmetadata.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>

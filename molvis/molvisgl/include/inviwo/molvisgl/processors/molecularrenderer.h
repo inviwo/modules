@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
@@ -44,30 +45,13 @@
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
 #include <inviwo/molvisbase/util/aminoacid.h>
 
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 namespace inviwo {
 
 class Mesh;
 class PickingEvent;
 
-/** \docpage{org.inviwo.MolecularRenderer, Molecular Renderer}
- * ![](org.inviwo.MolecularRenderer.png?classIdentifier=org.inviwo.MolecularRenderer)
- * Renders one or more molecular datastructure objects as molecular representation. The molecular
- * data is colored using standard color maps. If residue or chain information is present, the data
- * can also be colored according to residues and chains.
- *
- * The result is depending on the chosen molecular representation.
- *    - VDW (van der Waals): considers only atoms
- *    - Licorice:            considers both atoms and bonds
- *    - Ball & Stick:        considers both atoms and bonds
- *
- * ### Inports
- *   * __inport__      Molecular datastructures
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __outport__ output image containing the moleculare rendering of the input
- *
- */
 class IVW_MODULE_MOLVISGL_API MolecularRenderer : public Processor {
 public:
     MolecularRenderer();
@@ -81,8 +65,6 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void handlePicking(PickingEvent* p);
-
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };
     enum class Coloring { Atoms, Residues, Chains, Fixed };
 
@@ -98,11 +80,13 @@ private:
 
     void configureVdWShader(Shader& shader);
     void configureLicoriceShader(Shader& shader);
-    static std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s,
-                                            ColorMapping colormap, size_t pickingId);
+    std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s, ColorMapping colormap,
+                                     size_t pickingId);
+    void handlePicking(PickingEvent* p);
 
     molvis::MolecularStructureFlatMultiInport inport_;
     ImageInport imageInport_;
+    BrushingAndLinkingInport brushing_;
     ImageOutport outport_;
 
     OptionProperty<Representation> representation_;
@@ -111,6 +95,10 @@ private:
     OptionProperty<molvis::element::Colormap> atomColormap_;
     OptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
     FloatVec4Property fixedColor_;
+
+    SelectionColorProperty showHighlighted_;
+    SelectionColorProperty showSelected_;
+    SelectionColorProperty showFiltered_;
 
     FloatProperty radiusScaling_;
     BoolProperty forceRadius_;

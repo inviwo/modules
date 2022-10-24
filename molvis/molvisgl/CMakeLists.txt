@@ -12,6 +12,8 @@ set(HEADER_FILES
     include/inviwo/molvisgl/processors/molecularmeshrenderer.h
     include/inviwo/molvisgl/processors/molecularrasterizer.h
     include/inviwo/molvisgl/processors/molecularrenderer.h
+    include/inviwo/molvisgl/util/molvisglutils.h
+    include/inviwo/molvisgl/util/vertexflags.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -24,13 +26,14 @@ set(SOURCE_FILES
     src/processors/molecularmeshrenderer.cpp
     src/processors/molecularrasterizer.cpp
     src/processors/molecularrenderer.cpp
+    src/util/molvisglutils.cpp
+    src/util/vertexflags.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
 #--------------------------------------------------------------------
 # Add shaders
 set(SHADER_FILES
-    glsl/intersection/raycapsule.glsl
     glsl/licorice-oit.frag
     glsl/licorice.frag
     glsl/licorice.geom
@@ -39,6 +42,8 @@ set(SHADER_FILES
     glsl/vdw.frag
     glsl/vdw.geom
     glsl/vdw.vert
+    glsl/intersection/raycapsule.glsl
+    glsl/utils/vertexflags.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

@@ -28,46 +28,71 @@
  *********************************************************************************/
 
 #include "utils/structs.glsl"
+#include "utils/selectioncolor.glsl"
+#include "utils/vertexflags.glsl"
 
 uniform GeometryParameters geometry;
 
 uniform vec4 defaultColor = vec4(1, 0, 0, 1);
 uniform float defaultRadius = 0.1;
+
+uniform SelectionColor showFiltered;
+uniform SelectionColor showSelected;
+uniform SelectionColor showHighlighted;
 uniform sampler2D metaColor;
 
 uniform float radiusScaling_ = 1.0;
 
-out vec4 worldPosition_;
-out vec4 sphereColor_;
-flat out float sphereRadius_;
-flat out uint pickID_;
-flat out float scalarMeta_;
+out Vertex {
+    smooth vec4 worldPosition;
+    flat vec4 color;
+    flat float radius;
+    flat uint pickID;
+    flat float scalarMeta;
+    flat int visible;
+} out_vert;
 
 void main(void) {
+    out_vert.visible = 1;
+    
 #if defined(HAS_SCALARMETA) && defined(USE_SCALARMETACOLOR) && !defined(FORCE_COLOR)
-    scalarMeta_ = in_ScalarMeta;
-    sphereColor_ = texture(metaColor, vec2(in_ScalarMeta, 0.5));
+    out_vert.scalarMeta = in_ScalarMeta;
+    out_vert.color = texture(metaColor, vec2(in_ScalarMeta, 0.5));
 #elif defined(HAS_COLOR) && !defined(FORCE_COLOR)
-    sphereColor_ = in_Color;
-    scalarMeta_ = 0.0;
+    out_vert.color = in_Color;
+    out_vert.scalarMeta = 0.0;
 #else
-    sphereColor_ = defaultColor;
-    scalarMeta_ = 0.0;
+    out_vert.color = defaultColor;
+    out_vert.scalarMeta = 0.0;
 #endif
 
 #if defined(HAS_RADII) && !defined(FORCE_RADIUS)
-    sphereRadius_ = in_Radii;
-#else 
-    sphereRadius_ = defaultRadius;
+    out_vert.radius = in_Radii;
+#else
+    out_vert.radius = defaultRadius;
 #endif
-    sphereRadius_ *= radiusScaling_;
+    out_vert.radius *= radiusScaling_;
+
+#if defined(HAS_TEXCOORD)
+    VertexFlags flags = extractFlags(in_TexCoord);
+
+    out_vert.visible = int(!flags.filtered || showFiltered.visible);
+
+    if (flags.filtered) {
+        out_vert.color = applySelectionColor(out_vert.color, showFiltered);
+    } else if (flags.highlighted) {
+        out_vert.color = applySelectionColor(out_vert.color, showHighlighted);
+    } else  if (flags.selected) {
+        out_vert.color = applySelectionColor(out_vert.color, showSelected);
+    }
+#endif
 
 #if defined(HAS_PICKING)
-    pickID_ = in_Picking;
-#else 
-    pickID_ = 0;
+    out_vert.pickID = in_Picking;
+#else
+    out_vert.pickID = 0;
 #endif
 
-    worldPosition_ = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
-    gl_Position = worldPosition_;
+    out_vert.worldPosition = geometry.dataToWorld * vec4(in_Position.xyz, 1.0);
+    gl_Position = out_vert.worldPosition;
 }

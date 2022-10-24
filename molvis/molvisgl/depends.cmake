@@ -5,6 +5,7 @@ set(dependencies
     InviwoOpenGLModule
     InviwoBaseGLModule
     InviwoMeshRenderingGLModule
+    InviwoBrushingAndLinkingModule
 )
 
 # Add an alias for this module. Several modules can share an alias. 
@@ -19,4 +20,4 @@ set(dependencies
 
 # By calling set(EnableByDefault ON) the module will be set to enabled 
 # when initially being added to CMake. Default OFF.
-#set(EnableByDefault OFF)
+set(EnableByDefault ON)

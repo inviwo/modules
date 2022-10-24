@@ -35,11 +35,13 @@
 #include <modules/opengl/openglutils.h>
 #include <modules/opengl/openglcapabilities.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/util/document.h>
 
 #include <inviwo/molvisbase/util/molvisutils.h>
 #include <inviwo/molvisbase/util/chain.h>
 #include <inviwo/molvisbase/algorithm/boundingbox.h>
+#include <inviwo/molvisgl/util/molvisglutils.h>
 
 #include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
 #include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
@@ -55,21 +57,43 @@ const ProcessorInfo MolecularRasterizer::processorInfo_{
     "MolVis",                          // Category
     CodeState::Experimental,           // Code state
     "GL, MolVis, Rendering",           // Tags
-};
+    R"(
+        Create a rasterization object to render one or more molecular datastructure objects in a
+        molecular representation. The molecular data is colored using standard color maps. If residue or
+        chain information is present, the data can also be colored according to residues and chains.
+        
+        The result is depending on the chosen molecular representation.
+        + VDW (van der Waals): considers only atoms
+        + Licorice:            considers both atoms and bonds
+        + Ball & Stick:        considers both atoms and bonds
+    )"_unindentHelp};
 const ProcessorInfo MolecularRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularRasterizer::MolecularRasterizer()
     : Processor()
-    , inport_("inport")
-    , outport_("rasterization")
+    , inport_("inport", "Molecular datastructures"_help)
+    , brushing_("brushing", "Brushing & Linking"_help)
+    , outport_("rasterization", "Rasterization functor for rendering the molecular structure"_help)
 
-    , representation_("representation", "Representation",
+    , representation_("representation", "Representation", R"(
+                        Determines the molecular representation
+                        + *VDW (van der Waals)*: considers only atoms
+                        + *Licorice*:            considers both atoms and bonds
+                        + *Ball & Stick*:        considers both atoms and bonds
+                    )"_unindentHelp,
                       {{"vdw", "VDW", Representation::VDW},
                        {"licorice", "Licorice", Representation::Licorice},
                        {"ballAndStick", "Ball & Stick", Representation::BallAndStick}},
                       0)
     , coloring_{"coloring",
                 "Coloring",
+                R"(
+                    Coloring scheme applied to the molecular structure.
+                    + *Fixed*: use a fixed color for the entire structure
+                    + *Atoms*: applies a colormap (Rasmol CPK, Rasmol CPK new) based on atomic elements
+                    + *Residues*: applies a colormap (Amino, Shapely, Ugene) based on amino acids
+                    + *Chains*: chain IDs are mapped to colors
+                )"_unindentHelp,
                 {{"fixed", "Fixed", Coloring::Fixed},
                  {"atoms", "Atoms", Coloring::Atoms},
                  {"residues", "Residues", Coloring::Residues},
@@ -77,23 +101,43 @@ MolecularRasterizer::MolecularRasterizer()
                 1}
     , atomColormap_{"atomColormap",
                     "Colormap",
+                    "Colormap for coloring atomic elements"_help,
                     {{"cpk", "Rasmol CPK", molvis::element::Colormap::RasmolCPK},
                      {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew}},
                     1}
     , aminoColormap_{"aminoColormap",
                      "Colormap",
+                     "Colormap for coloring amino acids/residues"_help,
                      {{"amino", "Amino", molvis::aminoacid::Colormap::Amino},
                       {"shapely", "Shapely", molvis::aminoacid::Colormap::Shapely},
                       {"ugene", "Ugene (multiple alignment)", molvis::aminoacid::Colormap::Ugene}}}
-    , fixedColor_("fixedColor", "Color", util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f))
+    , fixedColor_("fixedColor", "Color",
+                  util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f)
+                      .set("Fixed color for the entire structure"_help))
+    , showHighlighted_("showHighlighted", "Show Highlighted",
+                       "Parameters for color overlay of highlighted data"_help, true,
+                       vec3(0.35f, 0.75f, 0.93f))
+    , showSelected_("showSelected", "Show Selected",
+                    "Parameters for color overlay of a selection"_help, true,
+                    vec3(1.0f, 0.84f, 0.0f))
+    , showFiltered_("showFiltered", "Show Filtered",
+                    "Parameters for color overlay of filtered data"_help, false,
+                    vec3(0.5f, 0.5f, 0.5f))
     , forceOpaque_("forceOpaque", "Shade Opaque", false, InvalidationLevel::InvalidResources)
     , useUniformAlpha_("useUniformAlpha", "Uniform Alpha", false,
                        InvalidationLevel::InvalidResources)
     , uniformAlpha_("alphaValue", "Alpha", 0.7f, 0, 1, 0.1f, InvalidationLevel::InvalidOutput)
-    , radiusScaling_("radiusScaling", "Radius Scaling", 1.0f, 0.0f, 2.0f)
-    , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
-    , defaultRadius_("defaultRadius", "Default Radius", 0.15f, 0.00001f, 2.0f, 0.01f)
-    , enableTooltips_("enableTooltips", "Enable Tooltips", true)
+    , radiusScaling_("radiusScaling", "Radius Scaling",
+                     "Scaling factor for the van der Waals representation and bonds"_help, 1.0f,
+                     {0.0f, ConstraintBehavior::Immutable}, {2.0f, ConstraintBehavior::Editable})
+    , forceRadius_("forceRadius", "Force Radius", "Use a uniform default radius for all atoms"_help,
+                   false, InvalidationLevel::InvalidResources)
+    , defaultRadius_("defaultRadius", "Default Radius",
+                     "Default radius for all atoms if *Force Radius* is enabled"_help, 0.15f,
+                     {0.00001f, ConstraintBehavior::Immutable},
+                     {2.0f, ConstraintBehavior::Editable}, 0.01f)
+    , enableTooltips_("enableTooltips", "Enable Tooltips",
+                      "Show tooltips with detailed information for atoms"_help, true)
     , camera_("camera", "Camera", molvis::boundingBox(inport_))
     , lighting_("lighting", "Lighting", &camera_)
 
@@ -104,7 +148,8 @@ MolecularRasterizer::MolecularRasterizer()
           {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
            {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
            {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
-           {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+           {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
           [&](Shader& shader) -> void {
               shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
@@ -116,15 +161,20 @@ MolecularRasterizer::MolecularRasterizer()
            {ShaderType::Fragment, std::string{"licorice-oit.frag"}}},
           {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
            {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
-           {BufferType::ScalarMetaAttrib, MeshShaderCache::Optional, "float"}},
+           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+           {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
           [&](Shader& shader) -> void {
               shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
               configureLicoriceShader(shader);
-          })} {
+          })}
+    , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
     addPort(inport_);
+    addPort(brushing_);
     addPort(outport_);
+
+    brushing_.setOptional(true);
 
     fixedColor_.visibilityDependsOn(
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Fixed; });
@@ -135,9 +185,13 @@ MolecularRasterizer::MolecularRasterizer()
 
     addProperties(representation_, coloring_, fixedColor_, atomColormap_, aminoColormap_,
                   forceOpaque_, useUniformAlpha_, uniformAlpha_, radiusScaling_, forceRadius_,
-                  defaultRadius_, enableTooltips_, camera_, lighting_);
+                  defaultRadius_, showHighlighted_, showSelected_, showFiltered_, enableTooltips_,
+                  camera_, lighting_);
 
     camera_.setCollapsed(true);
+    showHighlighted_.setCollapsed(true);
+    showSelected_.setCollapsed(true);
+    showFiltered_.setCollapsed(true);
 
     lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
     lighting_.ambientColor_.set(vec3(0.515f));
@@ -150,6 +204,11 @@ MolecularRasterizer::MolecularRasterizer()
 }
 
 void MolecularRasterizer::process() {
+    atomPicking_.resize(std::max<size_t>(
+        std::accumulate(inport_.begin(), inport_.end(), size_t{0u},
+                        [](size_t val, auto s) { return val + s->atoms().positions.size(); }),
+        1));
+
     const bool updateColorMap = [&]() {
         if (coloring_.isModified()) return true;
         switch (coloring_) {
@@ -165,11 +224,26 @@ void MolecularRasterizer::process() {
         }
     }();
 
+    bool meshCreated = false;
     if (meshes_.empty() || inport_.isChanged() || updateColorMap) {
         meshes_.clear();
+        const size_t pickingId = atomPicking_.getPickingId(0);
+        size_t offset = 0;
         for (auto structure : inport_) {
-            meshes_.push_back(
-                createMesh(*structure, {coloring_, atomColormap_, aminoColormap_, fixedColor_}, 0));
+            meshes_.push_back(createMesh(*structure,
+                                         {coloring_, atomColormap_, aminoColormap_, fixedColor_},
+                                         pickingId + offset));
+            offset += structure->atoms().positions.size();
+        }
+        meshCreated = true;
+    }
+    if (brushing_.isChanged() || meshCreated) {
+        size_t offset = 0;
+        for (auto& mesh : meshes_) {
+            if (mesh->getBuffers().empty()) continue;
+            molvis::updateBrushing(brushing_.getManager(), *mesh, offset, showSelected_,
+                                   showHighlighted_);
+            offset += mesh->getIndices(0)->getSize();
         }
     }
 
@@ -319,11 +393,33 @@ std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStr
             indices.push_back(static_cast<uint32_t>(bond.first));
             indices.push_back(static_cast<uint32_t>(bond.second));
         }
+
         mesh->addIndices(Mesh::MeshInfo(DrawType::Lines, ConnectivityType::None),
                          util::makeIndexBuffer(std::move(indices)));
     }
 
     return mesh;
+}
+
+void MolecularRasterizer::handlePicking(PickingEvent* p) {
+    const uint32_t atomId = static_cast<uint32_t>(p->getPickedId());
+
+    // Show tooltip for current item
+    if (p->getPressState() == PickingPressState::None) {
+        if (p->getHoverState() == PickingHoverState::Enter ||
+            (p->getGlobalPickingId() != p->getPreviousGlobalPickingId())) {
+            BitSet b(atomId);
+            brushing_.highlight(b);
+            if (enableTooltips_) {
+                p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+            }
+        } else if (p->getHoverState() == PickingHoverState::Exit) {
+            brushing_.highlight({});
+            if (enableTooltips_) {
+                p->setToolTip("");
+            }
+        }
+    }
 }
 
 MolecularRasterization::MolecularRasterization(const MolecularRasterizer& processor)
@@ -333,6 +429,9 @@ MolecularRasterization::MolecularRasterization(const MolecularRasterizer& proces
     , radiusScaling_(processor.radiusScaling_)
     , defaultRadius_(processor.defaultRadius_)
     , lighting_(processor.lighting_.getState())
+    , highlighted_(processor.showHighlighted_.getState())
+    , selected_(processor.showSelected_.getState())
+    , filtered_(processor.showFiltered_.getState())
     , uniformAlpha_(processor.uniformAlpha_)
     , forceOpaque_(processor.forceOpaque_)
     , vdwShaders_(processor.vdwShaders_)
@@ -365,6 +464,9 @@ void MolecularRasterization::rasterize(const ivec2& imageSize, const mat4& world
         shader.setUniform("radiusScaling_", radius);
         shader.setUniform("uniformAlpha", uniformAlpha_);
         utilgl::setShaderUniforms(shader, lighting_, "lighting");
+        utilgl::setShaderUniforms(shader, highlighted_, "showHighlighted");
+        utilgl::setShaderUniforms(shader, selected_, "showSelected");
+        utilgl::setShaderUniforms(shader, filtered_, "showFiltered");
         setUniforms(shader);
         auto transform = CompositeTransform(mesh->getModelMatrix(),
                                             mesh->getWorldMatrix() * worldMatrixTransform);
@@ -380,10 +482,14 @@ void MolecularRasterization::rasterize(const ivec2& imageSize, const mat4& world
         shader.setUniform("radius_", 0.25f * radius);
         shader.setUniform("uniformAlpha", uniformAlpha_);
         utilgl::setShaderUniforms(shader, lighting_, "lighting");
+        utilgl::setShaderUniforms(shader, highlighted_, "showHighlighted");
+        utilgl::setShaderUniforms(shader, selected_, "showSelected");
+        utilgl::setShaderUniforms(shader, filtered_, "showFiltered");
         auto transform = CompositeTransform(mesh->getModelMatrix(),
                                             mesh->getWorldMatrix() * worldMatrixTransform);
         setUniforms(shader);
         utilgl::setShaderUniforms(shader, transform, "geometry");
+        utilgl::CullFaceState cull(GL_BACK);
         drawMesh(mesh, drawer, DrawType::Lines);
         shader.deactivate();
     };

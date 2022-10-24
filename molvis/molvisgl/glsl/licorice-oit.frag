@@ -97,6 +97,8 @@ void main() {
 #else
     color.a = in_frag.color[side].a;
 #endif // UNIFORM_ALPHA
+    color.rgb *= color.a;
+
     if (color.a < 0.01) discard;
 
     vec4 curr_clip_coord = camera.viewToClip * vec4(view_coord, 1);

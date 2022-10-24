@@ -83,6 +83,7 @@ void main() {
     color.rgb = APPLY_LIGHTING(lighting, in_frag.color[side].rgb, in_frag.color[side].rgb, vec3(1.0f), 
                                intersection, normal, normalize(campos - intersection));
     color.a = in_frag.color[side].a;
+    color.rgb *= color.a;
 
     vec4 curr_clip_coord = camera.viewToClip * vec4(view_coord, 1);
 
