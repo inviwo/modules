@@ -1,8 +1,8 @@
 [submodule "misc/ext/OpenMesh"]
 	path = misc/openmesh/ext/OpenMesh
 	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
-[submodule "misc/ext/openvdb"]
-	path = misc/openvdb/ext/openvdb
+[submodule "misc/openvdb/ext/openvdb"]
+	path = misc/openvdb/ext/openvdb/openvdb
 	url = https://github.com/AcademySoftwareFoundation/openvdb.git
 [submodule "topovis/topologytoolkit/ext/ttk/ttk"]
 	path = topovis/topologytoolkit/ext/ttk/ttk
@@ -13,3 +13,6 @@
 [submodule "misc/nanovgutils/ext/nanovg"]
 	path = misc/nanovgutils/ext/nanovg/nanovg
 	url = https://github.com/memononen/nanovg.git
+[submodule "misc/openvdb/ext/openvdb/openvdb"]
+	path = misc/openvdb/ext/openvdb/openvdb
+	url = https://github.com/AcademySoftwareFoundation/openvdb.git
