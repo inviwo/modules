@@ -29,6 +29,7 @@
 
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
 #include <inviwo/ttk/processors/volumetovtk.h>
+#include <inviwo/ttk/processors/vtktovolume.h>
 #include <inviwo/ttk/processors/vtkdatasettovtkimagedata.h>
 #include <inviwo/ttk/ttkmodule.h>
 
@@ -46,6 +47,7 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     ttkwrapper::registerTTKFilters(this);
     // registerProcessor < TTKGenericProcessor < ttkMorseSmaleComplex>>();
     registerProcessor<VolumeToVTK>();
+	registerProcessor<VTKToVolume>();
     registerProcessor<VTKDataSetToVTKImageData>();
     // registerProcessor<ttkProcessor>();
 
