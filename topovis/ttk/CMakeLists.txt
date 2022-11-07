@@ -3,6 +3,7 @@ ivw_module(ttk)
 set(HEADER_FILES
     include/inviwo/ttk/processors/ttkgenericprocessor.h
     include/inviwo/ttk/processors/volumetovtk.h
+    include/inviwo/ttk/processors/vtkdatasettovtkimagedata.h
     include/inviwo/ttk/ttkmodule.h
     include/inviwo/ttk/ttkmoduledefine.h
 )
@@ -11,6 +12,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/processors/ttkgenericprocessor.cpp
     src/processors/volumetovtk.cpp
+    src/processors/vtkdatasettovtkimagedata.cpp
     src/ttkmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
