@@ -78,7 +78,7 @@ IVW_MODULE_TTK_API bool TypeIdIsA(int typeId, int targetTypeId);
 class IVW_MODULE_TTK_API VtkOutport : public Outport {
 public:
     VtkOutport(std::string_view identifier, std::string_view vtkDataClassName)
-        : Outport(std::string{identifier}), vtkDataClassName_{vtkDataClassName} {
+        : Outport(identifier, Document{}), vtkDataClassName_{vtkDataClassName} {
 
         isReady_.setUpdate([this]() {
             return invalidationLevel_ == InvalidationLevel::Valid && data_ != nullptr;
@@ -151,7 +151,7 @@ private:
 class IVW_MODULE_TTK_API VtkInport : public Inport {
 public:
     VtkInport(std::string_view identifier, std::string_view vtkDataClassName)
-        : Inport(std::string{identifier}), vtkDataClassName_{vtkDataClassName} {}
+        : Inport(identifier, Document{}), vtkDataClassName_{vtkDataClassName} {}
 
     virtual bool canConnectTo(const Port* port) const override {
 
