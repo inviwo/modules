@@ -773,7 +773,8 @@ def makeFilterTable(filters: list[FilterData]):
         table.add_row(
             data.displayName,
             makeTable(data.props),
-            rich.console.RenderGroup(
+            #rich.console.RenderGroup(
+            rich.console.Group(
                 makeTable(data.inports),
                 makeTable(data.outports)
             )
@@ -818,7 +819,13 @@ if __name__ == '__main__':
         "BottleneckDistance",                # Munkres.h:200 missing include MunkresImpl.h
         "TrackingFromFields",                # Munkres.h:200 missing include MunkresImpl.h
         "TrackingFromPersistenceDiagrams",   # Munkres.h:200 missing include MunkresImpl.h
-        "FTRGraph"                           # Missing include
+        "FTRGraph",                          # Missing include
+        "ArrayPreconditioning",              # Could not find SetBurstSize (member/function)
+        "GhostCellPreconditioning",          # Could not find import ttkGhostCellPreconditioning.h
+        "MergeTreeDistanceMatrix",           # Could not find SetUseFieldDataParameters (member/funcion)
+        "PersistentGenerators",              # Could not find import ttkPersistentGenerators.h
+        "ProjectionFromTable",               # Could not find import ttkProjectionFromTable.h
+        "MergeTreeClustering"                # Could not find SetBarycenterSizeLimitPercent (member/function)
     ]
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
@@ -846,7 +853,18 @@ if __name__ == '__main__':
 
     #myfile = requests.get(url)
 
+    # To parse specific VTK filters
+    dir = Path("C:/Users/sigsi52/Development/Inviwo/local/modules-worktree/topovis/ttk/data/vtk_filters")
+    vtk_files = (xml for xml in dir.glob("*.xml"))
 
+    for file in vtk_files:
+        try:
+            with open(file, 'r') as f:
+                xmlstr = f.read()
+            filters.extend(parse(xmlstr, file))
+        except Exception as e:
+            print(f"Error parsing {file} \n{e}")
+            print(traceback.format_exc())
 
     console.print(makeFilterTable(filters))
 
