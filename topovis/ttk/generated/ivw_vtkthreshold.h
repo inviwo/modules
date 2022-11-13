@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace ttkwrapper {
-void registerttkMergeTreeClustering(InviwoModule* module);
+void registervtkThreshold(InviwoModule* module);
 }  // namespace ttkwrapper
 }  // namespace inviwo

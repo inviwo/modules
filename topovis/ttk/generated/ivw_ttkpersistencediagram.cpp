@@ -64,9 +64,10 @@ struct Wrapper3 {
         "Backend",
         {{"FTM (IEEE TPSD 2019)", "FTM (IEEE TPSD 2019)", 0},
          {"Progressive Approach (IEEE TVCG 2020)", "Progressive Approach (IEEE TVCG 2020)", 1},
-         {"Persistent Simplex (Zomorodian 2010)", "Persistent Simplex (Zomorodian 2010)", 2},
-         {"Approximation Approach (IEEE LDAV 2021)", "Approximation Approach (IEEE LDAV 2021)", 3}},
-        0};
+         {"Discrete Morse Sandwich", "Discrete Morse Sandwich", 2},
+         {"Approximation Approach (IEEE LDAV 2021)", "Approximation Approach (IEEE LDAV 2021)", 3},
+         {"Persistent Simplex (Zomorodian 2010)", "Persistent Simplex (Zomorodian 2010)", 4}},
+        2};
 };
 
 struct Wrapper4 {
@@ -126,13 +127,21 @@ struct Wrapper9 {
 
 struct Wrapper10 {
     bool set(ttkPersistenceDiagram& filter) {
+        //filter.SetIgnoreBoundary(property.get());
+        return true;
+    }
+    BoolProperty property{"IgnoreBoundary", "Ignore Boundary", false};
+};
+
+struct Wrapper11 {
+    bool set(ttkPersistenceDiagram& filter) {
         filter.SetShowInsideDomain(property.get());
         return true;
     }
     BoolProperty property{"ShowInsideDomain", "Embed in Domain", false};
 };
 
-struct Wrapper11 {
+struct Wrapper12 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -140,7 +149,7 @@ struct Wrapper11 {
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper12 {
+struct Wrapper13 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -150,7 +159,7 @@ struct Wrapper12 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper13 {
+struct Wrapper14 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -160,7 +169,7 @@ struct Wrapper13 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper14 {
+struct Wrapper15 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -185,12 +194,12 @@ struct TTKTraits<ttkPersistenceDiagram> {
                "BackEnd", "StartingResolutionLevel", "StoppingResolutionLevel", "IsResumable",
                "TimeLimit", "Epsilon", "ScalarFieldNew", "ForceInputOffsetScalarField",
                "InputOffsetScalarFieldNameNew"}},
-        Group{"Output options", {"SaddleConnectors", "ShowInsideDomain"}},
+        Group{"Output options", {"SaddleConnectors", "Ignore Boundary", "ShowInsideDomain"}},
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15>
         properties;
 };
 

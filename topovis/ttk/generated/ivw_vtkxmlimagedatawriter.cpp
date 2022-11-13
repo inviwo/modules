@@ -1,4 +1,4 @@
-#include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkxmlimagedatawriter.h"
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
@@ -14,7 +14,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-//#include "vtkFileSeriesReader.h"
+#include "vtkXMLImageDataWriter.h"
 #include <warn/pop>
 
 namespace inviwo {
@@ -25,29 +25,29 @@ namespace {
 #include <warn/ignore/conversion>
 
 struct Wrapper0 {
-    /*bool set(vtkFileSeriesReader& filter) {
+    bool set(vtkXMLImageDataWriter& filter) {
         if (property.get().empty()) return false;
-        filter.AddFileName(property.get().c_str());
+        filter.SetFileName(property.get().c_str());
         return true;
-    }*/
+    }
     FileProperty property{"FileName", "FileName", ""};
 };
 
 #include <warn/pop>
 
 }  // namespace
-//template <>
-//struct TTKTraits<vtkFileSeriesReader> {
-//    static constexpr std::string_view identifier = "XMLPartitionedDataSetCollectionReader";
-//    static constexpr std::string_view displayName = "XML Partitioned Dataset Collection Reader";
-//    inline static std::array<InputData, 0> inports = {};
-//    inline static std::array<OutputData, 0> outports = {};
-//    inline static std::array<Group, 0> groups = {};
-//    std::tuple<Wrapper0> properties;
-//};
+template <>
+struct TTKTraits<vtkXMLImageDataWriter> {
+    static constexpr std::string_view identifier = "XMLImageDataWriter";
+    static constexpr std::string_view displayName = "XMLImageDataWriter";
+    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", -1}};
+    inline static std::array<OutputData, 0> outports = {};
+    inline static std::array<Group, 0> groups = {};
+    std::tuple<Wrapper0> properties;
+};
 
-void registervtkFileSeriesReader(InviwoModule* module) {
-    //module->registerProcessor<TTKGenericProcessor<vtkFileSeriesReader>>();
+void registervtkXMLImageDataWriter(InviwoModule* module) {
+    module->registerProcessor<TTKGenericProcessor<vtkXMLImageDataWriter>>();
 }
 
 }  // namespace ttkwrapper

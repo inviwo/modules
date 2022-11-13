@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace ttkwrapper {
-void registerttkArrayPreconditioning(InviwoModule* module);
+void registervtkXMLImageDataWriter(InviwoModule* module);
 }  // namespace ttkwrapper
 }  // namespace inviwo
