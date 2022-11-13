@@ -65,7 +65,8 @@ struct Wrapper3 {
                                 {"Facet", "Facet", 1},
                                 {"Cofacet", "Cofacet", 2},
                                 {"Star", "Star", 3},
-                                {"Link", "Link", 4}},
+                                {"Link", "Link", 4},
+                                {"Domain Boundary", "Domain Boundary", 5}},
                                0};
 };
 

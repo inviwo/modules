@@ -1,7 +1,6 @@
 #include "registerttkfilters.h"
 
 #include "ivw_ttkarrayeditor.h"
-#include "ivw_ttkarraypreconditioning.h"
 #include "ivw_ttkbarycentricsubdivision.h"
 #include "ivw_ttkblockaggregator.h"
 #include "ivw_ttkcinemaimaging.h"
@@ -46,8 +45,6 @@
 #include "ivw_ttkmanifoldcheck.h"
 #include "ivw_ttkmatrixtoheatmap.h"
 #include "ivw_ttkmergeblocktables.h"
-#include "ivw_ttkmergetreeclustering.h"
-#include "ivw_ttkmergetreedistancematrix.h"
 #include "ivw_ttkmergetreetemporalreductiondecoding.h"
 #include "ivw_ttkmergetreetemporalreductionencoding.h"
 #include "ivw_ttkmeshgraph.h"
@@ -134,13 +131,14 @@
 #include "ivw_vtkfileseriesreader.h"
 #include "ivw_vtkfileseriesreader.h"
 #include "ivw_vtkfileseriesreader.h"
+#include "ivw_vtkthreshold.h"
+#include "ivw_vtkxmlimagedatawriter.h"
 
 namespace inviwo {
 namespace ttkwrapper {
 
 void registerTTKFilters(InviwoModule* module) {
     registerttkArrayEditor(module);
-    registerttkArrayPreconditioning(module);
     registerttkBarycentricSubdivision(module);
     registerttkBlockAggregator(module);
     registerttkCinemaImaging(module);
@@ -185,8 +183,6 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkManifoldCheck(module);
     registerttkMatrixToHeatMap(module);
     registerttkMergeBlockTables(module);
-    registerttkMergeTreeClustering(module);
-    registerttkMergeTreeDistanceMatrix(module);
     registerttkMergeTreeTemporalReductionDecoding(module);
     registerttkMergeTreeTemporalReductionEncoding(module);
     registerttkMeshGraph(module);
@@ -273,6 +269,8 @@ void registerTTKFilters(InviwoModule* module) {
     registervtkFileSeriesReader(module);
     registervtkFileSeriesReader(module);
     registervtkFileSeriesReader(module);
+    registervtkThreshold(module);
+    registervtkXMLImageDataWriter(module);
 }
 
 }  // namespace ttkwrapper
