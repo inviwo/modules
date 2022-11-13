@@ -30,15 +30,20 @@
 #pragma once
 
 #include <inviwo/ttk/ttkmoduledefine.h>
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/utilities.h>
+#include <inviwo/core/util/rendercontext.h>
+
+#include <inviwo/ttk/ports/vtkinport.h>
+#include <inviwo/ttk/ports/vtkoutport.h>
 
 #include <tuple>
 #include <optional>
@@ -51,16 +56,15 @@
 #include <vtkNew.h>
 #include <vtkInformation.h>
 #include <vtkInformationStringVectorKey.h>
-#include <vtkDataObject.h>
 #include <vtkDataSet.h>
+#include <vtkDataObject.h>
+#include <vtkDataObjectTypes.h>
 #include <vtkFieldData.h>
 
 #include <vtkSmartPointer.h>
-#include <vtkDataObjectTypes.h>
 #include <vtkExecutive.h>
-
 #include <ttkAlgorithm.h>
-
+#include "vtkCommand.h"
 
 // debug
 #include <ttkMorseSmaleComplex.h>
@@ -69,200 +73,21 @@
 
 namespace inviwo {
 
-namespace vtk {
-
-IVW_MODULE_TTK_API void addTable(Document::DocumentHandle& h, std::string_view str);
-
-IVW_MODULE_TTK_API bool TypeIdIsA(int typeId, int targetTypeId);
-
-class IVW_MODULE_TTK_API VtkOutport : public Outport {
-public:
-    VtkOutport(std::string_view identifier, std::string_view vtkDataClassName)
-        : Outport(identifier, Document{}), vtkDataClassName_{vtkDataClassName} {
-
-        isReady_.setUpdate([this]() {
-            return invalidationLevel_ == InvalidationLevel::Valid && data_ != nullptr;
-        });
-    }
-
-    const std::string& getTypeName() const { return vtkDataClassName_; }
-
-    vtkDataObject* getData() const { return data_; }
-
-    void setData(vtkDataObject* data) {
-        if (!data) {
-            data_ = data;
-            isReady_.update();
-            return;
-        }
-
-        if (data->IsA(vtkDataClassName_.c_str())) {
-            data_ = data;
-            isReady_.update();
-        } else {
-            throw Exception(fmt::format("Invalid VTK data type for port {} expected {} got {}",
-                                        getPath(), vtkDataClassName_, data->GetClassName()));
-        }
-    }
-
-    virtual bool hasData() const override { return data_ != nullptr; }
-
-    virtual void clear() override {
-        data_ = nullptr;
-        isReady_.update();
-    }
-
-    virtual std::string getClassIdentifier() const override;
-
-    virtual glm::uvec3 getColorCode() const override {
-        // Todo use a table here or something...
-        auto offset = 5 * vtkDataObjectTypes::GetTypeIdFromClassName(getTypeName().c_str());
-        return uvec3{102, 102, 153 + offset};
-    };
-    virtual Document getInfo() const override {
-        Document doc;
-        using P = Document::PathComponent;
-        using H = utildoc::TableBuilder::Header;
-        auto b = doc.append("html").append("body");
-        auto p = b.append("p");
-        p.append("b", vtkDataClassName_ + " Outport", {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(p, P::end());
-        tb(H("Identifier"), getIdentifier());
-        tb(H("Class"), getClassIdentifier());
-        tb(H("Ready"), isReady());
-        tb(H("Connected"), isConnected());
-        tb(H("Connections"), connectedInports_.size());
-
-        if (hasData()) {
-            std::stringstream ss;
-            data_->Print(ss);
-            addTable(b, ss.str());
-        } else {
-            b.append("p", "Port has no data");
-        }
-        return doc;
-    }
-
-private:
-    std::string vtkDataClassName_;
-    vtkDataObject* data_ = nullptr;
-};
-
-class IVW_MODULE_TTK_API VtkInport : public Inport {
-public:
-    VtkInport(std::string_view identifier, std::string_view vtkDataClassName)
-        : Inport(identifier, Document{}), vtkDataClassName_{vtkDataClassName} {}
-
-    virtual bool canConnectTo(const Port* port) const override {
-
-        if (auto base = static_cast<const VtkOutport*>(port)) {
-            auto out = vtkDataObjectTypes::GetTypeIdFromClassName(base->getTypeName().c_str());
-            auto in = vtkDataObjectTypes::GetTypeIdFromClassName(getTypeName().c_str());
-            return TypeIdIsA(out, in);
-
-            // TODO use with vtk 9.0.2
-            // return vtkDataObjectTypes::TypeIdIsA(out, in);
-        }
-        return false;
-    }
-    virtual size_t getMaxNumberOfConnections() const override { return 1; }
-
-    vtkDataObject* getData() const {
-        if (isConnected()) {
-            return static_cast<VtkOutport*>(connectedOutports_[0])->getData();
-        }
-        return nullptr;
-    }
-
-    bool hasData() const {
-        if (isConnected()) {
-            return static_cast<VtkOutport*>(connectedOutports_[0])->hasData();
-        }
-        return false;
-    }
-
-    virtual std::string getClassIdentifier() const override;
-
-    virtual glm::uvec3 getColorCode() const override {
-        // Todo use a table here or something...
-        auto offset = 5 * vtkDataObjectTypes::GetTypeIdFromClassName(getTypeName().c_str());
-        return uvec3{102, 102, 153 + offset};
-    }
-
-    virtual Document getInfo() const override {
-        Document doc;
-        using P = Document::PathComponent;
-        using H = utildoc::TableBuilder::Header;
-        auto b = doc.append("html").append("body");
-        auto p = b.append("p");
-        p.append("b", vtkDataClassName_ + " Inport", {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(p, P::end());
-        tb(H("Identifier"), getIdentifier());
-        tb(H("Class"), getClassIdentifier());
-        tb(H("Ready"), isReady());
-        tb(H("Connected"), isConnected());
-
-        tb(H("Connections"),
-           fmt::format("{} ({})", getNumberOfConnections(), getMaxNumberOfConnections()));
-        tb(H("Optional"), isOptional());
-
-        if (hasData()) {
-            std::stringstream ss;
-            getData()->Print(ss);
-            addTable(b, ss.str());
-        } else {
-            b.append("p", "Port has no data");
-        }
-        return doc;
-    }
-
-    const std::string& getTypeName() const { return vtkDataClassName_; }
-
-private:
-    std::string vtkDataClassName_;
-};
-
-}  // namespace vtk
-
-template <>
-struct PortTraits<vtk::VtkOutport> {
-    static const std::string& classIdentifier() {
-        static std::string id{"org.inviwo.vtk.outport"};
-        return id;
-    }
-};
-
-template <>
-struct PortTraits<vtk::VtkInport> {
-    static const std::string& classIdentifier() {
-        static std::string id{"org.inviwo.vtk.inport"};
-        return id;
-    }
-};
-
-inline std::string vtk::VtkOutport::getClassIdentifier() const {
-    return PortTraits<vtk::VtkOutport>::classIdentifier();
-}
-
-inline std::string vtk::VtkInport::getClassIdentifier() const {
-    return PortTraits<vtk::VtkInport>::classIdentifier();
-}
-
 namespace ttkwrapper {
 
-struct InputData {
+struct IVW_MODULE_TTK_API InputData {
     std::string identifier;
     std::string dataType;
     int numComp;
 };
 
-struct OutputData {
+struct IVW_MODULE_TTK_API OutputData {
     std::string identifier;
     std::string displayName;
     int index;
 };
 
-struct Group {
+struct IVW_MODULE_TTK_API Group {
     std::string displayName;
     std::vector<std::string> members;
 };
@@ -270,15 +95,60 @@ struct Group {
 template <typename TTKFilter>
 struct TTKTraits;
 
-struct FieldSelection {};
+struct IVW_MODULE_TTK_API FieldSelection {};
+
+class IVW_MODULE_TTK_API Command : public vtkCommand {
+public:
+    vtkTypeMacro(Command, vtkCommand)
+
+        static Command* New() {
+        return new Command;
+    }
+    void Execute(vtkObject* caller, unsigned long eid, void* callData) override {
+        if (callback) {
+            callback(caller, eid, callData);
+        }
+    }
+
+    std::function<void(vtkObject*, unsigned long, void*)> callback;
+
+protected:
+    Command() = default;
+    ~Command() override = default;
+};
 
 /**
  * @brief A Wrapper for all TTK filters
  */
 template <typename TTKFilter>
-class TTKGenericProcessor : public Processor {
+class TTKGenericProcessor : public Processor, public ProgressBarOwner {
 public:
     TTKGenericProcessor() : Processor() {
+        observer_ = vtkSmartPointer<Command>::Take(Command::New());
+
+        observer_->callback = [this](vtkObject*, unsigned long eid, void* data) {
+            if (eid == vtkCommand::ErrorEvent) {
+                LogError(static_cast<const char*>(data));
+            } else if (eid == vtkCommand::WarningEvent) {
+                LogWarn(static_cast<const char*>(data));
+            } else if (eid == vtkCommand::MessageEvent) {
+                LogInfo(static_cast<const char*>(data));
+            } else if (eid == vtkCommand::TextEvent) {
+                LogInfo(static_cast<const char*>(data));
+            } else if (eid == vtkCommand::ProgressEvent) {
+                updateProgress(static_cast<float>(*static_cast<double*>(data)));
+                getNetwork()->getApplication()->processEvents();
+                rendercontext::activateDefault();
+            }
+        };
+
+        filter_->AddObserver(vtkCommand::ErrorEvent, observer_);
+        filter_->AddObserver(vtkCommand::WarningEvent, observer_);
+        filter_->AddObserver(vtkCommand::MessageEvent, observer_);
+        filter_->AddObserver(vtkCommand::TextEvent, observer_);
+        filter_->AddObserver(vtkCommand::ProgressEvent, observer_);
+        filter_->DebugOn();
+
         const auto nInputs = filter_->GetNumberOfInputPorts();
         const auto nOutputs = filter_->GetNumberOfOutputPorts();
 
@@ -291,7 +161,7 @@ public:
             }
 
             if (dataType) {
-                auto id = i < TTKTraits<TTKFilter>::inports.size()
+                auto id = i < static_cast<int>(TTKTraits<TTKFilter>::inports.size())
                               ? TTKTraits<TTKFilter>::inports[i].identifier
                               : fmt::format("inport{}", i);
 
@@ -315,7 +185,7 @@ public:
             }
 
             if (dataType) {
-                auto id = i < TTKTraits<TTKFilter>::outports.size()
+                auto id = i < static_cast<int>(TTKTraits<TTKFilter>::outports.size())
                               ? TTKTraits<TTKFilter>::outports[i].identifier
                               : fmt::format("output{}", i);
 
@@ -348,7 +218,7 @@ public:
                     if (auto inport = getInport(wrapper.inport)) {
                         auto vtkinport = static_cast<vtk::VtkInport*>(inport);
 
-                        vtkinport->onChange([this, port = vtkinport, w = &wrapper]() {
+                        vtkinport->onChange([port = vtkinport, w = &wrapper]() {
                             if (port->isReady()) {
                                 vtkDataObject* data = port->getData();
                                 vtkFieldData* fd =
@@ -379,7 +249,9 @@ public:
 
         if (!ready) return;
 
-        //vtkNew<ttkMorseSmaleComplex> filter_;
+        getProgressBar().setActive(true);
+
+        // vtkNew<ttkMorseSmaleComplex> filter_;
 
         const auto nInputs = filter_->GetNumberOfInputPorts();
         const auto nOutputs = filter_->GetNumberOfOutputPorts();
@@ -389,13 +261,12 @@ public:
             filter_->SetInputDataObject(i, data);
         }
 
-        vtkTypeBool error = filter_->GetExecutive()->Update();
-
-        if(error != 1) {
-            LogError("process error");
+        if (filter_->GetExecutive()->Update() != 1) {
+            for (int i = 0; i < nOutputs; ++i) {
+                static_cast<vtk::VtkOutport*>(getOutports()[i])->setData(nullptr);
+            }
+            throw Exception(IVW_CONTEXT, "Error running vtk filter");
         }
-
-        // vtkGlobalWarning display off
 
         for (int i = 0; i < nOutputs; ++i) {
             if (auto result = filter_->GetOutputDataObject(i)) {
@@ -404,6 +275,8 @@ public:
                 static_cast<vtk::VtkOutport*>(getOutports()[i])->setData(nullptr);
             }
         }
+
+        getProgressBar().setActive(false);
     }
 
     virtual const ProcessorInfo getProcessorInfo() const override;
@@ -412,6 +285,7 @@ public:
 private:
     vtkNew<TTKFilter> filter_;
     TTKTraits<TTKFilter> traits_;
+    vtkSmartPointer<Command> observer_;
 };
 
 }  // namespace ttkwrapper

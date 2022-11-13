@@ -32,34 +32,59 @@
 
 #include <vtkImageData.h>
 
+#include <vtkType.h>
+#include <vtkDataObjectTypes.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VTKDataSetToVTKImageData::processorInfo_{
-    "org.inviwo.VTKDataSetToVTKImageData",  // Class identifier
-    "vtkDataSet To vtkImageData",           // Display name
-    "VTK",                                  // Category
-    CodeState::Experimental,                // Code state
-    Tags::CPU,                              // Tags
+const ProcessorInfo VTKDowncastData::processorInfo_{
+    "org.inviwo.VTKDowncastData",  // Class identifier
+    "VTK Downcast Data",           // Display name
+    "VTK",                         // Category
+    CodeState::Experimental,       // Code state
+    Tag::CPU | Tag{"VTK"},         // Tags
 };
-const ProcessorInfo VTKDataSetToVTKImageData::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VTKDowncastData::getProcessorInfo() const { return processorInfo_; }
 
-VTKDataSetToVTKImageData::VTKDataSetToVTKImageData()
-    : Processor(), inport_("inport", "vtkDataSet"), outport_("outport", "vtkImageData") {
+VTKDowncastData::VTKDowncastData()
+    : Processor()
+    , outportType_{"outportType", "Derived Type",
+                   []() {
+                       OptionPropertyState<int> state;
+                       for (int typeId = VTK_POLY_DATA; typeId <= VTK_IMAGE_STENCIL_DATA;
+                            ++typeId) {
+
+                           if (vtkDataObjectTypes::TypeIdIsA(typeId, VTK_DATA_SET)) {
+                               if (typeId == VTK_IMAGE_DATA) {
+                                   state.selectedIndex = state.options.size();
+                               }
+
+                               auto name = vtkDataObjectTypes::GetClassNameFromTypeId(typeId);
+                               state.options.emplace_back(name, name, typeId);
+                           }
+                       }
+                       return state;
+                   }()
+
+      }
+    , inport_{"inport", VTK_DATA_SET}
+    , outport_{"outport", outportType_.getSelectedValue()} {
 
     addPorts(inport_, outport_);
+    addProperties(outportType_);
+
+    outportType_.onChange([this]() { outport_.setTypeId(outportType_.getSelectedValue()); });
 }
 
-void VTKDataSetToVTKImageData::process() {
-    auto vtkDataSet = inport_.getData();
-
-    if (vtkDataSet != nullptr) {
-
-        if (!vtkDataSet->IsA("vtkImageData")) {
-            throw Exception("Data is not of type vtkImageData.",
-                            IVW_CONTEXT_CUSTOM("VTKDataSetToVTKImageData"));
+void VTKDowncastData::process() {
+    if (auto vtkDataSet = inport_.getData()) {
+        if (!vtkDataSet->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()))) {
+            outport_.setData(nullptr);
+            throw Exception(IVW_CONTEXT, "Data is not of type '{}' got '{}'",
+                            vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()),
+                            vtkDataSet->GetClassName());
         }
-
         outport_.setData(vtkDataSet);
     }
 }

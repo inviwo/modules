@@ -27,7 +27,8 @@ namespace {
 struct Wrapper0 : FieldSelection {
     bool set(vtkThreshold& filter) {
         if (property.size() == 0) return false;
-        filter.SetInputArrayToProcess(0, 0, 0, 0, property.get().c_str());
+        filter.SetInputArrayToProcess(0, 0, 0, vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS,
+                                      property.get().c_str());
         return true;
     }
     OptionPropertyString property{"SelectInputScalars", "Scalars", {}, 0};
@@ -37,7 +38,12 @@ struct Wrapper0 : FieldSelection {
 
 struct Wrapper1 {
     bool set(vtkThreshold& filter) {
-        filter.ThresholdBetween(property.get(0), property.get(1));
+        filter.SetLowerThreshold(property.get(0));
+        filter.SetUpperThreshold(property.get(1));
+
+
+        filter.SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);
+
         return true;
     }
     DoubleVec2Property property{"ThresholdBetween", "Threshold Range", dvec2{0.0, 0.0},

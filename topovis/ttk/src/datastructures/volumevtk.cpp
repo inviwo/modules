@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,12 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/ttk/ttkmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
-
-#include <inviwo/ttk/ports/vtkinport.h>
-
-class vtkDataSet;
+#include <inviwo/ttk/datastructures/volumevtk.h>
 
 namespace inviwo {
 
-class IVW_MODULE_TTK_API VTKToVolume : public Processor {
-public:
-    VTKToVolume();
-    virtual ~VTKToVolume() override = default;
+VolumeVTK::VolumeVTK() {
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    void updateSources(vtkDataSet* array);
-
-    vtk::VtkInport inport_;
-    VolumeOutport outport_;
-    
-    OptionPropertyInt source_;
-    OptionPropertyInt precision_;
-        
-    VolumeInformationProperty information_;
-    
-    std::shared_ptr<Volume> volume_;
-};
+}
 
 }  // namespace inviwo

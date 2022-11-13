@@ -31,11 +31,36 @@
 #include <inviwo/ttk/processors/volumetovtk.h>
 #include <inviwo/ttk/processors/vtktovolume.h>
 #include <inviwo/ttk/processors/vtkdatasettovtkimagedata.h>
+#include <inviwo/ttk/processors/vtktodataframe.h>
+#include <inviwo/ttk/processors/vtktomesh.h>
+#include <inviwo/ttk/ports/vtkinport.h>
+#include <inviwo/ttk/ports/vtkoutport.h>
+
 #include <inviwo/ttk/ttkmodule.h>
 
 #include <registerttkfilters.h>
 
+#include <vtkLogger.h>
+
+#include <fmt/core.h>
+
 namespace inviwo {
+
+void logCallback(void* user_data, const vtkLogger::Message& message) {
+
+    auto level = [&]() {
+        if (message.verbosity <= vtkLogger::VERBOSITY_ERROR) {
+            return LogLevel::Error;
+        } else if (message.verbosity <= vtkLogger::VERBOSITY_WARNING) {
+            return LogLevel::Warn;
+        } else {
+            return LogLevel::Info;
+        }
+    }();
+
+    LogCentral::getPtr()->log("VTK", level, LogAudience::Developer, message.filename, "",
+                              message.line, fmt::format("{}{}", message.prefix, message.message));
+}
 
 ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     // Add a directory to the search path of the Shadermanager
@@ -43,13 +68,18 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
 
     // Register objects that can be shared with the rest of inviwo here:
 
+    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr, vtkLogger::VERBOSITY_MAX);
+    vtkObject::GlobalWarningDisplayOn();
+
     // Processors
     ttkwrapper::registerTTKFilters(this);
     // registerProcessor < TTKGenericProcessor < ttkMorseSmaleComplex>>();
     registerProcessor<VolumeToVTK>();
-	registerProcessor<VTKToVolume>();
-    registerProcessor<VTKDataSetToVTKImageData>();
-    // registerProcessor<ttkProcessor>();
+    registerProcessor<VTKToVolume>();
+    registerProcessor<VTKDowncastData>();
+    registerProcessor<VTKToDataFrame>();
+    registerProcessor<VTKToMesh>();
+
 
 
     // Properties
@@ -63,8 +93,8 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     // registerRepresentationConverter(std::make_unique<ttkDisk2RAMConverter>());
 
     // Ports
-    // registerPort<ttkOutport>();
-    // registerPort<ttkInport>();
+    registerPort<vtk::VtkInport>();
+    registerPort<vtk::VtkOutport>();
 
     // PropertyWidgets
     // registerPropertyWidget<ttkPropertyWidget, ttkProperty>("Default");
@@ -77,8 +107,8 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     // registerSettings(std::make_unique<ttkSettings>());
     // registerMetaData(std::make_unique<ttkMetaData>());
     // registerPortInspector("ttkOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(util::make_unique_ptr<ttkDrawer>());
+    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
+    // processorWidget); registerDrawer(util::make_unique_ptr<ttkDrawer>());
 }
 
 }  // namespace inviwo

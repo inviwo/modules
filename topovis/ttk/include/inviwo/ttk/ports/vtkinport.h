@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,43 +26,60 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/ttk/ttkmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <modules/base/properties/volumeinformationproperty.h>
 
-#include <inviwo/ttk/ports/vtkinport.h>
+#include <inviwo/core/ports/inport.h>
+#include <inviwo/core/ports/porttraits.h>
 
-class vtkDataSet;
+#include <string_view>
+#include <string>
+
+#include <vtkType.h>
+
+class vtkDataObject;
 
 namespace inviwo {
 
-class IVW_MODULE_TTK_API VTKToVolume : public Processor {
+namespace vtk {
+
+class IVW_MODULE_TTK_API VtkInport : public Inport {
 public:
-    VTKToVolume();
-    virtual ~VTKToVolume() override = default;
+    VtkInport(std::string_view identifier, int typeId = VTK_DATA_OBJECT,
+              Document help = Document{});
+    VtkInport(std::string_view identifier, std::string_view vtkDataClassName,
+              Document help = Document{});
 
-    virtual void process() override;
+    using type = vtkDataObject;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    virtual bool canConnectTo(const Port* port) const override;
+    virtual size_t getMaxNumberOfConnections() const override;
+    virtual std::string getClassIdentifier() const override;
+    virtual glm::uvec3 getColorCode() const override;
+    virtual Document getInfo() const override;
+
+    vtkDataObject* getData() const;
+    bool hasData() const;
+    int getTypeId() const;
+    void setTypeId(int typeId);
 
 private:
-    void updateSources(vtkDataSet* array);
-
-    vtk::VtkInport inport_;
-    VolumeOutport outport_;
-    
-    OptionPropertyInt source_;
-    OptionPropertyInt precision_;
-        
-    VolumeInformationProperty information_;
-    
-    std::shared_ptr<Volume> volume_;
+    int typeId_;
 };
+
+}  // namespace vtk
+
+template <>
+struct PortTraits<vtk::VtkInport> {
+    static const std::string& classIdentifier() {
+        static std::string id{"org.inviwo.vtk.inport"};
+        return id;
+    }
+};
+
+inline std::string vtk::VtkInport::getClassIdentifier() const {
+    return PortTraits<vtk::VtkInport>::classIdentifier();
+}
 
 }  // namespace inviwo
