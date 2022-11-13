@@ -31,17 +31,15 @@
 
 #include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/ports/dataoutport.h>
-
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
-#include <vtkImageData.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/ttk/ports/vtkinport.h>
+#include <inviwo/ttk/ports/vtkoutport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_TTK_API VTKDataSetToVTKImageData : public Processor {
+class IVW_MODULE_TTK_API VTKDowncastData : public Processor {
 public:
-    VTKDataSetToVTKImageData();
+    VTKDowncastData();
 
     virtual void process() override;
 
@@ -49,9 +47,10 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    OptionPropertyInt outportType_;
+    
     vtk::VtkInport inport_;
     vtk::VtkOutport outport_;
-    //FloatVec3Property position_;
 };
 
 }  // namespace inviwo

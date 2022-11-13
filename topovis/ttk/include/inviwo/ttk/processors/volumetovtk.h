@@ -52,8 +52,7 @@ public:
 private:
     VolumeInport inport_;
     vtk::VtkOutport outport_;
-
-    //std::unique_ptr<vtkDataSet> data_;
+    
     vtkSmartPointer<vtkImageData> data_;
 };
 
