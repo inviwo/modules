@@ -50,7 +50,7 @@ namespace inviwo {
 class IVW_MODULE_MOLVISBASE_API MolecularStructureSource
     : public DataSource<molvis::MolecularStructure, molvis::MolecularStructureOutport> {
 public:
-    MolecularStructureSource(InviwoApplication* app, const std::string& file = "");
+    MolecularStructureSource(InviwoApplication* app, std::string_view file = "");
     virtual ~MolecularStructureSource() = default;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
