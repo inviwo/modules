@@ -29,6 +29,8 @@
 
 #include <inviwo/molvisbase/processors/molecularstructuresource.h>
 
+#include <inviwo/core/common/factoryutil.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -41,8 +43,8 @@ const ProcessorInfo MolecularStructureSource::processorInfo_{
 };
 const ProcessorInfo MolecularStructureSource::getProcessorInfo() const { return processorInfo_; }
 
-MolecularStructureSource::MolecularStructureSource(InviwoApplication* app, const std::string& file)
+MolecularStructureSource::MolecularStructureSource(InviwoApplication* app, std::string_view file)
     : DataSource<molvis::MolecularStructure, molvis::MolecularStructureOutport>(
-          app, file, "molecularstructure") {}
+          util::getDataReaderFactory(app), file, "molecularstructure") {}
 
 }  // namespace inviwo
