@@ -90,6 +90,22 @@ class ChgcarSource(ivw.Processor):
         self.radiusScaling = ivw.properties.FloatProperty(
             "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
         self.addProperty(self.radiusScaling)
+        #Add wrapping option for VASP. Default is repeat since the data is most likely periodic. 
+        self.wrapX=ivw.properties.OptionPropertyInt("wrapX", "Wrapping X",
+            [ ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
+                ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
+                ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror) ], 1)
+        self.addProperty(self.wrapX, owner=False)
+        self.wrapY=ivw.properties.OptionPropertyInt("wrapY", "Wrapping Y",
+            [ ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
+                ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
+                ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror) ], 1)
+        self.addProperty(self.wrapY, owner=False)
+        self.wrapZ=ivw.properties.OptionPropertyInt("wrapZ", "Wrapping Z",
+            [ ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
+                ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
+                ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror) ], 1)
+        self.addProperty(self.wrapZ, owner=False)
 
         self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
 
@@ -120,7 +136,8 @@ class ChgcarSource(ivw.Processor):
 
         self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
         self.volume.dataMap.valueRange = self.volume.dataMap.dataRange
-
+        
+        self.volume.wrapping=[ivw.data.Wrapping(self.wrapX.value),ivw.data.Wrapping(self.wrapY.value),ivw.data.Wrapping(self.wrapZ.value)]
         self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
                                             basis=self.volume.basis, offset=self.volume.offset,
                                             pm=self.pm, margin=self.margin.value,

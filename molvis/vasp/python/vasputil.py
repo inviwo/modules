@@ -105,7 +105,7 @@ def parseFile(file, flipSign=False, centerData=True):
     volume.axes[2].name = "z"
     volume.axes[2].unit = ivw.data.Unit("Angstrom" )
     volume.dataMap.valueAxis.name = "Charge Density"
-    volume.dataMap.valueAxis.unit = ivw.data.Unit("eV")
+    volume.dataMap.valueAxis.unit = ivw.data.Unit("e")
 
     volume.basis = ivw.glm.mat3(basis)
     volume.offset = ivw.glm.vec3(offset)
