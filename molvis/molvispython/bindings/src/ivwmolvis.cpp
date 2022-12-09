@@ -46,7 +46,9 @@ PYBIND11_MODULE(ivwmolvis, m) {
     py::module::import("inviwopy");
 
     using namespace inviwo;
-    m.doc() = "Python interface for Inviwo MolVis";
+    m.doc() = R"doc(
+        MolVis Module API
+        )doc";
 
     exposeMolVis(m);
 

@@ -1,31 +1,31 @@
- #################################################################################
- #
- # Inviwo - Interactive Visualization Workshop
- #
- # Copyright (c) 2020-2022 Inviwo Foundation
- # All rights reserved.
- #
- # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met:
- #
- # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer.
- # 2. Redistributions in binary form must reproduce the above copyright notice,
- # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution.
- #
- # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- #
- #################################################################################
+#################################################################################
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2020-2022 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#################################################################################
 
 import inviwopy as ivw
 import ivwmolvis
@@ -33,6 +33,7 @@ import ivwmolvis
 import numpy
 
 from pathlib import Path
+
 
 def parseCubeFile(file, flipSign=False, centerData=True):
     file = Path(file)
@@ -67,8 +68,8 @@ def parseCubeFile(file, flipSign=False, centerData=True):
     bohrToAngstrom = 0.529177249
     splitted = lines[3].strip().split()
     sizeX = int(splitted[0])
-    # If sizeX<0 the input cube coordinates are assumed to be in Bohr, otherwise, they are interpreted as Angstroms.
-    # see http://gaussian.com/cubegen/
+    # If sizeX<0 the input cube coordinates are assumed to be in Bohr, otherwise,
+    # they are interpreted as Angstroms. see http://gaussian.com/cubegen/
     if sizeX < 0:
         sizeX = -sizeX
         unitsInAngstrom = True
@@ -103,13 +104,9 @@ def parseCubeFile(file, flipSign=False, centerData=True):
 
     sign = -1.0 if flipSign else 1.0
 
-    chg = []
-    for i in range(6 + numAtoms + extraLines, len(lines)):
-        splitted = lines[i].strip().split()
-        for val in splitted:
-            chg.append(sign * float(val))
+    chgdata = sign * numpy.fromstring(" ".join(lines[6 + numAtoms + extraLines:]),
+                                      sep=' ', dtype=numpy.float32)
 
-    chgdata = numpy.array(chg).astype(numpy.float32)
     chosenIdx = 0
     chgdata = chgdata[chosenIdx::nVal]
     size = (sizeX, sizeY, sizeZ)
@@ -117,8 +114,13 @@ def parseCubeFile(file, flipSign=False, centerData=True):
     chgdata = chgdata.flatten('F')
     chgdata = chgdata.reshape(size)
 
-    volume = ivw.data.Volume(chgdata)
-    volume.data = chgdata
+    volumepy = ivw.data.VolumePy(chgdata,
+                                 interpolation=ivw.data.InterpolationType.Linear,
+                                 wrapping=[ivw.data.Wrapping.Clamp,
+                                           ivw.data.Wrapping.Clamp,
+                                           ivw.data.Wrapping.Clamp])
+
+    volume = ivw.data.Volume(volumepy)
     volume.dataMap.dataRange = ivw.glm.dvec2(chgdata.min(), chgdata.max())
     volume.dataMap.valueRange = volume.dataMap.dataRange
 
@@ -127,7 +129,7 @@ def parseCubeFile(file, flipSign=False, centerData=True):
     volume.axes[1].name = "y"
     volume.axes[1].unit = ivw.data.Unit("Angstrom")
     volume.axes[2].name = "z"
-    volume.axes[2].unit = ivw.data.Unit("Angstrom" )
+    volume.axes[2].unit = ivw.data.Unit("Angstrom")
     volume.dataMap.valueAxis.name = "Charge Density"
     volume.dataMap.valueAxis.unit = ivw.data.Unit("e/Angstrom^3")
 

@@ -1,7 +1,8 @@
-# Name: VolumeExtractChannel 
+# Name: VolumeExtractChannel
 
 import inviwopy as ivw
 import numpy as np
+
 
 class VolumeExtractChannel(ivw.Processor):
     def __init__(self, id, name):
@@ -17,11 +18,11 @@ class VolumeExtractChannel(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-    		classIdentifier = "org.inviwo.VolumeExtractChannel", 
-    		displayName = "Volume Extract Channel",
-    		category = "Volume Operation",
-    		codeState = ivw.CodeState.Stable,
-    		tags = ivw.Tags.PY
+            classIdentifier="org.inviwo.VolumeExtractChannel",
+            displayName="Volume Extract Channel",
+            category="Volume Operation",
+            codeState=ivw.CodeState.Stable,
+            tags=ivw.Tags.PY
         )
 
     def getProcessorInfo(self):
@@ -30,12 +31,12 @@ class VolumeExtractChannel(ivw.Processor):
     def process(self):
         volume = self.inport.getData()
         if len(volume.data.shape) <= 3:
-             self.outport.setData(volume)
-             return
+            self.outport.setData(volume)
+            return
 
         channels = volume.data.shape[3]
 
-        volumeSlice = volume.data[:,:,:, np.clip(self.channel.value, 0, channels-1)]
+        volumeSlice = volume.data[:, :, :, np.clip(self.channel.value, 0, channels - 1)]
         newVolume = ivw.data.Volume(volumeSlice)
         newVolume.dataMap = volume.dataMap
         newVolume.modelMatrix = volume.modelMatrix

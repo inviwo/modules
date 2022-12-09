@@ -1,31 +1,31 @@
- #################################################################################
- #
- # Inviwo - Interactive Visualization Workshop
- #
- # Copyright (c) 2022 Inviwo Foundation
- # All rights reserved.
- #
- # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met:
- #
- # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer.
- # 2. Redistributions in binary form must reproduce the above copyright notice,
- # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution.
- #
- # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- #
- #################################################################################
+#################################################################################
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2022 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#################################################################################
 
 import inviwopy as ivw
 import ivwdataframe as df
@@ -36,20 +36,22 @@ import numpy
 from typing import List
 from collections.abc import Callable
 
-def _adjustMargins(pos, margin : float, func : Callable[[List[float]], None]):
+
+def _adjustMargins(pos, margin: float, func: Callable[[List[float]], None]):
     if margin > 0.0:
         for shift in itertools.product([-1, 0, 1], repeat=3):
-            if all([x+s > -margin and x+s < 1 + margin for s, x in zip(shift, pos)]):
-                func([x+s for s, x in zip(shift, pos)])
+            if all([x + s > -margin and x + s < 1 + margin for s, x in zip(shift, pos)]):
+                func([x + s for s, x in zip(shift, pos)])
     else:
         func(pos)
 
-def createMesh(pos : List[numpy.array], 
-               elements : List[ivwmolvis.atomicelement.element],
-               basis : ivw.glm.mat3=None, offset : ivw.glm.vec3=ivw.glm.vec3(0, 0, 0),
-               pm : ivw.PickingMapper=None,
-               margin : float=0.0,
-               radiusscaling : float=1.0):
+
+def createMesh(pos: List[numpy.array],
+               elements: List[ivwmolvis.atomicelement.element],
+               basis: ivw.glm.mat3 = None, offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0),
+               pm: ivw.PickingMapper = None,
+               margin: float = 0.0,
+               radiusscaling: float = 1.0):
     """
     Create a sphere Mesh from a list of 3D positions.
 
@@ -105,9 +107,10 @@ def createMesh(pos : List[numpy.array],
         numpy.array(index).astype(numpy.uint32)))
     return mesh
 
-def createMolecularStructure(pos : List[numpy.array], 
-                             elements : List[ivwmolvis.atomicelement.element],
-                             margin : float=0.0, offset : ivw.glm.vec3=ivw.glm.vec3(0, 0, 0)):
+
+def createMolecularStructure(pos: List[numpy.array],
+                             elements: List[ivwmolvis.atomicelement.element],
+                             margin: float = 0.0, offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0)):
     """
     Create a molecular representation from a list of 3D positions.
 
@@ -141,9 +144,10 @@ def createMolecularStructure(pos : List[numpy.array],
                                                                 residues=[], chains=[],
                                                                 bonds=bonds))
 
-def createDataFrame(pos : List[numpy.array], 
-                    elements : List[ivwmolvis.atomicelement.element],
-                    modelmat : ivw.glm.mat3=ivw.glm.mat3(1.0)):
+
+def createDataFrame(pos: List[numpy.array],
+                    elements: List[ivwmolvis.atomicelement.element],
+                    modelmat: ivw.glm.mat4 = ivw.glm.mat4(1.0)):
     """
     Create a DataFrame from a list of 3D positions and elements.
 
