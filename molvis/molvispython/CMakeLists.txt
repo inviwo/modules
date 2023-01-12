@@ -29,7 +29,6 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${PYTHON_FILES})
 target_link_libraries(inviwo-module-molvispython PUBLIC 
-    pybind11::module
     $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>
 )
 

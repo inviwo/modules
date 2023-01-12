@@ -144,7 +144,8 @@ class CubeSource(ivw.Processor):
                                             basis=self.volume.basis, offset=self.volume.offset,
                                             pm=self.pm, radiusscaling=self.radiusScaling.value)
 
-        self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes)
+        self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
+                                                      modelmat=ivw.glm.mat4(1.0))
 
         offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
         self.molecule = molviscommon.createMolecularStructure(
