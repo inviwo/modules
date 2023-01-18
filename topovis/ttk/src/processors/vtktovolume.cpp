@@ -183,7 +183,11 @@ void VTKToVolume::process() {
         volume_ = std::make_shared<Volume>(ram);
 
         const dvec3 offset = glm::make_vec3(vtkImg->GetOrigin());
-        const dmat3 basis = glm::make_mat3x3(vtkImg->GetDirectionMatrix()->GetData());
+        const dvec3 spacing = glm::make_vec3(vtkImg->GetSpacing());
+        const dmat3 direction = glm::make_mat3x3(vtkImg->GetDirectionMatrix()->GetData());
+        const dvec3 ddim{dim};
+        const dmat3 basis{direction[0] * ddim[0] * spacing[0], direction[1] * ddim[1] * spacing[1],
+                          direction[2] * ddim[2] * spacing[2]};
 
         volume_->setBasis(static_cast<mat3>(basis));
         volume_->setOffset(static_cast<vec3>(offset));
@@ -198,6 +202,10 @@ void VTKToVolume::process() {
                 volume_->dataMap_.valueAxis.unit = units::unit_from_string(m.str(2));
             }
         }
+        if (volume_->dataMap_.valueAxis.name.empty()) {
+            volume_->dataMap_.valueAxis.name = array->GetName();
+        }
+
         if (info->Has(vtkDataArray::COMPONENT_RANGE())) {
             auto* range = info->Get(vtkDataArray::COMPONENT_RANGE());
             volume_->dataMap_.dataRange[0] = range[0];
