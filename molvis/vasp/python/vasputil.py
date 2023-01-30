@@ -94,7 +94,7 @@ def parseFile(file, flipSign=False, centerData=True):
     chgdata = numpy.array(chg).astype(numpy.float32)
     chgdata.shape = [dims[0], dims[1], dims[2]]
 
-    pyvolume = ivw.data.PyVolume(chgdata,
+    pyvolume = ivw.data.VolumePy(chgdata,
                                  interpolation=ivw.data.InterpolationType.Linear,
                                  wrapping=[ivw.data.Wrapping.Repeat,
                                            ivw.data.Wrapping.Repeat,
