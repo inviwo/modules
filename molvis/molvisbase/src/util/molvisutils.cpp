@@ -168,7 +168,7 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     std::vector<std::vector<size_t>> cellData;
 
     auto cellCoord = [&](const dvec3& pos) -> size3_t {
-        return glm::clamp(size3_t((pos - min) / cellExt), size3_t(0), dims - size_t{1});
+        return size3_t(glm::clamp((pos - min) / cellExt, dvec3(0), dvec3(dims) - dvec3{1}));
     };
 
     util::IndexMapper3D im(dims);

@@ -1,33 +1,33 @@
 # Name: ChgcarSource
 
- #################################################################################
- #
- # Inviwo - Interactive Visualization Workshop
- #
- # Copyright (c) 2020-2022 Inviwo Foundation
- # All rights reserved.
- #
- # Redistribution and use in source and binary forms, with or without
- # modification, are permitted provided that the following conditions are met:
- #
- # 1. Redistributions of source code must retain the above copyright notice, this
- # list of conditions and the following disclaimer.
- # 2. Redistributions in binary form must reproduce the above copyright notice,
- # this list of conditions and the following disclaimer in the documentation
- # and/or other materials provided with the distribution.
- #
- # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- # ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- # WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- # DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
- # ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- # (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- # LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- #
- #################################################################################
+#################################################################################
+#
+# Inviwo - Interactive Visualization Workshop
+#
+# Copyright (c) 2020-2022 Inviwo Foundation
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+# list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+# this list of conditions and the following disclaimer in the documentation
+# and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#################################################################################
 
 import inviwopy as ivw
 import ivwdataframe as df
@@ -37,6 +37,7 @@ import vasputil
 
 import numpy as np
 from pathlib import Path
+
 
 # Description found at https://cms.mpi.univie.ac.at/wiki/index.php/CHGCAR
 class ChgcarSource(ivw.Processor):
@@ -82,32 +83,35 @@ class ChgcarSource(ivw.Processor):
         self.addProperty(self.centerData)
 
         self.margin = ivw.properties.FloatProperty(
-            "margin", "Border Repetition Margin", 0.05, 
-            min=(0.0, ivw.properties.ConstraintBehavior.Immutable), 
+            "margin", "Border Repetition Margin", 0.05,
+            min=(0.0, ivw.properties.ConstraintBehavior.Immutable),
             max=(0.5, ivw.properties.ConstraintBehavior.Editable), increment=0.01)
         self.addProperty(self.margin)
 
         self.radiusScaling = ivw.properties.FloatProperty(
             "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
         self.addProperty(self.radiusScaling)
-        #Add wrapping option for VASP. Default is repeat since the data is most likely periodic. 
-        self.wrapX=ivw.properties.OptionPropertyInt("wrapX", "Wrapping X",
-            [ ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
-                ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
-                ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror) ], 1)
+        # Add wrapping option for VASP. Default is repeat since the data is most likely periodic.
+        self.wrapX = ivw.properties.OptionPropertyInt(
+            "wrapX", "Wrapping X",
+            [ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
+             ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
+             ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror)], 1)
         self.addProperty(self.wrapX, owner=False)
-        self.wrapY=ivw.properties.OptionPropertyInt("wrapY", "Wrapping Y",
-            [ ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
-                ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
-                ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror) ], 1)
+        self.wrapY = ivw.properties.OptionPropertyInt(
+            "wrapY", "Wrapping Y",
+            [ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
+             ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
+             ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror)], 1)
         self.addProperty(self.wrapY, owner=False)
-        self.wrapZ=ivw.properties.OptionPropertyInt("wrapZ", "Wrapping Z",
-            [ ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
-                ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
-                ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror) ], 1)
+        self.wrapZ = ivw.properties.OptionPropertyInt(
+            "wrapZ", "Wrapping Z",
+            [ivw.properties.IntOption("clamp", "Clamp", ivw.data.Wrapping.Clamp),
+             ivw.properties.IntOption("repeat", "Repeat", ivw.data.Wrapping.Repeat),
+             ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror)], 1)
         self.addProperty(self.wrapZ, owner=False)
 
-        self.pm = inviwopy.PickingMapper(self, 1, lambda x: self.callback(x))
+        self.pm = ivw.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
     def processorInfo():
@@ -134,10 +138,13 @@ class ChgcarSource(ivw.Processor):
             self.chgcarFilePath.value, self.flipSign.value, self.centerData.value)
         self.dataRange.value = self.volume.dataMap.dataRange
 
-        self.volume.dataMap.dataRange = self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
+        self.volume.dataMap.dataRange = (
+            self.customDataRange.value if self.useCustomRange.value else self.dataRange.value
+        )
         self.volume.dataMap.valueRange = self.volume.dataMap.dataRange
-        
-        self.volume.wrapping=[ivw.data.Wrapping(self.wrapX.value),ivw.data.Wrapping(self.wrapY.value),ivw.data.Wrapping(self.wrapZ.value)]
+
+        self.volume.wrapping = [ivw.data.Wrapping(self.wrapX.value), ivw.data.Wrapping(
+            self.wrapY.value), ivw.data.Wrapping(self.wrapZ.value)]
         self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
                                             basis=self.volume.basis, offset=self.volume.offset,
                                             pm=self.pm, margin=self.margin.value,
@@ -147,8 +154,8 @@ class ChgcarSource(ivw.Processor):
                                                       modelmat=self.volume.modelMatrix)
 
         offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
-        self.molecule = molviscommon.createMolecularStructure(pos=self.atomPos, elements=self.atomTypes, 
-                                                              margin=self.margin.value, offset=offset)
+        self.molecule = molviscommon.createMolecularStructure(
+            pos=self.atomPos, elements=self.atomTypes, margin=self.margin.value, offset=offset)
 
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
@@ -156,9 +163,11 @@ class ChgcarSource(ivw.Processor):
         self.outports.molecule.setData(self.molecule)
 
     def callback(self, pickevent):
-        if (pickevent.state == inviwopy.PickingState.Updated):
+        if (pickevent.state == ivw.PickingState.Updated):
             i = pickevent.pickedId
             pos = np.dot(np.array(self.volume.basis), self.atomPos[i])
-            pickevent.setToolTip(f"Atom id: {i}\nType: {ivwmolvis.atomicelement.symbol(self.atomTypes[i])}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
+            elem = ivwmolvis.atomicelement.symbol(self.atomTypes[i])
+            pickevent.setToolTip(
+                f"Atom id: {i}\nType: {elem}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
         else:
             pickevent.setToolTip("")
