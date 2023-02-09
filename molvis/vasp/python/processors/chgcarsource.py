@@ -40,12 +40,10 @@ import numpy as np
 from pathlib import Path
 
 import importlib
-
 importlib.reload(molviscommon)
 
+
 # Description found at https://cms.mpi.univie.ac.at/wiki/index.php/CHGCAR
-
-
 class ChgcarSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
@@ -204,8 +202,8 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
 
         if (pickEvent.pressState == ivw.PickingPressState.Release
             and pickEvent.pressItem == ivw.PickingPressItem.Primary
-            and pickEvent.deltaPressedPosition.x == 0
-                and pickEvent.deltaPressedPosition.y == 0):
+            and abs(pickEvent.deltaPressedPosition.x) < 0.01
+                and abs(pickEvent.deltaPressedPosition.y) < 0.01):
 
             selection = self.bnlInport.getSelectedIndices()
             selection.flip(pickEvent.pickedId)
