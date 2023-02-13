@@ -133,7 +133,6 @@ public:
                            std::function<void(Shader&)> setUniforms) const override;
     virtual bool usesFragmentLists() const override;
     virtual Document getInfo() const override;
-    virtual Rasterization* clone() const override;
 
 protected:
     const float BallAndStickVDWScale;

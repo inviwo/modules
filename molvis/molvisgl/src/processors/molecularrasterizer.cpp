@@ -537,6 +537,4 @@ Document MolecularRasterization::getInfo() const {
     return doc;
 }
 
-Rasterization* MolecularRasterization::clone() const { return new MolecularRasterization(*this); }
-
 }  // namespace inviwo
