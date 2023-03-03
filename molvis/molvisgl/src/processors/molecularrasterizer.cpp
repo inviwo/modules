@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2021-2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -536,7 +536,5 @@ Document MolecularRasterization::getInfo() const {
                                 usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
     return doc;
 }
-
-Rasterization* MolecularRasterization::clone() const { return new MolecularRasterization(*this); }
 
 }  // namespace inviwo
