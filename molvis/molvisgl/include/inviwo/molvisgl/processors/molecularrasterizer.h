@@ -45,23 +45,29 @@
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
 #include <inviwo/molvisbase/util/aminoacid.h>
 
-#include <modules/meshrenderinggl/datastructures/rasterization.h>
-#include <modules/meshrenderinggl/ports/rasterizationport.h>
+#include <modules/oit/processors/rasterizer.h>
+#include <modules/oit/ports/rasterizationport.h>
 
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 namespace inviwo {
 
-class IVW_MODULE_MOLVISGL_API MolecularRasterizer : public Processor {
+class IVW_MODULE_MOLVISGL_API MolecularRasterizer : public Rasterizer {
     friend class MolecularRasterization;
 
 public:
     MolecularRasterizer();
     virtual ~MolecularRasterizer() = default;
 
-    virtual void process() override;
-
     virtual void initializeResources() override;
+
+    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+
+    virtual UseFragmentList usesFragmentLists() const override;
+
+    virtual std::optional<mat4> boundingBox() const override;
+
+    virtual Document getInfo() const override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -80,6 +86,8 @@ private:
     const float BallAndStickVDWScale = 0.3f;
     const float BallAndStickLicoriceScale = 0.5f;
 
+    virtual void setUniforms(Shader& shader) override;
+
     void configureVdWShader(Shader& shader);
     void configureLicoriceShader(Shader& shader);
     void configureOITShader(Shader& shader);
@@ -90,7 +98,6 @@ private:
 
     molvis::MolecularStructureFlatMultiInport inport_;
     BrushingAndLinkingInport brushing_;
-    RasterizationOutport outport_;
 
     OptionProperty<Representation> representation_;
     OptionProperty<Coloring> coloring_;
@@ -116,40 +123,10 @@ private:
     CameraProperty camera_;
     SimpleLightingProperty lighting_;
 
-    std::shared_ptr<MeshShaderCache> vdwShaders_;
-    std::shared_ptr<MeshShaderCache> licoriceShaders_;
+    MeshShaderCache vdwShaders_;
+    MeshShaderCache licoriceShaders_;
     PickingMapper atomPicking_;
 
-    std::vector<std::shared_ptr<Mesh>> meshes_;
-};
-
-/**
- * \brief Functor object that will render molecular data into a fragment list.
- */
-class IVW_MODULE_MOLVISGL_API MolecularRasterization : public Rasterization {
-public:
-    MolecularRasterization(const MolecularRasterizer& processor);
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms) const override;
-    virtual bool usesFragmentLists() const override;
-    virtual Document getInfo() const override;
-
-protected:
-    const float BallAndStickVDWScale;
-    const float BallAndStickLicoriceScale;
-
-    MolecularRasterizer::Representation representation_;
-    float radiusScaling_;
-    float defaultRadius_;
-    LightingState lighting_;
-    SelectionColorState highlighted_;
-    SelectionColorState selected_;
-    SelectionColorState filtered_;
-    float uniformAlpha_;
-    const bool forceOpaque_;
-
-    std::shared_ptr<MeshShaderCache> vdwShaders_;
-    std::shared_ptr<MeshShaderCache> licoriceShaders_;
     std::vector<std::shared_ptr<Mesh>> meshes_;
 };
 

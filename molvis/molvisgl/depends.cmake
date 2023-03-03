@@ -4,7 +4,7 @@ set(dependencies
     InviwoMolVisBaseModule
     InviwoOpenGLModule
     InviwoBaseGLModule
-    InviwoMeshRenderingGLModule
+    InviwoOITModule
     InviwoBrushingAndLinkingModule
 )
 
