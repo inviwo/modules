@@ -66,7 +66,8 @@ void VolumeToVTK::process() {
 
     data_ = vtkSmartPointer<vtkImageData>::New();
     data_->SetDimensions(dim.x, dim.y, dim.z);
-    data_->SetSpacing(spacing.x, spacing.y, spacing.z);
+    // data_->SetSpacing(spacing.x, spacing.y, spacing.z);
+    data_->SetSpacing(1, 1, 1);
     data_->SetOrigin(glm::value_ptr(offset));
     data_->SetDirectionMatrix(glm::value_ptr(direction));
 
