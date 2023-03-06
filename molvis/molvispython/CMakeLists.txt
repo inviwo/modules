@@ -27,10 +27,12 @@ ivw_add_unittest(${TEST_FILES})
 #--------------------------------------------------------------------
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
+find_package(pybind11 CONFIG REQUIRED)
 target_link_libraries(inviwo-module-molvispython PUBLIC 
     pybind11::embed 
     $<BUILD_INTERFACE:${PYTHON_LIBRARIES}>
 )
+target_compile_definitions(inviwo-module-molvispython PUBLIC PYBIND11_USE_SMART_HOLDER_AS_DEFAULT)
 
 add_subdirectory(bindings)
 
