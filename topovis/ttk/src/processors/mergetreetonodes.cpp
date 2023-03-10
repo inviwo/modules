@@ -35,10 +35,10 @@ namespace inviwo {
 const ProcessorInfo MergeTreeToNodes::processorInfo_{
     "org.inviwo.MergeTreeToNodes",  // Class identifier
     "Merge Tree To Nodes",          // Display name
-    "Undefined",                    // Category
+    "VTK",                          // Category
     CodeState::Experimental,        // Code state
-    Tags::None,                     // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp};
+    Tag::CPU | Tag{"VTK"},          // Tags
+    R"(Create merge tree nodes (with node id, scalar value, critical type and parent id) from VTK critical points and VTK edges)"_unindentHelp};
 
 const ProcessorInfo MergeTreeToNodes::getProcessorInfo() const { return processorInfo_; }
 
@@ -68,7 +68,7 @@ void MergeTreeToNodes::process() {
         treeEdges->getColumn("upNodeId")->getBuffer()->getRepresentation<BufferRAM>());
     auto upNodeIds = bufferram_upNodes->getDataContainer();
 
-	// Find parent id for each node (the root will have no parent)
+    // Find parent id for each node (the root will have no parent)
     std::vector<int> parentIds = {};
     const size_t numRows = treeCrits->getNumberOfRows();
     for (size_t i = 0; i < numRows; i++) {
