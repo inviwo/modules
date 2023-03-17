@@ -67,7 +67,7 @@ void TensorField3DAngle::process() {
     const auto numberOfElements = maev1.size();
 
     auto iv = std::make_shared<InvariantSpace>(
-        3, std::vector<std::string>{u8"φmax", u8"φmiddle", u8"φmin"},
+        3, std::vector<std::string>{"φmax", "φmiddle", "φmin"},
         std::vector<TensorFeature>{TensorFeature::Unspecified, TensorFeature::Unspecified,
                                    TensorFeature::Unspecified});
 

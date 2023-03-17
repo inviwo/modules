@@ -34,43 +34,8 @@ namespace inviwo {
 
 DataFrameClusteringModule::DataFrameClusteringModule(InviwoApplication* app)
     : InviwoModule(app, "DataFrameClustering") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
     registerProcessor<DataFrameClustering>();
-    // registerProcessor<DataFrameClusteringProcessor>();
-
-    // Properties
-    // registerProperty<DataFrameClusteringProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<DataFrameClusteringReader>());
-    // registerDataWriter(std::make_unique<DataFrameClusteringWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<DataFrameClusteringDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<DataFrameClusteringOutport>();
-    // registerPort<DataFrameClusteringInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<DataFrameClusteringPropertyWidget,
-    // DataFrameClusteringProperty>("Default");
-
-    // Dialogs
-    // registerDialog<DataFrameClusteringDialog>(DataFrameClusteringOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<DataFrameClusteringCapabilities>());
-    // registerSettings(std::make_unique<DataFrameClusteringSettings>());
-    // registerMetaData(std::make_unique<DataFrameClusteringMetaData>());
-    // registerPortInspector("DataFrameClusteringOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<DataFrameClusteringDrawer>());
 }
 
 }  // namespace inviwo
