@@ -248,8 +248,8 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
         // on-demand loading via loader class
         auto diskRepr = std::make_shared<VolumeDisk>(sequenceDirectory, vol->getDimensions(),
                                                      vol->getDataFormat());
-        auto loader = util::make_unique<GCDMVolumeRAMLoader>(
-            sequenceDirectory, vol->getDimensions(), vol->getDataFormat(), true, series);
+        auto loader = std::make_unique<GCDMVolumeRAMLoader>(sequenceDirectory, vol->getDimensions(),
+                                                            vol->getDataFormat(), true, series);
         diskRepr->setLoader(loader.release());
         vol->addRepresentation(diskRepr);
         outputVolumes->push_back(vol);
@@ -424,7 +424,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
                 // on-demand loading via loader class
                 auto diskRepr = std::make_shared<VolumeDisk>(dicomdirPath, vol->getDimensions(),
                                                              vol->getDataFormat());
-                auto loader = util::make_unique<GCDMVolumeRAMLoader>(
+                auto loader = std::make_unique<GCDMVolumeRAMLoader>(
                     dicomdirPath, vol->getDimensions(), vol->getDataFormat(), true, series);
                 diskRepr->setLoader(loader.release());
                 vol->addRepresentation(diskRepr);

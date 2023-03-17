@@ -81,7 +81,7 @@ public:
         typedef typename T::type F;
 
         const std::size_t size = glm::compMul(dimension_);
-        auto data = util::make_unique<F[]>(size);
+        auto data = std::make_unique<F[]>(size);
         if (!data) {
             throw DataReaderException(
                 "Error: Could not allocate memory for loading mevis volume data: " + tif_file_,
