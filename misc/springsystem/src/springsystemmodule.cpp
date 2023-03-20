@@ -33,41 +33,8 @@
 namespace inviwo {
 
 SpringSystemModule::SpringSystemModule(InviwoApplication* app) : InviwoModule(app, "SpringSystem") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
     registerProcessor<SpringSystemProcessor>();
-
-    // Properties
-    // registerProperty<SpringSystemProperty>();
-
-    // Readers and writes
-    // registerDataReader(util::make_unique<SpringSystemReader>());
-    // registerDataWriter(util::make_unique<SpringSystemWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(util::make_unique<SpringSystemDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<SpringSystemOutport>("SpringSystemOutport");
-    // registerPort<SpringSystemInport>("SpringSystemInport");
-
-    // PropertyWidgets
-    // registerPropertyWidget<SpringSystemPropertyWidget, SpringSystemProperty>("Default");
-
-    // Dialogs
-    // registerDialog<SpringSystemDialog>(SpringSystemOutport);
-
-    // Other varius things
-    // registerCapabilities(util::make_unique<SpringSystemCapabilities>());
-    // registerSettings(util::make_unique<SpringSystemSettings>());
-    // registerMetaData(util::make_unique<SpringSystemMetaData>());
-    // registerPortInspector("SpringSystemOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<SpringSystemDrawer>());
 }
 
 }  // namespace inviwo

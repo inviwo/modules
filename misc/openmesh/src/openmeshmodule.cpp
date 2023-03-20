@@ -58,8 +58,8 @@ OpenMeshModule::OpenMeshModule(InviwoApplication* app) : InviwoModule(app, "Open
     registerProcessor<VertexNormals>();
 
     // Readers and writes
-    registerDataReader(util::make_unique<OpenMeshReader>());
-    registerDataWriter(util::make_unique<OpenMeshWriter>());
+    registerDataReader(std::make_unique<OpenMeshReader>());
+    registerDataWriter(std::make_unique<OpenMeshWriter>());
 
     LogInfo("OpenMesh version: " << OM_GET_VER << "." << OM_GET_MAJ << "." << OM_GET_MIN);
 }

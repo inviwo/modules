@@ -108,7 +108,8 @@ void LogRendererProcessors::LoggerHandler::log(std::string_view logSource, LogLe
     if (logLevel == LogLevel::Info && !owner_->logInfo_.get()) return;
     if (logLevel == LogLevel::Warn && !owner_->logWarnings_.get()) return;
     if (logLevel == LogLevel::Error && !owner_->logErrors_.get()) return;
-    msg = fmt::format(owner_->fmt_.get(), logSource, logLevel, audience, file, function, line, msg);
+    msg = fmt::format(fmt::runtime(owner_->fmt_.get()), logSource, logLevel, audience, file,
+                      function, line, msg);
     owner_->rows_.emplace_back(msg);
 
     dispatchFront([network = owner_->getNetwork(), id = owner_->getIdentifier()]() {

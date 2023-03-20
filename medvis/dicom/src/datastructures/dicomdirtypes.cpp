@@ -249,10 +249,8 @@ void Series::updateImageInformation(const std::string& dicompath) {
             fmt::format("varying slopes/intercepts in DICOM series '{}' ('{}')", desc, dicompath));
     }
     if (warnPixelSpacing) {
-        LogWarn(
-            fmt::format("pixel spacings differ in DICOM series '{}', "
-                        "expected {} but found {} ('{}')",
-                        desc, toString(refImage.pixelSpacing), dicompath));
+        LogWarn(fmt::format("pixel spacings differ in DICOM series '{}', expected {} ('{}')", desc,
+                            toString(refImage.pixelSpacing), dicompath));
     }
     if (warnOrientation) {
         LogWarn(

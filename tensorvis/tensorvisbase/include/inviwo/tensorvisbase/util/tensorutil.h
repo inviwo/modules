@@ -180,42 +180,42 @@ std::array<double, 3> IVW_MODULE_TENSORVISBASE_API calculateEigenValues(const dm
 
 dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3& tensor);
 
-static const std::string lamda_str{u8"λ"};
+static const std::string lamda_str{"λ"};
 
-static const std::string lamda1_str{u8"λ₁"};
+static const std::string lamda1_str{"λ₁"};
 
-static const std::string lamda2_str{u8"λ₂"};
+static const std::string lamda2_str{"λ₂"};
 
-static const std::string lamda3_str{u8"λ₃"};
+static const std::string lamda3_str{"λ₃"};
 
-static const std::string theta_str{u8"θ"};
+static const std::string theta_str{"θ"};
 
-static const std::string phi_str{u8"φ"};
+static const std::string phi_str{"φ"};
 
-static const std::string sigma_str{u8"σ"};
+static const std::string sigma_str{"σ"};
 
-static const std::string sigma1_str{u8"σ₁"};
-static const std::string sigma1safe_str{u8"σ1"};
+static const std::string sigma1_str{"σ₁"};
+static const std::string sigma1safe_str{"σ1"};
 
-static const std::string sigma2_str{u8"σ₂"};
-static const std::string sigma2safe_str{u8"σ2"};
+static const std::string sigma2_str{"σ₂"};
+static const std::string sigma2safe_str{"σ2"};
 
-static const std::string sigma3_str{u8"σ₃"};
-static const std::string sigma3safe_str{u8"σ3"};
+static const std::string sigma3_str{"σ₃"};
+static const std::string sigma3safe_str{"σ3"};
 
-static const std::string i1_str{u8"I₁"};
+static const std::string i1_str{"I₁"};
 
-static const std::string i2_str{u8"I₂"};
+static const std::string i2_str{"I₂"};
 
-static const std::string i3_str{u8"I₃"};
+static const std::string i3_str{"I₃"};
 
-static const std::string j1_str{u8"J₁"};
+static const std::string j1_str{"J₁"};
 
-static const std::string j2_str{u8"J₂"};
+static const std::string j2_str{"J₂"};
 
-static const std::string j3_str{u8"J₃"};
+static const std::string j3_str{"J₃"};
 
-static const std::string tau_str{u8"τ"};
+static const std::string tau_str{"τ"};
 }  // namespace tensorutil
 
 }  // namespace inviwo

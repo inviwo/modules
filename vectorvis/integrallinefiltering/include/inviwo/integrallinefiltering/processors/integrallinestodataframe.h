@@ -115,13 +115,13 @@ public:
             std::vector<float>* avg = nullptr;
             std::vector<float>* sds = nullptr;
             if (avg_.get()) {
-                avg = &dataFrame.addColumn<float>(name + u8" μ")
+                avg = &dataFrame.addColumn<float>(name + " μ")
                            ->getTypedBuffer()
                            ->getEditableRAMRepresentation()
                            ->getDataContainer();
             }
             if (sd_.get()) {
-                sds = &dataFrame.addColumn<float>(name + u8" σ")
+                sds = &dataFrame.addColumn<float>(name + " σ")
                            ->getTypedBuffer()
                            ->getEditableRAMRepresentation()
                            ->getDataContainer();
