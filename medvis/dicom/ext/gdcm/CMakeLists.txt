@@ -3,6 +3,7 @@ project(gdcm)
 # Add grassroots Dicom reader
 set(GDCM_ALWAYS_TRACE_MACRO ON CACHE BOOL "enable errors/warnings/debug messages from GDCM" FORCE)
 set(GDCM_BUILD_DOCBOOK_MANPAGES OFF CACHE BOOL "disable build of docbook manpages" FORCE)
+set(GDCM_BUILD_TESTING OFF CACHE BOOL "disable build of gdcm testing" FORCE)
 
 set(GDCM_EXT_DIR gdcm)
 

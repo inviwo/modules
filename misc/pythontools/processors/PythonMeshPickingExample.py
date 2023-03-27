@@ -1,10 +1,10 @@
-# Name: PythonMeshExample
+# Name: PythonMeshPickingExample
 
 import inviwopy as ivw
 import numpy as np
 
 
-class PythonMeshExample(ivw.Processor):
+class PythonMeshPickingExample(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
         self.outport = ivw.data.MeshOutport("outport")
@@ -22,15 +22,15 @@ class PythonMeshExample(ivw.Processor):
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
-            classIdentifier="org.inviwo.PythonMeshExample",
-            displayName="Python Mesh Example",
+            classIdentifier="org.inviwo.PythonMeshPickingExample",
+            displayName="Python Mesh Picking Example",
             category="Python",
             codeState=ivw.CodeState.Stable,
             tags=ivw.Tags.PY
         )
 
     def getProcessorInfo(self):
-        return PythonMeshExample.processorInfo()
+        return PythonMeshPickingExample.processorInfo()
 
     def process(self):
         count = self.count.value
