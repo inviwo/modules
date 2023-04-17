@@ -304,6 +304,8 @@ MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(dat
     }
 }
 
+MolecularStructure* MolecularStructure::clone() const { return new MolecularStructure(*this); }
+
 const MolecularData& MolecularStructure::data() const { return data_; }
 
 const Atoms& MolecularStructure::atoms() const { return data_.atoms; }
@@ -380,6 +382,12 @@ const std::vector<size_t>& MolecularStructure::getResidueIndices() const {
 const std::vector<size_t>& MolecularStructure::getBackboneSegmentIndices() const {
     return chainSegmentIndices_;
 }
+
+static_assert(!std::is_default_constructible_v<MolecularStructure>);
+static_assert(std::is_copy_constructible_v<MolecularStructure>);
+static_assert(std::is_copy_assignable_v<MolecularStructure>);
+static_assert(std::is_move_constructible_v<MolecularStructure>);
+static_assert(std::is_move_assignable_v<MolecularStructure>);
 
 }  // namespace molvis
 
