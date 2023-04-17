@@ -285,7 +285,13 @@ Document createToolTip(const MolecularStructure& s, int atomIndex) {
     using P = Document::PathComponent;
     const auto& atoms = s.atoms();
     Document doc;
-    doc.append("b", fmt::format("Atom {}", atomIndex), {{"style", "color:white;"}});
+
+    if (!atoms.serialNumbers.empty()) {
+        doc.append("b", fmt::format("Atom {} ({})", atoms.serialNumbers[atomIndex], atomIndex),
+                   {{"style", "color:white;"}});
+    } else {
+        doc.append("b", fmt::format("Atom {}", atomIndex), {{"style", "color:white;"}});
+    }
     utildoc::TableBuilder tb(doc.handle(), P::end());
     const auto& pos = atoms.positions[atomIndex];
     if (!atoms.atomicNumbers.empty()) {
