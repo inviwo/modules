@@ -424,6 +424,13 @@ void exposeMolVis(pybind11::module& m) {
         .def("getChainResidues", &MolecularStructure::getChainResidues, py::arg("chainId"))
         .def("getResidueIndices", &MolecularStructure::getResidueIndices)
 
+        .def_property("modelMatrix", &MolecularStructure::getModelMatrix,
+                      &MolecularStructure::setModelMatrix)
+        .def_property("worldMatrix", &MolecularStructure::getWorldMatrix,
+                      &MolecularStructure::setWorldMatrix)
+        .def_property("basis", &MolecularStructure::getBasis, &MolecularStructure::setBasis)
+        .def_property("offset", &MolecularStructure::getOffset, &MolecularStructure::setOffset)
+
         .def("__repr__", [](const MolecularStructure& s) {
             return fmt::format("<MolecularStructure: {} atom(s), residues {}, chains {}>",
                                s.atoms().positions.size(), s.hasResidues() ? "yes" : "no",

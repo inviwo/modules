@@ -110,7 +110,9 @@ def createMesh(pos: List[numpy.array],
 
 def createMolecularStructure(pos: List[numpy.array],
                              elements: List[ivwmolvis.atomicelement.element],
-                             margin: float = 0.0, offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0)):
+                             margin: float = 0.0, 
+                             basis: ivw.glm.mat3 = None, 
+                             offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0)):
     """
     Create a molecular representation from a list of 3D positions.
 
@@ -123,26 +125,31 @@ def createMolecularStructure(pos: List[numpy.array],
     """
 
     positions = []
-    indices = []
+    serialnumbers = []
     atomicnumbers = []
     for i, p in enumerate(pos):
         element = elements[i]
 
         def addAtom(atompos):
-            positions.append(ivw.glm.dvec3(atompos) + offset)
-            indices.append(i)
+            positions.append(ivw.glm.dvec3(atompos))
+            serialnumbers.append(i)
             atomicnumbers.append(element)
 
         _adjustMargins(p, margin, addAtom)
 
     atoms = ivwmolvis.Atoms()
     atoms.positions = positions
-    atoms.serialnumbers = indices
+    atoms.serialnumbers = serialnumbers
     atoms.atomicnumbers = atomicnumbers
     bonds = ivwmolvis.util.computeCovalentBonds(atoms)
-    return ivwmolvis.MolecularStructure(ivwmolvis.MolecularData(source="chgcar_file", atoms=atoms,
-                                                                residues=[], chains=[],
-                                                                bonds=bonds))
+    ms = ivwmolvis.MolecularStructure(ivwmolvis.MolecularData(source="chgcar_file", atoms=atoms,
+                                                              residues=[], chains=[],
+                                                              bonds=bonds))
+    if basis:
+        ms.basis = ivw.glm.mat3(basis)
+    ms.offset = ivw.glm.vec3(offset)
+
+    return ms
 
 
 def createDataFrame(pos: List[numpy.array],
