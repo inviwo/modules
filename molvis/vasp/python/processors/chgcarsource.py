@@ -44,16 +44,20 @@ class ChgcarSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.volumeOutport = ivw.data.VolumeOutport("chargedensity")
+        self.volumeOutport = ivw.data.VolumeOutport("chargedensity", 
+            help=ivw.md2doc('Charge density volume'))
         self.addOutport(self.volumeOutport, owner=False)
 
-        self.meshOutport = ivw.data.MeshOutport("atoms")
+        self.meshOutport = ivw.data.MeshOutport("atoms", 
+            help=ivw.md2doc('SphereMesh (positions, radii, and colors) of the atoms'))
         self.addOutport(self.meshOutport)
 
-        self.dataframeOutport = df.DataFrameOutport("atomInformation")
+        self.dataframeOutport = df.DataFrameOutport("atomInformation",
+            help=ivw.md2doc('DataFrame holding atom positions and atomic type'))
         self.addOutport(self.dataframeOutport)
 
-        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
+        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule",
+            help=ivw.md2doc('MolecularStructure representing all atoms')))
 
         self.chgcarFilePath = ivw.properties.FileProperty("chgcar", "CHGCAR", "", "chgcarfile")
         self.addProperty(self.chgcarFilePath)
@@ -121,7 +125,10 @@ class ChgcarSource(ivw.Processor):
             category="Source",
             codeState=ivw.CodeState.Stable,
             tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("VASP"),
-                           ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")])
+                           ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")]),
+            help=ivw.md2doc(r'''
+Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
+''')
         )
 
     def getProcessorInfo(self):
@@ -155,7 +162,8 @@ class ChgcarSource(ivw.Processor):
 
         offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
         self.molecule = molviscommon.createMolecularStructure(
-            pos=self.atomPos, elements=self.atomTypes, margin=self.margin.value, offset=offset)
+            pos=self.atomPos, elements=self.atomTypes, margin=self.margin.value,
+            basis=self.volume.basis, offset=offset)
 
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)
