@@ -31,6 +31,7 @@
 #include <inviwo/molvisbase/molvisbasemoduledefine.h>
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/hashcombine.h>
+#include <inviwo/core/datastructures/spatialdata.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
 #include <inviwo/molvisbase/util/aminoacid.h>
@@ -212,7 +213,7 @@ namespace molvis {
  *
  * \see MolecularData
  */
-class IVW_MODULE_MOLVISBASE_API MolecularStructure {
+class IVW_MODULE_MOLVISBASE_API MolecularStructure : public SpatialEntity<3> {
 public:
     /**
      * \brief data structure defining a single backbone segment
@@ -256,7 +257,9 @@ public:
      */
     MolecularStructure(MolecularData data);
     MolecularStructure() = delete;
-    ~MolecularStructure() = default;
+    virtual ~MolecularStructure() = default;
+
+    virtual MolecularStructure* clone() const;
 
     const MolecularData& data() const;
     const Atoms& atoms() const;

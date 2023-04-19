@@ -44,16 +44,20 @@ class CubeSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.volumeOutport = ivw.data.VolumeOutport("chargedensity")
+        self.volumeOutport = ivw.data.VolumeOutport("chargedensity", 
+            help=ivw.md2doc('Charge density volume'))
         self.addOutport(self.volumeOutport, owner=False)
 
-        self.meshOutport = ivw.data.MeshOutport("atoms")
+        self.meshOutport = ivw.data.MeshOutport("atoms", 
+            help=ivw.md2doc('SphereMesh (positions, radii, and colors) of the atoms'))
         self.addOutport(self.meshOutport)
 
-        self.dataframeOutport = df.DataFrameOutport("atomInformation")
+        self.dataframeOutport = df.DataFrameOutport("atomInformation",
+            help=ivw.md2doc('DataFrame holding atom positions and atomic type'))
         self.addOutport(self.dataframeOutport)
 
-        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule"))
+        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule",
+            help=ivw.md2doc('MolecularStructure representing all atoms')))
 
         self.cubeFilePath = ivw.properties.FileProperty("cube", "cube", "", "cubefile")
         self.addProperty(self.cubeFilePath)
@@ -115,7 +119,10 @@ class CubeSource(ivw.Processor):
             category="Source",
             codeState=ivw.CodeState.Stable,
             tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), ivw.Tag("Gaussian"),
-                           ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")])
+                           ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")]),
+            help=ivw.md2doc(r'''
+Loads CUBE files stemming from [Gaussian](https://www.gaussian.com) calculations.
+''')
         )
 
     def getProcessorInfo(self):
@@ -141,7 +148,7 @@ class CubeSource(ivw.Processor):
             self.wrapY.value), ivw.data.Wrapping(self.wrapZ.value)]
 
         self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
-                                            basis=self.volume.basis, offset=self.volume.offset,
+                                            basis=None, offset=self.volume.offset,
                                             pm=self.pm, radiusscaling=self.radiusScaling.value)
 
         self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
@@ -149,7 +156,7 @@ class CubeSource(ivw.Processor):
 
         offset = ivw.glm.dvec3(self.volume.offset) if self.centerData.value else ivw.glm.dvec3(0)
         self.molecule = molviscommon.createMolecularStructure(
-            pos=self.atomPos, elements=self.atomTypes, offset=offset)
+            pos=self.atomPos, elements=self.atomTypes, basis=None, offset=offset)
 
         self.volumeOutport.setData(self.volume)
         self.meshOutport.setData(self.mesh)

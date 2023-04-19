@@ -442,6 +442,9 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
                          util::makeIndexBuffer(std::move(indices)));
     }
 
+    mesh->setModelMatrix(s.getModelMatrix());
+    mesh->setWorldMatrix(s.getWorldMatrix());
+
     return mesh;
 }
 
