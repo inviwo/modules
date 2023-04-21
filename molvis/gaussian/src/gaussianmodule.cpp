@@ -33,7 +33,7 @@ namespace inviwo {
 
 GaussianModule::GaussianModule(InviwoApplication* app)
     : InviwoModule(app, "Gaussian")
-    , scripts_{getPath() + "/python"}
-    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {}
+    , scripts_{getPath() / "python"}
+    , pythonFolderObserver_{app, getPath() / "python/processors", *this} {}
 
 }  // namespace inviwo

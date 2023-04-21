@@ -33,7 +33,7 @@ namespace inviwo {
 
 VASPModule::VASPModule(InviwoApplication* app)
     : InviwoModule(app, "VASP")
-    , scripts_{getPath() + "/python"}
-    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {}
+    , scripts_{getPath() / "python"}
+    , pythonFolderObserver_{app, getPath() / "python" / "processors", *this} {}
 
 }  // namespace inviwo

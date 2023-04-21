@@ -35,8 +35,8 @@ namespace inviwo {
 MolVisPythonModule::MolVisPythonModule(InviwoApplication* app) try
     : InviwoModule(app, "MolVisPython")
     , module_{pybind11::module::import("ivwmolvis")}
-    , scripts_{getPath() + "/python"}
-    , pythonFolderObserver_{app, getPath() + "/python/processors", *this} {
+    , scripts_{getPath() / "python"}
+    , pythonFolderObserver_{app, getPath() / "python/processors", *this} {
 } catch (const std::exception& e) {
     throw ModuleInitException(e.what(), IVW_CONTEXT);
 }
