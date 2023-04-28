@@ -92,7 +92,7 @@ def parseFile(file, flipSign=False, centerData=True):
             chg.append(sign * float(c))
 
     chgdata = numpy.array(chg).astype(numpy.float32)
-    chgdata.shape = [dims[0], dims[1], dims[2]]
+    chgdata.shape = (dims[2], dims[1], dims[0])
 
     pyvolume = ivw.data.VolumePy(chgdata,
                                  interpolation=ivw.data.InterpolationType.Linear,
