@@ -109,10 +109,7 @@ def parseCubeFile(file, flipSign=False, centerData=True):
 
     chosenIdx = 0
     chgdata = chgdata[chosenIdx::nVal]
-    size = (sizeX, sizeY, sizeZ)
-    chgdata = chgdata.reshape(size)
-    chgdata = chgdata.flatten('F')
-    chgdata = chgdata.reshape(size)
+    chgdata.shape = (sizeZ, sizeY, sizeX)
 
     volumepy = ivw.data.VolumePy(chgdata,
                                  interpolation=ivw.data.InterpolationType.Linear,
