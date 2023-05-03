@@ -115,6 +115,13 @@ class ChgcarSource(ivw.Processor):
              ivw.properties.IntOption("mirror", "Mirror", ivw.data.Wrapping.Mirror)], 1)
         self.addProperty(self.wrapZ, owner=False)
 
+        self.colormap = ivw.properties.OptionPropertyInt(
+            "colormap", "Colormap",
+            [ivw.properties.IntOption("cpk", "Rasmol CPK", ivwmolvis.atomicelement.Colormap.RasmolCPK),
+             ivw.properties.IntOption("cpknew", "Rasmol CPK new", ivwmolvis.atomicelement.Colormap.RasmolCPKnew),
+             ivw.properties.IntOption("jmol", "Jmol", ivwmolvis.atomicelement.Colormap.Jmol)], 1)
+        self.addProperty(self.colormap, owner=False)
+
         self.pm = ivw.PickingMapper(self, 1, lambda x: self.callback(x))
 
     @staticmethod
@@ -155,7 +162,8 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
         self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
                                             basis=self.volume.basis, offset=self.volume.offset,
                                             pm=self.pm, margin=self.margin.value,
-                                            radiusscaling=self.radiusScaling.value)
+                                            radiusscaling=self.radiusScaling.value,
+                                            colormap=ivwmolvis.atomicelement.Colormap(self.colormap.value))
 
         self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
                                                       modelmat=self.volume.modelMatrix)
