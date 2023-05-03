@@ -73,10 +73,12 @@ void exposeAtomicElement(pybind11::module& m) {
     auto colors = m.def_submodule("colors", "Various color lookup tables");
     colors.attr("rasmol") = py::cast(element::detail::colorsRasmol);
     colors.attr("rasmolCPKnew") = py::cast(element::detail::colorsRasmolCPKnew);
+    colors.attr("jmol") = py::cast(element::detail::colorsJmol);
 
     py::enum_<element::Colormap>(m, "Colormap")
         .value("RasmolCPK", element::Colormap::RasmolCPK)
-        .value("RasmolCPKnew", element::Colormap::RasmolCPKnew);
+        .value("RasmolCPKnew", element::Colormap::RasmolCPKnew)
+        .value("Jmol", element::Colormap::Jmol);
 
     py::enum_<Element>(m, "Element")
         .value("Unknown", Element::Unknown)

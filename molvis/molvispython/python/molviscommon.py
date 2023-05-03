@@ -51,7 +51,8 @@ def createMesh(pos: List[numpy.array],
                basis: ivw.glm.mat3 = None, offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0),
                pm: ivw.PickingMapper = None,
                margin: float = 0.0,
-               radiusscaling: float = 1.0):
+               radiusscaling: float = 1.0,
+               colormap: ivwmolvis.atomicelement.Colormap = ivwmolvis.atomicelement.Colormap.RasmolCPKnew):
     """
     Create a sphere Mesh from a list of 3D positions.
 
@@ -63,6 +64,7 @@ def createMesh(pos: List[numpy.array],
     :param margin:     if larger than 0, positions within margin distance to a boundingbox surface
                        of a [0,0,0]-[1,1,1] cube will be duplicated
     :param radiusscaling:  scaling factor for sphere radii
+    :param colormap:   colormap 
     :return: inviwopy.data.Mesh
     """
     position = []
@@ -75,7 +77,7 @@ def createMesh(pos: List[numpy.array],
         pm.resize(len(elements))
 
     for i, p in enumerate(pos):
-        c = numpy.array(ivwmolvis.atomicelement.color(elements[i]))
+        c = numpy.array(ivwmolvis.atomicelement.color(elements[i], colormap=colormap))
         r = ivwmolvis.atomicelement.vdwRadius(elements[i]) * radiusscaling
         pi = pm.pickingId(i) if pm else None
 
