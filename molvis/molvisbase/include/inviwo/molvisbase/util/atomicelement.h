@@ -62,7 +62,7 @@ enum class Element : unsigned char {
 
 namespace element {
 
-enum class Colormap { RasmolCPK, RasmolCPKnew };
+enum class Colormap { RasmolCPK, RasmolCPKnew, Jmol };
 
 constexpr int num_elements = 119;
 
@@ -185,11 +185,32 @@ constexpr std::array<unsigned int, num_elements> colorsRasmolCPKnewHex = {
     0xFF1E00F8, 0xFF1C00FA, 0xFF1A00FC, 0xFF1800FD, 0xFF1600FE, 0xFF1400FF, 0xFF1200FF,
 };
 
+constexpr std::array<unsigned int, num_elements> colorsJmolHex = {
+    0xFFFF00FF, 0xFFFFFFFF, 0xFFFFFFD9, 0xFFFF80CC, 0xFF00FFC2, 0xFFB5B5FF, 0xFF909090, 0xFFF85030,
+    0xFF0D0DFF, 0xFF50E090, 0xFFF5E3B3, 0xFFF25CAB, 0xFF00FF8A, 0xFFA6A6BF, 0xFFA0C8F0, 0xFF0080FF,
+    0xFF30FFFF, 0xFF1FF01F, 0xFFE3D180, 0xFFD4408F, 0xFF00FF3D, 0xFFE6E6E6, 0xFFC7C2BF, 0xFFABA6A6,
+    0xFFC7998A, 0xFFC77A9C, 0xFF3366E0, 0xFFA090F0, 0xFF50D050, 0xFF3380C8, 0xFFB0807D, 0xFF8F8FC2,
+    0xFF8F8F66, 0xFFE380BD, 0xFF00A1FF, 0xFF2929A6, 0xFFD1B85C, 0xFFB02E70, 0xFF00FF00, 0xFFFFFF94,
+    0xFFE0E094, 0xFFC9C273, 0xFFB5B554, 0xFF9E9E3B, 0xFF8F8F24, 0xFF8C7D0A, 0xFF856900, 0xFFC0C0C0,
+    0xFF8FD9FF, 0xFF7375A6, 0xFF808066, 0xFFB5639E, 0xFF007AD4, 0xFF940094, 0xFFB09E42, 0xFF8F1757,
+    0xFF00C900, 0xFFFFD470, 0xFFC7FFFF, 0xFFC7FFD9, 0xFFC7FFC7, 0xFFC7FFA3, 0xFFC7FF8F, 0xFFC7FF61,
+    0xFFC7FF45, 0xFFC7FF30, 0xFFC7FF1F, 0xFF9CFF00, 0xFF75E600, 0xFF52D400, 0xFF38BF00, 0xFF24AB00,
+    0xFFFFC24D, 0xFFFFA64D, 0xFFD69421, 0xFFAB7D26, 0xFF966626, 0xFF875417, 0xFFE0D0D0, 0xFF23D1FF,
+    0xFFD0B8B8, 0xFF4D54A6, 0xFF615957, 0xFFB54F9E, 0xFF005CAB, 0xFF454F75, 0xFF968242, 0xFF660042,
+    0xFF007D00, 0xFFFAAB70, 0xFFFFBA00, 0xFFFFA100, 0xFFFF8F00, 0xFFFF8000, 0xFFFF6B00, 0xFFF25C54,
+    0xFFE35C78, 0xFFE34F8A, 0xFFD436A1, 0xFFD41FB3, 0xFFBA1FB3, 0xFFA60DB3, 0xFF870DBD, 0xFF6600C7,
+    0xFF5900CC, 0xFF4F00D1, 0xFF4500D9, 0xFF3800E0, 0xFF2E00E6, 0xFF2600EB, 0xFF2200F0, 0xFF2000F6,
+    0xFF1E00F8, 0xFF1C00FA, 0xFF1A00FC, 0xFF1800FD, 0xFF1600FE, 0xFF1400FF, 0xFF1200FF,
+};
+
 constexpr std::array<glm::vec4, num_elements> colorsRasmol = util::make_array<num_elements>(
     [](auto index) { return molvisutil::colorFromHex(colorsRasmolHex[index]); });
 
 constexpr std::array<glm::vec4, num_elements> colorsRasmolCPKnew = util::make_array<num_elements>(
     [](auto index) { return molvisutil::colorFromHex(colorsRasmolCPKnewHex[index]); });
+
+constexpr std::array<glm::vec4, num_elements> colorsJmol = util::make_array<num_elements>(
+    [](auto index) { return molvisutil::colorFromHex(colorsJmolHex[index]); });
 
 constexpr std::array<Element, 17> nonmetallic = {
     Element::H,  Element::He, Element::C, Element::N,  Element::O,  Element::F,
@@ -217,6 +238,8 @@ constexpr vec4 color(Element symbol, Colormap map) noexcept {
             return detail::colorsRasmol[atomicNumber(symbol)];
         case Colormap::RasmolCPKnew:
             return detail::colorsRasmolCPKnew[atomicNumber(symbol)];
+        case Colormap::Jmol:
+            return detail::colorsJmol[atomicNumber(symbol)];
         default:
             return color(symbol);
     }

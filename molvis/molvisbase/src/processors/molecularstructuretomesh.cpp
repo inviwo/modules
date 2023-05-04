@@ -63,7 +63,8 @@ MolecularStructureToMesh::MolecularStructureToMesh()
     , atomColormap_{"atomColormap",
                     "Colormap",
                     {{"cpk", "Rasmol CPK", molvis::element::Colormap::RasmolCPK},
-                     {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew}},
+                     {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew},
+                     {"jmol", "Jmol", molvis::element::Colormap::Jmol}},
                     1}
     , aminoColormap_{"aminoColormap",
                      "Colormap",

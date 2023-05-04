@@ -109,9 +109,12 @@ def parseCubeFile(file, flipSign=False, centerData=True):
 
     chosenIdx = 0
     chgdata = chgdata[chosenIdx::nVal]
-    chgdata.shape = (sizeZ, sizeY, sizeX)
+    # density values are given in Fortran order
+    # see http://gaussian.com/cubegen/ 
+    # and http://paulbourke.net/dataformats/cube/
+    chgdata = chgdata.reshape(sizeZ, sizeY, sizeX, order='F')
 
-    volumepy = ivw.data.VolumePy(chgdata,
+    volumepy = ivw.data.VolumePy(numpy.ascontiguousarray(chgdata),
                                  interpolation=ivw.data.InterpolationType.Linear,
                                  wrapping=[ivw.data.Wrapping.Clamp,
                                            ivw.data.Wrapping.Clamp,
