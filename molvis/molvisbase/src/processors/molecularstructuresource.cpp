@@ -43,7 +43,8 @@ const ProcessorInfo MolecularStructureSource::processorInfo_{
 };
 const ProcessorInfo MolecularStructureSource::getProcessorInfo() const { return processorInfo_; }
 
-MolecularStructureSource::MolecularStructureSource(InviwoApplication* app, std::string_view file)
+MolecularStructureSource::MolecularStructureSource(InviwoApplication* app,
+                                                   const std::filesystem::path& file)
     : DataSource<molvis::MolecularStructure, molvis::MolecularStructureOutport>(
           util::getDataReaderFactory(app), file, "molecularstructure") {}
 

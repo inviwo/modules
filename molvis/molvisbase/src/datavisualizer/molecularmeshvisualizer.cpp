@@ -69,7 +69,7 @@ bool MolecularMeshVisualizer::hasSourceProcessor() const { return true; }
 bool MolecularMeshVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> MolecularMeshVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
     auto source =
         net->addProcessor(util::makeProcessor<MolecularStructureSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
@@ -86,7 +86,7 @@ std::vector<Processor*> MolecularMeshVisualizer::addVisualizerNetwork(Outport* o
 }
 
 std::vector<Processor*> MolecularMeshVisualizer::addSourceAndVisualizerNetwork(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
 
     auto sourceAndOutport = addSourceProcessor(filename, net);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
