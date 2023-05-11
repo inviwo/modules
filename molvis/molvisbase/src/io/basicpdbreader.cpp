@@ -115,7 +115,7 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(
     contents.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 
     molvis::MolecularData data;
-    data.source = path.filename();
+    data.source = path.filename().string();
 
     int lineNumber = 0;
     int currentModel = 0;

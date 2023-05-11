@@ -67,8 +67,8 @@ bool HyperLICVisualizer3D::isOutportSupported(const Outport* port) const {
 bool HyperLICVisualizer3D::hasSourceProcessor() const { return false; }
 bool HyperLICVisualizer3D::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> HyperLICVisualizer3D::addSourceProcessor(const std::string&,
-                                                                         ProcessorNetwork*) const {
+std::pair<Processor*, Outport*> HyperLICVisualizer3D::addSourceProcessor(
+    const std::filesystem::path&, ProcessorNetwork*) const {
     return {nullptr, nullptr};
 }
 
@@ -90,7 +90,7 @@ std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outp
 }
 
 std::vector<Processor*> HyperLICVisualizer3D::addSourceAndVisualizerNetwork(
-    const std::string&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*) const {
 
     return {nullptr};
 }

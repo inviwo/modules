@@ -72,8 +72,8 @@ bool VTKToVolumeVisualizer::isOutportSupported(const Outport* port) const {
 bool VTKToVolumeVisualizer::hasSourceProcessor() const { return false; }
 bool VTKToVolumeVisualizer::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> VTKToVolumeVisualizer::addSourceProcessor(const std::string&,
-                                                                          ProcessorNetwork*) const {
+std::pair<Processor*, Outport*> VTKToVolumeVisualizer::addSourceProcessor(
+    const std::filesystem::path&, ProcessorNetwork*) const {
     return {nullptr, nullptr};
 }
 
@@ -125,7 +125,7 @@ std::vector<Processor*> VTKToVolumeVisualizer::addVisualizerNetwork(Outport* out
 }
 
 std::vector<Processor*> VTKToVolumeVisualizer::addSourceAndVisualizerNetwork(
-    const std::string&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*) const {
 
     return {nullptr};
 }

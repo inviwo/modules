@@ -171,8 +171,8 @@ void NanoVGContext::textBox(const ivec2& coordinates, float textBoxWidth, const 
     }
 }
 
-int NanoVGContext::createFont(const std::string& name, const std::string& filename) {
-    return nvgCreateFont(activeNanoVGContext_, name.c_str(), filename.c_str());
+int NanoVGContext::createFont(const std::string& name, const std::filesystem::path& filename) {
+    return nvgCreateFont(activeNanoVGContext_, name.c_str(), filename.string().c_str());
 }
 
 void NanoVGContext::strokeWidth(float width) { nvgStrokeWidth(activeNanoVGContext_, width); }

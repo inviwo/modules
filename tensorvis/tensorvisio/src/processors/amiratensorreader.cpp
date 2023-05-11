@@ -27,7 +27,7 @@ AmiraTensorReader::AmiraTensorReader()
 
 void AmiraTensorReader::process() {
     // const char* FileName = "testscalar.am";
-    const char* FileName = inFile_.get().c_str();
+    const char* FileName = inFile_.get().string().c_str();
     // const char* FileName = "testvector3c.am";
 
     FILE* fp = fopen(FileName, "rb");
