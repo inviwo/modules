@@ -62,9 +62,9 @@ OpenMeshWriter::OpenMeshWriter() : DataWriterType<Mesh>() {
 
 inviwo::OpenMeshWriter* OpenMeshWriter::clone() const { return new OpenMeshWriter(*this); }
 
-void OpenMeshWriter::writeData(const Mesh* data, std::string_view filePath) const {
+void OpenMeshWriter::writeData(const Mesh* data, const std::filesystem::path& filePath) const {
     auto mesh = openmeshutil::fromInviwo(*data);
-    OpenMesh::IO::write_mesh(mesh, std::string{filePath});
+    OpenMesh::IO::write_mesh(mesh, filePath.string());
 }
 
 }  // namespace inviwo

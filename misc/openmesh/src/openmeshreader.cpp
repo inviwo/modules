@@ -40,6 +40,8 @@
 #include <OpenMesh/Core/IO/IOManager.hh>
 #include <warn/pop>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 OpenMeshReader::OpenMeshReader() : DataReaderType<Mesh>() {
@@ -60,11 +62,11 @@ OpenMeshReader::OpenMeshReader() : DataReaderType<Mesh>() {
     }
 }
 
-std::shared_ptr<Mesh> OpenMeshReader::readData(std::string_view filePath) {
+std::shared_ptr<Mesh> OpenMeshReader::readData(const std::filesystem::path& filePath) {
     checkExists(filePath);
 
     TriMesh mesh;
-    if (!OpenMesh::IO::read_mesh(mesh, std::string{filePath})) {
+    if (!OpenMesh::IO::read_mesh(mesh, filePath.string())) {
         throw Exception(IVW_CONTEXT, "Failed reading mesh from disk {}", filePath);
     }
     mesh.request_vertex_normals();

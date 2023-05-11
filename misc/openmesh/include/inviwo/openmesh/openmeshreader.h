@@ -51,7 +51,7 @@ public:
     virtual OpenMeshReader* clone() const override { return new OpenMeshReader(*this); }
     virtual ~OpenMeshReader() = default;
 
-    virtual std::shared_ptr<Mesh> readData(std::string_view filePath) override;
+    virtual std::shared_ptr<Mesh> readData(const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo
