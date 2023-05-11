@@ -62,8 +62,8 @@ void NRRDReader::process() {
         return;
     }
 
-    auto extension = filesystem::getFileExtension(inFile_.get());
-    if (extension != "nhdr") {
+    auto extension = inFile_.get().extension();
+    if (extension != ".nhdr") {
         LogError("Not a NHDR file");
         return;
     }
@@ -93,7 +93,7 @@ void NRRDReader::process() {
     }
 
     size3_t dimensions{0};
-    std::string rawFileName;
+    std::filesystem::path rawFileName;
     {
         auto it = values.find("sizes");
         if (it != values.end()) {
@@ -120,12 +120,12 @@ void NRRDReader::process() {
     {
         auto it = values.find("data file");
         if (it != values.end()) {
-            auto path = filesystem::getFileDirectory(inFile_.get());
-            rawFileName = path + '/' + (*it).second;
+            auto path = inFile_.get().parent_path();
+            rawFileName = path / (*it).second;
         }
     }
 
-    if (!filesystem::fileExists(rawFileName)) {
+    if (!std::filesystem::is_regular_file(rawFileName)) {
         LogError("Raw file does not exist");
         return;
     }

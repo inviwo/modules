@@ -32,6 +32,7 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/clock.h>
 #include <inviwo/core/io/datareaderexception.h>
+#include <inviwo/vtk/util/vtkutil.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -39,8 +40,8 @@
 #include <warn/pop>
 
 #include <fstream>
-#include <inviwo/vtk/util/vtkutil.h>
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -91,7 +92,7 @@ void VTKReader::process() {
     if (file_.isModified()) {
         auto fileName = file_.get();
 
-        if (!filesystem::fileExists(fileName)) {
+        if (!std::filesystem::is_regular_file(fileName)) {
             LogError(fmt::format("File {} not found.", fileName));
             return;
         }
@@ -125,9 +126,9 @@ void VTKReader::process() {
     }
 }
 
-VTKReader::VTKFileType VTKReader::determineFileType(const std::string& fileName) const {
+VTKReader::VTKFileType VTKReader::determineFileType(const std::filesystem::path& fileName) const {
     std::string line{};
-    std::ifstream infile = filesystem::ifstream(fileName);
+    std::ifstream infile = std::ifstream(fileName);
     if (!infile.is_open()) {
         throw inviwo::Exception(fmt::format("Could not open file '{}'", fileName), IVW_CONTEXT);
     }

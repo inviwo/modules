@@ -78,24 +78,24 @@ class MolecularStructureSource(ivw.Processor):
         if not self.filename.value or not os.path.isfile(self.filename.value):
             return
 
-        self.dataset.value = self.filename.value.split("/")[-1]
+        self.dataset.value = self.filename.value.name
 
         self.outports.molecule.setData(self.parseFile(self.filename.value))
 
     @staticmethod
     def parseFile(filename):
-        ext = filename.split(".")[-1]
-        if ext == 'gz' or ext == 'bz2':
-            ext = filename.split(".")[-2]
+        ext = filename.suffix
+        if ext == '.gz' or ext == '.bz2':
+            ext = filename.suffixes[0]
 
-        if (ext.startswith('pdb')):
+        if (ext.startswith('.pdb')):
             parser = PDBParser(PERMISSIVE=1, structure_builder=xpdb.SloppyStructureBuilder())
-        elif (ext.startswith('cif')):
+        elif (ext.startswith('.cif')):
             parser = MMCIFParser()
         else:
             raise Exception("unsupported extension '{}'".format(ext))
 
-        structureName = filename.split("/")[-1]
+        structureName = filename.name
         structure = parser.get_structure(structureName, filename)
 
         pos = []

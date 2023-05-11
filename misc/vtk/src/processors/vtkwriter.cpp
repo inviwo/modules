@@ -90,10 +90,10 @@ void VTKWriter::export_isacppkeyword() {
                 break;
         }
 
-        std::string vtkConvention = filesystem::replaceFileExtension(file_.get(), ending);
+        std::filesystem::path vtkConvention = filesystem::replaceFileExtension(file_.get(), ending);
         // write
         writer_->SetInputData(*dataSet);
-        writer_->SetFileName(vtkConvention.c_str());
+        writer_->SetFileName(vtkConvention.string().c_str());
         writer_->Write();
         LogProcessorInfo("File written to " << vtkConvention);
     }

@@ -65,8 +65,8 @@ bool HyperLICVisualizer2D::isOutportSupported(const Outport* port) const {
 bool HyperLICVisualizer2D::hasSourceProcessor() const { return false; }
 bool HyperLICVisualizer2D::hasVisualizerNetwork() const { return true; }
 
-std::pair<Processor*, Outport*> HyperLICVisualizer2D::addSourceProcessor(const std::string&,
-                                                                         ProcessorNetwork*) const {
+std::pair<Processor*, Outport*> HyperLICVisualizer2D::addSourceProcessor(
+    const std::filesystem::path&, ProcessorNetwork*) const {
     return {nullptr, nullptr};
 }
 
@@ -86,7 +86,7 @@ std::vector<Processor*> HyperLICVisualizer2D::addVisualizerNetwork(Outport* outp
 }
 
 std::vector<Processor*> HyperLICVisualizer2D::addSourceAndVisualizerNetwork(
-    const std::string&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*) const {
 
     return {nullptr};
 }

@@ -139,7 +139,7 @@ Loads CUBE files stemming from [Gaussian](https://www.gaussian.com) calculations
         pass
 
     def process(self):
-        if len(self.cubeFilePath.value) == 0 or not Path(self.cubeFilePath.value).exists():
+        if not Path(self.cubeFilePath.value).exists():
             return
 
         self.volume, self.atomPos, self.atomTypes = gaussianutil.parseCubeFile(

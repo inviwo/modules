@@ -224,7 +224,7 @@ public:
                  size_t text_cutoff = 0);
     // Creates font by loading it from the disk from specified file name.
     // Returns handle to the font.
-    int createFont(const std::string& name, const std::string& filename);
+    int createFont(const std::string& name, const std::filesystem::path& filename);
     /** Measures the specified text string. Parameter bounds should be a pointer to float[4],
      if the bounding box of the text should be returned. The bounds value are [xmin,ymin,
      xmax,ymax] Returns the horizontal advance of the measured text (i.e. where the next character

@@ -68,7 +68,7 @@ bool MolecularSourceVisualizer::hasSourceProcessor() const { return true; }
 bool MolecularSourceVisualizer::hasVisualizerNetwork() const { return false; }
 
 std::pair<Processor*, Outport*> MolecularSourceVisualizer::addSourceProcessor(
-    const std::string& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net) const {
     auto source =
         net->addProcessor(util::makeProcessor<MolecularStructureSource>(GP{0, 0}, app_, filename));
     auto outport = source->getOutports().front();
@@ -81,7 +81,7 @@ std::vector<Processor*> MolecularSourceVisualizer::addVisualizerNetwork(Outport*
 }
 
 std::vector<Processor*> MolecularSourceVisualizer::addSourceAndVisualizerNetwork(
-    const std::string&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*) const {
     return {};
 }
 

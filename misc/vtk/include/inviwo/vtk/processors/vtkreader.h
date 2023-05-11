@@ -88,16 +88,16 @@ private:
     std::shared_ptr<VTKDataSet> data_;
     vtkSmartPointer<vtkDataSet> dataSet_;
 
-    VTKFileType determineFileType(const std::string& fileName) const;
+    VTKFileType determineFileType(const std::filesystem::path& fileName) const;
 
     template <VTKFileType T>
-    vtkSmartPointer<vtkDataSet> read(const std::string path) {
+    vtkSmartPointer<vtkDataSet> read(const std::filesystem::path path) {
         using V = std::conditional_t<T == VTKFileType::Legacy, vtkGenericDataObjectReader,
                                      vtkXMLGenericDataObjectReader>;
 
         auto reader = vtkSmartPointer<V>::New();
 
-        reader->SetFileName(path.c_str());
+        reader->SetFileName(path.string().c_str());
         reader->Update();
 
         return vtkDataSet::SafeDownCast(V::SafeDownCast(reader.GetPointer())->GetOutput());

@@ -33,6 +33,6 @@ namespace inviwo {
 
 PythonToolsModule::PythonToolsModule(InviwoApplication* app)
     : InviwoModule(app, "PythonTools")
-    , pythonFolderObserver_{app, getPath() + "/processors", *this} {}
+    , pythonFolderObserver_{app, getPath() / "processors", *this} {}
 
 }  // namespace inviwo

@@ -86,8 +86,8 @@ DataFrameClustering::DataFrameClustering(InviwoApplication* app)
                 {"ward", "ward"}})
 
     , columns_("columns", "Columns")
-    , script_(app->getModuleByType<DataFrameClusteringModule>()->getPath(ModulePath::Scripts) +
-              "/dataframeclustering.py") {
+    , script_(app->getModuleByType<DataFrameClusteringModule>()->getPath(ModulePath::Scripts) /
+              "dataframeclustering.py") {
 
     numberOfClusters_.setSerializationMode(PropertySerializationMode::All);
 

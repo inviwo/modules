@@ -32,7 +32,8 @@ public:
 
     float getFontSize() const { return fontSize_.get(); }
     vec4 getFontColor() const { return fontColor_.get(); }
-    std::string getFontFace() const { return fontFace_.get(); }
+    const std::string& getFontFace() const { return fontFace_.getSelectedDisplayName(); }
+    const std::filesystem::path& getFontPath() const { return fontFace_.get(); }
     NanoVGContext::Alignment getFontAligntment() const { return fontAlignment_.get(); }
     std::optional<float> getFontBlur() const;
     auto get() const;

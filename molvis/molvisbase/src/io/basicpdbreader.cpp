@@ -104,8 +104,9 @@ T parseSection(std::string_view line, size_t begin, size_t size, std::string_vie
     return res;
 }
 
-std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(std::string_view fileName) {
-    auto file = open(fileName);
+std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(
+    const std::filesystem::path& path) {
+    auto file = open(path);
 
     std::string contents;
     file.seekg(0, std::ios::end);
@@ -114,7 +115,7 @@ std::shared_ptr<molvis::MolecularStructure> BasicPDBReader::readData(std::string
     contents.assign(std::istreambuf_iterator<char>(file), std::istreambuf_iterator<char>());
 
     molvis::MolecularData data;
-    data.source = filesystem::getFileNameWithExtension(fileName);
+    data.source = path.filename().string();
 
     int lineNumber = 0;
     int currentModel = 0;
