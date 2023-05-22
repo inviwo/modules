@@ -72,11 +72,12 @@
 
 #include <tiff.h>
 #include <tiffio.h>
-//#include<DataStructureAndEncodingDefinition / gdcmTag.h>
-//#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
+// #include<DataStructureAndEncodingDefinition / gdcmTag.h>
+// #include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
 #include <warn/pop>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 namespace inviwo {
 
@@ -97,7 +98,7 @@ MevisVolumeReader::MevisVolumeReader()
 
 MevisVolumeReader* MevisVolumeReader::clone() const { return new MevisVolumeReader(*this); }
 
-std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string_view filePath) {
+std::shared_ptr<Volume> MevisVolumeReader::readData(const std::filesystem::path& filePath) {
     auto formatErrorMsg = [](const auto& filename, const auto& msg) {
         return fmt::format("{} ('{}')", msg, filename);
     };
@@ -107,7 +108,7 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string_view fileP
             filePath, "could not locate associated tif and dcm files to read Mevis DICOM format"));
     }
 
-    TIFF* tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
+    TIFF* tiffimage = TIFFOpen(tif_file_.string().c_str(), "rc");
     if (!tiffimage) {
         throw DataReaderException(formatErrorMsg(tif_file_, "invalid tif file"));
     }
@@ -147,7 +148,7 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string_view fileP
 
     // the gdcm image reader *will* fail - saying no pixel data found
     gdcm::ImageReader reader;
-    reader.SetFileName(dcm_file_.c_str());
+    reader.SetFileName(dcm_file_.string().c_str());
     if (reader.Read()) {
         LogWarn("dcm file " << dcm_file_ << " contains an image/volume - maybe the data in "
                             << tif_file_ << " does not belong to this dcm file?")
@@ -198,7 +199,7 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::string_view fileP
     return volume;
 }
 
-MevisVolumeRAMLoader::MevisVolumeRAMLoader(std::string file, size3_t dimension,
+MevisVolumeRAMLoader::MevisVolumeRAMLoader(const std::filesystem::path& file, size3_t dimension,
                                            const DataFormatBase* format)
     : tif_file_(file), dimension_(dimension), format_(format) {}
 
@@ -224,12 +225,12 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     // currently only packed, tiled volume data is supported
 
     auto formatErrorMsg = [filename = tif_file_](const auto& msg) {
-        return fmt::format("{} ('{}')", msg, filename);
+        return fmt::format("{} ({})", msg, filename);
     };
 
-    TIFF* tiffimage = TIFFOpen(tif_file_.c_str(), "rc");
+    TIFF* tiffimage = TIFFOpen(tif_file_.string().c_str(), "rc");
     if (!tiffimage) {
-        throw DataReaderException(fmt::format("cannot open TIFF: \'{}\'", tif_file_));
+        throw DataReaderException(fmt::format("cannot open TIFF: {}", tif_file_));
     }
 
     util::OnScopeExit closeTiffImg([&]() {
@@ -279,9 +280,8 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
 #if defined(IVW_DEBUG)
     unsigned int number_of_tiles = TIFFNumberOfTiles(tiffimage);
     LogInfo("number of tiles: " << number_of_tiles);
-    LogInfo("tilesize: " << tilesz << " (" << tilesize.x << "x" << tilesize.y << "x" << tilesize.z
-                         << ")");
-    LogInfo("rowbyte: " << tilerowbytes << ", bytespersample: " << bytespersample);
+    LogInfo(fmt::format("tilesize: {} ({}x{}x{})", tilesz, tilesize.x, tilesize.y, tilesize.z));
+    LogInfo(fmt::format("rowbyte: {}, bytespersample: {}", tilerowbytes, bytespersample));
 #endif
 
     IVW_ASSERT(tilerowbytes == tilesize.x * bytespersample,
@@ -344,34 +344,35 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     }
 }
 
-bool MevisVolumeReader::setFilenames(std::string_view filePath) {
+bool MevisVolumeReader::setFilenames(const std::filesystem::path& filePath) {
     dcm_file_.clear();
     tif_file_.clear();
 
-    const std::string fileDirectory = filesystem::getFileDirectory(filePath);
-    const std::string filename = filesystem::getFileNameWithoutExtension(filePath);
-    const std::string basePath = fileDirectory + "/" + filename + ".";
-    const auto ext = toLower(filesystem::getFileExtension(filename));
+    const std::filesystem::path basepath = filePath.stem();
 
-    auto checkForFile = [basePath](const auto& exts) -> std::string {
+    const auto ext = toLower(filePath.extension().string());
+
+    auto checkForFile = [basepath](const auto& exts) -> std::filesystem::path {
         for (auto& e : exts) {
-            if (filesystem::fileExists(basePath + e)) {
-                return basePath + e;
+            std::filesystem::path path{basepath};
+            path += e;
+            if (std::filesystem::exists(path)) {
+                return path;
             }
         }
         return {};
     };
 
-    if ((ext == "tif") || (ext == "tiff")) {
+    if ((ext == ".tif") || (ext == ".tiff")) {
         tif_file_ = filePath;
     } else {
-        tif_file_ = checkForFile(std::vector<std::string>{"tif", "TIF", "tiff", "TIFF"});
+        tif_file_ = checkForFile(std::vector<std::string_view>{".tif", ".TIF", ".tiff", ".TIFF"});
     }
 
-    if (ext == "dcm") {
+    if (ext == ".dcm") {
         dcm_file_ = filePath;
     } else {
-        dcm_file_ = checkForFile(std::vector<std::string>{"dmc", "DCM"});
+        dcm_file_ = checkForFile(std::vector<std::string_view>{".dmc", ".DCM"});
     }
     return !tif_file_.empty() && !dcm_file_.empty();
 }
