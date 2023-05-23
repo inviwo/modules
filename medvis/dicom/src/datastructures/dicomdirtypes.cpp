@@ -35,6 +35,7 @@
 #include <inviwo/core/util/filesystem.h>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -160,7 +161,7 @@ struct ImageMetaData {
 
 Series::Series(const std::string& description) : desc{description} {}
 
-void Series::updateImageInformation(const std::string& dicompath) {
+void Series::updateImageInformation(const std::filesystem::path& dicompath) {
 
     // According to the standard the following parameters should be the same within a
     // series:
@@ -220,7 +221,7 @@ void Series::updateImageInformation(const std::string& dicompath) {
     ImageMetaData refImage;
     for (auto& imgInfo : images) {
         gdcm::ImageReader imageReader;
-        auto imageInputStream = filesystem::ifstream(imgInfo.path, std::ios::binary);
+        auto imageInputStream = std::ifstream(imgInfo.path, std::ios::binary);
         imageReader.SetStream(imageInputStream);
 
         if (!imageInputStream.is_open() || !imageReader.CanRead()) {

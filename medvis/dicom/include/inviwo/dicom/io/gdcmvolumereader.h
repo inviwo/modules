@@ -68,35 +68,37 @@ public:
     /**
      * Entry point of the reader, called from VolumeSource processor
      */
-    virtual std::shared_ptr<VolumeSequence> readData(const std::string_view filePath) override;
+    virtual std::shared_ptr<VolumeSequence> readData(
+        const std::filesystem::path& filePath) override;
 
 private:
     /**
      * Try to read all volumes contained in given path using standard  format
      */
-    static std::shared_ptr<VolumeSequence> tryReadDICOMDIR(const std::string& fileOrDirectory);
+    static std::shared_ptr<VolumeSequence> tryReadDICOMDIR(
+        const std::filesystem::path& dicomdirPath);
 
     /**
      * Non-recursive version of tryReadDICOMsequenceRecursive
      */
     static std::shared_ptr<VolumeSequence> tryReadDICOMsequence(
-        const std::string& sequenceDirectory);
+        const std::filesystem::path& sequenceDirectory);
 
     /**
      * Tries to read all volumes contained in given directory path, including subdirectories.
      * Looks only at all the image files and ignores possibly existing DIOCMDIR.
      */
     static std::shared_ptr<VolumeSequence> tryReadDICOMsequenceRecursive(
-        const std::string& directory);
+        const std::filesystem::path& directory);
 
     /**
      * Creates inviwo volume handle from DICOM series on disk.
      * Only metadata, no actual voxels are returned.
      */
     static std::shared_ptr<Volume> getVolumeDescription(dicomdir::Series& series,
-                                                        const std::string& path = "");
+                                                        const std::filesystem::path& path = {});
 
-    std::string file_;
+    std::filesystem::path file_;
     const DataFormatBase* format_;
     size3_t dimension_;
     std::shared_ptr<VolumeSequence> volumes_;
@@ -109,8 +111,9 @@ private:
 class IVW_MODULE_DICOM_API GCDMVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    GCDMVolumeRAMLoader(std::string file, size3_t dimension, const DataFormatBase* format,
-                        bool isPartOfSequence = false, dicomdir::Series series = {});
+    GCDMVolumeRAMLoader(const std::filesystem::path& file, size3_t dimension,
+                        const DataFormatBase* format, bool isPartOfSequence = false,
+                        dicomdir::Series series = {});
     virtual GCDMVolumeRAMLoader* clone() const override;
     virtual ~GCDMVolumeRAMLoader() = default;
 
@@ -121,7 +124,7 @@ public:
 
 private:
     void getVolumeData(const dicomdir::Series& series, void* outData) const;  // static here?
-    std::string file_;  // only relevant for single volumes
+    std::filesystem::path file_;  // only relevant for single volumes
     size3_t dimension_;
     const DataFormatBase* format_;
     bool isPartOfSequence_;

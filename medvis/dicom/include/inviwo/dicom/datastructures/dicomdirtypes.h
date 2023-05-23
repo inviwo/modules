@@ -33,6 +33,7 @@
 
 #include <vector>
 #include <ostream>
+#include <filesystem>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -110,7 +111,7 @@ struct IVW_MODULE_DICOM_API Series {
      * @throws DataReaderException if sanity check fails.
      * @see dicomdir::Image
      */
-    void updateImageInformation(const std::string& dicompath = "");
+    void updateImageInformation(const std::filesystem::path& dicompath = std::filesystem::path{});
 
     /**
      * sort images by slice position in patient coords (zPos)

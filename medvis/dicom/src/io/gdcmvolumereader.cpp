@@ -38,6 +38,7 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 
 #include <fmt/format.h>
+#include <fmt/std.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -85,12 +86,12 @@ GdcmVolumeReader* GdcmVolumeReader::clone() const { return new GdcmVolumeReader(
  * Only metadata.
  */
 std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series& series,
-                                                               const std::string& path) {
+                                                               const std::filesystem::path& path) {
 
     series.updateImageInformation(path);
     if (series.empty()) {
         throw DataReaderException(
-            fmt::format("DICOM series '{}' does not contain any images ('{}')", series.desc, path),
+            fmt::format("DICOM series '{}' does not contain any images ({})", series.desc, path),
             IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
     }
 
@@ -104,7 +105,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
     const DataFormatBase* format = gdcmutil::getDataFormatBase(series.pixelformat);
     if (!format) {
         throw DataReaderException(
-            fmt::format("unsupported image format in DICOM series '{}': {} ('{}')", series.desc,
+            fmt::format("unsupported image format in DICOM series '{}': {} ({})", series.desc,
                         series.pixelformat.GetScalarTypeAsString(), path),
             IVW_CONTEXT_CUSTOM("GdcmVolumeReader::getVolumeDescription"));
     }
@@ -140,7 +141,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
         if (dicomImg.sliceThickness == 0.0) {
             LogWarnCustom("GdcmVolumeReader::getVolumeDescription",
                           fmt::format("DICOM series '{}' does not define pixel spacing in z or "
-                                      "slice thickness, using 1.0 for z ('{}')",
+                                      "slice thickness, using 1.0 for z ({})",
                                       series.desc, path));
             spacing.z = 1.0;
         } else {
@@ -166,14 +167,14 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
  * Looks only at all the image files and ignores possibly existing DIOCMDIR.
  */
 std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequenceRecursive(
-    const std::string& directory) {
+    const std::filesystem::path& directory) {
     std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMsequence(directory);
 
     const auto childDirectories =
         filesystem::getDirectoryContents(directory, filesystem::ListMode::Directories);
     for (const auto& childDir : childDirectories) {
         std::shared_ptr<VolumeSequence> childVolumes =
-            tryReadDICOMsequenceRecursive(directory + '/' + childDir);
+            tryReadDICOMsequenceRecursive(directory / childDir);
         for (const auto& childVolume : *childVolumes) {
             outputVolumes->push_back(childVolume);
         }
@@ -186,7 +187,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequenceRecursive(
  * Non-recursive version of tryReadDICOMsequenceRecursive
  */
 std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
-    const std::string& sequenceDirectory) {
+    const std::filesystem::path& sequenceDirectory) {
     const auto files = filesystem::getDirectoryContents(sequenceDirectory);
     std::shared_ptr<VolumeSequence> outputVolumes = std::make_shared<VolumeSequence>();
     std::map<std::string, dicomdir::Series> seriesByUID;
@@ -196,16 +197,16 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
         // if yes: read patient ID and sequence ID
         // group sequences by sequence ID
         // add sequences to "outputVolumes"
-        std::string file = sequenceDirectory + '/' + f;
-        if (!filesystem::fileExists(file)) {
-            throw DataReaderException(fmt::format("file does not exist ('{}')", file),
+        std::filesystem::path file = sequenceDirectory / f;
+        if (!std::filesystem::is_regular_file(file)) {
+            throw DataReaderException(fmt::format("file does not exist ({})", file),
                                       IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
         }
 
         gdcm::ImageReader imageReader;
         std::ifstream imageInputStream(file, std::ios::binary);
         if (!imageInputStream.is_open()) {
-            throw DataReaderException(fmt::format("file cannot be opened ('{}')", file),
+            throw DataReaderException(fmt::format("file cannot be opened ({})", file),
                                       IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
         }
 
@@ -228,10 +229,10 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
                     newSeries.modality = dicomMediaStorage.GetModality();
                     seriesByUID[suid] = newSeries;
                 }
-                seriesByUID[suid].images.push_back(dicomdir::Image{file});
+                seriesByUID[suid].images.push_back(dicomdir::Image{file.string()});
             } else {
                 throw DataReaderException(
-                    fmt::format("could not find DICOM series UID ('{}')", file),
+                    fmt::format("could not find DICOM series UID ({})", file),
                     IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
             }
         } else {
@@ -261,11 +262,11 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
  * Try to read all volumes contained in given path using standard dicomdir:: format
  */
 std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
-    const std::string& fileOrDirectory) {
-    std::string dicomdirPath = fileOrDirectory;
+    const std::filesystem::path& dicomdirPath) {
+
     std::ifstream dicomdirInputStream(dicomdirPath, std::ios::binary);
     if (!dicomdirInputStream.is_open()) {
-        throw DataReaderException(fmt::format("could not open DICOM file ('{}')", dicomdirPath),
+        throw DataReaderException(fmt::format("could not open DICOM file ({})", dicomdirPath),
                                   IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMDIR"));
     }
 
@@ -379,18 +380,17 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
 
                 // save referenced image path to be able to read it later if it's in the volume
                 if (record.FindDataElement(referencedFileID)) {
-                    std::stringstream imagePath;
-                    record.GetDataElement(referencedFileID).GetValue().Print(imagePath);
-                    std::string imagePathStr = trim(imagePath.str());
+                    std::stringstream imagePathStr;
+                    record.GetDataElement(referencedFileID).GetValue().Print(imagePathStr);
 
                     // relative to absolute path
-                    imagePathStr =
-                        dicomdirPath.substr(0, dicomdirPath.find_last_of("/\\") + 1) + imagePathStr;
+                    std::filesystem::path imagePath{dicomdirPath.parent_path() /
+                                                    trim(imagePathStr.str())};
 
                     auto& study = dataPerPatient.back().studies.back();
                     auto& series = study.series.back();
 
-                    series.images.push_back(dicomdir::Image{imagePathStr});
+                    series.images.push_back(dicomdir::Image{imagePath.string()});
                 }
 
                 imageCount++;
@@ -509,30 +509,30 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
 /**
  * Entry point of the reader, called from VolumeSource processor
  */
-std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string_view filePath) {
+std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::filesystem::path& filePath) {
     auto path = filePath;
-    if (!filesystem::fileExists(path)) {
-        std::string newPath = filesystem::addBasePath(path);
-        if (filesystem::fileExists(newPath)) {
+    if (!std::filesystem::is_regular_file(path)) {
+        auto newPath = filesystem::addBasePath(path);
+        if (std::filesystem::is_regular_file(newPath)) {
             path = newPath;
         } else {
-            throw DataReaderException(fmt::format("could not read input file ('{}')", path),
+            throw DataReaderException(fmt::format("could not read input file ({})", path),
                                       IVW_CONTEXT);
         }
     }
 
-    const auto directory = filesystem::getFileDirectory(path);
+    const auto directory = path.parent_path();
     // TODO sequence source calls here for each file in a folder
-    if (directory == this->file_) {
-        return this->volumes_;  // doesnt work
+    if (directory == file_) {
+        return volumes_;  // doesnt work
     }
     gdcm::Trace::DebugOff();  // prevent gdcm from spamming inviwo console
 
     {
         std::shared_ptr<VolumeSequence> outputVolumes = tryReadDICOMsequenceRecursive(directory);
         if (outputVolumes) {
-            this->file_ = directory;
-            this->volumes_ = outputVolumes;
+            file_ = directory;
+            volumes_ = outputVolumes;
             return outputVolumes;
         }
     }
@@ -542,10 +542,10 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string_vie
     // TODO make different dimensions possible in one sequence
 
     // Otherwise keep trying
-    this->file_ = path;
+    file_ = path;
     std::shared_ptr<VolumeSequence> outputVolumes = std::make_shared<VolumeSequence>();
     gdcm::ImageReader reader;
-    reader.SetFileName(file_.c_str());
+    reader.SetFileName(file_.string().c_str());
     if (!reader.Read()) {
         MevisVolumeReader mvreader;
         if (mvreader.setFilenames(file_)) {
@@ -554,7 +554,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string_vie
             outputVolumes->push_back(v);
             return outputVolumes;
         } else {
-            throw DataReaderException(fmt::format("could not read input file ('{}')", path),
+            throw DataReaderException(fmt::format("could not read input file ({})", path),
                                       IVW_CONTEXT);
         }
     }
@@ -563,8 +563,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::string_vie
     const gdcm::File& file = reader.GetFile();
     std::shared_ptr<Volume> v = generateVolume(image, file);
     if (!v) {
-        throw DataReaderException(fmt::format("could not read input file ('{}')", path),
-                                  IVW_CONTEXT);
+        throw DataReaderException(fmt::format("could not read input file ({})", path), IVW_CONTEXT);
     }
 
     outputVolumes->push_back(v);
@@ -617,7 +616,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     // create an Inviwo Volume
     const DataFormatBase* format = gdcmutil::getDataFormatBase(image);
     if (!format) {
-        throw DataReaderException(fmt::format("unsupported image format in DICOM image: {} ('{}')",
+        throw DataReaderException(fmt::format("unsupported image format in DICOM image: {} ({})",
                                               image.GetPixelFormat().GetScalarTypeAsString(),
                                               file.GetHeader().GetMediaStorageAsString()),
                                   IVW_CONTEXT);
@@ -634,8 +633,8 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     if (size != len) {
         throw DataReaderException(
             fmt::format(
-                "inconsistent format size information: {} byte (Inviwo), {} byte (gdcm) ('{}')",
-                size, len, file.GetHeader().GetMediaStorageAsString()),
+                "inconsistent format size information: {} byte (Inviwo), {} byte (gdcm) ({})", size,
+                len, file.GetHeader().GetMediaStorageAsString()),
             IVW_CONTEXT);
     }
 
@@ -675,8 +674,8 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     LogInfo("========================================================================");
 #endif
 
-    this->dimension_ = dimension;
-    this->format_ = format;
+    dimension_ = dimension;
+    format_ = format;
     std::shared_ptr<Volume> volume = std::make_shared<Volume>(dimension, format);
     volume->setBasis(basis);
     volume->setOffset(offset);
@@ -708,7 +707,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     return volume;
 }
 
-GCDMVolumeRAMLoader::GCDMVolumeRAMLoader(std::string file, size3_t dimension,
+GCDMVolumeRAMLoader::GCDMVolumeRAMLoader(const std::filesystem::path& file, size3_t dimension,
                                          const DataFormatBase* format, bool isPartOfSequence,
                                          dicomdir::Series series)
     : file_(file)
@@ -728,10 +727,9 @@ std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
 
     if (!isPartOfSequence_) {
         gdcm::ImageReader reader;
-        reader.SetFileName(file_.c_str());
+        reader.SetFileName(file_.string().c_str());
         if (!reader.Read()) {
-            throw DataReaderException(fmt::format("could not read file ('{}')", file_),
-                                      IVW_CONTEXT);
+            throw DataReaderException(fmt::format("could not read file ({})", file_), IVW_CONTEXT);
         }
         const gdcm::Image& image = reader.GetImage();
         image.GetBuffer(data.get());
@@ -757,7 +755,7 @@ void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* ou
 
         std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
         if (!imageInputStream.is_open()) {
-            throw DataReaderException(fmt::format("file cannot be opened ('{}')", imgInfo.path),
+            throw DataReaderException(fmt::format("file cannot be opened ({})", imgInfo.path),
                                       IVW_CONTEXT);
         }
 
@@ -772,7 +770,7 @@ void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* ou
             // Get RAW image (gdcm does the decoding for us)
             if (!image.GetBuffer(reinterpret_cast<char*>(outData) + totalByteCount)) {
                 throw DataReaderException(
-                    fmt::format("could not read image data ('{}')", imgInfo.path), IVW_CONTEXT);
+                    fmt::format("could not read image data ({})", imgInfo.path), IVW_CONTEXT);
             }
 
             totalByteCount += image.GetBufferLength();
@@ -784,10 +782,9 @@ void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
                                                const VolumeRepresentation&) const {
     if (!isPartOfSequence_) {
         gdcm::ImageReader reader;
-        reader.SetFileName(file_.c_str());
+        reader.SetFileName(file_.string().c_str());
         if (!reader.Read()) {
-            throw DataReaderException(fmt::format("could not read file ('{}')", file_),
-                                      IVW_CONTEXT);
+            throw DataReaderException(fmt::format("could not read file ({})", file_), IVW_CONTEXT);
         }
 
         const gdcm::Image& image = reader.GetImage();

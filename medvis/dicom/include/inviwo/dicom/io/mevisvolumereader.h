@@ -41,6 +41,8 @@
 
 #include <functional>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 class IVW_MODULE_DICOM_API MevisVolumeReader : public DataReaderType<Volume> {
@@ -50,13 +52,13 @@ public:
     virtual ~MevisVolumeReader() = default;
 
     // interface gdcm - mevis reader
-    bool setFilenames(std::string_view filePath);
+    bool setFilenames(const std::filesystem::path& filePath);
 
-    virtual std::shared_ptr<Volume> readData(const std::string_view filePath) override;
+    virtual std::shared_ptr<Volume> readData(const std::filesystem::path& filePath) override;
 
 private:
-    std::string dcm_file_;
-    std::string tif_file_;
+    std::filesystem::path dcm_file_;
+    std::filesystem::path tif_file_;
     const DataFormatBase* format;
     size3_t dimension_;
 };
@@ -67,7 +69,8 @@ private:
 class IVW_MODULE_DICOM_API MevisVolumeRAMLoader
     : public DiskRepresentationLoader<VolumeRepresentation> {
 public:
-    MevisVolumeRAMLoader(std::string file, size3_t dimension, const DataFormatBase* format);
+    MevisVolumeRAMLoader(const std::filesystem::path& file, size3_t dimension,
+                         const DataFormatBase* format);
     virtual MevisVolumeRAMLoader* clone() const override;
     virtual ~MevisVolumeRAMLoader() = default;
 
@@ -84,8 +87,8 @@ public:
         auto data = std::make_unique<F[]>(size);
         if (!data) {
             throw DataReaderException(
-                "Error: Could not allocate memory for loading mevis volume data: " + tif_file_,
-                IVW_CONTEXT);
+                IVW_CONTEXT,
+                "Error: Could not allocate memory for loading mevis volume data: ", tif_file_);
         }
 
         readDataInto(reinterpret_cast<char*>(data.get()));
@@ -96,7 +99,7 @@ public:
 
 private:
     void readDataInto(void* destination) const;
-    std::string tif_file_;
+    std::filesystem::path tif_file_;
     size3_t dimension_;
     const DataFormatBase* format_;
 };
