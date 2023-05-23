@@ -356,7 +356,7 @@ bool MevisVolumeReader::setFilenames(const std::filesystem::path& filePath) {
         for (auto& e : exts) {
             std::filesystem::path path{basepath};
             path += e;
-            if (std::filesystem::exists(path)) {
+            if (std::filesystem::is_regular_file(path)) {
                 return path;
             }
         }

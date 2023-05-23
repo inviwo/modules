@@ -198,7 +198,7 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMsequence(
         // group sequences by sequence ID
         // add sequences to "outputVolumes"
         std::filesystem::path file = sequenceDirectory / f;
-        if (!std::filesystem::exists(file)) {
+        if (!std::filesystem::is_regular_file(file)) {
             throw DataReaderException(fmt::format("file does not exist ({})", file),
                                       IVW_CONTEXT_CUSTOM("GdcmVolumeReader::tryReadDICOMsequence"));
         }
@@ -511,9 +511,9 @@ std::shared_ptr<VolumeSequence> GdcmVolumeReader::tryReadDICOMDIR(
  */
 std::shared_ptr<VolumeSequence> GdcmVolumeReader::readData(const std::filesystem::path& filePath) {
     auto path = filePath;
-    if (!std::filesystem::exists(path)) {
+    if (!std::filesystem::is_regular_file(path)) {
         auto newPath = filesystem::addBasePath(path);
-        if (std::filesystem::exists(newPath)) {
+        if (std::filesystem::is_regular_file(newPath)) {
             path = newPath;
         } else {
             throw DataReaderException(fmt::format("could not read input file ({})", path),
