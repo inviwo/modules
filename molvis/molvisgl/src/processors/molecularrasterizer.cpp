@@ -230,7 +230,7 @@ void MolecularRasterizer::process() {
         meshes_.clear();
         const size_t pickingId = atomPicking_.getPickingId(0);
         size_t offset = 0;
-        for (auto structure : inport_) {
+        for (const auto& structure : inport_) {
             meshes_.push_back(createMesh(*structure,
                                          {coloring_, atomColormap_, aminoColormap_, fixedColor_},
                                          pickingId + offset));
@@ -412,7 +412,16 @@ void MolecularRasterizer::handlePicking(PickingEvent* p) {
             BitSet b(atomId);
             brushing_.highlight(b);
             if (enableTooltips_) {
-                p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+                size_t offset = 0;
+                for (const auto& structure : inport_) {
+                    const auto atomCount = structure->atoms().positions.size();
+                    if (atomId < offset + atomCount) {
+                        p->setToolTip(
+                            molvis::createToolTip(*structure, static_cast<int>(atomId - offset)));
+                        break;
+                    }
+                    offset += atomCount;
+                }
             }
         } else if (p->getHoverState() == PickingHoverState::Exit) {
             brushing_.highlight({});
