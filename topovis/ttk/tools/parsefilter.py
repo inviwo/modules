@@ -1,20 +1,17 @@
 import argparse
 import re
 import os
-import sys
 import dataclasses
 import traceback
 import subprocess
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from functools import partial
-from collections.abc import Iterable
 from collections import defaultdict
 from typing import Callable, Optional, TypeVar, Union, Tuple
 
 import rich
 from rich.console import Console
-from rich.syntax import Syntax
 from rich import print
 
 import requests
@@ -25,6 +22,7 @@ T = TypeVar('T')
 R = TypeVar('R')
 
 console = Console()
+
 
 def chain(val: Optional[T], *funcs: Callable[[T], R]):
     '''
@@ -116,7 +114,7 @@ class RequiredProperty:
 @dataclasses.dataclass
 class ExtentProperty:
     defaultValue: Optional[list[int]]
-    requiredProperties : list[RequiredProperty] = dataclasses.field(default_factory=list)
+    requiredProperties: list[RequiredProperty] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass
@@ -131,9 +129,9 @@ class FilterPropertyData:
     displayName: str
     command: str
     numElem: Optional[int] = None
-    informationOnly: bool =False
+    informationOnly: bool = False
     kind: Union[IntVecProperty, DoubleVecProperty, IntOptionProperty,
-                StringProperty, FileProperty, ButtonProperty, BoolProperty, 
+                StringProperty, FileProperty, ButtonProperty, BoolProperty,
                 ExtentProperty, FieldSelectionProperty, None] = None
     doc: Optional[str] = None
 
@@ -167,6 +165,7 @@ class FilterData:
 
 # Parsers for property like stuff
 
+
 def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
     '''
     Helper that parses information that is in most properties
@@ -175,8 +174,10 @@ def parseHelperProperty(xml: ET.Element) -> FilterPropertyData:
         identifier=xml.attrib["name"].replace(' ', ''),
         displayName=xml.attrib["label" if "label" in xml.attrib else "name"],
         command=xml.attrib["command"] if "command" in xml.attrib else "",
-        numElem=int(xml.attrib["number_of_elements"]) if "number_of_elements" in xml.attrib else None,
-        informationOnly = (int(xml.attrib["information_only"]) > 0) if "information_only" in xml.attrib else False
+        numElem=(int(xml.attrib["number_of_elements"])
+                 if "number_of_elements" in xml.attrib else None),
+        informationOnly=((int(xml.attrib["information_only"]) > 0)
+                         if "information_only" in xml.attrib else False)
     )
     if (doc := xml.find('Documentation')) is not None:
         data.doc = stripEachLine(doc.text)
@@ -201,7 +202,7 @@ def parseIntVectorProperty(xml: ET.Element) -> FilterPropertyData:
         defaultValue = chain(xml, xmlattr("default_values"), int)
         data.kind.defaultValue = next((i for i, v in enumerate(data.kind.options)
                                        if v[1] == defaultValue), None)
-    elif (extend := xml.find('ExtentDomain')) is not None:
+    elif (extent := xml.find('ExtentDomain')) is not None:
         ep = ExtentProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
                                str.split, partial(map, int), tuple)
@@ -213,7 +214,7 @@ def parseIntVectorProperty(xml: ET.Element) -> FilterPropertyData:
                     name=xml.attrib["name"]
                 ))
 
-        data.kind = ep 
+        data.kind = ep
 
     elif data.numElem is not None and data.numElem >= 0 and data.numElem <= 4:
         data.kind = IntVecProperty(
@@ -279,7 +280,7 @@ def parseStringVectorProperty(xml: ET.Element) -> FilterPropertyData:
     return data
 
 
-def parseProperty(xml : ET.Element) -> Optional[FilterPropertyData]:
+def parseProperty(xml: ET.Element) -> Optional[FilterPropertyData]:
     data = parseHelperProperty(xml)
     if "panel_widget" in xml.attrib and xml.attrib["panel_widget"] == "command_button":
         data.kind = ButtonProperty()
@@ -309,6 +310,7 @@ def parseOutport(xml: ET.Element) -> OutputData:
         index=int(xml.attrib["index"])
     )
 
+
 def parse(xmlstr: str, file: Path) -> list[FilterData]:
     '''
     Parse a paraview xml string, returns list of Filterdata
@@ -326,6 +328,7 @@ def parse(xmlstr: str, file: Path) -> list[FilterData]:
 
     return filters
 
+
 def parseProxyGroup(group: ET.Element, file: Path) -> list[FilterData]:
     filters = []
     for proxy in group:
@@ -333,6 +336,7 @@ def parseProxyGroup(group: ET.Element, file: Path) -> list[FilterData]:
             raise Exception(f"Unexpected element, expected a proxy found '{proxy.tag}'")
         filters.append(parseProxy(proxy, file))
     return filters
+
 
 def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
 
@@ -352,17 +356,17 @@ def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
     )
 
     propertyParsers: dict[str, Callable[[ET.Element], FilterPropertyData]] = {
-        "IntVectorProperty"    : parseIntVectorProperty,
-        "StringVectorProperty" : parseStringVectorProperty,
-        "DoubleVectorProperty" : parseDoubleVectorProperty,
-        "Property"             : parseProperty
+        "IntVectorProperty": parseIntVectorProperty,
+        "StringVectorProperty": parseStringVectorProperty,
+        "DoubleVectorProperty": parseDoubleVectorProperty,
+        "Property": parseProperty
     }
 
     for elem in proxy:
         if (parser := propertyParsers.get(elem.tag, None)) is not None:
             try:
                 data.props.append(parser(elem))
-            except Exception as e:
+            except Exception:
                 console.print(f"[bold red]Error parsing {data.identifier}")
                 console.print_exception(extra_lines=1)
                 console.print(ET.tostring(elem, encoding="unicode"))
@@ -515,7 +519,8 @@ struct {structName} {{
 extentTemplate = """
 struct {structName} {{
     bool set({className}& filter) {{
-        filter.{command}(x.getStart(), x.getEnd(), y.getStart(), y.getEnd(), z.getStart(), z.getEnd());
+        filter.{command}(x.getStart(), x.getEnd(), y.getStart(), y.getEnd(),
+            z.getStart(), z.getEnd());
         return true;
     }
 
@@ -747,7 +752,7 @@ def generate(data: FilterData) -> str:
 
 
 def formatFile(file: Path):
-    clangFormat = "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/" \
+    clangFormat = "C:/Program Files/Microsoft Visual Studio/2022/Enterprise/" \
                   "VC/Tools/Llvm/bin/clang-format.exe"
     subprocess.run([clangFormat, "-i", file])
 
@@ -773,7 +778,7 @@ def makeFilterTable(filters: list[FilterData]):
         table.add_row(
             data.displayName,
             makeTable(data.props),
-            #rich.console.RenderGroup(
+            # rich.console.RenderGroup(
             rich.console.Group(
                 makeTable(data.inports),
                 makeTable(data.outports)
@@ -788,11 +793,11 @@ def makeCmdParser():
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
     parser.add_argument('--ttkrepo', type=Path,
-        help='Path to the ttk repo, needed for paraview xml files', required=True)
+                        help='Path to the ttk repo, needed for paraview xml files', required=True)
     parser.add_argument('-o', '--output', type=Path,
-        help='Path to output directory for generated files', required=True)
+                        help='Path to output directory for generated files', required=True)
     parser.add_argument('-c', '--clear', action='store_true',
-        help='Clear any old file in the output directory')
+                        help='Clear any old file in the output directory')
     return parser
 
 
@@ -807,7 +812,7 @@ if __name__ == '__main__':
         debugWidgets = f.read()
 
     denyList = [
-        "Algorithm"       # Empty? 
+        "Algorithm"       # Empty?
         "Compatibility",  # Very odd one
         "Extract",        # Has double prop of dim 6...
 
@@ -822,10 +827,10 @@ if __name__ == '__main__':
         "FTRGraph",                          # Missing include
         "ArrayPreconditioning",              # Could not find SetBurstSize (member/function)
         "GhostCellPreconditioning",          # Could not find import ttkGhostCellPreconditioning.h
-        "MergeTreeDistanceMatrix",           # Could not find SetUseFieldDataParameters (member/funcion)
-        "PersistentGenerators",              # Could not find import ttkPersistentGenerators.h
-        "ProjectionFromTable",               # Could not find import ttkProjectionFromTable.h
-        "MergeTreeClustering"                # Could not find SetBarycenterSizeLimitPercent (member/function)
+        "MergeTreeDistanceMatrix",     # Could not find SetUseFieldDataParameters (member/funcion)
+        "PersistentGenerators",        # Could not find import ttkPersistentGenerators.h
+        "ProjectionFromTable",         # Could not find import ttkProjectionFromTable.h
+        "MergeTreeClustering"       # Could not find SetBarycenterSizeLimitPercent (member/function)
     ]
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
@@ -851,7 +856,7 @@ if __name__ == '__main__':
             print(f"Error parsing {url} \n{e}")
             print(traceback.format_exc())
 
-    #myfile = requests.get(url)
+    # myfile = requests.get(url)
 
     # To parse specific VTK filters
     dir = Path("C:/Users/sigsi52/Development/Inviwo/local/modules-worktree/topovis/ttk/data/vtk_filters")
@@ -907,7 +912,7 @@ if __name__ == '__main__':
                                             register='\n'.join(register)))
 
 
-## Some notes about the structure of the files. 
+# Some notes about the structure of the files.
 #: for i,f in enumerate(files):
 #     r = ET.parse(f).getroot()
 #     print(f"{i}, {len(r)} {r[0].tag} {r[1].tag if len(r)>1 else '-'} {f}")
