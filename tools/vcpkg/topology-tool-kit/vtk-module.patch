@@ -1,0 +1,9 @@
+--- ttk-1.1.0/core/vtk/ttkAlgorithm/vtk.module	2023-06-27 11:00:31.884729300 +0200
++++ ttk-1.1.0/core/vtk/ttkAlgorithm/vtk.module	2023-06-27 11:33:15.035991800 +0200
+@@ -4,4 +4,5 @@
+   VTK::FiltersCore
+ PRIVATE_DEPENDS
+   VTK::CommonCore
++OPTIONAL_DEPENDS
+   VTK::FiltersParallelDIY2
+\ No newline at end of file
