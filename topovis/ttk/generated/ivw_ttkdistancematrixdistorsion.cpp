@@ -1,4 +1,4 @@
-#include "ivw_ttkgaussianpointcloud.h"
+#include "ivw_ttkdistancematrixdistorsion.h"
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
@@ -14,7 +14,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkGaussianPointCloud.h"
+#include "ttkDistanceMatrixDistorsion.h"
 #include <warn/pop>
 
 namespace inviwo {
@@ -25,43 +25,49 @@ namespace {
 #include <warn/ignore/conversion>
 
 struct Wrapper0 {
-    bool set(ttkGaussianPointCloud& filter) {
-        filter.SetNumberOfSamples(property.get());
+    bool set(ttkDistanceMatrixDistorsion& filter) {
+        filter.SetSelectFieldsWithRegexpHigh(property.get());
         return true;
     }
-    IntProperty property{"NumberOfSamples", "Number of Samples", 1000,
-                         std::pair{1, ConstraintBehavior::Ignore},
-                         std::pair{1000000, ConstraintBehavior::Ignore}};
+    BoolProperty property{"SelectFieldsWithRegexpHigh", "Select Fields with a Regexp (High matrix)",
+                          false};
 };
 
 struct Wrapper1 {
-    bool set(ttkGaussianPointCloud& filter) {
-        filter.SetDimension(property.get());
+    bool set(ttkDistanceMatrixDistorsion& filter) {
+        filter.SetRegexpStringHigh(property.get().c_str());
         return true;
     }
-    OptionPropertyInt property{
-        "Dimension", "Dimension", {{"1", "1", 1}, {"2", "2", 2}, {"3", "3", 3}}, 1};
+    StringProperty property{"RegexpHigh", "RegexpHigh", ".*"};
 };
 
 struct Wrapper2 {
-    bool set(ttkGaussianPointCloud& filter) {
-        filter.SetRandomSeed(property.get());
+    bool set(ttkDistanceMatrixDistorsion& filter) {
+        filter.SetSelectFieldsWithRegexpLow(property.get());
         return true;
     }
-    IntProperty property{"Seed", "Random Seed", 0, std::pair{0, ConstraintBehavior::Ignore},
-                         std::pair{100, ConstraintBehavior::Ignore}};
+    BoolProperty property{"SelectFieldsWithRegexpLow", "Select Fields with a Regexp (Low matrix)",
+                          false};
 };
 
 struct Wrapper3 {
-    bool set(ttkGaussianPointCloud& filter) {
+    bool set(ttkDistanceMatrixDistorsion& filter) {
+        filter.SetRegexpStringLow(property.get().c_str());
+        return true;
+    }
+    StringProperty property{"RegexpLow", "RegexpLow", ".*"};
+};
+
+struct Wrapper4 {
+    bool set(ttkDistanceMatrixDistorsion& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper4 {
-    bool set(ttkGaussianPointCloud& filter) {
+struct Wrapper5 {
+    bool set(ttkDistanceMatrixDistorsion& filter) {
         filter.SetThreadNumber(property.get());
         return true;
     }
@@ -70,8 +76,8 @@ struct Wrapper4 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper5 {
-    bool set(ttkGaussianPointCloud& filter) {
+struct Wrapper6 {
+    bool set(ttkDistanceMatrixDistorsion& filter) {
         filter.SetDebugLevel(property.get());
         return true;
     }
@@ -80,8 +86,8 @@ struct Wrapper5 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper6 {
-    bool set(ttkGaussianPointCloud& filter) {
+struct Wrapper7 {
+    bool set(ttkDistanceMatrixDistorsion& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
@@ -94,21 +100,26 @@ struct Wrapper6 {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkGaussianPointCloud> {
-    static constexpr std::string_view identifier = "ttkGaussianPointCloud";
-    static constexpr std::string_view displayName = "TTK GaussianPointCloud";
-    inline static std::array<InputData, 0> inports = {};
+struct TTKTraits<ttkDistanceMatrixDistorsion> {
+    static constexpr std::string_view identifier = "ttkDistanceMatrixDistorsion";
+    static constexpr std::string_view displayName = "TTK DistanceMatrixDistorsion";
+    inline static std::array<InputData, 2> inports = {
+        InputData{"HighDistanceMatrix", "vtkTable", 1},
+        InputData{"LowDistanceMatrix", "vtkTable", -1}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}},
-        Group{"Output Options", {"NumberOfSamples", "Dimension", "Seed"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+        Group{"Input options",
+              {"SelectFieldsWithRegexpHigh", "ScalarFieldsHigh", "RegexpHigh",
+               "SelectFieldsWithRegexpLow", "ScalarFieldsLow", "RegexpLow"}}};
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
+        properties;
 };
 
-void registerttkGaussianPointCloud(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkGaussianPointCloud>>();
+void registerttkDistanceMatrixDistorsion(InviwoModule* module) {
+    module->registerProcessor<TTKGenericProcessor<ttkDistanceMatrixDistorsion>>();
 }
 
 }  // namespace ttkwrapper

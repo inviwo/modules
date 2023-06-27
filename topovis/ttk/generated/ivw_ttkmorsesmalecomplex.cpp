@@ -147,13 +147,21 @@ struct Wrapper13 {
 
 struct Wrapper14 {
     bool set(ttkMorseSmaleComplex& filter) {
+        filter.SetThresholdIsAbsolute(property.get());
+        return true;
+    }
+    BoolProperty property{"ThresholdIsAbsolute", "ThresholdIsAbsolute", false};
+};
+
+struct Wrapper15 {
+    bool set(ttkMorseSmaleComplex& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper15 {
+struct Wrapper16 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -163,7 +171,7 @@ struct Wrapper15 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper16 {
+struct Wrapper17 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -173,7 +181,7 @@ struct Wrapper16 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper17 {
+struct Wrapper18 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -205,10 +213,10 @@ struct TTKTraits<ttkMorseSmaleComplex> {
                "ComputeAscendingSeparatrices2", "ComputeDescendingSeparatrices2",
                "ComputeAscendingSegmentation", "ComputeDescendingSegmentation",
                "ComputeFinalSegmentation", "ReturnSaddleConnectors",
-               "SaddleConnectorsPersistenceThreshold"}}};
+               "SaddleConnectorsPersistenceThreshold", "ThresholdIsAbsolute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
-               Wrapper16, Wrapper17>
+               Wrapper16, Wrapper17, Wrapper18>
         properties;
 };
 

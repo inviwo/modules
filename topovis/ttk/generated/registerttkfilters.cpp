@@ -8,6 +8,7 @@
 #include "ivw_ttkcinemaquery.h"
 #include "ivw_ttkcinemareader.h"
 #include "ivw_ttkcinemawriter.h"
+#include "ivw_ttkclusteringmetrics.h"
 #include "ivw_ttkcomponentsize.h"
 #include "ivw_ttkconnectedcomponents.h"
 #include "ivw_ttkcontinuousscatterplot.h"
@@ -18,6 +19,7 @@
 #include "ivw_ttkdimensionreduction.h"
 #include "ivw_ttkdiscretegradient.h"
 #include "ivw_ttkdistancefield.h"
+#include "ivw_ttkdistancematrixdistorsion.h"
 #include "ivw_ttkeigenfield.h"
 #include "ivw_ttkendfor.h"
 #include "ivw_ttkfiber.h"
@@ -43,8 +45,11 @@
 #include "ivw_ttkldistancematrix.h"
 #include "ivw_ttkmandatorycriticalpoints.h"
 #include "ivw_ttkmanifoldcheck.h"
+#include "ivw_ttkmarchingtetrahedra.h"
 #include "ivw_ttkmatrixtoheatmap.h"
 #include "ivw_ttkmergeblocktables.h"
+#include "ivw_ttkmergetreeprincipalgeodesics.h"
+#include "ivw_ttkmergetreeprincipalgeodesicsdecoding.h"
 #include "ivw_ttkmergetreetemporalreductiondecoding.h"
 #include "ivw_ttkmergetreetemporalreductionencoding.h"
 #include "ivw_ttkmeshgraph.h"
@@ -56,6 +61,7 @@
 #include "ivw_ttkobjwriter.h"
 #include "ivw_ttkoffreader.h"
 #include "ivw_ttkoffwriter.h"
+#include "ivw_ttkpathcompression.h"
 #include "ivw_ttkpersistencecurve.h"
 #include "ivw_ttkpersistencediagram.h"
 #include "ivw_ttkpersistencediagramapproximation.h"
@@ -131,8 +137,6 @@
 #include "ivw_vtkfileseriesreader.h"
 #include "ivw_vtkfileseriesreader.h"
 #include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkthreshold.h"
-#include "ivw_vtkxmlimagedatawriter.h"
 
 namespace inviwo {
 namespace ttkwrapper {
@@ -146,6 +150,7 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkCinemaQuery(module);
     registerttkCinemaReader(module);
     registerttkCinemaWriter(module);
+    registerttkClusteringMetrics(module);
     registerttkComponentSize(module);
     registerttkConnectedComponents(module);
     registerttkContinuousScatterPlot(module);
@@ -156,6 +161,7 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkDimensionReduction(module);
     registerttkDiscreteGradient(module);
     registerttkDistanceField(module);
+    registerttkDistanceMatrixDistorsion(module);
     registerttkEigenField(module);
     registerttkEndFor(module);
     registerttkFiber(module);
@@ -181,8 +187,11 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkLDistanceMatrix(module);
     registerttkMandatoryCriticalPoints(module);
     registerttkManifoldCheck(module);
+    registerttkMarchingTetrahedra(module);
     registerttkMatrixToHeatMap(module);
     registerttkMergeBlockTables(module);
+    registerttkMergeTreePrincipalGeodesics(module);
+    registerttkMergeTreePrincipalGeodesicsDecoding(module);
     registerttkMergeTreeTemporalReductionDecoding(module);
     registerttkMergeTreeTemporalReductionEncoding(module);
     registerttkMeshGraph(module);
@@ -194,6 +203,7 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkOBJWriter(module);
     registerttkOFFReader(module);
     registerttkOFFWriter(module);
+    registerttkPathCompression(module);
     registerttkPersistenceCurve(module);
     registerttkPersistenceDiagram(module);
     registerttkPersistenceDiagramApproximation(module);
@@ -269,8 +279,6 @@ void registerTTKFilters(InviwoModule* module) {
     registervtkFileSeriesReader(module);
     registervtkFileSeriesReader(module);
     registervtkFileSeriesReader(module);
-    registervtkThreshold(module);
-    registervtkXMLImageDataWriter(module);
 }
 
 }  // namespace ttkwrapper

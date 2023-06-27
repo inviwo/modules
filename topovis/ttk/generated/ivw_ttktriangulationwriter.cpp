@@ -33,6 +33,14 @@ struct Wrapper0 {
     FileProperty property{"FileName", "FileName", ""};
 };
 
+struct Wrapper1 {
+    bool set(ttkTriangulationWriter& filter) {
+        filter.SetUseASCIIFormat(property.get());
+        return true;
+    }
+    BoolProperty property{"UseASCIIFormat", "Use ASCII format (no reader available)", false};
+};
+
 #include <warn/pop>
 
 }  // namespace
@@ -43,8 +51,8 @@ struct TTKTraits<ttkTriangulationWriter> {
     inline static std::array<InputData, 1> inports = {
         InputData{"Input", "vtkUnstructuredGrid", -1}};
     inline static std::array<OutputData, 0> outports = {};
-    inline static std::array<Group, 0> groups = {};
-    std::tuple<Wrapper0> properties;
+    inline static std::array<Group, 1> groups = {Group{"Output", {"FileName", "UseASCIIFormat"}}};
+    std::tuple<Wrapper0, Wrapper1> properties;
 };
 
 void registerttkTriangulationWriter(InviwoModule* module) {

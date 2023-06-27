@@ -84,13 +84,21 @@ struct Wrapper5 : FieldSelection {
 
 struct Wrapper6 {
     bool set(ttkIntegralLines& filter) {
+        filter.SetEnableForking(property.get());
+        return true;
+    }
+    BoolProperty property{"EnableForking", "Enable Forking", false};
+};
+
+struct Wrapper7 {
+    bool set(ttkIntegralLines& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper7 {
+struct Wrapper8 {
     bool set(ttkIntegralLines& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -100,7 +108,7 @@ struct Wrapper7 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper8 {
+struct Wrapper9 {
     bool set(ttkIntegralLines& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -110,7 +118,7 @@ struct Wrapper8 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper9 {
+struct Wrapper10 {
     bool set(ttkIntegralLines& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -134,11 +142,12 @@ struct TTKTraits<ttkIntegralLines> {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}},
-        Group{"Input options",
-              {"ScalarFieldNew", "Direction", "ForceInputVertexScalarField",
-               "InputVertexScalarField", "ForceInputOffsetScalarField", "OffsetScalarField"}}};
+        Group{
+            "Input options",
+            {"ScalarFieldNew", "Direction", "ForceInputVertexScalarField", "InputVertexScalarField",
+             "ForceInputOffsetScalarField", "OffsetScalarField", "EnableForking"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9>
+               Wrapper8, Wrapper9, Wrapper10>
         properties;
 };
 

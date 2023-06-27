@@ -119,21 +119,50 @@ struct Wrapper8 {
 
 struct Wrapper9 {
     bool set(ttkPersistenceDiagram& filter) {
-        filter.SetComputeSaddleConnectors(property.get());
-        return true;
-    }
-    BoolProperty property{"SaddleConnectors", "Compute saddle-saddle pairs (SLOW!)", false};
-};
-
-struct Wrapper10 {
-    bool set(ttkPersistenceDiagram& filter) {
-        //filter.SetIgnoreBoundary(property.get());
+        filter.SetIgnoreBoundary(property.get());
         return true;
     }
     BoolProperty property{"IgnoreBoundary", "Ignore Boundary", false};
 };
 
+struct Wrapper10 {
+    bool set(ttkPersistenceDiagram& filter) {
+        filter.SetDMSDimensions(property.get());
+        return true;
+    }
+    OptionPropertyInt property{
+        "DMSDimensions",
+        "Dimensions",
+        {{"All Dimensions", "All Dimensions", 0},
+         {"Selected Dimensions (no infinite pairs)", "Selected Dimensions (no infinite pairs)", 1}},
+        0};
+};
+
 struct Wrapper11 {
+    bool set(ttkPersistenceDiagram& filter) {
+        filter.SetComputeMinSad(property.get());
+        return true;
+    }
+    BoolProperty property{"ComputeMinSad", "Minimum-saddle diagram (dimension 0)", true};
+};
+
+struct Wrapper12 {
+    bool set(ttkPersistenceDiagram& filter) {
+        filter.SetComputeSadSad(property.get());
+        return true;
+    }
+    BoolProperty property{"ComputeSadSad", "Saddle-saddle diagram (dimension 1, slowest)", true};
+};
+
+struct Wrapper13 {
+    bool set(ttkPersistenceDiagram& filter) {
+        filter.SetComputeSadMax(property.get());
+        return true;
+    }
+    BoolProperty property{"ComputeSadMax", "Saddle-maximum diagram (dimension d - 1)", true};
+};
+
+struct Wrapper14 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetShowInsideDomain(property.get());
         return true;
@@ -141,7 +170,15 @@ struct Wrapper11 {
     BoolProperty property{"ShowInsideDomain", "Embed in Domain", false};
 };
 
-struct Wrapper12 {
+struct Wrapper15 {
+    bool set(ttkPersistenceDiagram& filter) {
+        filter.SetClearDGCache(property.get());
+        return true;
+    }
+    BoolProperty property{"ClearDGCache", "Clear DiscreteGradient Cache", false};
+};
+
+struct Wrapper16 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -149,7 +186,7 @@ struct Wrapper12 {
     BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
 };
 
-struct Wrapper13 {
+struct Wrapper17 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -159,7 +196,7 @@ struct Wrapper13 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper14 {
+struct Wrapper18 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -169,7 +206,7 @@ struct Wrapper14 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper15 {
+struct Wrapper19 {
     bool set(ttkPersistenceDiagram& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -194,12 +231,15 @@ struct TTKTraits<ttkPersistenceDiagram> {
                "BackEnd", "StartingResolutionLevel", "StoppingResolutionLevel", "IsResumable",
                "TimeLimit", "Epsilon", "ScalarFieldNew", "ForceInputOffsetScalarField",
                "InputOffsetScalarFieldNameNew"}},
-        Group{"Output options", {"SaddleConnectors", "Ignore Boundary", "ShowInsideDomain"}},
+        Group{"Output options",
+              {"Ignore Boundary", "DMSDimensions", "ComputeMinSad", "ComputeSadSad",
+               "ComputeSadMax", "ClearDGCache", "ShowInsideDomain"}},
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
+               Wrapper16, Wrapper17, Wrapper18, Wrapper19>
         properties;
 };
 

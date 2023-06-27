@@ -116,7 +116,7 @@ template <>
 struct TTKTraits<ttkPersistenceDiagramApproximation> {
     static constexpr std::string_view identifier = "ttkPersistenceDiagramApproximation";
     static constexpr std::string_view displayName = "TTK PersistenceDiagramApproximation";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", 1}};
+    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkImageData", 1}};
     inline static std::array<OutputData, 3> outports = {
         OutputData{"port0", "Persistence Diagram", 0}, OutputData{"port1", "Approximate Field", 1},
         OutputData{"port2", "Uncertainty Bounds", 2}};

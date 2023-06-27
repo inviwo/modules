@@ -69,7 +69,7 @@ struct Wrapper4 {
         filter.SetOutputMinimumComponentId(property.get());
         return true;
     }
-    IntProperty property{"OutputMinmumComponentId", "Only display minimum with Id", 0,
+    IntProperty property{"OutputMinimumComponentId", "Only display minimum with Id", 0,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -186,7 +186,7 @@ struct TTKTraits<ttkMandatoryCriticalPoints> {
         Group{"Output options",
               {"OutputAllMinimumComponents", "OutputAllJoinSaddleComponents",
                "OutputAllSplitSaddleComponents", "OutputAllMaximumComponents",
-               "OutputMinmumComponentId", "OutputJoinSaddleComponentId",
+               "OutputMinimumComponentId", "OutputJoinSaddleComponentId",
                "OutputSplitSaddleComponentId", "OutputMaxmumComponentId"}},
         Group{"Input options",
               {"SimplificationThreshold", "Lower Bound Field", "Upper Bound Field"}},
