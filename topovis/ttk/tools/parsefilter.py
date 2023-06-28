@@ -189,7 +189,7 @@ def parseIntVectorProperty(xml: ET.Element) -> FilterPropertyData:
     data = parseHelperProperty(xml)
 
     if data.informationOnly:
-        raise Exception("Unhandled IntProperty informationOnly not handled")
+        raise Exception("Unhandled IntProperty information_only not handled")
 
     elif xml.find('BooleanDomain') is not None:
         data.kind = BoolProperty(
@@ -232,7 +232,7 @@ def parseDoubleVectorProperty(xml: ET.Element) -> FilterPropertyData:
     data = parseHelperProperty(xml)
 
     if data.informationOnly:
-        raise Exception("Unhandled DoubleProperty informationOnly not handled")
+        raise Exception("Unhandled DoubleProperty information_only not handled")
 
     if data.numElem is not None and data.numElem >= 0 and data.numElem <= 4:
         data.kind = DoubleVecProperty(
@@ -250,7 +250,7 @@ def parseStringVectorProperty(xml: ET.Element) -> FilterPropertyData:
     data = parseHelperProperty(xml)
 
     if data.informationOnly:
-        raise Exception("Unhandled StringVectorProperty informationOnly not handled")
+        raise Exception("Unhandled StringVectorProperty information_only not handled")
 
     elif data.command == "SetInputArrayToProcess":
         defaultValue = [0, 0, 0, 0, None]
@@ -499,7 +499,7 @@ fileTemplate = """
 struct {structName} {{
     bool set({className}& filter) {{
         if(property.get().empty()) return false;
-        filter.{command}(property.get().c_str());
+        filter.{command}(property.get().string().c_str());
         return true;
     }}
     FileProperty property{{"{identifier}", "{displayName}", "{defaultValue}"}};
@@ -870,6 +870,24 @@ if __name__ == '__main__':
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
+
+    # remove all filters with class name vtkFileSeriesReaders
+    #
+    # TODO: needs parsing of the nested SubProxy, then using the proxyname as class name
+    #
+    # <SourceProxy class="vtkFileSeriesReader"
+    #              file_name_method="SetFileName"
+    #              label="XML PolyData Reader"
+    #              name="XMLPolyDataReader"
+    #              si_class="vtkSIMetaReaderProxy">
+    #   <Documentation>...</Documentation>
+    #   <SubProxy>
+    #     <Proxy name="Reader"
+    #            proxygroup="internal_sources"
+    #            proxyname="XMLPolyDataReaderCore"></Proxy>
+    filterCount = len(filters)
+    filters = [f for f in filters if f.className != "vtkFileSeriesReader"]
+    print(f"Removed {filterCount - len(filters)} vtkFileSeriesReaders.")
 
     console.print(makeFilterTable(filters))
 
