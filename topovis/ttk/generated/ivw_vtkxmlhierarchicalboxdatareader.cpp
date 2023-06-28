@@ -27,7 +27,7 @@ namespace {
 struct Wrapper0 {
     bool set(vtkXMLHierarchicalBoxDataReader& filter) {
         if (property.get().empty()) return false;
-        filter.SetFileName(property.get().c_str());
+        filter.SetFileName(property.get().string().c_str());
         return true;
     }
     FileProperty property{"FileName", "FileName", ""};

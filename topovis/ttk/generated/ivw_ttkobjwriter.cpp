@@ -27,7 +27,7 @@ namespace {
 struct Wrapper0 {
     bool set(ttkOBJWriter& filter) {
         if (property.get().empty()) return false;
-        filter.SetFilename(property.get().c_str());
+        filter.SetFilename(property.get().string().c_str());
         return true;
     }
     FileProperty property{"FileName", "FileName", ""};

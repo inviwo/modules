@@ -117,26 +117,7 @@
 #include "ivw_vtkxmlmultiblockdatareader.h"
 #include "ivw_vtkxmlpartitioneddatasetreader.h"
 #include "ivw_vtkxmlpartitioneddatasetcollectionreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
 #include "ivw_vtkrtxmlpolydatareader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
-#include "ivw_vtkfileseriesreader.h"
 
 namespace inviwo {
 namespace ttkwrapper {
@@ -259,26 +240,7 @@ void registerTTKFilters(InviwoModule* module) {
     registervtkXMLMultiBlockDataReader(module);
     registervtkXMLPartitionedDataSetReader(module);
     registervtkXMLPartitionedDataSetCollectionReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
     registervtkRTXMLPolyDataReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
-    registervtkFileSeriesReader(module);
 }
 
 }  // namespace ttkwrapper

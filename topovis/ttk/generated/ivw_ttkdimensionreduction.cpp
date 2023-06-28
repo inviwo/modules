@@ -441,7 +441,7 @@ struct Wrapper44 {
 struct Wrapper45 {
     bool set(ttkDimensionReduction& filter) {
         if (property.get().empty()) return false;
-        filter.SetModulePath(property.get().c_str());
+        filter.SetModulePath(property.get().string().c_str());
         return true;
     }
     FileProperty property{"ModulePath", "Module Path", "default"};

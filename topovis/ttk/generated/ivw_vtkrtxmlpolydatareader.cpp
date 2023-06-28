@@ -27,7 +27,7 @@ namespace {
 struct Wrapper0 {
     bool set(vtkRTXMLPolyDataReader& filter) {
         if (property.get().empty()) return false;
-        filter.SetFileName(property.get().c_str());
+        filter.SetFileName(property.get().string().c_str());
         return true;
     }
     FileProperty property{"FileName", "FileName", ""};
@@ -36,7 +36,7 @@ struct Wrapper0 {
 struct Wrapper1 {
     bool set(vtkRTXMLPolyDataReader& filter) {
         if (property.get().empty()) return false;
-        filter.SetLocation(property.get().c_str());
+        filter.SetLocation(property.get().string().c_str());
         return true;
     }
     FileProperty property{"Location", "Location", ""};

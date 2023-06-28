@@ -27,7 +27,7 @@ namespace {
 struct Wrapper0 {
     bool set(ttkTriangulationReader& filter) {
         if (property.get().empty()) return false;
-        filter.SetTriangulationFilePath(property.get().c_str());
+        filter.SetTriangulationFilePath(property.get().string().c_str());
         return true;
     }
     FileProperty property{"TriangulationFilePath", "Triangulation File Path", ""};

@@ -27,7 +27,7 @@ namespace {
 struct Wrapper0 {
     bool set(ttkCinemaWriter& filter) {
         if (property.get().empty()) return false;
-        filter.SetDatabasePath(property.get().c_str());
+        filter.SetDatabasePath(property.get().string().c_str());
         return true;
     }
     FileProperty property{"DatabasePath", "DatabasePath", ""};
