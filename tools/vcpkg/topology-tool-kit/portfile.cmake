@@ -1,13 +1,13 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO topology-tool-kit/ttk
-    REF ${VERSION} 
-    SHA512 811092769fd1c5dfbd230998d544607e8644a69b4be3ff433d171f255dd29cf93746bfa39d9cd8f1e53ab48aaf0714c18fe68a71818eaeeaa998ff36b2627c89
+    REF 06f99e3
+    SHA512 f5861b6d2669e15277f967400e8206d31fbd3c061a1ca25b3f46155a36b0a2dded7f95154af66105ce1de7bcb9205f59bd54d4fe520f75bb7b47a0693e17c576
     HEAD_REF master
     PATCHES
         "config-cmake.patch"
-        "vtk-module.patch"
-        "vtk-module-cmake.patch"
+        "marchingtetrahedra.patch"
+        "ttkintegrallines.patch"
 )
 
 vcpkg_configure_cmake(
