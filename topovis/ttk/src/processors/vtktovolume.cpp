@@ -58,7 +58,7 @@ const ProcessorInfo VTKToVolume::getProcessorInfo() const { return processorInfo
 
 VTKToVolume::VTKToVolume()
     : Processor()
-    , inport_("inport", "vtkImageData")
+    , inport_("inport", "vtkDataSet")
     , outport_("outport")
     , source_{"source", "Source"}
     , precision_{"precision",

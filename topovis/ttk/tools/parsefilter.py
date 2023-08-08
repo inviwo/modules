@@ -859,7 +859,7 @@ if __name__ == '__main__':
     # myfile = requests.get(url)
 
     # To parse specific VTK filters
-    dir = Path("C:/Users/sigsi52/Development/Inviwo/local/modules-worktree/topovis/ttk/data/vtk_filters")
+    dir = Path("filters/")
     vtk_files = (xml for xml in dir.glob("*.xml"))
 
     for file in vtk_files:

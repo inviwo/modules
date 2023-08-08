@@ -118,6 +118,10 @@
 #include "ivw_vtkxmlpartitioneddatasetreader.h"
 #include "ivw_vtkxmlpartitioneddatasetcollectionreader.h"
 #include "ivw_vtkrtxmlpolydatareader.h"
+#include "ivw_vtkcontourfilter.h"
+#include "ivw_vtkthreshold.h"
+#include "ivw_vtkxmldataobjectwriter.h"
+#include "ivw_vtkxmlimagedatawriter.h"
 
 namespace inviwo {
 namespace ttkwrapper {
@@ -241,6 +245,10 @@ void registerTTKFilters(InviwoModule* module) {
     registervtkXMLPartitionedDataSetReader(module);
     registervtkXMLPartitionedDataSetCollectionReader(module);
     registervtkRTXMLPolyDataReader(module);
+    registervtkContourFilter(module);
+    registervtkThreshold(module);
+    registervtkXMLDataObjectWriter(module);
+    registervtkXMLImageDataWriter(module);
 }
 
 }  // namespace ttkwrapper
