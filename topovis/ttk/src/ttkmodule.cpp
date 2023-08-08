@@ -68,8 +68,10 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
 
     // Register objects that can be shared with the rest of inviwo here:
 
-    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr, vtkLogger::VERBOSITY_MAX);
-    vtkObject::GlobalWarningDisplayOn();
+    // see https://vtk.org/doc/nightly/html/classvtkLogger.html
+    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr, vtkLogger::VERBOSITY_ERROR);
+    // vtkObject::GlobalWarningDisplayOn();
+    vtkObject::GlobalWarningDisplayOff();
 
     // Processors
     ttkwrapper::registerTTKFilters(this);
