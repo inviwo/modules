@@ -1,13 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO topology-tool-kit/ttk
-    REF 06f99e3
-    SHA512 f5861b6d2669e15277f967400e8206d31fbd3c061a1ca25b3f46155a36b0a2dded7f95154af66105ce1de7bcb9205f59bd54d4fe520f75bb7b47a0693e17c576
+    REF db472ffefb9a94a2353d89bb705aef8230f85d12
+    SHA512 f988e1d3bbec7794453e6b85467c984f4cf97c59f21d7aa641418e4991790980bec89ca31e8919845da7d037eeb93a5b9f85811e74fd564db24904f0563d504a
     HEAD_REF master
-    PATCHES
-        "config-cmake.patch"
-        "marchingtetrahedra.patch"
-        "ttkintegrallines.patch"
 )
 
 vcpkg_configure_cmake(
@@ -24,6 +20,8 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_ZLIB=ON
         -DTTK_ENABLE_OPENMP=OFF
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
+
+        -DTTK_SCRIPTS_PATH=${CURRENT_PACKAGES_DIR}/share/scripts/ttk
 )
 vcpkg_install_cmake()
 vcpkg_copy_pdbs()
