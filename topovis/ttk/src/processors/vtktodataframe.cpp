@@ -126,7 +126,8 @@ void addVTKCellsToDataFrame(vtkDataSet* dataSet, DataFrame& df) {
         types.emplace_back(vtkCellTypes::GetClassNameFromTypeId(i));
     }
 
-    df.addColumn(std::make_shared<CategoricalColumn>("Cell Type", std::move(cellType), std::move(types)));
+    df.addColumn(
+        std::make_shared<CategoricalColumn>("Cell Type", std::move(cellType), std::move(types)));
 
     df.addColumn("#Points", std::move(nPoints));
 }
@@ -149,7 +150,6 @@ void addVTKPointsToDataFrame(vtkDataSet* dataSet, DataFrame& df) {
     df.addColumn("y", std::move(y));
     df.addColumn("z", std::move(z));
 }
-
 
 void VTKToDataFrame::process() {
     auto data = vtkDataSet::SafeDownCast(inport_.getData());

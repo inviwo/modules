@@ -29,9 +29,4 @@
 
 #include <inviwo/ttk/arrayutils.h>
 
-namespace inviwo {
-
-
-
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

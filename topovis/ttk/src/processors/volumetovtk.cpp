@@ -62,7 +62,6 @@ void VolumeToVTK::process() {
     const dvec3 length{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])};
     const dvec3 spacing{length / ddim};
     const dmat3 direction{basis[0] / length[0], basis[1] / length[1], basis[2] / length[2]};
-        
 
     data_ = vtkSmartPointer<vtkImageData>::New();
     data_->SetDimensions(dim.x, dim.y, dim.z);

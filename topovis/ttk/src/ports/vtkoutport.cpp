@@ -41,7 +41,8 @@
 
 namespace inviwo::vtk {
 
-VtkOutport::VtkOutport(std::string_view identifier, std::string_view vtkDataClassName, Document help)
+VtkOutport::VtkOutport(std::string_view identifier, std::string_view vtkDataClassName,
+                       Document help)
     : Outport(identifier, std::move(help)), typeId_{[&]() {
         auto id = vtkDataObjectTypes::GetTypeIdFromClassName(SafeCStr{vtkDataClassName}.c_str());
         if (id < 0) {

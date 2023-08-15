@@ -82,8 +82,6 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     registerProcessor<VTKToDataFrame>();
     registerProcessor<VTKToMesh>();
 
-
-
     // Properties
     // registerProperty<ttkProperty>();
 

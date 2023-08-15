@@ -48,7 +48,7 @@ public:
 
 private:
     OptionPropertyInt outportType_;
-    
+
     vtk::VtkInport inport_;
     vtk::VtkOutport outport_;
 };

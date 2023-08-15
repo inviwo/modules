@@ -56,12 +56,12 @@ private:
 
     vtk::VtkInport inport_;
     VolumeOutport outport_;
-    
+
     OptionPropertyInt source_;
     OptionPropertyInt precision_;
-        
+
     VolumeInformationProperty information_;
-    
+
     std::shared_ptr<Volume> volume_;
 };
 

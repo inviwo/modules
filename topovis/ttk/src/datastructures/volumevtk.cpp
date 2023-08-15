@@ -31,8 +31,6 @@
 
 namespace inviwo {
 
-VolumeVTK::VolumeVTK() {
-
-}
+VolumeVTK::VolumeVTK() {}
 
 }  // namespace inviwo

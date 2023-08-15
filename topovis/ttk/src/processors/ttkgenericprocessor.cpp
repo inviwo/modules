@@ -31,10 +31,6 @@
 
 namespace inviwo {
 
-namespace vtk {
-
-
-
-}  // namespace vtk
+namespace vtk {}  // namespace vtk
 
 }  // namespace inviwo

@@ -46,7 +46,8 @@ namespace vtk {
 
 class IVW_MODULE_TTK_API VtkOutport : public Outport {
 public:
-    VtkOutport(std::string_view identifier, int typeId = VTK_DATA_OBJECT, Document help = Document{});
+    VtkOutport(std::string_view identifier, int typeId = VTK_DATA_OBJECT,
+               Document help = Document{});
     VtkOutport(std::string_view identifier, std::string_view vtkDataClassName,
                Document help = Document{});
 
