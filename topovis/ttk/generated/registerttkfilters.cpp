@@ -146,7 +146,7 @@ void registerTTKFilters(InviwoModule* module) {
     registerttkDimensionReduction(module);
     registerttkDiscreteGradient(module);
     registerttkDistanceField(module);
-    registerttkDistanceMatrixDistorsion(module);
+    registerttkDistanceMatrixDistortion(module);
     registerttkEigenField(module);
     registerttkEndFor(module);
     registerttkFiber(module);

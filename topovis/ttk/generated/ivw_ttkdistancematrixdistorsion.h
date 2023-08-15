@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace ttkwrapper {
-void registerttkDistanceMatrixDistorsion(InviwoModule* module);
+void registerttkDistanceMatrixDistortion(InviwoModule* module);
 }  // namespace ttkwrapper
 }  // namespace inviwo

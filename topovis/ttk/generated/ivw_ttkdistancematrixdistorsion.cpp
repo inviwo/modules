@@ -14,7 +14,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkDistanceMatrixDistorsion.h"
+#include "ttkDistanceMatrixDistortion.h"
 #include <warn/pop>
 
 namespace inviwo {
@@ -25,7 +25,7 @@ namespace {
 #include <warn/ignore/conversion>
 
 struct Wrapper0 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetSelectFieldsWithRegexpHigh(property.get());
         return true;
     }
@@ -34,7 +34,7 @@ struct Wrapper0 {
 };
 
 struct Wrapper1 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetRegexpStringHigh(property.get().c_str());
         return true;
     }
@@ -42,7 +42,7 @@ struct Wrapper1 {
 };
 
 struct Wrapper2 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetSelectFieldsWithRegexpLow(property.get());
         return true;
     }
@@ -51,7 +51,7 @@ struct Wrapper2 {
 };
 
 struct Wrapper3 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetRegexpStringLow(property.get().c_str());
         return true;
     }
@@ -59,7 +59,7 @@ struct Wrapper3 {
 };
 
 struct Wrapper4 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
@@ -67,7 +67,7 @@ struct Wrapper4 {
 };
 
 struct Wrapper5 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetThreadNumber(property.get());
         return true;
     }
@@ -77,7 +77,7 @@ struct Wrapper5 {
 };
 
 struct Wrapper6 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetDebugLevel(property.get());
         return true;
     }
@@ -87,7 +87,7 @@ struct Wrapper6 {
 };
 
 struct Wrapper7 {
-    bool set(ttkDistanceMatrixDistorsion& filter) {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
@@ -100,8 +100,8 @@ struct Wrapper7 {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkDistanceMatrixDistorsion> {
-    static constexpr std::string_view identifier = "ttkDistanceMatrixDistorsion";
+struct TTKTraits<ttkDistanceMatrixDistortion> {
+    static constexpr std::string_view identifier = "ttkDistanceMatrixDistortion";
     static constexpr std::string_view displayName = "TTK DistanceMatrixDistorsion";
     inline static std::array<InputData, 2> inports = {
         InputData{"HighDistanceMatrix", "vtkTable", 1},
@@ -118,8 +118,8 @@ struct TTKTraits<ttkDistanceMatrixDistorsion> {
         properties;
 };
 
-void registerttkDistanceMatrixDistorsion(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkDistanceMatrixDistorsion>>();
+void registerttkDistanceMatrixDistortion(InviwoModule* module) {
+    module->registerProcessor<TTKGenericProcessor<ttkDistanceMatrixDistortion>>();
 }
 
 }  // namespace ttkwrapper
