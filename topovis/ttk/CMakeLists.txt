@@ -5,6 +5,7 @@ set(HEADER_FILES
     include/inviwo/ttk/datastructures/volumevtk.h
     include/inviwo/ttk/ports/vtkinport.h
     include/inviwo/ttk/ports/vtkoutport.h
+    include/inviwo/ttk/processors/imagetovtk.h
     include/inviwo/ttk/processors/ttkgenericprocessor.h
     include/inviwo/ttk/processors/volumetovtk.h
     include/inviwo/ttk/processors/vtkdatasettovtkimagedata.h
@@ -21,6 +22,7 @@ set(SOURCE_FILES
     src/datastructures/volumevtk.cpp
     src/ports/vtkinport.cpp
     src/ports/vtkoutport.cpp
+    src/processors/imagetovtk.cpp
     src/processors/ttkgenericprocessor.cpp
     src/processors/volumetovtk.cpp
     src/processors/vtkdatasettovtkimagedata.cpp
