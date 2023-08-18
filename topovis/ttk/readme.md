@@ -35,19 +35,15 @@ SomeDir/
  - vcpkg    <-- the vcpkg repo
 
 
-In
-<build>/vcpkg_installed/x64-windows/share/vtk/FindPEGTL.cmake
-comment out line 26:
-    set_target_properties(taocpp::pegtl PROPERTIES IMPORTED_GLOBAL TRUE)
-
-Have not figured out how to solve that one yet.
-Think the issue is that inviwo also comes with a version of PEGTL. 
-But I have not had time to change the one in inviwo to use vcpkg yet
-
-
 To generate the wrappers run
 
 >  python.exe .\tools\parsefilter.py --ttkrepo <path to a ttk repo> --output .\generated
+
+for example: 
+
+> python.exe .\tools\parsefilter.py \
+   --ttkrepo ../../../vcpkg/buildtrees/topology-tool-kit/src/8230f85d12-cfe2266a70.clean \
+   --output .\generated
 
 from the same directory as this readme.
 

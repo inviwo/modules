@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,8 +27,12 @@
  *
  *********************************************************************************/
 
-#include <inviwo/ttk/processors/volumetovtk.h>
-#include <inviwo/core/datastructures/volume/volumeramprecision.h>
+#include <inviwo/ttk/processors/imagetovtk.h>
+
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/imageram.h>
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/image/layerram.h>
 
 #include <inviwo/core/util/glm.h>
 
@@ -39,40 +43,89 @@
 
 namespace inviwo {
 
-// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VolumeToVTK::processorInfo_{
-    "org.inviwo.VolumeToVTK",              // Class identifier
-    "Volume To VTK",                       // Display name
-    "VTK",                                 // Category
-    CodeState::Experimental,               // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Volume"}  // Tags
-};
-const ProcessorInfo VolumeToVTK::getProcessorInfo() const { return processorInfo_; }
+namespace {
 
-VolumeToVTK::VolumeToVTK() : Processor(), inport_("inport"), outport_("outport", "vtkImageData") {
-    addPorts(inport_, outport_);
+template <typename T = double, typename U = T>
+OrdinalPropertyState<T> transformState(T val = T{1}) {
+    return {val,
+            util::filled<T>(static_cast<util::value_type_t<T>>(-100)),
+            ConstraintBehavior::Ignore,
+            util::filled<T>(static_cast<util::value_type_t<T>>(100)),
+            ConstraintBehavior::Ignore,
+            util::filled<T>(static_cast<util::value_type_t<T>>(0.1)),
+            InvalidationLevel::InvalidOutput,
+            PropertySemantics::Text};
 }
 
-void VolumeToVTK::process() {
-    auto volume = inport_.getData();
+}  // namespace
 
-    const auto dim = static_cast<ivec3>(volume->getDimensions());
-    const dvec3 offset = volume->getOffset();
-    const dmat3 basis = volume->getBasis();
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo ImageToVTK::processorInfo_{
+    "org.inviwo.ImageToVTK",               // Class identifier
+    "Image To VTK",                        // Display name
+    "VTK",                                 // Category
+    CodeState::Experimental,               // Code state
+    Tag::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
+    R"(Converts an inviwo Image to a VTKImageData )"_unindentHelp};
 
-    const dvec3 ddim{dim};
+const ProcessorInfo ImageToVTK::getProcessorInfo() const { return processorInfo_; }
+
+ImageToVTK::ImageToVTK()
+    : Processor{}
+    , inport_{"inport"}
+    , outport_{"outport"}
+    , layer_{"layer",
+             "Layer",
+             "Select which image layer that should be shown in the canvas. defaults to "
+             "the first color layer"_help,
+             {{"color", "Color layer", LayerType::Color},
+              {"depth", "Depth layer", LayerType::Depth},
+              {"picking", "Picking layer", LayerType::Picking}},
+             0}
+    , layerIndex_{"layerIndex",
+                  "Color Layer ID",
+                  "Index of the color layer to show in the canvas"_help,
+                  0,
+                  {0, ConstraintBehavior::Immutable},
+                  {0, ConstraintBehavior::Mutable}
+
+      }
+    , transform_{"transform", "Transform", transformState<dmat4>()} {
+
+    addPorts(inport_, outport_);
+    addProperties(layer_, layerIndex_);
+
+    inport_.onChange([&]() {
+        int layers = static_cast<int>(inport_.getData()->getNumberOfColorLayers());
+        layerIndex_.setMaxValue(layers - 1);
+    });
+}
+
+void ImageToVTK::process() {
+    auto image = inport_.getData();
+
+    auto layer = image->getLayer(layer_.getSelectedValue(), layerIndex_.get());
+
+    const auto dim = static_cast<ivec2>(layer->getDimensions());
+
+    data_ = vtkSmartPointer<vtkImageData>::New();
+
+    const auto basis = dmat3{transform_.get()};
+    const auto offset = dvec3{transform_.get()[3]};
+
+    const dvec3 ddim{dim, 1.0};
     const dvec3 length{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])};
     const dvec3 spacing{length / ddim};
     const dmat3 direction{basis[0] / length[0], basis[1] / length[1], basis[2] / length[2]};
 
     data_ = vtkSmartPointer<vtkImageData>::New();
-    data_->SetDimensions(dim.x, dim.y, dim.z);
+    data_->SetDimensions(dim.x, dim.y, 1);
     data_->SetSpacing(spacing.x, spacing.y, spacing.z);
     data_->SetOrigin(glm::value_ptr(offset));
     data_->SetDirectionMatrix(glm::value_ptr(direction));
 
     const auto vtkType = [&]() {
-        switch (volume->getDataFormat()->getId()) {
+        switch (layer->getDataFormat()->getId()) {
             case DataFormatId::Int8:
             case DataFormatId::Vec2Int8:
             case DataFormatId::Vec3Int8:
@@ -166,22 +219,13 @@ void VolumeToVTK::process() {
         }
     }();
 
-    const auto nComp = volume->getDataFormat()->getComponents();
+    const auto nComp = layer->getDataFormat()->getComponents();
     data_->AllocateScalars(vtkType, static_cast<int>(nComp));
     void* dst = data_->GetScalarPointer();
-    const void* src = volume->getRepresentation<VolumeRAM>()->getData();
-    std::memcpy(dst, src, glm::compMul(dim) * volume->getDataFormat()->getSize());
-
-    vtkInformation* info = data_->GetPointData()->GetScalars()->GetInformation();
-    info->Set(vtkDataArray::UNITS_LABEL(), fmt::format("{}{: [}", volume->dataMap_.valueAxis.name,
-                                                       volume->dataMap_.valueAxis.unit));
-    std::array<double, 8> range;
-    for (size_t i = 0; i < nComp; ++i) {
-        range[i * 2] = volume->dataMap_.dataRange[0];
-        range[i * 2 + 1] = volume->dataMap_.dataRange[1];
-    }
-    info->Set(vtkDataArray::COMPONENT_RANGE(), range.data(), static_cast<int>(nComp * 2));
+    const void* src = layer->getRepresentation<LayerRAM>()->getData();
+    std::memcpy(dst, src, glm::compMul(dim) * layer->getDataFormat()->getSize());
 
     outport_.setData(data_);
 }
+
 }  // namespace inviwo

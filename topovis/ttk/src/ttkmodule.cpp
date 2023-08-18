@@ -36,6 +36,7 @@
 #include <inviwo/ttk/ports/vtkinport.h>
 #include <inviwo/ttk/ports/vtkoutport.h>
 
+#include <inviwo/ttk/processors/imagetovtk.h>
 #include <inviwo/ttk/ttkmodule.h>
 
 #include <registerttkfilters.h>
@@ -46,7 +47,7 @@
 
 namespace inviwo {
 
-void logCallback(void* user_data, const vtkLogger::Message& message) {
+void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
 
     auto level = [&]() {
         if (message.verbosity <= vtkLogger::VERBOSITY_ERROR) {
@@ -76,6 +77,7 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     // Processors
     ttkwrapper::registerTTKFilters(this);
     // registerProcessor < TTKGenericProcessor < ttkMorseSmaleComplex>>();
+    registerProcessor<ImageToVTK>();
     registerProcessor<VolumeToVTK>();
     registerProcessor<VTKToVolume>();
     registerProcessor<VTKDowncastData>();

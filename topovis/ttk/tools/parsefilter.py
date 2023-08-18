@@ -318,7 +318,8 @@ def parse(xmlstr: str, file: Path) -> list[FilterData]:
     xml = ET.fromstring(xmlstr)
 
     if xml.tag != "ServerManagerConfiguration":
-        raise Exception(f"Unexpected element, expected 'ServerManagerConfiguration' found '{xml.tag}'")
+        raise Exception(
+            f"Unexpected element, expected 'ServerManagerConfiguration' found '{xml.tag}'")
 
     filters = []
     for group in xml:

@@ -86,6 +86,8 @@ VTKToMesh::BufferInfo::BufferInfo(BufferType type, Source defaultSource, Transfo
         transform);
 }
 
+namespace {
+
 template <typename T = double, typename U = T>
 OrdinalPropertyState<T> transformState(T val = T{1}) {
     return {val,
@@ -97,6 +99,8 @@ OrdinalPropertyState<T> transformState(T val = T{1}) {
             InvalidationLevel::InvalidOutput,
             PropertySemantics::Text};
 }
+
+}  // namespace
 
 VTKToMesh::ScaleAndOffset::ScaleAndOffset()
     : scale{"scale", "Scale", transformState<double>(1.0)}
