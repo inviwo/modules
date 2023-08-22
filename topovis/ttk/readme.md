@@ -41,11 +41,17 @@ To generate the wrappers run
 
 for example: 
 
-> python.exe .\tools\parsefilter.py \
-   --ttkrepo ../../../vcpkg/buildtrees/topology-tool-kit/src/8230f85d12-cfe2266a70.clean \
-   --output .\generated
+> python.exe .\tools\parsefilter.py  --ttkrepo ../../../vcpkg/buildtrees/topology-tool-kit/src/8230f85d12-cfe2266a70.clean --output .\generated
 
 from the same directory as this readme.
 
 We need to have a ttk repo around to since we need to get to the paraview xml files which not 
 included in the installation from vcpkg.
+
+
+filters/filters.xml Comes from
+https://github.com/Kitware/ParaView/blob/v5.7.0/ParaViewCore/ServerManager/SMApplication/Resources/filters.xml
+
+After 5.7 paraview split up the filter in many more files, and even more filter became vtkPV filter
+ie defined for a derived paraview subclas
+
