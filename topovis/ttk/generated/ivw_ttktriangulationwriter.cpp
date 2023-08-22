@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkTriangulationWriter.h"
+#include <vtkDataObject.h>
+#include <ttkTriangulationWriter.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -30,7 +32,10 @@ struct Wrapper0 {
         filter.SetFilename(property.get().string().c_str());
         return true;
     }
-    FileProperty property{"FileName", "FileName", ""};
+    FileProperty property{
+        "FileName", "FileName",
+        R"(This property specifies the file name for the Triangulation writer.)"_help,
+        std::filesystem::path{""}};
 };
 
 struct Wrapper1 {
@@ -38,7 +43,9 @@ struct Wrapper1 {
         filter.SetUseASCIIFormat(property.get());
         return true;
     }
-    BoolProperty property{"UseASCIIFormat", "Use ASCII format (no reader available)", false};
+    BoolProperty property{"UseASCIIFormat", "Use ASCII format (no reader available)",
+                          R"(Write Triangulation using ASCII format instead of binary.)"_help,
+                          false};
 };
 
 #include <warn/pop>
@@ -46,13 +53,17 @@ struct Wrapper1 {
 }  // namespace
 template <>
 struct TTKTraits<ttkTriangulationWriter> {
+    static constexpr std::string_view className = "ttkTriangulationWriter";
     static constexpr std::string_view identifier = "ttkTriangulationWriter";
     static constexpr std::string_view displayName = "TTK Triangulation File Writer";
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkUnstructuredGrid", -1}};
+        InputData{"Input", "vtkUnstructuredGrid", -1, R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {Group{"Output", {"FileName", "UseASCIIFormat"}}};
     std::tuple<Wrapper0, Wrapper1> properties;
+    static constexpr std::string_view doc = R"(Export a TTK (Explicit) Triangulation into a file.)";
 };
 
 void registerttkTriangulationWriter(InviwoModule* module) {

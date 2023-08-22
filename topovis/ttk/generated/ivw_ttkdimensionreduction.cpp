@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkDimensionReduction.h"
+#include <vtkDataObject.h>
+#include <ttkDimensionReduction.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -29,7 +31,9 @@ struct Wrapper0 {
         filter.SetSelectFieldsWithRegexp(property.get());
         return true;
     }
-    BoolProperty property{"SelectFieldsWithRegexp", "Select Fields with a Regexp", false};
+    BoolProperty property{"SelectFieldsWithRegexp", "Select Fields with a Regexp",
+                          R"(Select input scalar fields matching a regular expression.)"_help,
+                          false};
 };
 
 struct Wrapper1 {
@@ -37,7 +41,10 @@ struct Wrapper1 {
         filter.SetRegexpString(property.get().c_str());
         return true;
     }
-    StringProperty property{"Regexp", "Regexp", ".*"};
+    StringProperty property{"Regexp", "Regexp",
+                            R"(This regexp will be used to filter the chosen fields. Only
+matching ones will be selected.)"_help,
+                            ".*"};
 };
 
 struct Wrapper2 {
@@ -48,6 +55,7 @@ struct Wrapper2 {
     OptionPropertyInt property{
         "Method",
         "Method",
+        R"()"_help,
         {{"Spectral Embedding", "Spectral Embedding", 0},
          {"Locally Linear Embedding", "Locally Linear Embedding", 1},
          {"Multi-Dimensional Scaling", "Multi-Dimensional Scaling", 2},
@@ -63,7 +71,10 @@ struct Wrapper3 {
         filter.SetNumberOfComponents(property.get());
         return true;
     }
-    IntProperty property{"NumberOfComponents", "Components", 2,
+    IntProperty property{"NumberOfComponents",
+                         "Components",
+                         R"(Set the number of output components (i.e. dimensions).)"_help,
+                         2,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -73,7 +84,10 @@ struct Wrapper4 {
         filter.SetNumberOfNeighbors(property.get());
         return true;
     }
-    IntProperty property{"NumberOfNeighbors", "Neighbors", 5,
+    IntProperty property{"NumberOfNeighbors",
+                         "Neighbors",
+                         R"(Set the number of neighbors.)"_help,
+                         5,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -83,7 +97,8 @@ struct Wrapper5 {
         filter.SetKeepAllDataArrays(property.get());
         return true;
     }
-    BoolProperty property{"KeepAllDataArrays", "Keep All Data Arrays", true};
+    BoolProperty property{"KeepAllDataArrays", "Keep All Data Arrays",
+                          R"(Keep all data arrays.)"_help, true};
 };
 
 struct Wrapper6 {
@@ -91,7 +106,11 @@ struct Wrapper6 {
         filter.SetInputIsADistanceMatrix(property.get());
         return true;
     }
-    BoolProperty property{"InputDistanceMatrix", "Input Is a Distance Matrix", false};
+    BoolProperty property{"InputDistanceMatrix", "Input Is a Distance Matrix",
+                          R"(The Spectral Embedding and MDS methods can be fed directly
+with dissimilarity (distance) matrices instead of raw point
+clouds.)"_help,
+                          false};
 };
 
 struct Wrapper7 {
@@ -99,7 +118,7 @@ struct Wrapper7 {
         filter.Setse_Affinity(property.get().c_str());
         return true;
     }
-    StringProperty property{"se_Affinity", "Affinity", "nearest_neighbors"};
+    StringProperty property{"se_Affinity", "Affinity", R"()"_help, "nearest_neighbors"};
 };
 
 struct Wrapper8 {
@@ -107,7 +126,11 @@ struct Wrapper8 {
         filter.Setse_Gamma(property.get());
         return true;
     }
-    DoubleProperty property{"se_Gamma", "Gamma", 1.0, std::pair{0.0, ConstraintBehavior::Ignore},
+    DoubleProperty property{"se_Gamma",
+                            "Gamma",
+                            R"()"_help,
+                            1.0,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
@@ -116,7 +139,7 @@ struct Wrapper9 {
         filter.Setse_EigenSolver(property.get().c_str());
         return true;
     }
-    StringProperty property{"se_EigenSolver", "Eigen Solver", "auto"};
+    StringProperty property{"se_EigenSolver", "Eigen Solver", R"()"_help, "auto"};
 };
 
 struct Wrapper10 {
@@ -124,7 +147,10 @@ struct Wrapper10 {
         filter.Setlle_Regularization(property.get());
         return true;
     }
-    DoubleProperty property{"lle_Regularization", "Regularization", 0.001,
+    DoubleProperty property{"lle_Regularization",
+                            "Regularization",
+                            R"()"_help,
+                            0.001,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -134,7 +160,7 @@ struct Wrapper11 {
         filter.Setlle_EigenSolver(property.get().c_str());
         return true;
     }
-    StringProperty property{"lle_EigenSolver", "Eigen Solver", "auto"};
+    StringProperty property{"lle_EigenSolver", "Eigen Solver", R"()"_help, "auto"};
 };
 
 struct Wrapper12 {
@@ -142,7 +168,10 @@ struct Wrapper12 {
         filter.Setlle_Tolerance(property.get());
         return true;
     }
-    DoubleProperty property{"lle_Tolerance", "Tolerance", 0.001,
+    DoubleProperty property{"lle_Tolerance",
+                            "Tolerance",
+                            R"()"_help,
+                            0.001,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -152,7 +181,10 @@ struct Wrapper13 {
         filter.Setlle_MaxIteration(property.get());
         return true;
     }
-    IntProperty property{"lle_MaxIteration", "Iteration threshold", 300,
+    IntProperty property{"lle_MaxIteration",
+                         "Iteration threshold",
+                         R"()"_help,
+                         300,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -162,7 +194,7 @@ struct Wrapper14 {
         filter.Setlle_Method(property.get().c_str());
         return true;
     }
-    StringProperty property{"lle_Method", "LLE Method", "standard"};
+    StringProperty property{"lle_Method", "LLE Method", R"()"_help, "standard"};
 };
 
 struct Wrapper15 {
@@ -170,7 +202,10 @@ struct Wrapper15 {
         filter.Setlle_HessianTolerance(property.get());
         return true;
     }
-    DoubleProperty property{"lle_HessianTolerance", "Hessian Tolerance", 0.001,
+    DoubleProperty property{"lle_HessianTolerance",
+                            "Hessian Tolerance",
+                            R"()"_help,
+                            0.001,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -180,7 +215,10 @@ struct Wrapper16 {
         filter.Setlle_ModifiedTolerance(property.get());
         return true;
     }
-    DoubleProperty property{"lle_ModifiedTolerance", "Modified Tolerance", 0.001,
+    DoubleProperty property{"lle_ModifiedTolerance",
+                            "Modified Tolerance",
+                            R"()"_help,
+                            0.001,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -190,7 +228,7 @@ struct Wrapper17 {
         filter.Setlle_NeighborsAlgorithm(property.get().c_str());
         return true;
     }
-    StringProperty property{"lle_NeighborsAlgorithm", "NN-algorithm", "auto"};
+    StringProperty property{"lle_NeighborsAlgorithm", "NN-algorithm", R"()"_help, "auto"};
 };
 
 struct Wrapper18 {
@@ -198,7 +236,7 @@ struct Wrapper18 {
         filter.Setmds_Metric(property.get());
         return true;
     }
-    BoolProperty property{"mds_Metric", "Metric", true};
+    BoolProperty property{"mds_Metric", "Metric", R"()"_help, true};
 };
 
 struct Wrapper19 {
@@ -206,7 +244,10 @@ struct Wrapper19 {
         filter.Setmds_Init(property.get());
         return true;
     }
-    IntProperty property{"mds_Init", "Number of init runs", 4,
+    IntProperty property{"mds_Init",
+                         "Number of init runs",
+                         R"()"_help,
+                         4,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -216,7 +257,10 @@ struct Wrapper20 {
         filter.Setmds_MaxIteration(property.get());
         return true;
     }
-    IntProperty property{"mds_MaxIteration", "Iteration Threshold", 300,
+    IntProperty property{"mds_MaxIteration",
+                         "Iteration Threshold",
+                         R"()"_help,
+                         300,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -226,7 +270,10 @@ struct Wrapper21 {
         filter.Setmds_Verbose(property.get());
         return true;
     }
-    IntProperty property{"mds_Verbose", "Verbosity Level", 0,
+    IntProperty property{"mds_Verbose",
+                         "Verbosity Level",
+                         R"()"_help,
+                         0,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -236,7 +283,10 @@ struct Wrapper22 {
         filter.Setmds_Epsilon(property.get());
         return true;
     }
-    DoubleProperty property{"mds_Epsilon", "Epsilon", 0.001,
+    DoubleProperty property{"mds_Epsilon",
+                            "Epsilon",
+                            R"()"_help,
+                            0.001,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -246,7 +296,10 @@ struct Wrapper23 {
         filter.Settsne_Perplexity(property.get());
         return true;
     }
-    DoubleProperty property{"tsne_Perplexity", "Perplexity", 30.0,
+    DoubleProperty property{"tsne_Perplexity",
+                            "Perplexity",
+                            R"()"_help,
+                            30.0,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -256,7 +309,10 @@ struct Wrapper24 {
         filter.Settsne_Exaggeration(property.get());
         return true;
     }
-    DoubleProperty property{"tsne_Exaggeration", "Early Exaggeration", 12.0,
+    DoubleProperty property{"tsne_Exaggeration",
+                            "Early Exaggeration",
+                            R"()"_help,
+                            12.0,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -266,7 +322,10 @@ struct Wrapper25 {
         filter.Settsne_LearningRate(property.get());
         return true;
     }
-    DoubleProperty property{"tsne_LearningRate", "Learning Rate", 200.0,
+    DoubleProperty property{"tsne_LearningRate",
+                            "Learning Rate",
+                            R"()"_help,
+                            200.0,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -276,7 +335,10 @@ struct Wrapper26 {
         filter.Settsne_MaxIteration(property.get());
         return true;
     }
-    IntProperty property{"tsne_MaxIteration", "Iteration Threshold", 1000,
+    IntProperty property{"tsne_MaxIteration",
+                         "Iteration Threshold",
+                         R"()"_help,
+                         1000,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -286,7 +348,10 @@ struct Wrapper27 {
         filter.Settsne_MaxIterationProgress(property.get());
         return true;
     }
-    IntProperty property{"tsne_MaxIterationProgress", "Iteration Without Progress Threshold", 300,
+    IntProperty property{"tsne_MaxIterationProgress",
+                         "Iteration Without Progress Threshold",
+                         R"(Documentation.)"_help,
+                         300,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -296,7 +361,10 @@ struct Wrapper28 {
         filter.Settsne_GradientThreshold(property.get());
         return true;
     }
-    DoubleProperty property{"tsne_GradientThreshold", "Gradient Threshold", 1e-07,
+    DoubleProperty property{"tsne_GradientThreshold",
+                            "Gradient Threshold",
+                            R"()"_help,
+                            1e-07,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -306,7 +374,7 @@ struct Wrapper29 {
         filter.Settsne_Metric(property.get().c_str());
         return true;
     }
-    StringProperty property{"tsne_Metric", "Metric", "euclidean"};
+    StringProperty property{"tsne_Metric", "Metric", R"()"_help, "euclidean"};
 };
 
 struct Wrapper30 {
@@ -314,7 +382,7 @@ struct Wrapper30 {
         filter.Settsne_Init(property.get().c_str());
         return true;
     }
-    StringProperty property{"tsne_Init", "Init", "random"};
+    StringProperty property{"tsne_Init", "Init", R"()"_help, "random"};
 };
 
 struct Wrapper31 {
@@ -322,7 +390,10 @@ struct Wrapper31 {
         filter.Settsne_Verbose(property.get());
         return true;
     }
-    IntProperty property{"tsne_Verbose", "Verbosity Level", 0,
+    IntProperty property{"tsne_Verbose",
+                         "Verbosity Level",
+                         R"()"_help,
+                         0,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -332,7 +403,7 @@ struct Wrapper32 {
         filter.Settsne_Method(property.get().c_str());
         return true;
     }
-    StringProperty property{"tsne_Method", "tSNE Method", "barnes_hut"};
+    StringProperty property{"tsne_Method", "tSNE Method", R"()"_help, "barnes_hut"};
 };
 
 struct Wrapper33 {
@@ -340,7 +411,11 @@ struct Wrapper33 {
         filter.Settsne_Angle(property.get());
         return true;
     }
-    DoubleProperty property{"tsne_Angle", "Angle", 0.5, std::pair{0.0, ConstraintBehavior::Ignore},
+    DoubleProperty property{"tsne_Angle",
+                            "Angle",
+                            R"()"_help,
+                            0.5,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
@@ -349,7 +424,7 @@ struct Wrapper34 {
         filter.Setiso_EigenSolver(property.get().c_str());
         return true;
     }
-    StringProperty property{"iso_EigenSolver", "Eigen Solver", "auto"};
+    StringProperty property{"iso_EigenSolver", "Eigen Solver", R"()"_help, "auto"};
 };
 
 struct Wrapper35 {
@@ -357,7 +432,10 @@ struct Wrapper35 {
         filter.Setiso_Tolerance(property.get());
         return true;
     }
-    DoubleProperty property{"iso_Tolerance", "Tolerance", 0.001,
+    DoubleProperty property{"iso_Tolerance",
+                            "Tolerance",
+                            R"()"_help,
+                            0.001,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -367,7 +445,10 @@ struct Wrapper36 {
         filter.Setiso_MaxIteration(property.get());
         return true;
     }
-    IntProperty property{"iso_MaxIteration", "Iteration threshold", 300,
+    IntProperty property{"iso_MaxIteration",
+                         "Iteration threshold",
+                         R"()"_help,
+                         300,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -377,7 +458,7 @@ struct Wrapper37 {
         filter.Setiso_PathMethod(property.get().c_str());
         return true;
     }
-    StringProperty property{"iso_PathMethod", "Path method", "auto"};
+    StringProperty property{"iso_PathMethod", "Path method", R"()"_help, "auto"};
 };
 
 struct Wrapper38 {
@@ -385,7 +466,7 @@ struct Wrapper38 {
         filter.Setiso_NeighborsAlgorithm(property.get().c_str());
         return true;
     }
-    StringProperty property{"iso_NeighborsAlgorithm", "NN-algorithm", "auto"};
+    StringProperty property{"iso_NeighborsAlgorithm", "NN-algorithm", R"()"_help, "auto"};
 };
 
 struct Wrapper39 {
@@ -393,7 +474,7 @@ struct Wrapper39 {
         filter.Setiso_Metric(property.get().c_str());
         return true;
     }
-    StringProperty property{"iso_Metric", "Metric", "euclidean"};
+    StringProperty property{"iso_Metric", "Metric", R"()"_help, "euclidean"};
 };
 
 struct Wrapper40 {
@@ -401,7 +482,7 @@ struct Wrapper40 {
         filter.Setpca_Copy(property.get());
         return true;
     }
-    BoolProperty property{"pca_Copy", "Copy", true};
+    BoolProperty property{"pca_Copy", "Copy", R"()"_help, true};
 };
 
 struct Wrapper41 {
@@ -409,7 +490,7 @@ struct Wrapper41 {
         filter.Setpca_Whiten(property.get());
         return true;
     }
-    BoolProperty property{"pca_Whiten", "Whiten", false};
+    BoolProperty property{"pca_Whiten", "Whiten", R"()"_help, false};
 };
 
 struct Wrapper42 {
@@ -417,7 +498,7 @@ struct Wrapper42 {
         filter.Setpca_SVDSolver(property.get().c_str());
         return true;
     }
-    StringProperty property{"pca_SVDSolver", "SVD Solver", "auto"};
+    StringProperty property{"pca_SVDSolver", "SVD Solver", R"()"_help, "auto"};
 };
 
 struct Wrapper43 {
@@ -425,7 +506,10 @@ struct Wrapper43 {
         filter.Setpca_Tolerance(property.get());
         return true;
     }
-    DoubleProperty property{"pca_Tolerance", "Tolerance", 0.0,
+    DoubleProperty property{"pca_Tolerance",
+                            "Tolerance",
+                            R"()"_help,
+                            0.0,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -435,7 +519,7 @@ struct Wrapper44 {
         filter.Setpca_MaxIteration(property.get().c_str());
         return true;
     }
-    StringProperty property{"pca_MaxIteration", "Iteration Threshold", "auto"};
+    StringProperty property{"pca_MaxIteration", "Iteration Threshold", R"()"_help, "auto"};
 };
 
 struct Wrapper45 {
@@ -444,7 +528,8 @@ struct Wrapper45 {
         filter.SetModulePath(property.get().string().c_str());
         return true;
     }
-    FileProperty property{"ModulePath", "Module Path", "default"};
+    FileProperty property{"ModulePath", "Module Path", R"(Set the path of the Python module.)"_help,
+                          std::filesystem::path{"default"}};
 };
 
 struct Wrapper46 {
@@ -452,7 +537,8 @@ struct Wrapper46 {
         filter.SetModuleName(property.get().c_str());
         return true;
     }
-    StringProperty property{"ModuleName", "Module Name", "dimensionReduction"};
+    StringProperty property{"ModuleName", "Module Name",
+                            R"(Set the name of the Python module.)"_help, "dimensionReduction"};
 };
 
 struct Wrapper47 {
@@ -460,7 +546,8 @@ struct Wrapper47 {
         filter.SetFunctionName(property.get().c_str());
         return true;
     }
-    StringProperty property{"FunctionName", "Function Name", "doIt"};
+    StringProperty property{"FunctionName", "Function Name",
+                            R"(Set the name of the Python function.)"_help, "doIt"};
 };
 
 struct Wrapper48 {
@@ -468,7 +555,8 @@ struct Wrapper48 {
         filter.SetIsDeterministic(property.get());
         return true;
     }
-    BoolProperty property{"IsDeterministic", "Is Deterministic", true};
+    BoolProperty property{"IsDeterministic", "Is Deterministic", R"(Set the random state.)"_help,
+                          true};
 };
 
 struct Wrapper49 {
@@ -476,7 +564,8 @@ struct Wrapper49 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper50 {
@@ -484,7 +573,10 @@ struct Wrapper50 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -494,7 +586,10 @@ struct Wrapper51 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -504,9 +599,24 @@ struct Wrapper52 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper53 {
+    bool set(ttkDimensionReduction& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -514,9 +624,13 @@ struct Wrapper52 {
 }  // namespace
 template <>
 struct TTKTraits<ttkDimensionReduction> {
+    static constexpr std::string_view className = "ttkDimensionReduction";
     static constexpr std::string_view identifier = "ttkDimensionReduction";
     static constexpr std::string_view displayName = "TTK DimensionReduction";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkTable", 1}};
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
+    inline static std::array<InputData, 1> inports = {
+        InputData{"Input", "vtkTable", 1, R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 9> groups = {
         Group{"Testing",
@@ -550,8 +664,25 @@ struct TTKTraits<ttkDimensionReduction> {
                Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34, Wrapper35, Wrapper36,
                Wrapper37, Wrapper38, Wrapper39, Wrapper40, Wrapper41, Wrapper42, Wrapper43,
                Wrapper44, Wrapper45, Wrapper46, Wrapper47, Wrapper48, Wrapper49, Wrapper50,
-               Wrapper51, Wrapper52>
+               Wrapper51, Wrapper52, Wrapper53>
         properties;
+    static constexpr std::string_view doc = R"(TTK dimensionReduction plugin documentation.
+
+Online examples:
+
+- https://topology-tool-kit.github.io/examples/1manifoldLearning/
+
+- https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/
+
+- https://topology-tool-kit.github.io/examples/karhunenLoveDigits64Dimensions/
+
+- https://topology-tool-kit.github.io/examples/mergeTreeClustering/
+
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_householdAnalysis/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
 };
 
 void registerttkDimensionReduction(InviwoModule* module) {

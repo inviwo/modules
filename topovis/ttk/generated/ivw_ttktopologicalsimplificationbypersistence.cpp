@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkTopologicalSimplificationByPersistence.h"
+#include <vtkDataObject.h>
+#include <ttkTopologicalSimplificationByPersistence.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -27,10 +29,27 @@ namespace {
 struct Wrapper0 : FieldSelection {
     bool set(ttkTopologicalSimplificationByPersistence& filter) {
         if (property.size() == 0) return false;
-        filter.SetInputArrayToProcess(0, 0, 0, 0, property.get().c_str());
+        filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
-    OptionPropertyString property{"InputArray", "Input Array", {}, 0};
+    OptionPropertyString name{"name", "Name", {}, 0};
+
+    OptionProperty<vtkDataObject::FieldAssociations> fieldAssociation{
+        "fieldAssociation",
+        "Field Association",
+        {{"points", "Points", vtkDataObject::FIELD_ASSOCIATION_POINTS},
+         {"cells", "Cells", vtkDataObject::FIELD_ASSOCIATION_CELLS},
+         {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
+         {"pointsThenCells", "Points then Cells",
+          vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
+        0};
+
+    CompositeProperty property{[&]() {
+        CompositeProperty tmp{"InputArray", "Input Array",
+                              R"(The scalar array that will be simplified.)"_help};
+        tmp.addProperties(name, fieldAssociation);
+        return tmp;
+    }()};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -40,12 +59,14 @@ struct Wrapper1 {
         filter.SetPairType(property.get());
         return true;
     }
-    OptionPropertyInt property{"PairType",
-                               "PairType",
-                               {{"Extremum-Saddle", "Extremum-Saddle", 0},
-                                {"Minimum-Saddle", "Minimum-Saddle", 1},
-                                {"Maximum-Saddle", "Maximum-Saddle", 2}},
-                               0};
+    OptionPropertyInt property{
+        "PairType",
+        "PairType",
+        R"(Determines which type of persistence pairs will be removed.)"_help,
+        {{"Extremum-Saddle", "Extremum-Saddle", 0},
+         {"Minimum-Saddle", "Minimum-Saddle", 1},
+         {"Maximum-Saddle", "Maximum-Saddle", 2}},
+        0};
 };
 
 struct Wrapper2 {
@@ -53,9 +74,13 @@ struct Wrapper2 {
         filter.SetPersistenceThreshold(property.get());
         return true;
     }
-    DoubleProperty property{"PersistenceThreshold", "PersistenceThreshold", 0.0,
-                            std::pair{0.0, ConstraintBehavior::Ignore},
-                            std::pair{100.0, ConstraintBehavior::Ignore}};
+    DoubleProperty property{
+        "PersistenceThreshold",
+        "PersistenceThreshold",
+        R"(The persistence threshold all persistence pairs of the output scalar field must strictly exceed (by default relative to the function range, i.e. between 0 and 1). Note, a persistence threshold of 0 will remove all flat plateau artifacts.)"_help,
+        0.0,
+        std::pair{0.0, ConstraintBehavior::Ignore},
+        std::pair{100.0, ConstraintBehavior::Ignore}};
 };
 
 struct Wrapper3 {
@@ -63,7 +88,10 @@ struct Wrapper3 {
         filter.SetThresholdIsAbsolute(property.get());
         return true;
     }
-    BoolProperty property{"ThresholdIsAbsolute", "ThresholdIsAbsolute", false};
+    BoolProperty property{
+        "ThresholdIsAbsolute", "ThresholdIsAbsolute",
+        R"(This parameter determines if the persistence threshold is an absolute scalar value, or a fraction (0-1) of the function range.)"_help,
+        false};
 };
 
 struct Wrapper4 {
@@ -71,7 +99,10 @@ struct Wrapper4 {
         filter.SetComputePerturbation(property.get());
         return true;
     }
-    BoolProperty property{"NumericalPerturbation", "NumericalPerturbation", false};
+    BoolProperty property{
+        "NumericalPerturbation", "NumericalPerturbation",
+        R"(Numerically perturb the output (to avoid the usage of an order array for flat plateau disambiguation).)"_help,
+        false};
 };
 
 struct Wrapper5 {
@@ -79,7 +110,8 @@ struct Wrapper5 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper6 {
@@ -87,7 +119,10 @@ struct Wrapper6 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -97,7 +132,10 @@ struct Wrapper7 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -107,9 +145,24 @@ struct Wrapper8 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper9 {
+    bool set(ttkTopologicalSimplificationByPersistence& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -117,9 +170,14 @@ struct Wrapper8 {
 }  // namespace
 template <>
 struct TTKTraits<ttkTopologicalSimplificationByPersistence> {
+    static constexpr std::string_view className = "ttkTopologicalSimplificationByPersistence";
     static constexpr std::string_view identifier = "ttkTopologicalSimplificationByPersistence";
     static constexpr std::string_view displayName = "TTK TopologicalSimplificationByPersistence";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", 1}};
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
+    inline static std::array<InputData, 1> inports = {InputData{
+        "Input", "vtkDataSet", 1,
+        R"(A vtkDataSet that has at least one point data scalar array that will be simplified.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Input Options", {"InputArray"}},
@@ -129,8 +187,25 @@ struct TTKTraits<ttkTopologicalSimplificationByPersistence> {
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8>
+               Wrapper8, Wrapper9>
         properties;
+    static constexpr std::string_view doc =
+        R"(Given an input scalar field and a persistence threshold (either as an absolute value or a fraction of the scalar range), this filter modifies the scalar field such that it no longer exhibits persistence pairs below the given threshold. All other pairs are unaffected. To this end the filter uses the persistence-sensitive specialization of localized topological simplification (PLTS). Note that this filter will also compute an unambiguous global vertex order that can be used in subsequent topological data analysis.
+
+Related publications:
+"Generalized Topological Simplification of Scalar Fields on Surfaces"
+Julien Tierny, Valerio Pascucci
+Proc. of IEEE VIS 2012.
+IEEE Transactions on Visualization and Computer Graphics, 2012.
+
+"Localized Topological Simplification of Scalar Data"
+Jonas Lukasczyk, Christoph Garth, Ross Maciejewski, Julien Tierny
+Proc. of IEEE VIS 2020.
+IEEE Transactions on Visualization and Computer Graphics
+
+Online examples:
+
+- https://topology-tool-kit.github.io/examples/contourTreeAlignment/)";
 };
 
 void registerttkTopologicalSimplificationByPersistence(InviwoModule* module) {

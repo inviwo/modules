@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkMergeTreePrincipalGeodesicsDecoding.h"
+#include <vtkDataObject.h>
+#include <ttkMergeTreePrincipalGeodesicsDecoding.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -29,7 +31,7 @@ struct Wrapper0 {
         filter.SetOutputInputTrees(property.get());
         return true;
     }
-    BoolProperty property{"OutputInputTrees", "Output Input Trees", false};
+    BoolProperty property{"OutputInputTrees", "Output Input Trees", R"()"_help, false};
 };
 
 struct Wrapper1 {
@@ -37,7 +39,8 @@ struct Wrapper1 {
         filter.SetOutputInputTreesSegmentation(property.get());
         return true;
     }
-    BoolProperty property{"OutputInputTreesSegmentation", "Output Input Trees Segmentation", false};
+    BoolProperty property{"OutputInputTreesSegmentation", "Output Input Trees Segmentation",
+                          R"()"_help, false};
 };
 
 struct Wrapper2 {
@@ -45,7 +48,7 @@ struct Wrapper2 {
         filter.SetOutputBarycenter(property.get());
         return true;
     }
-    BoolProperty property{"OutputBarycenter", "Output Barycenter", false};
+    BoolProperty property{"OutputBarycenter", "Output Barycenter", R"()"_help, false};
 };
 
 struct Wrapper3 {
@@ -53,7 +56,7 @@ struct Wrapper3 {
         filter.SetReconstructInputTrees(property.get());
         return true;
     }
-    BoolProperty property{"ReconstructInputTrees", "Reconstruct Input Trees", true};
+    BoolProperty property{"ReconstructInputTrees", "Reconstruct Input Trees", R"()"_help, true};
 };
 
 struct Wrapper4 {
@@ -61,7 +64,8 @@ struct Wrapper4 {
         filter.SetcomputeReconstructionError_(property.get());
         return true;
     }
-    BoolProperty property{"ComputeReconstructionError", "Compute Reconstruction Error", false};
+    BoolProperty property{"ComputeReconstructionError", "Compute Reconstruction Error", R"()"_help,
+                          false};
 };
 
 struct Wrapper5 {
@@ -70,7 +74,7 @@ struct Wrapper5 {
         return true;
     }
     BoolProperty property{"TransferInputTreesInformation", "Transfer Input Trees Information",
-                          false};
+                          R"()"_help, false};
 };
 
 struct Wrapper6 {
@@ -79,7 +83,7 @@ struct Wrapper6 {
         return true;
     }
     BoolProperty property{"TransferBarycenterInformation", "Transfer Barycenter Information",
-                          false};
+                          R"()"_help, false};
 };
 
 struct Wrapper7 {
@@ -87,7 +91,8 @@ struct Wrapper7 {
         filter.SetConstructGeodesicsTrees(property.get());
         return true;
     }
-    BoolProperty property{"ConstructGeodesicsTrees", "Construct Geodesics Trees", false};
+    BoolProperty property{"ConstructGeodesicsTrees", "Construct Geodesics Trees", R"()"_help,
+                          false};
 };
 
 struct Wrapper8 {
@@ -95,7 +100,7 @@ struct Wrapper8 {
         filter.SetConstructEllipses(property.get());
         return true;
     }
-    BoolProperty property{"ConstructEllipses", "Construct Ellipses", false};
+    BoolProperty property{"ConstructEllipses", "Construct Ellipses", R"()"_help, false};
 };
 
 struct Wrapper9 {
@@ -103,7 +108,7 @@ struct Wrapper9 {
         filter.SetConstructRectangle(property.get());
         return true;
     }
-    BoolProperty property{"ConstructRectangle", "Construct Rectangle", false};
+    BoolProperty property{"ConstructRectangle", "Construct Rectangle", R"()"_help, false};
 };
 
 struct Wrapper10 {
@@ -111,7 +116,10 @@ struct Wrapper10 {
         filter.SetRectangleMultiplier(property.get());
         return true;
     }
-    IntProperty property{"RectangleMultiplier", "Rectangle Multiplier", 1,
+    IntProperty property{"RectangleMultiplier",
+                         "Rectangle Multiplier",
+                         R"(Number of intervals in the geodesic.)"_help,
+                         1,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -121,7 +129,7 @@ struct Wrapper11 {
         filter.SetConstructSurface(property.get());
         return true;
     }
-    BoolProperty property{"ConstructSurface", "Construct Surface", false};
+    BoolProperty property{"ConstructSurface", "Construct Surface", R"()"_help, false};
 };
 
 struct Wrapper12 {
@@ -129,7 +137,10 @@ struct Wrapper12 {
         filter.SetNumberOfGeodesicsIntervals(property.get());
         return true;
     }
-    IntProperty property{"NumberOfGeodesicsIntervals", "Number Of Geodesics Intervals", 8,
+    IntProperty property{"NumberOfGeodesicsIntervals",
+                         "Number Of Geodesics Intervals",
+                         R"(Number of intervals in the geodesic.)"_help,
+                         8,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -139,7 +150,7 @@ struct Wrapper13 {
         filter.SetProcessSecondInput(property.get());
         return true;
     }
-    BoolProperty property{"ProcessSecondInput", "Process Second Input", false};
+    BoolProperty property{"ProcessSecondInput", "Process Second Input", R"()"_help, false};
 };
 
 struct Wrapper14 {
@@ -147,7 +158,8 @@ struct Wrapper14 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper15 {
@@ -155,7 +167,10 @@ struct Wrapper15 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -165,7 +180,10 @@ struct Wrapper16 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -175,9 +193,24 @@ struct Wrapper17 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper18 {
+    bool set(ttkMergeTreePrincipalGeodesicsDecoding& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -185,13 +218,20 @@ struct Wrapper17 {
 }  // namespace
 template <>
 struct TTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
+    static constexpr std::string_view className = "ttkMergeTreePrincipalGeodesicsDecoding";
     static constexpr std::string_view identifier = "ttkMergeTreePrincipalGeodesicsDecoding";
     static constexpr std::string_view displayName = "TTK MergeTreePrincipalGeodesicsDecoding";
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 5> inports = {
-        InputData{"Barycenter", "vtkMultiBlockDataSet", 1},
-        InputData{"Coefficients", "vtkTable", 1}, InputData{"Geodesics Vectors", "vtkTable", 1},
-        InputData{"Correlation Matrix (optional)", "vtkTable", 1},
-        InputData{"Input Trees (optional)", "vtkMultiBlockDataSet", 1}};
+        InputData{"Barycenter", "vtkMultiBlockDataSet", 1, R"(Merge trees to process.)"},
+        InputData{"Coefficients", "vtkTable", 1,
+                  R"(Projection coefficients of the input trees in the new basis.)"},
+        InputData{"Geodesics Vectors", "vtkTable", 1,
+                  R"(Vectors defining the principal geodesics.)"},
+        InputData{"Correlation Matrix (optional)", "vtkTable", 1,
+                  R"(Correlation between branches and geodesics axis.)"},
+        InputData{"Input Trees (optional)", "vtkMultiBlockDataSet", 1, R"(Original input trees.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{
@@ -206,8 +246,20 @@ struct TTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
-               Wrapper16, Wrapper17>
+               Wrapper16, Wrapper17, Wrapper18>
         properties;
+    static constexpr std::string_view doc =
+        R"(This filter reconstructs merge trees (or persistence diagrams) given their coordinates in a basis computed via Principal Geodesic Analysis.
+
+Related publication:
+
+'Principal Geodesic Analysis of Merge Trees (and Persistence Diagrams)'
+Mathieu Pont, Jules Vidal, Julien Tierny.
+IEEE Transactions on Visualization and Computer Graphics, 2022
+
+Online examples:
+
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/)";
 };
 
 void registerttkMergeTreePrincipalGeodesicsDecoding(InviwoModule* module) {

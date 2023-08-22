@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkSphereFromPoint.h"
+#include <vtkDataObject.h>
+#include <ttkSphereFromPoint.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -29,7 +31,11 @@ struct Wrapper0 {
         filter.SetRadius(property.get());
         return true;
     }
-    DoubleProperty property{"Radius", "Radius", 0.5, std::pair{0.0, ConstraintBehavior::Ignore},
+    DoubleProperty property{"Radius",
+                            "Radius",
+                            R"(Sphere radius.)"_help,
+                            0.5,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{100.0, ConstraintBehavior::Ignore}};
 };
 
@@ -38,7 +44,10 @@ struct Wrapper1 {
         filter.SetThetaResolution(property.get());
         return true;
     }
-    IntProperty property{"ThetaResolution", "Theta Resolution", 20,
+    IntProperty property{"ThetaResolution",
+                         "Theta Resolution",
+                         R"(Theta resolution.)"_help,
+                         20,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -48,7 +57,11 @@ struct Wrapper2 {
         filter.SetStartTheta(property.get());
         return true;
     }
-    IntProperty property{"StartTheta", "Start Theta", 0, std::pair{0, ConstraintBehavior::Ignore},
+    IntProperty property{"StartTheta",
+                         "Start Theta",
+                         R"(Start theta.)"_help,
+                         0,
+                         std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{360, ConstraintBehavior::Ignore}};
 };
 
@@ -57,7 +70,11 @@ struct Wrapper3 {
         filter.SetEndTheta(property.get());
         return true;
     }
-    IntProperty property{"EndTheta", "End Theta", 360, std::pair{0, ConstraintBehavior::Ignore},
+    IntProperty property{"EndTheta",
+                         "End Theta",
+                         R"(End theta.)"_help,
+                         360,
+                         std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{360, ConstraintBehavior::Ignore}};
 };
 
@@ -66,7 +83,10 @@ struct Wrapper4 {
         filter.SetPhiResolution(property.get());
         return true;
     }
-    IntProperty property{"PhiResolution", "Phi Resolution", 20,
+    IntProperty property{"PhiResolution",
+                         "Phi Resolution",
+                         R"(Phi resolution.)"_help,
+                         20,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -76,7 +96,11 @@ struct Wrapper5 {
         filter.SetStartPhi(property.get());
         return true;
     }
-    IntProperty property{"StartPhi", "Start Phi", 0, std::pair{0, ConstraintBehavior::Ignore},
+    IntProperty property{"StartPhi",
+                         "Start Phi",
+                         R"(Start phi.)"_help,
+                         0,
+                         std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{360, ConstraintBehavior::Ignore}};
 };
 
@@ -85,7 +109,11 @@ struct Wrapper6 {
         filter.SetEndPhi(property.get());
         return true;
     }
-    IntProperty property{"EndPhi", "End Phi", 180, std::pair{0, ConstraintBehavior::Ignore},
+    IntProperty property{"EndPhi",
+                         "End Phi",
+                         R"(End phi.)"_help,
+                         180,
+                         std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{180, ConstraintBehavior::Ignore}};
 };
 
@@ -94,7 +122,8 @@ struct Wrapper7 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper8 {
@@ -102,7 +131,10 @@ struct Wrapper8 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -112,7 +144,10 @@ struct Wrapper9 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -122,9 +157,24 @@ struct Wrapper10 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper11 {
+    bool set(ttkSphereFromPoint& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -132,17 +182,22 @@ struct Wrapper10 {
 }  // namespace
 template <>
 struct TTKTraits<ttkSphereFromPoint> {
+    static constexpr std::string_view className = "ttkSphereFromPoint";
     static constexpr std::string_view identifier = "ttkSphereFromPoint";
     static constexpr std::string_view displayName = "TTK SphereFromPoint";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", -1}};
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
+    inline static std::array<InputData, 1> inports = {
+        InputData{"Input", "vtkDataSet", -1, R"(Input point set.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11>
         properties;
+    static constexpr std::string_view doc = R"(TTK plugin that produces sphere-only glyphs.)";
 };
 
 void registerttkSphereFromPoint(InviwoModule* module) {
