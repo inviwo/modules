@@ -41,6 +41,7 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/utilities.h>
 #include <inviwo/core/util/rendercontext.h>
+#include <inviwo/core/algorithm/markdown.h>
 
 #include <inviwo/ttk/ports/vtkinport.h>
 #include <inviwo/ttk/ports/vtkoutport.h>
@@ -79,6 +80,7 @@ struct IVW_MODULE_TTK_API InputData {
     std::string identifier;
     std::string dataType;
     int numComp;
+    std::string doc;
 };
 
 struct IVW_MODULE_TTK_API OutputData {
@@ -116,6 +118,13 @@ protected:
     Command() = default;
     ~Command() override = default;
 };
+
+inline std::string toString(vtkInformation* info) {
+    vtkIndent indent;
+    std::stringstream ss;
+    info->PrintSelf(ss, indent);
+    return std::move(ss.str());
+}
 
 /**
  * @brief A Wrapper for all TTK filters
@@ -158,16 +167,23 @@ public:
             std::optional<std::string> dataType;
             if (info->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
                 dataType = info->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
+            } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+                dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
             }
 
             if (dataType) {
                 auto id = i < static_cast<int>(TTKTraits<TTKFilter>::inports.size())
-                              ? TTKTraits<TTKFilter>::inports[i].identifier
+                              ? util::stripIdentifier(TTKTraits<TTKFilter>::inports[i].identifier)
                               : fmt::format("inport{}", i);
 
-                addPort(std::make_unique<vtk::VtkInport>(id, *dataType));
+                auto doc = i < static_cast<int>(TTKTraits<TTKFilter>::outports.size())
+                               ? util::unindentMd2doc(TTKTraits<TTKFilter>::inports[i].doc)
+                               : Document{};
+                addPort(std::make_unique<vtk::VtkInport>(id, *dataType, std::move(doc)));
             } else {
-                throw Exception(fmt::format("missing inport for {}", getIdentifier()));
+                throw Exception(
+                    fmt::format("missing inport for {}, dataType not known port info: {}",
+                                TTKTraits<TTKFilter>::identifier, toString(info)));
             }
         }
 
@@ -179,6 +195,8 @@ public:
                 vtkInformation* inportInfo = filter_->GetInputPortInformation(inportNum);
                 if (inportInfo->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
                     dataType = inportInfo->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
+                } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+                    dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
                 }
             } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
                 dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
@@ -186,12 +204,17 @@ public:
 
             if (dataType) {
                 auto id = i < static_cast<int>(TTKTraits<TTKFilter>::outports.size())
-                              ? TTKTraits<TTKFilter>::outports[i].identifier
+                              ? util::stripIdentifier(TTKTraits<TTKFilter>::outports[i].identifier)
                               : fmt::format("output{}", i);
 
-                addPort(std::make_unique<vtk::VtkOutport>(id, *dataType));
+                auto doc = i < static_cast<int>(TTKTraits<TTKFilter>::outports.size())
+                               ? util::unindentMd2doc(TTKTraits<TTKFilter>::outports[i].displayName)
+                               : Document{};
+                addPort(std::make_unique<vtk::VtkOutport>(id, *dataType, std::move(doc)));
             } else {
-                throw Exception(fmt::format("missing outport for {}", getIdentifier()));
+                throw Exception(
+                    fmt::format("missing outport for {}, dataType not known, port info: {}",
+                                TTKTraits<TTKFilter>::identifier, toString(info)));
             }
         }
 
@@ -218,23 +241,45 @@ public:
                     if (auto inport = getInport(wrapper.inport)) {
                         auto vtkinport = static_cast<vtk::VtkInport*>(inport);
 
-                        vtkinport->onChange([port = vtkinport, w = &wrapper]() {
-                            if (port->isReady()) {
-                                vtkDataObject* data = port->getData();
+                        auto update = [](vtkDataObject::FieldAssociations assoc,
+                                         vtkDataObject* data, OptionPropertyString& opts) {
+                            std::vector<OptionPropertyStringOption> options;
+                            if (assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS ||
+                                assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS) {
+
                                 vtkFieldData* fd =
                                     data->GetAttributesAsFieldData(vtkDataObject::POINT);
-                                std::vector<std::string> options;
                                 for (int i = 0; i < fd->GetNumberOfArrays(); ++i) {
                                     options.emplace_back(fd->GetArrayName(i));
                                 }
+                            }
 
-                                fd = data->GetAttributesAsFieldData(vtkDataObject::CELL);
+                            if (assoc == vtkDataObject::FIELD_ASSOCIATION_CELLS ||
+                                assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS) {
+
+                                vtkFieldData* fd =
+                                    data->GetAttributesAsFieldData(vtkDataObject::CELL);
                                 for (int i = 0; i < fd->GetNumberOfArrays(); ++i) {
                                     options.emplace_back(fd->GetArrayName(i));
                                 }
-                                w->property.replaceOptions(std::move(options));
+                            }
+
+                            opts.replaceOptions(std::move(options));
+                        };
+
+                        vtkinport->onChange([update, port = vtkinport, w = &wrapper]() {
+                            if (port->isReady()) {
+                                vtkDataObject* data = port->getData();
+                                update(w->fieldAssociation.get(), data, w->name);
                             }
                         });
+                        wrapper.fieldAssociation.onChange(
+                            [update, port = vtkinport, w = &wrapper]() {
+                                if (port->isReady()) {
+                                    vtkDataObject* data = port->getData();
+                                    update(w->fieldAssociation.get(), data, w->name);
+                                }
+                            });
                     }
                 }
             },
@@ -295,12 +340,12 @@ struct ProcessorTraits<ttkwrapper::TTKGenericProcessor<TTKFilter>> {
     static ProcessorInfo getProcessorInfo() {
         return ProcessorInfo{
             fmt::format("org.inviwo.tkk.{}",
-                        ttkwrapper::TTKTraits<TTKFilter>::identifier),   // Class identifier
-            std::string{ttkwrapper::TTKTraits<TTKFilter>::displayName},  // Display name
-            "Topology",                                                  // Category
-            CodeState::Experimental,                                     // Code state
-            Tag{"TTK"}                                                   // Tags
-        };
+                        ttkwrapper::TTKTraits<TTKFilter>::className),      // Class identifier
+            std::string{ttkwrapper::TTKTraits<TTKFilter>::displayName},    // Display name
+            std::string{ttkwrapper::TTKTraits<TTKFilter>::category},       // Category
+            CodeState::Experimental,                                       // Code state
+            Tags{ttkwrapper::TTKTraits<TTKFilter>::tags},                  // Tags
+            util::unindentMd2doc(ttkwrapper::TTKTraits<TTKFilter>::doc)};  // Documentation
     }
 };
 
