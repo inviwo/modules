@@ -28,7 +28,7 @@ namespace {
 
 struct Wrapper0 : FieldSelection {
     bool set(ttkJacobiSet& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -42,7 +42,7 @@ struct Wrapper0 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"UComponent", "U Component",
@@ -56,7 +56,7 @@ struct Wrapper0 : FieldSelection {
 
 struct Wrapper1 : FieldSelection {
     bool set(ttkJacobiSet& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -70,7 +70,7 @@ struct Wrapper1 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"VComponent", "V Component",
@@ -95,7 +95,7 @@ as vertex offset (used to disambiguate flat plateaus).)"_help,
 
 struct Wrapper3 : FieldSelection {
     bool set(ttkJacobiSet& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(2, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -109,7 +109,7 @@ struct Wrapper3 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"UOffsetField", "U Offset Field",
@@ -124,7 +124,7 @@ u-coordinate (used to disambiguate collinear edges).)"_help};
 
 struct Wrapper4 : FieldSelection {
     bool set(ttkJacobiSet& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(3, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -138,7 +138,7 @@ struct Wrapper4 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"VOffsetField", "V Offset Field",

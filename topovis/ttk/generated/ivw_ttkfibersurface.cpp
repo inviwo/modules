@@ -28,7 +28,7 @@ namespace {
 
 struct Wrapper0 : FieldSelection {
     bool set(ttkFiberSurface& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -42,7 +42,7 @@ struct Wrapper0 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{
@@ -57,7 +57,7 @@ struct Wrapper0 : FieldSelection {
 
 struct Wrapper1 : FieldSelection {
     bool set(ttkFiberSurface& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -71,7 +71,7 @@ struct Wrapper1 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{
@@ -86,7 +86,7 @@ struct Wrapper1 : FieldSelection {
 
 struct Wrapper2 : FieldSelection {
     bool set(ttkFiberSurface& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(2, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -100,7 +100,7 @@ struct Wrapper2 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{
@@ -115,7 +115,7 @@ struct Wrapper2 : FieldSelection {
 
 struct Wrapper3 : FieldSelection {
     bool set(ttkFiberSurface& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(3, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -129,7 +129,7 @@ struct Wrapper3 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{

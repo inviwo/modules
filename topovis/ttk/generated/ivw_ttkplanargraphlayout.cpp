@@ -50,7 +50,7 @@ struct Wrapper1 {
 
 struct Wrapper2 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -64,7 +64,7 @@ struct Wrapper2 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"SequenceArray", "Sequence Array", R"(Sequence Scalar Array.)"_help};
@@ -86,7 +86,7 @@ struct Wrapper3 {
 
 struct Wrapper4 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -100,7 +100,7 @@ struct Wrapper4 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"SizeArray", "Size Array", R"(Size Scalar Array.)"_help};
@@ -123,7 +123,7 @@ struct Wrapper5 {
 
 struct Wrapper6 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(2, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -137,7 +137,7 @@ struct Wrapper6 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"BranchArray", "Branch Array", R"(Branch Scalar Array.)"_help};
@@ -161,7 +161,7 @@ struct Wrapper7 {
 
 struct Wrapper8 : FieldSelection {
     bool set(ttkPlanarGraphLayout& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(3, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -175,7 +175,7 @@ struct Wrapper8 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"LevelArray", "Level Array", R"(Level Scalar Array.)"_help};
