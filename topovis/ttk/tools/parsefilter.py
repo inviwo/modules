@@ -269,7 +269,7 @@ def parseStringVectorProperty(xml: ET.Element) -> FilterPropertyData:
         raise Exception("Unhandled StringVectorProperty information_only not handled")
 
     elif data.command == "SetInputArrayToProcess":
-        defaultValue = [0, 0, 0, 0, None]
+        defaultValue = [0, 0, 0, 3, None]
         if "default_values" in xml.attrib and xml.attrib["default_values"] != "None":
             defaults = xml.attrib["default_values"].split()
             if len(defaults) > 0:
@@ -689,7 +689,7 @@ struct {structName} {{
 fieldSelectionTemplate = """
 struct {structName} : FieldSelection {{
     bool set({className}& filter) {{
-        if(property.size() == 0) return false;
+        if(name.size() == 0) return false;
         filter.{command}({defaultValue[0]}, {defaultValue[1]},
                          {defaultValue[2]}, fieldAssociation.get(), name.get().c_str());
         return true;
