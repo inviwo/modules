@@ -28,7 +28,7 @@ namespace {
 
 struct Wrapper0 : FieldSelection {
     bool set(ttkLDistance& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -42,7 +42,7 @@ struct Wrapper0 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"ScalarField1", "Scalar Field 1",
@@ -56,7 +56,7 @@ struct Wrapper0 : FieldSelection {
 
 struct Wrapper1 : FieldSelection {
     bool set(ttkLDistance& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -70,7 +70,7 @@ struct Wrapper1 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"ScalarField2", "Scalar Field 2",

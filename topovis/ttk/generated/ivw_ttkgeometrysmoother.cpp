@@ -63,7 +63,7 @@ struct Wrapper2 {
 
 struct Wrapper3 : FieldSelection {
     bool set(ttkGeometrySmoother& filter) {
-        if (property.size() == 0) return false;
+        if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
@@ -77,7 +77,7 @@ struct Wrapper3 : FieldSelection {
          {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
          {"pointsThenCells", "Points then Cells",
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
-        0};
+        3};
 
     CompositeProperty property{[&]() {
         CompositeProperty tmp{"InputMaskNew", "Input Mask Field",
