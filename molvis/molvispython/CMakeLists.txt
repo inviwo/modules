@@ -35,3 +35,5 @@ add_subdirectory(bindings)
 if(IVW_UNITTESTS)
     add_dependencies(inviwo-unittests-molvispython ivwmolvis)
 endif()
+
+ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/python)
