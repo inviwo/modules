@@ -97,7 +97,7 @@ class GenericNetCDFSource(ivw.Processor):
     def process(self):
         first = self.firstRun
         self.firstRun = False
-        if len(self.filePath.value) == 0 or not Path(self.filePath.value).exists():
+        if not self.filePath.value or not self.filePath.value.exists():
             self.variables.clear()
             self.dimensions.clear()
             return
@@ -171,7 +171,7 @@ class GenericNetCDFSource(ivw.Processor):
                     varData = var[tuple(dims)]
                     buffer = numpy.array(varData).astype(
                         'float32' if self.toFloat.value else var.datatype)
-                    buffer.shape = numpy.flip([numpy.amax(1, var.datatype.ndim)] + sizeDims)
+                    buffer.shape = buffer.shape[3:] + (1,)
                     data.append(buffer)
 
                 # Assemble data extent.
@@ -188,10 +188,7 @@ class GenericNetCDFSource(ivw.Processor):
                 self.dataLoaded(data, extents)  # implemented in child
 
     def displayDataInfo(self):
-        if len(self.filePath.value) == 0:
-            self.log("File name empty")
-            return
-        if not Path(self.filePath.value).exists():
+        if not self.filePath.value or not self.filePath.value.exists():
             self.log(f"{self.filePath.value} does not exist")
             return
 
