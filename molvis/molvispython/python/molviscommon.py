@@ -31,6 +31,8 @@ import inviwopy as ivw
 import ivwdataframe as df
 import ivwmolvis
 
+import ivwmolvis.atomicelement as atomicelement
+
 import itertools
 import numpy
 from typing import List
@@ -47,12 +49,12 @@ def _adjustMargins(pos, margin: float, func: Callable[[List[float]], None]):
 
 
 def createMesh(pos: List[numpy.array],
-               elements: List[ivwmolvis.atomicelement.element],
+               elements: List[atomicelement.element],
                basis: ivw.glm.mat3 = None, offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0),
                pm: ivw.PickingMapper = None,
                margin: float = 0.0,
                radiusscaling: float = 1.0,
-               colormap: ivwmolvis.atomicelement.Colormap = ivwmolvis.atomicelement.Colormap.RasmolCPKnew):
+               colormap: atomicelement.Colormap = atomicelement.Colormap.RasmolCPKnew):
     """
     Create a sphere Mesh from a list of 3D positions.
 
@@ -64,7 +66,7 @@ def createMesh(pos: List[numpy.array],
     :param margin:     if larger than 0, positions within margin distance to a boundingbox surface
                        of a [0,0,0]-[1,1,1] cube will be duplicated
     :param radiusscaling:  scaling factor for sphere radii
-    :param colormap:   colormap 
+    :param colormap:   colormap
     :return: inviwopy.data.Mesh
     """
     position = []
@@ -77,8 +79,8 @@ def createMesh(pos: List[numpy.array],
         pm.resize(len(elements))
 
     for i, p in enumerate(pos):
-        c = numpy.array(ivwmolvis.atomicelement.color(elements[i], colormap=colormap))
-        r = ivwmolvis.atomicelement.vdwRadius(elements[i]) * radiusscaling
+        c = numpy.array(atomicelement.color(elements[i], colormap=colormap))
+        r = atomicelement.vdwRadius(elements[i]) * radiusscaling
         pi = pm.pickingId(i) if pm else None
 
         def addVertex(vertexpos):
@@ -111,9 +113,9 @@ def createMesh(pos: List[numpy.array],
 
 
 def createMolecularStructure(pos: List[numpy.array],
-                             elements: List[ivwmolvis.atomicelement.element],
-                             margin: float = 0.0, 
-                             basis: ivw.glm.mat3 = None, 
+                             elements: List[atomicelement.element],
+                             margin: float = 0.0,
+                             basis: ivw.glm.mat3 = None,
                              offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0)):
     """
     Create a molecular representation from a list of 3D positions.
@@ -155,7 +157,7 @@ def createMolecularStructure(pos: List[numpy.array],
 
 
 def createDataFrame(pos: List[numpy.array],
-                    elements: List[ivwmolvis.atomicelement.element],
+                    elements: List[atomicelement.element],
                     modelmat: ivw.glm.mat4 = ivw.glm.mat4(1.0)):
     """
     Create a DataFrame from a list of 3D positions and elements.
@@ -175,11 +177,11 @@ def createDataFrame(pos: List[numpy.array],
     for elem, p in zip(elements, pos):
         mp = modelmat * ivw.glm.vec4(p[0], p[1], p[2], 1.0)
 
-        ct.add(ivwmolvis.atomicelement.symbol(elem))
+        ct.add(atomicelement.symbol(elem))
         cx.add(mp[0])
         cy.add(mp[1])
         cz.add(mp[2])
-        r.add(ivwmolvis.atomicelement.vdwRadius(elem))
+        r.add(atomicelement.vdwRadius(elem))
 
     dataframe.updateIndex()
 
