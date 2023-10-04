@@ -1033,7 +1033,7 @@ if __name__ == '__main__':
     ]
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
-   # files = []
+
     filters = []
     for file in files:
         try:

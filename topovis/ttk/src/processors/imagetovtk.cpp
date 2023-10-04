@@ -66,7 +66,7 @@ const ProcessorInfo ImageToVTK::processorInfo_{
     "VTK",                                 // Category
     CodeState::Experimental,               // Code state
     Tag::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
-    R"(Converts an inviwo Image to a VTKImageData )"_unindentHelp};
+    R"(Converts an Inviwo Image to a VTKImageData )"_unindentHelp};
 
 const ProcessorInfo ImageToVTK::getProcessorInfo() const { return processorInfo_; }
 
@@ -76,7 +76,7 @@ ImageToVTK::ImageToVTK()
     , outport_{"outport"}
     , layer_{"layer",
              "Layer",
-             "Select which image layer that should be shown in the canvas. defaults to "
+             "Select which image layer should be used. defaults to "
              "the first color layer"_help,
              {{"color", "Color layer", LayerType::Color},
               {"depth", "Depth layer", LayerType::Depth},
@@ -84,7 +84,7 @@ ImageToVTK::ImageToVTK()
              0}
     , layerIndex_{"layerIndex",
                   "Color Layer ID",
-                  "Index of the color layer to show in the canvas"_help,
+                  "Index of the color layer to use"_help,
                   0,
                   {0, ConstraintBehavior::Immutable},
                   {0, ConstraintBehavior::Mutable}

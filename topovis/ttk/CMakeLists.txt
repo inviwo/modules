@@ -49,7 +49,6 @@ find_package(freetype CONFIG REQUIRED)
 add_library(Freetype::Freetype ALIAS freetype)
 
 find_package(utf8cpp CONFIG REQUIRED)
-find_package(utf8cpp CONFIG REQUIRED)
 
 find_package(TTKBase CONFIG REQUIRED)
 find_package(TTKVTK CONFIG REQUIRED)

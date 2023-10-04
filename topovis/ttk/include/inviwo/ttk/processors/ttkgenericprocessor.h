@@ -182,7 +182,7 @@ public:
                 addPort(std::make_unique<vtk::VtkInport>(id, *dataType, std::move(doc)));
             } else {
                 throw Exception(
-                    fmt::format("missing inport for {}, dataType not known port info: {}",
+                    fmt::format("missing inport for {}, unknown VTK dataType. Port info: {}",
                                 TTKTraits<TTKFilter>::identifier, toString(info)));
             }
         }
