@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkImportEmbeddingFromTable.h"
+#include <vtkDataObject.h>
+#include <ttkImportEmbeddingFromTable.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -29,7 +31,7 @@ struct Wrapper0 {
         filter.SetXColumn(property.get().c_str());
         return true;
     }
-    StringProperty property{"XColumn", "X Column", ""};
+    StringProperty property{"XColumn", "X Column", R"(Input x column.)"_help, ""};
 };
 
 struct Wrapper1 {
@@ -37,7 +39,7 @@ struct Wrapper1 {
         filter.SetYColumn(property.get().c_str());
         return true;
     }
-    StringProperty property{"YColumn", "Y Column", ""};
+    StringProperty property{"YColumn", "Y Column", R"(Input y column.)"_help, ""};
 };
 
 struct Wrapper2 {
@@ -45,7 +47,7 @@ struct Wrapper2 {
         filter.SetZColumn(property.get().c_str());
         return true;
     }
-    StringProperty property{"ZColumn", "Z Column", ""};
+    StringProperty property{"ZColumn", "Z Column", R"(Input z column.)"_help, ""};
 };
 
 struct Wrapper3 {
@@ -53,7 +55,7 @@ struct Wrapper3 {
         filter.SetEmbedding2D(property.get());
         return true;
     }
-    BoolProperty property{"2DPoints", "2DPoints", false};
+    BoolProperty property{"2DPoints", "2DPoints", R"()"_help, false};
 };
 
 #include <warn/pop>
@@ -61,13 +63,18 @@ struct Wrapper3 {
 }  // namespace
 template <>
 struct TTKTraits<ttkImportEmbeddingFromTable> {
+    static constexpr std::string_view className = "ttkImportEmbeddingFromTable";
     static constexpr std::string_view identifier = "ttkImportEmbeddingFromTable";
     static constexpr std::string_view displayName = "TTK ImportEmbeddingFromTable";
-    inline static std::array<InputData, 2> inports = {InputData{"DataSet", "vtkPointSet", -1},
-                                                      InputData{"Table", "vtkTable", -1}};
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
+    inline static std::array<InputData, 2> inports = {
+        InputData{"DataSet", "vtkPointSet", -1, R"(Data-set to process.)"},
+        InputData{"Table", "vtkTable", -1, R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+    static constexpr std::string_view doc = R"(TTK fieldSelector plugin documentation.)";
 };
 
 void registerttkImportEmbeddingFromTable(InviwoModule* module) {

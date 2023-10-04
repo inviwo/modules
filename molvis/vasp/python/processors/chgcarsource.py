@@ -34,9 +34,13 @@ import ivwdataframe as df
 import ivwmolvis
 import molviscommon
 import vasputil
+import ivwbnl
 
 import numpy as np
 from pathlib import Path
+
+import importlib
+importlib.reload(molviscommon)
 
 
 # Description found at https://cms.mpi.univie.ac.at/wiki/index.php/CHGCAR
@@ -58,6 +62,9 @@ class ChgcarSource(ivw.Processor):
 
         self.addOutport(ivwmolvis.MolecularStructureOutport("molecule",
             help=ivw.md2doc('MolecularStructure representing all atoms')))
+
+        self.bnlInport = ivwbnl.BrushingAndLinkingInport("bnl", [])
+        self.addInport(self.bnlInport)
 
         self.chgcarFilePath = ivw.properties.FileProperty("chgcar", "CHGCAR", "", "chgcarfile")
         self.addProperty(self.chgcarFilePath)
@@ -179,12 +186,25 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
         self.dataframeOutport.setData(self.dataframe)
         self.outports.molecule.setData(self.molecule)
 
-    def callback(self, pickevent):
-        if (pickevent.state == ivw.PickingState.Updated):
-            i = pickevent.pickedId
-            pos = np.dot(np.array(self.volume.basis), self.atomPos[i])
-            elem = ivwmolvis.atomicelement.symbol(self.atomTypes[i])
-            pickevent.setToolTip(
-                f"Atom id: {i}\nType: {elem}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
-        else:
-            pickevent.setToolTip("")
+    def callback(self, pickEvent):
+        if pickEvent.pressState == ivw.PickingPressState.NoPress:
+            if pickEvent.hoverState == ivw.PickingHoverState.Enter:
+                i = pickEvent.pickedId
+                self.bnlInport.highlight(ivw.data.BitSet([i]))
+                pos = np.dot(np.array(self.volume.basis), self.atomPos[i])
+                elem = ivwmolvis.atomicelement.symbol(self.atomTypes[i])
+                pickEvent.setToolTip(
+                    f"Atom id: {i}\nType: {elem}\nPosition: {pos}\nFractional: {self.atomPos[i]}")
+
+            elif pickEvent.hoverState == ivw.PickingHoverState.Exit:
+                self.bnlInport.highlight(ivw.data.BitSet())
+                pickEvent.setToolTip("")
+
+        if (pickEvent.pressState == ivw.PickingPressState.Release
+            and pickEvent.pressItem == ivw.PickingPressItem.Primary
+            and abs(pickEvent.deltaPressedPosition.x) < 0.01
+                and abs(pickEvent.deltaPressedPosition.y) < 0.01):
+
+            selection = self.bnlInport.getSelectedIndices()
+            selection.flip(pickEvent.pickedId)
+            self.bnlInport.select(selection)

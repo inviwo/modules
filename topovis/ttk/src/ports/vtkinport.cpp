@@ -100,6 +100,11 @@ Document VtkInport::getInfo() const {
     auto p = b.append("p");
     p.append("b", fmt::format("{} Inport", vtkDataObjectTypes::GetClassNameFromTypeId(typeId_)),
              {{"style", "color:white;"}});
+
+    if (!help_.empty()) {
+        p.append("div", "", {{"class", "help"}}).append(help_);
+    }
+
     utildoc::TableBuilder tb(p, P::end());
     tb(H("Identifier"), getIdentifier());
     tb(H("Class"), getClassIdentifier());

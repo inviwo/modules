@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "vtkXMLUnstructuredGridReader.h"
+#include <vtkDataObject.h>
+#include <vtkXMLUnstructuredGridReader.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -30,7 +32,10 @@ struct Wrapper0 {
         filter.SetFileName(property.get().string().c_str());
         return true;
     }
-    FileProperty property{"FileName", "FileName", ""};
+    FileProperty property{"FileName", "FileName",
+                          R"(This property specifies the file name for the VTK XML
+unstructured grid reader.)"_help,
+                          std::filesystem::path{""}};
 };
 
 struct Wrapper1 {
@@ -38,7 +43,10 @@ struct Wrapper1 {
         filter.SetActiveTimeDataArrayName(property.get().c_str());
         return true;
     }
-    StringProperty property{"TimeArray", "Time Array", "TimeValue"};
+    StringProperty property{"TimeArray", "Time Array",
+                            R"(This property sets which field data to use as time arrays to
+read. If set to Default, time steps are incremented integer values starting at zero.)"_help,
+                            "TimeValue"};
 };
 
 #include <warn/pop>
@@ -46,12 +54,18 @@ struct Wrapper1 {
 }  // namespace
 template <>
 struct TTKTraits<vtkXMLUnstructuredGridReader> {
+    static constexpr std::string_view className = "vtkXMLUnstructuredGridReader";
     static constexpr std::string_view identifier = "XMLUnstructuredGridReaderCore";
     static constexpr std::string_view displayName = "XML Unstructured Grid reader";
+    static constexpr std::string_view category = "vtk";
+    static constexpr std::string_view tags = "VTK,readers";
     inline static std::array<InputData, 0> inports = {};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
+    static constexpr std::string_view doc = R"(The XML Unstructured Grid reader reads the VTK XML
+unstructured grid data file format. The standard extension
+is .vtu.)";
 };
 
 void registervtkXMLUnstructuredGridReader(InviwoModule* module) {

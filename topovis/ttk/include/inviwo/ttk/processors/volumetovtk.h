@@ -31,11 +31,11 @@
 
 #include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/ttk/ports/vtkoutport.h>
 #include <vtkImageData.h>
+#include <vtkSmartPointer.h>
 
 namespace inviwo {
 

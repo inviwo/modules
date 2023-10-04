@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkMergeTreePrincipalGeodesics.h"
+#include <vtkDataObject.h>
+#include <ttkMergeTreePrincipalGeodesics.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -29,7 +31,7 @@ struct Wrapper0 {
         filter.SetNormalizedWasserstein(property.get());
         return true;
     }
-    BoolProperty property{"NormalizedWasserstein", "Normalized Wasserstein", true};
+    BoolProperty property{"NormalizedWasserstein", "Normalized Wasserstein", R"()"_help, true};
 };
 
 struct Wrapper1 {
@@ -37,7 +39,10 @@ struct Wrapper1 {
         filter.SetNumberOfGeodesics(property.get());
         return true;
     }
-    IntProperty property{"NumberOfGeodesics", "Number Of Geodesics", 2,
+    IntProperty property{"NumberOfGeodesics",
+                         "Number Of Geodesics",
+                         R"(Number of geodesics to compute.)"_help,
+                         2,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -47,9 +52,13 @@ struct Wrapper2 {
         filter.SetNumberOfProjectionIntervals(property.get());
         return true;
     }
-    IntProperty property{"NumberOfProjectionIntervals", "Number Of Projection Intervals", 16,
-                         std::pair{0, ConstraintBehavior::Ignore},
-                         std::pair{100, ConstraintBehavior::Ignore}};
+    IntProperty property{
+        "NumberOfProjectionIntervals",
+        "Number Of Projection Intervals",
+        R"(Number of intervals in the geodesic to compute the projection of each input.)"_help,
+        16,
+        std::pair{0, ConstraintBehavior::Ignore},
+        std::pair{100, ConstraintBehavior::Ignore}};
 };
 
 struct Wrapper3 {
@@ -57,7 +66,10 @@ struct Wrapper3 {
         filter.SetNumberOfProjectionSteps(property.get());
         return true;
     }
-    IntProperty property{"NumberOfProjectionSteps", "Number Of Projection Steps", 8,
+    IntProperty property{"NumberOfProjectionSteps",
+                         "Number Of Projection Steps",
+                         R"()"_help,
+                         8,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -67,7 +79,10 @@ struct Wrapper4 {
         filter.SetBarycenterSizeLimitPercent(property.get());
         return true;
     }
-    DoubleProperty property{"BarycenterSizeLimitPercent", "Barycenter Size Limit Percent", 0.0,
+    DoubleProperty property{"BarycenterSizeLimitPercent",
+                            "Barycenter Size Limit Percent",
+                            R"()"_help,
+                            0.0,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{100.0, ConstraintBehavior::Ignore}};
 };
@@ -77,7 +92,7 @@ struct Wrapper5 {
         filter.SetDeterministic(property.get());
         return true;
     }
-    BoolProperty property{"Deterministic", "Deterministic", false};
+    BoolProperty property{"Deterministic", "Deterministic", R"()"_help, false};
 };
 
 struct Wrapper6 {
@@ -85,9 +100,14 @@ struct Wrapper6 {
         filter.SetJoinSplitMixtureCoefficient(property.get());
         return true;
     }
-    DoubleProperty property{"JoinSplitMixtureCoefficient", "Pair Type Mixture Coefficient", 0.5,
-                            std::pair{0.0, ConstraintBehavior::Ignore},
-                            std::pair{1.0, ConstraintBehavior::Ignore}};
+    DoubleProperty property{
+        "JoinSplitMixtureCoefficient",
+        "Pair Type Mixture Coefficient",
+        R"(If input are merge trees, this parameter allows to weight between the first input and the second input, typically join and split trees (0 for only the second input and 1 for only the first one).
+If input are persistence diagrams, this parameter allows to weight between min-sad and sad-max pairs (0 for only sad-max and 1 for only min-sad).)"_help,
+        0.5,
+        std::pair{0.0, ConstraintBehavior::Ignore},
+        std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
 struct Wrapper7 {
@@ -95,7 +115,8 @@ struct Wrapper7 {
         filter.SetComputeReconstructionError(property.get());
         return true;
     }
-    BoolProperty property{"ComputeReconstructionError", "Compute Reconstruction Error", false};
+    BoolProperty property{"ComputeReconstructionError", "Compute Reconstruction Error", R"()"_help,
+                          false};
 };
 
 struct Wrapper8 {
@@ -103,7 +124,8 @@ struct Wrapper8 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper9 {
@@ -111,7 +133,10 @@ struct Wrapper9 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -121,7 +146,10 @@ struct Wrapper10 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -131,9 +159,24 @@ struct Wrapper11 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper12 {
+    bool set(ttkMergeTreePrincipalGeodesics& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -141,11 +184,17 @@ struct Wrapper11 {
 }  // namespace
 template <>
 struct TTKTraits<ttkMergeTreePrincipalGeodesics> {
+    static constexpr std::string_view className = "ttkMergeTreePrincipalGeodesics";
     static constexpr std::string_view identifier = "ttkMergeTreePrincipalGeodesics";
     static constexpr std::string_view displayName = "TTK MergeTreePrincipalGeodesics";
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkMultiBlockDataSet", 1},
-        InputData{"Optional Input", "vtkMultiBlockDataSet", 1}};
+        InputData{"Input", "vtkMultiBlockDataSet", 1, R"(Merge trees to process.)"},
+        InputData{
+            "Optional Input", "vtkMultiBlockDataSet", 1,
+            R"(If input are merge trees, then this input can be used to process join and split trees together. Pass as input either join or split trees in the first input and the other type of trees in the second input.
+If input are persistence diagrams, then this has no effect to use this input.)"}};
     inline static std::array<OutputData, 4> outports = {
         OutputData{"port0", "Barycenter", 0}, OutputData{"port1", "Coefficients", 1},
         OutputData{"port2", "Geodesics Vectors", 2}, OutputData{"port3", "Correlation Matrix", 3}};
@@ -159,8 +208,20 @@ struct TTKTraits<ttkMergeTreePrincipalGeodesics> {
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12>
         properties;
+    static constexpr std::string_view doc =
+        R"(This filter computes Principal Geodesic Analysis on the space of merge trees or persistence diagrams, that is, a set of orthogonal geodesic axes defining an optimized basis with the barycenter as origin.
+
+Related publication:
+
+'Principal Geodesic Analysis of Merge Trees (and Persistence Diagrams)'
+Mathieu Pont, Jules Vidal, Julien Tierny.
+IEEE Transactions on Visualization and Computer Graphics, 2022
+
+Online examples:
+
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/)";
 };
 
 void registerttkMergeTreePrincipalGeodesics(InviwoModule* module) {

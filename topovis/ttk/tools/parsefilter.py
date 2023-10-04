@@ -59,6 +59,15 @@ def valueOr(value, default):
     else:
         return value
 
+def splitComma(text: str):
+    return text.split(',')
+
+def elide(text: str, chars: int):
+    if len(text) == 0: 
+        return text
+    chars = 4 if chars <= 3 else chars
+    line = text.splitlines()[0]
+    return line if len(line) <= chars - 3 else f"{line[:chars-3]}..."
 
 @dataclasses.dataclass
 class BoolProperty:
@@ -68,15 +77,15 @@ class BoolProperty:
 @dataclasses.dataclass
 class IntVecProperty:
     defaultValue: Optional[list[int]]
-    minValue: Optional[int]
-    maxValue: Optional[int]
+    minValue: Optional[list[int]]
+    maxValue: Optional[list[int]]
 
 
 @dataclasses.dataclass
 class DoubleVecProperty:
     defaultValue: Optional[list[float]]
-    minValue: Optional[float]
-    maxValue: Optional[float]
+    minValue: Optional[list[float]]
+    maxValue: Optional[list[float]]
 
 
 @dataclasses.dataclass
@@ -140,7 +149,8 @@ class FilterPropertyData:
 class InputData:
     identifier: str
     dataType: Optional[str]
-    numComp: Optional[int]
+    numComp: Optional[list[int]]
+    doc: Optional[str] = None
 
 
 @dataclasses.dataclass
@@ -155,6 +165,8 @@ class FilterData:
     identifier: str
     displayName: str
     className: str
+    category: str
+    tags: str
     desc: str
     doc: str = dataclasses.field(repr=False)
     props: list[FilterPropertyData] = dataclasses.field(default_factory=list)
@@ -202,7 +214,7 @@ def parseIntVectorProperty(xml: ET.Element) -> FilterPropertyData:
         defaultValue = chain(xml, xmlattr("default_values"), int)
         data.kind.defaultValue = next((i for i, v in enumerate(data.kind.options)
                                        if v[1] == defaultValue), None)
-    elif (extent := xml.find('ExtentDomain')) is not None:
+    elif (xml.find('ExtentDomain')) is not None:
         ep = ExtentProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
                                str.split, partial(map, int), tuple)
@@ -220,8 +232,10 @@ def parseIntVectorProperty(xml: ET.Element) -> FilterPropertyData:
         data.kind = IntVecProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
                                str.split, partial(map, int), tuple),
-            minValue=chain(xml, xmlfind('IntRangeDomain'), xmlattr("min"), int),
-            maxValue=chain(xml, xmlfind('IntRangeDomain'), xmlattr("max"), int)
+            minValue=chain(xml, xmlfind('IntRangeDomain'), xmlattr("min"),
+                           str.split, partial(map, int), tuple),
+            maxValue=chain(xml, xmlfind('IntRangeDomain'), xmlattr("max"),
+                           str.split, partial(map, int), tuple)
         )
     else:
         raise Exception("Unhandled IntProperty")
@@ -238,8 +252,10 @@ def parseDoubleVectorProperty(xml: ET.Element) -> FilterPropertyData:
         data.kind = DoubleVecProperty(
             defaultValue=chain(xml, xmlattr("default_values"),
                                str.split, partial(map, float), tuple),
-            minValue=chain(xml, xmlfind('DoubleRangeDomain'), xmlattr("min"), float),
-            maxValue=chain(xml, xmlfind('DoubleRangeDomain'), xmlattr("max"), float)
+            minValue=chain(xml, xmlfind('DoubleRangeDomain'), xmlattr("min"),
+                           str.split, partial(map, float), tuple),
+            maxValue=chain(xml, xmlfind('DoubleRangeDomain'), xmlattr("max"),
+                           str.split, partial(map, float), tuple)
         )
     else:
         raise Exception("Unhandled DoubleProperty")
@@ -253,7 +269,7 @@ def parseStringVectorProperty(xml: ET.Element) -> FilterPropertyData:
         raise Exception("Unhandled StringVectorProperty information_only not handled")
 
     elif data.command == "SetInputArrayToProcess":
-        defaultValue = [0, 0, 0, 0, None]
+        defaultValue = [0, 0, 0, 3, None]
         if "default_values" in xml.attrib and xml.attrib["default_values"] != "None":
             defaults = xml.attrib["default_values"].split()
             if len(defaults) > 0:
@@ -293,52 +309,77 @@ def parseInputProperty(xml: ET.Element) -> InputData:
     '''
     Parse Input properties, Will be mapped to inviwo Inports
     '''
-    return InputData(
+    
+    data = InputData(
         identifier=xml.attrib["name"],
         dataType=chain(xml, xmlfind('DataTypeDomain/DataType'), xmlattr("value")),
-        numComp=chain(xml, xmlfind('InputArrayDomain'), xmlattr("number_of_components"), int)
+        numComp=chain(xml, xmlfind('InputArrayDomain'), 
+                      xmlattr("number_of_components"), 
+                      splitComma, partial(map, int), tuple)
     )
+    
+    if (doc := xml.find('Documentation')) is not None:
+        data.doc = stripEachLine(doc.text)
+    
+    return data
 
 
 def parseOutport(xml: ET.Element) -> OutputData:
     '''
     Parse Outports, Will be mapped to inviwo Outports
     '''
+    
+    index = int(xml.attrib["index"])
+    identifier = xml.attrib["id"] if "id" in xml.attrib else f"outport{index}"
+    
     return OutputData(
-        identifier=xml.attrib["id"],
+        identifier=identifier,
         displayName=xml.attrib["name"],
-        index=int(xml.attrib["index"])
+        index=index
     )
 
 
-def parse(xmlstr: str, file: Path) -> list[FilterData]:
+def parse(xmlstr: str, file: Path, category: str, tags: str) -> list[FilterData]:
     '''
     Parse a paraview xml string, returns list of Filterdata
     '''
     xml = ET.fromstring(xmlstr)
 
     if xml.tag != "ServerManagerConfiguration":
-        raise Exception(f"Unexpected element, expected 'ServerManagerConfiguration' found '{xml.tag}'")
+        raise Exception(
+            f"Unexpected element, expected 'ServerManagerConfiguration' found '{xml.tag}'")
 
     filters = []
     for group in xml:
         if group.tag != "ProxyGroup":
             raise Exception(f"Unexpected element, expected 'ProxyGroup' found '{group.tag}'")
-        filters.extend(parseProxyGroup(group, file))
+        filters.extend(parseProxyGroup(group, file, category, tags))
 
     return filters
 
 
-def parseProxyGroup(group: ET.Element, file: Path) -> list[FilterData]:
+def parseProxyGroup(group: ET.Element, file: Path, category: str, tags: str) -> list[FilterData]:
     filters = []
     for proxy in group:
-        if proxy.tag not in ["SourceProxy", "WriterProxy", "Proxy"]:
-            raise Exception(f"Unexpected element, expected a proxy found '{proxy.tag}'")
-        filters.append(parseProxy(proxy, file))
+        try:
+            if proxy.tag in ["CompoundSourceProxy"]:
+                # Maybe handle in the future?
+                continue
+        
+            if proxy.tag not in ["SourceProxy", "WriterProxy", "Proxy"]:
+                raise Exception(f"Unexpected element, expected a proxy found '{proxy.tag}'")
+                
+            filters.append(parseProxy(proxy, file, category, tags))
+        
+        except Exception as e:
+            print(f"Error parsing {proxy.tag} in {file} \n{e}")
+            #print(traceback.format_exc())
+            #print(ET.tostring(proxy, encoding='unicode'))
+            
     return filters
 
 
-def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
+def parseProxy(proxy: ET.Element, file: Path, category: str, tags: str) -> FilterData:
 
     doc = proxy.find('Documentation')
     if doc is None:
@@ -346,11 +387,19 @@ def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
         docStr = ""
     else:
         docShort = re.sub(' +', ' ', doc.attrib['short_help']) if 'short_help' in doc.attrib else ""
-        docStr = stripEachLine(doc.text)
+        if isinstance(doc.text, str):
+            docStr = stripEachLine(doc.text)
+        elif 'long_help' in doc.attrib:
+            docStr = doc.attrib['long_help']
+        else:
+            docStr = docShort
+            
     data = FilterData(
         identifier=proxy.attrib["name"],
         displayName=proxy.attrib["label"] if "label" in proxy.attrib else proxy.attrib["name"],
         className=proxy.attrib["class"],
+        category=category,
+        tags=tags,
         desc=docShort,
         doc=docStr
     )
@@ -375,7 +424,7 @@ def parseProxy(proxy: ET.Element, file: Path) -> FilterData:
             data.inports.append(parseInputProperty(elem))
         elif elem.tag == "OutputPort":
             data.outports.append(parseOutport(elem))
-        elif elem.tag == "PropertyGroup":
+        elif elem.tag == "PropertyGroup" and "label" in elem.attrib:
             group = elem.attrib["label"]
             members = [i.attrib["name"] for i in elem if i.tag == "Property"]
             data.groups[group] += members
@@ -402,10 +451,10 @@ struct {structName} {{
         filter.{command}(property.get());
         return true;
     }}
-    DoubleProperty property{{"{identifier}", "{displayName}",
+    DoubleProperty property{{"{identifier}", "{displayName}", R"({doc})"_help,
                              {defaultValue[0]},
-                             std::pair{{{minValue}, ConstraintBehavior::Ignore}},
-                             std::pair{{{maxValue}, ConstraintBehavior::Ignore}}}};
+                             std::pair{{{minValue[0]}, ConstraintBehavior::Ignore}},
+                             std::pair{{{maxValue[0]}, ConstraintBehavior::Ignore}}}};
 }};
 """
 
@@ -415,10 +464,10 @@ struct {structName} {{
         filter.{command}(property.get(0), property.get(1));
         return true;
     }}
-    DoubleVec2Property property{{"{identifier}", "{displayName}",
+    DoubleVec2Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                                 dvec2{{{defaultValue[0]}, {defaultValue[1]}}},
-                                std::pair{{dvec2{{{minValue}}}, ConstraintBehavior::Ignore}},
-                                std::pair{{dvec2{{{maxValue}}}, ConstraintBehavior::Ignore}}}};
+                                std::pair{{dvec2{{{minValue[0]},{minValue[1]}}}, ConstraintBehavior::Ignore}},
+                                std::pair{{dvec2{{{maxValue[0]},{maxValue[1]}}}, ConstraintBehavior::Ignore}}}};
 }};
 """
 
@@ -428,12 +477,57 @@ struct {structName} {{
         filter.{command}(property.get(0), property.get(1), property.get(2));
         return true;
     }}
-    DoubleVec3Property property{{"{identifier}", "{displayName}",
+    DoubleVec3Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                                 dvec3{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}}},
-                                std::pair{{dvec3{{{minValue}}}, ConstraintBehavior::Ignore}},
-                                std::pair{{dvec3{{{maxValue}}}, ConstraintBehavior::Ignore}}}};
+                                std::pair{{dvec3{{{minValue[0]},{minValue[1]},{minValue[2]}}}, ConstraintBehavior::Ignore}},
+                                std::pair{{dvec3{{{maxValue[0]},{maxValue[1]},{maxValue[2]}}}, ConstraintBehavior::Ignore}}}};
 }};
 """
+
+doubleVec4Template = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        filter.{command}(property.get(0), property.get(1), property.get(2), property.get(3));
+        return true;
+    }}
+    DoubleVec3Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
+                                dvec4{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}, {defaultValue[3]}}},
+                                std::pair{{dvec4{{{minValue[0]},{minValue[1]},{minValue[2]},{minValue[3]}}}, ConstraintBehavior::Ignore}},
+                                std::pair{{dvec4{{{maxValue[0]},{maxValue[1]},{maxValue[2]},{maxValue[3]}}}, ConstraintBehavior::Ignore}}}};
+}};
+"""
+
+doubleVec6Template = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        filter.{command}(x.get(0), x.get(1), y.get(0), y.get(1), z.get(0), z.get(1));
+        return true;
+    }}
+    DoubleVec2Property x{{"x", "X",
+        dvec2{{{defaultValue[0]}, {defaultValue[1]}}},
+        std::pair{{dvec2{{{minValue[0]},{minValue[1]}}}, ConstraintBehavior::Ignore}},
+        std::pair{{dvec2{{{maxValue[0]},{maxValue[1]}}}, ConstraintBehavior::Ignore}}}};
+
+    DoubleVec2Property y{{"y", "Y",
+        dvec2{{{defaultValue[2]}, {defaultValue[3]}}},
+        std::pair{{dvec2{{{minValue[2]},{minValue[3]}}}, ConstraintBehavior::Ignore}},
+        std::pair{{dvec2{{{maxValue[2]},{maxValue[3]}}}, ConstraintBehavior::Ignore}}}};
+
+    DoubleVec2Property z{{"z", "Z",
+        dvec2{{{defaultValue[4]}, {defaultValue[5]}}},
+        std::pair{{dvec2{{{minValue[4]},{minValue[5]}}}, ConstraintBehavior::Ignore}},
+        std::pair{{dvec2{{{maxValue[4]},{maxValue[5]}}}, ConstraintBehavior::Ignore}}}};
+
+    CompositeProperty property{{[&](){{
+        CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
+        tmp.addProperties(x,y,z);
+        return tmp;
+        }}()
+    }};
+
+}};
+"""
+
 
 intTemplate = """
 struct {structName} {{
@@ -441,10 +535,10 @@ struct {structName} {{
         filter.{command}(property.get());
         return true;
     }}
-    IntProperty property{{"{identifier}", "{displayName}",
+    IntProperty property{{"{identifier}", "{displayName}", R"({doc})"_help,
                          {defaultValue[0]},
-                         std::pair{{{minValue}, ConstraintBehavior::Ignore}},
-                         std::pair{{{maxValue}, ConstraintBehavior::Ignore}}}};
+                         std::pair{{{minValue[0]}, ConstraintBehavior::Ignore}},
+                         std::pair{{{maxValue[0]}, ConstraintBehavior::Ignore}}}};
 }};
 """
 
@@ -454,23 +548,67 @@ struct {structName} {{
         filter.{command}(property.get(0), property.get(1));
         return true;
     }}
-    IntVec2Property property{{"{identifier}", "{displayName}",
+    IntVec2Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                             ivec2{{{defaultValue[0]}, {defaultValue[1]}}},
-                            std::pair{{ivec2{{{minValue}}}, ConstraintBehavior::Ignore}},
-                            std::pair{{ivec2{{{maxValue}}}, ConstraintBehavior::Ignore}}}};
+                            std::pair{{ivec2{{{minValue[0]},{minValue[1]}}}, ConstraintBehavior::Ignore}},
+                            std::pair{{ivec2{{{maxValue[0]},{maxValue[1]}}}, ConstraintBehavior::Ignore}}}};
 }};
 """
 
 intVec3Template = """
 struct {structName} {{
     bool set({className}& filter) {{
-        filter.{command}(property.get(0), property.get(1), property.get(2)));
+        filter.{command}(property.get(0), property.get(1), property.get(2));
         return true;
     }}
-    IntVec3Property property{{"{identifier}", "{displayName}",
+    IntVec3Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                             ivec3{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}}},
-                            std::pair{{ivec3{{{minValue}}}, ConstraintBehavior::Ignore}},
-                            std::pair{{ivec3{{{maxValue}}}, ConstraintBehavior::Ignore}}}};
+                            std::pair{{ivec3{{{minValue[0]},{minValue[1]},{minValue[2]}}}, ConstraintBehavior::Ignore}},
+                            std::pair{{ivec3{{{maxValue[0]},{maxValue[1]},{maxValue[2]}}}, ConstraintBehavior::Ignore}}}};
+}};
+"""
+
+intVec4Template = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        filter.{command}(property.get(0), property.get(1), property.get(2), property.get(3));
+        return true;
+    }}
+    IntVec4Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
+                            ivec4{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]},{defaultValue[3]}}},
+                            std::pair{{ivec4{{{minValue[0]},{minValue[1]},{minValue[2]},{minValue[3]}}}, ConstraintBehavior::Ignore}},
+                            std::pair{{ivec4{{{maxValue[0]},{maxValue[1]},{maxValue[2]},{maxValue[3]}}}, ConstraintBehavior::Ignore}}}};
+}};
+"""
+
+intVec6Template = """
+struct {structName} {{
+    bool set({className}& filter) {{
+        filter.{command}(x.get(0), x.get(1), y.get(0), y.get(1), z.get(0), z.get(1));
+        return true;
+    }}
+    IntVec2Property x{{"x", "X",
+        dvec2{{{defaultValue[0]}, {defaultValue[1]}}},
+        std::pair{{dvec2{{{minValue[0]},{minValue[1]}}}, ConstraintBehavior::Ignore}},
+        std::pair{{dvec2{{{maxValue[0]},{maxValue[1]}}}, ConstraintBehavior::Ignore}}}};
+
+    IntVec2Property y{{"y", "Y",
+        dvec2{{{defaultValue[2]}, {defaultValue[3]}}},
+        std::pair{{dvec2{{{minValue[2]},{minValue[3]}}}, ConstraintBehavior::Ignore}},
+        std::pair{{dvec2{{{maxValue[2]},{maxValue[3]}}}, ConstraintBehavior::Ignore}}}};
+
+    IntVec2Property z{{"z", "Z",
+        dvec2{{{defaultValue[4]}, {defaultValue[5]}}},
+        std::pair{{dvec2{{{minValue[4]},{minValue[5]}}}, ConstraintBehavior::Ignore}},
+        std::pair{{dvec2{{{maxValue[4]},{maxValue[5]}}}, ConstraintBehavior::Ignore}}}};
+
+    CompositeProperty property{{[&](){{
+        CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
+        tmp.addProperties(x,y,z);
+        return tmp;
+        }}()
+    }};
+
 }};
 """
 
@@ -481,7 +619,7 @@ struct {structName} {{
         filter.{command}(property.get());
         return true;
     }}
-    BoolProperty property{{"{identifier}", "{displayName}", {defaultValue}}};
+    BoolProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, {defaultValue}}};
 }};
 """
 
@@ -491,7 +629,7 @@ struct {structName} {{
         filter.{command}(property.get().c_str());
         return true;
     }}
-    StringProperty property{{"{identifier}", "{displayName}", "{defaultValue}"}};
+    StringProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, "{defaultValue}"}};
 }};
 """
 
@@ -502,7 +640,8 @@ struct {structName} {{
         filter.{command}(property.get().string().c_str());
         return true;
     }}
-    FileProperty property{{"{identifier}", "{displayName}", "{defaultValue}"}};
+    FileProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, 
+                           std::filesystem::path{{"{defaultValue}"}}}};
 }};
 """
 
@@ -512,7 +651,7 @@ struct {structName} {{
         filter.{command}();
         return true;
     }}
-    ButtonProperty property{{"{identifier}", "{displayName}"}};
+    ButtonProperty property{{"{identifier}", "{displayName}", R"({doc})"_help}};
 }};
 """
 
@@ -529,8 +668,8 @@ struct {structName} {{
     IntSizeTMinMaxProperty z{{"zExtent", "X Extent", 0, 100, 0, 1000}};
 
     CompositeProperty property{{[&](){{
-            CompositeProperty tmp{{"{identifier}", "{displayName}"}};
-            tmp.add_properties(x,y,z);
+            CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
+            tmp.addProperties(x,y,z);
             return tmp;
         }}()
     }};
@@ -543,20 +682,35 @@ struct {structName} {{
         filter.{command}(property.get());
         return true;
     }}
-    OptionPropertyInt property{{"{identifier}", "{displayName}", {{{options}}}, {defaultValue}}};
+    OptionPropertyInt property{{"{identifier}", "{displayName}", R"({doc})"_help, {{{options}}}, {defaultValue}}};
 }};
 """
 
 fieldSelectionTemplate = """
 struct {structName} : FieldSelection {{
     bool set({className}& filter) {{
-        if(property.size() == 0) return false;
+        if(name.size() == 0) return false;
         filter.{command}({defaultValue[0]}, {defaultValue[1]},
-                         {defaultValue[2]}, {defaultValue[3]}, property.get().c_str());
+                         {defaultValue[2]}, fieldAssociation.get(), name.get().c_str());
         return true;
     }}
-    OptionPropertyString property{{"{identifier}", "{displayName}", {{{defaultoptions}}}, 0}};
+    OptionPropertyString name{{"name", "Name", {{{defaultoptions}}}, 0}};
 
+    OptionProperty<vtkDataObject::FieldAssociations> fieldAssociation{{"fieldAssociation", "Field Association",
+        {{
+            {{"points","Points",vtkDataObject::FIELD_ASSOCIATION_POINTS}},
+            {{"cells","Cells",vtkDataObject::FIELD_ASSOCIATION_CELLS}},
+            {{"none","None",vtkDataObject::FIELD_ASSOCIATION_NONE}},
+            {{"pointsThenCells","Points then Cells",vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}}
+        }}, {defaultValue[3]} }};
+
+    CompositeProperty property{{[&](){{
+            CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
+            tmp.addProperties(name, fieldAssociation);
+            return tmp;
+        }}()
+    }};
+    
     static constexpr std::string_view inport = "{inport}";
 }};
 """
@@ -576,6 +730,7 @@ sourceTemplate = """
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -585,7 +740,8 @@ sourceTemplate = """
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "{className}.h"
+#include <vtkDataObject.h>
+#include <{className}.h>
 #include <warn/pop>
 
 namespace inviwo {{
@@ -602,12 +758,16 @@ namespace {{
 }}
 template <>
 struct TTKTraits<{className}> {{
+    static constexpr std::string_view className = "{className}";
     static constexpr std::string_view identifier = "{identifier}";
     static constexpr std::string_view displayName = "{displayName}";
+    static constexpr std::string_view category = "{category}";
+    static constexpr std::string_view tags = "{tags}";
     inline static std::array<InputData, {nInput}> inports = {{{inputData}}};
     inline static std::array<OutputData, {nOutput}> outports = {{{outputData}}};
     inline static std::array<Group, {nGroup}> groups = {{{groupList}}};
     std::tuple<{proplist}> properties;
+    static constexpr std::string_view doc = R"({doc})";
 }};
 
 void register{className}(InviwoModule* module) {{
@@ -658,11 +818,28 @@ def generate(data: FilterData) -> str:
                 template = doubleVec2Template
             elif p.numElem == 3:
                 template = doubleVec3Template
+            elif p.numElem == 4:
+                template = doubleVec4Template
+            elif p.numElem == 6:
+                template = doubleVec6Template             
             else:
                 print(f"Missing template for DoubleVecProperty of dim {p.numElem}")
                 continue
-            kind.minValue = kind.minValue if kind.minValue else 0.0
-            kind.maxValue = kind.maxValue if kind.maxValue else 100.0
+
+            if not kind.minValue:
+                kind.minValue = [0.0]*p.numElem
+            
+            if kind.minValue:
+                if len(kind.minValue) == 1:
+                    kind.minValue = kind.minValue*p.numElem
+                    
+            if not kind.maxValue:
+                kind.maxValue = [100.0]*p.numElem
+                    
+            if kind.maxValue:
+                if len(kind.maxValue) == 1:
+                    kind.maxValue = kind.maxValue*p.numElem    
+
 
         elif isinstance(kind, IntVecProperty):
             if p.numElem == 1:
@@ -671,14 +848,32 @@ def generate(data: FilterData) -> str:
                 template = intVec2Template
             elif p.numElem == 3:
                 template = intVec3Template
+            elif p.numElem == 4:
+                template = intVec4Template
+            elif p.numElem == 6:
+                template = intVec6Template
             else:
                 print(f"Missing template for IntVecProperty of dim {p.numElem}")
                 continue
-            kind.minValue = kind.minValue if kind.minValue else 0
-            kind.maxValue = kind.maxValue if kind.maxValue else 100
+            
+            if not kind.minValue:
+                kind.minValue = [0]*p.numElem
+            
+            if kind.minValue:
+                if len(kind.minValue) == 1:
+                    kind.minValue = kind.minValue*p.numElem
+                    
+            if not kind.maxValue:
+                kind.maxValue = [100]*p.numElem
+                    
+            if kind.maxValue:
+                if len(kind.maxValue) == 1:
+                    kind.maxValue = kind.maxValue*p.numElem        
+
 
         elif isinstance(kind, IntOptionProperty) and p.numElem == 1:
             template = optionTemplate
+            kind.defaultValue = valueOr(kind.defaultValue, 0)
             kind.options = ', '.join(f'{{"{n}","{n}",{v}}}' for n, v in kind.options)
 
         elif isinstance(kind, StringProperty) and p.numElem == 1:
@@ -689,10 +884,10 @@ def generate(data: FilterData) -> str:
             template = fileTemplate
             kind.defaultValue = valueOr(kind.defaultValue, "")
 
-        elif isinstance(kind, ButtonProperty) and p.numElem == 1:
+        elif isinstance(kind, ButtonProperty) and (not p.numElem or p.numElem == 1):
             template = buttonTemplate
 
-        elif isinstance(kind, ButtonProperty) and p.numElem == 1:
+        elif isinstance(kind, ExtentProperty) and p.numElem == 1:
             template = extentTemplate
 
         elif isinstance(kind, BoolProperty) and p.numElem == 1:
@@ -717,13 +912,14 @@ def generate(data: FilterData) -> str:
             identifier=p.identifier,
             displayName=p.displayName,
             command=p.command,
+            doc=p.doc if p.doc else "",
             **dataclasses.asdict(kind),
             **extra
         )
         proplist.append(structName)
 
     inputData = ", ".join(
-        f'InputData{{"{d.identifier}", "{valueOr(d.dataType, "")}", {valueOr(d.numComp,-1)}}}'
+        f'InputData{{"{d.identifier}", "{valueOr(d.dataType, "")}", {valueOr(d.numComp,[-1])[0]}, R"({valueOr(d.doc, "")})"}}'
         for d in data.inports)
     outputData = ", ".join(f'OutputData{{"{d.identifier}", "{d.displayName}", {d.index}}}'
                            for d in data.outports)
@@ -736,6 +932,9 @@ def generate(data: FilterData) -> str:
     source = sourceTemplate.format(identifier=data.identifier,
                                    displayName=data.displayName,
                                    className=data.className,
+                                   category=data.category,
+                                   tags=data.tags,
+                                   doc=data.doc,
                                    proplist=', '.join(proplist),
                                    propClasses=propClasses,
                                    nInput=len(data.inports),
@@ -764,7 +963,7 @@ def makeTable(items) -> rich.table.Table:
     for key in dataclasses.asdict(items[0]).keys():
         table.add_column(key)
     for item in items:
-        table.add_row(*map(str, dataclasses.astuple(item)))
+        table.add_row(*map(lambda x : elide(str(x), 20), dataclasses.astuple(item)))
     return table
 
 
@@ -834,24 +1033,26 @@ if __name__ == '__main__':
     ]
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
+
     filters = []
     for file in files:
         try:
             with open(file, 'r') as f:
                 xmlstr = f.read().replace("${DEBUG_WIDGETS}", debugWidgets)
-            filters.extend(parse(xmlstr, file))
+            filters.extend(parse(xmlstr, file, "topology", "TTK")) 
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
 
     paraviewXmls = [
-        "https://github.com/Kitware/ParaView/raw/master/Remoting/Application/Resources/readers_ioxml.xml"
+        "https://github.com/Kitware/ParaView/raw/master/"
+        "Remoting/Application/Resources/readers_ioxml.xml"
     ]
     for url in paraviewXmls:
         try:
             response = requests.get(url)
             xmlstr = response.content
-            filters.extend(parse(xmlstr, url))
+            filters.extend(parse(xmlstr, url, "vtk", "VTK,readers"))
         except Exception as e:
             print(f"Error parsing {url} \n{e}")
             print(traceback.format_exc())
@@ -866,7 +1067,7 @@ if __name__ == '__main__':
         try:
             with open(file, 'r') as f:
                 xmlstr = f.read()
-            filters.extend(parse(xmlstr, file))
+            filters.extend(parse(xmlstr, file, "vtk", "VTK"))
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
@@ -888,6 +1089,54 @@ if __name__ == '__main__':
     filterCount = len(filters)
     filters = [f for f in filters if f.className != "vtkFileSeriesReader"]
     print(f"Removed {filterCount - len(filters)} vtkFileSeriesReaders.")
+
+
+    filters = [f for f in filters if not f.className.startswith("vtkPV")]
+    filters = [f for f in filters if not f.className.startswith("vtkAMR")]
+
+    missingHeader = [
+        "vtkAttributeDataToTableFilter",
+        "vtkAdditionalFieldReader",
+        "vtkCleanUnstructuredGrid",
+        "vtkCleanUnstructuredGridCells",
+        "vtkClientServerMoveData",
+        "vtkCTHSimpleSurface",
+        "vtkDataObjectTreeToPointSetFilter",
+        "vtkDistributedPointCloudFilter",
+        "vtkEnvironmentAnnotationFilter",
+        "vtkExtractSelectionRange",
+        "vtkGridConnectivity",
+        "vtkHybridProbeFilter",
+        "vtkIntegrateFlowThroughSurface",
+        "vtkInSituPParticlePathFilter",
+        "vtkIsoVolume",
+        "vtkIntersectFragments",
+        "vtkMaterialInterfaceFilter",
+        "vtkMinMax",
+        "vtkMergeCompositeDataSet",
+        "vtkMPIMoveData",
+        "vtkNonOverlappingAMRLevelIdScalars",
+        "vtkMultiBlockFromTimeSeriesFilter",
+        "vtkOrderedCompositeDistributor",
+        "vtkPCellSizeFilter",
+        "vtkPConvertSelection",
+        "vtkPExtractHistogram",
+        "vtkPlotEdges",
+        "vtkPolyLineToRectilinearGridFilter",
+        "vtkPSciVizContingencyStats",
+        "vtkPSciVizKMeans",
+        "vtkPSciVizDescriptiveStats",
+        "vtkPSciVizMultiCorrelativeStats",
+        "vtkPSciVizPCAStats",
+        "vtkRectilinearGridConnectivity",
+        "vtkReductionFilter",
+        "vtkRulerLineForInput",
+        "vtkSliceAlongPolyPlane",
+        "vtkSurfaceVectors",
+        "vtkTimeStepProgressFilter",
+        "vtkTimeToTextConvertor"
+    ]
+    filters = [f for f in filters if f.className not in missingHeader]
 
     console.print(makeFilterTable(filters))
 

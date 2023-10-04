@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkReebSpace.h"
+#include <vtkDataObject.h>
+#include <ttkReebSpace.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -26,22 +28,56 @@ namespace {
 
 struct Wrapper0 : FieldSelection {
     bool set(ttkReebSpace& filter) {
-        if (property.size() == 0) return false;
-        filter.SetInputArrayToProcess(0, 0, 0, 0, property.get().c_str());
+        if (name.size() == 0) return false;
+        filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
-    OptionPropertyString property{"UComponent", "U Component", {}, 0};
+    OptionPropertyString name{"name", "Name", {}, 0};
+
+    OptionProperty<vtkDataObject::FieldAssociations> fieldAssociation{
+        "fieldAssociation",
+        "Field Association",
+        {{"points", "Points", vtkDataObject::FIELD_ASSOCIATION_POINTS},
+         {"cells", "Cells", vtkDataObject::FIELD_ASSOCIATION_CELLS},
+         {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
+         {"pointsThenCells", "Points then Cells",
+          vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
+        3};
+
+    CompositeProperty property{[&]() {
+        CompositeProperty tmp{"UComponent", "U Component",
+                              R"(Select the U component of the bivariate field.)"_help};
+        tmp.addProperties(name, fieldAssociation);
+        return tmp;
+    }()};
 
     static constexpr std::string_view inport = "Input";
 };
 
 struct Wrapper1 : FieldSelection {
     bool set(ttkReebSpace& filter) {
-        if (property.size() == 0) return false;
-        filter.SetInputArrayToProcess(1, 0, 0, 0, property.get().c_str());
+        if (name.size() == 0) return false;
+        filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
-    OptionPropertyString property{"VComponent", "V Component", {}, 0};
+    OptionPropertyString name{"name", "Name", {}, 0};
+
+    OptionProperty<vtkDataObject::FieldAssociations> fieldAssociation{
+        "fieldAssociation",
+        "Field Association",
+        {{"points", "Points", vtkDataObject::FIELD_ASSOCIATION_POINTS},
+         {"cells", "Cells", vtkDataObject::FIELD_ASSOCIATION_CELLS},
+         {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
+         {"pointsThenCells", "Points then Cells",
+          vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
+        3};
+
+    CompositeProperty property{[&]() {
+        CompositeProperty tmp{"VComponent", "V Component",
+                              R"(Select the V component of the bivariate field.)"_help};
+        tmp.addProperties(name, fieldAssociation);
+        return tmp;
+    }()};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -51,27 +87,66 @@ struct Wrapper2 {
         filter.SetForceInputOffsetScalarField(property.get());
         return true;
     }
-    BoolProperty property{"Withpredefinedoffset", "Force Input Offset Field", false};
+    BoolProperty property{"Withpredefinedoffset", "Force Input Offset Field",
+                          R"(Check this box to force the usage of a specific input scalar field
+as vertex offset (used to disambiguate flat plateaus).)"_help,
+                          false};
 };
 
 struct Wrapper3 : FieldSelection {
     bool set(ttkReebSpace& filter) {
-        if (property.size() == 0) return false;
-        filter.SetInputArrayToProcess(2, 0, 0, 0, property.get().c_str());
+        if (name.size() == 0) return false;
+        filter.SetInputArrayToProcess(2, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
-    OptionPropertyString property{"UOffsetField", "U Offset Field", {}, 0};
+    OptionPropertyString name{"name", "Name", {}, 0};
+
+    OptionProperty<vtkDataObject::FieldAssociations> fieldAssociation{
+        "fieldAssociation",
+        "Field Association",
+        {{"points", "Points", vtkDataObject::FIELD_ASSOCIATION_POINTS},
+         {"cells", "Cells", vtkDataObject::FIELD_ASSOCIATION_CELLS},
+         {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
+         {"pointsThenCells", "Points then Cells",
+          vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
+        3};
+
+    CompositeProperty property{[&]() {
+        CompositeProperty tmp{"UOffsetField", "U Offset Field",
+                              R"(Select the scalar field to use as a vertex offset for the
+u-coordinate (used to disambiguate collinear edges).)"_help};
+        tmp.addProperties(name, fieldAssociation);
+        return tmp;
+    }()};
 
     static constexpr std::string_view inport = "Input";
 };
 
 struct Wrapper4 : FieldSelection {
     bool set(ttkReebSpace& filter) {
-        if (property.size() == 0) return false;
-        filter.SetInputArrayToProcess(3, 0, 0, 0, property.get().c_str());
+        if (name.size() == 0) return false;
+        filter.SetInputArrayToProcess(3, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
     }
-    OptionPropertyString property{"VOffsetField", "V Offset Field", {}, 0};
+    OptionPropertyString name{"name", "Name", {}, 0};
+
+    OptionProperty<vtkDataObject::FieldAssociations> fieldAssociation{
+        "fieldAssociation",
+        "Field Association",
+        {{"points", "Points", vtkDataObject::FIELD_ASSOCIATION_POINTS},
+         {"cells", "Cells", vtkDataObject::FIELD_ASSOCIATION_CELLS},
+         {"none", "None", vtkDataObject::FIELD_ASSOCIATION_NONE},
+         {"pointsThenCells", "Points then Cells",
+          vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
+        3};
+
+    CompositeProperty property{[&]() {
+        CompositeProperty tmp{"VOffsetField", "V Offset Field",
+                              R"(Select the scalar field to use as a vertex offset for the
+v-coordinate (used to disambiguate collinear edges).)"_help};
+        tmp.addProperties(name, fieldAssociation);
+        return tmp;
+    }()};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -83,6 +158,7 @@ struct Wrapper5 {
     }
     OptionPropertyInt property{"SimplificationCriterion",
                                "SimplificationCriterion",
+                               R"(Set the simplification criterion.)"_help,
                                {{"Domain Volume", "Domain Volume", 0},
                                 {"Range Area", "Range Area", 1},
                                 {"Hyper Volume", "Hyper Volume", 2}},
@@ -94,7 +170,10 @@ struct Wrapper6 {
         filter.SetSimplificationThreshold(property.get());
         return true;
     }
-    DoubleProperty property{"SimplificationThreshold", "Simplification Threshold", 0.0,
+    DoubleProperty property{"SimplificationThreshold",
+                            "Simplification Threshold",
+                            R"(Threshold for the simplification of the Reeb space.)"_help,
+                            0.0,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
@@ -104,7 +183,8 @@ struct Wrapper7 {
         filter.SetUseOctreeAcceleration(property.get());
         return true;
     }
-    BoolProperty property{"OctreeAcceleration", "With Range Query Acceleration", true};
+    BoolProperty property{"OctreeAcceleration", "With Range Query Acceleration",
+                          R"(Use range driven octree for range query accelerations.)"_help, true};
 };
 
 struct Wrapper8 {
@@ -112,7 +192,9 @@ struct Wrapper8 {
         filter.SetZeroSheetValue(property.get());
         return true;
     }
-    BoolProperty property{"0-scalar", "With field values", true};
+    BoolProperty property{"0-scalar", "With field values",
+                          R"(Check this box to save the input field values on the 0-sheets.)"_help,
+                          true};
 };
 
 struct Wrapper9 {
@@ -120,7 +202,8 @@ struct Wrapper9 {
         filter.SetZeroSheetVertexId(property.get());
         return true;
     }
-    BoolProperty property{"0-vertexId", "With vertex Ids", true};
+    BoolProperty property{"0-vertexId", "With vertex Ids",
+                          R"(Check this box to save the vertex Ids on the 0-sheets.)"_help, true};
 };
 
 struct Wrapper10 {
@@ -128,7 +211,8 @@ struct Wrapper10 {
         filter.SetZeroSheetType(property.get());
         return true;
     }
-    BoolProperty property{"0-type", "With sheet type", true};
+    BoolProperty property{"0-type", "With sheet type",
+                          R"(Check this box to save the sheet type on the 0-sheets.)"_help, true};
 };
 
 struct Wrapper11 {
@@ -136,7 +220,8 @@ struct Wrapper11 {
         filter.SetZeroSheetId(property.get());
         return true;
     }
-    BoolProperty property{"0-sheetId", "With sheet Ids", true};
+    BoolProperty property{"0-sheetId", "With sheet Ids",
+                          R"(Check this box to save the sheet Ids on the 0-sheets.)"_help, true};
 };
 
 struct Wrapper12 {
@@ -144,7 +229,9 @@ struct Wrapper12 {
         filter.SetOneSheetValue(property.get());
         return true;
     }
-    BoolProperty property{"1-scalar", "With field values", true};
+    BoolProperty property{"1-scalar", "With field values",
+                          R"(Check this box to save the input field values on the 1-sheets.)"_help,
+                          true};
 };
 
 struct Wrapper13 {
@@ -152,7 +239,8 @@ struct Wrapper13 {
         filter.SetOneSheetVertexId(property.get());
         return true;
     }
-    BoolProperty property{"1-vertexId", "With vertex Ids", true};
+    BoolProperty property{"1-vertexId", "With vertex Ids",
+                          R"(Check this box to save the vertex Ids on the 1-sheets.)"_help, true};
 };
 
 struct Wrapper14 {
@@ -160,7 +248,8 @@ struct Wrapper14 {
         filter.SetOneSheetEdgeId(property.get());
         return true;
     }
-    BoolProperty property{"1-edgeId", "With edge Ids", true};
+    BoolProperty property{"1-edgeId", "With edge Ids",
+                          R"(Check this box to save the edge Ids on the 1-sheets.)"_help, true};
 };
 
 struct Wrapper15 {
@@ -168,7 +257,8 @@ struct Wrapper15 {
         filter.SetOneSheetType(property.get());
         return true;
     }
-    BoolProperty property{"1-type", "With sheet type", true};
+    BoolProperty property{"1-type", "With sheet type",
+                          R"(Check this box to save the sheet type on the 1-sheets.)"_help, true};
 };
 
 struct Wrapper16 {
@@ -176,7 +266,8 @@ struct Wrapper16 {
         filter.SetOneSheetId(property.get());
         return true;
     }
-    BoolProperty property{"1-sheetId", "With sheet Ids", true};
+    BoolProperty property{"1-sheetId", "With sheet Ids",
+                          R"(Check this box to save the sheet Ids on the 1-sheets.)"_help, true};
 };
 
 struct Wrapper17 {
@@ -184,7 +275,8 @@ struct Wrapper17 {
         filter.SetTwoSheets(property.get());
         return true;
     }
-    BoolProperty property{"2-sheets", "With 2-sheets", false};
+    BoolProperty property{"2-sheets", "With 2-sheets",
+                          R"(Check this box to visualize the 2-sheets.)"_help, false};
 };
 
 struct Wrapper18 {
@@ -192,7 +284,9 @@ struct Wrapper18 {
         filter.SetTwoSheetValue(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetValue", "With field values", true};
+    BoolProperty property{"2-sheetValue", "With field values",
+                          R"(Check this box to save the input field values on the 2-sheets.)"_help,
+                          true};
 };
 
 struct Wrapper19 {
@@ -200,7 +294,10 @@ struct Wrapper19 {
         filter.SetTwoSheetParameterization(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetParameterization", "With edge length parameterization", true};
+    BoolProperty property{"2-sheetParameterization", "With edge length parameterization",
+                          R"(Check this box to save the edge-length parameterization
+on the 2-sheets.)"_help,
+                          true};
 };
 
 struct Wrapper20 {
@@ -208,7 +305,8 @@ struct Wrapper20 {
         filter.SetTwoSheetId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetId", "With sheet Ids", true};
+    BoolProperty property{"2-sheetId", "With sheet Ids",
+                          R"(Check this box to save the sheet Ids on the 2-sheets.)"_help, true};
 };
 
 struct Wrapper21 {
@@ -216,7 +314,9 @@ struct Wrapper21 {
         filter.SetTwoSheetEdgeId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetEdgeId", "With edge Ids", true};
+    BoolProperty property{"2-sheetEdgeId", "With edge Ids",
+                          R"(Check this box to save the 1-sheet edgeIds on the 2-sheets.)"_help,
+                          true};
 };
 
 struct Wrapper22 {
@@ -224,7 +324,8 @@ struct Wrapper22 {
         filter.SetTwoSheetTetId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetTetId", "With tet Ids", true};
+    BoolProperty property{"2-sheetTetId", "With tet Ids",
+                          R"(Check this box to save the tetIds on the 2-sheets.)"_help, true};
 };
 
 struct Wrapper23 {
@@ -232,7 +333,9 @@ struct Wrapper23 {
         filter.SetTwoSheetCaseId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetCaseId", "With case Ids", true};
+    BoolProperty property{"2-sheetCaseId", "With case Ids",
+                          R"(Check this box to save the case Ids for each 2-sheet triangle.)"_help,
+                          true};
 };
 
 struct Wrapper24 {
@@ -240,7 +343,10 @@ struct Wrapper24 {
         filter.SetTwoSheetEdgeType(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetEdgeType", "With edge type", true};
+    BoolProperty property{"2-sheetEdgeType", "With edge type",
+                          R"(Check this box to save the edge type of the corresponding edge in the
+1-sheet.)"_help,
+                          true};
 };
 
 struct Wrapper25 {
@@ -248,7 +354,10 @@ struct Wrapper25 {
         filter.SetThreeSheetVertexNumber(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetVertexNumber", "3-sheet vertex number", true};
+    BoolProperty property{"3-sheetVertexNumber", "3-sheet vertex number",
+                          R"(Check this box to save the number of vertices per 3-sheet as an extra
+attribute field.)"_help,
+                          true};
 };
 
 struct Wrapper26 {
@@ -256,7 +365,10 @@ struct Wrapper26 {
         filter.SetThreeSheetTetNumber(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetTetNumber", "3-sheet tet number", true};
+    BoolProperty property{"3-sheetTetNumber", "3-sheet tet number",
+                          R"(Check this box to save the number of tetrahedra per 3-sheet as an
+extra attribute field.)"_help,
+                          true};
 };
 
 struct Wrapper27 {
@@ -264,7 +376,10 @@ struct Wrapper27 {
         filter.SetThreeSheetExpansion(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetExpansion", "3-sheet expansion", true};
+    BoolProperty property{"3-sheetExpansion", "3-sheet expansion",
+                          R"(Check this box to trigger the expansion of the 3-sheets to their
+maximal extent.)"_help,
+                          true};
 };
 
 struct Wrapper28 {
@@ -272,7 +387,10 @@ struct Wrapper28 {
         filter.SetThreeSheetDomainVolume(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetDomainVolume", "3-sheet domain volume", true};
+    BoolProperty property{"3-sheetDomainVolume", "3-sheet domain volume",
+                          R"(Check this box to save the volume in the domain of each 3-sheet as an
+extra attribute field.)"_help,
+                          true};
 };
 
 struct Wrapper29 {
@@ -280,7 +398,10 @@ struct Wrapper29 {
         filter.SetThreeSheetRangeArea(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetRangeArea", "3-sheet range area", true};
+    BoolProperty property{"3-sheetRangeArea", "3-sheet range area",
+                          R"(Check this box to save the area in the range of each 3-sheet as an
+extra attribute field.)"_help,
+                          true};
 };
 
 struct Wrapper30 {
@@ -288,7 +409,10 @@ struct Wrapper30 {
         filter.SetThreeSheetHyperVolume(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetHyperVolume", "3-sheet hyper volume", true};
+    BoolProperty property{"3-sheetHyperVolume", "3-sheet hyper volume",
+                          R"(Check this box to save the hyper-volume of each 3-sheet as an
+extra attribute field.)"_help,
+                          true};
 };
 
 struct Wrapper31 {
@@ -296,7 +420,8 @@ struct Wrapper31 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper32 {
@@ -304,7 +429,10 @@ struct Wrapper32 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -314,7 +442,10 @@ struct Wrapper33 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -324,9 +455,24 @@ struct Wrapper34 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper35 {
+    bool set(ttkReebSpace& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -334,9 +480,13 @@ struct Wrapper34 {
 }  // namespace
 template <>
 struct TTKTraits<ttkReebSpace> {
+    static constexpr std::string_view className = "ttkReebSpace";
     static constexpr std::string_view identifier = "ttkReebSpace";
     static constexpr std::string_view displayName = "TTK ReebSpace";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", 1}};
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
+    inline static std::array<InputData, 1> inports = {
+        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.)"}};
     inline static std::array<OutputData, 4> outports = {
         OutputData{"port0", "0-sheets", 0}, OutputData{"port1", "1-sheets", 1},
         OutputData{"port2", "2-sheets", 2}, OutputData{"port3", "3-sheets", 3}};
@@ -361,8 +511,28 @@ struct TTKTraits<ttkReebSpace> {
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
                Wrapper16, Wrapper17, Wrapper18, Wrapper19, Wrapper20, Wrapper21, Wrapper22,
                Wrapper23, Wrapper24, Wrapper25, Wrapper26, Wrapper27, Wrapper28, Wrapper29,
-               Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34>
+               Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34, Wrapper35>
         properties;
+    static constexpr std::string_view doc =
+        R"(The Reeb space is a useful topological abstraction of bivariate scalar
+fields for data segmentation purposes. Intuitively, it allows the automatic
+separation of volumetric regions that project to the same areas in the
+range. This class also implements a simplification heuristic for progressive
+coarsening. Used in conjunction with continuous scatterplots, this class
+enables continuous scattterplot peeling for instance.
+
+The input data must be provided as two independent point data scalar fields
+defined on the geometry.
+WARNING: Only tetrahedral meshes are supported.
+
+Related publication:
+"Jacobi Fiber Surfaces for Bivariate Reeb Space Computation"
+Julien Tierny, Hamish Carr
+Proc. of IEEE VIS 2016.
+IEEE Transactions on Visualization and Computer Graphics, 2016.
+
+See also ContinuousScatterplot, JacobiSet, Fiber, FiberSurface,
+ProjectionFromField, RangePolygon.)";
 };
 
 void registerttkReebSpace(InviwoModule* module) {

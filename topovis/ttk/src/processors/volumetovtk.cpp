@@ -30,6 +30,8 @@
 #include <inviwo/ttk/processors/volumetovtk.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <inviwo/core/util/glm.h>
+
 #include <vtkImageData.h>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>

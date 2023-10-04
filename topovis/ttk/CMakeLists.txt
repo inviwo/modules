@@ -5,6 +5,7 @@ set(HEADER_FILES
     include/inviwo/ttk/datastructures/volumevtk.h
     include/inviwo/ttk/ports/vtkinport.h
     include/inviwo/ttk/ports/vtkoutport.h
+    include/inviwo/ttk/processors/imagetovtk.h
     include/inviwo/ttk/processors/ttkgenericprocessor.h
     include/inviwo/ttk/processors/volumetovtk.h
     include/inviwo/ttk/processors/vtkdatasettovtkimagedata.h
@@ -21,6 +22,7 @@ set(SOURCE_FILES
     src/datastructures/volumevtk.cpp
     src/ports/vtkinport.cpp
     src/ports/vtkoutport.cpp
+    src/processors/imagetovtk.cpp
     src/processors/ttkgenericprocessor.cpp
     src/processors/volumetovtk.cpp
     src/processors/vtkdatasettovtkimagedata.cpp
@@ -46,12 +48,35 @@ target_include_directories(inviwo-module-ttk PRIVATE generated)
 find_package(freetype CONFIG REQUIRED)
 add_library(Freetype::Freetype ALIAS freetype)
 
-
-# potential vtk workarounds for issues in <build>/vcpkg_installed/x64-windows/share/vtk/FindPEGTL.cmake
-#add_library(PEGTL::PEGTL ALIAS pegtl)
-#find_package(PEGTL CONFIG REQUIRED)
+find_package(utf8cpp CONFIG REQUIRED)
 
 find_package(TTKBase CONFIG REQUIRED)
 find_package(TTKVTK CONFIG REQUIRED)
 
-target_link_libraries(inviwo-module-ttk PRIVATE ttk::base::baseAll ttk::vtk::ttkAll)
+find_package(VTK CONFIG REQUIRED)
+
+target_link_libraries(inviwo-module-ttk 
+    PRIVATE 
+        ttk::base::baseAll
+        ttk::vtk::ttkAll
+
+
+        VTK::CommonExecutionModel
+        VTK::DomainsChemistry
+        VTK::FiltersAMR
+        VTK::FiltersCore  
+        VTK::FiltersExtraction
+        VTK::FiltersFlowPaths
+        VTK::FiltersGeneric
+        VTK::FiltersGeometry
+        VTK::FiltersHybrid
+        VTK::FiltersHyperTree
+        VTK::FiltersModeling
+        VTK::FiltersParallel
+        VTK::FiltersPoints
+        VTK::FiltersStatistics
+        VTK::FiltersTexture
+        VTK::FiltersVerdict
+        VTK::ImagingGeneral
+        VTK::ImagingHybrid
+)

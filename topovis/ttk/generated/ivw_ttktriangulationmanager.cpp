@@ -5,6 +5,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 
@@ -14,7 +15,8 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include "ttkTriangulationManager.h"
+#include <vtkDataObject.h>
+#include <ttkTriangulationManager.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -29,7 +31,8 @@ struct Wrapper0 {
         filter.SetPeriodicity(property.get());
         return true;
     }
-    BoolProperty property{"SetPeriodicity", "Periodicity in All Dimensions", false};
+    BoolProperty property{"SetPeriodicity", "Periodicity in All Dimensions",
+                          R"(Set the periodicity ON or OFF.)"_help, false};
 };
 
 struct Wrapper1 {
@@ -40,6 +43,11 @@ struct Wrapper1 {
     OptionPropertyInt property{
         "SetPreconditioning",
         "Preconditioning Strategy",
+        R"(Modify the preconditioning strategy for implicit and periodic triangulations:
+* Default: use preconditioning under a grid size of
+TTK_IMPLICIT_PRECONDITIONS_THRESHOLD^3,
+* Preconditioning: force preconditioning for faster computation,
+* No Preconditioning: disable preconditioning to reduce memory pressure.)"_help,
         {{"Default", "Default", 0},
          {"Preconditioning (faster)", "Preconditioning (faster)", 1},
          {"No Preconditioning (larger datasets)", "No Preconditioning (larger datasets)", 2}},
@@ -51,7 +59,10 @@ struct Wrapper2 {
         filter.SetThreshold(property.get());
         return true;
     }
-    IntProperty property{"Threshold", "Bucket threshold", 1000,
+    IntProperty property{"Threshold",
+                         "Bucket threshold",
+                         R"(Bucket capacity for the octree construction.)"_help,
+                         1000,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
@@ -61,7 +72,8 @@ struct Wrapper3 {
         filter.SetUseAllCores(property.get());
         return true;
     }
-    BoolProperty property{"Debug_UseAllCores", "Use All Cores", true};
+    BoolProperty property{"Debug_UseAllCores", "Use All Cores", R"(Use all available cores.)"_help,
+                          true};
 };
 
 struct Wrapper4 {
@@ -69,7 +81,10 @@ struct Wrapper4 {
         filter.SetThreadNumber(property.get());
         return true;
     }
-    IntProperty property{"Debug_ThreadNumber", "Thread Number", 1,
+    IntProperty property{"Debug_ThreadNumber",
+                         "Thread Number",
+                         R"(The maximum number of threads.)"_help,
+                         1,
                          std::pair{1, ConstraintBehavior::Ignore},
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
@@ -79,7 +94,10 @@ struct Wrapper5 {
         filter.SetDebugLevel(property.get());
         return true;
     }
-    IntProperty property{"Debug_DebugLevel", "Debug Level", 3,
+    IntProperty property{"Debug_DebugLevel",
+                         "Debug Level",
+                         R"(Debug level.)"_help,
+                         3,
                          std::pair{0, ConstraintBehavior::Ignore},
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
@@ -89,9 +107,24 @@ struct Wrapper6 {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
-    DoubleProperty property{"CompactTriangulationCacheSize", "Cache", 0.2,
+    DoubleProperty property{"CompactTriangulationCacheSize",
+                            "Cache",
+                            R"(Set the cache size for the compact triangulation as a
+ratio with respect to the total cluster number.)"_help,
+                            0.2,
                             std::pair{0.0, ConstraintBehavior::Ignore},
                             std::pair{1.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper7 {
+    bool set(ttkTriangulationManager& filter) {
+        filter.Modified();
+        return true;
+    }
+    ButtonProperty property{"Debug_Execute", "Execute",
+                            R"(Executes the filter with the last applied parameters, which is
+handy to re-start pipeline execution from a specific element
+without changing parameters.)"_help};
 };
 
 #include <warn/pop>
@@ -99,9 +132,13 @@ struct Wrapper6 {
 }  // namespace
 template <>
 struct TTKTraits<ttkTriangulationManager> {
+    static constexpr std::string_view className = "ttkTriangulationManager";
     static constexpr std::string_view identifier = "ttkTriangulationManager";
     static constexpr std::string_view displayName = "TTK TriangulationManager";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", -1}};
+    static constexpr std::string_view category = "topology";
+    static constexpr std::string_view tags = "TTK";
+    inline static std::array<InputData, 1> inports = {
+        InputData{"Input", "vtkDataSet", -1, R"(An input VTK data-set.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",
@@ -109,7 +146,33 @@ struct TTKTraits<ttkTriangulationManager> {
                "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Implicit Triangulation Options", {"SetPeriodicity", "SetPreconditioning"}},
         Group{"Compact Explicit Triangulation Options", {"Threshold", "DataArrays"}}};
-    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+    std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
+        properties;
+    static constexpr std::string_view doc =
+        R"(This filter converts a regular grid (vtkImageData) into a
+periodic regular grid (vtkImageData), in all dimensions OR compacts an
+unstructured grid (vtkUnstructuredGrid, vtkPolyData) triangulation.
+
+Alternatively, given a simplicial mesh, this filter also uses the PR star octree to divide
+the mesh into different regions, and adds this clustering information as
+a new scalar field to the original dataset. This clustering index scalar
+field can be further used by TopoCluster data structure.
+
+Related publications:
+"The PR-star octree: A spatio-topological data structure for tetrahedral meshes."
+Kenneth Weiss, Leila Floriani, Riccardo Fellegara, and Marcelo Velloso
+Proc. of ACM SIGSPATIAL 2011.
+
+"TopoCluster: A Localized Data Structure for Topology-based Visualization"
+Guoxi Liu, Federico Iuricich, Riccardo Fellegara, and Leila De Floriani
+IEEE Transactions on Visualization and Computer Graphics, 2021.
+
+
+Online examples:
+
+- https://topology-tool-kit.github.io/examples/compactTriangulation/
+
+- https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)";
 };
 
 void registerttkTriangulationManager(InviwoModule* module) {
