@@ -14,6 +14,7 @@ set(HEADER_FILES
     include/inviwo/ttk/processors/vtktovolume.h
     include/inviwo/ttk/ttkmodule.h
     include/inviwo/ttk/ttkmoduledefine.h
+    include/inviwo/ttk/util/vtkbufferutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -30,6 +31,7 @@ set(SOURCE_FILES
     src/processors/vtktomesh.cpp
     src/processors/vtktovolume.cpp
     src/ttkmodule.cpp
+    src/util/vtkbufferutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 

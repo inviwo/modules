@@ -31,18 +31,11 @@
 
 #include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/minmaxproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/properties/boolcompositeproperty.h>
-#include <inviwo/core/datastructures/geometry/geometrytype.h>
-#include <inviwo/core/interaction/pickingmapper.h>
+#include <inviwo/core/ports/meshport.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
 #include <inviwo/ttk/ports/vtkinport.h>
-
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/ttk/util/vtkbufferutils.h>
 
 #include <variant>
 #include <array>
@@ -50,6 +43,8 @@
 class vtkDataSet;
 
 namespace inviwo {
+
+class PickingEvent;
 
 class IVW_MODULE_TTK_API VTKToMesh : public Processor {
 public:
@@ -60,71 +55,14 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    enum class SourceType { Default, Point, CellData, PointData, Attribute, None };
-    struct IVW_MODULE_TTK_API Source {
-        SourceType type = SourceType::Default;
-        int index = 0;
-
-        void serialize(Serializer& s) const {
-            s.serialize("type", type);
-            s.serialize("index", index);
-        }
-
-        void deserialize(Deserializer& d) {
-            d.deserialize("type", type);
-            d.deserialize("index", index);
-        }
-        friend bool operator==(const Source& a, const Source& b) {
-            return std::tie(a.type, a.index) == std::tie(b.type, b.index);
-        }
-        friend bool operator!=(const Source& a, const Source& b) {
-            return std::tie(a.type, a.index) != std::tie(b.type, b.index);
-        }
-    };
-
-    struct ScaleAndOffset {
-        ScaleAndOffset();
-        DoubleProperty scale;
-        DoubleProperty offset;
-    };
-
-    struct OffsetAndPicking {
-        OffsetAndPicking(Processor* p, size_t size, std::function<void(PickingEvent*)> callback);
-        IntProperty offset;
-        PickingMapper pickingMapper;
-    };
-
-    struct BufferInfo {
-        using Transform = std::variant<OrdinalProperty<dmat4>, ScaleAndOffset, OffsetAndPicking,
-                                       TransferFunctionProperty>;
-        BufferInfo(BufferType type, Source defaultSource, Transform transform);
-        BufferType type;
-        BoolCompositeProperty comp;
-        OptionProperty<Source> source;
-        DoubleMinMaxProperty range;
-        BoolCompositeProperty doTransform;
-        Transform transform;
-        Source defaultSource;
-    };
-
 private:
-    void updateSources(vtkDataSet* array);
-
     void picking(PickingEvent* event);
 
-    vtk::VtkInport inport;
-    BrushingAndLinkingInport brushLinkPort;
-    MeshOutport outport;
+    vtk::VtkInport inport_;
+    BrushingAndLinkingInport brushLinkPort_;
+    MeshOutport outport_;
 
-    std::array<BufferInfo, 9> infos;
-};
-
-template <>
-struct OptionPropertyTraits<VTKToMesh::Source> {
-    static const std::string& classIdentifier() {
-        static const std::string identifier = "org.inviwo.OptionProperty.VTKtoMesh.Source";
-        return identifier;
-    }
+    utilvtk::ArrayBufferMapper bufferMapper_;
 };
 
 }  // namespace inviwo
