@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/inviwo/ttk/processors/ttkgenericprocessor.h
     include/inviwo/ttk/processors/volumetovtk.h
     include/inviwo/ttk/processors/vtkdatasettovtkimagedata.h
+    include/inviwo/ttk/processors/vtksource.h
     include/inviwo/ttk/processors/vtktodataframe.h
     include/inviwo/ttk/processors/vtktomesh.h
     include/inviwo/ttk/processors/vtktovolume.h
@@ -27,6 +28,7 @@ set(SOURCE_FILES
     src/processors/ttkgenericprocessor.cpp
     src/processors/volumetovtk.cpp
     src/processors/vtkdatasettovtkimagedata.cpp
+    src/processors/vtksource.cpp
     src/processors/vtktodataframe.cpp
     src/processors/vtktomesh.cpp
     src/processors/vtktovolume.cpp
