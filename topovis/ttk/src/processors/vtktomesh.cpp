@@ -82,6 +82,7 @@ constexpr std::array<Mesh::MeshInfo, VTK_NUMBER_OF_CELL_TYPES> cellMap = []() {
     tmp[VTK_POLY_VERTEX].dt = DrawType::Points;
     tmp[VTK_LINE].dt = DrawType::Lines;
     tmp[VTK_TRIANGLE].dt = DrawType::Triangles;
+    tmp[VTK_TETRA].dt = DrawType::Triangles;
 
     return tmp;
 }();
@@ -115,9 +116,40 @@ void VTKToMesh::process() {
                 lines.push_back(static_cast<std::uint32_t>(*pit));
             }
         } else if (cellMap[it->GetCellType()].dt == DrawType::Triangles) {
-            vtkIdList* pointIds = it->GetPointIds();
-            for (auto pit = pointIds->begin(); pit != pointIds->end(); ++pit) {
-                triangles.push_back(static_cast<std::uint32_t>(*pit));
+            switch (it->GetCellType()) {
+                case VTK_TRIANGLE:
+                    for (vtkIdType id : *it->GetPointIds()) {
+                        triangles.push_back(static_cast<std::uint32_t>(id));
+                    }
+                    break;
+                case VTK_TETRA: {
+                    std::array<std::uint32_t, 4> ids;
+                    int idx = 0;
+                    for (vtkIdType id : *it->GetPointIds()) {
+                        ids[idx++] = static_cast<std::uint32_t>(id);
+                    }
+
+                    // first
+                    triangles.push_back(ids[1]);
+                    triangles.push_back(ids[2]);
+                    triangles.push_back(ids[3]);
+                    // second
+                    triangles.push_back(ids[0]);
+                    triangles.push_back(ids[3]);
+                    triangles.push_back(ids[2]);
+
+                    triangles.push_back(ids[0]);
+                    triangles.push_back(ids[2]);
+                    triangles.push_back(ids[1]);
+
+                    triangles.push_back(ids[0]);
+                    triangles.push_back(ids[1]);
+                    triangles.push_back(ids[3]);
+
+                    break;
+                }
+                default:
+                    break;
             }
         }
     }
