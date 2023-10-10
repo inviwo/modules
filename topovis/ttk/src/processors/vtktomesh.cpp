@@ -30,6 +30,8 @@
 #include <inviwo/ttk/processors/vtktomesh.h>
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
+#include <inviwo/core/datastructures/buffer/bufferram.h>
+#include <inviwo/core/datastructures/buffer/bufferramprecision.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/utilities.h>
@@ -99,6 +101,35 @@ void VTKToMesh::process() {
 
     auto mesh = std::make_shared<Mesh>(bufferMapper_.getBuffers(data), Mesh::IndexVector{});
 
+    using OrientationFunc = std::function<bool(const std::array<std::uint32_t, 4>&)>;
+
+    auto flippedTetra = [&]() -> OrientationFunc {
+        // need the vertex positions for checking the face orientation of tetrahedra
+        auto posBuffer = mesh->getBuffer(BufferType::PositionAttrib);
+        if (!posBuffer || posBuffer->getDataFormat()->getComponents() != 3) {
+            return [](const std::array<std::uint32_t, 4>&) { return false; };
+        }
+
+        return posBuffer->getRepresentation<BufferRAM>()
+            ->template dispatch<OrientationFunc, dispatching::filter::Vec3s>([](auto br) {
+                using ValueType = util::PrecisionValueType<decltype(br)>;
+                const auto& data = br->getDataContainer();
+                return [data](const auto& ids) {
+                    if constexpr (std::is_floating_point_v<util::value_type_t<ValueType>>) {
+                        ValueType a{data[ids[1]] - data[ids[0]]};
+                        ValueType b{data[ids[2]] - data[ids[0]]};
+                        ValueType c{data[ids[3]] - data[ids[0]]};
+                        return (glm::dot(c, glm::cross(b, a)) > 0.0);
+                    } else {
+                        ValueType a{data[ids[1]] - data[ids[0]]};
+                        ValueType b{data[ids[2]] - data[ids[0]]};
+                        ValueType c{data[ids[3]] - data[ids[0]]};
+                        return (glm::dot(vec3{c}, glm::cross(vec3{b}, vec3{a})) > 0.0);
+                    }
+                };
+            });
+    }();
+
     std::vector<std::uint32_t> points;
     std::vector<std::uint32_t> lines;
     std::vector<std::uint32_t> triangles;
@@ -123,25 +154,34 @@ void VTKToMesh::process() {
                     }
                     break;
                 case VTK_TETRA: {
-                    std::array<std::uint32_t, 4> ids;
-                    int idx = 0;
-                    for (vtkIdType id : *it->GetPointIds()) {
-                        ids[idx++] = static_cast<std::uint32_t>(id);
+                    auto ids = util::make_array<4>([it = it->GetPointIds()->begin()](auto) mutable {
+                        return static_cast<std::uint32_t>(*it++);
+                    });
+
+                    if (flippedTetra(ids)) {
+                        // vertex 3 is facing the front-face of the triangle 0-2-1
+                        std::swap(ids[2], ids[3]);
                     }
 
-                    // first
+                    // tetrahedra indexing and face enumeration based on
+                    //   M. Lage, T. Lewiner, H. Lopes, and L. Velho.
+                    //   CHF: A scalable topological data structure for tetrahedral meshes.
+                    //   In Brazilian Symposium on Computer Graphics and Image Processing
+                    //   (SIBGRAPI'05), pp. 349-356, 2005, doi: 10.1109/SIBGRAPI.2005.18
+                    //
+                    // first face
                     triangles.push_back(ids[1]);
                     triangles.push_back(ids[2]);
                     triangles.push_back(ids[3]);
-                    // second
+                    // second face
                     triangles.push_back(ids[0]);
                     triangles.push_back(ids[3]);
                     triangles.push_back(ids[2]);
-
+                    // third face
                     triangles.push_back(ids[0]);
                     triangles.push_back(ids[2]);
                     triangles.push_back(ids[1]);
-
+                    // fourth face
                     triangles.push_back(ids[0]);
                     triangles.push_back(ids[1]);
                     triangles.push_back(ids[3]);
