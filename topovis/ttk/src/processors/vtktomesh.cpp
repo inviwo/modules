@@ -69,7 +69,8 @@ VTKToMesh::VTKToMesh()
     , inport_{"inport_", VTK_DATA_SET, ""_help}
     , brushLinkPort_{"brushingAndLinking"}
     , outport_{"outport_", ""_help}
-    , bufferMapper_{*this, [this](PickingEvent* event) { picking(event); }} {
+    , bufferMapper_{*this, utilvtk::ArrayUsageSelection(flags::any),
+                    [this](PickingEvent* event) { picking(event); }} {
 
     addPorts(inport_, brushLinkPort_, outport_);
 }

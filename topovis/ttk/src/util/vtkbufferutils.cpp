@@ -63,9 +63,35 @@ OrdinalPropertyState<T> transformState(T val = T{1}) {
             PropertySemantics::Text};
 }
 
+ArrayUsage toArrayUsage(BufferType t) {
+    switch (t) {
+        case BufferType::PositionAttrib:
+            return ArrayUsage::Position;
+        case BufferType::NormalAttrib:
+            return ArrayUsage::Normal;
+        case BufferType::ColorAttrib:
+            return ArrayUsage::Color;
+        case BufferType::TexCoordAttrib:
+            return ArrayUsage::TexCoord;
+        case BufferType::CurvatureAttrib:
+            return ArrayUsage::Curvature;
+        case BufferType::IndexAttrib:
+            return ArrayUsage::Index;
+        case BufferType::RadiiAttrib:
+            return ArrayUsage::Radii;
+        case BufferType::PickingAttrib:
+            return ArrayUsage::Picking;
+        case BufferType::ScalarMetaAttrib:
+            return ArrayUsage::Scalar;
+        default:
+            return ArrayUsage::Unknown;
+    }
+}
+
 }  // namespace
 
-ArrayBufferMapper::ArrayBufferMapper(Processor& processor, PickingAction::Callback callback)
+ArrayBufferMapper::ArrayBufferMapper(Processor& processor, ArrayUsageSelection types,
+                                     PickingAction::Callback callback)
     : infos{{{BufferType::PositionAttrib,
               {SourceType::Point, 1},
               OrdinalProperty<dmat4>("transform", "Transform", transformState<dmat4>())},
@@ -91,7 +117,26 @@ ArrayBufferMapper::ArrayBufferMapper(Processor& processor, PickingAction::Callba
     updateSources(nullptr);
 
     for (auto& info : infos) {
-        processor.addProperty(info.comp);
+        if (types.contains(toArrayUsage(info.type))) {
+            processor.addProperty(info.comp);
+        }
+    }
+}
+
+void ArrayBufferMapper::setVisible(ArrayUsageSelection types, bool visible) {
+    for (auto& info : infos) {
+        if (types.contains(toArrayUsage(info.type))) {
+            info.comp.setVisible(visible);
+        }
+    }
+}
+
+bool ArrayBufferMapper::getVisible(BufferType type) const {
+    auto it = util::find_if(infos, [type](const auto& info) { return info.type == type; });
+    if (it != infos.end()) {
+        return it->comp.getVisible();
+    } else {
+        return false;
     }
 }
 

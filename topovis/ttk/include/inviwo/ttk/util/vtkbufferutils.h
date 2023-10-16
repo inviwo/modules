@@ -44,6 +44,9 @@
 #include <variant>
 #include <functional>
 
+#include <flags/allow_flags.h>
+#include <flags/flags.h>
+
 class vtkDataSet;
 
 namespace inviwo {
@@ -54,6 +57,27 @@ class Mesh;
 
 namespace utilvtk {
 
+enum class ArrayUsage {
+    Position = 1 << 0,
+    Normal = 1 << 1,
+    Color = 1 << 2,
+    TexCoord = 1 << 3,
+    Curvature = 1 << 4,
+    Index = 1 << 5,
+    Radii = 1 << 6,
+    Picking = 1 << 7,
+    Scalar = 1 << 8,
+    Unknown = 1 << 9
+};
+
+}
+
+ALLOW_FLAGS_FOR_ENUM(utilvtk::ArrayUsage);
+
+namespace utilvtk {
+
+using ArrayUsageSelection = flags::flags<ArrayUsage>;
+
 /**
  * This class manages the properties required for creating Buffers and IndexBuffers from a VTK
  * dataset. In particular, it allows to select specific data arrays to be used for vertex data,
@@ -62,7 +86,18 @@ namespace utilvtk {
 class IVW_MODULE_TTK_API ArrayBufferMapper {
 public:
     ArrayBufferMapper(
-        Processor& processor, PickingAction::Callback callback = [](PickingEvent*) {});
+        Processor& processor, ArrayUsageSelection types = ArrayUsageSelection(flags::any),
+        PickingAction::Callback callback = [](PickingEvent*) {});
+
+    /**
+     * Adjust the visibility of the composite properties associated with the given buffer types.
+     */
+    void setVisible(ArrayUsageSelection types, bool visible);
+
+    /**
+     * Query the property's visibility for buffer type \p type.
+     */
+    bool getVisible(BufferType type) const;
 
     /**
      * Query the isModified() status of all nested composite properties
