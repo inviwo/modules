@@ -85,6 +85,8 @@ using ArrayUsageSelection = flags::flags<ArrayUsage>;
  */
 class IVW_MODULE_TTK_API ArrayBufferMapper {
 public:
+    struct BufferInfo;
+
     ArrayBufferMapper(
         Processor& processor, ArrayUsageSelection types = ArrayUsageSelection(flags::any),
         PickingAction::Callback callback = [](PickingEvent*) {});
@@ -116,12 +118,20 @@ public:
     void updateSources(vtkDataSet* array);
 
     /**
-     * Generate mesh buffers for the given VTK data set \p array based on the internal properties
+     * Generate mesh buffers for the given VTK data set \p array based on the internal properties.
      *
      * @param array   VTK array used as data source
      * @see updateSources
      */
     Mesh::BufferVector getBuffers(vtkDataSet* array);
+
+    /**
+     * Return the buffer info for the given \p type.
+     *
+     * @return buffer info matching \p type, nullptr otherwise
+     */
+    BufferInfo* getBufferInfo(ArrayUsage type);
+    const BufferInfo* getBufferInfo(ArrayUsage type) const;
 
     enum class SourceType { Default, Point, CellData, PointData, Attribute, None };
     struct IVW_MODULE_TTK_API Source {
@@ -157,10 +167,13 @@ public:
         PickingMapper pickingMapper;
     };
 
-    struct BufferInfo {
+    struct IVW_MODULE_TTK_API BufferInfo {
         using Transform = std::variant<OrdinalProperty<dmat4>, ScaleAndOffset, OffsetAndPicking,
                                        TransferFunctionProperty>;
         BufferInfo(BufferType type, Source defaultSource, Transform transform);
+
+        dvec2 getDataRange() const;
+
         BufferType type;
         BoolCompositeProperty comp;
         OptionProperty<Source> source;

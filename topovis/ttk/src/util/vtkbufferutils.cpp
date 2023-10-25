@@ -143,7 +143,7 @@ bool ArrayBufferMapper::getVisible(BufferType type) const {
 bool ArrayBufferMapper::isModified() const {
     bool update = false;
     for (auto& info : infos) {
-        update |= info.comp.isModified();
+        update |= info.comp.isModified() && info.comp.getOwner();
     }
     return update;
 }
@@ -237,7 +237,7 @@ std::shared_ptr<BufferBase> vtkArrayToBuffer(vtkDataArray* array,
                     auto trans = [&](auto val) {
                         using T = decltype(val);
                         const auto dval = static_cast<util::same_extent_t<T, double>>(val);
-                        return static_cast<T>(so.scale.get() * dval + so.offset.get());
+                        return static_cast<T>(so.scale.get() * (dval + so.offset.get()));
                     };
                     return vtk::arrayToBuffer(array, trans, repeat);
                 },
@@ -365,6 +365,24 @@ Mesh::BufferVector ArrayBufferMapper::getBuffers(vtkDataSet* data) {
     return buffers;
 }
 
+auto ArrayBufferMapper::getBufferInfo(ArrayUsage type) const -> const BufferInfo* {
+    auto it = util::find_if(infos, [type](auto& info) { return toArrayUsage(info.type) == type; });
+    if (it != infos.end()) {
+        return &(*it);
+    } else {
+        return nullptr;
+    }
+}
+
+auto ArrayBufferMapper::getBufferInfo(ArrayUsage type) -> BufferInfo* {
+    auto it = util::find_if(infos, [type](auto& info) { return toArrayUsage(info.type) == type; });
+    if (it != infos.end()) {
+        return &(*it);
+    } else {
+        return nullptr;
+    }
+}
+
 ArrayBufferMapper::BufferInfo::BufferInfo(BufferType type, Source defaultSource,
                                           Transform aTransform)
     : type{type}
@@ -381,11 +399,27 @@ ArrayBufferMapper::BufferInfo::BufferInfo(BufferType type, Source defaultSource,
     std::visit(
         util::overloaded{[&](Property& item) { doTransform.addProperty(item); },
                          [&](ScaleAndOffset& item) {
-                             doTransform.addProperty(item.scale);
                              doTransform.addProperty(item.offset);
+                             doTransform.addProperty(item.scale);
                          },
                          [&](OffsetAndPicking& item) { doTransform.addProperty(item.offset); }},
         transform);
+}
+
+dvec2 ArrayBufferMapper::BufferInfo::getDataRange() const {
+    if (doTransform.isChecked()) {
+        return std::visit(util::overloaded{[&](const Property&) { return range.get(); },
+                                           [&](const ScaleAndOffset& item) {
+                                               return (range.get() + dvec2{item.offset}) *
+                                                      dvec2{item.scale};
+                                           },
+                                           [&](const OffsetAndPicking& item) {
+                                               return range.get() + dvec2(item.offset.get());
+                                           }},
+                          transform);
+    } else {
+        return range.get();
+    }
 }
 
 ArrayBufferMapper::ScaleAndOffset::ScaleAndOffset()
