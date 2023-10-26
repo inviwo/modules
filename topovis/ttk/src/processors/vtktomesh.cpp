@@ -60,7 +60,7 @@ const ProcessorInfo VTKToMesh::processorInfo_{
     "VTK",                                // Category
     CodeState::Experimental,              // Code state
     Tag::CPU | Tag{"VTK"} | Tag{"Mesh"},  // Tags
-    R"(Convert VTK DataSet to a inviwo Mesh)"_unindentHelp};
+    R"(Convert VTK DataSet to an Inviwo Mesh)"_unindentHelp};
 
 const ProcessorInfo VTKToMesh::getProcessorInfo() const { return processorInfo_; }
 

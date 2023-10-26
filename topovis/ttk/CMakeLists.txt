@@ -3,6 +3,7 @@ ivw_module(ttk)
 set(HEADER_FILES
     include/inviwo/ttk/arrayutils.h
     include/inviwo/ttk/datastructures/volumevtk.h
+    include/inviwo/ttk/datastructures/vtktetrameshprovider.h
     include/inviwo/ttk/ports/vtkinport.h
     include/inviwo/ttk/ports/vtkoutport.h
     include/inviwo/ttk/processors/imagetovtk.h
@@ -12,6 +13,7 @@ set(HEADER_FILES
     include/inviwo/ttk/processors/vtksource.h
     include/inviwo/ttk/processors/vtktodataframe.h
     include/inviwo/ttk/processors/vtktomesh.h
+    include/inviwo/ttk/processors/vtktotetramesh.h
     include/inviwo/ttk/processors/vtktovolume.h
     include/inviwo/ttk/ttkmodule.h
     include/inviwo/ttk/ttkmoduledefine.h
@@ -22,6 +24,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/arrayutils.cpp
     src/datastructures/volumevtk.cpp
+    src/datastructures/vtktetrameshprovider.cpp
     src/ports/vtkinport.cpp
     src/ports/vtkoutport.cpp
     src/processors/imagetovtk.cpp
@@ -31,6 +34,7 @@ set(SOURCE_FILES
     src/processors/vtksource.cpp
     src/processors/vtktodataframe.cpp
     src/processors/vtktomesh.cpp
+    src/processors/vtktotetramesh.cpp
     src/processors/vtktovolume.cpp
     src/ttkmodule.cpp
     src/util/vtkbufferutils.cpp
