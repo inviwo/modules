@@ -33,6 +33,7 @@
 #include <inviwo/ttk/processors/vtkdatasettovtkimagedata.h>
 #include <inviwo/ttk/processors/vtktodataframe.h>
 #include <inviwo/ttk/processors/vtktomesh.h>
+#include <inviwo/ttk/processors/vtktotetramesh.h>
 #include <inviwo/ttk/ports/vtkinport.h>
 #include <inviwo/ttk/ports/vtkoutport.h>
 
@@ -84,6 +85,7 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     registerProcessor<VTKDowncastData>();
     registerProcessor<VTKToDataFrame>();
     registerProcessor<VTKToMesh>();
+    registerProcessor<VTKToTetraMesh>();
     registerProcessor<vtk::VTKSource>();
 
     // Properties
