@@ -27,25 +27,31 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/processors/tetrameshboundaryextractor.h>
-#include <inviwo/tetramesh/tetrameshmodule.h>
+#pragma once
 
-#include <inviwo/tetramesh/processors/tetrameshvolumeraycaster.h>
+#include <inviwo/tetramesh/tetrameshmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+
 #include <inviwo/tetramesh/ports/tetrameshport.h>
-#include <inviwo/tetramesh/processors/volumetotetramesh.h>
-#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-TetraMeshModule::TetraMeshModule(InviwoApplication* app) : InviwoModule(app, "TetraMesh") {
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_TETRAMESH_API VolumeToTetraMesh : public Processor {
+public:
+    VolumeToTetraMesh();
 
-    registerProcessor<TetraMeshBoundaryExtractor>();
-    registerProcessor<TetraMeshVolumeRaycaster>();
-    registerProcessor<VolumeToTetraMesh>();
+    virtual void process() override;
 
-    registerPort<TetraMeshOutport>();
-    registerPort<TetraMeshInport>();
-}
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport inport_;
+    TetraMeshOutport outport_;
+
+    OptionPropertyInt channel_;
+};
 
 }  // namespace inviwo
