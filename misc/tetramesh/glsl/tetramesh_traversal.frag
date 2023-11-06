@@ -97,8 +97,12 @@ struct Tetra {
     mat4x3 v; // vertices
     vec4 s; // scalar values
 
+    mat4x3 fA; // oriented face areas (in negative normal direction) as used in barycentricWeights(), 
+               // their magnitude is equivalent to two times the face area.
     float jacobyDetInv; // 1 over determinant of the Jacobian, where det(Jacobian) = 6 vol(tetra)
 };
+
+mat4x3 getFaceAreas(in Tetra t);
 
 Tetra getTetra(in int tetraId) {
     ivec4 vertices = vertexIds[tetraId];
@@ -111,6 +115,8 @@ Tetra getTetra(in int tetraId) {
     Tetra t;
     t.v = mat4x3(p[0].pos, p[1].pos, p[2].pos, p[3].pos);
     t.s = vec4(p[0].scalar, p[1].scalar, p[2].scalar, p[3].scalar);
+
+    t.fA = getFaceAreas(t);
 
     // the determinant of the Jacobian of the tetrahedra is det = 6 V, where V is its volume
     t.jacobyDetInv = 1.0 / dot(cross(t.v[2] - t.v[0], t.v[3] - t.v[2]), t.v[1] - t.v[0]);
@@ -136,57 +142,51 @@ mat4x3 getFaceAreas(in Tetra t) {
                   cross(v_01, v_02));
 }
 
-// compute the face normals for tetrahedron \p t
+// Compute the face normals for tetrahedron \p t
 //
-// @param t   input tetraehdron
-// @param fA  oriented face areas (in negative normal direction) as used in barycentricWeights(), 
-//            their magnitude is equivalent to two times the face area.
+// @param t   input tetraehdron with oriented face areas (in negative normal direction)
 // @return face normals, that is normalized(fA[0]), ..., normalized(fA[3])
-mat4x3 getFaceNormals(in Tetra t, out mat4x3 fA) {
-    fA = getFaceAreas(t);
-    return mat4x3(-normalize(fA[0]), -normalize(fA[1]), -normalize(fA[2]), -normalize(fA[3]));
+mat4x3 getFaceNormals(in Tetra t) {
+    return mat4x3(-normalize(t.fA[0]), -normalize(t.fA[1]), -normalize(t.fA[2]), -normalize(t.fA[3]));
 }
 
-// interpolate scalars of tetrahedron \p tetra using barycentric coordinates for position \p p within
+// Interpolate scalars of tetrahedron \p tetra using barycentric coordinates for position \p p within
 //
 // @param p      position of the barycentric coords
 // @param tetra  input tetrahedron
-// @param fA     oriented face areas
 // @return interpolated scalar value
 // 
 // see https://www.iue.tuwien.ac.at/phd/nentchev/node30.html
 // and https://www.iue.tuwien.ac.at/phd/nentchev/node31.html
-float barycentricInterpolation(in vec3 p, in Tetra tetra, in mat4x3 fA) {
+float barycentricInterpolation(in vec3 p, in Tetra tetra) {
     const vec3 v_0p = p - tetra.v[0];
     const vec3 v_1p = p - tetra.v[1];
 
     // barycentric volumes, correct volumes obtained by scaling with 1/6
-    float vol0 = dot(fA[0], v_1p);
-    float vol1 = dot(fA[1], v_0p);
-    float vol2 = dot(fA[2], v_0p);
-    float vol3 = dot(fA[3], v_0p);
+    float vol0 = dot(tetra.fA[0], v_1p);
+    float vol1 = dot(tetra.fA[1], v_0p);
+    float vol2 = dot(tetra.fA[2], v_0p);
+    float vol3 = dot(tetra.fA[3], v_0p);
 
     return dot(vec4(vol0, vol1, vol2, vol3) * tetra.jacobyDetInv, tetra.s);
 }
 
-// determine barycentric gradients at each vertex of \p tetra
+// Determine barycentric gradients at each vertex of \p tetra
 //
-// @param tetra  input tetrahedron
-// @param fA     oriented face areas
+// @param tetra  input tetrahedron with oriented face areas
 // @return barycentric gradients (direction matches face normals)
-mat4x3 getBarycentricGradients(in Tetra tetra, in mat4x3 fA) {
-    return fA * tetra.jacobyDetInv;    
+mat4x3 getBarycentricGradients(in Tetra tetra) {
+    return tetra.fA * tetra.jacobyDetInv;    
 }
 
-// compute the constant gradient within tetrahedron \p tetra
+// Compute the constant gradient within tetrahedron \p tetra
 //
-// @param tetra  input tetrahedron
-// @param fA     oriented face areas
+// @param tetra  input tetrahedron withoriented face areas
 // @return gradient of \p tetra
-vec3 getTetraGradient(in Tetra tetra, in mat4x3 fA) {
+vec3 getTetraGradient(in Tetra tetra) {
     // accumulate the barycentric gradients (fA / det(Jacobian)) weighted by the 
     // corresponding scalar values
-    return -normalize(fA * tetra.jacobyDetInv * tetra.s);
+    return -normalize(tetra.fA * tetra.jacobyDetInv * tetra.s);
 }
 
 
@@ -195,8 +195,12 @@ float absorption(in float opacity, in float tIncr) {
     return 1.0 - pow(1.0 - opacity, tIncr * REF_SAMPLING_INTERVAL);
 }
 
-vec4 sampleTF(float scalar) {
-    return texture(transferFunction, vec2((scalar + tfScalarOffset) * tfScalarScaling, 0.5));
+float normalizeScalar(float scalar) {
+    return (scalar + tfScalarOffset) * tfScalarScaling;
+}
+
+vec4 sampleTF(float normalizedScalar) {
+    return texture(transferFunction, vec2(normalizedScalar, 0.5));
 }
 
 void main() {
@@ -212,8 +216,7 @@ void main() {
 
     // determine scalar value at entry position
     Tetra tetra = getTetra(tetraId);
-    mat4x3 fA = getFaceAreas(tetra);
-    float prevScalar = barycentricInterpolation(pos, tetra, fA);
+    float prevScalar = normalizeScalar(barycentricInterpolation(pos, tetra));
 
     vec4 dvrColor = vec4(0);
     int steps = 0;
@@ -225,7 +228,7 @@ void main() {
 
         // query data of current tetrahedron
         tetra = getTetra(tetraId);
-        mat4x3 faceNormal = getFaceNormals(tetra, fA);
+        mat4x3 faceNormal = getFaceNormals(tetra);
 
         // intersect ray at current position with all tetra faces
         vec4 vdir = vec4(dot(faceNormal[0], rayDirection),
@@ -237,39 +240,40 @@ void main() {
                        dot(tetra.v[3] - pos, faceNormal[2]),
                        dot(tetra.v[0] - pos, faceNormal[3])) / vdir;
 
+        const float invalidDist = 1.0e6;
         // only consider intersections on the inside of the current triangle faces, that is t > 0.
         // Also ignore intersections being parallel to a face
-        vt = mix(vt, vec4(1.0e6), lessThan(vdir, vec4(0.0)));
+        vt = mix(vt, vec4(invalidDist), lessThan(vdir, vec4(0.0)));
 
         // ignore self-intersection with current face ID, set distance to max
-        vt[localFaceId] = 1.0e6;
+        vt[localFaceId] = invalidDist;
 
         // closest intersection
         // face ID of closest intersection
-        int vface1 = vt.x < vt.y ? 0 : 1;
-        int vface2 = vt.z < vt.w ? 2 : 3;
-        int vface = vt[vface1] < vt[vface2] ? vface1 : vface2;        
-        float tmin = vt[vface];
-
+        const int vface1 = vt.x < vt.y ? 0 : 1;
+        const int vface2 = vt.z < vt.w ? 2 : 3;
+        const int vface = vt[vface1] < vt[vface2] ? vface1 : vface2;        
+        const float tmin = vt[vface];
 
         vec3 endPos = pos + rayDirection * tmin;
 
-        float scalar = barycentricInterpolation(endPos, tetra, fA);
-        vec3 gradient = getTetraGradient(tetra, fA);
+        float scalar = normalizeScalar(barycentricInterpolation(endPos, tetra));
+        vec3 gradient = getTetraGradient(tetra);
         
         const int numSteps = 100;
+        float tDelta = tmin / float(numSteps);
         for (int i = 1; i <= numSteps; ++i) {
             float s = mix(prevScalar, scalar, i / float(numSteps));
 
             vec4 color = sampleTF(s);
 #if defined(SHADING_ENABLED)
             color.rgb = APPLY_LIGHTING(lighting, color.rgb, color.rgb, vec3(1.0),
-                                       pos + rayDirection * tmin * i / float(numSteps),
+                                       pos + rayDirection * tDelta * i,
                                        gradient, -rayDirection);
 #endif
 
             // volume integration along current segment
-            color.a = absorption(color.a, tmin / float(numSteps) * opacityScaling * 0.1);
+            color.a = absorption(color.a, tDelta * opacityScaling * 0.1);
             // front-to-back blending
             color.rgb *= color.a;
             dvrColor += (1.0 - dvrColor.a) * color;
