@@ -29,19 +29,19 @@
 #pragma once
 
 #include <inviwo/ttk/ttkmoduledefine.h>
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 
 #include <inviwo/ttk/util/vtkbufferutils.h>
 
 #include <vector>
-#include <utility>
 
 class vtkUnstructuredGrid;
 
 namespace inviwo {
 
 /**
- * \brief Data provider for rendering a vtkUnstructuredGrid as tetrahedral mesh
+ * \ingroup datastructures
+ * \brief Data required for rendering a vtkUnstructuredGrid as tetrahedral mesh
  *
  * Provides an interface between a vtkUnstructuredGrid and the data structures required for
  * rendering a tetrahedral mesh.
@@ -52,11 +52,11 @@ namespace inviwo {
  *    In Brazilian Symposium on Computer Graphics and Image Processing
  *    (SIBGRAPI'05), pp. 349-356, 2005, doi: 10.1109/SIBGRAPI.2005.18
  */
-class IVW_MODULE_TTK_API VTKTetraMeshProvider : public TetraMeshProvider {
+class IVW_MODULE_TTK_API VTKTetraMesh : public TetraMesh {
 public:
-    VTKTetraMeshProvider(utilvtk::ArrayBufferMapper& bufferMapper,
-                         vtkUnstructuredGrid* vtkData = nullptr);
-    virtual ~VTKTetraMeshProvider() = default;
+    VTKTetraMesh(utilvtk::ArrayBufferMapper& bufferMapper, vtkUnstructuredGrid* vtkData = nullptr);
+    virtual VTKTetraMesh* clone() const override;
+    virtual ~VTKTetraMesh() = default;
 
     void setData(vtkUnstructuredGrid* vtkData);
 
@@ -64,25 +64,28 @@ public:
     virtual int getNumberOfPoints() const override;
 
     /**
-     * @copydoc TetraMeshProvider::getBoundaryMesh
+     * @copydoc TetraMesh::getNodes
      */
-    virtual std::shared_ptr<Mesh> getBoundaryMesh() const override;
+    virtual std::vector<vec4> getNodes() const override;
 
     /**
-     * @copydoc TetraMeshProvider::getBounds
+     * @copydoc TetraMesh::getNodeIds
+     */
+    virtual std::vector<ivec4> getNodeIds() const override;
+
+    /**
+     * @copydoc TetraMesh::getBounds
      */
     virtual std::pair<vec3, vec3> getBounds() const override;
 
     /**
-     * @copydoc TetraMeshProvider::getDataRange
+     * @copydoc TetraMesh::getDataRange
      */
-    virtual dvec2 getDataRange() const;
+    virtual dvec2 getDataRange() const override;
 
 private:
     utilvtk::ArrayBufferMapper& bufferMapper_;
     vtkUnstructuredGrid* vtkData_;
-
-    std::shared_ptr<Mesh> boundaryMesh_;
 };
 
 }  // namespace inviwo

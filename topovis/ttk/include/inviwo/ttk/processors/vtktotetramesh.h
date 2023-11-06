@@ -31,15 +31,12 @@
 
 #include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 
 #include <inviwo/tetramesh/ports/tetrameshport.h>
 #include <inviwo/ttk/ports/vtkinport.h>
 #include <inviwo/ttk/util/vtkbufferutils.h>
 
 namespace inviwo {
-
-class VTKTetraMeshProvider;
 
 class IVW_MODULE_TTK_API VTKToTetraMesh : public Processor {
 public:
@@ -55,8 +52,6 @@ private:
     TetraMeshOutport outport_;
 
     utilvtk::ArrayBufferMapper bufferMapper_;
-
-    std::shared_ptr<VTKTetraMeshProvider> meshProvider_;
 };
 
 }  // namespace inviwo

@@ -28,8 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/ttk/processors/vtktotetramesh.h>
-#include <inviwo/ttk/datastructures/vtktetrameshprovider.h>
-#include <inviwo/tetramesh/datastructures/tetrameshdata.h>
+#include <inviwo/ttk/datastructures/vtktetramesh.h>
 #include <inviwo/tetramesh/util/tetrameshutils.h>
 
 #include <vtkUnstructuredGrid.h>
@@ -61,12 +60,9 @@ void VTKToTetraMesh::process() {
     if (inport_.isChanged()) {
         bufferMapper_.updateSources(vtkDataSet::SafeDownCast(inport_.getData()));
     }
-    if (inport_.isChanged() || bufferMapper_.isModified() || !meshProvider_) {
-        auto vtkgrid = vtkUnstructuredGrid::SafeDownCast(inport_.getData());
-        meshProvider_ = std::make_shared<VTKTetraMeshProvider>(bufferMapper_, vtkgrid);
-    }
 
-    auto tetraMesh = std::make_shared<TetraMeshData>(meshProvider_);
+    auto vtkgrid = vtkUnstructuredGrid::SafeDownCast(inport_.getData());
+    auto tetraMesh = std::make_shared<VTKTetraMesh>(bufferMapper_, vtkgrid);
 
     outport_.setData(tetraMesh);
 }

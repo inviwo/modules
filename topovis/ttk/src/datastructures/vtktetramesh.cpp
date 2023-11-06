@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/ttk/datastructures/vtktetrameshprovider.h>
+#include <inviwo/ttk/datastructures/vtktetramesh.h>
 #include <inviwo/tetramesh/util/tetrameshutils.h>
 
 #include <inviwo/core/util/exception.h>
@@ -62,7 +62,7 @@ std::vector<vec4> getNodes(vtkUnstructuredGrid* vtkData,
     // store scalar values in the 4th component of the nodes
     if (scalarBuffer) {
         if (scalarBuffer->getSize() != nodes.size()) {
-            throw Exception(IVW_CONTEXT_CUSTOM("VTKTetraMeshProvider"),
+            throw Exception(IVW_CONTEXT_CUSTOM("VTKTetraMesh"),
                             "Size of scalar buffer ({}) doese not match the number of nodes ({}).",
                             scalarBuffer->getSize(), nodes.size());
         }
@@ -102,7 +102,7 @@ std::vector<ivec4> getNodeIds(vtkUnstructuredGrid* vtkData) {
         nodeIds.emplace_back(ids[0], ids[1], ids[2], ids[3]);
     }
     if (skippedCells > 0) {
-        util::logWarn(IVW_CONTEXT_CUSTOM("VTKTetraMeshProvider"),
+        util::logWarn(IVW_CONTEXT_CUSTOM("VTKTetraMesh"),
                       "Only tetrahedral cells are supported. Skipped {} of {} cells", skippedCells,
                       numCells);
     }
@@ -111,17 +111,35 @@ std::vector<ivec4> getNodeIds(vtkUnstructuredGrid* vtkData) {
 
 }  // namespace detail
 
-VTKTetraMeshProvider::VTKTetraMeshProvider(utilvtk::ArrayBufferMapper& bufferMapper,
-                                           vtkUnstructuredGrid* vtkData)
+VTKTetraMesh::VTKTetraMesh(utilvtk::ArrayBufferMapper& bufferMapper, vtkUnstructuredGrid* vtkData)
     : bufferMapper_{bufferMapper}, vtkData_{nullptr} {
     setData(vtkData);
 }
 
-void VTKTetraMeshProvider::setData(vtkUnstructuredGrid* vtkData) {
-    vtkData_ = vtkData;
-    boundaryMesh_ = nullptr;
+VTKTetraMesh* VTKTetraMesh::clone() const { return new VTKTetraMesh{*this}; }
 
-    if (!vtkData_) return;
+void VTKTetraMesh::setData(vtkUnstructuredGrid* vtkData) { vtkData_ = vtkData; }
+
+int VTKTetraMesh::getNumberOfCells() const {
+    if (vtkData_) {
+        return static_cast<int>(vtkData_->GetNumberOfCells());
+    } else {
+        return 0;
+    }
+}
+
+int VTKTetraMesh::getNumberOfPoints() const {
+    if (vtkData_) {
+        return static_cast<int>(vtkData_->GetNumberOfPoints());
+    } else {
+        return 0;
+    }
+}
+
+std::vector<vec4> VTKTetraMesh::getNodes() const {
+    if (!vtkData_) {
+        return {};
+    }
 
     auto scalarBuffer = [&]() -> std::shared_ptr<BufferBase> {
         auto buffers = bufferMapper_.getBuffers(vtkData_);
@@ -133,38 +151,17 @@ void VTKTetraMeshProvider::setData(vtkUnstructuredGrid* vtkData) {
             return nullptr;
         }
     }();
-
-    auto nodes = detail::getNodes(vtkData_, scalarBuffer);
-    auto nodeIds = detail::getNodeIds(vtkData_);
-
-    utiltetra::fixFaceOrientation(nodes, nodeIds);
-
-    auto opposingFaces = utiltetra::getOpposingFaces(nodeIds);
-
-    buffers_.upload(nodes, nodeIds, opposingFaces);
-    boundaryMesh_ =
-        utiltetra::createBoundaryMesh(nodes, nodeIds, utiltetra::getBoundaryFaces(opposingFaces));
+    return detail::getNodes(vtkData_, scalarBuffer);
 }
 
-int VTKTetraMeshProvider::getNumberOfCells() const {
-    if (vtkData_) {
-        return static_cast<int>(vtkData_->GetNumberOfCells());
-    } else {
-        return 0;
+std::vector<ivec4> VTKTetraMesh::getNodeIds() const {
+    if (!vtkData_) {
+        return {};
     }
+    return detail::getNodeIds(vtkData_);
 }
 
-int VTKTetraMeshProvider::getNumberOfPoints() const {
-    if (vtkData_) {
-        return static_cast<int>(vtkData_->GetNumberOfPoints());
-    } else {
-        return 0;
-    }
-}
-
-std::shared_ptr<Mesh> VTKTetraMeshProvider::getBoundaryMesh() const { return boundaryMesh_; }
-
-std::pair<vec3, vec3> VTKTetraMeshProvider::getBounds() const {
+std::pair<vec3, vec3> VTKTetraMesh::getBounds() const {
     if (vtkData_) {
         vtkData_->ComputeBounds();
         auto bounds = vtkData_->GetBounds();
@@ -176,7 +173,7 @@ std::pair<vec3, vec3> VTKTetraMeshProvider::getBounds() const {
     }
 }
 
-dvec2 VTKTetraMeshProvider::getDataRange() const {
+dvec2 VTKTetraMesh::getDataRange() const {
     if (auto b = bufferMapper_.getBufferInfo(utilvtk::ArrayUsage::Scalar); b) {
         return b->getDataRange();
     } else {
