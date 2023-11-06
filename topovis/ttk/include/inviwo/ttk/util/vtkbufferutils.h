@@ -147,12 +147,7 @@ public:
             d.deserialize("type", type);
             d.deserialize("index", index);
         }
-        friend bool operator==(const Source& a, const Source& b) {
-            return std::tie(a.type, a.index) == std::tie(b.type, b.index);
-        }
-        friend bool operator!=(const Source& a, const Source& b) {
-            return std::tie(a.type, a.index) != std::tie(b.type, b.index);
-        }
+        auto operator<=>(const Source&) const = default;
     };
 
     struct ScaleAndOffset {
