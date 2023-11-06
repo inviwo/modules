@@ -29,7 +29,7 @@
 #pragma once
 
 #include <inviwo/tetramesh/tetrameshmoduledefine.h>
-#include <inviwo/tetramesh/datastructures/tetrameshdata.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 
@@ -38,21 +38,21 @@ namespace inviwo {
 /**
  * \ingroup ports
  */
-using TetraMeshInport = DataInport<TetraMeshData>;
+using TetraMeshInport = DataInport<TetraMesh>;
 
 /**
  * \ingroup ports
  */
-using TetraMeshMultiInport = DataInport<TetraMeshData, 0>;
+using TetraMeshMultiInport = DataInport<TetraMesh, 0>;
 
 /**
  * \ingroup ports
  */
-using TetraMeshFlatMultiInport = DataInport<TetraMeshData, 0, true>;
+using TetraMeshFlatMultiInport = DataInport<TetraMesh, 0, true>;
 
 /**
  * \ingroup ports
  */
-using TetraMeshOutport = DataOutport<TetraMeshData>;
+using TetraMeshOutport = DataOutport<TetraMesh>;
 
 }  // namespace inviwo

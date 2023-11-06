@@ -27,30 +27,6 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tetramesh/datastructures/tetrameshdata.h>
-#include <inviwo/tetramesh/datastructures/tetrameshprovider.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 
-namespace inviwo {
-
-TetraMeshData::TetraMeshData(const std::shared_ptr<TetraMeshProvider>& meshprovider)
-    : meshProvider_{meshprovider} {}
-
-TetraMeshData* TetraMeshData::clone() const { return new TetraMeshData(*this); }
-
-int TetraMeshData::getNumberOfCells() const {
-    if (meshProvider_) {
-        return meshProvider_->getNumberOfCells();
-    } else {
-        return 0;
-    }
-}
-
-int TetraMeshData::getNumberOfPoints() const {
-    if (meshProvider_) {
-        return meshProvider_->getNumberOfPoints();
-    } else {
-        return 0;
-    }
-}
-
-}  // namespace inviwo
+namespace inviwo {}  // namespace inviwo

@@ -31,6 +31,7 @@
 
 #include <inviwo/tetramesh/tetrameshmoduledefine.h>
 #include <inviwo/tetramesh/ports/tetrameshport.h>
+#include <inviwo/tetramesh/datastructures/tetrameshbuffers.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -44,6 +45,8 @@
 #include <modules/opengl/buffer/bufferobject.h>
 
 namespace inviwo {
+
+class Mesh;
 
 class IVW_MODULE_TETRAMESH_API TetraMeshVolumeRaycaster : public Processor {
 public:
@@ -68,6 +71,8 @@ private:
     IntProperty maxSteps_;
 
     Shader shader_;
+    TetraMeshBuffers buffers_;
+    std::shared_ptr<Mesh> mesh_;
 };
 
 }  // namespace inviwo
