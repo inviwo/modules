@@ -35,7 +35,6 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
 #include <inviwo/core/ports/imageport.h>
@@ -73,6 +72,9 @@ private:
     Shader shader_;
     TetraMeshBuffers buffers_;
     std::shared_ptr<Mesh> mesh_;
+
+    std::vector<vec4> tetraNodes_;
+    std::vector<ivec4> tetraNodeIds_;
 };
 
 }  // namespace inviwo

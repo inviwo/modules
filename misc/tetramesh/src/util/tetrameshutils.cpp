@@ -149,9 +149,10 @@ std::shared_ptr<Mesh> createBoundaryMesh(const std::vector<vec4>& nodes,
 }
 
 std::shared_ptr<Mesh> createBoundaryMesh(const TetraMesh& mesh) {
-    const auto& nodeIds = mesh.getNodeIds();
-    return createBoundaryMesh(mesh.getNodes(), nodeIds,
-                              getBoundaryFaces(getOpposingFaces(nodeIds)));
+    std::vector<vec4> nodes;
+    std::vector<ivec4> nodeIds;
+    mesh.get(nodes, nodeIds);
+    return createBoundaryMesh(nodes, nodeIds, getBoundaryFaces(getOpposingFaces(nodeIds)));
 }
 
 void fixFaceOrientation(const std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) {

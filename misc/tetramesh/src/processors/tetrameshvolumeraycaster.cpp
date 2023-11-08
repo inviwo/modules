@@ -107,14 +107,11 @@ void TetraMeshVolumeRaycaster::process() {
     if (inport_.isChanged() || !mesh_) {
         const auto& tetraMesh = *inport_.getData();
 
-        auto nodes = tetraMesh.getNodes();
-        auto nodeIds = tetraMesh.getNodeIds();
-        utiltetra::fixFaceOrientation(nodes, nodeIds);
+        tetraMesh.get(tetraNodes_, tetraNodeIds_);
+        auto opposingFaces = utiltetra::getOpposingFaces(tetraNodeIds_);
 
-        auto opposingFaces = utiltetra::getOpposingFaces(nodeIds);
-
-        buffers_.upload(nodes, nodeIds, opposingFaces);
-        mesh_ = utiltetra::createBoundaryMesh(nodes, nodeIds,
+        buffers_.upload(tetraNodes_, tetraNodeIds_, opposingFaces);
+        mesh_ = utiltetra::createBoundaryMesh(tetraNodes_, tetraNodeIds_,
                                               utiltetra::getBoundaryFaces(opposingFaces));
     }
 

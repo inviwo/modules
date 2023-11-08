@@ -65,14 +65,9 @@ public:
     virtual int getNumberOfPoints() const override;
 
     /**
-     * @copydoc TetraMesh::getNodes
+     * @copydoc TetraMesh::get
      */
-    virtual std::vector<vec4> getNodes() const override;
-
-    /**
-     * @copydoc TetraMesh::getNodeIds
-     */
-    virtual std::vector<ivec4> getNodeIds() const override;
+    virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const override;
 
     /**
      * @copydoc TetraMesh::getBounds

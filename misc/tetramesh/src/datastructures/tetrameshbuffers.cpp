@@ -48,8 +48,10 @@ void TetraMeshBuffers::bind() const {
 void TetraMeshBuffers::unbind() const { glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0); }
 
 void TetraMeshBuffers::upload(const TetraMesh& mesh) {
-    const auto& nodeIds = mesh.getNodeIds();
-    upload(mesh.getNodes(), nodeIds, utiltetra::getOpposingFaces(nodeIds));
+    std::vector<vec4> nodes;
+    std::vector<ivec4> nodeIds;
+    mesh.get(nodes, nodeIds);
+    upload(nodes, nodeIds, utiltetra::getOpposingFaces(nodeIds));
 }
 
 void TetraMeshBuffers::upload(const std::vector<vec4>& nodes, const std::vector<ivec4>& nodeIds,

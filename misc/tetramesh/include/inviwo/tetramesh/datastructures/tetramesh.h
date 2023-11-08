@@ -63,20 +63,12 @@ public:
     virtual int getNumberOfPoints() const = 0;
 
     /**
-     * This list holds the 3D coordinates of each node along with its scalar value (vec4).
-     * The scalar is stored in the w component.
-     *
-     * @return node position and corresponding scalar value
+     * Fill the \p nodes vector with the 3D coordinates of each node along with its scalar value
+     * (vec4). The scalar is stored in the w component. The \p nodeIds vector is filled with the
+     * node/vertex IDs for each tetrahedron (ivec4). The faces opposite of each node are implicitly
+     * encoded.
      */
-    virtual std::vector<vec4> getNodes() const = 0;
-
-    /**
-     * A list of node/vertex IDs for each tetrahedron (ivec4). The faces opposite of each node are
-     * implicitly encoded.
-     *
-     * @return list of four node IDs for each tetrahedron
-     */
-    virtual std::vector<ivec4> getNodeIds() const = 0;
+    virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const = 0;
 
     /**
      * Determine the bounding box of all nodes in the tetrahedral mesh

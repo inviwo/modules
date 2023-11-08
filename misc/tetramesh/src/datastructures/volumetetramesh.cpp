@@ -100,26 +100,23 @@ mat4 tetraBoundingBox(const Volume& volume) {
 
 }  // namespace detail
 
-std::vector<vec4> VolumeTetraMesh::getNodes() const {
+void VolumeTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const {
+    nodes.clear();
+    nodeIds.clear();
+
     if (!volume_) {
-        return {};
+        return;
     }
 
     // regular tetrahedralization with six tetrahedra per four-voxel cube with
     // node positions being voxel-centered
-
-    size3_t dims = glm::max(volume_->getDimensions(), size3_t{2});
+    const size3_t dims = volume_->getDimensions();
 
     mat4 bbox = detail::tetraBoundingBox(*volume_.get());
-
     mat4 indexMatrix{glm::scale(dims - size3_t{1})};
-
-    // mat4 m = bbox * glm::inverse(volume_->getIndexMatrix());
     mat4 m = bbox * glm::inverse(indexMatrix);
 
-    std::vector<vec4> nodes;
     nodes.reserve(getNumberOfPoints());
-
     for (size_t z = 0; z < dims.z; ++z) {
         for (size_t y = 0; y < dims.y; ++y) {
             for (size_t x = 0; x < dims.x; ++x) {
@@ -128,7 +125,6 @@ std::vector<vec4> VolumeTetraMesh::getNodes() const {
             }
         }
     }
-
     volume_->getRepresentation<VolumeRAM>()->dispatch<void>([&](const auto* vrprecision) {
         using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
         const ValueType* data = vrprecision->getDataTyped();
@@ -137,19 +133,7 @@ std::vector<vec4> VolumeTetraMesh::getNodes() const {
         }
     });
 
-    return nodes;
-}
-
-std::vector<ivec4> VolumeTetraMesh::getNodeIds() const {
-    if (!volume_) {
-        return {};
-    }
-
-    ivec3 dims{volume_.get()->getDimensions()};
-
-    std::vector<ivec4> nodeIds;
     nodeIds.reserve(getNumberOfCells());
-
     util::IndexMapper<3, int> indexMapper{dims};
     for (int z = 0; z < dims.z - 1; ++z) {
         for (int y = 0; y < dims.y - 1; ++y) {
@@ -163,31 +147,17 @@ std::vector<ivec4> VolumeTetraMesh::getNodeIds() const {
                 int v6 = indexMapper(x, y + 1, z + 1);
                 int v7 = indexMapper(x + 1, y + 1, z + 1);
 
-                if ((x & 1) != (y & 1)) {
-                    // flip tetras in x and y direction for odd x, y cells so that
-                    // neighboring cells align (2D checkerboard)
-                    nodeIds.emplace_back(v2, v3, v6, v0);
-                    nodeIds.emplace_back(v3, v6, v4, v7);
-                    nodeIds.emplace_back(v3, v0, v4, v6);
-                    nodeIds.emplace_back(v3, v1, v5, v0);
-                    nodeIds.emplace_back(v3, v7, v4, v5);
-                    nodeIds.emplace_back(v3, v5, v4, v0);
-                } else {
-                    nodeIds.emplace_back(v0, v1, v2, v4);
-                    nodeIds.emplace_back(v1, v4, v5, v6);
-                    nodeIds.emplace_back(v1, v2, v4, v6);
-                    nodeIds.emplace_back(v1, v3, v2, v7);
-                    nodeIds.emplace_back(v1, v5, v7, v6);
-                    nodeIds.emplace_back(v1, v7, v2, v6);
-                }
+                nodeIds.emplace_back(v0, v1, v2, v6);
+                nodeIds.emplace_back(v0, v6, v4, v1);
+                nodeIds.emplace_back(v1, v5, v4, v6);
+                nodeIds.emplace_back(v1, v3, v2, v6);
+                nodeIds.emplace_back(v1, v7, v3, v6);
+                nodeIds.emplace_back(v1, v7, v5, v6);
             }
         }
     }
 
-    std::vector<ivec4> tmpCopy{nodeIds};
-    utiltetra::fixFaceOrientation(getNodes(), tmpCopy);
-
-    return nodeIds;
+    utiltetra::fixFaceOrientation(nodes, nodeIds);
 }
 
 std::pair<vec3, vec3> VolumeTetraMesh::getBounds() const {
