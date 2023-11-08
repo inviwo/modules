@@ -48,11 +48,10 @@ namespace inviwo {
 
 namespace detail {
 
-std::vector<vec4> getNodes(vtkUnstructuredGrid* vtkData,
-                           const std::shared_ptr<BufferBase>& scalarBuffer) {
+void getNodes(vtkUnstructuredGrid* vtkData, const std::shared_ptr<BufferBase>& scalarBuffer,
+              std::vector<vec4>& nodes) {
     const vtkIdType numPoints = vtkData->GetNumberOfPoints();
 
-    std::vector<vec4> nodes;
     nodes.reserve(numPoints);
     for (vtkIdType pointId = 0; pointId < numPoints; ++pointId) {
         auto* point = vtkData->GetPoint(pointId);
@@ -77,13 +76,11 @@ std::vector<vec4> getNodes(vtkUnstructuredGrid* vtkData,
                 }
             });
     }
-    return nodes;
 }
 
-std::vector<ivec4> getNodeIds(vtkUnstructuredGrid* vtkData) {
+void getNodeIds(vtkUnstructuredGrid* vtkData, std::vector<ivec4>& nodeIds) {
     const vtkIdType numCells = vtkData->GetNumberOfCells();
 
-    std::vector<ivec4> nodeIds;
     nodeIds.reserve(numCells);
 
     const glm::imat4x3 triIndices{ivec3{1, 2, 3}, ivec3{2, 0, 3}, ivec3{3, 0, 1}, ivec3{0, 2, 1}};
@@ -106,7 +103,6 @@ std::vector<ivec4> getNodeIds(vtkUnstructuredGrid* vtkData) {
                       "Only tetrahedral cells are supported. Skipped {} of {} cells", skippedCells,
                       numCells);
     }
-    return nodeIds;
 }
 
 }  // namespace detail
@@ -136,9 +132,12 @@ int VTKTetraMesh::getNumberOfPoints() const {
     }
 }
 
-std::vector<vec4> VTKTetraMesh::getNodes() const {
+void VTKTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const {
+    nodes.clear();
+    nodeIds.clear();
+
     if (!vtkData_) {
-        return {};
+        return;
     }
 
     auto scalarBuffer = [&]() -> std::shared_ptr<BufferBase> {
@@ -151,14 +150,8 @@ std::vector<vec4> VTKTetraMesh::getNodes() const {
             return nullptr;
         }
     }();
-    return detail::getNodes(vtkData_, scalarBuffer);
-}
-
-std::vector<ivec4> VTKTetraMesh::getNodeIds() const {
-    if (!vtkData_) {
-        return {};
-    }
-    return detail::getNodeIds(vtkData_);
+    detail::getNodes(vtkData_, scalarBuffer, nodes);
+    detail::getNodeIds(vtkData_, nodeIds);
 }
 
 std::pair<vec3, vec3> VTKTetraMesh::getBounds() const {
