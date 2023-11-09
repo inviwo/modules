@@ -114,7 +114,11 @@ VTKTetraMesh::VTKTetraMesh(utilvtk::ArrayBufferMapper& bufferMapper, vtkUnstruct
 
 VTKTetraMesh* VTKTetraMesh::clone() const { return new VTKTetraMesh{*this}; }
 
-void VTKTetraMesh::setData(vtkUnstructuredGrid* vtkData) { vtkData_ = vtkData; }
+void VTKTetraMesh::setData(vtkUnstructuredGrid* vtkData) { 
+    vtkData_ = vtkData; 
+    setModelMatrix(mat4(1.0f));
+    setWorldMatrix(mat4(1.0f));
+}
 
 int VTKTetraMesh::getNumberOfCells() const {
     if (vtkData_) {
@@ -154,16 +158,19 @@ void VTKTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) co
     detail::getNodeIds(vtkData_, nodeIds);
 }
 
-std::pair<vec3, vec3> VTKTetraMesh::getBounds() const {
+mat4 VTKTetraMesh::getBoundingBox() const {
+    vec3 dataMin{0.0f};
+    vec3 dataMax{0.0f};
     if (vtkData_) {
         vtkData_->ComputeBounds();
         auto bounds = vtkData_->GetBounds();
-        const vec3 dataMin{bounds[0], bounds[2], bounds[4]};
-        const vec3 dataMax{bounds[1], bounds[3], bounds[5]};
-        return {dataMin, dataMax};
-    } else {
-        return {vec3{0.0f}, vec3{0.0f}};
+        dataMin = vec3{bounds[0], bounds[2], bounds[4]};
+        dataMax = vec3{bounds[1], bounds[3], bounds[5]};
     }
+
+    auto m = glm::scale(dataMax - dataMin);
+    m[3] = vec4(dataMin, 1.0f);
+    return m;
 }
 
 dvec2 VTKTetraMesh::getDataRange() const {
