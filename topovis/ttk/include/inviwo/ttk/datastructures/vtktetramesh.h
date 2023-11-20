@@ -26,43 +26,61 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
 #include <inviwo/ttk/ttkmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/tetramesh/datastructures/tetramesh.h>
 
-#include <inviwo/ttk/ports/vtkinport.h>
 #include <inviwo/ttk/util/vtkbufferutils.h>
 
-#include <variant>
-#include <array>
+#include <vector>
 
-class vtkDataSet;
+class vtkUnstructuredGrid;
 
 namespace inviwo {
 
-class PickingEvent;
-
-class IVW_MODULE_TTK_API VTKToMesh : public Processor {
+/**
+ * \ingroup datastructures
+ * \brief Data required for rendering a vtkUnstructuredGrid as tetrahedral mesh
+ *
+ * Provides an interface between a vtkUnstructuredGrid and the data structures required for
+ * rendering a tetrahedral mesh.
+ *
+ * Data structures for tetrahedra indexing and face enumeration based on
+ *    M. Lage, T. Lewiner, H. Lopes, and L. Velho.
+ *    CHF: A scalable topological data structure for tetrahedral meshes.
+ *    In Brazilian Symposium on Computer Graphics and Image Processing
+ *    (SIBGRAPI'05), pp. 349-356, 2005, doi: 10.1109/SIBGRAPI.2005.18
+ */
+class IVW_MODULE_TTK_API VTKTetraMesh : public TetraMesh {
 public:
-    VTKToMesh();
+    VTKTetraMesh(utilvtk::ArrayBufferMapper& bufferMapper, vtkUnstructuredGrid* vtkData = nullptr);
+    virtual VTKTetraMesh* clone() const override;
+    virtual ~VTKTetraMesh() = default;
 
-    virtual void process() override;
+    void setData(vtkUnstructuredGrid* vtkData);
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    virtual int getNumberOfCells() const override;
+    virtual int getNumberOfPoints() const override;
+
+    /**
+     * @copydoc TetraMesh::get
+     */
+    virtual void get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) const override;
+
+    /**
+     * @copydoc TetraMesh::getBoundingBox
+     */
+    virtual mat4 getBoundingBox() const override;
+
+    /**
+     * @copydoc TetraMesh::getDataRange
+     */
+    virtual dvec2 getDataRange() const override;
 
 private:
-    void picking(PickingEvent* event);
-
-    vtk::VtkInport inport_;
-    BrushingAndLinkingInport brushLinkPort_;
-    MeshOutport outport_;
-
-    utilvtk::ArrayBufferMapper bufferMapper_;
+    utilvtk::ArrayBufferMapper& bufferMapper_;
+    vtkUnstructuredGrid* vtkData_;
 };
 
 }  // namespace inviwo

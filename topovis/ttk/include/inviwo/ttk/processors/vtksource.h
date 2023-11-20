@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,31 +27,42 @@
  *
  *********************************************************************************/
 
-#ifdef _MSC_VER
-#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
-#endif
+#pragma once
 
-#include <inviwo/core/util/logcentral.h>
-#include <inviwo/core/util/consolelogger.h>
-#include <inviwo/testutil/configurablegtesteventlistener.h>
+#include <inviwo/ttk/ttkmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <gtest/gtest.h>
-#include <warn/pop>
+#include <inviwo/ttk/ports/vtkoutport.h>
 
-int main(int argc, char** argv) {
-    using namespace inviwo;
-    LogCentral::init();
-    auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
-    LogCentral::getPtr()->registerLogger(logger);
+#include <vtkSmartPointer.h>
 
-    int ret = -1;
-    {
-        ::testing::InitGoogleTest(&argc, argv);
-        inviwo::ConfigurableGTestEventListener::setup();
-        ret = RUN_ALL_TESTS();
-    }
-    return ret;
-}
+class vtkDataSetReader;
+
+namespace inviwo {
+
+namespace vtk {
+
+class IVW_MODULE_TTK_API VTKSource : public Processor {
+public:
+    VTKSource(const std::filesystem::path& filePath = "");
+    virtual ~VTKSource();
+
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    vtk::VtkOutport outport_;
+
+    FileProperty file_;
+    ButtonProperty reload_;
+
+    vtkSmartPointer<vtkDataSetReader> reader_;
+};
+
+}  // namespace vtk
+
+}  // namespace inviwo

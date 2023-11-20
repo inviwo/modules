@@ -40,14 +40,11 @@
 #include <gtest/gtest.h>
 #include <warn/pop>
 
-#include <inviwo/core/datastructures/datatraits.h>
-#include <fmt/format.h>
-
 int main(int argc, char** argv) {
     using namespace inviwo;
     LogCentral::init();
     auto logger = std::make_shared<ConsoleLogger>();
-    LogCentral::getPtr()->setVerbosity(LogVerbosity::Info);
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
     LogCentral::getPtr()->registerLogger(logger);
 
     int ret = -1;

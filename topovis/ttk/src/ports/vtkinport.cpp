@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
 
@@ -129,10 +130,10 @@ int VtkInport::getTypeId() const { return typeId_; }
 
 void VtkInport::setTypeId(int typeId) {
     typeId_ = typeId;
-    for (auto outport : connectedOutports_) {
-        if (canConnectTo(outport)) {
-            getProcessor()->getNetwork()->removeConnection(outport, this);
-        }
+    std::vector<Outport*> portsToRemove =
+        util::copy_if(connectedOutports_, [&](auto port) { return !canConnectTo(port); });
+    for (auto outport : portsToRemove) {
+        getProcessor()->getNetwork()->removeConnection(outport, this);
     }
 }
 

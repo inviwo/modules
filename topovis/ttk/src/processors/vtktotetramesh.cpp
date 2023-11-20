@@ -27,42 +27,44 @@
  *
  *********************************************************************************/
 
-#pragma once
+#include <inviwo/ttk/processors/vtktotetramesh.h>
+#include <inviwo/ttk/datastructures/vtktetramesh.h>
+#include <inviwo/tetramesh/util/tetrameshutils.h>
 
-#include <inviwo/ttk/ttkmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
-
-#include <inviwo/ttk/ports/vtkinport.h>
-#include <inviwo/ttk/util/vtkbufferutils.h>
-
-#include <variant>
-#include <array>
-
-class vtkDataSet;
+#include <vtkUnstructuredGrid.h>
 
 namespace inviwo {
 
-class PickingEvent;
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VTKToTetraMesh::processorInfo_{
+    "org.inviwo.VTKToTetraMesh",                  // Class identifier
+    "VTK To TetraMesh",                           // Display name
+    "Unstructured Grids",                         // Category
+    CodeState::Experimental,                      // Code state
+    Tag::CPU | Tag{"VTK"} | Tag{"Unstructured"},  // Tags
+    R"(Use a VTK Unstructured Grid dataSet as input for an Inviwo TetraMesh)"_unindentHelp};
 
-class IVW_MODULE_TTK_API VTKToMesh : public Processor {
-public:
-    VTKToMesh();
+const ProcessorInfo VTKToTetraMesh::getProcessorInfo() const { return processorInfo_; }
 
-    virtual void process() override;
+VTKToTetraMesh::VTKToTetraMesh()
+    : Processor{}
+    , inport_{"vtkdata", VTK_UNSTRUCTURED_GRID,
+              "VTK dataset. Only unstructured grids are accepted."_help}
+    , outport_{"tetramesh", "Tetrahedral mesh information extracted from the VTK dataset."_help}
+    , bufferMapper_{*this, utilvtk::ArrayUsageSelection(utilvtk::ArrayUsage::Scalar)} {
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
+    addPorts(inport_, outport_);
+}
 
-private:
-    void picking(PickingEvent* event);
+void VTKToTetraMesh::process() {
+    if (inport_.isChanged()) {
+        bufferMapper_.updateSources(vtkDataSet::SafeDownCast(inport_.getData()));
+    }
 
-    vtk::VtkInport inport_;
-    BrushingAndLinkingInport brushLinkPort_;
-    MeshOutport outport_;
+    auto vtkgrid = vtkUnstructuredGrid::SafeDownCast(inport_.getData());
+    auto tetraMesh = std::make_shared<VTKTetraMesh>(bufferMapper_, vtkgrid);
 
-    utilvtk::ArrayBufferMapper bufferMapper_;
-};
+    outport_.setData(tetraMesh);
+}
 
 }  // namespace inviwo
