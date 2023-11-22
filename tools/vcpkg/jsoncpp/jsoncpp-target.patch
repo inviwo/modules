@@ -1,0 +1,15 @@
+diff --git a/jsoncpp-namespaced-targets.cmake b/jsoncpp-namespaced-targets.cmake
+index ac1504e..486a0c2 100644
+--- a/jsoncpp-namespaced-targets.cmake
++++ b/jsoncpp-namespaced-targets.cmake
+@@ -1,7 +1,7 @@
+ if (TARGET jsoncpp_static)
+     add_library(JsonCpp::JsonCpp INTERFACE IMPORTED)
+     set_target_properties(JsonCpp::JsonCpp PROPERTIES INTERFACE_LINK_LIBRARIES "jsoncpp_static")
+-elseif (TARGET jsoncpp_lib)
++elseif (TARGET jsoncpp_lib AND NOT TARGET JsonCpp::JsonCpp)
+     add_library(JsonCpp::JsonCpp INTERFACE IMPORTED)
+     set_target_properties(JsonCpp::JsonCpp PROPERTIES INTERFACE_LINK_LIBRARIES "jsoncpp_lib")
+-endif ()
+\ No newline at end of file
++endif ()
