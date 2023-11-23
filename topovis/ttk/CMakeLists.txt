@@ -46,10 +46,30 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
-file(GLOB ttkWrappers RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} generated/*)
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/generated PREFIX TTKWrappers FILES ${ttkWrappers})
+file(GLOB ttkWrapperHeaders RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} generated/*.h)
+file(GLOB ttkWrapperSourceFiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} generated/*.cpp)
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/generated 
+    PREFIX 
+        TTKWrappers 
+    FILES 
+        ${ttkWrapperHeaders} 
+        ${ttkWrapperSourceFiles}
+)
 
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${ttkWrappers})
+ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+
+target_sources(inviwo-module-ttk
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS
+        ${CMAKE_CURRENT_BINARY_DIR}/generated
+        ${CMAKE_CURRENT_SOURCE_DIR}/generated
+    FILES
+        ${ttkWrapperHeaders}
+    PRIVATE
+        ${ttkWrapperSourceFiles}
+)
 
 target_include_directories(inviwo-module-ttk PRIVATE generated)
 
