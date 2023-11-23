@@ -59,15 +59,18 @@ def valueOr(value, default):
     else:
         return value
 
+
 def splitComma(text: str):
     return text.split(',')
 
+
 def elide(text: str, chars: int):
-    if len(text) == 0: 
+    if len(text) == 0:
         return text
     chars = 4 if chars <= 3 else chars
     line = text.splitlines()[0]
     return line if len(line) <= chars - 3 else f"{line[:chars-3]}..."
+
 
 @dataclasses.dataclass
 class BoolProperty:
@@ -309,18 +312,18 @@ def parseInputProperty(xml: ET.Element) -> InputData:
     '''
     Parse Input properties, Will be mapped to inviwo Inports
     '''
-    
+
     data = InputData(
         identifier=xml.attrib["name"],
         dataType=chain(xml, xmlfind('DataTypeDomain/DataType'), xmlattr("value")),
-        numComp=chain(xml, xmlfind('InputArrayDomain'), 
-                      xmlattr("number_of_components"), 
+        numComp=chain(xml, xmlfind('InputArrayDomain'),
+                      xmlattr("number_of_components"),
                       splitComma, partial(map, int), tuple)
     )
-    
+
     if (doc := xml.find('Documentation')) is not None:
         data.doc = stripEachLine(doc.text)
-    
+
     return data
 
 
@@ -328,10 +331,10 @@ def parseOutport(xml: ET.Element) -> OutputData:
     '''
     Parse Outports, Will be mapped to inviwo Outports
     '''
-    
+
     index = int(xml.attrib["index"])
     identifier = xml.attrib["id"] if "id" in xml.attrib else f"outport{index}"
-    
+
     return OutputData(
         identifier=identifier,
         displayName=xml.attrib["name"],
@@ -365,17 +368,17 @@ def parseProxyGroup(group: ET.Element, file: Path, category: str, tags: str) -> 
             if proxy.tag in ["CompoundSourceProxy"]:
                 # Maybe handle in the future?
                 continue
-        
+
             if proxy.tag not in ["SourceProxy", "WriterProxy", "Proxy"]:
                 raise Exception(f"Unexpected element, expected a proxy found '{proxy.tag}'")
-                
+
             filters.append(parseProxy(proxy, file, category, tags))
-        
+
         except Exception as e:
             print(f"Error parsing {proxy.tag} in {file} \n{e}")
-            #print(traceback.format_exc())
-            #print(ET.tostring(proxy, encoding='unicode'))
-            
+            # print(traceback.format_exc())
+            # print(ET.tostring(proxy, encoding='unicode'))
+
     return filters
 
 
@@ -393,7 +396,7 @@ def parseProxy(proxy: ET.Element, file: Path, category: str, tags: str) -> Filte
             docStr = doc.attrib['long_help']
         else:
             docStr = docShort
-            
+
     data = FilterData(
         identifier=proxy.attrib["name"],
         displayName=proxy.attrib["label"] if "label" in proxy.attrib else proxy.attrib["name"],
@@ -466,8 +469,10 @@ struct {structName} {{
     }}
     DoubleVec2Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                                 dvec2{{{defaultValue[0]}, {defaultValue[1]}}},
-                                std::pair{{dvec2{{{minValue[0]},{minValue[1]}}}, ConstraintBehavior::Ignore}},
-                                std::pair{{dvec2{{{maxValue[0]},{maxValue[1]}}}, ConstraintBehavior::Ignore}}}};
+                                std::pair{{dvec2{{{minValue[0]},{minValue[1]}}},
+                                          ConstraintBehavior::Ignore}},
+                                std::pair{{dvec2{{{maxValue[0]},{maxValue[1]}}},
+                                          ConstraintBehavior::Ignore}}}};
 }};
 """
 
@@ -479,8 +484,10 @@ struct {structName} {{
     }}
     DoubleVec3Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                                 dvec3{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}}},
-                                std::pair{{dvec3{{{minValue[0]},{minValue[1]},{minValue[2]}}}, ConstraintBehavior::Ignore}},
-                                std::pair{{dvec3{{{maxValue[0]},{maxValue[1]},{maxValue[2]}}}, ConstraintBehavior::Ignore}}}};
+                                std::pair{{dvec3{{{minValue[0]},{minValue[1]},{minValue[2]}}},
+                                          ConstraintBehavior::Ignore}},
+                                std::pair{{dvec3{{{maxValue[0]},{maxValue[1]},{maxValue[2]}}},
+                                          ConstraintBehavior::Ignore}}}};
 }};
 """
 
@@ -492,8 +499,8 @@ struct {structName} {{
     }}
     DoubleVec3Property property{{"{identifier}", "{displayName}", R"({doc})"_help,
                                 dvec4{{{defaultValue[0]}, {defaultValue[1]}, {defaultValue[2]}, {defaultValue[3]}}},
-                                std::pair{{dvec4{{{minValue[0]},{minValue[1]},{minValue[2]},{minValue[3]}}}, ConstraintBehavior::Ignore}},
-                                std::pair{{dvec4{{{maxValue[0]},{maxValue[1]},{maxValue[2]},{maxValue[3]}}}, ConstraintBehavior::Ignore}}}};
+                                std::pair{{dvec4{{{minValue[0]}, {minValue[1]}, {minValue[2]}, {minValue[3]}}}, ConstraintBehavior::Ignore}},
+                                std::pair{{dvec4{{{maxValue[0]}, {maxValue[1]}, {maxValue[2]}, {maxValue[3]}}}, ConstraintBehavior::Ignore}}}};
 }};
 """
 
@@ -640,7 +647,7 @@ struct {structName} {{
         filter.{command}(property.get().string().c_str());
         return true;
     }}
-    FileProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, 
+    FileProperty property{{"{identifier}", "{displayName}", R"({doc})"_help,
                            std::filesystem::path{{"{defaultValue}"}}}};
 }};
 """
@@ -682,7 +689,8 @@ struct {structName} {{
         filter.{command}(property.get());
         return true;
     }}
-    OptionPropertyInt property{{"{identifier}", "{displayName}", R"({doc})"_help, {{{options}}}, {defaultValue}}};
+    OptionPropertyInt property{{"{identifier}", "{displayName}",
+                               R"({doc})"_help, {{{options}}}, {defaultValue}}};
 }};
 """
 
@@ -710,7 +718,7 @@ struct {structName} : FieldSelection {{
             return tmp;
         }}()
     }};
-    
+
     static constexpr std::string_view inport = "{inport}";
 }};
 """
@@ -821,25 +829,24 @@ def generate(data: FilterData) -> str:
             elif p.numElem == 4:
                 template = doubleVec4Template
             elif p.numElem == 6:
-                template = doubleVec6Template             
+                template = doubleVec6Template
             else:
                 print(f"Missing template for DoubleVecProperty of dim {p.numElem}")
                 continue
 
             if not kind.minValue:
-                kind.minValue = [0.0]*p.numElem
-            
+                kind.minValue = [0.0] * p.numElem
+
             if kind.minValue:
                 if len(kind.minValue) == 1:
-                    kind.minValue = kind.minValue*p.numElem
-                    
+                    kind.minValue = kind.minValue * p.numElem
+
             if not kind.maxValue:
-                kind.maxValue = [100.0]*p.numElem
-                    
+                kind.maxValue = [100.0] * p.numElem
+
             if kind.maxValue:
                 if len(kind.maxValue) == 1:
-                    kind.maxValue = kind.maxValue*p.numElem    
-
+                    kind.maxValue = kind.maxValue * p.numElem
 
         elif isinstance(kind, IntVecProperty):
             if p.numElem == 1:
@@ -855,21 +862,20 @@ def generate(data: FilterData) -> str:
             else:
                 print(f"Missing template for IntVecProperty of dim {p.numElem}")
                 continue
-            
+
             if not kind.minValue:
-                kind.minValue = [0]*p.numElem
-            
+                kind.minValue = [0] * p.numElem
+
             if kind.minValue:
                 if len(kind.minValue) == 1:
-                    kind.minValue = kind.minValue*p.numElem
-                    
+                    kind.minValue = kind.minValue * p.numElem
+
             if not kind.maxValue:
-                kind.maxValue = [100]*p.numElem
-                    
+                kind.maxValue = [100] * p.numElem
+
             if kind.maxValue:
                 if len(kind.maxValue) == 1:
-                    kind.maxValue = kind.maxValue*p.numElem        
-
+                    kind.maxValue = kind.maxValue * p.numElem
 
         elif isinstance(kind, IntOptionProperty) and p.numElem == 1:
             template = optionTemplate
@@ -919,7 +925,8 @@ def generate(data: FilterData) -> str:
         proplist.append(structName)
 
     inputData = ", ".join(
-        f'InputData{{"{d.identifier}", "{valueOr(d.dataType, "")}", {valueOr(d.numComp,[-1])[0]}, R"({valueOr(d.doc, "")})"}}'
+        f'InputData{{"{d.identifier}", "{valueOr(d.dataType, "")}", \
+        {valueOr(d.numComp,[-1])[0]}, R"({valueOr(d.doc, "")})"}}'
         for d in data.inports)
     outputData = ", ".join(f'OutputData{{"{d.identifier}", "{d.displayName}", {d.index}}}'
                            for d in data.outports)
@@ -963,7 +970,7 @@ def makeTable(items) -> rich.table.Table:
     for key in dataclasses.asdict(items[0]).keys():
         table.add_column(key)
     for item in items:
-        table.add_row(*map(lambda x : elide(str(x), 20), dataclasses.astuple(item)))
+        table.add_row(*map(lambda x: elide(str(x), 20), dataclasses.astuple(item)))
     return table
 
 
@@ -1039,7 +1046,7 @@ if __name__ == '__main__':
         try:
             with open(file, 'r') as f:
                 xmlstr = f.read().replace("${DEBUG_WIDGETS}", debugWidgets)
-            filters.extend(parse(xmlstr, file, "topology", "TTK")) 
+            filters.extend(parse(xmlstr, file, "topology", "TTK"))
         except Exception as e:
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
@@ -1089,7 +1096,6 @@ if __name__ == '__main__':
     filterCount = len(filters)
     filters = [f for f in filters if f.className != "vtkFileSeriesReader"]
     print(f"Removed {filterCount - len(filters)} vtkFileSeriesReaders.")
-
 
     filters = [f for f in filters if not f.className.startswith("vtkPV")]
     filters = [f for f in filters if not f.className.startswith("vtkAMR")]
