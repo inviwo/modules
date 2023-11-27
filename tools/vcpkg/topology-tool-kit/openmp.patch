@@ -1,0 +1,71 @@
+diff --git forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
+index 4de544e55d6e45f7c7bac1587314d2dfbf94082b..8c6f31a53b35e06cb70ee7751e86b513a170abfe 100644
+--- forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
++++ forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
+@@ -9,7 +9,7 @@ void ttk::PDFHistograms::getVertexHistogram(
+ 
+   histogram.resize(numberOfBins_);
+   if(vertexId < numberOfVertices_) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_) \
+   schedule(static, numberOfBins_ / threadNumber_)
+ #endif
+@@ -27,7 +27,7 @@ void ttk::PDFHistograms::getVertexHistogram(
+ 
+ void ttk::PDFHistograms::normalize() {
+   const double normalization = 1.0 / static_cast<double>(numberOfInputs_);
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_) collapse(2) \
+   schedule(static, (numberOfBins_ * numberOfVertices_) / threadNumber_)
+ #endif
+diff --git forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h
+index f3563953d840080124a0c4e6f414fe0960bff1da..05885c720839907362403cfb3955c66b50369f12 100644
+--- forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h
++++ forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h
+@@ -33,7 +33,7 @@ namespace ttk {
+          || !(lowerBound_.size() == numberOfVertices)) {
+         upperBound_.resize(numberOfVertices);
+         lowerBound_.resize(numberOfVertices);
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+ #endif
+         for(size_t i = 0; i < numberOfVertices; i++) {
+@@ -41,7 +41,7 @@ namespace ttk {
+           lowerBound_[i] = inputData[i];
+         }
+       } else { /* Update the two fields with the new input */
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+ #endif
+         for(size_t i = 0; i < numberOfVertices; i++) {
+@@ -314,7 +314,7 @@ int ttk::UncertainDataEstimator::execute() {
+   dataType **inputData = (dataType **)inputData_.data();
+   double *outputMeanField = static_cast<double *>(outputMeanField_);
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+ #endif
+   for(SimplexId v = 0; v < (SimplexId)vertexNumber_; v++) {
+@@ -350,7 +350,7 @@ int ttk::UncertainDataEstimator::execute() {
+ 
+       // Update the progress bar of the wrapping code -- to adapt
+       if(debugLevel_ > static_cast<int>(debug::Priority::DETAIL)) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp critical
+ #endif
+         {
+@@ -388,7 +388,7 @@ int ttk::UncertainDataEstimator::execute() {
+ 
+     int idx;
+     double const increment = 1.0 / (double)numberOfInputs_;
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for private(idx) num_threads(threadNumber_)
+ #endif
+     for(SimplexId v = 0; v < vertexNumber_; v++) {
