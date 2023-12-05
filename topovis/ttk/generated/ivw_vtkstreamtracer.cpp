@@ -250,25 +250,32 @@ vorticity.)"_help,
 template <>
 struct TTKTraits<vtkStreamTracer> {
     static constexpr std::string_view className = "vtkStreamTracer";
-    static constexpr std::string_view identifier = "ArbitrarySourceStreamTracer";
-    static constexpr std::string_view displayName = "Stream Tracer With Custom Source";
+    static constexpr std::string_view identifier = "StreamTracer";
+    static constexpr std::string_view displayName = "Stream Tracer";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
         InputData{"Input", "vtkDataSet", 3,
                   R"(This property specifies the input to the Stream Tracer
 filter.)"},
-        InputData{"Source", "", -1, R"(This property specifies the input used to obtain the
-seed points.)"}};
+        InputData{"Source", "", -1, R"(The value of this property determines how the seeds for
+the streamlines will be generated.)"}};
     inline static std::array<OutputData, 0> outports = {};
-    inline static std::array<Group, 0> groups = {};
+    inline static std::array<Group, 3> groups = {
+        Group{"Seeds", {"Source"}},
+        Group{"Integration Parameters",
+              {"IntegrationDirection", "IntegratorType", "IntegrationStepUnit",
+               "InitialIntegrationStep", "MinimumIntegrationStep", "MaximumIntegrationStep",
+               "MaximumError"}},
+        Group{"Streamline Parameters",
+              {"MaximumNumberOfSteps", "MaximumPropagation", "TerminalSpeed"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13>
         properties;
     static constexpr std::string_view doc = R"(The
-Stream Tracer With Custom Source filter generates streamlines
-in a vector field from a collection of seed points. Production
-of streamlines terminates if a streamline crosses the
+Stream Tracer filter generates streamlines in a vector
+field from a collection of seed points. Production of
+streamlines terminates if a streamline crosses the
 exterior boundary of the input dataset
 (ReasonForTermination=1). Other reasons for termination
 include an initialization issue (ReasonForTermination=2),
@@ -279,9 +286,7 @@ input value (ReasonForTermination=5), and velocity was
 lower than the Terminal Speed input value
 (ReasonForTermination=6). This filter operates on any
 type of dataset, provided it has point-centered vectors.
-The output is polygonal data containing polylines.
-This filter takes a Source input
-that provides the seed points.)";
+The output is polygonal data containing polylines.)";
 };
 
 void registervtkStreamTracer(InviwoModule* module) {

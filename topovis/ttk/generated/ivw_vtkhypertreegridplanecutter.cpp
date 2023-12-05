@@ -46,12 +46,13 @@ struct Wrapper1 {
         filter.SetDual(property.get());
         return true;
     }
-    BoolProperty property{"UseDualGrid", "UseDualGrid",
-                          R"(If enabled, the output plane is computed using the dual grid, providing
+    BoolProperty property{
+        "UseDualGrid", "UseDualGrid",
+        R"(If enabled, the output plane is computed using the dual grid, providing
 perfect connectivity at the cost of speed. If disabled, the AMR mesh
 is used directly, and the output is obtained faster and is more useful
 for rendering.)"_help,
-                          false};
+        false};
 };
 
 #include <warn/pop>
