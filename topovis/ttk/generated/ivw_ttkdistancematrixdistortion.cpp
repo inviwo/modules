@@ -28,6 +28,17 @@ namespace {
 
 struct Wrapper0 {
     bool set(ttkDistanceMatrixDistortion& filter) {
+        filter.SetDoNotNormalize(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "DoNotNormalize", "Do not normalize computations",
+        R"(If the box is not checked, we normalize the results by dividing the sums by the maximum element of the line. Warning: if the box is checked, the values will lie between -inf and 1 (best similarity).)"_help,
+        false};
+};
+
+struct Wrapper1 {
+    bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetSelectFieldsWithRegexpHigh(property.get());
         return true;
     }
@@ -36,7 +47,7 @@ struct Wrapper0 {
                           false};
 };
 
-struct Wrapper1 {
+struct Wrapper2 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetRegexpStringHigh(property.get().c_str());
         return true;
@@ -47,7 +58,7 @@ matching ones will be selected.)"_help,
                             ".*"};
 };
 
-struct Wrapper2 {
+struct Wrapper3 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetSelectFieldsWithRegexpLow(property.get());
         return true;
@@ -57,7 +68,7 @@ struct Wrapper2 {
                           false};
 };
 
-struct Wrapper3 {
+struct Wrapper4 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetRegexpStringLow(property.get().c_str());
         return true;
@@ -68,7 +79,7 @@ matching ones will be selected.)"_help,
                             ".*"};
 };
 
-struct Wrapper4 {
+struct Wrapper5 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -77,7 +88,7 @@ struct Wrapper4 {
                           true};
 };
 
-struct Wrapper5 {
+struct Wrapper6 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -90,7 +101,7 @@ struct Wrapper5 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper6 {
+struct Wrapper7 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -103,7 +114,7 @@ struct Wrapper6 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper7 {
+struct Wrapper8 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -117,7 +128,7 @@ ratio with respect to the total cluster number.)"_help,
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper8 {
+struct Wrapper9 {
     bool set(ttkDistanceMatrixDistortion& filter) {
         filter.Modified();
         return true;
@@ -142,18 +153,19 @@ struct TTKTraits<ttkDistanceMatrixDistortion> {
         InputData{"HighDistanceMatrix", "vtkTable", 1, R"(High dimension distance matrix.)"},
         InputData{"LowDistanceMatrix", "vtkTable", -1, R"(Low dimension distance matrix.)"}};
     inline static std::array<OutputData, 0> outports = {};
-    inline static std::array<Group, 2> groups = {
+    inline static std::array<Group, 3> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options",
               {"SelectFieldsWithRegexpHigh", "ScalarFieldsHigh", "RegexpHigh",
-               "SelectFieldsWithRegexpLow", "ScalarFieldsLow", "RegexpLow"}}};
+               "SelectFieldsWithRegexpLow", "ScalarFieldsLow", "RegexpLow"}},
+        Group{"Output options", {"DoNotNormalize"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8>
+               Wrapper8, Wrapper9>
         properties;
     static constexpr std::string_view doc =
-        R"(This plugin, given two distance matrices representing the same points, computes the distortion between the two, according the SIM formula. It also provides, for each point, the distorsion for its own distances to the other points.)";
+        R"(This plugin, given two distance matrices representing the same points, computes the distortion between the two, according the SIM formula. It also provides, for each point, the distortion for its own distances to the other points.)";
 };
 
 void registerttkDistanceMatrixDistortion(InviwoModule* module) {

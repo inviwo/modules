@@ -9,6 +9,7 @@ from pathlib import Path
 from functools import partial
 from collections import defaultdict
 from typing import Callable, Optional, TypeVar, Union, Tuple
+from operator import attrgetter
 
 import rich
 from rich.console import Console
@@ -908,7 +909,7 @@ def generate(data: FilterData) -> str:
                 extra["defaultoptions"] = ""
         else:
             print(f"Missing template for {type(kind)} in property {p.identifier}"
-                  f" in filter {data.identifier}")
+                  + f" in filter {data.identifier}")
             continue  # WIP:::
 
         structName = f"Wrapper{len(proplist)}"
@@ -1041,7 +1042,7 @@ if __name__ == '__main__':
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in denyList)
 
-    filters = []
+    filters: list[FilterData] = []
     for file in files:
         try:
             with open(file, 'r') as f:
@@ -1051,15 +1052,15 @@ if __name__ == '__main__':
             print(f"Error parsing {file} \n{e}")
             print(traceback.format_exc())
 
-    paraviewXmls = [
+    paraviewXmls: list[str] = [
         "https://github.com/Kitware/ParaView/raw/master/"
-        "Remoting/Application/Resources/readers_ioxml.xml"
+        + "Remoting/Application/Resources/readers_ioxml.xml"
     ]
     for url in paraviewXmls:
         try:
             response = requests.get(url)
-            xmlstr = response.content
-            filters.extend(parse(xmlstr, url, "vtk", "VTK,readers"))
+            xmlstr = response.content.decode('utf-8')
+            filters.extend(parse(xmlstr, Path(url), "vtk", "VTK,readers"))
         except Exception as e:
             print(f"Error parsing {url} \n{e}")
             print(traceback.format_exc())
@@ -1162,7 +1163,13 @@ if __name__ == '__main__':
 
     includes = []
     register = []
-    for data in filters:
+    used: list[str] = []
+    for data in sorted(filters, key=attrgetter('className')):
+        if data.className in used:
+            console.print(f"[bold red]class name aleady used {data}")
+            continue
+
+        used.append(data.className)
         name = data.className
         header, source = generate(data)
         with open(gen / f"ivw_{name.lower()}.h", 'w') as f:

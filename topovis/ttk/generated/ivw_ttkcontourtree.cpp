@@ -1,4 +1,4 @@
-#include "ivw_ttkftmtree.h"
+#include "ivw_ttkcontourtree.h"
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
@@ -16,7 +16,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkDataObject.h>
-#include <ttkFTMTree.h>
+#include <ttkContourTree.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -27,7 +27,7 @@ namespace {
 #include <warn/ignore/conversion>
 
 struct Wrapper0 : FieldSelection {
-    bool set(ttkFTMTree& filter) {
+    bool set(ttkContourTree& filter) {
         if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(0, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
@@ -55,7 +55,7 @@ struct Wrapper0 : FieldSelection {
 };
 
 struct Wrapper1 {
-    bool set(ttkFTMTree& filter) {
+    bool set(ttkContourTree& filter) {
         filter.SetForceInputOffsetScalarField(property.get());
         return true;
     }
@@ -67,7 +67,7 @@ plateaus).)"_help,
 };
 
 struct Wrapper2 : FieldSelection {
-    bool set(ttkFTMTree& filter) {
+    bool set(ttkContourTree& filter) {
         if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
         return true;
@@ -96,21 +96,7 @@ struct Wrapper2 : FieldSelection {
 };
 
 struct Wrapper3 {
-    bool set(ttkFTMTree& filter) {
-        filter.SetTreeType(property.get());
-        return true;
-    }
-    OptionPropertyInt property{"TreeType",
-                               "Tree Type",
-                               R"(0 is JT, 1 is ST, 2 is CT)"_help,
-                               {{"Join Tree", "Join Tree", 0},
-                                {"Split Tree", "Split Tree", 1},
-                                {"Contour Tree", "Contour Tree", 2}},
-                               2};
-};
-
-struct Wrapper4 {
-    bool set(ttkFTMTree& filter) {
+    bool set(ttkContourTree& filter) {
         filter.SetSuperArcSamplingLevel(property.get());
         return true;
     }
@@ -122,8 +108,8 @@ struct Wrapper4 {
                          std::pair{100, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper5 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper4 {
+    bool set(ttkContourTree& filter) {
         filter.SetWithNormalize(property.get());
         return true;
     }
@@ -133,8 +119,8 @@ arc and node identifiers across distinct runs.)"_help,
                           true};
 };
 
-struct Wrapper6 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper5 {
+    bool set(ttkContourTree& filter) {
         filter.SetWithAdvStats(property.get());
         return true;
     }
@@ -144,8 +130,8 @@ between nodes, ...))"_help,
                           true};
 };
 
-struct Wrapper7 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper6 {
+    bool set(ttkContourTree& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
@@ -153,8 +139,8 @@ struct Wrapper7 {
                           true};
 };
 
-struct Wrapper8 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper7 {
+    bool set(ttkContourTree& filter) {
         filter.SetThreadNumber(property.get());
         return true;
     }
@@ -166,8 +152,8 @@ struct Wrapper8 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper9 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper8 {
+    bool set(ttkContourTree& filter) {
         filter.SetDebugLevel(property.get());
         return true;
     }
@@ -179,8 +165,8 @@ struct Wrapper9 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper10 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper9 {
+    bool set(ttkContourTree& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
@@ -193,8 +179,8 @@ ratio with respect to the total cluster number.)"_help,
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper11 {
-    bool set(ttkFTMTree& filter) {
+struct Wrapper10 {
+    bool set(ttkContourTree& filter) {
         filter.Modified();
         return true;
     }
@@ -208,10 +194,10 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkFTMTree> {
-    static constexpr std::string_view className = "ttkFTMTree";
-    static constexpr std::string_view identifier = "ttkftmtree";
-    static constexpr std::string_view displayName = "TTK Merge and Contour Tree (FTM)";
+struct TTKTraits<ttkContourTree> {
+    static constexpr std::string_view className = "ttkContourTree";
+    static constexpr std::string_view identifier = "ttkContourTree";
+    static constexpr std::string_view displayName = "TTK ContourTree";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
@@ -227,10 +213,9 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
                "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options",
               {"Scalar Field", "ForceInputOffsetScalarField", "Input Offset Field"}},
-        Group{"Output options",
-              {"Tree Type", "SuperArcSamplingLevel", "NormalizeId", "AdvancedStats"}}};
+        Group{"Output options", {"SuperArcSamplingLevel", "NormalizeId", "AdvancedStats"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11>
+               Wrapper8, Wrapper9, Wrapper10>
         properties;
     static constexpr std::string_view doc =
         R"(This plugin takes a scalar field attached as point data to a geometry
@@ -240,9 +225,9 @@ the tree (as points in 3D space), the arcs of the tree and the data
 segmentation.
 
 Related publication:
-'Task-based Augmented Merge Trees with Fibonacci Heaps',
+'Task-based Augmented Contour Trees with Fibonacci Heaps',
 Charles Gueunet, Pierre Fortin, Julien Jomier, Julien Tierny,
-Proc. of IEEE LDAV 2017.
+IEEE TPDS 2019.
 
 CriticalType:
 * 0 - minimum,
@@ -263,23 +248,11 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/contourTreeAlignment/
 
-- https://topology-tool-kit.github.io/examples/ctBones/
-
-- https://topology-tool-kit.github.io/examples/dragon/
-
-- https://topology-tool-kit.github.io/examples/interactionSites/
-
-- https://topology-tool-kit.github.io/examples/mergeTreeClustering/
-
-- https://topology-tool-kit.github.io/examples/mergeTreeFeatureTracking/
-
-- https://topology-tool-kit.github.io/examples/mergeTreePGA/
-
-- https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/)";
+- https://topology-tool-kit.github.io/examples/dragon/)";
 };
 
-void registerttkFTMTree(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkFTMTree>>();
+void registerttkContourTree(InviwoModule* module) {
+    module->registerProcessor<TTKGenericProcessor<ttkContourTree>>();
 }
 
 }  // namespace ttkwrapper

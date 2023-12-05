@@ -1,4 +1,4 @@
-#include "ivw_ttkmergetreetemporalreductionencoding.h"
+#include "ivw_ttkmergetreetemporalreduction.h"
 
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/ttk/processors/ttkgenericprocessor.h>
@@ -16,7 +16,7 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <vtkDataObject.h>
-#include <ttkMergeTreeTemporalReductionEncoding.h>
+#include <ttkMergeTreeTemporalReduction.h>
 #include <warn/pop>
 
 namespace inviwo {
@@ -27,7 +27,7 @@ namespace {
 #include <warn/ignore/conversion>
 
 struct Wrapper0 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetAssignmentSolver(property.get());
         return true;
     }
@@ -41,7 +41,7 @@ struct Wrapper0 {
 };
 
 struct Wrapper1 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetRemovalPercentage(property.get());
         return true;
     }
@@ -54,7 +54,7 @@ struct Wrapper1 {
 };
 
 struct Wrapper2 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetUseCustomTimeVariable(property.get());
         return true;
     }
@@ -65,7 +65,7 @@ struct Wrapper2 {
 };
 
 struct Wrapper3 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetUseL2Distance(property.get());
         return true;
     }
@@ -76,7 +76,7 @@ struct Wrapper3 {
 };
 
 struct Wrapper4 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
@@ -85,7 +85,7 @@ struct Wrapper4 {
 };
 
 struct Wrapper5 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetThreadNumber(property.get());
         return true;
     }
@@ -98,7 +98,7 @@ struct Wrapper5 {
 };
 
 struct Wrapper6 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetDebugLevel(property.get());
         return true;
     }
@@ -111,7 +111,7 @@ struct Wrapper6 {
 };
 
 struct Wrapper7 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
     }
@@ -125,7 +125,7 @@ ratio with respect to the total cluster number.)"_help,
 };
 
 struct Wrapper8 {
-    bool set(ttkMergeTreeTemporalReductionEncoding& filter) {
+    bool set(ttkMergeTreeTemporalReduction& filter) {
         filter.Modified();
         return true;
     }
@@ -139,10 +139,10 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMergeTreeTemporalReductionEncoding> {
-    static constexpr std::string_view className = "ttkMergeTreeTemporalReductionEncoding";
-    static constexpr std::string_view identifier = "ttkMergeTreeTemporalReductionEncoding";
-    static constexpr std::string_view displayName = "TTK MergeTreeTemporalReductionEncoding";
+struct TTKTraits<ttkMergeTreeTemporalReduction> {
+    static constexpr std::string_view className = "ttkMergeTreeTemporalReduction";
+    static constexpr std::string_view identifier = "ttkMergeTreeTemporalReduction";
+    static constexpr std::string_view displayName = "TTK MergeTreeTemporalReduction";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
@@ -178,8 +178,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/)";
 };
 
-void registerttkMergeTreeTemporalReductionEncoding(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMergeTreeTemporalReductionEncoding>>();
+void registerttkMergeTreeTemporalReduction(InviwoModule* module) {
+    module->registerProcessor<TTKGenericProcessor<ttkMergeTreeTemporalReduction>>();
 }
 
 }  // namespace ttkwrapper
