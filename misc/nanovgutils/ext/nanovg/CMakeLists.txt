@@ -41,7 +41,7 @@ else()
 endif()
 target_link_libraries(nanovg PUBLIC 
     ${OPENGL_LIBRARIES}
-    freetype
+    Freetype::Freetype
 )
 
 #--------------------------------------------------------------------
