@@ -32,15 +32,57 @@
 
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
+#include <inviwo/core/datastructures/image/layerram.h>
+#include <inviwo/core/datastructures/image/layerramprecision.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/glmutils.h>
 
 #include <vtkAbstractArray.h>
 #include <vtkArrayDispatch.h>
 
+class vtkImageData;
+
 namespace inviwo {
 
 namespace vtk {
+
+namespace detail {
+template <bool FloatingPoint, bool Signed, size_t Precision>
+constexpr auto typemap() {
+    if constexpr (FloatingPoint) {
+        if constexpr (Precision == 64) {
+            return double{};
+        } else {
+            return float();
+        }
+    } else {
+        if constexpr (Signed) {
+            if constexpr (Precision == 8) {
+                return char{};
+            } else if constexpr (Precision == 16) {
+                return short{};
+            } else if constexpr (Precision == 32) {
+                return int{};
+            } else if constexpr (Precision == 64) {
+                long long val{};
+                return val;
+            }
+        } else {
+            return std::make_unsigned_t<decltype(typemap<false, true, Precision>())>();
+        }
+    }
+}
+}  // namespace detail
+
+template <size_t Precision, typename Src>
+constexpr auto changePrecision(Src) {
+    using SrcE = util::glmtype_t<Src>;
+    using DstE = decltype(detail::typemap<std::is_floating_point_v<SrcE>, std::is_signed_v<SrcE>,
+                                          Precision>());
+    using Dst = util::same_extent_t<Src, DstE>;
+    return Dst{};
+}
 
 template <size_t N, typename TypedArray>
 auto getTuple(TypedArray* array, vtkIdType id) {
@@ -111,6 +153,52 @@ std::shared_ptr<BufferBase> arrayToBuffer(vtkDataArray* array, Transform transfo
 }
 
 template <size_t N, typename TypedArray, typename Transform>
+auto getLayerRAMOfTuple(size2_t dimensions, TypedArray* array, Transform transform) {
+    using DType = decltype(std::invoke(transform, getTuple<N>(array, 0)));
+    const auto nTuples = array->GetNumberOfTuples();
+
+    auto layer = std::make_shared<LayerRAMPrecision<DType>>(dimensions);
+
+    if (static_cast<vtkIdType>(glm::compMul(dimensions)) != nTuples) {
+        throw Exception("Invalid dims");
+    }
+
+    auto data = layer->getDataTyped();
+
+    for (int i = 0; i < nTuples; ++i) {
+        const auto val = std::invoke(transform, getTuple<N>(array, i));
+        data[i] = val;
+    }
+    return layer;
+}
+
+template <typename Transform>
+std::shared_ptr<LayerRAM> arrayToLayerRAM(size2_t dimensions, vtkDataArray* array,
+                                          Transform transform) {
+    std::shared_ptr<LayerRAM> layer;
+
+    auto worker = [&](auto* typedArray) {
+        const auto nComp = typedArray->GetNumberOfComponents();
+        if (nComp == 1) {
+            layer = getLayerRAMOfTuple<1>(dimensions, typedArray, transform);
+        } else if (nComp == 2) {
+            layer = getLayerRAMOfTuple<2>(dimensions, typedArray, transform);
+        } else if (nComp == 3) {
+            layer = getLayerRAMOfTuple<3>(dimensions, typedArray, transform);
+        } else if (nComp == 4) {
+            layer = getLayerRAMOfTuple<4>(dimensions, typedArray, transform);
+        } else {
+            throw Exception("no matching type");
+        }
+    };
+    if (!vtkArrayDispatch::Dispatch::Execute(array, worker)) {
+        throw Exception("no matching type");
+    }
+
+    return layer;
+}
+
+template <size_t N, typename TypedArray, typename Transform>
 auto getVolumeRAMOfTuple(size3_t dimensions, TypedArray* array, Transform transform) {
     using DType = decltype(std::invoke(transform, getTuple<N>(array, 0)));
     const auto nTuples = array->GetNumberOfTuples();
@@ -155,6 +243,11 @@ std::shared_ptr<VolumeRAM> arrayToVolumeRAM(size3_t dimensions, vtkDataArray* ar
 
     return ram;
 }
+
+IVW_MODULE_TTK_API std::shared_ptr<Layer> vtkImageDataToLayer(vtkImageData* vtkImage,
+                                                              int arrayIndex, int precision);
+IVW_MODULE_TTK_API std::shared_ptr<Volume> vtkImageDataToVolume(vtkImageData* vtkImage,
+                                                              int arrayIndex, int precision);
 
 }  // namespace vtk
 

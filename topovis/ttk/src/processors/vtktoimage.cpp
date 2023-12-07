@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2022 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,39 +27,36 @@
  *
  *********************************************************************************/
 
-#include <inviwo/ttk/processors/vtktovolume.h>
-#include <inviwo/core/datastructures/volume/volumeram.h>
-#include <inviwo/core/network/processornetwork.h>
-#include <inviwo/core/util/glm.h>
-#include <inviwo/core/util/formats.h>
+#include <inviwo/ttk/processors/vtktoimage.h>
+
+#include <inviwo/core/datastructures/image/image.h>
+#include <inviwo/core/datastructures/image/layer.h>
 #include <inviwo/core/util/utilities.h>
 
 #include <inviwo/ttk/arrayutils.h>
 
-#include <regex>
-
 #include <vtkImageData.h>
 #include <vtkPointData.h>
 #include <vtkDataArray.h>
-#include <vtkInformation.h>
-#include <vtkMatrix3x3.h>
+#include <vtkDataSet.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VTKToVolume::processorInfo_{
-    "org.inviwo.VTKToVolume",  // Class identifier
-    "VTK To Volume",           // Display name
-    "VTK",                     // Category
-    CodeState::Experimental,   // Code state
-    Tags::CPU,                 // Tags
-};
-const ProcessorInfo VTKToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VTKToImage::processorInfo_{
+    "org.inviwo.VTKToImage",               // Class identifier
+    "VTK To Image",                        // Display name
+    "VTK",                                 // Category
+    CodeState::Experimental,               // Code state
+    Tag::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
+    R"(Converts a VTKImageData dataset to an Inviwo image)"_unindentHelp};
 
-VTKToVolume::VTKToVolume()
-    : Processor()
-    , inport_("inport", "vtkDataSet")
-    , outport_("outport")
+const ProcessorInfo VTKToImage::getProcessorInfo() const { return processorInfo_; }
+
+VTKToImage::VTKToImage()
+    : Processor{}
+    , inport_{"vtkdata", VTK_IMAGE_DATA, "VTK dataset. Only VTK image data is accepted."_help}
+    , outport_{"outport", "Image extracted from the VTK dataset"_help}
     , source_{"source", "Source"}
     , precision_{"precision",
                  "Output Precision",
@@ -70,12 +67,14 @@ VTKToVolume::VTKToVolume()
                   {"full", "64 bit", 64}},
                  0}
     , information_("Information", "Data information") {
+
+    outport_.setHandleResizeEvents(false);
     addPorts(inport_, outport_);
 
     addProperties(source_, precision_, information_);
 }
 
-void VTKToVolume::updateSources(vtkDataSet* data) {
+void VTKToImage::updateSources(vtkDataSet* data) {
     std::vector<OptionPropertyOption<int>> opts;
 
     if (data) {
@@ -94,7 +93,7 @@ void VTKToVolume::updateSources(vtkDataSet* data) {
     source_.replaceOptions(opts);
 }
 
-void VTKToVolume::process() {
+void VTKToImage::process() {
     auto data = inport_.getData();
     auto vtkImg = vtkImageData::SafeDownCast(data);
 
@@ -108,16 +107,13 @@ void VTKToVolume::process() {
     }
 
     if (inport_.isChanged() || source_.isModified() || precision_.isModified()) {
-        volume_ = vtk::vtkImageDataToVolume(vtkImg, source_.getSelectedValue(), precision_);
-
-        information_.updateForNewVolume(*volume_, getNetwork()->isDeserializing()
-                                                      ? util::OverwriteState::Yes
-                                                      : util::OverwriteState::No);
+        layer_ = vtk::vtkImageDataToLayer(vtkImg, source_.getSelectedValue(), precision_);
     }
 
-    information_.updateVolume(*volume_);
+    auto image = std::make_shared<Image>(layer_);
+    information_.updateForNewImage(*image);
 
-    outport_.setData(volume_);
+    outport_.setData(image);
 }
 
 }  // namespace inviwo
