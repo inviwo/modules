@@ -213,7 +213,7 @@ namespace molvis {
  *
  * \see MolecularData
  */
-class IVW_MODULE_MOLVISBASE_API MolecularStructure : public SpatialEntity<3> {
+class IVW_MODULE_MOLVISBASE_API MolecularStructure : public SpatialEntity {
 public:
     /**
      * \brief data structure defining a single backbone segment
