@@ -30,6 +30,7 @@
 #include <inviwo/ttk/processors/vtktolayer.h>
 
 #include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/utilities.h>
 
 #include <inviwo/ttk/arrayutils.h>
@@ -106,9 +107,13 @@ void VTKToLayer::process() {
 
     if (inport_.isChanged() || source_.isModified() || precision_.isModified()) {
         layer_ = vtk::vtkImageDataToLayer(vtkImg, source_.getSelectedValue(), precision_);
+
+        const bool deserializing = getNetwork()->isDeserializing();
+        information_.updateForNewLayer(
+            *layer_, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
     }
 
-    information_.updateFromLayer(*layer_);
+    information_.updateLayer(*layer_);
 
     outport_.setData(layer_);
 }

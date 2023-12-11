@@ -91,22 +91,7 @@ std::shared_ptr<Layer> vtkImageDataToLayer(vtkImageData* vtkImage, int arrayInde
     const dmat3 basis{direction[0] * ddim[0] * spacing[0], direction[1] * ddim[1] * spacing[1],
                       direction[2] * ddim[2] * spacing[2]};
 
-    auto swizzleMask = [](int numComponents) {
-        switch (numComponents) {
-            case 1:
-                return swizzlemasks::luminance;
-            case 2:
-                return SwizzleMask{ImageChannel::Red, ImageChannel::Green, ImageChannel::Zero,
-                                   ImageChannel::One};
-            case 3:
-                return swizzlemasks::rgb;
-            case 4:
-            default:
-                return swizzlemasks::rgba;
-        }
-    };
-
-    layer->setSwizzleMask(swizzleMask(array->GetNumberOfComponents()));
+    layer->setSwizzleMask(swizzlemasks::defaultData(array->GetNumberOfComponents()));
 
     layer->setBasis(static_cast<mat3>(basis));
     layer->setOffset(static_cast<vec3>(offset));

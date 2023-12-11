@@ -110,9 +110,9 @@ void VTKToVolume::process() {
     if (inport_.isChanged() || source_.isModified() || precision_.isModified()) {
         volume_ = vtk::vtkImageDataToVolume(vtkImg, source_.getSelectedValue(), precision_);
 
-        information_.updateForNewVolume(*volume_, getNetwork()->isDeserializing()
-                                                      ? util::OverwriteState::Yes
-                                                      : util::OverwriteState::No);
+        const bool deserializing = getNetwork()->isDeserializing();
+        information_.updateForNewVolume(
+            *volume_, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
     }
 
     information_.updateVolume(*volume_);

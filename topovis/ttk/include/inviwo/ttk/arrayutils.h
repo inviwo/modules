@@ -247,7 +247,7 @@ std::shared_ptr<VolumeRAM> arrayToVolumeRAM(size3_t dimensions, vtkDataArray* ar
 IVW_MODULE_TTK_API std::shared_ptr<Layer> vtkImageDataToLayer(vtkImageData* vtkImage,
                                                               int arrayIndex, int precision);
 IVW_MODULE_TTK_API std::shared_ptr<Volume> vtkImageDataToVolume(vtkImageData* vtkImage,
-                                                              int arrayIndex, int precision);
+                                                                int arrayIndex, int precision);
 
 }  // namespace vtk
 
