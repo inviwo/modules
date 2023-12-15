@@ -34,6 +34,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/layerport.h>
 #include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
 #include <inviwo/ttk/ports/vtkinport.h>
 
@@ -60,6 +61,7 @@ private:
     OptionPropertyInt precision_;
 
     LayerInformationProperty information_;
+    BasisProperty basis_;
 
     std::shared_ptr<Layer> layer_;
 };

@@ -66,11 +66,12 @@ VTKToLayer::VTKToLayer()
                   {"heigh", "32 bit", 32},
                   {"full", "64 bit", 64}},
                  0}
-    , information_("Information", "Data information") {
+    , information_("Information", "Data Information")
+    , basis_("Basis", "Basis and Offset") {
 
     addPorts(inport_, outport_);
 
-    addProperties(source_, precision_, information_);
+    addProperties(source_, precision_, information_, basis_);
 }
 
 void VTKToLayer::updateSources(vtkDataSet* data) {
@@ -109,11 +110,13 @@ void VTKToLayer::process() {
         layer_ = vtk::vtkImageDataToLayer(vtkImg, source_.getSelectedValue(), precision_);
 
         const bool deserializing = getNetwork()->isDeserializing();
+        basis_.updateForNewEntity(*layer_, deserializing);
         information_.updateForNewLayer(
             *layer_, deserializing ? util::OverwriteState::Yes : util::OverwriteState::No);
     }
 
     information_.updateLayer(*layer_);
+    basis_.updateEntity(*layer_);
 
     outport_.setData(layer_);
 }
