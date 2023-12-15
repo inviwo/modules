@@ -53,7 +53,7 @@ TriangulationData::TriangulationData(std::vector<vec3> points, const std::vector
 }
 
 TriangulationData::TriangulationData(const TriangulationData& rhs)
-    : SpatialEntity<3>(rhs)
+    : SpatialEntity(rhs)
     , MetaDataOwner(rhs)
     , cells_(rhs.cells_)
     , points_(rhs.points_)
@@ -75,7 +75,7 @@ TriangulationData::TriangulationData(const TriangulationData& rhs)
 }
 
 TriangulationData::TriangulationData(TriangulationData&& rhs)
-    : SpatialEntity<3>(rhs)
+    : SpatialEntity(rhs)
     , MetaDataOwner(rhs)
     , cells_(std::move(rhs.cells_))
     , points_(std::move(rhs.points_))
@@ -83,7 +83,7 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
     , triangulation_{std::move(rhs.triangulation_)}
     , scalars_(std::move(rhs.scalars_))
     , gridDims_(std::move(rhs.gridDims_))
-    , gridOrigin_(std::move(rhs.gridOrigin_))
+    , gridOrigin_(std::move(rhs.gridOrigin_))♦
     , gridExtent_(std::move(rhs.gridExtent_)) {
     if (rhs.isUniformGrid()) {
         set(gridDims_, gridOrigin_, gridExtent_, rhs.getDataMapper());
@@ -97,7 +97,7 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
 
 TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
     if (this != &rhs) {
-        SpatialEntity<3>::operator=(rhs);
+        SpatialEntity::operator=(rhs);
         MetaDataOwner::operator=(rhs);
 
         cells_ = rhs.cells_;
@@ -123,7 +123,7 @@ TriangulationData& TriangulationData::operator=(const TriangulationData& rhs) {
 
 TriangulationData& TriangulationData::operator=(TriangulationData&& rhs) {
     if (this != &rhs) {
-        SpatialEntity<3>::operator=(rhs);
+        SpatialEntity::operator=(rhs);
         MetaDataOwner::operator=(rhs);
 
         cells_ = std::move(rhs.cells_);
@@ -456,9 +456,9 @@ vec3& TriangulationData::operator[](size_t i) { return points_[i]; }
 
 const vec3& TriangulationData::operator[](size_t i) const { return points_[i]; }
 
-const SpatialCameraCoordinateTransformer<3>& TriangulationData::getCoordinateTransformer(
+const SpatialCameraCoordinateTransformer& TriangulationData::getCoordinateTransformer(
     const Camera& camera) const {
-    return SpatialEntity<3>::getCoordinateTransformer(camera);
+    return SpatialEntity::getCoordinateTransformer(camera);
 }
 
 std::vector<uint32_t> TriangulationData::convertToTriangles(const std::vector<uint32_t>& indices,

@@ -59,7 +59,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     topology::MorseSmaleComplexInport inport_;
-    DataInport<SpatialSampler<3, 3, double>> sampler_;
+    DataInport<SpatialSampler<3, double>> sampler_;
     MeshOutport outport_;
 
 private:
