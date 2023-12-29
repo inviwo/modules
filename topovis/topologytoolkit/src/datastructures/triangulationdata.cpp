@@ -83,7 +83,7 @@ TriangulationData::TriangulationData(TriangulationData&& rhs)
     , triangulation_{std::move(rhs.triangulation_)}
     , scalars_(std::move(rhs.scalars_))
     , gridDims_(std::move(rhs.gridDims_))
-    , gridOrigin_(std::move(rhs.gridOrigin_))♦
+    , gridOrigin_(std::move(rhs.gridOrigin_))
     , gridExtent_(std::move(rhs.gridExtent_)) {
     if (rhs.isUniformGrid()) {
         set(gridDims_, gridOrigin_, gridExtent_, rhs.getDataMapper());
