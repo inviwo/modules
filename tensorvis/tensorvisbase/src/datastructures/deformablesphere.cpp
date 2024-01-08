@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2016-2023 Inviwo Foundation
+ * Copyright (c) 2016-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -66,7 +66,7 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
     faces_.clear();
     faces_.reserve(nFaces);
 
-    auto calcVert = [](vec3 & vertex, const float& cosphi, const float& sinphi,
+    auto calcVert = [](vec3& vertex, const float& cosphi, const float& sinphi,
                        const float& costheta, const float& sintheta) -> auto {
         auto sgnsinphi = int(glm::sign(sinphi));
         auto sgncosphi = int(glm::sign(cosphi));

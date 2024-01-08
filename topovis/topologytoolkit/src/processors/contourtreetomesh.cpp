@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2023 Inviwo Foundation
+ * Copyright (c) 2019-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,7 @@
 
 #include <inviwo/topologytoolkit/processors/contourtreetomesh.h>
 
-//#include <inviwo/topologytoolkit/utils/ttkutils.h>
+// #include <inviwo/topologytoolkit/utils/ttkutils.h>
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
 
