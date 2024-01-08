@@ -11,18 +11,16 @@ namespace inviwo {
 namespace detail {
 
 template <typename V, typename H, typename M, typename P>
-P seedTransform(const M &m, const P &pIn) {
+P seedTransform(const M& m, const P& pIn) {
     auto p = m * H(pIn, 1.0f);
-    return P(p) / p[SpatialSampler<3, 3, double>::DataDimensions];
+    return P(p) / p[SpatialSampler<3, double>::DataDimensions];
 }
 
-template <typename SpatialVector, typename DataVector, typename Sampler, typename F,
-          typename DataMatrix>
-std::tuple<SpatialVector, DataVector, bool> hyperstep(const SpatialVector &oldPos,
-                                                      IntegralLineProperties::IntegrationScheme,
-                                                      F stepSize, const DataMatrix &invBasis,
-                                                      bool normalizeSamples, const Sampler &sampler,
-                                                      const bool prevFlipped) {
+template <typename DataVector, typename Sampler, typename F, typename DataMatrix>
+std::tuple<dvec3, DataVector, bool> hyperstep(const dvec3& oldPos,
+                                              IntegralLineProperties::IntegrationScheme, F stepSize,
+                                              const DataMatrix& invBasis, bool normalizeSamples,
+                                              const Sampler& sampler, const bool prevFlipped) {
 
     auto normalize = [](auto v) {
         auto l = glm::length(v);
@@ -83,32 +81,30 @@ public:
     /*
      * Various types used within this class
      */
-    using SpatialVector = Vector<SpatialSampler<3, 3, double>::SpatialDimensions, double>;
-    using DataVector = Vector<SpatialSampler<3, 3, double>::DataDimensions, double>;
-    using DataHomogenousVector = Vector<SpatialSampler<3, 3, double>::DataDimensions + 1, double>;
-    using SpatialMatrix = Matrix<SpatialSampler<3, 3, double>::SpatialDimensions, double>;
-    using DataMatrix = Matrix<SpatialSampler<3, 3, double>::DataDimensions, double>;
-    using DataHomogenouSpatialMatrixrix =
-        Matrix<SpatialSampler<3, 3, double>::DataDimensions + 1, double>;
+    using DataVector = Vector<SpatialSampler<3, double>::DataDimensions, double>;
+    using DataHomogeneousVector = Vector<SpatialSampler<3, double>::DataDimensions + 1, double>;
+    using DataMatrix = Matrix<SpatialSampler<3, double>::DataDimensions, double>;
+    using DataHomogeneousSpatialMatrix =
+        Matrix<SpatialSampler<3, double>::DataDimensions + 1, double>;
 
-    HyperStreamLineTracer(std::shared_ptr<const SpatialSampler<3, 3, double>> sampler,
-                          const IntegralLineProperties &properties);
+    HyperStreamLineTracer(std::shared_ptr<const SpatialSampler<3, double>> sampler,
+                          const IntegralLineProperties& properties);
 
-    Result traceFrom(const SpatialVector &pIn);
+    Result traceFrom(const dvec3& pIn);
 
-    void addMetaDataSampler(const std::string &name,
-                            std::shared_ptr<const SpatialSampler<3, 3, double>> sampler);
+    void addMetaDataSampler(const std::string& name,
+                            std::shared_ptr<const SpatialSampler<3, double>> sampler);
 
-    const DataHomogenouSpatialMatrixrix &getSeedTransformationMatrix() const;
+    const DataHomogeneousSpatialMatrix& getSeedTransformationMatrix() const;
 
     void setTransformOutputToWorldSpace(bool transform);
     bool isTransformingOutputToWorldSpace() const;
 
 private:
-    bool addPoint(IntegralLine &line, const SpatialVector &pos);
-    bool addPoint(IntegralLine &line, const SpatialVector &pos, const DataVector &worldVelocity);
+    bool addPoint(IntegralLine& line, const dvec3& pos);
+    bool addPoint(IntegralLine& line, const dvec3& pos, const DataVector& worldVelocity);
 
-    IntegralLine::TerminationReason integrate(size_t steps, SpatialVector pos, IntegralLine &line,
+    IntegralLine::TerminationReason integrate(size_t steps, const dvec3& pos, IntegralLine& line,
                                               bool fwd);
 
     IntegralLineProperties::IntegrationScheme integrationScheme_;
@@ -118,13 +114,12 @@ private:
     IntegralLineProperties::Direction dir_;
     bool normalizeSamples_;
 
-    std::shared_ptr<const SpatialSampler<3, 3, double>> sampler_;
-    std::unordered_map<std::string, std::shared_ptr<const SpatialSampler<3, 3, double>>>
-        metaSamplers_;
+    std::shared_ptr<const SpatialSampler<3, double>> sampler_;
+    std::unordered_map<std::string, std::shared_ptr<const SpatialSampler<3, double>>> metaSamplers_;
 
     DataMatrix invBasis_;
-    DataHomogenouSpatialMatrixrix seedTransformation_;
-    DataHomogenouSpatialMatrixrix toWorld_;
+    DataHomogeneousSpatialMatrix seedTransformation_;
+    DataHomogeneousSpatialMatrix toWorld_;
     bool transformOutputToWorldSpace_;
 };
 

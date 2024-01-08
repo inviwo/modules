@@ -38,7 +38,10 @@
 #include <inviwo/ttk/ports/vtkoutport.h>
 
 #include <inviwo/ttk/processors/imagetovtk.h>
+#include <inviwo/ttk/processors/layertovtk.h>
 #include <inviwo/ttk/processors/vtksource.h>
+#include <inviwo/ttk/processors/vtktoimage.h>
+#include <inviwo/ttk/processors/vtktolayer.h>
 #include <inviwo/ttk/ttkmodule.h>
 
 #include <registerttkfilters.h>
@@ -80,10 +83,13 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     ttkwrapper::registerTTKFilters(this);
     // registerProcessor < TTKGenericProcessor < ttkMorseSmaleComplex>>();
     registerProcessor<ImageToVTK>();
+    registerProcessor<LayerToVTK>();
     registerProcessor<VolumeToVTK>();
     registerProcessor<VTKToVolume>();
     registerProcessor<VTKDowncastData>();
     registerProcessor<VTKToDataFrame>();
+    registerProcessor<VTKToImage>();
+    registerProcessor<VTKToLayer>();
     registerProcessor<VTKToMesh>();
     registerProcessor<VTKToTetraMesh>();
     registerProcessor<vtk::VTKSource>();

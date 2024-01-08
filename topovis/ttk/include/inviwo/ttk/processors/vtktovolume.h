@@ -34,6 +34,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
 #include <inviwo/ttk/ports/vtkinport.h>
 
@@ -61,6 +62,7 @@ private:
     OptionPropertyInt precision_;
 
     VolumeInformationProperty information_;
+    BasisProperty basis_;
 
     std::shared_ptr<Volume> volume_;
 };

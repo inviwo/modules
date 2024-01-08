@@ -64,7 +64,7 @@ namespace topology {
  * hold doubles. When accessing the point data, it is converted to float. See
  * ttk::ExplicitTriangulation::getVertexPoint().
  */
-class IVW_MODULE_TOPOLOGYTOOLKIT_API TriangulationData : public SpatialEntity<3>,
+class IVW_MODULE_TOPOLOGYTOOLKIT_API TriangulationData : public SpatialEntity,
                                                          public MetaDataOwner {
 public:
     enum class InputTriangulation { Edges, Triangles, Tetrahedra };
@@ -234,9 +234,9 @@ public:
      */
     size_t getCellCount() const;
 
-    virtual const SpatialCameraCoordinateTransformer<3>& getCoordinateTransformer(
+    virtual const SpatialCameraCoordinateTransformer& getCoordinateTransformer(
         const Camera& camera) const;
-    using SpatialEntity<3>::getCoordinateTransformer;
+    using SpatialEntity::getCoordinateTransformer;
 
 private:
     std::vector<uint32_t> convertToTriangles(const std::vector<uint32_t>& indices,

@@ -23,8 +23,8 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<SpatialSampler<3, 3, double>> sampler_;
-    SeedPointsInport<SpatialSampler<3, 3, double>::SpatialDimensions> seeds_;
+    DataInport<SpatialSampler<3, double>> sampler_;
+    SeedPointsInport<SpatialSampler<3, double>::SpatialDimensions> seeds_;
 
     IntegralLineSetOutport lines_;
 

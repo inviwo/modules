@@ -29,4 +29,181 @@
 
 #include <inviwo/ttk/arrayutils.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <inviwo/core/datastructures/image/layer.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/glm.h>
+
+#include <vtkImageData.h>
+#include <vtkPointData.h>
+#include <vtkDataArray.h>
+#include <vtkInformation.h>
+#include <vtkMatrix3x3.h>
+
+#include <regex>
+
+namespace inviwo::vtk {
+
+std::shared_ptr<Layer> vtkImageDataToLayer(vtkImageData* vtkImage, int arrayIndex, int precision) {
+    if (!vtkImage) return nullptr;
+
+    const ivec2 dim = glm::make_vec2(vtkImage->GetDimensions());
+    auto array = vtkImage->GetPointData()->GetArray(arrayIndex);
+
+    auto ram = [&]() {
+        if (precision == 8) {
+            return vtk::arrayToLayerRAM(static_cast<size2_t>(dim), array, [](auto item) {
+                using Dst = decltype(changePrecision<8>(item));
+                return static_cast<Dst>(item);
+            });
+        } else if (precision == 16) {
+            return vtk::arrayToLayerRAM(static_cast<size2_t>(dim), array, [](auto item) {
+                using Dst = decltype(changePrecision<16>(item));
+                return static_cast<Dst>(item);
+            });
+        } else if (precision == 32) {
+            return vtk::arrayToLayerRAM(static_cast<size2_t>(dim), array, [](auto item) {
+                using Dst = decltype(changePrecision<32>(item));
+                return static_cast<Dst>(item);
+            });
+        } else if (precision == 64) {
+            return vtk::arrayToLayerRAM(static_cast<size2_t>(dim), array, [](auto item) {
+                using Dst = decltype(changePrecision<64>(item));
+                return static_cast<Dst>(item);
+            });
+        } else {
+            return vtk::arrayToLayerRAM(static_cast<size2_t>(dim), array,
+                                        [](auto item) { return item; });
+        }
+    }();
+
+    if (ram->getDataFormatId() == DataFormatId::NotSpecialized) {
+        throw Exception(IVW_CONTEXT_CUSTOM("vtk::vtkImageDataToLayer"),
+                        "No valid inviwo DataFormat found for '{}' with '{}' components",
+                        array->GetDataTypeAsString(), array->GetNumberOfComponents());
+    }
+
+    auto layer = std::make_shared<Layer>(ram);
+
+    const dvec3 offset = glm::make_vec3(vtkImage->GetOrigin());
+    const dvec3 spacing = glm::make_vec3(vtkImage->GetSpacing());
+    const dmat3 direction = glm::make_mat3x3(vtkImage->GetDirectionMatrix()->GetData());
+    const dvec3 ddim{dim, 0};
+    const dmat3 basis{direction[0] * ddim[0] * spacing[0], direction[1] * ddim[1] * spacing[1],
+                      direction[2] * ddim[2] * spacing[2]};
+
+    layer->setSwizzleMask(swizzlemasks::defaultData(array->GetNumberOfComponents()));
+
+    layer->setBasis(static_cast<mat3>(basis));
+    layer->setOffset(static_cast<vec3>(offset));
+
+    vtkInformation* info = array->GetInformation();
+    if (info->Has(vtkDataArray::UNITS_LABEL())) {
+        std::regex re{R"((.*)\[(.*)\])"};
+        std::smatch m;
+        auto label = std::string{info->Get(vtkDataArray::UNITS_LABEL())};
+        if (std::regex_match(label, m, re)) {
+            layer->dataMap.valueAxis.name = util::trim(m.str(1));
+            layer->dataMap.valueAxis.unit = units::unit_from_string(m.str(2));
+        }
+    }
+    if (layer->dataMap.valueAxis.name.empty()) {
+        layer->dataMap.valueAxis.name = array->GetName();
+    }
+
+    if (info->Has(vtkDataArray::COMPONENT_RANGE())) {
+        auto* range = info->Get(vtkDataArray::COMPONENT_RANGE());
+        layer->dataMap.dataRange[0] = range[0];
+        layer->dataMap.dataRange[1] = range[1];
+        layer->dataMap.valueRange = layer->dataMap.dataRange;
+    } else {
+        auto* range = array->GetRange();
+        layer->dataMap.dataRange[0] = range[0];
+        layer->dataMap.dataRange[1] = range[1];
+        layer->dataMap.valueRange = layer->dataMap.dataRange;
+    }
+
+    return layer;
+}
+
+std::shared_ptr<Volume> vtkImageDataToVolume(vtkImageData* vtkImage, int arrayIndex,
+                                             int precision) {
+    if (!vtkImage) return nullptr;
+
+    const ivec3 dim = glm::make_vec3(vtkImage->GetDimensions());
+    auto array = vtkImage->GetPointData()->GetArray(arrayIndex);
+
+    auto ram = [&]() {
+        if (precision == 8) {
+            return vtk::arrayToVolumeRAM(static_cast<size3_t>(dim), array, [](auto item) {
+                using Dst = decltype(vtk::changePrecision<8>(item));
+                return static_cast<Dst>(item);
+            });
+        } else if (precision == 16) {
+            return vtk::arrayToVolumeRAM(static_cast<size3_t>(dim), array, [](auto item) {
+                using Dst = decltype(vtk::changePrecision<16>(item));
+                return static_cast<Dst>(item);
+            });
+        } else if (precision == 32) {
+            return vtk::arrayToVolumeRAM(static_cast<size3_t>(dim), array, [](auto item) {
+                using Dst = decltype(vtk::changePrecision<32>(item));
+                return static_cast<Dst>(item);
+            });
+        } else if (precision == 64) {
+            return vtk::arrayToVolumeRAM(static_cast<size3_t>(dim), array, [](auto item) {
+                using Dst = decltype(vtk::changePrecision<64>(item));
+                return static_cast<Dst>(item);
+            });
+        } else {
+            return vtk::arrayToVolumeRAM(static_cast<size3_t>(dim), array,
+                                         [](auto item) { return item; });
+        }
+    }();
+
+    if (ram->getDataFormatId() == DataFormatId::NotSpecialized) {
+        throw Exception(IVW_CONTEXT_CUSTOM("vtk::vtkImageDataToVolume"),
+                        "No valid inviwo DataFormat found for '{}' with '{}' components",
+                        array->GetDataTypeAsString(), array->GetNumberOfComponents());
+    }
+
+    auto volume = std::make_shared<Volume>(ram);
+
+    const dvec3 offset = glm::make_vec3(vtkImage->GetOrigin());
+    const dvec3 spacing = glm::make_vec3(vtkImage->GetSpacing());
+    const dmat3 direction = glm::make_mat3x3(vtkImage->GetDirectionMatrix()->GetData());
+    const dvec3 ddim{dim};
+    const dmat3 basis{direction[0] * ddim[0] * spacing[0], direction[1] * ddim[1] * spacing[1],
+                      direction[2] * ddim[2] * spacing[2]};
+
+    volume->setBasis(static_cast<mat3>(basis));
+    volume->setOffset(static_cast<vec3>(offset));
+
+    vtkInformation* info = array->GetInformation();
+    if (info->Has(vtkDataArray::UNITS_LABEL())) {
+        std::regex re{R"((.*)\[(.*)\])"};
+        std::smatch m;
+        auto label = std::string{info->Get(vtkDataArray::UNITS_LABEL())};
+        if (std::regex_match(label, m, re)) {
+            volume->dataMap_.valueAxis.name = util::trim(m.str(1));
+            volume->dataMap_.valueAxis.unit = units::unit_from_string(m.str(2));
+        }
+    }
+    if (volume->dataMap_.valueAxis.name.empty()) {
+        volume->dataMap_.valueAxis.name = array->GetName();
+    }
+
+    if (info->Has(vtkDataArray::COMPONENT_RANGE())) {
+        auto* range = info->Get(vtkDataArray::COMPONENT_RANGE());
+        volume->dataMap_.dataRange[0] = range[0];
+        volume->dataMap_.dataRange[1] = range[1];
+        volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+    } else {
+        auto* range = array->GetRange();
+        volume->dataMap_.dataRange[0] = range[0];
+        volume->dataMap_.dataRange[1] = range[1];
+        volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+    }
+
+    return volume;
+}
+
+}  // namespace inviwo::vtk

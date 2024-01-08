@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2023 Inviwo Foundation
+ * Copyright (c) 2023 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,54 +29,41 @@
 
 #pragma once
 
-#include <inviwo/topologytoolkit/topologytoolkitmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/topologytoolkit/ports/morsesmalecomplexport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/ports/layerport.h>
+#include <modules/base/properties/layerinformationproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
-#include <inviwo/springsystem/datastructures/springsystem.h>
-#include <inviwo/core/util/spatialsampler.h>
+#include <inviwo/ttk/ports/vtkinport.h>
 
-#include <inviwo/topologytoolkit/properties/topologycolorsproperty.h>
-#include <inviwo/topologytoolkit/properties/topologyfilterproperty.h>
+class vtkDataSet;
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.SeparatrixRefiner, Separatrix Refiner}
- * ![](org.inviwo.SeparatrixRefiner.png?classIdentifier=org.inviwo.SeparatrixRefiner)
- */
-
-class IVW_MODULE_TOPOLOGYTOOLKIT_API SeparatrixRefiner : public Processor {
+class IVW_MODULE_TTK_API VTKToLayer : public Processor {
 public:
-    SeparatrixRefiner();
-    virtual ~SeparatrixRefiner() = default;
+    VTKToLayer();
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    topology::MorseSmaleComplexInport inport_;
-    DataInport<SpatialSampler<3, double>> sampler_;
-    MeshOutport outport_;
-
 private:
-    TopologyColorsProperty colors_;
-    TopologyFilterProperty filters_;
-    FloatProperty sphereRadius_;
-    FloatProperty lineThickness_;
-    BoolProperty fillPBC_;
+    void updateSources(vtkDataSet* data);
 
-    CompositeProperty springSys_;
-    IntSizeTProperty timesteps_;
-    FloatProperty timestep_;
-    FloatProperty springLength_;
-    FloatProperty springLinearConstant_;
-    FloatProperty springSquareConstant_;
-    FloatProperty springDamping_;
-    FloatProperty gradientScale_;
+    vtk::VtkInport inport_;
+    LayerOutport outport_;
+
+    OptionPropertyInt source_;
+    OptionPropertyInt precision_;
+
+    LayerInformationProperty information_;
+    BasisProperty basis_;
+
+    std::shared_ptr<Layer> layer_;
 };
 
 }  // namespace inviwo
