@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace ttkwrapper {
-void registerttkFTMTree(InviwoModule* module);
+void registerttkReebGraph(InviwoModule* module);
 }  // namespace ttkwrapper
 }  // namespace inviwo

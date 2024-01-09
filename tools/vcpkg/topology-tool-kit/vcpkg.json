@@ -1,6 +1,7 @@
 {
   "name": "topology-tool-kit",
   "version-string": "1.2.0",
+  "port-version" : 3,
   "description": "TTK - The Topology ToolKit",
   "homepage": "https://github.com/topology-tool-kit/ttk",
   "dependencies": [

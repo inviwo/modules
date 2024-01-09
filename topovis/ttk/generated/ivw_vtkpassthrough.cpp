@@ -26,24 +26,33 @@ namespace {
 #include <warn/push>
 #include <warn/ignore/conversion>
 
+struct Wrapper0 {
+    bool set(vtkPassThrough& filter) {
+        filter.SetAllowNullInput(property.get());
+        return true;
+    }
+    BoolProperty property{"AllowNullInput", "AllowNullInput",
+                          R"(Allow the filter to execute successful, producing an empty polydata,
+when the input is not specified.)"_help,
+                          true};
+};
+
 #include <warn/pop>
 
 }  // namespace
 template <>
 struct TTKTraits<vtkPassThrough> {
     static constexpr std::string_view className = "vtkPassThrough";
-    static constexpr std::string_view identifier = "PlotAttributes";
-    static constexpr std::string_view displayName = "Plot Data";
+    static constexpr std::string_view identifier = "PipelineConnection";
+    static constexpr std::string_view displayName = "Pipeline Connection";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataObject", -1, R"(The input.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkDataSet", -1, R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
-    std::tuple<> properties;
-    static constexpr std::string_view doc = R"(This filter
-prepare arbitrary data to be plotted in any of the plots. By default the
-data is shown in a XY line plot.)";
+    std::tuple<Wrapper0> properties;
+    static constexpr std::string_view doc =
+        R"(This proxy provides UI for selecting an existing pipeline connection.)";
 };
 
 void registervtkPassThrough(InviwoModule* module) {
