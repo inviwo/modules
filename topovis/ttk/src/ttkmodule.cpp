@@ -38,6 +38,7 @@
 #include <inviwo/ttk/ports/vtkoutport.h>
 
 #include <inviwo/ttk/processors/imagetovtk.h>
+#include <inviwo/ttk/processors/mergetreetonodes.h>
 #include <inviwo/ttk/processors/vtksource.h>
 #include <inviwo/ttk/ttkmodule.h>
 
@@ -80,6 +81,7 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     ttkwrapper::registerTTKFilters(this);
     // registerProcessor < TTKGenericProcessor < ttkMorseSmaleComplex>>();
     registerProcessor<ImageToVTK>();
+    registerProcessor<MergeTreeToNodes>();
     registerProcessor<VolumeToVTK>();
     registerProcessor<VTKToVolume>();
     registerProcessor<VTKDowncastData>();
