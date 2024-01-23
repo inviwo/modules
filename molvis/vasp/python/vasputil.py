@@ -37,7 +37,7 @@ import numpy
 from pathlib import Path
 
 
-def parseFile(file, flipSign=False, centerData=True):
+def parseFile(file, flipSign=False, centerData=True, createSuperCell=False):
     file = Path(file)
     if file.suffix == ".xz":
         import lzma
@@ -62,16 +62,32 @@ def parseFile(file, flipSign=False, centerData=True):
 
     elem = lines[5].strip().split()
     nelem = list(map(int, lines[6].strip().split()))
+
+    # use if createSuperCell...
+    nelem_new = []
+    for elem_member in nelem:
+        nelem_new.append(8 * elem_member)
+
     direct = not {lines[7].strip()[0]}.issubset({"K", "k", "C", "c"})
     ntot = functools.reduce(lambda x, y: x + y, nelem)
     pos = []
     for line in lines[8:8 + ntot]:
-        pos.append(numpy.array(list(map(float, line.strip().split()))))
+        if not createSuperCell:
+            pos.append(numpy.array(list(map(float, line.strip().split()))))
+        else:
+            coords = list(map(float, line.strip().split()))
+            for xx in range(2):
+                for yy in range(2):
+                    for zz in range(2):
+                        pos.append(numpy.array((0.5 * (coords[0]+xx), 0.5 * (coords[1]+yy), 0.5*(coords[2]+zz))))
     pos = numpy.array(pos).astype(numpy.float32)
 
     factor = scale if scale >= 0.0 else numpy.power(
         -scale / numpy.dot(a3, numpy.cross(a2, a1)), 1 / 3)
     basis = numpy.array([a1, a2, a3]) * factor
+
+    if createSuperCell:
+        basis = 2 * basis
 
     offset = -0.5 * (basis[0] + basis[1] + basis[2]) if centerData else 0
 
@@ -93,6 +109,24 @@ def parseFile(file, flipSign=False, centerData=True):
 
     chgdata = numpy.array(chg).astype(numpy.float32)
     chgdata.shape = (dims[2], dims[1], dims[0])
+
+    if createSuperCell:
+        # Repeat volume 2x2x2
+        exDims = (2*dims[2], 2*dims[1], 2*dims[0])
+        exDataArr = numpy.zeros(exDims)
+        exDataArr[0:dims[2],0:dims[1],0:dims[0]] = chgdata
+        exDataArr[0:dims[2],0:dims[1],dims[0]:] = chgdata
+        exDataArr[0:dims[2],dims[1]:,0:dims[0]] = chgdata
+        exDataArr[0:dims[2],dims[1]:,dims[0]:] = chgdata
+        exDataArr[dims[2]:,0:dims[1],0:dims[0]] = chgdata
+        exDataArr[dims[2]:,0:dims[1],dims[0]:] = chgdata
+        exDataArr[dims[2]:,dims[1]:,0:dims[0]] = chgdata
+        exDataArr[dims[2]:,dims[1]:,dims[0]:] = chgdata
+
+        exDataArr = numpy.float32(exDataArr)
+        exDataArr.shape = [2*dims[2], 2*dims[1], 2*dims[0]]
+        
+        chgdata = exDataArr
 
     pyvolume = ivw.data.VolumePy(chgdata,
                                  interpolation=ivw.data.InterpolationType.Linear,
@@ -116,9 +150,9 @@ def parseFile(file, flipSign=False, centerData=True):
     volume.offset = ivw.glm.vec3(offset)
 
     atoms = []
-    for i, n in enumerate(nelem):
+    for i, n in enumerate(nelem_new if createSuperCell else nelem):
         element = ivwmolvis.atomicelement.fromAbbr(elem[i])
         for x in range(n):
             atoms.append(element)
 
-    return (volume, pos, elem, nelem, atoms)
+    return (volume, pos, elem, nelem_new if createSuperCell else nelem, atoms)

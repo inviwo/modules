@@ -131,6 +131,10 @@ class ChgcarSource(ivw.Processor):
 
         self.pm = ivw.PickingMapper(self, 1, lambda x: self.callback(x))
 
+        self.createSuperCell = ivw.properties.BoolProperty(
+            "createSuperCell", "Create super cell (2x2x2)", False)
+        self.addProperty(self.createSuperCell)
+
     @staticmethod
     def processorInfo():
         return ivw.ProcessorInfo(
@@ -157,7 +161,7 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
             
 
         self.volume, self.atomPos, self.elem, self.nelem, self.atomTypes = vasputil.parseFile(
-            self.chgcarFilePath.value, self.flipSign.value, self.centerData.value)
+            self.chgcarFilePath.value, self.flipSign.value, self.centerData.value, self.createSuperCell.value)
         self.dataRange.value = self.volume.dataMap.dataRange
 
         self.volume.dataMap.dataRange = (
