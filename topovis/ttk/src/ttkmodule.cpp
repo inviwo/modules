@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/ttk/ttkmodule.h>
+#include <inviwo/ttk/processors/mergetreetonodes.h>
 
 #include <registerfilters.h>
 
@@ -41,6 +42,7 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
 
     // Processors
     vtkwrapper::registerVTKFilters(this);
+    registerProcessor<MergeTreeToNodes>();
 }
 
 int ttkModule::getVersion() const { return 1; }
