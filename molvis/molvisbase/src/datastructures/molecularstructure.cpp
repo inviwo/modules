@@ -289,7 +289,11 @@ void verifyData(const MolecularData& data) {
 
 }  // namespace detail
 
-MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(data)} {
+MolecularStructure::MolecularStructure(MolecularData data)
+    : axes{{{"x", Unit(units::precise::distance::angstrom)},
+            {"y", Unit(units::precise::distance::angstrom)},
+            {"z", Unit(units::precise::distance::angstrom)}}}
+    , data_{std::move(data)} {
     detail::verifyData(data_);
 
     if (!data_.atoms.residueIds.empty() && !data_.residues.empty() &&
@@ -305,6 +309,13 @@ MolecularStructure::MolecularStructure(MolecularData data) : data_{std::move(dat
 }
 
 MolecularStructure* MolecularStructure::clone() const { return new MolecularStructure(*this); }
+
+const Axis* MolecularStructure::getAxis(size_t index) const {
+    if (index > 3) {
+        return nullptr;
+    }
+    return &axes[index];
+}
 
 const MolecularData& MolecularStructure::data() const { return data_; }
 
