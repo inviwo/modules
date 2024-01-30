@@ -108,7 +108,7 @@ void getNodeIds(vtkUnstructuredGrid* vtkData, std::vector<ivec4>& nodeIds) {
 }  // namespace detail
 
 VTKTetraMesh::VTKTetraMesh(utilvtk::ArrayBufferMapper& bufferMapper, vtkUnstructuredGrid* vtkData)
-    : bufferMapper_{bufferMapper}, vtkData_{nullptr} {
+    : axes{util::defaultAxes<3>()}, bufferMapper_{bufferMapper}, vtkData_{nullptr} {
     setData(vtkData);
 }
 
@@ -181,6 +181,13 @@ dvec2 VTKTetraMesh::getDataRange() const {
     } else {
         return dvec2{0.0, 1.0};
     }
+}
+
+const Axis* VTKTetraMesh::getAxis(size_t index) const {
+    if (index >= 3) {
+        return nullptr;
+    }
+    return &axes[index];
 }
 
 }  // namespace inviwo

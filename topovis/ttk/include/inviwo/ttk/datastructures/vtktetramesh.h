@@ -78,6 +78,13 @@ public:
      */
     virtual dvec2 getDataRange() const override;
 
+    /**
+     * @copydoc SpatialEntity::getAxis
+     */
+    virtual const Axis* getAxis(size_t index) const override;
+
+    std::array<Axis, 3> axes;
+
 private:
     utilvtk::ArrayBufferMapper& bufferMapper_;
     vtkUnstructuredGrid* vtkData_;
