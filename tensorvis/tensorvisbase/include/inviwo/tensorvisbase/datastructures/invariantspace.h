@@ -34,7 +34,7 @@ struct IVW_MODULE_TENSORVISBASE_API InvariantSpace {
     }
 
     template <typename T>
-    void addAxis(const MetaDataType<T>* metaData, const std::string& name = "") {
+    void addAxis(const tensor::MetaDataType<T>* metaData, const std::string& name = "") {
         identifiers_.push_back(name.empty() ? metaData->getDisplayName() : name);
         metaDataTypes_.push_back(metaData->type_);
         minmax_.push_back({{metaData->getMinMax().first, metaData->getMinMax().second}});

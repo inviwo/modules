@@ -49,7 +49,7 @@ struct EnumTraits<TensorFeature> {
 };
 
 template <class Elem, class Traits>
-std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &os,
+std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              TensorFeature feature) {
     switch (feature) {
         case TensorFeature::I1:
@@ -138,12 +138,14 @@ std::basic_ostream<Elem, Traits> &operator<<(std::basic_ostream<Elem, Traits> &o
     return os;
 }
 
+namespace tensor {
+
 struct MetaDataBase {
     MetaDataBase() = default;
 
     virtual ~MetaDataBase() = default;
 
-    virtual MetaDataBase *clone() const = 0;
+    virtual MetaDataBase* clone() const = 0;
 
     // Getters
     virtual uint64_t getId() const = 0;
@@ -152,12 +154,12 @@ struct MetaDataBase {
 
     virtual std::string getDisplayName() const = 0;
 
-    virtual const void *getDataPtr() const = 0;
+    virtual const void* getDataPtr() const = 0;
 
     // Serialization
-    virtual void serialize(std::ofstream &outFile) const = 0;
+    virtual void serialize(std::ofstream& outFile) const = 0;
 
-    virtual void deserialize(std::ifstream &inFile, size_t numElements) = 0;
+    virtual void deserialize(std::ifstream& inFile, size_t numElements) = 0;
 };
 
 template <typename T>
@@ -171,7 +173,7 @@ struct MetaDataType : MetaDataBase {
 
     ~MetaDataType() override = default;
 
-    virtual MetaDataType<T> *clone() const override = 0;
+    virtual MetaDataType<T>* clone() const override = 0;
 
     // Getters
     std::pair<TType, TType> getMinMax() const;
@@ -184,38 +186,38 @@ struct MetaDataType : MetaDataBase {
 
     size_t getNumberOfComponents() const override;
 
-    const std::vector<T> &getData() const;
+    const std::vector<T>& getData() const;
 
     uint64_t getId() const override = 0;
 
-    const void *getDataPtr() const override;
+    const void* getDataPtr() const override;
 
     // Serialization
-    void serialize(std::ofstream &outFile) const override;
+    void serialize(std::ofstream& outFile) const override;
 
-    void deserialize(std::ifstream &inFile, size_t numElements) override;
+    void deserialize(std::ifstream& inFile, size_t numElements) override;
 
     DataType data_;
     TensorFeature type_ = TensorFeature::NumberOfTensorFeatures;
 };
 
 template <typename T>
-void MetaDataType<T>::serialize(std::ofstream &outFile) const {
+void MetaDataType<T>::serialize(std::ofstream& outFile) const {
     auto id = getId();
-    const auto dataPtr = static_cast<const T *>(data_.data());
+    const auto dataPtr = static_cast<const T*>(data_.data());
 
-    outFile.write(reinterpret_cast<const char *>(&id), sizeof(uint64_t));
-    outFile.write(reinterpret_cast<const char *>(&type_), sizeof(uint64_t));
-    outFile.write(reinterpret_cast<const char *>(dataPtr), sizeof(T) * data_.size());
+    outFile.write(reinterpret_cast<const char*>(&id), sizeof(uint64_t));
+    outFile.write(reinterpret_cast<const char*>(&type_), sizeof(uint64_t));
+    outFile.write(reinterpret_cast<const char*>(dataPtr), sizeof(T) * data_.size());
 }
 
 template <typename T>
-void MetaDataType<T>::deserialize(std::ifstream &inFile, const size_t numElements) {
+void MetaDataType<T>::deserialize(std::ifstream& inFile, const size_t numElements) {
     data_.resize(numElements);
     auto data = data_.data();
 
-    inFile.read(reinterpret_cast<char *>(&type_), sizeof(uint64_t));
-    inFile.read(reinterpret_cast<char *>(data), sizeof(MetaDataType<T>::TType) * numElements);
+    inFile.read(reinterpret_cast<char*>(&type_), sizeof(uint64_t));
+    inFile.read(reinterpret_cast<char*>(data), sizeof(MetaDataType<T>::TType) * numElements);
 }
 
 template <typename T>
@@ -227,7 +229,7 @@ MetaDataType<T>::getMinMax() const {
 }
 
 template <typename T>
-const std::vector<T> &MetaDataType<T>::getData() const {
+const std::vector<T>& MetaDataType<T>::getData() const {
     return data_;
 }
 
@@ -236,7 +238,7 @@ MetaDataType<T>::MetaDataType(std::vector<T> data, const TensorFeature type)
     : data_(std::move(data)), type_(type) {}
 
 template <typename T>
-const void *MetaDataType<T>::getDataPtr() const {
+const void* MetaDataType<T>::getDataPtr() const {
     return data_.data();
 }
 
@@ -246,5 +248,7 @@ size_t MetaDataType<T>::getNumberOfComponents() const {
 }
 
 #include "tensorfieldmetadataspecializations.h"
+
+}  // namespace tensor
 
 }  //  namespace inviwo

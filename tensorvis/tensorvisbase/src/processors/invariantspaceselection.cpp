@@ -69,67 +69,67 @@ InvariantSpaceSelection::InvariantSpaceSelection()
         std::unordered_set<size_t> selectedIndices;
 
         if (sigma1_.get()) {
-            selectedIndices.insert(MajorEigenValues::id());
+            selectedIndices.insert(tensor::MajorEigenValues::id());
         }
         if (sigma2_.get()) {
-            selectedIndices.insert(IntermediateEigenValues::id());
+            selectedIndices.insert(tensor::IntermediateEigenValues::id());
         }
         if (sigma3_.get()) {
-            selectedIndices.insert(MinorEigenValues::id());
+            selectedIndices.insert(tensor::MinorEigenValues::id());
         }
         if (i1_.get()) {
-            selectedIndices.insert(I1::id());
+            selectedIndices.insert(tensor::I1::id());
         }
         if (i2_.get()) {
-            selectedIndices.insert(I2::id());
+            selectedIndices.insert(tensor::I2::id());
         }
         if (i3_.get()) {
-            selectedIndices.insert(I3::id());
+            selectedIndices.insert(tensor::I3::id());
         }
         if (j1_.get()) {
-            selectedIndices.insert(J1::id());
+            selectedIndices.insert(tensor::J1::id());
         }
         if (j2_.get()) {
-            selectedIndices.insert(J2::id());
+            selectedIndices.insert(tensor::J2::id());
         }
         if (j3_.get()) {
-            selectedIndices.insert(J3::id());
+            selectedIndices.insert(tensor::J3::id());
         }
         if (lodeAngle_.get()) {
-            selectedIndices.insert(LodeAngle::id());
+            selectedIndices.insert(tensor::LodeAngle::id());
         }
         if (anisotropy_.get()) {
-            selectedIndices.insert(Anisotropy::id());
+            selectedIndices.insert(tensor::Anisotropy::id());
         }
         if (linearAnisotropy_.get()) {
-            selectedIndices.insert(LinearAnisotropy::id());
+            selectedIndices.insert(tensor::LinearAnisotropy::id());
         }
         if (planarAnisotropy_.get()) {
-            selectedIndices.insert(PlanarAnisotropy::id());
+            selectedIndices.insert(tensor::PlanarAnisotropy::id());
         }
         if (sphericalAnisotropy_.get()) {
-            selectedIndices.insert(SphericalAnisotropy::id());
+            selectedIndices.insert(tensor::SphericalAnisotropy::id());
         }
         if (diffusivity_.get()) {
-            selectedIndices.insert(Diffusivity::id());
+            selectedIndices.insert(tensor::Diffusivity::id());
         }
         if (shearStress_.get()) {
-            selectedIndices.insert(ShearStress::id());
+            selectedIndices.insert(tensor::ShearStress::id());
         }
         if (pureShear_.get()) {
-            selectedIndices.insert(PureShear::id());
+            selectedIndices.insert(tensor::PureShear::id());
         }
         if (shapeFactor_.get()) {
-            selectedIndices.insert(ShapeFactor::id());
+            selectedIndices.insert(tensor::ShapeFactor::id());
         }
         if (isotropicScaling_.get()) {
-            selectedIndices.insert(IsotropicScaling::id());
+            selectedIndices.insert(tensor::IsotropicScaling::id());
         }
         if (rotation_.get()) {
-            selectedIndices.insert(Rotation::id());
+            selectedIndices.insert(tensor::Rotation::id());
         }
         if (hill_.get()) {
-            selectedIndices.insert(HillYieldCriterion::id());
+            selectedIndices.insert(tensor::HillYieldCriterion::id());
         }
     });
 }
@@ -142,68 +142,69 @@ void InvariantSpaceSelection::process() {
     auto tensorField = tensorFieldInport_.getData();
 
     if (sigma1_.get()) {
-        if (tensorField->hasMetaData<MajorEigenValues>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<MajorEigenValues>());
+        if (tensorField->hasMetaData<tensor::MajorEigenValues>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::MajorEigenValues>());
         else
             LogWarn(
                 "Requested meta data MajorEigenValues not available. Consider adding a meta data "
                 "processor.")
     }
     if (sigma2_.get()) {
-        if (tensorField->hasMetaData<IntermediateEigenValues>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<IntermediateEigenValues>());
+        if (tensorField->hasMetaData<tensor::IntermediateEigenValues>())
+            invariantSpace->addAxis(
+                tensorField->getMetaDataContainer<tensor::IntermediateEigenValues>());
         else
             LogWarn(
                 "Requested meta data IntermediateEigenValues not available. Consider adding a meta "
                 "data processor.")
     }
     if (sigma3_.get()) {
-        if (tensorField->hasMetaData<MinorEigenValues>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<MinorEigenValues>());
+        if (tensorField->hasMetaData<tensor::MinorEigenValues>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::MinorEigenValues>());
         else
             LogWarn(
                 "Requested meta data MinorEigenValues not available. Consider adding a meta data "
                 "processor.")
     }
     if (i1_.get()) {
-        if (tensorField->hasMetaData<I1>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<I1>());
+        if (tensorField->hasMetaData<tensor::I1>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::I1>());
         else
             LogWarn("Requested meta data I1 not available. Consider adding a meta data processor.")
     }
     if (i2_.get()) {
-        if (tensorField->hasMetaData<I2>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<I2>());
+        if (tensorField->hasMetaData<tensor::I2>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::I2>());
         else
             LogWarn("Requested meta data I2 not available. Consider adding a meta data processor.")
     }
     if (i3_.get()) {
-        if (tensorField->hasMetaData<I3>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<I3>());
+        if (tensorField->hasMetaData<tensor::I3>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::I3>());
         else
             LogWarn("Requested meta data I3 not available. Consider adding a meta data processor.")
     }
     if (j1_.get()) {
-        if (tensorField->hasMetaData<J1>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<J1>());
+        if (tensorField->hasMetaData<tensor::J1>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::J1>());
         else
             LogWarn("Requested meta data J1 not available. Consider adding a meta data processor.")
     }
     if (j2_.get()) {
-        if (tensorField->hasMetaData<J2>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<J2>());
+        if (tensorField->hasMetaData<tensor::J2>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::J2>());
         else
             LogWarn("Requested meta data J2 not available. Consider adding a meta data processor.")
     }
     if (j3_.get()) {
-        if (tensorField->hasMetaData<J3>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<J3>());
+        if (tensorField->hasMetaData<tensor::J3>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::J3>());
         else
             LogWarn("Requested meta data J3 not available. Consider adding a meta data processor.")
     }
     if (lodeAngle_.get()) {
-        if (tensorField->hasMetaData<LodeAngle>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<LodeAngle>(),
+        if (tensorField->hasMetaData<tensor::LodeAngle>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::LodeAngle>(),
                                     lodeAngle_.getDisplayName());
         else
             LogWarn(
@@ -211,8 +212,8 @@ void InvariantSpaceSelection::process() {
                 "processor.")
     }
     if (anisotropy_.get()) {
-        if (tensorField->hasMetaData<Anisotropy>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<Anisotropy>(),
+        if (tensorField->hasMetaData<tensor::Anisotropy>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::Anisotropy>(),
                                     anisotropy_.getDisplayName());
         else
             LogWarn(
@@ -220,56 +221,57 @@ void InvariantSpaceSelection::process() {
                 "processor.")
     }
     if (linearAnisotropy_.get()) {
-        if (tensorField->hasMetaData<LinearAnisotropy>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<LinearAnisotropy>());
+        if (tensorField->hasMetaData<tensor::LinearAnisotropy>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::LinearAnisotropy>());
         else
             LogWarn(
                 "Requested meta data LinearAnisotropy not available. Consider adding a meta data "
                 "processor.")
     }
     if (planarAnisotropy_.get()) {
-        if (tensorField->hasMetaData<PlanarAnisotropy>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<PlanarAnisotropy>());
+        if (tensorField->hasMetaData<tensor::PlanarAnisotropy>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::PlanarAnisotropy>());
         else
             LogWarn(
                 "Requested meta data PlanarAnisotropy not available. Consider adding a meta data "
                 "processor.")
     }
     if (sphericalAnisotropy_.get()) {
-        if (tensorField->hasMetaData<SphericalAnisotropy>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<SphericalAnisotropy>());
+        if (tensorField->hasMetaData<tensor::SphericalAnisotropy>())
+            invariantSpace->addAxis(
+                tensorField->getMetaDataContainer<tensor::SphericalAnisotropy>());
         else
             LogWarn(
                 "Requested meta data SphericalAnisotropy not available. Consider adding a meta "
                 "data processor.")
     }
     if (diffusivity_.get()) {
-        if (tensorField->hasMetaData<Diffusivity>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<Diffusivity>());
+        if (tensorField->hasMetaData<tensor::Diffusivity>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::Diffusivity>());
         else
             LogWarn(
                 "Requested meta data Diffusivity not available. Consider adding a meta data "
                 "processor.")
     }
     if (shearStress_.get()) {
-        if (tensorField->hasMetaData<ShearStress>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<ShearStress>());
+        if (tensorField->hasMetaData<tensor::ShearStress>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::ShearStress>());
         else
             LogWarn(
                 "Requested meta data ShearStress not available. Consider adding a meta data "
                 "processor.")
     }
     if (pureShear_.get()) {
-        if (tensorField->hasMetaData<PureShear>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<PureShear>());
+        if (tensorField->hasMetaData<tensor::PureShear>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::PureShear>());
         else
             LogWarn(
                 "Requested meta data PureShear not available. Consider adding a meta data "
                 "processor.")
     }
     if (shapeFactor_.get()) {
-        if (tensorField->hasMetaData<ShapeFactor>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<ShapeFactor>(),
+        if (tensorField->hasMetaData<tensor::ShapeFactor>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::ShapeFactor>(),
                                     shapeFactor_.getDisplayName());
         else
             LogWarn(
@@ -277,8 +279,8 @@ void InvariantSpaceSelection::process() {
                 "processor.")
     }
     if (isotropicScaling_.get()) {
-        if (tensorField->hasMetaData<IsotropicScaling>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<IsotropicScaling>(),
+        if (tensorField->hasMetaData<tensor::IsotropicScaling>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::IsotropicScaling>(),
                                     isotropicScaling_.getDisplayName());
         else
             LogWarn(
@@ -286,8 +288,8 @@ void InvariantSpaceSelection::process() {
                 "processor.")
     }
     if (rotation_.get()) {
-        if (tensorField->hasMetaData<Rotation>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<Rotation>(),
+        if (tensorField->hasMetaData<tensor::Rotation>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::Rotation>(),
                                     rotation_.getDisplayName());
         else
             LogWarn(
@@ -295,8 +297,8 @@ void InvariantSpaceSelection::process() {
                 "processor.")
     }
     if (hill_.get()) {
-        if (tensorField->hasMetaData<HillYieldCriterion>())
-            invariantSpace->addAxis(tensorField->getMetaDataContainer<HillYieldCriterion>(),
+        if (tensorField->hasMetaData<tensor::HillYieldCriterion>())
+            invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::HillYieldCriterion>(),
                                     hill_.getDisplayName());
         else
             LogWarn(

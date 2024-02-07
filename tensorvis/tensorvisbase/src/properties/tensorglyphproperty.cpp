@@ -478,7 +478,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateSuperquadricExtend
     if (!useEigenBasis_.get())
         basis = glm::diagonal3x3(dvec3(eigenValues[0], eigenValues[1], eigenValues[2]));
 
-    const auto frobeniusNorm = tensorField->getMetaData<FrobeniusNorm>()[index];
+    const auto frobeniusNorm = tensorField->getMetaData<tensor::FrobeniusNorm>()[index];
     auto lamda = tensorField->getSortedEigenValuesForTensor(index);
 
     std::transform(lamda.begin(), lamda.end(), lamda.begin(),
