@@ -95,6 +95,8 @@ public:
 
     virtual TriangulationData* clone() const;
 
+    virtual const Axis* getAxis(size_t index) const override { return nullptr; }
+
     /**
      * query state of triangulation whether it is implicit, i.e. a uniform grid, or explicit
      *
