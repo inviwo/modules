@@ -73,13 +73,13 @@ struct fill_integer_sequence<val, std::index_sequence<Inds...>> {
 };
 
 template <size_t N>
-struct wrap {
+struct box {
     static constexpr size_t value = N;
 };
 
 template <typename F, size_t... Is>
 constexpr auto for_each_index_impl(F&& f, std::index_sequence<Is...>) {
-    return (void)std::initializer_list<int>{0, (f(wrap<Is>{}), 0)...}, std::forward<F>(f);
+    return (void)std::initializer_list<int>{0, (f(box<Is>{}), 0)...}, std::forward<F>(f);
 }
 
 }  // namespace detail

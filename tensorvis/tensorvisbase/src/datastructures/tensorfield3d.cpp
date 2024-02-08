@@ -87,14 +87,14 @@ TensorField3D::TensorField3D(const size3_t dimensions, const std::vector<double>
         tensors_.push_back(tensor);
     }
 
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
+    addMetaData<tensor::MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
+    addMetaData<tensor::IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
+    addMetaData<tensor::MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
+    addMetaData<tensor::MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
+    addMetaData<tensor::IntermediateEigenVectors>(middleEigenVectors,
+                                                  TensorFeature::IntermediateEigenVector);
+    addMetaData<tensor::MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
@@ -114,14 +114,14 @@ TensorField3D::TensorField3D(
     , size_(glm::compMul(dimensions))
     , rank_(2)
     , dimensionality_(3) {
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
+    addMetaData<tensor::MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
+    addMetaData<tensor::IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
+    addMetaData<tensor::MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
+    addMetaData<tensor::MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
+    addMetaData<tensor::IntermediateEigenVectors>(middleEigenVectors,
+                                                  TensorFeature::IntermediateEigenVector);
+    addMetaData<tensor::MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
@@ -243,14 +243,14 @@ TensorField3D::TensorField3D(
         tensors_.push_back(tensor);
     }
 
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
+    addMetaData<tensor::MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
+    addMetaData<tensor::IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
+    addMetaData<tensor::MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
+    addMetaData<tensor::MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
+    addMetaData<tensor::IntermediateEigenVectors>(middleEigenVectors,
+                                                  TensorFeature::IntermediateEigenVector);
+    addMetaData<tensor::MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
@@ -273,14 +273,14 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
     , size_(x * y * z)
     , rank_(2)
     , dimensionality_(3) {
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
+    addMetaData<tensor::MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
+    addMetaData<tensor::IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
+    addMetaData<tensor::MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
+    addMetaData<tensor::MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
+    addMetaData<tensor::IntermediateEigenVectors>(middleEigenVectors,
+                                                  TensorFeature::IntermediateEigenVector);
+    addMetaData<tensor::MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 
     computeNormalizedScreenCoordinates(sliceCoord);
     computeDataMaps();
@@ -290,8 +290,8 @@ TensorField3D::TensorField3D(const size_t x, const size_t y, const size_t z,
 
 TensorField3D::TensorField3D(
     const size3_t dimensions, std::vector<dmat3> data,
-    const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>>& metaData, const vec3& extent,
-    float sliceCoord)
+    const std::unordered_map<uint64_t, std::unique_ptr<tensor::MetaDataBase>>& metaData,
+    const vec3& extent, float sliceCoord)
     : StructuredGridEntity<3>()
     , dimensions_(dimensions)
     , indexMapper_(dimensions)
@@ -493,17 +493,17 @@ mat4 TensorField3D::getBasisAndOffset() const {
 
 std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEigenVectorsForTensor(
     const size_t index) const {
-    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<tensor::MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<tensor::IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<tensor::MinorEigenValues>();
 
     const auto& majorEigenValue = majorEigenValues[index];
     const auto& middleEigenValue = middleEigenValues[index];
     const auto& minorEigenValue = minorEigenValues[index];
 
-    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<tensor::MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<tensor::IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<tensor::MinorEigenVectors>();
 
     const auto& majorEigenVector = majorEigenVectors[index];
     const auto& middleEigenVector = middleEigenVectors[index];
@@ -521,17 +521,17 @@ std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEi
     const size3_t pos) const {
     auto index = indexMapper_(pos);
 
-    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<tensor::MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<tensor::IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<tensor::MinorEigenValues>();
 
     const auto& majorEigenValue = majorEigenValues[index];
     const auto& middleEigenValue = middleEigenValues[index];
     const auto& minorEigenValue = minorEigenValues[index];
 
-    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<tensor::MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<tensor::IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<tensor::MinorEigenVectors>();
 
     const auto& majorEigenVector = majorEigenVectors[index];
     const auto& middleEigenVector = middleEigenVectors[index];
@@ -548,9 +548,9 @@ std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEi
 std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size_t index) const {
     auto ret = std::array<double, 3>();
 
-    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<tensor::MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<tensor::IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<tensor::MinorEigenValues>();
 
     ret[0] = majorEigenValues[index];
     ret[1] = middleEigenValues[index];
@@ -562,9 +562,9 @@ std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size3_t
     auto index = indexMapper_(pos);
     auto ret = std::array<double, 3>();
 
-    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<tensor::MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<tensor::IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<tensor::MinorEigenValues>();
 
     ret[0] = majorEigenValues[index];
     ret[1] = middleEigenValues[index];
@@ -576,9 +576,9 @@ std::array<double, 3> TensorField3D::getSortedEigenValuesForTensor(const size3_t
 std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size_t index) const {
     auto ret = std::array<dvec3, 3>();
 
-    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<tensor::MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<tensor::IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<tensor::MinorEigenVectors>();
 
     ret[0] = majorEigenVectors[index];
     ret[1] = middleEigenVectors[index];
@@ -591,9 +591,9 @@ std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size3_t
     auto index = indexMapper_(pos);
     auto ret = std::array<dvec3, 3>();
 
-    const auto& majorEigenVectors = getMetaData<MajorEigenVectors>();
-    const auto& middleEigenVectors = getMetaData<IntermediateEigenVectors>();
-    const auto& minorEigenVectors = getMetaData<MinorEigenVectors>();
+    const auto& majorEigenVectors = getMetaData<tensor::MajorEigenVectors>();
+    const auto& middleEigenVectors = getMetaData<tensor::IntermediateEigenVectors>();
+    const auto& minorEigenVectors = getMetaData<tensor::MinorEigenVectors>();
 
     ret[0] = majorEigenVectors[index];
     ret[1] = middleEigenVectors[index];
@@ -602,27 +602,27 @@ std::array<dvec3, 3> TensorField3D::getSortedEigenVectorsForTensor(const size3_t
 }
 
 const std::vector<dvec3>& TensorField3D::majorEigenVectors() const {
-    return getMetaData<MajorEigenVectors>();
+    return getMetaData<tensor::MajorEigenVectors>();
 }
 
 const std::vector<dvec3>& TensorField3D::middleEigenVectors() const {
-    return getMetaData<IntermediateEigenVectors>();
+    return getMetaData<tensor::IntermediateEigenVectors>();
 }
 
 const std::vector<dvec3>& TensorField3D::minorEigenVectors() const {
-    return getMetaData<MinorEigenVectors>();
+    return getMetaData<tensor::MinorEigenVectors>();
 }
 
 const std::vector<double>& TensorField3D::majorEigenValues() const {
-    return getMetaData<MajorEigenValues>();
+    return getMetaData<tensor::MajorEigenValues>();
 }
 
 const std::vector<double>& TensorField3D::middleEigenValues() const {
-    return getMetaData<IntermediateEigenValues>();
+    return getMetaData<tensor::IntermediateEigenValues>();
 }
 
 const std::vector<double>& TensorField3D::minorEigenValues() const {
-    return getMetaData<MinorEigenValues>();
+    return getMetaData<tensor::MinorEigenValues>();
 }
 
 const std::vector<dmat3>& TensorField3D::tensors() const { return tensors_; }
@@ -634,55 +634,55 @@ int TensorField3D::getNumDefinedEntries() const {
 bool TensorField3D::hasMetaData(const TensorFeature feature) const {
     switch (feature) {
         case TensorFeature::I1:
-            return hasMetaData<I1>();
+            return hasMetaData<tensor::I1>();
         case TensorFeature::I2:
-            return hasMetaData<I2>();
+            return hasMetaData<tensor::I2>();
         case TensorFeature::I3:
-            return hasMetaData<I3>();
+            return hasMetaData<tensor::I3>();
         case TensorFeature::J1:
-            return hasMetaData<J1>();
+            return hasMetaData<tensor::J1>();
         case TensorFeature::J2:
-            return hasMetaData<J2>();
+            return hasMetaData<tensor::J2>();
         case TensorFeature::J3:
-            return hasMetaData<J3>();
+            return hasMetaData<tensor::J3>();
         case TensorFeature::Sigma1:
-            return hasMetaData<MajorEigenValues>();
+            return hasMetaData<tensor::MajorEigenValues>();
         case TensorFeature::Sigma2:
-            return hasMetaData<IntermediateEigenValues>();
+            return hasMetaData<tensor::IntermediateEigenValues>();
         case TensorFeature::Sigma3:
-            return hasMetaData<MinorEigenValues>();
+            return hasMetaData<tensor::MinorEigenValues>();
         case TensorFeature::MajorEigenVector:
-            return hasMetaData<MajorEigenVectors>();
+            return hasMetaData<tensor::MajorEigenVectors>();
         case TensorFeature::IntermediateEigenVector:
-            return hasMetaData<IntermediateEigenVectors>();
+            return hasMetaData<tensor::IntermediateEigenVectors>();
         case TensorFeature::MinorEigenVector:
-            return hasMetaData<MinorEigenVectors>();
+            return hasMetaData<tensor::MinorEigenVectors>();
         case TensorFeature::LodeAngle:
-            return hasMetaData<LodeAngle>();
+            return hasMetaData<tensor::LodeAngle>();
         case TensorFeature::Anisotropy:
-            return hasMetaData<Anisotropy>();
+            return hasMetaData<tensor::Anisotropy>();
         case TensorFeature::LinearAnisotropy:
-            return hasMetaData<LinearAnisotropy>();
+            return hasMetaData<tensor::LinearAnisotropy>();
         case TensorFeature::PlanarAnisotropy:
-            return hasMetaData<PlanarAnisotropy>();
+            return hasMetaData<tensor::PlanarAnisotropy>();
         case TensorFeature::SphericalAnisotropy:
-            return hasMetaData<SphericalAnisotropy>();
+            return hasMetaData<tensor::SphericalAnisotropy>();
         case TensorFeature::Diffusivity:
-            return hasMetaData<Diffusivity>();
+            return hasMetaData<tensor::Diffusivity>();
         case TensorFeature::ShearStress:
-            return hasMetaData<ShearStress>();
+            return hasMetaData<tensor::ShearStress>();
         case TensorFeature::PureShear:
-            return hasMetaData<PureShear>();
+            return hasMetaData<tensor::PureShear>();
         case TensorFeature::ShapeFactor:
-            return hasMetaData<ShapeFactor>();
+            return hasMetaData<tensor::ShapeFactor>();
         case TensorFeature::IsotropicScaling:
-            return hasMetaData<IsotropicScaling>();
+            return hasMetaData<tensor::IsotropicScaling>();
         case TensorFeature::Rotation:
-            return hasMetaData<Rotation>();
+            return hasMetaData<tensor::Rotation>();
         case TensorFeature::FrobeniusNorm:
-            return hasMetaData<FrobeniusNorm>();
+            return hasMetaData<tensor::FrobeniusNorm>();
         case TensorFeature::HillYieldCriterion:
-            return hasMetaData<HillYieldCriterion>();
+            return hasMetaData<tensor::HillYieldCriterion>();
         default:
             break;
     }
@@ -750,14 +750,14 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
         minorEigenValues[i] = eigenValuesAndEigenVectors[2].first;
     }
 
-    addMetaData<MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
-    addMetaData<IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
-    addMetaData<MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
+    addMetaData<tensor::MajorEigenValues>(majorEigenValues, TensorFeature::Sigma1);
+    addMetaData<tensor::IntermediateEigenValues>(middleEigenValues, TensorFeature::Sigma2);
+    addMetaData<tensor::MinorEigenValues>(minorEigenValues, TensorFeature::Sigma3);
 
-    addMetaData<MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
-    addMetaData<IntermediateEigenVectors>(middleEigenVectors,
-                                          TensorFeature::IntermediateEigenVector);
-    addMetaData<MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
+    addMetaData<tensor::MajorEigenVectors>(majorEigenVectors, TensorFeature::MajorEigenVector);
+    addMetaData<tensor::IntermediateEigenVectors>(middleEigenVectors,
+                                                  TensorFeature::IntermediateEigenVector);
+    addMetaData<tensor::MinorEigenVectors>(minorEigenVectors, TensorFeature::MinorEigenVector);
 }
 
 void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
@@ -783,9 +783,9 @@ void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
 }
 
 void TensorField3D::computeDataMaps() {
-    const auto& majorEigenValues = getMetaData<MajorEigenValues>();
-    const auto& middleEigenValues = getMetaData<IntermediateEigenValues>();
-    const auto& minorEigenValues = getMetaData<MinorEigenValues>();
+    const auto& majorEigenValues = getMetaData<tensor::MajorEigenValues>();
+    const auto& middleEigenValues = getMetaData<tensor::IntermediateEigenValues>();
+    const auto& minorEigenValues = getMetaData<tensor::MinorEigenValues>();
 
     dataMapEigenValues_[0].dataRange.x = dataMapEigenValues_[0].valueRange.x =
         *std::min_element(majorEigenValues.begin(), majorEigenValues.end());
@@ -805,7 +805,7 @@ void TensorField3D::computeDataMaps() {
 
     auto min = std::numeric_limits<double>::max();
     auto max = std::numeric_limits<double>::lowest();
-    for (const auto& v : getMetaData<MajorEigenVectors>()) {
+    for (const auto& v : getMetaData<tensor::MajorEigenVectors>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -814,7 +814,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto& v : getMetaData<IntermediateEigenVectors>()) {
+    for (const auto& v : getMetaData<tensor::IntermediateEigenVectors>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }
@@ -823,7 +823,7 @@ void TensorField3D::computeDataMaps() {
 
     min = std::numeric_limits<double>::max();
     max = std::numeric_limits<double>::lowest();
-    for (const auto& v : getMetaData<MinorEigenVectors>()) {
+    for (const auto& v : getMetaData<tensor::MinorEigenVectors>()) {
         min = std::min(min_f(v), min);
         max = std::max(max_f(v), max);
     }

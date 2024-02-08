@@ -107,9 +107,10 @@ public:
                   const std::vector<dvec3>& minorEigenvectors, const vec3& extent = vec3(1.0f),
                   float sliceCoord = 0.0f);
 
-    TensorField3D(size3_t dimensions, std::vector<dmat3> data,
-                  const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>>& metaData,
-                  const vec3& extent = vec3(1.0f), float sliceCoord = 0.0f);
+    TensorField3D(
+        size3_t dimensions, std::vector<dmat3> data,
+        const std::unordered_map<uint64_t, std::unique_ptr<tensor::MetaDataBase>>& metaData,
+        const vec3& extent = vec3(1.0f), float sliceCoord = 0.0f);
 
     TensorField3D& operator=(const TensorField3D&) = delete;
 
@@ -119,6 +120,8 @@ public:
     // Copying and Cloning
     TensorField3D(const TensorField3D& tf);
     virtual TensorField3D* clone() const final;
+
+    virtual const Axis* getAxis(size_t) const override { return nullptr; }
 
     std::string getDataInfo() const;
     std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> getVolumeRepresentation() const;
@@ -211,15 +214,15 @@ public:
 
     template <typename T = double>
     T getMajorEigenValue(const size_t index) const {
-        return T(getMetaData<MajorEigenValues>()[index]);
+        return T(getMetaData<tensor::MajorEigenValues>()[index]);
     }
     template <typename T = double>
     T getMiddleEigenValue(const size_t index) const {
-        return T(getMetaData<IntermediateEigenValues>()[index]);
+        return T(getMetaData<tensor::IntermediateEigenValues>()[index]);
     }
     template <typename T = double>
     T getMinorEigenValue(const size_t index) const {
-        return T(getMetaData<MinorEigenValues>()[index]);
+        return T(getMetaData<tensor::MinorEigenValues>()[index]);
     }
 
     mat4 getBasisAndOffset() const;
@@ -331,7 +334,7 @@ public:
         }
     }
 
-    const std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>>& metaData() const {
+    const std::unordered_map<uint64_t, std::unique_ptr<tensor::MetaDataBase>>& metaData() const {
         return metaData_;
     }
 
@@ -347,7 +350,7 @@ protected:
     glm::u8 rank_;
     glm::u8 dimensionality_;
     std::vector<vec3> normalizedVolumePositions_;
-    std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> metaData_;
+    std::unordered_map<uint64_t, std::unique_ptr<tensor::MetaDataBase>> metaData_;
 
     std::vector<glm::uint8> binaryMask_;
 };

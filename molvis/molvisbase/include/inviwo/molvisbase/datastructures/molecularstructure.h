@@ -259,7 +259,12 @@ public:
     MolecularStructure() = delete;
     virtual ~MolecularStructure() = default;
 
-    virtual MolecularStructure* clone() const;
+    virtual MolecularStructure* clone() const override;
+
+    /**
+     * @copydoc SpatialEntity::getAxis
+     */
+    virtual const Axis* getAxis(size_t index) const override;
 
     const MolecularData& data() const;
     const Atoms& atoms() const;
@@ -327,6 +332,8 @@ public:
      * @return list of per-atom backbone indices
      */
     const std::vector<size_t>& getBackboneSegmentIndices() const;
+
+    std::array<Axis, 3> axes;
 
 private:
     MolecularData data_;

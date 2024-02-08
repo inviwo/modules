@@ -126,124 +126,124 @@ void TensorField3DMetaData::initializeResources() {
 
         tensorFieldOut_ = std::shared_ptr<TensorField3D>(tensorField->clone());
 
-        sigma1_.set(tensorFieldOut_->hasMetaData<MajorEigenValues>());
-        sigma2_.set(tensorFieldOut_->hasMetaData<IntermediateEigenValues>());
-        sigma3_.set(tensorFieldOut_->hasMetaData<MinorEigenValues>());
+        sigma1_.set(tensorFieldOut_->hasMetaData<tensor::MajorEigenValues>());
+        sigma2_.set(tensorFieldOut_->hasMetaData<tensor::IntermediateEigenValues>());
+        sigma3_.set(tensorFieldOut_->hasMetaData<tensor::MinorEigenValues>());
 
-        ev1_.set(tensorFieldOut_->hasMetaData<MajorEigenVectors>());
-        ev2_.set(tensorFieldOut_->hasMetaData<IntermediateEigenVectors>());
-        ev3_.set(tensorFieldOut_->hasMetaData<MinorEigenVectors>());
+        ev1_.set(tensorFieldOut_->hasMetaData<tensor::MajorEigenVectors>());
+        ev2_.set(tensorFieldOut_->hasMetaData<tensor::IntermediateEigenVectors>());
+        ev3_.set(tensorFieldOut_->hasMetaData<tensor::MinorEigenVectors>());
 
-        i1_.set(tensorFieldOut_->hasMetaData<I1>());
-        i2_.set(tensorFieldOut_->hasMetaData<I2>());
-        i3_.set(tensorFieldOut_->hasMetaData<I3>());
+        i1_.set(tensorFieldOut_->hasMetaData<tensor::I1>());
+        i2_.set(tensorFieldOut_->hasMetaData<tensor::I2>());
+        i3_.set(tensorFieldOut_->hasMetaData<tensor::I3>());
 
-        j1_.set(tensorFieldOut_->hasMetaData<J1>());
-        j2_.set(tensorFieldOut_->hasMetaData<J2>());
-        j3_.set(tensorFieldOut_->hasMetaData<J3>());
+        j1_.set(tensorFieldOut_->hasMetaData<tensor::J1>());
+        j2_.set(tensorFieldOut_->hasMetaData<tensor::J2>());
+        j3_.set(tensorFieldOut_->hasMetaData<tensor::J3>());
 
-        lodeAngle_.set(tensorFieldOut_->hasMetaData<LodeAngle>());
+        lodeAngle_.set(tensorFieldOut_->hasMetaData<tensor::LodeAngle>());
 
-        anisotropy_.set(tensorFieldOut_->hasMetaData<Anisotropy>());
+        anisotropy_.set(tensorFieldOut_->hasMetaData<tensor::Anisotropy>());
 
-        linearAnisotropy_.set(tensorFieldOut_->hasMetaData<LinearAnisotropy>());
-        planarAnisotropy_.set(tensorFieldOut_->hasMetaData<PlanarAnisotropy>());
-        sphericalAnisotropy_.set(tensorFieldOut_->hasMetaData<SphericalAnisotropy>());
-        diffusivity_.set(tensorFieldOut_->hasMetaData<Diffusivity>());
-        shearStress_.set(tensorFieldOut_->hasMetaData<ShearStress>());
-        pureShear_.set(tensorFieldOut_->hasMetaData<PureShear>());
-        shapeFactor_.set(tensorFieldOut_->hasMetaData<ShapeFactor>());
-        isotropicScaling_.set(tensorFieldOut_->hasMetaData<IsotropicScaling>());
-        rotation_.set(tensorFieldOut_->hasMetaData<Rotation>());
-        frobeniusNorm_.set(tensorFieldOut_->hasMetaData<FrobeniusNorm>());
-        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<HillYieldCriterion>());
+        linearAnisotropy_.set(tensorFieldOut_->hasMetaData<tensor::LinearAnisotropy>());
+        planarAnisotropy_.set(tensorFieldOut_->hasMetaData<tensor::PlanarAnisotropy>());
+        sphericalAnisotropy_.set(tensorFieldOut_->hasMetaData<tensor::SphericalAnisotropy>());
+        diffusivity_.set(tensorFieldOut_->hasMetaData<tensor::Diffusivity>());
+        shearStress_.set(tensorFieldOut_->hasMetaData<tensor::ShearStress>());
+        pureShear_.set(tensorFieldOut_->hasMetaData<tensor::PureShear>());
+        shapeFactor_.set(tensorFieldOut_->hasMetaData<tensor::ShapeFactor>());
+        isotropicScaling_.set(tensorFieldOut_->hasMetaData<tensor::IsotropicScaling>());
+        rotation_.set(tensorFieldOut_->hasMetaData<tensor::Rotation>());
+        frobeniusNorm_.set(tensorFieldOut_->hasMetaData<tensor::FrobeniusNorm>());
+        hillYieldCriterion_.set(tensorFieldOut_->hasMetaData<tensor::HillYieldCriterion>());
     }
 }
 
 void TensorField3DMetaData::addMetaData() {
     const auto& tensors = tensorFieldOut_->tensors();
 
-    if (i1_.get() && !tensorFieldOut_->hasMetaData<I1>()) {
+    if (i1_.get() && !tensorFieldOut_->hasMetaData<tensor::I1>()) {
         std::vector<double> i1;
 
         for (const auto& tensor : tensors) {
             i1.emplace_back(tensorutil::calculateI1(tensor));
         }
 
-        tensorFieldOut_->addMetaData<I1>(i1, TensorFeature::I1);
+        tensorFieldOut_->addMetaData<tensor::I1>(i1, TensorFeature::I1);
     }
-    if (i2_.get() && !tensorFieldOut_->hasMetaData<I2>()) {
+    if (i2_.get() && !tensorFieldOut_->hasMetaData<tensor::I2>()) {
         std::vector<double> i2;
 
         for (const auto& tensor : tensors) {
             i2.emplace_back(tensorutil::calculateI2(tensor));
         }
 
-        tensorFieldOut_->addMetaData<I2>(i2, TensorFeature::I2);
+        tensorFieldOut_->addMetaData<tensor::I2>(i2, TensorFeature::I2);
     }
-    if (i3_.get() && !tensorFieldOut_->hasMetaData<I3>()) {
+    if (i3_.get() && !tensorFieldOut_->hasMetaData<tensor::I3>()) {
         std::vector<double> i3;
 
         for (const auto& tensor : tensors) {
             i3.emplace_back(tensorutil::calculateI3(tensor));
         }
 
-        tensorFieldOut_->addMetaData<I3>(i3, TensorFeature::I3);
+        tensorFieldOut_->addMetaData<tensor::I3>(i3, TensorFeature::I3);
     }
-    if (j1_.get() && !tensorFieldOut_->hasMetaData<J1>()) {
+    if (j1_.get() && !tensorFieldOut_->hasMetaData<tensor::J1>()) {
         std::vector<double> j1;
 
         for (const auto& tensor : tensors) {
             j1.emplace_back(tensorutil::calculateJ1(tensor));
         }
 
-        tensorFieldOut_->addMetaData<J1>(j1, TensorFeature::J1);
+        tensorFieldOut_->addMetaData<tensor::J1>(j1, TensorFeature::J1);
     }
-    if (j2_.get() && !tensorFieldOut_->hasMetaData<J2>()) {
+    if (j2_.get() && !tensorFieldOut_->hasMetaData<tensor::J2>()) {
         std::vector<double> j2;
 
         for (const auto& tensor : tensors) {
             j2.emplace_back(tensorutil::calculateJ2(tensor));
         }
 
-        tensorFieldOut_->addMetaData<J2>(j2, TensorFeature::J2);
+        tensorFieldOut_->addMetaData<tensor::J2>(j2, TensorFeature::J2);
     }
-    if (j3_.get() && !tensorFieldOut_->hasMetaData<J3>()) {
+    if (j3_.get() && !tensorFieldOut_->hasMetaData<tensor::J3>()) {
         std::vector<double> j3;
 
         for (const auto& tensor : tensors) {
             j3.emplace_back(tensorutil::calculateJ3(tensor));
         }
 
-        tensorFieldOut_->addMetaData<J3>(j3, TensorFeature::J3);
+        tensorFieldOut_->addMetaData<tensor::J3>(j3, TensorFeature::J3);
     }
-    if (lodeAngle_.get() && !tensorFieldOut_->hasMetaData<LodeAngle>()) {
+    if (lodeAngle_.get() && !tensorFieldOut_->hasMetaData<tensor::LodeAngle>()) {
         std::vector<double> lodeAngle;
 
         for (const auto& tensor : tensors) {
             lodeAngle.emplace_back(tensorutil::calculateLodeAngle(tensor));
         }
 
-        tensorFieldOut_->addMetaData<LodeAngle>(lodeAngle, TensorFeature::LodeAngle);
+        tensorFieldOut_->addMetaData<tensor::LodeAngle>(lodeAngle, TensorFeature::LodeAngle);
     }
-    if (anisotropy_.get() && !tensorFieldOut_->hasMetaData<Anisotropy>()) {
+    if (anisotropy_.get() && !tensorFieldOut_->hasMetaData<tensor::Anisotropy>()) {
         std::vector<double> anisotropy;
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < tensors.size(); i++) {
             anisotropy.emplace_back(std::abs(majorEigenValues[i] - minorEigenValues[i]));
         }
 
-        tensorFieldOut_->addMetaData<Anisotropy>(anisotropy, TensorFeature::Anisotropy);
+        tensorFieldOut_->addMetaData<tensor::Anisotropy>(anisotropy, TensorFeature::Anisotropy);
     }
-    if (linearAnisotropy_.get() && !tensorFieldOut_->hasMetaData<LinearAnisotropy>()) {
+    if (linearAnisotropy_.get() && !tensorFieldOut_->hasMetaData<tensor::LinearAnisotropy>()) {
         std::vector<double> linearAnisotropy;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             std::array<double, 3> eigenValues{majorEigenValues[i], intermediateEigenValues[i],
@@ -262,16 +262,16 @@ void TensorField3DMetaData::addMetaData() {
             linearAnisotropy.emplace_back((eigenValues[0] - eigenValues[1]) / denominator);
         }
 
-        tensorFieldOut_->addMetaData<LinearAnisotropy>(linearAnisotropy,
-                                                       TensorFeature::LinearAnisotropy);
+        tensorFieldOut_->addMetaData<tensor::LinearAnisotropy>(linearAnisotropy,
+                                                               TensorFeature::LinearAnisotropy);
     }
-    if (planarAnisotropy_.get() && !tensorFieldOut_->hasMetaData<PlanarAnisotropy>()) {
+    if (planarAnisotropy_.get() && !tensorFieldOut_->hasMetaData<tensor::PlanarAnisotropy>()) {
         std::vector<double> planarAnisotropy;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             std::array<double, 3> eigenValues{majorEigenValues[i], intermediateEigenValues[i],
@@ -290,16 +290,17 @@ void TensorField3DMetaData::addMetaData() {
             planarAnisotropy.emplace_back((2.0 * (eigenValues[1] - eigenValues[2])) / denominator);
         }
 
-        tensorFieldOut_->addMetaData<PlanarAnisotropy>(planarAnisotropy,
-                                                       TensorFeature::PlanarAnisotropy);
+        tensorFieldOut_->addMetaData<tensor::PlanarAnisotropy>(planarAnisotropy,
+                                                               TensorFeature::PlanarAnisotropy);
     }
-    if (sphericalAnisotropy_.get() && !tensorFieldOut_->hasMetaData<SphericalAnisotropy>()) {
+    if (sphericalAnisotropy_.get() &&
+        !tensorFieldOut_->hasMetaData<tensor::SphericalAnisotropy>()) {
         std::vector<double> sphericalAnisotropy;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             std::array<double, 3> eigenValues{majorEigenValues[i], intermediateEigenValues[i],
@@ -318,16 +319,16 @@ void TensorField3DMetaData::addMetaData() {
             sphericalAnisotropy.emplace_back((3.0 * eigenValues[2]) / denominator);
         }
 
-        tensorFieldOut_->addMetaData<SphericalAnisotropy>(sphericalAnisotropy,
-                                                          TensorFeature::SphericalAnisotropy);
+        tensorFieldOut_->addMetaData<tensor::SphericalAnisotropy>(
+            sphericalAnisotropy, TensorFeature::SphericalAnisotropy);
     }
-    if (diffusivity_.get() && !tensorFieldOut_->hasMetaData<Diffusivity>()) {
+    if (diffusivity_.get() && !tensorFieldOut_->hasMetaData<tensor::Diffusivity>()) {
         std::vector<double> diffusivity;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             std::array<double, 3> eigenValues{majorEigenValues[i], intermediateEigenValues[i],
@@ -344,75 +345,75 @@ void TensorField3DMetaData::addMetaData() {
                                      eigenValues[2] * eigenValues[2]);
         }
 
-        tensorFieldOut_->addMetaData<Diffusivity>(diffusivity, TensorFeature::Diffusivity);
+        tensorFieldOut_->addMetaData<tensor::Diffusivity>(diffusivity, TensorFeature::Diffusivity);
     }
-    if (shearStress_.get() && !tensorFieldOut_->hasMetaData<ShearStress>()) {
+    if (shearStress_.get() && !tensorFieldOut_->hasMetaData<tensor::ShearStress>()) {
         std::vector<double> shearStress;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             shearStress.emplace_back((majorEigenValues[i] - minorEigenValues[i]) / 2.0);
         }
 
-        tensorFieldOut_->addMetaData<ShearStress>(shearStress, TensorFeature::ShearStress);
+        tensorFieldOut_->addMetaData<tensor::ShearStress>(shearStress, TensorFeature::ShearStress);
     }
-    if (pureShear_.get() && !tensorFieldOut_->hasMetaData<PureShear>()) {
+    if (pureShear_.get() && !tensorFieldOut_->hasMetaData<tensor::PureShear>()) {
         std::vector<double> pureShear;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             pureShear.emplace_back(0);
         }
 
-        tensorFieldOut_->addMetaData<PureShear>(pureShear, TensorFeature::PureShear);
+        tensorFieldOut_->addMetaData<tensor::PureShear>(pureShear, TensorFeature::PureShear);
     }
-    if (shapeFactor_.get() && !tensorFieldOut_->hasMetaData<ShapeFactor>()) {
+    if (shapeFactor_.get() && !tensorFieldOut_->hasMetaData<tensor::ShapeFactor>()) {
         std::vector<double> shapeFactor;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             shapeFactor.emplace_back((majorEigenValues[i] - intermediateEigenValues[i]) /
                                      (majorEigenValues[i] - minorEigenValues[i]));
         }
 
-        tensorFieldOut_->addMetaData<ShapeFactor>(shapeFactor, TensorFeature::ShapeFactor);
+        tensorFieldOut_->addMetaData<tensor::ShapeFactor>(shapeFactor, TensorFeature::ShapeFactor);
     }
-    if (isotropicScaling_.get() && !tensorFieldOut_->hasMetaData<IsotropicScaling>()) {
+    if (isotropicScaling_.get() && !tensorFieldOut_->hasMetaData<tensor::IsotropicScaling>()) {
         std::vector<double> isotropicScaling;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             isotropicScaling.emplace_back(
                 (majorEigenValues[i] + intermediateEigenValues[i] + minorEigenValues[i]) / 3.0);
         }
 
-        tensorFieldOut_->addMetaData<IsotropicScaling>(isotropicScaling,
-                                                       TensorFeature::IsotropicScaling);
+        tensorFieldOut_->addMetaData<tensor::IsotropicScaling>(isotropicScaling,
+                                                               TensorFeature::IsotropicScaling);
     }
-    if (rotation_.get() && !tensorFieldOut_->hasMetaData<Rotation>()) {
+    if (rotation_.get() && !tensorFieldOut_->hasMetaData<tensor::Rotation>()) {
         std::vector<double> rotation;
 
         rotation.resize(tensors.size(), 0.0);
 
-        tensorFieldOut_->addMetaData<Rotation>(rotation, TensorFeature::Rotation);
+        tensorFieldOut_->addMetaData<tensor::Rotation>(rotation, TensorFeature::Rotation);
     }
-    if (frobeniusNorm_.get() && !tensorFieldOut_->hasMetaData<FrobeniusNorm>()) {
+    if (frobeniusNorm_.get() && !tensorFieldOut_->hasMetaData<tensor::FrobeniusNorm>()) {
         std::vector<double> frobeniusNorm;
 
-        const auto& majorEigenValues = tensorFieldOut_->getMetaData<MajorEigenValues>();
+        const auto& majorEigenValues = tensorFieldOut_->getMetaData<tensor::MajorEigenValues>();
         const auto& intermediateEigenValues =
-            tensorFieldOut_->getMetaData<IntermediateEigenValues>();
-        const auto& minorEigenValues = tensorFieldOut_->getMetaData<MinorEigenValues>();
+            tensorFieldOut_->getMetaData<tensor::IntermediateEigenValues>();
+        const auto& minorEigenValues = tensorFieldOut_->getMetaData<tensor::MinorEigenValues>();
 
         for (size_t i = 0; i < majorEigenValues.size(); i++) {
             auto eigenValues = std::array<double, 3>{
@@ -422,64 +423,65 @@ void TensorField3DMetaData::addMetaData() {
                                 [](const double& a, const double& b) { return a + (b * b); })));
         }
 
-        tensorFieldOut_->addMetaData<FrobeniusNorm>(frobeniusNorm, TensorFeature::FrobeniusNorm);
+        tensorFieldOut_->addMetaData<tensor::FrobeniusNorm>(frobeniusNorm,
+                                                            TensorFeature::FrobeniusNorm);
     }
 }
 
 void TensorField3DMetaData::removeMetaData() {
     if (!i1_.get()) {
-        tensorFieldOut_->removeMetaData<I1>();
+        tensorFieldOut_->removeMetaData<tensor::I1>();
     }
     if (!i2_.get()) {
-        tensorFieldOut_->removeMetaData<I2>();
+        tensorFieldOut_->removeMetaData<tensor::I2>();
     }
     if (!i3_.get()) {
-        tensorFieldOut_->removeMetaData<I3>();
+        tensorFieldOut_->removeMetaData<tensor::I3>();
     }
     if (!j1_.get()) {
-        tensorFieldOut_->removeMetaData<J1>();
+        tensorFieldOut_->removeMetaData<tensor::J1>();
     }
     if (!j2_.get()) {
-        tensorFieldOut_->removeMetaData<J2>();
+        tensorFieldOut_->removeMetaData<tensor::J2>();
     }
     if (!j3_.get()) {
-        tensorFieldOut_->removeMetaData<J3>();
+        tensorFieldOut_->removeMetaData<tensor::J3>();
     }
     if (!lodeAngle_.get()) {
-        tensorFieldOut_->removeMetaData<LodeAngle>();
+        tensorFieldOut_->removeMetaData<tensor::LodeAngle>();
     }
     if (!anisotropy_.get()) {
-        tensorFieldOut_->removeMetaData<Anisotropy>();
+        tensorFieldOut_->removeMetaData<tensor::Anisotropy>();
     }
     if (!linearAnisotropy_.get()) {
-        tensorFieldOut_->removeMetaData<LinearAnisotropy>();
+        tensorFieldOut_->removeMetaData<tensor::LinearAnisotropy>();
     }
     if (!planarAnisotropy_.get()) {
-        tensorFieldOut_->removeMetaData<PlanarAnisotropy>();
+        tensorFieldOut_->removeMetaData<tensor::PlanarAnisotropy>();
     }
     if (!sphericalAnisotropy_.get()) {
-        tensorFieldOut_->removeMetaData<SphericalAnisotropy>();
+        tensorFieldOut_->removeMetaData<tensor::SphericalAnisotropy>();
     }
     if (!diffusivity_.get()) {
-        tensorFieldOut_->removeMetaData<Diffusivity>();
+        tensorFieldOut_->removeMetaData<tensor::Diffusivity>();
     }
     if (!shearStress_.get()) {
-        tensorFieldOut_->removeMetaData<ShearStress>();
+        tensorFieldOut_->removeMetaData<tensor::ShearStress>();
     }
     if (!pureShear_.get()) {
-        tensorFieldOut_->removeMetaData<PureShear>();
+        tensorFieldOut_->removeMetaData<tensor::PureShear>();
     }
     if (!shapeFactor_.get()) {
-        tensorFieldOut_->removeMetaData<ShapeFactor>();
+        tensorFieldOut_->removeMetaData<tensor::ShapeFactor>();
     }
     if (!isotropicScaling_.get()) {
-        tensorFieldOut_->removeMetaData<IsotropicScaling>();
+        tensorFieldOut_->removeMetaData<tensor::IsotropicScaling>();
     }
     if (!rotation_.get()) {
-        tensorFieldOut_->removeMetaData<Rotation>();
+        tensorFieldOut_->removeMetaData<tensor::Rotation>();
     }
     if (!frobeniusNorm_.get()) {
-        tensorFieldOut_->removeMetaData<FrobeniusNorm>();
+        tensorFieldOut_->removeMetaData<tensor::FrobeniusNorm>();
     }
 }
 

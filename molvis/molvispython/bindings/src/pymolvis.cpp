@@ -411,6 +411,7 @@ void exposeMolVis(pybind11::module& m) {
     py::class_<MolecularStructure>(m, "MolecularStructure")
         .def(py::init([](MolecularData data) -> MolecularStructure { return {std::move(data)}; }),
              py::arg("data"))
+        .def_readwrite("axes", &MolecularStructure::axes)
         .def("data", &MolecularStructure::data)
         .def("atoms", &MolecularStructure::atoms)
         .def("residues", &MolecularStructure::residues)
