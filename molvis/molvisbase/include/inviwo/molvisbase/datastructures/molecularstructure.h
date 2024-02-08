@@ -259,7 +259,7 @@ public:
     MolecularStructure() = delete;
     virtual ~MolecularStructure() = default;
 
-    virtual MolecularStructure* clone() const;
+    virtual MolecularStructure* clone() const override;
 
     /**
      * @copydoc SpatialEntity::getAxis

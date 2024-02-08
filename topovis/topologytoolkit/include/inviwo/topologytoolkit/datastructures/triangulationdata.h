@@ -93,7 +93,7 @@ public:
     TriangulationData& operator=(const TriangulationData& rhs);
     TriangulationData& operator=(TriangulationData&& rhs);
 
-    virtual TriangulationData* clone() const;
+    virtual TriangulationData* clone() const override;
 
     virtual const Axis* getAxis(size_t index) const override { return nullptr; }
 
@@ -237,7 +237,7 @@ public:
     size_t getCellCount() const;
 
     virtual const SpatialCameraCoordinateTransformer& getCoordinateTransformer(
-        const Camera& camera) const;
+        const Camera& camera) const override;
     using SpatialEntity::getCoordinateTransformer;
 
 private:
