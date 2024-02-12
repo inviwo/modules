@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwo.h>
 
 #include <inviwo/core/io/datareader.h>
-#include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/datastructures/data.h>
 #include <inviwo/core/datastructures/volume/volumedisk.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -78,24 +77,6 @@ public:
         const VolumeRepresentation&) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
                                       const VolumeRepresentation&) const override;
-
-    template <typename Result, typename T>
-    std::shared_ptr<VolumeRAM> operator()() const {
-        typedef typename T::type F;
-
-        const std::size_t size = glm::compMul(dimension_);
-        auto data = std::make_unique<F[]>(size);
-        if (!data) {
-            throw DataReaderException(
-                IVW_CONTEXT,
-                "Error: Could not allocate memory for loading mevis volume data: ", tif_file_);
-        }
-
-        readDataInto(reinterpret_cast<char*>(data.get()));
-        auto repr = std::make_shared<VolumeRAMPrecision<F>>(data.get(), dimension_);
-        data.release();
-        return repr;
-    }
 
 private:
     void readDataInto(void* destination) const;
