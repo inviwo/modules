@@ -114,7 +114,6 @@ void main() {
 #else
     glyphColor.a = in_frag.color.a;
 #endif // UNIFORM_ALPHA
-    glyphColor.rgb *= glyphColor.a;
 
     if (glyphColor.a < 0.01) discard;
 
@@ -137,11 +136,7 @@ void main() {
     }
 
 #if defined(USE_FRAGMENT_LIST)
-    // fragment list rendering
-    if (glyphColor.a > 0.0) {
-        ivec2 coords = ivec2(gl_FragCoord.xy);
-        abufferRender(coords, depth, glyphColor);
-    }
+    abufferRender(ivec2(gl_FragCoord.xy), depth, glyphColor);
     discard;
 #else
     FragData0 = glyphColor;

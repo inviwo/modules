@@ -43,8 +43,8 @@
 #include <inviwo/molvisbase/algorithm/boundingbox.h>
 #include <inviwo/molvisgl/util/molvisglutils.h>
 
-#include <modules/meshrenderinggl/rendering/fragmentlistrenderer.h>
-#include <modules/meshrenderinggl/datastructures/transformedrasterization.h>
+#include <modules/oit/rendering/fragmentlistrenderer.h>
+#include <modules/oit/datastructures/transformedrasterization.h>
 
 #include <fmt/format.h>
 
@@ -67,13 +67,13 @@ const ProcessorInfo MolecularRasterizer::processorInfo_{
         + Licorice:            considers both atoms and bonds
         + Ball & Stick:        considers both atoms and bonds
     )"_unindentHelp};
+
 const ProcessorInfo MolecularRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularRasterizer::MolecularRasterizer()
-    : Processor()
+    : Rasterizer()
     , inport_("inport", "Molecular datastructures"_help)
     , brushing_("brushing", "Brushing & Linking"_help)
-    , outport_("rasterization", "Rasterization functor for rendering the molecular structure"_help)
 
     , representation_("representation", "Representation", R"(
                         Determines the molecular representation
@@ -142,38 +142,37 @@ MolecularRasterizer::MolecularRasterizer()
     , camera_("camera", "Camera", molvis::boundingBox(inport_))
     , lighting_("lighting", "Lighting", &camera_)
 
-    , vdwShaders_{new MeshShaderCache(
-          {{ShaderType::Vertex, std::string{"vdw.vert"}},
-           {ShaderType::Geometry, std::string{"vdw.geom"}},
-           {ShaderType::Fragment, std::string{"vdw-oit.frag"}}},
-          {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-           {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
-           {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
-           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-           {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
+    , vdwShaders_{{{ShaderType::Vertex, std::string{"vdw.vert"}},
+                   {ShaderType::Geometry, std::string{"vdw.geom"}},
+                   {ShaderType::Fragment, std::string{"vdw-oit.frag"}}},
+                  {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                   {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                   {BufferType::RadiiAttrib, MeshShaderCache::Optional, "float"},
+                   {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                   {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
-          [&](Shader& shader) -> void {
-              shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-              configureVdWShader(shader);
-          })}
-    , licoriceShaders_{new MeshShaderCache(
-          {{ShaderType::Vertex, std::string{"licorice.vert"}},
-           {ShaderType::Geometry, std::string{"licorice.geom"}},
-           {ShaderType::Fragment, std::string{"licorice-oit.frag"}}},
-          {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
-           {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
-           {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
-           {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
+                  [&](Shader& shader) -> void {
+                      shader.onReload(
+                          [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                      configureVdWShader(shader);
+                  }}
+    , licoriceShaders_{{{ShaderType::Vertex, std::string{"licorice.vert"}},
+                        {ShaderType::Geometry, std::string{"licorice.geom"}},
+                        {ShaderType::Fragment, std::string{"licorice-oit.frag"}}},
+                       {{BufferType::PositionAttrib, MeshShaderCache::Mandatory, "vec3"},
+                        {BufferType::ColorAttrib, MeshShaderCache::Optional, "vec4"},
+                        {BufferType::PickingAttrib, MeshShaderCache::Optional, "uint"},
+                        {BufferType::TexCoordAttrib, MeshShaderCache::Optional, "uint"}},
 
-          [&](Shader& shader) -> void {
-              shader.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-              configureLicoriceShader(shader);
-          })}
+                       [&](Shader& shader) -> void {
+                           shader.onReload(
+                               [this]() { invalidate(InvalidationLevel::InvalidResources); });
+                           configureLicoriceShader(shader);
+                       }}
     , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
     addPort(inport_);
     addPort(brushing_);
-    addPort(outport_);
 
     brushing_.setOptional(true);
 
@@ -204,7 +203,7 @@ MolecularRasterizer::MolecularRasterizer()
     lighting_.setCurrentStateAsDefault();
 }
 
-void MolecularRasterizer::process() {
+void MolecularRasterizer::preprocess() {
     atomPicking_.resize(std::max<size_t>(
         std::accumulate(inport_.begin(), inport_.end(), size_t{0u},
                         [](size_t val, auto s) { return val + s->atoms().positions.size(); }),
@@ -247,31 +246,36 @@ void MolecularRasterizer::process() {
             offset += mesh->getIndices(0)->getSize();
         }
     }
-
-    std::shared_ptr<const Rasterization> rasterization =
-        std::make_shared<MolecularRasterization>(*this);
-    outport_.setData(rasterization);
 }
 
 void MolecularRasterizer::initializeResources() {
-    for (auto& item : vdwShaders_->getShaders()) {
-        configureVdWShader(item.second);
+    for (auto& [state, shader] : vdwShaders_.getShaders()) {
+        configureVdWShader(shader);
     }
-    for (auto& item : licoriceShaders_->getShaders()) {
-        configureLicoriceShader(item.second);
+    for (auto& [state, shader] : licoriceShaders_.getShaders()) {
+        configureLicoriceShader(shader);
     }
 }
 
+/*
+void SphereRasterizer::configureShader(Shader& shader) {
+    Rasterizer::configureShader(shader);
+    utilgl::addDefines(shader, labels_, periodic_, config_, clip_);
+    shader.build();
+}
+*/
+
 void MolecularRasterizer::configureVdWShader(Shader& shader) {
+    Rasterizer::configureShader(shader);
+
     utilgl::addDefines(shader, lighting_);
-
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
-
-    configureOITShader(shader);
     shader.build();
 }
 
 void MolecularRasterizer::configureLicoriceShader(Shader& shader) {
+    Rasterizer::configureShader(shader);
+
     utilgl::addDefines(shader, lighting_);
 
     const bool arbExt = OpenGLCapabilities::isExtensionSupported("GL_ARB_conservative_depth");
@@ -289,23 +293,113 @@ void MolecularRasterizer::configureLicoriceShader(Shader& shader) {
             fmt::format("#ifdef {}\nlayout (depth_greater) out float gl_FragDepth;\n#endif", ext);
         shader.getFragmentShaderObject()->addOutDeclaration(outdecl);
     }
-
-    configureOITShader(shader);
     shader.build();
 }
 
-void MolecularRasterizer::configureOITShader(Shader& shader) {
-    auto fso = shader.getFragmentShaderObject();
+void MolecularRasterizer::setUniforms(Shader& shader) {
+    Rasterizer::setUniforms(shader);
 
-    fso->addShaderExtension("GL_NV_gpu_shader5", true);
-    fso->addShaderExtension("GL_EXT_shader_image_load_store", true);
-    fso->addShaderExtension("GL_NV_shader_buffer_load", true);
-    fso->addShaderExtension("GL_EXT_bindable_uniform", true);
+    shader.setUniform("defaultRadius", defaultRadius_);
+    shader.setUniform("uniformAlpha", uniformAlpha_);
+    utilgl::setShaderUniforms(shader, lighting_, "lighting");
+    utilgl::setShaderUniforms(shader, showHighlighted_, "showHighlighted");
+    utilgl::setShaderUniforms(shader, showSelected_, "showSelected");
+    utilgl::setShaderUniforms(shader, showFiltered_, "showFiltered");
+}
 
-    fso->setShaderDefine("USE_FRAGMENT_LIST",
-                         !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists());
+void MolecularRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
 
-    fso->setShaderDefine("UNIFORM_ALPHA", useUniformAlpha_.get());
+    auto drawMesh = [](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
+                       DrawType dt) {
+        if ((mesh->getNumberOfIndicies() == 0) && (mesh->getDefaultMeshInfo().dt == dt)) {
+            drawer.draw();
+        } else {
+            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+                if (mesh->getIndexMeshInfo(i).dt == dt) {
+                    drawer.draw(i);
+                }
+            }
+        }
+    };
+
+    auto drawVdW = [&](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
+                       float radius) {
+        auto& shader = vdwShaders_.getShader(*mesh);
+        utilgl::Activate activate{&shader};
+
+        setUniforms(shader);
+        shader.setUniform("radius_", 0.25f * radius);
+        shader.setUniform("radiusScaling_", radius);
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
+        auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                            mesh->getWorldMatrix() * worldMatrixTransform);
+        utilgl::setShaderUniforms(shader, transform, "geometry");
+
+        drawMesh(mesh, drawer, DrawType::Points);
+    };
+    auto drawLicorice = [&](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
+                            float radius) {
+        auto& shader = licoriceShaders_.getShader(*mesh);
+        utilgl::Activate activate{&shader};
+
+        shader.setUniform("radius_", 0.25f * radius);
+        auto transform = CompositeTransform(mesh->getModelMatrix(),
+                                            mesh->getWorldMatrix() * worldMatrixTransform);
+        setUniforms(shader);
+        utilgl::setShaderUniforms(shader, transform, "geometry");
+
+        utilgl::CullFaceState cull(GL_BACK);
+        drawMesh(mesh, drawer, DrawType::Lines);
+    };
+
+    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
+
+    for (auto& mesh : meshes_) {
+        if (mesh->getNumberOfBuffers() == 0) continue;
+
+        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
+                                        mesh->getDefaultMeshInfo()};
+        switch (representation_) {
+            case MolecularRasterizer::Representation::VDW:
+                drawVdW(mesh, drawer, radiusScaling_);
+                break;
+            case MolecularRasterizer::Representation::Licorice:
+                drawLicorice(mesh, drawer, radiusScaling_);
+                break;
+            case MolecularRasterizer::Representation::BallAndStick:
+                drawVdW(mesh, drawer, radiusScaling_ * BallAndStickVDWScale);
+                drawLicorice(mesh, drawer, radiusScaling_ * BallAndStickLicoriceScale);
+                break;
+            case MolecularRasterizer::Representation::Ribbon:
+                throw Exception("Unsupported representation: 'Ribbon'", IVW_CONTEXT);
+                break;
+            case MolecularRasterizer::Representation::Cartoon:
+                throw Exception("Unsupported representation: 'Cartoon'", IVW_CONTEXT);
+                break;
+            default:
+                drawVdW(mesh, drawer, radiusScaling_);
+                break;
+        }
+    }
+}
+
+UseFragmentList MolecularRasterizer::usesFragmentLists() const {
+    return !forceOpaque_.get() && FragmentListRenderer::supportsFragmentLists()
+               ? UseFragmentList::Yes
+               : UseFragmentList::No;
+}
+
+Document MolecularRasterizer::getInfo() const {
+    Document doc;
+    doc.append("p", fmt::format("Molecular rasterization functor with {} molecule{}. {}.",
+                                meshes_.size(), (meshes_.size() == 1) ? "" : "s",
+                                usesFragmentLists() == UseFragmentList::Yes ? "Using A-buffer"
+                                                                            : "Rendering opaque"));
+    return doc;
+}
+
+std::optional<mat4> MolecularRasterizer::boundingBox() const {
+    return molvis::boundingBox(inport_)();
 }
 
 std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStructure& s,
@@ -430,121 +524,6 @@ void MolecularRasterizer::handlePicking(PickingEvent* p) {
             }
         }
     }
-}
-
-MolecularRasterization::MolecularRasterization(const MolecularRasterizer& processor)
-    : BallAndStickVDWScale(processor.BallAndStickVDWScale)
-    , BallAndStickLicoriceScale(processor.BallAndStickLicoriceScale)
-    , representation_(processor.representation_)
-    , radiusScaling_(processor.radiusScaling_)
-    , defaultRadius_(processor.defaultRadius_)
-    , lighting_(processor.lighting_.getState())
-    , highlighted_(processor.showHighlighted_.getState())
-    , selected_(processor.showSelected_.getState())
-    , filtered_(processor.showFiltered_.getState())
-    , uniformAlpha_(processor.uniformAlpha_)
-    , forceOpaque_(processor.forceOpaque_)
-    , vdwShaders_(processor.vdwShaders_)
-    , licoriceShaders_(processor.licoriceShaders_)
-    , meshes_(processor.meshes_) {}
-
-void MolecularRasterization::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                                       std::function<void(Shader&)> setUniforms) const {
-
-    auto drawMesh = [](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
-                       DrawType dt) {
-        if ((mesh->getNumberOfIndicies() == 0) && (mesh->getDefaultMeshInfo().dt == dt)) {
-            drawer.draw();
-        } else {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
-                if (mesh->getIndexMeshInfo(i).dt == dt) {
-                    drawer.draw(i);
-                }
-            }
-        }
-    };
-
-    auto drawVdW = [&](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
-                       float radius) {
-        auto& shader = vdwShaders_->getShader(*mesh);
-
-        shader.activate();
-        shader.setUniform("defaultRadius", defaultRadius_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
-        shader.setUniform("radiusScaling_", radius);
-        shader.setUniform("uniformAlpha", uniformAlpha_);
-        utilgl::setShaderUniforms(shader, lighting_, "lighting");
-        utilgl::setShaderUniforms(shader, highlighted_, "showHighlighted");
-        utilgl::setShaderUniforms(shader, selected_, "showSelected");
-        utilgl::setShaderUniforms(shader, filtered_, "showFiltered");
-        setUniforms(shader);
-        auto transform = CompositeTransform(mesh->getModelMatrix(),
-                                            mesh->getWorldMatrix() * worldMatrixTransform);
-        utilgl::setShaderUniforms(shader, transform, "geometry");
-        drawMesh(mesh, drawer, DrawType::Points);
-        shader.deactivate();
-    };
-    auto drawLicorice = [&](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
-                            float radius) {
-        auto& shader = licoriceShaders_->getShader(*mesh);
-        shader.activate();
-        shader.setUniform("defaultRadius", defaultRadius_);
-        shader.setUniform("radius_", 0.25f * radius);
-        shader.setUniform("uniformAlpha", uniformAlpha_);
-        utilgl::setShaderUniforms(shader, lighting_, "lighting");
-        utilgl::setShaderUniforms(shader, highlighted_, "showHighlighted");
-        utilgl::setShaderUniforms(shader, selected_, "showSelected");
-        utilgl::setShaderUniforms(shader, filtered_, "showFiltered");
-        auto transform = CompositeTransform(mesh->getModelMatrix(),
-                                            mesh->getWorldMatrix() * worldMatrixTransform);
-        setUniforms(shader);
-        utilgl::setShaderUniforms(shader, transform, "geometry");
-        utilgl::CullFaceState cull(GL_BACK);
-        drawMesh(mesh, drawer, DrawType::Lines);
-        shader.deactivate();
-    };
-
-    utilgl::GlBoolState depthTest(GL_DEPTH_TEST, !usesFragmentLists());
-
-    for (auto mesh : meshes_) {
-        if (mesh->getNumberOfBuffers() == 0) continue;
-
-        MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
-                                        mesh->getDefaultMeshInfo()};
-        switch (representation_) {
-            case MolecularRasterizer::Representation::VDW:
-                drawVdW(mesh, drawer, radiusScaling_);
-                break;
-            case MolecularRasterizer::Representation::Licorice:
-                drawLicorice(mesh, drawer, radiusScaling_);
-                break;
-            case MolecularRasterizer::Representation::BallAndStick:
-                drawVdW(mesh, drawer, radiusScaling_ * BallAndStickVDWScale);
-                drawLicorice(mesh, drawer, radiusScaling_ * BallAndStickLicoriceScale);
-                break;
-            case MolecularRasterizer::Representation::Ribbon:
-                throw Exception("Unsupported representation: 'Ribbon'", IVW_CONTEXT);
-                break;
-            case MolecularRasterizer::Representation::Cartoon:
-                throw Exception("Unsupported representation: 'Cartoon'", IVW_CONTEXT);
-                break;
-            default:
-                drawVdW(mesh, drawer, radiusScaling_);
-                break;
-        }
-    }
-}
-
-bool MolecularRasterization::usesFragmentLists() const {
-    return !forceOpaque_ && FragmentListRenderer::supportsFragmentLists();
-}
-
-Document MolecularRasterization::getInfo() const {
-    Document doc;
-    doc.append("p", fmt::format("Molecular rasterization functor with {} molecule{}. {}.",
-                                meshes_.size(), (meshes_.size() == 1) ? "" : "s",
-                                usesFragmentLists() ? "Using A-buffer" : "Rendering opaque"));
-    return doc;
 }
 
 }  // namespace inviwo

@@ -97,7 +97,6 @@ void main() {
 #else
     color.a = in_frag.color[side].a;
 #endif // UNIFORM_ALPHA
-    color.rgb *= color.a;
 
     if (color.a < 0.01) discard;
 
@@ -106,11 +105,7 @@ void main() {
     float depth = (curr_clip_coord.z / curr_clip_coord.w) * 0.5 + 0.5;
 
 #if defined(USE_FRAGMENT_LIST)
-    // fragment list rendering
-    if (color.a > 0.0) {
-        ivec2 coords = ivec2(gl_FragCoord.xy);
-        abufferRender(coords, depth, color);
-    }
+    abufferRender(ivec2(gl_FragCoord.xy), depth, color);
     discard;
 #else
     FragData0 = color;
