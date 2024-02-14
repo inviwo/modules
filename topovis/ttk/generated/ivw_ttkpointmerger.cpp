@@ -1,7 +1,6 @@
 #include "ivw_ttkpointmerger.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -112,7 +111,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPointMerger> {
+struct VTKTraits<ttkPointMerger> {
+    static constexpr std::string_view uri = "ttk.ttkPointMerger";
     static constexpr std::string_view className = "ttkPointMerger";
     static constexpr std::string_view identifier = "ttkPointMerger";
     static constexpr std::string_view displayName = "TTK PointMerger";
@@ -133,8 +133,8 @@ a user defined threshold.)";
 };
 
 void registerttkPointMerger(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPointMerger>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPointMerger>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

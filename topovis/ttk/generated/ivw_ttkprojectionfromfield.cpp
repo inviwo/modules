@@ -1,7 +1,6 @@
 #include "ivw_ttkprojectionfromfield.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -199,7 +198,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkProjectionFromField> {
+struct VTKTraits<ttkProjectionFromField> {
+    static constexpr std::string_view uri = "ttk.ttkProjectionFromField";
     static constexpr std::string_view className = "ttkProjectionFromField";
     static constexpr std::string_view identifier = "ttkProjectionFromField";
     static constexpr std::string_view displayName = "TTK ProjectionFromField";
@@ -227,8 +227,8 @@ Online examples:
 };
 
 void registerttkProjectionFromField(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkProjectionFromField>>();
+    module->registerProcessor<VTKGenericProcessor<ttkProjectionFromField>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

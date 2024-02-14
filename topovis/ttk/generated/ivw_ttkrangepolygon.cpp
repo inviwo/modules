@@ -1,7 +1,6 @@
 #include "ivw_ttkrangepolygon.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -112,7 +111,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkRangePolygon> {
+struct VTKTraits<ttkRangePolygon> {
+    static constexpr std::string_view uri = "ttk.ttkRangePolygon";
     static constexpr std::string_view className = "ttkRangePolygon";
     static constexpr std::string_view identifier = "ttkRangePolygon";
     static constexpr std::string_view displayName = "TTK RangePolygon";
@@ -159,8 +159,8 @@ Online examples:
 };
 
 void registerttkRangePolygon(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkRangePolygon>>();
+    module->registerProcessor<VTKGenericProcessor<ttkRangePolygon>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkforeach.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -169,7 +168,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkForEach> {
+struct VTKTraits<ttkForEach> {
+    static constexpr std::string_view uri = "ttk.ttkForEach";
     static constexpr std::string_view className = "ttkForEach";
     static constexpr std::string_view identifier = "ttkForEach";
     static constexpr std::string_view displayName = "TTK ForEach";
@@ -200,8 +200,8 @@ Online examples:
 };
 
 void registerttkForEach(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkForEach>>();
+    module->registerProcessor<VTKGenericProcessor<ttkForEach>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

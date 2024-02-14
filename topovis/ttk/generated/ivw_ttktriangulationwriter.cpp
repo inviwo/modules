@@ -1,7 +1,6 @@
 #include "ivw_ttktriangulationwriter.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -52,7 +51,8 @@ struct Wrapper1 {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTriangulationWriter> {
+struct VTKTraits<ttkTriangulationWriter> {
+    static constexpr std::string_view uri = "ttk.ttkTriangulationWriter";
     static constexpr std::string_view className = "ttkTriangulationWriter";
     static constexpr std::string_view identifier = "ttkTriangulationWriter";
     static constexpr std::string_view displayName = "TTK Triangulation File Writer";
@@ -67,8 +67,8 @@ struct TTKTraits<ttkTriangulationWriter> {
 };
 
 void registerttkTriangulationWriter(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTriangulationWriter>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTriangulationWriter>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

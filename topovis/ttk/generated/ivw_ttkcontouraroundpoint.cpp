@@ -1,7 +1,6 @@
 #include "ivw_ttkcontouraroundpoint.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -158,7 +157,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkContourAroundPoint> {
+struct VTKTraits<ttkContourAroundPoint> {
+    static constexpr std::string_view uri = "ttk.ttkContourAroundPoint";
     static constexpr std::string_view className = "ttkContourAroundPoint";
     static constexpr std::string_view identifier = "ttkContourAroundPoint";
     static constexpr std::string_view displayName = "TTK ContourAroundPoint";
@@ -189,8 +189,8 @@ arrays: downNodeId: int, upNodeId: int.)"}};
 };
 
 void registerttkContourAroundPoint(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkContourAroundPoint>>();
+    module->registerProcessor<VTKGenericProcessor<ttkContourAroundPoint>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

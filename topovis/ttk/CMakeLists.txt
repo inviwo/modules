@@ -1,49 +1,13 @@
 ivw_module(ttk)
 
 set(HEADER_FILES
-    include/inviwo/ttk/arrayutils.h
-    include/inviwo/ttk/datastructures/volumevtk.h
-    include/inviwo/ttk/datastructures/vtktetramesh.h
-    include/inviwo/ttk/ports/vtkinport.h
-    include/inviwo/ttk/ports/vtkoutport.h
-    include/inviwo/ttk/processors/imagetovtk.h
-    include/inviwo/ttk/processors/layertovtk.h
-    include/inviwo/ttk/processors/ttkgenericprocessor.h
-    include/inviwo/ttk/processors/volumetovtk.h
-    include/inviwo/ttk/processors/vtkdatasettovtkimagedata.h
-    include/inviwo/ttk/processors/vtksource.h
-    include/inviwo/ttk/processors/vtktodataframe.h
-    include/inviwo/ttk/processors/vtktoimage.h
-    include/inviwo/ttk/processors/vtktolayer.h
-    include/inviwo/ttk/processors/vtktomesh.h
-    include/inviwo/ttk/processors/vtktotetramesh.h
-    include/inviwo/ttk/processors/vtktovolume.h
     include/inviwo/ttk/ttkmodule.h
     include/inviwo/ttk/ttkmoduledefine.h
-    include/inviwo/ttk/util/vtkbufferutils.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
-    src/arrayutils.cpp
-    src/datastructures/volumevtk.cpp
-    src/datastructures/vtktetramesh.cpp
-    src/ports/vtkinport.cpp
-    src/ports/vtkoutport.cpp
-    src/processors/imagetovtk.cpp
-    src/processors/layertovtk.cpp
-    src/processors/ttkgenericprocessor.cpp
-    src/processors/volumetovtk.cpp
-    src/processors/vtkdatasettovtkimagedata.cpp
-    src/processors/vtksource.cpp
-    src/processors/vtktodataframe.cpp
-    src/processors/vtktoimage.cpp
-    src/processors/vtktolayer.cpp
-    src/processors/vtktomesh.cpp
-    src/processors/vtktotetramesh.cpp
-    src/processors/vtktovolume.cpp
     src/ttkmodule.cpp
-    src/util/vtkbufferutils.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -93,7 +57,6 @@ target_link_libraries(inviwo-module-ttk
     PRIVATE 
         ttk::base::baseAll
         ttk::vtk::ttkAll
-
 
         VTK::CommonExecutionModel
         VTK::DomainsChemistry

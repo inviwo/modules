@@ -1,7 +1,6 @@
 #include "ivw_ttkmorsesmalequadrangulation.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -108,7 +107,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMorseSmaleQuadrangulation> {
+struct VTKTraits<ttkMorseSmaleQuadrangulation> {
+    static constexpr std::string_view uri = "ttk.ttkMorseSmaleQuadrangulation";
     static constexpr std::string_view className = "ttkMorseSmaleQuadrangulation";
     static constexpr std::string_view identifier = "ttkMorseSmaleQuadrangulation";
     static constexpr std::string_view displayName = "TTK MorseSmaleQuadrangulation";
@@ -137,8 +137,8 @@ Online examples:
 };
 
 void registerttkMorseSmaleQuadrangulation(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMorseSmaleQuadrangulation>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMorseSmaleQuadrangulation>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

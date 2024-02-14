@@ -1,7 +1,6 @@
 #include "ivw_ttktopologicalsimplificationbypersistence.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -169,7 +168,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTopologicalSimplificationByPersistence> {
+struct VTKTraits<ttkTopologicalSimplificationByPersistence> {
+    static constexpr std::string_view uri = "ttk.ttkTopologicalSimplificationByPersistence";
     static constexpr std::string_view className = "ttkTopologicalSimplificationByPersistence";
     static constexpr std::string_view identifier = "ttkTopologicalSimplificationByPersistence";
     static constexpr std::string_view displayName = "TTK TopologicalSimplificationByPersistence";
@@ -209,8 +209,8 @@ Online examples:
 };
 
 void registerttkTopologicalSimplificationByPersistence(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTopologicalSimplificationByPersistence>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTopologicalSimplificationByPersistence>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -2,6 +2,8 @@
 namespace inviwo {
 class InviwoModule;
 namespace vtkwrapper {
-void registerttkMarchingTetrahedra(InviwoModule* module);
+
+void registerVTKFilters(InviwoModule* module);
+
 }  // namespace vtkwrapper
 }  // namespace inviwo

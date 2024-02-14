@@ -1,7 +1,6 @@
 #include "ivw_ttkplanargraphlayout.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -259,7 +258,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPlanarGraphLayout> {
+struct VTKTraits<ttkPlanarGraphLayout> {
+    static constexpr std::string_view uri = "ttk.ttkPlanarGraphLayout";
     static constexpr std::string_view className = "ttkPlanarGraphLayout";
     static constexpr std::string_view identifier = "ttkPlanarGraphLayout";
     static constexpr std::string_view displayName = "TTK PlanarGraphLayout";
@@ -314,8 +314,8 @@ Online examples:
 };
 
 void registerttkPlanarGraphLayout(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPlanarGraphLayout>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPlanarGraphLayout>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkclusteringmetrics.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -146,7 +145,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkClusteringMetrics> {
+struct VTKTraits<ttkClusteringMetrics> {
+    static constexpr std::string_view uri = "ttk.ttkClusteringMetrics";
     static constexpr std::string_view className = "ttkClusteringMetrics";
     static constexpr std::string_view identifier = "ttkClusteringMetrics";
     static constexpr std::string_view displayName = "TTK ClusteringMetrics";
@@ -169,8 +169,8 @@ struct TTKTraits<ttkClusteringMetrics> {
 };
 
 void registerttkClusteringMetrics(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkClusteringMetrics>>();
+    module->registerProcessor<VTKGenericProcessor<ttkClusteringMetrics>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

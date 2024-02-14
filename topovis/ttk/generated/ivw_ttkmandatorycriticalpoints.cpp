@@ -1,7 +1,6 @@
 #include "ivw_ttkmandatorycriticalpoints.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -255,7 +254,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMandatoryCriticalPoints> {
+struct VTKTraits<ttkMandatoryCriticalPoints> {
+    static constexpr std::string_view uri = "ttk.ttkMandatoryCriticalPoints";
     static constexpr std::string_view className = "ttkMandatoryCriticalPoints";
     static constexpr std::string_view identifier = "ttkMandatoryCriticalPoints";
     static constexpr std::string_view displayName = "TTK MandatoryCriticalPoints";
@@ -310,8 +310,8 @@ Online Examples:
 };
 
 void registerttkMandatoryCriticalPoints(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMandatoryCriticalPoints>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMandatoryCriticalPoints>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

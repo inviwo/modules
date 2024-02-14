@@ -1,7 +1,6 @@
 #include "ivw_ttkuncertaindataestimator.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -117,7 +116,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkUncertainDataEstimator> {
+struct VTKTraits<ttkUncertainDataEstimator> {
+    static constexpr std::string_view uri = "ttk.ttkUncertainDataEstimator";
     static constexpr std::string_view className = "ttkUncertainDataEstimator";
     static constexpr std::string_view identifier = "ttkUncertainDataEstimator";
     static constexpr std::string_view displayName = "TTK UncertainDataEstimator";
@@ -145,8 +145,8 @@ See also MandatoryCriticalPoints.)";
 };
 
 void registerttkUncertainDataEstimator(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkUncertainDataEstimator>>();
+    module->registerProcessor<VTKGenericProcessor<ttkUncertainDataEstimator>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

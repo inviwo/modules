@@ -1,7 +1,6 @@
 #include "ivw_ttkdimensionreduction.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -623,7 +622,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkDimensionReduction> {
+struct VTKTraits<ttkDimensionReduction> {
+    static constexpr std::string_view uri = "ttk.ttkDimensionReduction";
     static constexpr std::string_view className = "ttkDimensionReduction";
     static constexpr std::string_view identifier = "ttkDimensionReduction";
     static constexpr std::string_view displayName = "TTK DimensionReduction";
@@ -686,8 +686,8 @@ Online examples:
 };
 
 void registerttkDimensionReduction(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkDimensionReduction>>();
+    module->registerProcessor<VTKGenericProcessor<ttkDimensionReduction>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkdistancefield.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -149,7 +148,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkDistanceField> {
+struct VTKTraits<ttkDistanceField> {
+    static constexpr std::string_view uri = "ttk.ttkDistanceField";
     static constexpr std::string_view className = "ttkDistanceField";
     static constexpr std::string_view identifier = "ttkDistanceField";
     static constexpr std::string_view displayName = "TTK DistanceField";
@@ -179,8 +179,8 @@ Edsger W. Dijkstra, Numerische Mathematik, 1959.)";
 };
 
 void registerttkDistanceField(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkDistanceField>>();
+    module->registerProcessor<VTKGenericProcessor<ttkDistanceField>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

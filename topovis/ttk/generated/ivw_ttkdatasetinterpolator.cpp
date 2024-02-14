@@ -1,7 +1,6 @@
 #include "ivw_ttkdatasetinterpolator.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkDataSetInterpolator> {
+struct VTKTraits<ttkDataSetInterpolator> {
+    static constexpr std::string_view uri = "ttk.ttkDataSetInterpolator";
     static constexpr std::string_view className = "ttkDataSetInterpolator";
     static constexpr std::string_view identifier = "ttkDataSetInterpolator";
     static constexpr std::string_view displayName = "TTK DataSetInterpolator";
@@ -109,8 +109,8 @@ struct TTKTraits<ttkDataSetInterpolator> {
 };
 
 void registerttkDataSetInterpolator(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkDataSetInterpolator>>();
+    module->registerProcessor<VTKGenericProcessor<ttkDataSetInterpolator>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

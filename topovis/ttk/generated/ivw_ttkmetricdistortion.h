@@ -1,7 +1,7 @@
 #pragma once
 namespace inviwo {
 class InviwoModule;
-namespace ttkwrapper {
+namespace vtkwrapper {
 void registerttkMetricDistortion(InviwoModule* module);
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

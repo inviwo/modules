@@ -1,7 +1,6 @@
 #include "ivw_ttktriangulationreader.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -100,7 +99,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTriangulationReader> {
+struct VTKTraits<ttkTriangulationReader> {
+    static constexpr std::string_view uri = "ttk.ttkTriangulationReader";
     static constexpr std::string_view className = "ttkTriangulationReader";
     static constexpr std::string_view identifier = "ttkTriangulationReader";
     static constexpr std::string_view displayName = "TTK TriangulationReader";
@@ -122,8 +122,8 @@ dataset.)";
 };
 
 void registerttkTriangulationReader(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTriangulationReader>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTriangulationReader>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

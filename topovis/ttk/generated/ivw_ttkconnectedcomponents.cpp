@@ -1,7 +1,6 @@
 #include "ivw_ttkconnectedcomponents.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -144,7 +143,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkConnectedComponents> {
+struct VTKTraits<ttkConnectedComponents> {
+    static constexpr std::string_view uri = "ttk.ttkConnectedComponents";
     static constexpr std::string_view className = "ttkConnectedComponents";
     static constexpr std::string_view identifier = "ConnectedComponents";
     static constexpr std::string_view displayName = "TTK ConnectedComponents";
@@ -167,8 +167,8 @@ struct TTKTraits<ttkConnectedComponents> {
 };
 
 void registerttkConnectedComponents(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkConnectedComponents>>();
+    module->registerProcessor<VTKGenericProcessor<ttkConnectedComponents>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

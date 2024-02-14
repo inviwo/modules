@@ -1,7 +1,6 @@
 #include "ivw_ttkmergeblocktables.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMergeBlockTables> {
+struct VTKTraits<ttkMergeBlockTables> {
+    static constexpr std::string_view uri = "ttk.ttkMergeBlockTables";
     static constexpr std::string_view className = "ttkMergeBlockTables";
     static constexpr std::string_view identifier = "ttkMergeBlockTables";
     static constexpr std::string_view displayName = "TTK MergeBlockTables";
@@ -116,8 +116,8 @@ Online examples:
 };
 
 void registerttkMergeBlockTables(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMergeBlockTables>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMergeBlockTables>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkflattenmultiblock.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkFlattenMultiBlock> {
+struct VTKTraits<ttkFlattenMultiBlock> {
+    static constexpr std::string_view uri = "ttk.ttkFlattenMultiBlock";
     static constexpr std::string_view className = "ttkFlattenMultiBlock";
     static constexpr std::string_view identifier = "ttkFlattenMultiBlock";
     static constexpr std::string_view displayName = "TTK FlattenMultiBlock";
@@ -121,8 +121,8 @@ Online examples:
 };
 
 void registerttkFlattenMultiBlock(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkFlattenMultiBlock>>();
+    module->registerProcessor<VTKGenericProcessor<ttkFlattenMultiBlock>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

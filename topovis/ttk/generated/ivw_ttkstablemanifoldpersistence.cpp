@@ -1,7 +1,6 @@
 #include "ivw_ttkstablemanifoldpersistence.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -101,7 +100,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkStableManifoldPersistence> {
+struct VTKTraits<ttkStableManifoldPersistence> {
+    static constexpr std::string_view uri = "ttk.ttkStableManifoldPersistence";
     static constexpr std::string_view className = "ttkStableManifoldPersistence";
     static constexpr std::string_view identifier = "ttkStableManifoldPersistence";
     static constexpr std::string_view displayName = "TTK StableManifoldPersistence";
@@ -154,8 +154,8 @@ See also MorseSmaleComplex, PersistenceDiagram.)";
 };
 
 void registerttkStableManifoldPersistence(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkStableManifoldPersistence>>();
+    module->registerProcessor<VTKGenericProcessor<ttkStableManifoldPersistence>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

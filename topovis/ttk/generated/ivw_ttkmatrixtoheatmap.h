@@ -1,7 +1,7 @@
 #pragma once
 namespace inviwo {
 class InviwoModule;
-namespace ttkwrapper {
+namespace vtkwrapper {
 void registerttkMatrixToHeatMap(InviwoModule* module);
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttktexturemapfromfield.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -182,7 +181,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTextureMapFromField> {
+struct VTKTraits<ttkTextureMapFromField> {
+    static constexpr std::string_view uri = "ttk.ttkTextureMapFromField";
     static constexpr std::string_view className = "ttkTextureMapFromField";
     static constexpr std::string_view identifier = "ttkTextureMapFromField";
     static constexpr std::string_view displayName = "TTK TextureMapFromField";
@@ -207,8 +207,8 @@ or to generate texture-based level lines out of a single scalar fields.)";
 };
 
 void registerttkTextureMapFromField(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTextureMapFromField>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTextureMapFromField>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

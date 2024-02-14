@@ -1,7 +1,6 @@
 #include "ivw_ttktabledataselector.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -114,7 +113,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTableDataSelector> {
+struct VTKTraits<ttkTableDataSelector> {
+    static constexpr std::string_view uri = "ttk.ttkTableDataSelector";
     static constexpr std::string_view className = "ttkTableDataSelector";
     static constexpr std::string_view identifier = "ttkTableDataSelector";
     static constexpr std::string_view displayName = "TTK TableDataSelector";
@@ -133,8 +133,8 @@ struct TTKTraits<ttkTableDataSelector> {
 };
 
 void registerttkTableDataSelector(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTableDataSelector>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTableDataSelector>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

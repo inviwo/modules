@@ -1,7 +1,6 @@
 #include "ivw_ttkpointdataconverter.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -148,7 +147,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPointDataConverter> {
+struct VTKTraits<ttkPointDataConverter> {
+    static constexpr std::string_view uri = "ttk.ttkPointDataConverter";
     static constexpr std::string_view className = "ttkPointDataConverter";
     static constexpr std::string_view identifier = "ttkPointDataConverter";
     static constexpr std::string_view displayName = "TTK PointDataConverter";
@@ -170,8 +170,8 @@ scalar fields (for instance, from double to float).)";
 };
 
 void registerttkPointDataConverter(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPointDataConverter>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPointDataConverter>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkpointsettocurve.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -69,7 +68,8 @@ point and the first point of the point set.)"_help,
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPointSetToCurve> {
+struct VTKTraits<ttkPointSetToCurve> {
+    static constexpr std::string_view uri = "ttk.ttkPointSetToCurve";
     static constexpr std::string_view className = "ttkPointSetToCurve";
     static constexpr std::string_view identifier = "ttkPointSetToCurve";
     static constexpr std::string_view displayName = "TTK PointSetToCurve";
@@ -90,8 +90,8 @@ Online examples:
 };
 
 void registerttkPointSetToCurve(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPointSetToCurve>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPointSetToCurve>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

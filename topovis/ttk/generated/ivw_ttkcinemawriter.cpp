@@ -1,7 +1,6 @@
 #include "ivw_ttkcinemawriter.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -161,7 +160,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkCinemaWriter> {
+struct VTKTraits<ttkCinemaWriter> {
+    static constexpr std::string_view uri = "ttk.ttkCinemaWriter";
     static constexpr std::string_view className = "ttkCinemaWriter";
     static constexpr std::string_view identifier = "ttkCinemaWriter";
     static constexpr std::string_view displayName = "TTK CinemaWriter";
@@ -191,8 +191,8 @@ The field data arrays of the input are used to derive a unique key that identifi
 };
 
 void registerttkCinemaWriter(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkCinemaWriter>>();
+    module->registerProcessor<VTKGenericProcessor<ttkCinemaWriter>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

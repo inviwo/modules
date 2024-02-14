@@ -1,7 +1,6 @@
 #include "ivw_ttkcomponentsize.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkComponentSize> {
+struct VTKTraits<ttkComponentSize> {
+    static constexpr std::string_view uri = "ttk.ttkComponentSize";
     static constexpr std::string_view className = "ttkComponentSize";
     static constexpr std::string_view identifier = "ttkComponentSize";
     static constexpr std::string_view displayName = "TTK ComponentSize";
@@ -115,8 +115,8 @@ data-set.)";
 };
 
 void registerttkComponentSize(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkComponentSize>>();
+    module->registerProcessor<VTKGenericProcessor<ttkComponentSize>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

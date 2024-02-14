@@ -30,13 +30,34 @@
 
 #include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/versionconverter.h>
+
+namespace ticpp {
+class Element;
+class Document;
+}  // namespace ticpp
 
 namespace inviwo {
+
+using TxElement = ticpp::Element;
 
 class IVW_MODULE_TTK_API ttkModule : public InviwoModule {
 public:
     ttkModule(InviwoApplication* app);
     virtual ~ttkModule() = default;
+
+    virtual int getVersion() const override;
+    virtual std::unique_ptr<VersionConverter> getConverter(int version) const override;
+
+private:
+    class Converter : public VersionConverter {
+    public:
+        Converter(int version);
+        virtual bool convert(TxElement* root) override;
+
+    private:
+        int version_;
+    };
 };
 
 }  // namespace inviwo

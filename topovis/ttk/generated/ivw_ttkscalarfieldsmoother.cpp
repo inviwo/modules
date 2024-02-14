@@ -1,7 +1,6 @@
 #include "ivw_ttkscalarfieldsmoother.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -170,7 +169,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkScalarFieldSmoother> {
+struct VTKTraits<ttkScalarFieldSmoother> {
+    static constexpr std::string_view uri = "ttk.ttkScalarFieldSmoother";
     static constexpr std::string_view className = "ttkScalarFieldSmoother";
     static constexpr std::string_view identifier = "ttkScalarFieldSmoother";
     static constexpr std::string_view displayName = "TTK ScalarFieldSmoother";
@@ -203,8 +203,8 @@ Online examples:
 };
 
 void registerttkScalarFieldSmoother(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkScalarFieldSmoother>>();
+    module->registerProcessor<VTKGenericProcessor<ttkScalarFieldSmoother>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

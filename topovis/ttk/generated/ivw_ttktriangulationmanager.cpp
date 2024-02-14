@@ -1,7 +1,6 @@
 #include "ivw_ttktriangulationmanager.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -131,7 +130,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTriangulationManager> {
+struct VTKTraits<ttkTriangulationManager> {
+    static constexpr std::string_view uri = "ttk.ttkTriangulationManager";
     static constexpr std::string_view className = "ttkTriangulationManager";
     static constexpr std::string_view identifier = "ttkTriangulationManager";
     static constexpr std::string_view displayName = "TTK TriangulationManager";
@@ -176,8 +176,8 @@ Online examples:
 };
 
 void registerttkTriangulationManager(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTriangulationManager>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTriangulationManager>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

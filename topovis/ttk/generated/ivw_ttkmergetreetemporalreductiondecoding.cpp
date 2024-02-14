@@ -1,7 +1,6 @@
 #include "ivw_ttkmergetreetemporalreductiondecoding.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -145,7 +144,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMergeTreeTemporalReductionDecoding> {
+struct VTKTraits<ttkMergeTreeTemporalReductionDecoding> {
+    static constexpr std::string_view uri = "ttk.ttkMergeTreeTemporalReductionDecoding";
     static constexpr std::string_view className = "ttkMergeTreeTemporalReductionDecoding";
     static constexpr std::string_view identifier = "ttkMergeTreeTemporalReductionDecoding";
     static constexpr std::string_view displayName = "TTK MergeTreeTemporalReductionDecoding";
@@ -186,8 +186,8 @@ Online examples:
 };
 
 void registerttkMergeTreeTemporalReductionDecoding(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMergeTreeTemporalReductionDecoding>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMergeTreeTemporalReductionDecoding>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

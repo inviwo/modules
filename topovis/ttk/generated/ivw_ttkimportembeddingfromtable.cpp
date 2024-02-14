@@ -1,7 +1,6 @@
 #include "ivw_ttkimportembeddingfromtable.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -62,7 +61,8 @@ struct Wrapper3 {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkImportEmbeddingFromTable> {
+struct VTKTraits<ttkImportEmbeddingFromTable> {
+    static constexpr std::string_view uri = "ttk.ttkImportEmbeddingFromTable";
     static constexpr std::string_view className = "ttkImportEmbeddingFromTable";
     static constexpr std::string_view identifier = "ttkImportEmbeddingFromTable";
     static constexpr std::string_view displayName = "TTK ImportEmbeddingFromTable";
@@ -78,8 +78,8 @@ struct TTKTraits<ttkImportEmbeddingFromTable> {
 };
 
 void registerttkImportEmbeddingFromTable(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkImportEmbeddingFromTable>>();
+    module->registerProcessor<VTKGenericProcessor<ttkImportEmbeddingFromTable>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

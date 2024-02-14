@@ -1,7 +1,6 @@
 #include "ivw_ttkendfor.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkEndFor> {
+struct VTKTraits<ttkEndFor> {
+    static constexpr std::string_view uri = "ttk.ttkEndFor";
     static constexpr std::string_view className = "ttkEndFor";
     static constexpr std::string_view identifier = "ttkEndFor";
     static constexpr std::string_view displayName = "TTK EndFor";
@@ -119,8 +119,8 @@ Online examples:
 };
 
 void registerttkEndFor(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkEndFor>>();
+    module->registerProcessor<VTKGenericProcessor<ttkEndFor>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

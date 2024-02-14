@@ -1,7 +1,6 @@
 #include "ivw_ttkmarchingtetrahedra.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -132,7 +131,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMarchingTetrahedra> {
+struct VTKTraits<ttkMarchingTetrahedra> {
+    static constexpr std::string_view uri = "ttk.ttkMarchingTetrahedra";
     static constexpr std::string_view className = "ttkMarchingTetrahedra";
     static constexpr std::string_view identifier = "ttkMarchingTetrahedra";
     static constexpr std::string_view displayName = "TTK MarchingTetrahedra";
@@ -163,8 +163,8 @@ Online examples:
 };
 
 void registerttkMarchingTetrahedra(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMarchingTetrahedra>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMarchingTetrahedra>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

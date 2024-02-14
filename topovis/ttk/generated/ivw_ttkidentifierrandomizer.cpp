@@ -1,7 +1,6 @@
 #include "ivw_ttkidentifierrandomizer.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -141,7 +140,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkIdentifierRandomizer> {
+struct VTKTraits<ttkIdentifierRandomizer> {
+    static constexpr std::string_view uri = "ttk.ttkIdentifierRandomizer";
     static constexpr std::string_view className = "ttkIdentifierRandomizer";
     static constexpr std::string_view identifier = "ttkIdentifierRandomizer";
     static constexpr std::string_view displayName = "TTK IdentifierRandomizer";
@@ -174,8 +174,8 @@ Online examples:
 };
 
 void registerttkIdentifierRandomizer(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkIdentifierRandomizer>>();
+    module->registerProcessor<VTKGenericProcessor<ttkIdentifierRandomizer>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

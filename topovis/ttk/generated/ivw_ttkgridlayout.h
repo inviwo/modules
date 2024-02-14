@@ -1,7 +1,7 @@
 #pragma once
 namespace inviwo {
 class InviwoModule;
-namespace ttkwrapper {
+namespace vtkwrapper {
 void registerttkGridLayout(InviwoModule* module);
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

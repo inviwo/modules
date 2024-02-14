@@ -1,7 +1,6 @@
 #include "ivw_ttkmatrixtoheatmap.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -111,7 +110,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMatrixToHeatMap> {
+struct VTKTraits<ttkMatrixToHeatMap> {
+    static constexpr std::string_view uri = "ttk.ttkMatrixToHeatMap";
     static constexpr std::string_view className = "ttkMatrixToHeatMap";
     static constexpr std::string_view identifier = "ttkMatrixToHeatMap";
     static constexpr std::string_view displayName = "TTK MatrixToHeatMap";
@@ -130,8 +130,8 @@ struct TTKTraits<ttkMatrixToHeatMap> {
 };
 
 void registerttkMatrixToHeatMap(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMatrixToHeatMap>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMatrixToHeatMap>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

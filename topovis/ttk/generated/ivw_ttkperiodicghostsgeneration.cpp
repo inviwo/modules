@@ -1,7 +1,6 @@
 #include "ivw_ttkperiodicghostsgeneration.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPeriodicGhostsGeneration> {
+struct VTKTraits<ttkPeriodicGhostsGeneration> {
+    static constexpr std::string_view uri = "ttk.ttkPeriodicGhostsGeneration";
     static constexpr std::string_view className = "ttkPeriodicGhostsGeneration";
     static constexpr std::string_view identifier = "ttkPeriodicGhostsGeneration";
     static constexpr std::string_view displayName = "TTK PeriodicGhostsGeneration";
@@ -109,8 +109,8 @@ struct TTKTraits<ttkPeriodicGhostsGeneration> {
 };
 
 void registerttkPeriodicGhostsGeneration(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPeriodicGhostsGeneration>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPeriodicGhostsGeneration>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

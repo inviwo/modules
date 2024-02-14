@@ -1,7 +1,6 @@
 #include "ivw_ttkdiscretegradient.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -167,7 +166,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkDiscreteGradient> {
+struct VTKTraits<ttkDiscreteGradient> {
+    static constexpr std::string_view uri = "ttk.ttkDiscreteGradient";
     static constexpr std::string_view className = "ttkDiscreteGradient";
     static constexpr std::string_view identifier = "ttkDiscreteGradient";
     static constexpr std::string_view displayName = "TTK DiscreteGradient";
@@ -193,8 +193,8 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
 };
 
 void registerttkDiscreteGradient(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkDiscreteGradient>>();
+    module->registerProcessor<VTKGenericProcessor<ttkDiscreteGradient>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

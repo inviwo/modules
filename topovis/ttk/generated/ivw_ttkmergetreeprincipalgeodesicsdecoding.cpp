@@ -1,7 +1,6 @@
 #include "ivw_ttkmergetreeprincipalgeodesicsdecoding.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -217,7 +216,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
+struct VTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
+    static constexpr std::string_view uri = "ttk.ttkMergeTreePrincipalGeodesicsDecoding";
     static constexpr std::string_view className = "ttkMergeTreePrincipalGeodesicsDecoding";
     static constexpr std::string_view identifier = "ttkMergeTreePrincipalGeodesicsDecoding";
     static constexpr std::string_view displayName = "TTK MergeTreePrincipalGeodesicsDecoding";
@@ -263,8 +263,8 @@ Online examples:
 };
 
 void registerttkMergeTreePrincipalGeodesicsDecoding(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMergeTreePrincipalGeodesicsDecoding>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMergeTreePrincipalGeodesicsDecoding>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo
