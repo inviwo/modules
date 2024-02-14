@@ -63,7 +63,7 @@ public:
 
     virtual void initializeResources() override;
 
-    virtual void preprocess() override;
+    virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
@@ -87,7 +87,6 @@ private:
     const float BallAndStickVDWScale = 0.3f;
     const float BallAndStickLicoriceScale = 0.5f;
 
-    //virtual void configureShader(Shader& shader) override;
     virtual void setUniforms(Shader& shader) override;
 
     void configureVdWShader(Shader& shader);
@@ -122,7 +121,6 @@ private:
     BoolProperty enableTooltips_;
 
     CameraProperty camera_;
-    SimpleLightingProperty lighting_;
 
     MeshShaderCache vdwShaders_;
     MeshShaderCache licoriceShaders_;
@@ -131,35 +129,4 @@ private:
     std::vector<std::shared_ptr<Mesh>> meshes_;
 };
 
-/**
- * \brief Functor object that will render molecular data into a fragment list.
- */
-/*
-class IVW_MODULE_MOLVISGL_API MolecularRasterization : public Rasterization {
-public:
-    MolecularRasterization(const MolecularRasterizer& processor);
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform,
-                           std::function<void(Shader&)> setUniforms) const override;
-    virtual bool usesFragmentLists() const override;
-    virtual Document getInfo() const override;
-
-protected:
-    const float BallAndStickVDWScale;
-    const float BallAndStickLicoriceScale;
-
-    MolecularRasterizer::Representation representation_;
-    float radiusScaling_;
-    float defaultRadius_;
-    LightingState lighting_;
-    SelectionColorState highlighted_;
-    SelectionColorState selected_;
-    SelectionColorState filtered_;
-    float uniformAlpha_;
-    const bool forceOpaque_;
-
-    std::shared_ptr<MeshShaderCache> vdwShaders_;
-    std::shared_ptr<MeshShaderCache> licoriceShaders_;
-    std::vector<std::shared_ptr<Mesh>> meshes_;
-};
-*/
 }  // namespace inviwo

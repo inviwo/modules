@@ -140,7 +140,6 @@ MolecularRasterizer::MolecularRasterizer()
     , enableTooltips_("enableTooltips", "Enable Tooltips",
                       "Show tooltips with detailed information for atoms"_help, true)
     , camera_("camera", "Camera", molvis::boundingBox(inport_))
-    , lighting_("lighting", "Lighting", &camera_)
 
     , vdwShaders_{{{ShaderType::Vertex, std::string{"vdw.vert"}},
                    {ShaderType::Geometry, std::string{"vdw.geom"}},
@@ -186,24 +185,15 @@ MolecularRasterizer::MolecularRasterizer()
     addProperties(representation_, coloring_, fixedColor_, atomColormap_, aminoColormap_,
                   forceOpaque_, useUniformAlpha_, uniformAlpha_, radiusScaling_, forceRadius_,
                   defaultRadius_, showHighlighted_, showSelected_, showFiltered_, enableTooltips_,
-                  camera_, lighting_);
+                  camera_);
 
     camera_.setCollapsed(true);
     showHighlighted_.setCollapsed(true);
     showSelected_.setCollapsed(true);
     showFiltered_.setCollapsed(true);
-
-    lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
-    lighting_.ambientColor_.set(vec3(0.515f));
-    lighting_.diffuseColor_.set(vec3(0.48f));
-    lighting_.specularColor_.set(vec3(0.09f));
-    lighting_.specularExponent_.set(1.9f);
-    lighting_.setCollapsed(true);
-
-    lighting_.setCurrentStateAsDefault();
 }
 
-void MolecularRasterizer::preprocess() {
+void MolecularRasterizer::process() {
     atomPicking_.resize(std::max<size_t>(
         std::accumulate(inport_.begin(), inport_.end(), size_t{0u},
                         [](size_t val, auto s) { return val + s->atoms().positions.size(); }),
@@ -246,6 +236,8 @@ void MolecularRasterizer::preprocess() {
             offset += mesh->getIndices(0)->getSize();
         }
     }
+
+    Rasterizer::process();
 }
 
 void MolecularRasterizer::initializeResources() {
@@ -257,26 +249,15 @@ void MolecularRasterizer::initializeResources() {
     }
 }
 
-/*
-void SphereRasterizer::configureShader(Shader& shader) {
-    Rasterizer::configureShader(shader);
-    utilgl::addDefines(shader, labels_, periodic_, config_, clip_);
-    shader.build();
-}
-*/
-
 void MolecularRasterizer::configureVdWShader(Shader& shader) {
     Rasterizer::configureShader(shader);
 
-    utilgl::addDefines(shader, lighting_);
     shader[ShaderType::Vertex]->setShaderDefine("FORCE_RADIUS", forceRadius_);
     shader.build();
 }
 
 void MolecularRasterizer::configureLicoriceShader(Shader& shader) {
     Rasterizer::configureShader(shader);
-
-    utilgl::addDefines(shader, lighting_);
 
     const bool arbExt = OpenGLCapabilities::isExtensionSupported("GL_ARB_conservative_depth");
     const bool extExt = OpenGLCapabilities::isExtensionSupported("GL_EXT_conservative_depth");
@@ -301,7 +282,6 @@ void MolecularRasterizer::setUniforms(Shader& shader) {
 
     shader.setUniform("defaultRadius", defaultRadius_);
     shader.setUniform("uniformAlpha", uniformAlpha_);
-    utilgl::setShaderUniforms(shader, lighting_, "lighting");
     utilgl::setShaderUniforms(shader, showHighlighted_, "showHighlighted");
     utilgl::setShaderUniforms(shader, showSelected_, "showSelected");
     utilgl::setShaderUniforms(shader, showFiltered_, "showFiltered");
