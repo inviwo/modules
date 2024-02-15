@@ -99,7 +99,7 @@ void TensorField2DExport::exportBinary() const {
     auto dimensions = tensorField->getDimensions();
     outFile.write(reinterpret_cast<const char*>(&dimensions), sizeof(size_t) * 2);
 
-    auto extents = tensorField->getExtents();
+    auto extents = tensorField->getExtent();
     outFile.write(reinterpret_cast<const char*>(&extents), sizeof(double) * 2);
 
     const auto& data = tensorField->tensors();

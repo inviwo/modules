@@ -32,66 +32,43 @@
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/ports/datainport.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/processors/activityindicator.h>
-
-#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/vtk/ports/vtkdatasetport.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <warn/pop>
+#include <inviwo/vtk/ports/vtkinport.h>
+#include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+
+class vtkDataSet;
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKDataSetToTensorField3D, VTK Data Set To Tensor Field3D}
- * ![](org.inviwo.VTKDataSetToTensorField3D.png?classIdentifier=org.inviwo.VTKDataSetToTensorField3D)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
+class TensorField3D;
 
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
-class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor,
-                                                             public ActivityIndicatorOwner {
+class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor {
 public:
     VTKDataSetToTensorField3D();
     virtual ~VTKDataSetToTensorField3D() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
-    VTKDataSetInport dataSetInport_;
+    void updateSources(vtkDataSet* array);
 
-    TensorField3DOutport tensorField3DOutport_;
+    vtk::VtkInport inport_;
+
+    TensorField3DOutport outport_;
+
+    OptionPropertyInt sourceTensors_;
+    OptionPropertyInt sourceScalars_;
+
+    BasisProperty basis_;
 
     BoolProperty normalizeExtents_;
 
-    OptionPropertyString tensors_;
-    OptionPropertyString scalars_;
-    ButtonProperty generate_;
-
-    bool busy_;
-
-    void generate();
+    std::shared_ptr<TensorField3D> tensorField_;
 };
 
 }  // namespace inviwo

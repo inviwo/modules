@@ -45,13 +45,13 @@ TensorField2DImport::TensorField2DImport()
     : Processor()
     , inFile_("inFile", "File", "")
     , outport_("outport")
-    , extents_("", "", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f)) {
+    , extent_("", "", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f)) {
     addPort(outport_);
 
     addProperty(inFile_);
-    extents_.setReadOnly(true);
-    extents_.setCurrentStateAsDefault();
-    addProperty(extents_);
+    extent_.setReadOnly(true);
+    extent_.setCurrentStateAsDefault();
+    addProperty(extent_);
 }
 
 void TensorField2DImport::buildTensors(const std::vector<double>& data,
@@ -174,13 +174,13 @@ void TensorField2DImport::process() {
             std::make_shared<TensorField2D>(dimensions, tensors, majorEigenvalues, minorEigenvalues,
                                             majorEigenvectors, minorEigenvectors, extents);
 
-        extents_.set(tensorField->getExtents());
+        extent_.set(tensorField->getExtent());
 
         outport_.setData(tensorField);
     } else {
         auto tensorField = std::make_shared<TensorField2D>(dimensions, tensors, extents);
 
-        extents_.set(tensorField->getExtents());
+        extent_.set(tensorField->getExtent());
 
         outport_.setData(tensorField);
     }

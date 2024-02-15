@@ -330,29 +330,33 @@ TensorField3D::TensorField3D(const TensorField3D& tf)
     }
 }
 
-std::string TensorField3D::getDataInfo() const {
-    std::stringstream ss;
-    ss << "<table border='0' cellspacing='0' cellpadding='0' "
-          "style='border-color:white;white-space:pre;'>/n"
-       << tensorutil::getHTMLTableRowString("Type", "3D tensor field")
-       << tensorutil::getHTMLTableRowString("Number of tensors", tensors_.size())
-       << tensorutil::getHTMLTableRowString("Dimensions", dimensions_)
-       << tensorutil::getHTMLTableRowString("Max major field eigenvalue",
-                                            dataMapEigenValues_[0].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min major field eigenvalue",
-                                            dataMapEigenValues_[0].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Max intermediate field eigenvalue",
-                                            dataMapEigenValues_[1].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min intermediate field eigenvalue",
-                                            dataMapEigenValues_[1].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Max minor field eigenvalue",
-                                            dataMapEigenValues_[2].valueRange.y)
-       << tensorutil::getHTMLTableRowString("Min minor field eigenvalue",
-                                            dataMapEigenValues_[2].valueRange.x)
-       << tensorutil::getHTMLTableRowString("Extends", getExtents())
+Document TensorField3D::getDataInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    Document doc;
+    utildoc::TableBuilder tb(doc.handle(), P::end());
 
-       << "</table>";
-    return ss.str();
+    tb(H("Type"), "3D tensor field");
+    tb(H("Number of Tensors"), tensors_.size());
+    tb(H("Dimensions"), dimensions_);
+    tb(H("Extent"), getExtent());
+
+    tb(H("Max Eigenvalue (major)"), dataMapEigenValues_[0].valueRange.y);
+    tb(H("Min Eigenvalue (major)"), dataMapEigenValues_[0].valueRange.x);
+    tb(H("Max Eigenvalue (minor)"), dataMapEigenValues_[2].valueRange.y);
+    tb(H("Min Eigenvalue (minor)"), dataMapEigenValues_[2].valueRange.x);
+
+    if (!metaData_.empty()) {
+        doc.append("b", "MetaData");
+        utildoc::TableBuilder tb2(doc.handle(), P::end());
+
+        tb2(H("Name"), H("No. Components"));
+        for (auto&& [key, value] : metaData_) {
+            tb2(H(value->getDisplayName()), value->getNumberOfComponents());
+        }
+    }
+
+    return doc;
 }
 
 /**
@@ -449,11 +453,11 @@ std::pair<glm::uint8, const dmat3&> TensorField3D::at(const size_t index) const 
     return std::pair<glm::uint8, const dmat3&>(maskVal, tensors_[index]);
 }
 
-void TensorField3D::setExtents(const vec3& extents) {
+void TensorField3D::setExtent(const vec3& extent) {
     auto basis = getBasis();
-    basis[0] = glm::normalize(basis[0]) * extents[0];
-    basis[1] = glm::normalize(basis[1]) * extents[1];
-    basis[2] = glm::normalize(basis[2]) * extents[2];
+    basis[0] = glm::normalize(basis[0]) * extent[0];
+    basis[1] = glm::normalize(basis[1]) * extent[1];
+    basis[2] = glm::normalize(basis[2]) * extent[2];
     setBasis(basis);
 }
 

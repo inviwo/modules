@@ -52,7 +52,7 @@ TensorField3DImport::TensorField3DImport()
     , inFile_("inFile", "File")
     , outport_("outport")
     , normalizeExtents_("normalizeExtents", "Normalize extents", true)
-    , extents_("extents", "Extents", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f),
+    , extent_("extents", "Extents", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f),
                InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(1.f), vec3(-1000.f), vec3(1000.f), vec3(0.0001f),
               InvalidationLevel::Valid)
@@ -65,9 +65,9 @@ TensorField3DImport::TensorField3DImport()
 
     addProperty(normalizeExtents_);
 
-    extents_.setReadOnly(true);
-    extents_.setCurrentStateAsDefault();
-    addProperty(extents_);
+    extent_.setReadOnly(true);
+    extent_.setCurrentStateAsDefault();
+    addProperty(extent_);
 
     offset_.setReadOnly(true);
     offset_.setCurrentStateAsDefault();
@@ -101,7 +101,7 @@ void TensorField3DImport::initializeResources() {
     std::array<DataMapper, 3> dataMapperEigenValues;
     std::array<DataMapper, 3> dataMapperEigenVectors;
     std::vector<glm::uint8> mask;
-    std::unordered_map<uint64_t, std::unique_ptr<MetaDataBase>> metaData;
+    std::unordered_map<uint64_t, std::unique_ptr<tensor::MetaDataBase>> metaData;
 
     std::string versionStr;
     size_t size;
@@ -190,83 +190,83 @@ void TensorField3DImport::initializeResources() {
             uint64_t id;
             inFile.read(reinterpret_cast<char*>(&id), sizeof(uint64_t));
 
-            std::unique_ptr<MetaDataBase> ptr = nullptr;
+            std::unique_ptr<tensor::MetaDataBase> ptr = nullptr;
 
             switch (id) {
-                case MajorEigenVectors::id():
-                    ptr = std::make_unique<MajorEigenVectors>();
+                case tensor::MajorEigenVectors::id():
+                    ptr = std::make_unique<tensor::MajorEigenVectors>();
                     break;
-                case IntermediateEigenVectors::id():
-                    ptr = std::make_unique<IntermediateEigenVectors>();
+                case tensor::IntermediateEigenVectors::id():
+                    ptr = std::make_unique<tensor::IntermediateEigenVectors>();
                     break;
-                case MinorEigenVectors::id():
-                    ptr = std::make_unique<MinorEigenVectors>();
+                case tensor::MinorEigenVectors::id():
+                    ptr = std::make_unique<tensor::MinorEigenVectors>();
                     break;
-                case MajorEigenValues::id():
-                    ptr = std::make_unique<MajorEigenValues>();
+                case tensor::MajorEigenValues::id():
+                    ptr = std::make_unique<tensor::MajorEigenValues>();
                     break;
-                case IntermediateEigenValues::id():
-                    ptr = std::make_unique<IntermediateEigenValues>();
+                case tensor::IntermediateEigenValues::id():
+                    ptr = std::make_unique<tensor::IntermediateEigenValues>();
                     break;
-                case MinorEigenValues::id():
-                    ptr = std::make_unique<MinorEigenValues>();
+                case tensor::MinorEigenValues::id():
+                    ptr = std::make_unique<tensor::MinorEigenValues>();
                     break;
-                case I1::id():
-                    ptr = std::make_unique<I1>();
+                case tensor::I1::id():
+                    ptr = std::make_unique<tensor::I1>();
                     break;
-                case I2::id():
-                    ptr = std::make_unique<I2>();
+                case tensor::I2::id():
+                    ptr = std::make_unique<tensor::I2>();
                     break;
-                case I3::id():
-                    ptr = std::make_unique<I3>();
+                case tensor::I3::id():
+                    ptr = std::make_unique<tensor::I3>();
                     break;
-                case J1::id():
-                    ptr = std::make_unique<J1>();
+                case tensor::J1::id():
+                    ptr = std::make_unique<tensor::J1>();
                     break;
-                case J2::id():
-                    ptr = std::make_unique<J2>();
+                case tensor::J2::id():
+                    ptr = std::make_unique<tensor::J2>();
                     break;
-                case J3::id():
-                    ptr = std::make_unique<J3>();
+                case tensor::J3::id():
+                    ptr = std::make_unique<tensor::J3>();
                     break;
-                case LodeAngle::id():
-                    ptr = std::make_unique<LodeAngle>();
+                case tensor::LodeAngle::id():
+                    ptr = std::make_unique<tensor::LodeAngle>();
                     break;
-                case Anisotropy::id():
-                    ptr = std::make_unique<Anisotropy>();
+                case tensor::Anisotropy::id():
+                    ptr = std::make_unique<tensor::Anisotropy>();
                     break;
-                case LinearAnisotropy::id():
-                    ptr = std::make_unique<LinearAnisotropy>();
+                case tensor::LinearAnisotropy::id():
+                    ptr = std::make_unique<tensor::LinearAnisotropy>();
                     break;
-                case PlanarAnisotropy::id():
-                    ptr = std::make_unique<PlanarAnisotropy>();
+                case tensor::PlanarAnisotropy::id():
+                    ptr = std::make_unique<tensor::PlanarAnisotropy>();
                     break;
-                case SphericalAnisotropy::id():
-                    ptr = std::make_unique<SphericalAnisotropy>();
+                case tensor::SphericalAnisotropy::id():
+                    ptr = std::make_unique<tensor::SphericalAnisotropy>();
                     break;
-                case Diffusivity::id():
-                    ptr = std::make_unique<Diffusivity>();
+                case tensor::Diffusivity::id():
+                    ptr = std::make_unique<tensor::Diffusivity>();
                     break;
-                case ShearStress::id():
-                    ptr = std::make_unique<ShearStress>();
+                case tensor::ShearStress::id():
+                    ptr = std::make_unique<tensor::ShearStress>();
                     break;
-                case PureShear::id():
-                    ptr = std::make_unique<PureShear>();
+                case tensor::PureShear::id():
+                    ptr = std::make_unique<tensor::PureShear>();
                     break;
-                case ShapeFactor::id():
-                    ptr = std::make_unique<ShapeFactor>();
+                case tensor::ShapeFactor::id():
+                    ptr = std::make_unique<tensor::ShapeFactor>();
                     break;
-                case IsotropicScaling::id():
-                    ptr = std::make_unique<IsotropicScaling>();
+                case tensor::IsotropicScaling::id():
+                    ptr = std::make_unique<tensor::IsotropicScaling>();
                     break;
-                case Rotation::id():
-                    ptr = std::make_unique<Rotation>();
+                case tensor::Rotation::id():
+                    ptr = std::make_unique<tensor::Rotation>();
                     break;
-                case FrobeniusNorm::id():
-                    ptr = std::make_unique<FrobeniusNorm>();
+                case tensor::FrobeniusNorm::id():
+                    ptr = std::make_unique<tensor::FrobeniusNorm>();
                     break;
-                case HillYieldCriterion::id():
-                    ptr = std::make_unique<HillYieldCriterion>();
+                case tensor::HillYieldCriterion::id():
+                    ptr = std::make_unique<tensor::HillYieldCriterion>();
                     break;
                 default:
                     // clang-format off
@@ -317,7 +317,7 @@ void TensorField3DImport::initializeResources() {
 
     tensorFieldOut_->setMask(mask);
 
-    extents_.set(extents);
+    extent_.set(extents);
     offset_.set(offset);
     dimensions_.set(dimensions);
 }
@@ -331,9 +331,9 @@ void TensorField3DImport::process() {
         extents /= std::max(std::max(extents.x, extents.y), extents.z);
     }
 
-    extents_.set(vec3(extents));
+    extent_.set(vec3(extents));
 
-    tensorFieldOut_->setExtents(vec3(extents));
+    tensorFieldOut_->setExtent(vec3(extents));
 
     outport_.setData(tensorFieldOut_);
 }

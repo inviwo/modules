@@ -75,7 +75,7 @@ private:
 
     void buildTensors(const std::vector<double>& data, std::vector<dmat2>& tensors) const;
 
-    FloatVec2Property extents_;
+    FloatVec2Property extent_;
 };
 
 }  // namespace inviwo

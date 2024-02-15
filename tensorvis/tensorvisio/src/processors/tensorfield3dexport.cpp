@@ -102,7 +102,7 @@ void TensorField3DExport::exportBinary() const {
     auto dimensions = tensorField->getDimensions();
     outFile.write(reinterpret_cast<const char*>(&dimensions), sizeof(size_t) * 3);
 
-    auto extents = tensorField->getExtents();
+    auto extents = tensorField->getExtent();
     outFile.write(reinterpret_cast<const char*>(&extents), sizeof(double) * 3);
 
     auto offset = tensorField->getOffset();
@@ -166,22 +166,22 @@ void TensorField3DExport::exportBinary() const {
             auto id = dataItem.first;
 
             switch (id) {
-                case MajorEigenValues::id():
+                case tensor::MajorEigenValues::id():
                     dataItem.second->serialize(outFile);
                     break;
-                case IntermediateEigenValues::id():
+                case tensor::IntermediateEigenValues::id():
                     dataItem.second->serialize(outFile);
                     break;
-                case MinorEigenValues::id():
+                case tensor::MinorEigenValues::id():
                     dataItem.second->serialize(outFile);
                     break;
-                case MajorEigenVectors::id():
+                case tensor::MajorEigenVectors::id():
                     dataItem.second->serialize(outFile);
                     break;
-                case IntermediateEigenVectors::id():
+                case tensor::IntermediateEigenVectors::id():
                     dataItem.second->serialize(outFile);
                     break;
-                case MinorEigenVectors::id():
+                case tensor::MinorEigenVectors::id():
                     dataItem.second->serialize(outFile);
                     break;
                 default:

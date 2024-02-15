@@ -58,12 +58,7 @@ TensorInformation::TensorInformation()
                    vec3(std::numeric_limits<float>::max())) {
     addPort(inport_);
 
-    inport_.onChange([this]() { invalidate(InvalidationLevel::InvalidResources); });
-
-    addProperty(index_);
-    addProperty(tensor_);
-    addProperty(eigenVectors_);
-    addProperty(eigenValues_);
+    addProperties(index_, tensor_, eigenVectors_, eigenValues_);
 
     tensor_.setReadOnly(true);
     eigenVectors_.setReadOnly(true);
@@ -74,18 +69,12 @@ TensorInformation::TensorInformation()
     eigenValues_.setCurrentStateAsDefault();
 }
 
-void TensorInformation::initializeResources() {
-    if (!inport_.hasData()) return;
-
-    index_.setMinValue(ivec3(0));
-
-    auto dimensions = inport_.getData()->getDimensions();
-
-    index_.setMaxValue(ivec3(dimensions) - ivec3(1));
-}
-
 void TensorInformation::process() {
     auto tensorField = inport_.getData();
+
+    const auto dimensions = inport_.getData()->getDimensions();
+    index_.setMinValue(ivec3(0));
+    index_.setMaxValue(ivec3(dimensions) - ivec3(1));
 
     tensor_.set(mat3(tensorField->at(index_.get()).second));
 

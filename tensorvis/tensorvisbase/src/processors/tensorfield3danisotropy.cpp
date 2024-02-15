@@ -181,10 +181,10 @@ void TensorField3DAnisotropy::process() {
     outputVolume->dataMap_.dataRange = vec2(min, max);
     outputVolume->dataMap_.valueRange = vec2(min, max);
 
-    const auto extends = tensorField->getExtents();
+    const auto extent = tensorField->getExtent();
 
     outputVolume->setBasis(
-        mat3(vec3(extends.x, 0., 0.), vec3(0., extends.y, 0.), vec3(0., 0., extends.z)));
+        mat3(vec3(extent.x, 0., 0.), vec3(0., extent.y, 0.), vec3(0., 0., extent.z)));
 
     outputVolume->setOffset(tensorField->getOffset());
     outputVolume->setInterpolation(InterpolationType::Nearest);

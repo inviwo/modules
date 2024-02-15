@@ -56,6 +56,12 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
     std::vector<dmat2> sliceData;
     sliceData.resize(dimensions.x * dimensions.y);
 
+    const vec3 sourceExtent{inTensorField->getExtent()};
+    const vec3 sourceOffset{inTensorField->getOffset()};
+
+    vec2 extent{1.0f};
+    vec2 offset{0.0f};
+
     switch (axis) {
         case CartesianCoordinateAxis::X:
             for (size_t z = 0; z < dimensions.y; z++) {
@@ -65,6 +71,8 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
                         tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
                 }
             }
+            extent = vec2{sourceExtent.y, sourceExtent.z};
+            offset = vec2{sourceOffset.y, sourceOffset.z};
             break;
         case CartesianCoordinateAxis::Y:
             for (size_t z = 0; z < dimensions.y; z++) {
@@ -74,6 +82,8 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
                         tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
                 }
             }
+            extent = vec2{sourceExtent.x, sourceExtent.z};
+            offset = vec2{sourceOffset.x, sourceOffset.z};
             break;
         case CartesianCoordinateAxis::Z:
             for (size_t y = 0; y < dimensions.y; y++) {
@@ -83,11 +93,13 @@ std::shared_ptr<TensorField2D> getSlice2D(std::shared_ptr<const TensorField3D> i
                         tensorutil::getProjectedTensor(inTensorField->at(x, y, z).second, axis);
                 }
             }
+            extent = vec2{sourceExtent.x, sourceExtent.y};
+            offset = vec2{sourceOffset.x, sourceOffset.y};
             break;
     }
 
-    auto tensorField = std::make_shared<TensorField2D>(dimensions, sliceData);
-    tensorField->setOffset(inTensorField->getOffset());
+    auto tensorField = std::make_shared<TensorField2D>(dimensions, sliceData, extent);
+    tensorField->setOffset(offset);
 
     return tensorField;
 }
@@ -120,7 +132,8 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
 
     std::vector<dmat3> sliceData{};
     sliceData.resize(dimensions.x * dimensions.y * dimensions.z);
-    vec3 offset{0};
+    mat3 basis{inTensorField->getBasis()};
+    vec3 offset{inTensorField->getOffset()};
 
     switch (axis) {
         case CartesianCoordinateAxis::X:
@@ -128,32 +141,37 @@ std::shared_ptr<TensorField3D> getSlice3D(std::shared_ptr<const TensorField3D> i
                 for (size_t y = 0; y < dimensions.y; y++) {
                     auto x = sliceNumber;
                     sliceData[indexMapper(size3_t(0, y, z))] = inTensorField->at(x, y, z).second;
-                    offset.x = frac;
                 }
             }
+            basis[0] = vec3{0.0f};
+            offset.x += frac;
             break;
         case CartesianCoordinateAxis::Y:
             for (size_t z = 0; z < dimensions.z; z++) {
                 for (size_t x = 0; x < dimensions.x; x++) {
                     auto y = sliceNumber;
                     sliceData[indexMapper(size3_t(x, 0, z))] = inTensorField->at(x, y, z).second;
-                    offset.y = frac;
                 }
             }
+            basis[1] = vec3{0.0f};
+            offset.y += frac;
             break;
         case CartesianCoordinateAxis::Z:
             for (size_t y = 0; y < dimensions.y; y++) {
                 for (size_t x = 0; x < dimensions.x; x++) {
                     auto z = sliceNumber;
                     sliceData[indexMapper(size3_t(x, y, 0))] = inTensorField->at(x, y, z).second;
-                    offset.z = frac;
                 }
             }
+            basis[2] = vec3{0.0f};
+            offset.z += frac;
             break;
     }
 
     auto tensorField =
-        std::make_shared<TensorField3D>(dimensions, sliceData, inTensorField->getExtents(), frac);
+        std::make_shared<TensorField3D>(dimensions, sliceData, inTensorField->getExtent(), frac);
+
+    tensorField->setBasis(basis);
     tensorField->setOffset(offset);
 
     return tensorField;
