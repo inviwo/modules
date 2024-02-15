@@ -3,8 +3,6 @@ ivw_module(VTK)
 set(HEADER_FILES
     include/inviwo/vtk/datastructures/volumevtk.h
     include/inviwo/vtk/datastructures/vtktetramesh.h
-    include/inviwo/vtk/vtkmodule.h
-    include/inviwo/vtk/vtkmoduledefine.h
     include/inviwo/vtk/ports/vtkinport.h
     include/inviwo/vtk/ports/vtkoutport.h
     include/inviwo/vtk/processors/imagetovtk.h
@@ -21,13 +19,15 @@ set(HEADER_FILES
     include/inviwo/vtk/processors/vtktovolume.h
     include/inviwo/vtk/util/arrayutils.h
     include/inviwo/vtk/util/vtkbufferutils.h
+    include/inviwo/vtk/util/vtkdatautils.h
+    include/inviwo/vtk/vtkmodule.h
+    include/inviwo/vtk/vtkmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
     src/datastructures/volumevtk.cpp
     src/datastructures/vtktetramesh.cpp
-    src/vtkmodule.cpp
     src/ports/vtkinport.cpp
     src/ports/vtkoutport.cpp
     src/processors/imagetovtk.cpp
@@ -44,6 +44,8 @@ set(SOURCE_FILES
     src/processors/vtktovolume.cpp
     src/util/arrayutils.cpp
     src/util/vtkbufferutils.cpp
+    src/util/vtkdatautils.cpp
+    src/vtkmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -89,7 +91,7 @@ target_link_libraries(inviwo-module-vtk
         VTK::CommonExecutionModel
         VTK::DomainsChemistry
         VTK::FiltersAMR
-        VTK::FiltersCore  
+        VTK::FiltersCore
         VTK::FiltersExtraction
         VTK::FiltersFlowPaths
         VTK::FiltersGeneric
