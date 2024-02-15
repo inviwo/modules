@@ -41,49 +41,20 @@
 
 namespace inviwo {
 
-namespace {
-
-template <typename T = double, typename U = T>
-OrdinalPropertyState<T> transformState(T val = T{1}) {
-    return {val,
-            util::filled<T>(static_cast<util::value_type_t<T>>(-100)),
-            ConstraintBehavior::Ignore,
-            util::filled<T>(static_cast<util::value_type_t<T>>(100)),
-            ConstraintBehavior::Ignore,
-            util::filled<T>(static_cast<util::value_type_t<T>>(0.1)),
-            InvalidationLevel::InvalidOutput,
-            PropertySemantics::Text};
-}
-
-}  // namespace
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo LayerToVTK::processorInfo_{
     "org.inviwo.LayerToVTK",               // Class identifier
     "Layer To VTK",                        // Display name
     "VTK",                                 // Category
     CodeState::Experimental,               // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
+    Tag::CPU | Tag{"VTK"} | Tag{"Layer"},  // Tags
     R"(Converts an Inviwo Layer to a VTKImageData )"_unindentHelp};
 
 const ProcessorInfo LayerToVTK::getProcessorInfo() const { return processorInfo_; }
 
-LayerToVTK::LayerToVTK()
-    : Processor{}
-    , inport_{"inport"}
-    , outport_{"outport"}
-    , layer_{"layer",
-             "Layer",
-             "Select which image layer should be used. defaults to "
-             "the first color layer"_help,
-             {{"color", "Color layer", LayerType::Color},
-              {"depth", "Depth layer", LayerType::Depth},
-              {"picking", "Picking layer", LayerType::Picking}},
-             0}
-    , transform_{"transform", "Transform", transformState<dmat4>()} {
+LayerToVTK::LayerToVTK() : Processor{}, inport_{"inport"}, outport_{"outport"} {
 
     addPorts(inport_, outport_);
-    addProperties(layer_);
 }
 
 void LayerToVTK::process() {
@@ -93,8 +64,8 @@ void LayerToVTK::process() {
 
     data_ = vtkSmartPointer<vtkImageData>::New();
 
-    const auto basis = dmat3{transform_.get()};
-    const auto offset = dvec3{transform_.get()[3]};
+    const dmat3 basis{layer->getBasis()};
+    const dvec3 offset{layer->getOffset()};
 
     const dvec3 ddim{dim, 1.0};
     const dvec3 length{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])};
@@ -197,7 +168,7 @@ void LayerToVTK::process() {
                 return VTK_DOUBLE;
             }
             default: {
-                throw Exception("Cannot map type to VTK.", IVW_CONTEXT_CUSTOM("VolumeToVtk"));
+                throw Exception("Cannot map type to VTK.", IVW_CONTEXT_CUSTOM("LayerToVtk"));
             }
         }
     }();

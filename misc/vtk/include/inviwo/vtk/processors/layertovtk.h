@@ -31,8 +31,6 @@
 
 #include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/layerport.h>
 
 #include <inviwo/vtk/ports/vtkoutport.h>
@@ -53,10 +51,6 @@ public:
 private:
     LayerInport inport_;
     vtk::VtkOutport outport_;
-
-    OptionProperty<LayerType> layer_;
-
-    OrdinalProperty<dmat4> transform_;
 
     vtkSmartPointer<vtkImageData> data_;
 };

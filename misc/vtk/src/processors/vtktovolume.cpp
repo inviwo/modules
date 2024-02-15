@@ -66,7 +66,7 @@ VTKToVolume::VTKToVolume()
                  {{"input", "Same As Input", 0},
                   {"low", "8 bit", 8},
                   {"medium", "16 bit", 16},
-                  {"heigh", "32 bit", 32},
+                  {"high", "32 bit", 32},
                   {"full", "64 bit", 64}},
                  0}
     , information_("Information", "Data information")
