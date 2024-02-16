@@ -88,6 +88,7 @@ find_package(VTK CONFIG REQUIRED)
 
 target_link_libraries(inviwo-module-vtk 
     PRIVATE
+        VTK::CommonCore
         VTK::CommonExecutionModel
         VTK::DomainsChemistry
         VTK::FiltersAMR
