@@ -53,7 +53,7 @@ TensorField3DImport::TensorField3DImport()
     , outport_("outport")
     , normalizeExtents_("normalizeExtents", "Normalize extents", true)
     , extent_("extents", "Extents", vec3(1.f), vec3(0.f), vec3(1000.f), vec3(0.0001f),
-               InvalidationLevel::Valid)
+              InvalidationLevel::Valid)
     , offset_("offset", "Offset", vec3(1.f), vec3(-1000.f), vec3(1000.f), vec3(0.0001f),
               InvalidationLevel::Valid)
     , dimensions_("dimensions", "Dimensions", ivec3(0), ivec3(0), ivec3(1024), ivec3(1),

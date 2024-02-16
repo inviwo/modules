@@ -102,7 +102,6 @@ std::shared_ptr<TensorField2D> vtkToTensorField(size3_t dimensions, vtkDataSet* 
         }
     } else if (numComponents == 9) {
 
-
         // Project tensor onto plane with extent 1 to yield 2x2 tensors (mat2)
         CartesianCoordinateAxis axis;
         if (dimensions.z == 1) {
