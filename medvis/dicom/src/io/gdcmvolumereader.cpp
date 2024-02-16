@@ -622,7 +622,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
                                   IVW_CONTEXT);
     }
 
-    std::size_t voxelsz = (format->getSize()) * (format->getComponents());
+    std::size_t voxelsz = (format->getSizeInBytes()) * (format->getComponents());
     std::size_t size = glm::compMul(dimension) * voxelsz;
 
     // sanity check
@@ -722,7 +722,7 @@ std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation& src) const {
 
     const std::size_t voxels = dimension_[0] * dimension_[1] * dimension_[2];
-    const auto voxelSize = format_->getSize();
+    const auto voxelSize = format_->getSizeInBytes();
     auto data = std::make_unique<char[]>(voxels * voxelSize);
 
     if (!isPartOfSequence_) {

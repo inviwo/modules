@@ -58,6 +58,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/util/assertion.h>
+#include <inviwo/core/io/datareaderexception.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
@@ -186,7 +187,7 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::filesystem::path&
                 formatErrorMsg(filePath, "tif and dcm info differ (components)"));
         }
 
-        if (bitspersample != 8 * (format->getSize())) {
+        if (bitspersample != 8 * (format->getSizeInBytes())) {
             throw DataReaderException(
                 formatErrorMsg(filePath, "tif and dcm info differ (bitspersample)"));
         }
@@ -209,8 +210,22 @@ MevisVolumeRAMLoader* MevisVolumeRAMLoader::clone() const {
 
 std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation(
     const VolumeRepresentation&) const {
-    return dispatching::dispatch<std::shared_ptr<VolumeRepresentation>, dispatching::filter::All>(
-        format_->getId(), *this);
+    return dispatching::singleDispatch<std::shared_ptr<VolumeRepresentation>,
+                                       dispatching::filter::All>(
+        format_->getId(), [this]<typename T>() {
+            const std::size_t size = glm::compMul(dimension_);
+            auto data = std::make_unique<T[]>(size);
+            if (!data) {
+                throw DataReaderException(
+                    IVW_CONTEXT,
+                    "Error: Could not allocate memory for loading mevis volume data: ", tif_file_);
+            }
+
+            readDataInto(reinterpret_cast<char*>(data.get()));
+            auto repr = std::make_shared<VolumeRAMPrecision<T>>(data.get(), dimension_);
+            data.release();
+            return repr;
+        });
 }
 
 void MevisVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
@@ -275,7 +290,7 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     unsigned char* vol = reinterpret_cast<unsigned char*>(destination);
     const size_t tilesz = TIFFTileSize(tiffimage);
     const size_t tilerowbytes = TIFFTileRowSize(tiffimage);
-    const size_t bytespersample = format_->getSize();
+    const size_t bytespersample = format_->getSizeInBytes();
 
 #if defined(IVW_DEBUG)
     unsigned int number_of_tiles = TIFFNumberOfTiles(tiffimage);
