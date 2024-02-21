@@ -465,9 +465,7 @@ vec3 TensorField3D::getNormalizedVolumePosition(const size_t index) const {
     return normalizedVolumePositions_[index];
 }
 
-mat4 TensorField3D::getBasisAndOffset() const {
-    return getModelMatrix();
-}
+mat4 TensorField3D::getBasisAndOffset() const { return getModelMatrix(); }
 
 std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEigenVectorsForTensor(
     const size_t index) const {
