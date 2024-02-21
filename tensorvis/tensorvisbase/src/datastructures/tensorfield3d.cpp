@@ -466,33 +466,7 @@ vec3 TensorField3D::getNormalizedVolumePosition(const size_t index) const {
 }
 
 mat4 TensorField3D::getBasisAndOffset() const {
-    auto basis = getBasis();
-    auto offset = getOffset();
-
-    mat4 modelMatrix;
-
-    modelMatrix[0][0] = basis[0][0];
-    modelMatrix[0][1] = basis[0][1];
-    modelMatrix[0][2] = basis[0][2];
-
-    modelMatrix[1][0] = basis[1][0];
-    modelMatrix[1][1] = basis[1][1];
-    modelMatrix[1][2] = basis[1][2];
-
-    modelMatrix[2][0] = basis[2][0];
-    modelMatrix[2][1] = basis[2][1];
-    modelMatrix[2][2] = basis[2][2];
-
-    modelMatrix[3][0] = offset[0];
-    modelMatrix[3][1] = offset[1];
-    modelMatrix[3][2] = offset[2];
-
-    modelMatrix[0][3] = 0.0;
-    modelMatrix[1][3] = 0.0;
-    modelMatrix[2][3] = 0.0;
-    modelMatrix[3][3] = 1.0;
-
-    return modelMatrix;
+    return getModelMatrix();
 }
 
 std::array<std::pair<double, dvec3>, 3> TensorField3D::getSortedEigenValuesAndEigenVectorsForTensor(
