@@ -67,6 +67,9 @@ void VTKSource::process() {
     reader_->SetFileName(file_.get().string().c_str());
     // mark reader as modified to force a reload even if the same file name has been used before
     reader_->Modified();
+    reader_->ReadAllScalarsOn();
+    reader_->ReadAllVectorsOn();
+    reader_->ReadAllTensorsOn();
     reader_->Update();
     reader_->CloseVTKFile();
 
