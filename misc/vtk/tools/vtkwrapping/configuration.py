@@ -39,7 +39,7 @@ class Mode(Enum):
 
 
 @dataclass
-class Config:
+class Configuration:
     """
     Provides a basic configuration for parsing
     """
@@ -54,7 +54,4 @@ class Config:
     ttkrepo: Path = Path()
     filters: Path = Path()
 
-    clangformat: str = "clang-format"
-
-
-global_config: Config = Config()
+    clangformat: Path = "clang-format"

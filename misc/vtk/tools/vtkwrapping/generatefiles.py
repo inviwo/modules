@@ -35,7 +35,7 @@ import subprocess
 from rich.console import Console
 from typing import Tuple, Optional, TypeVar
 
-from . import vtkdata, properties, propertytemplates, cpptemplates, config, fixes
+from . import vtkdata, properties, propertytemplates, cpptemplates, fixes
 
 
 console = Console()
@@ -48,7 +48,8 @@ def generate_files(destination: Path,
                    uriPrefix: str = "vtk",
                    remove_old_files: bool = False,
                    property_fixes: Optional[dict[fixes.PropertyKey,
-                                                 fixes.TextReplacement]] = None
+                                                 fixes.TextReplacement]] = None,
+                   clangformat: Path = Path("clangformat")
                    ) -> None:
     """
     Generate header and source files in destination, one for each FilterData object in filters
@@ -96,8 +97,8 @@ def generate_files(destination: Path,
         includes.append(f'#include "ivw_{name.lower()}.h"')
         register.append(f"    register{data.className}(module);")
 
-        formatFile(destination / f"ivw_{name.lower()}.h")
-        formatFile(destination / f"ivw_{name.lower()}.cpp")
+        formatFile(destination / f"ivw_{name.lower()}.h", clangformat)
+        formatFile(destination / f"ivw_{name.lower()}.cpp", clangformat)
 
     with open(destination / "registerfilters.h", 'w') as f:
         f.write(cpptemplates.mainHeader)
@@ -115,8 +116,8 @@ def valueOr(value: Optional[_T], default: _T) -> _T:
         return value
 
 
-def formatFile(file: Path) -> None:
-    subprocess.run([config.global_config.clangformat, "-i", file])
+def formatFile(file: Path, clangformat: Path = Path("clang-format")) -> None:
+    subprocess.run([clangformat, "-i", file])
 
 
 def generate_source_files(data: vtkdata.FilterData, uriPrefix: str,

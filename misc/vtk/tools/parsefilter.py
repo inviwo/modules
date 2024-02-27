@@ -38,13 +38,13 @@ import vtkwrapping.commandlineargs
 import vtkwrapping.propertytable
 
 import vtkwrapping.excludedfilters
-import vtkwrapping.missingheaders
 import vtkwrapping.fixes
 
 console = Console()
 
 
-def vtk_paraview_filters(category: str, tags: str) -> list[vtkwrapping.vtkdata.FilterData]:
+def vtk_paraview_filters(category: str, tags: str,
+                         showTraceback: bool) -> list[vtkwrapping.vtkdata.FilterData]:
     """
     Parses VTK and ParaView XML filters
 
@@ -68,15 +68,16 @@ def vtk_paraview_filters(category: str, tags: str) -> list[vtkwrapping.vtkdata.F
         + "Remoting/Application/Resources/readers_ioxml.xml"
     ]
     for url in paraviewXmls:
-        filters.extend(vtkwrapping.parse_url(url, category, tags + ",readers"))
+        filters.extend(vtkwrapping.parse_url(url, category, tags + ",readers", showTraceback))
 
     # parse specific local VTK filters
     for file in Path("filters/").glob("*.xml"):
-        filters.extend(vtkwrapping.parse_file(file, category, tags))
+        filters.extend(vtkwrapping.parse_file(file, category, tags, showTraceback))
     return filters
 
 
-def ttk_filters(category: str, tags: str) -> list[vtkwrapping.vtkdata.FilterData]:
+def ttk_filters(category: str, tags: str,
+                ttkrepo: Path, showTraceback: bool) -> list[vtkwrapping.vtkdata.FilterData]:
     """
     Parses XML filters of the Topology Toolkit
 
@@ -88,25 +89,25 @@ def ttk_filters(category: str, tags: str) -> list[vtkwrapping.vtkdata.FilterData
         List of filters found and successfully parsed
     """
 
-    basedir = vtkwrapping.global_config.ttkrepo / "paraview" / "xmls"
+    basedir = ttkrepo / "paraview" / "xmls"
 
     # TTK debug widgets provide additional filter properties
-    debugWidgetsFile = vtkwrapping.global_config.ttkrepo / "CMake" / "debug_widgets.xml"
+    debugWidgetsFile = ttkrepo / "CMake" / "debug_widgets.xml"
     with open(debugWidgetsFile, 'r') as f:
         debugWidgets = f.read()
 
     files = (xml for xml in basedir.glob("*.xml") if xml.stem not in
-             vtkwrapping.excludedfilters.filters)
+             vtkwrapping.excludedfilters.ttk_filters)
 
     filters: list[vtkwrapping.vtkdata.FilterData] = []
     for file in files:
-        filters.extend(vtkwrapping.parse_file(file, category, tags,
+        filters.extend(vtkwrapping.parse_file(file, category, tags, showTraceback,
                        lambda s: s.replace("${DEBUG_WIDGETS}", debugWidgets)))
     return filters
 
 
-def custom_filters(filter_path: Path, category: str, tags: str,) \
-        -> list[vtkwrapping.vtkdata.FilterData]:
+def custom_filters(filter_path: Path, category: str, tags: str,
+                   showTraceback: bool) -> list[vtkwrapping.vtkdata.FilterData]:
     """
     Parses ParaView XML filters in filter_path
 
@@ -123,25 +124,25 @@ def custom_filters(filter_path: Path, category: str, tags: str,) \
     filters: list[vtkwrapping.vtkdata.FilterData] = []
 
     for file in filter_path.glob("*.xml"):
-        filters.extend(vtkwrapping.parse_file(file, category, tags))
+        filters.extend(vtkwrapping.parse_file(file, category, tags, showTraceback))
     return filters
 
 
 if __name__ == '__main__':
-    args = vtkwrapping.commandlineargs.parse_arguments()
+    config = vtkwrapping.commandlineargs.parse_arguments()
 
     # Set clang format binary in case clang-format is not in path
 
-    # vtkwrapping.global_config.clangformat = "C:/Program Files/Microsoft Visual Studio/2022/" \
+    # config.clangformat = "C:/Program Files/Microsoft Visual Studio/2022/" \
     #     + "Enterprise/VC/Tools/Llvm/bin/clang-format.exe"
 
     filters: list[vtkwrapping.vtkdata.FilterData] = []
-    if vtkwrapping.global_config.mode == vtkwrapping.Mode.vtk:
-        filters = vtk_paraview_filters("vtk", "VTK")
-    elif vtkwrapping.global_config.mode == vtkwrapping.Mode.ttk:
-        filters = ttk_filters("topology", "TTK")
-    elif vtkwrapping.global_config.mode == vtkwrapping.Mode.custom:
-        filters = custom_filters(vtkwrapping.global_config.filters, "vtk", "VTK,custom")
+    if config.mode == vtkwrapping.Mode.vtk:
+        filters = vtk_paraview_filters("vtk", "VTK", config.show_traceback)
+    elif config.mode == vtkwrapping.Mode.ttk:
+        filters = ttk_filters("topology", "TTK", config.ttkrepo, config.show_traceback)
+    elif config.mode == vtkwrapping.Mode.custom:
+        filters = custom_filters(config.filters, "vtk", "VTK,custom")
 
     # remove all filters with class name vtkFileSeriesReaders
     #
@@ -164,9 +165,10 @@ if __name__ == '__main__':
     filters = [f for f in filters if not f.className.startswith("vtkPV")]
     filters = [f for f in filters if not f.className.startswith("vtkAMR")]
 
-    filters = [f for f in filters if f.className not in vtkwrapping.missingheaders.headers]
+    filters = [f for f in filters if f.className not in
+               vtkwrapping.excludedfilters.vtk_paraview_filters]
 
-    if vtkwrapping.global_config.print_table:
+    if config.print_table:
         console.print(vtkwrapping.propertytable.generate_filter_table(filters))
 
     # some debug logging...
@@ -175,19 +177,20 @@ if __name__ == '__main__':
     # console.print(Syntax(header, lexer_name='c++', line_numbers=True))
     # console.print(Syntax(source, lexer_name='c++', line_numbers=True))
 
-    prefix = vtkwrapping.global_config.mode.name
-    if vtkwrapping.global_config.mode == vtkwrapping.Mode.custom:
+    prefix = config.mode.name
+    if config.mode == vtkwrapping.Mode.custom:
         prefix = ""
 
     # FIXME: consider proper prefix based on mode, which will break old Inviwo Workspaces
     # prefix = "ttk"
 
     vtkwrapping.generatefiles.generate_files(
-        destination=vtkwrapping.global_config.destination,
+        destination=config.destination,
         filters=filters,
         uriPrefix=prefix,
-        remove_old_files=vtkwrapping.global_config.remove_old_files,
-        property_fixes=vtkwrapping.fixes.vtk_fixes)
+        remove_old_files=config.remove_old_files,
+        property_fixes=vtkwrapping.fixes.get_fixes_vtk(),
+        clangformat=config.clangformat)
 
 
 # Some notes about the structure of the files.

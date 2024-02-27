@@ -40,10 +40,13 @@ class TextReplacement(NamedTuple):
     new_value: str
 
 
-vtk_fixes: dict[PropertyKey, TextReplacement] = {}
+def get_fixes_vtk() -> dict[PropertyKey, TextReplacement]:
+    fixes: dict[PropertyKey, TextReplacement] = {}
 
-vtk_fixes[("vtkThreshold", "ThresholdBetween")] = TextReplacement(
-    old_value="filter.ThresholdBetween(property.get(0), property.get(1));",
-    new_value="""filter.SetLowerThreshold(property.get(0));
+    fixes[("vtkThreshold", "ThresholdBetween")] = TextReplacement(
+        old_value="filter.ThresholdBetween(property.get(0), property.get(1));",
+        new_value="""filter.SetLowerThreshold(property.get(0));
     filter.SetUpperThreshold(property.get(1));
     filter.SetThresholdFunction(vtkThreshold::THRESHOLD_BETWEEN);""")
+
+    return fixes

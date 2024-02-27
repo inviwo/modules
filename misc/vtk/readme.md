@@ -11,9 +11,6 @@ Use a CMake preset similar to this to enable this VTK module:
       "displayName": "VTK MSVC VCPKG",
       "inherits" : ["modules", "msvc-dev-vcpkg"],
       "cacheVariables": {
-        "VCPKG_TARGET_TRIPLET" :   "x64-windows",
-        "VCPKG_FEATURE_FLAGS":     "-compilertracking",
-        "VCPKG_INSTALL_OPTIONS":   "--x-abi-tools-use-exact-versions",
         "VCPKG_OVERLAY_PORTS" :    "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg",
         "VCPKG_MANIFEST_FEATURES": "vtk",
 

@@ -31,12 +31,12 @@ import argparse
 from pathlib import Path
 import sys
 
-from . import config
+from . import configuration
 
 parse_modes = ("vtk", "ttk", "custom")
 
 
-def parse_arguments(cmdargs=None, namespace=None):
+def parse_arguments(cmdargs=None, namespace=None) -> configuration.Configuration:
     parser = argparse.ArgumentParser(
         description="Parse paraview xml",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter
@@ -75,14 +75,12 @@ def parse_arguments(cmdargs=None, namespace=None):
               file=sys.stderr)
         parser.exit()
 
-    config.global_config.destination = args.output
-    config.global_config.ttkrepo = args.ttkrepo
-    config.global_config.filters = args.filters
+    config = configuration.Configuration(show_traceback=not args.quiet,
+                                         remove_old_files=args.clear,
+                                         print_table=args.printtable,
+                                         mode=configuration.Mode[args.mode],
+                                         destination=args.output,
+                                         filters=args.filters,
+                                         ttkrepo=args.ttkrepo)
 
-    config.global_config.mode = config.Mode[args.mode]
-
-    config.global_config.show_traceback = not args.quiet
-    config.global_config.remove_old_files = args.clear
-    config.global_config.print_table = args.printtable
-
-    return args
+    return config

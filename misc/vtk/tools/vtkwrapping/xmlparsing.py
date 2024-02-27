@@ -36,7 +36,7 @@ from rich.console import Console
 import requests
 import traceback
 
-from . import vtkdata, properties, config
+from . import vtkdata, properties
 from .exceptions import ParseException, PropertyException
 
 console = Console()
@@ -81,6 +81,7 @@ def splitComma(text: str):
 
 
 def parse_file(file: Path, category: str, tags: str,
+               showTraceback: bool,
                func: Optional[Callable[[str], str]] = None) \
         -> list[vtkdata.FilterData]:
     try:
@@ -88,9 +89,9 @@ def parse_file(file: Path, category: str, tags: str,
             xmlstr = f.read()
             if func:
                 xmlstr = func(xmlstr)
-        return parse_xml(xmlstr, file, category, tags)
+        return parse_xml(xmlstr, file, category, tags, showTraceback)
     except ParseException as e:
-        if config.global_config.show_traceback:
+        if showTraceback:
             print(f"Error parsing {file}\n{e}")
             print(traceback.format_exc())
         else:
@@ -98,13 +99,13 @@ def parse_file(file: Path, category: str, tags: str,
     return []
 
 
-def parse_url(url: str, category: str, tags: str) -> list[vtkdata.FilterData]:
+def parse_url(url: str, category: str, tags: str, showTraceback: bool) -> list[vtkdata.FilterData]:
     try:
         response = requests.get(url)
         xmlstr = response.content.decode('utf-8')
-        return parse_xml(xmlstr, Path(url), category, tags)
+        return parse_xml(xmlstr, Path(url), category, tags, showTraceback)
     except ParseException as e:
-        if config.global_config.show_traceback:
+        if showTraceback:
             print(f"Error parsing {url}\n{e}")
             print(traceback.format_exc())
         else:
@@ -112,7 +113,8 @@ def parse_url(url: str, category: str, tags: str) -> list[vtkdata.FilterData]:
     return []
 
 
-def parse_xml(xmlstr: str, file: Path, category: str, tags: str) -> list[vtkdata.FilterData]:
+def parse_xml(xmlstr: str, file: Path, category: str, tags: str,
+              showTraceback: bool) -> list[vtkdata.FilterData]:
     '''
     Parse a paraview xml string, returns list of Filterdata
     '''
@@ -126,7 +128,7 @@ def parse_xml(xmlstr: str, file: Path, category: str, tags: str) -> list[vtkdata
     for group in xml:
         if group.tag != "ProxyGroup":
             raise ParseException(f"Unexpected element, expected 'ProxyGroup' found '{group.tag}'")
-        filters.extend(parseProxyGroup(group, file, category, tags))
+        filters.extend(parseProxyGroup(group, file, category, tags, showTraceback))
 
     return filters
 
@@ -299,7 +301,7 @@ def parseOutport(xml: ET.Element) -> vtkdata.OutputData:
 
 
 def parseProxyGroup(group: ET.Element, file: Path,
-                    category: str, tags: str) -> list[vtkdata.FilterData]:
+                    category: str, tags: str, showTraceback: bool) -> list[vtkdata.FilterData]:
     filters = []
     for proxy in group:
         try:
@@ -310,7 +312,7 @@ def parseProxyGroup(group: ET.Element, file: Path,
             if proxy.tag not in ["SourceProxy", "WriterProxy", "Proxy"]:
                 raise ParseException(f"Unexpected element, expected a proxy found '{proxy.tag}'")
 
-            filters.append(parseProxy(proxy, file, category, tags))
+            filters.append(parseProxy(proxy, file, category, tags, showTraceback))
 
         except ParseException as e:
             print(f"Error parsing {proxy.tag} in {file} \n{e}")
@@ -320,7 +322,8 @@ def parseProxyGroup(group: ET.Element, file: Path,
     return filters
 
 
-def parseProxy(proxy: ET.Element, file: Path, category: str, tags: str) -> vtkdata.FilterData:
+def parseProxy(proxy: ET.Element, file: Path, category: str, tags: str,
+               showTraceback: bool) -> vtkdata.FilterData:
 
     doc = proxy.find('Documentation')
     if doc is None:
@@ -359,12 +362,12 @@ def parseProxy(proxy: ET.Element, file: Path, category: str, tags: str) -> vtkda
                 data.props.append(parser(elem))
             except ParseException:
                 console.print(f"[bold red]Error parsing '{data.identifier}' in {file}")
-                if config.global_config.show_traceback:
+                if showTraceback:
                     console.print_exception(extra_lines=1)
                     print(ET.tostring(elem, encoding="unicode"))
             except Exception:
                 console.print(f"[bold orange]Error parsing '{data.identifier}' in {file}")
-                if config.global_config.show_traceback:
+                if showTraceback:
                     console.print_exception(extra_lines=1)
                     print(ET.tostring(elem, encoding="unicode"))
                 raise
@@ -388,7 +391,7 @@ def parseProxy(proxy: ET.Element, file: Path, category: str, tags: str) -> vtkda
             pass
         else:
             console.print(f"[bold red]No parser for elem: {elem.tag} in {file}")
-            if config.global_config.show_traceback:
+            if showTraceback:
                 print(ET.tostring(elem, encoding="unicode"))
 
     return data

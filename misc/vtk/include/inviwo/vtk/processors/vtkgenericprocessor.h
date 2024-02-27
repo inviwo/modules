@@ -74,11 +74,11 @@ namespace inviwo {
 
 namespace vtkwrapper {
 
-namespace ttkhelper {
+namespace vtkhelper {
 
 IVW_MODULE_VTK_API vtkInformationIntegerKey* SAME_DATA_TYPE_AS_INPUT_PORT();
 
-}  // namespace ttkhelper
+}  // namespace vtkhelper
 
 struct IVW_MODULE_VTK_API InputData {
     std::string identifier;
@@ -194,8 +194,8 @@ public:
         for (int i = 0; i < nOutputs; ++i) {
             vtkInformation* info = filter_->GetOutputPortInformation(i);
             std::optional<std::string> dataType;
-            if (info->Has(ttkhelper::SAME_DATA_TYPE_AS_INPUT_PORT())) {
-                int inportNum = info->Get(ttkhelper::SAME_DATA_TYPE_AS_INPUT_PORT());
+            if (info->Has(vtkhelper::SAME_DATA_TYPE_AS_INPUT_PORT())) {
+                int inportNum = info->Get(vtkhelper::SAME_DATA_TYPE_AS_INPUT_PORT());
                 vtkInformation* inportInfo = filter_->GetInputPortInformation(inportNum);
                 if (inportInfo->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
                     dataType = inportInfo->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());

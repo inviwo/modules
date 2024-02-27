@@ -28,7 +28,7 @@
 #
 # ********************************************************************************
 
-filters = [
+ttk_filters = [
     "Algorithm"       # Empty?
     "Compatibility",  # Very odd one
     "Extract",        # Has double prop of dim 6...
@@ -49,4 +49,48 @@ filters = [
     "ProjectionFromTable",         # Could not find import ttkProjectionFromTable.h
     # Could not find SetBarycenterSizeLimitPercent (member/function)
     "MergeTreeClustering"
+]
+
+# exclude the following ParaView filters due to missing header files
+vtk_paraview_filters = [
+    "vtkAttributeDataToTableFilter",
+    "vtkAdditionalFieldReader",
+    "vtkCleanUnstructuredGrid",
+    "vtkCleanUnstructuredGridCells",
+    "vtkClientServerMoveData",
+    "vtkCTHSimpleSurface",
+    "vtkDataObjectTreeToPointSetFilter",
+    "vtkDistributedPointCloudFilter",
+    "vtkEnvironmentAnnotationFilter",
+    "vtkExtractSelectionRange",
+    "vtkGridConnectivity",
+    "vtkHybridProbeFilter",
+    "vtkIntegrateFlowThroughSurface",
+    "vtkInSituPParticlePathFilter",
+    "vtkIsoVolume",
+    "vtkIntersectFragments",
+    "vtkMaterialInterfaceFilter",
+    "vtkMinMax",
+    "vtkMergeCompositeDataSet",
+    "vtkMPIMoveData",
+    "vtkNonOverlappingAMRLevelIdScalars",
+    "vtkMultiBlockFromTimeSeriesFilter",
+    "vtkOrderedCompositeDistributor",
+    "vtkPCellSizeFilter",
+    "vtkPConvertSelection",
+    "vtkPExtractHistogram",
+    "vtkPlotEdges",
+    "vtkPolyLineToRectilinearGridFilter",
+    "vtkPSciVizContingencyStats",
+    "vtkPSciVizKMeans",
+    "vtkPSciVizDescriptiveStats",
+    "vtkPSciVizMultiCorrelativeStats",
+    "vtkPSciVizPCAStats",
+    "vtkRectilinearGridConnectivity",
+    "vtkReductionFilter",
+    "vtkRulerLineForInput",
+    "vtkSliceAlongPolyPlane",
+    "vtkSurfaceVectors",
+    "vtkTimeStepProgressFilter",
+    "vtkTimeToTextConvertor"
 ]
