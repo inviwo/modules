@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2022-2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,84 +30,41 @@
 #pragma once
 
 #include <inviwo/vtk/vtkmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/processors/activityindicator.h>
-#include <inviwo/core/properties/compositeproperty.h>
-#include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/base/properties/basisproperty.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkSmartPointer.h>
-#include <vtkXMLGenericDataObjectReader.h>
-#include <vtkGenericDataObjectReader.h>
-#include <vtkDataSet.h>
-#include <vtkDataObject.h>
-#include <warn/pop>
+#include <inviwo/vtk/ports/vtkinport.h>
+
+class vtkDataSet;
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKtoVolume, VTKtoVolume}
- * ![](org.inviwo.VTKtoVolume.png?classIdentifier=org.inviwo.VTKtoVolume)
- * Converts a VTK data set to an inviwo volume, assuming that it is regular.
- */
-
-/**
- * \brief Convert rectlinear VTK data to inviwo volume
- * Builds a new inviwo volume with the data from the given VTK data set.
- * Checks if the underlying grid is regular. If not, no data is generated.
- * All grids will be interpreted as uniform, so the shape of the grid might be lost.
- */
-class IVW_MODULE_VTK_API VTKtoVolume : public Processor {
+class IVW_MODULE_VTK_API VTKToVolume : public Processor {
 public:
-    VTKtoVolume();
-    virtual ~VTKtoVolume() = default;
+    VTKToVolume();
+    virtual ~VTKToVolume() override = default;
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual void deserialize(Deserializer&) override;
-    virtual void serialize(Serializer& s) const override;
-
 private:
-    void updateFormats();
-    void updateArrays();
-    void convertData();
-    void updateAvailableArrays();
+    void updateSources(vtkDataSet* array);
 
+    vtk::VtkInport inport_;
     VolumeOutport outport_;
-    VTKDataSetInport inport_;
-    BoolProperty useCellData_;
-    std::shared_ptr<Volume> data_;
 
-    struct VTKArrayList : CompositeProperty {
-        VTKArrayList(const std::string& identifier, const std::string& displayName)
-            : CompositeProperty(identifier, displayName) {}
-        void clear();
-        void addArray(const std::string& name, int numChannels, void* dataPtr);
-        DataFormatId selectedFormat;
-        std::vector<size_t> numArrayComponents;
-        std::vector<unsigned char*> ptrArrayData;
+    OptionPropertyInt source_;
+    OptionPropertyInt precision_;
 
-    protected:
-        using CompositeProperty::addProperties;
-        using CompositeProperty::addProperty;
-    } dataArrays_;
-    OptionProperty<DataFormatId> dataFormats_;
-    ButtonProperty convertButton_;
-    BoolProperty autoConvert_;
-    DoubleVec2Property dataRange_;
+    VolumeInformationProperty information_;
+    BasisProperty basis_;
 
-    bool isDirty_;
-    bool convertData_;
-    std::vector<std::string> prevArraySelection_;
+    std::shared_ptr<Volume> volume_;
 };
 
 }  // namespace inviwo

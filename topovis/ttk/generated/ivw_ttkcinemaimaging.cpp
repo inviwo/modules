@@ -1,7 +1,6 @@
 #include "ivw_ttkcinemaimaging.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -211,7 +210,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkCinemaImaging> {
+struct VTKTraits<ttkCinemaImaging> {
+    static constexpr std::string_view uri = "ttk.ttkCinemaImaging";
     static constexpr std::string_view className = "ttkCinemaImaging";
     static constexpr std::string_view identifier = "ttkCinemaImaging";
     static constexpr std::string_view displayName = "TTK CinemaImaging";
@@ -243,8 +243,8 @@ Online examples:
 };
 
 void registerttkCinemaImaging(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkCinemaImaging>>();
+    module->registerProcessor<VTKGenericProcessor<ttkCinemaImaging>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkdistancematrixdistortion.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -143,7 +142,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkDistanceMatrixDistortion> {
+struct VTKTraits<ttkDistanceMatrixDistortion> {
+    static constexpr std::string_view uri = "ttk.ttkDistanceMatrixDistortion";
     static constexpr std::string_view className = "ttkDistanceMatrixDistortion";
     static constexpr std::string_view identifier = "ttkDistanceMatrixDistortion";
     static constexpr std::string_view displayName = "TTK DistanceMatrixDistortion";
@@ -169,8 +169,8 @@ struct TTKTraits<ttkDistanceMatrixDistortion> {
 };
 
 void registerttkDistanceMatrixDistortion(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkDistanceMatrixDistortion>>();
+    module->registerProcessor<VTKGenericProcessor<ttkDistanceMatrixDistortion>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

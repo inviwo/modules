@@ -1,7 +1,6 @@
 #include "ivw_ttkpointsettosurface.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -86,7 +85,8 @@ struct Wrapper1 : FieldSelection {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPointSetToSurface> {
+struct VTKTraits<ttkPointSetToSurface> {
+    static constexpr std::string_view uri = "ttk.ttkPointSetToSurface";
     static constexpr std::string_view className = "ttkPointSetToSurface";
     static constexpr std::string_view identifier = "ttkPointSetToSurface";
     static constexpr std::string_view displayName = "TTK PointSetToSurface";
@@ -108,8 +108,8 @@ Online examples:
 };
 
 void registerttkPointSetToSurface(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPointSetToSurface>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPointSetToSurface>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -33,7 +33,11 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
-#include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <inviwo/vtk/ports/vtkoutport.h>
+
+#include <vtkSmartPointer.h>
+
+class vtkStructuredGrid;
 
 namespace inviwo {
 
@@ -67,7 +71,9 @@ public:
 
 private:
     TensorField2DInport tensorFieldInport_;
-    VTKDataSetOutport vtkDataSetOutport_;
+    vtk::VtkOutport vtkDataSetOutport_;
+
+    vtkSmartPointer<vtkStructuredGrid> structuredGrid_;
 };
 
 }  // namespace inviwo

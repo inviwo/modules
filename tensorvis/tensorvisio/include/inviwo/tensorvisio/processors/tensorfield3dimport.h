@@ -78,7 +78,7 @@ private:
 
     BoolProperty normalizeExtents_;
 
-    FloatVec3Property extents_;
+    FloatVec3Property extent_;
 
     FloatVec3Property offset_;
     IntVec3Property dimensions_;

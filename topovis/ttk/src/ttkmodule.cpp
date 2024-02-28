@@ -27,46 +27,11 @@
  *
  *********************************************************************************/
 
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
-#include <inviwo/ttk/processors/volumetovtk.h>
-#include <inviwo/ttk/processors/vtktovolume.h>
-#include <inviwo/ttk/processors/vtkdatasettovtkimagedata.h>
-#include <inviwo/ttk/processors/vtktodataframe.h>
-#include <inviwo/ttk/processors/vtktomesh.h>
-#include <inviwo/ttk/processors/vtktotetramesh.h>
-#include <inviwo/ttk/ports/vtkinport.h>
-#include <inviwo/ttk/ports/vtkoutport.h>
-
-#include <inviwo/ttk/processors/imagetovtk.h>
-#include <inviwo/ttk/processors/layertovtk.h>
-#include <inviwo/ttk/processors/vtksource.h>
-#include <inviwo/ttk/processors/vtktoimage.h>
-#include <inviwo/ttk/processors/vtktolayer.h>
 #include <inviwo/ttk/ttkmodule.h>
 
-#include <registerttkfilters.h>
-
-#include <vtkLogger.h>
-
-#include <fmt/core.h>
+#include <registerfilters.h>
 
 namespace inviwo {
-
-void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
-
-    auto level = [&]() {
-        if (message.verbosity <= vtkLogger::VERBOSITY_ERROR) {
-            return LogLevel::Error;
-        } else if (message.verbosity <= vtkLogger::VERBOSITY_WARNING) {
-            return LogLevel::Warn;
-        } else {
-            return LogLevel::Info;
-        }
-    }();
-
-    LogCentral::getPtr()->log("VTK", level, LogAudience::Developer, message.filename, "",
-                              message.line, fmt::format("{}{}", message.prefix, message.message));
-}
 
 ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
     // Add a directory to the search path of the Shadermanager
@@ -74,53 +39,47 @@ ttkModule::ttkModule(InviwoApplication* app) : InviwoModule(app, "ttk") {
 
     // Register objects that can be shared with the rest of inviwo here:
 
-    // see https://vtk.org/doc/nightly/html/classvtkLogger.html
-    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr, vtkLogger::VERBOSITY_ERROR);
-    // vtkObject::GlobalWarningDisplayOn();
-    vtkObject::GlobalWarningDisplayOff();
-
     // Processors
-    ttkwrapper::registerTTKFilters(this);
-    // registerProcessor < TTKGenericProcessor < ttkMorseSmaleComplex>>();
-    registerProcessor<ImageToVTK>();
-    registerProcessor<LayerToVTK>();
-    registerProcessor<VolumeToVTK>();
-    registerProcessor<VTKToVolume>();
-    registerProcessor<VTKDowncastData>();
-    registerProcessor<VTKToDataFrame>();
-    registerProcessor<VTKToImage>();
-    registerProcessor<VTKToLayer>();
-    registerProcessor<VTKToMesh>();
-    registerProcessor<VTKToTetraMesh>();
-    registerProcessor<vtk::VTKSource>();
+    vtkwrapper::registerVTKFilters(this);
+}
 
-    // Properties
-    // registerProperty<ttkProperty>();
+int ttkModule::getVersion() const { return 1; }
 
-    // Readers and writes
-    // registerDataReader(std::make_unique<ttkReader>());
-    // registerDataWriter(std::make_unique<ttkWriter>());
+std::unique_ptr<VersionConverter> ttkModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
 
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<ttkDisk2RAMConverter>());
+ttkModule::Converter::Converter(int version) : version_(version) {}
 
-    // Ports
-    registerPort<vtk::VtkInport>();
-    registerPort<vtk::VtkOutport>();
+bool ttkModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            TraversingVersionConverter conv{[&](TxElement* node) -> bool {
+                const auto& key = node->Value();
+                if (key != "Processor") return true;
+                const auto& type = node->GetAttribute("type");
+                if (!type.starts_with("org.inviwo.tkk.")) return true;
 
-    // PropertyWidgets
-    // registerPropertyWidget<ttkPropertyWidget, ttkProperty>("Default");
+                // fix typo in URI
+                std::string s{node->GetAttribute("type")};
+                replaceInString(s, "org.inviwo.tkk.ttk", "org.inviwo.ttk.ttk");
+                // vtk filters have been moved to VTK module
+                replaceInString(s, "org.inviwo.tkk.vtk", "org.inviwo.vtk.vtk");
 
-    // Dialogs
-    // registerDialog<ttkDialog>(ttkOutport);
+                node->SetAttribute("type", s);
+                res = true;
 
-    // Other things
-    // registerCapabilities(std::make_unique<ttkCapabilities>());
-    // registerSettings(std::make_unique<ttkSettings>());
-    // registerMetaData(std::make_unique<ttkMetaData>());
-    // registerPortInspector("ttkOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget>
-    // processorWidget); registerDrawer(util::make_unique_ptr<ttkDrawer>());
+                return true;
+            }};
+
+            conv.convert(root);
+
+            return res;
+        }
+        default:
+            return false;  // No changes
+    }
 }
 
 }  // namespace inviwo

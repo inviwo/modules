@@ -1,7 +1,6 @@
 #include "ivw_ttkmorsesmalecomplex.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -274,7 +273,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMorseSmaleComplex> {
+struct VTKTraits<ttkMorseSmaleComplex> {
+    static constexpr std::string_view uri = "ttk.ttkMorseSmaleComplex";
     static constexpr std::string_view className = "ttkMorseSmaleComplex";
     static constexpr std::string_view identifier = "ttkMorseSmaleComplex";
     static constexpr std::string_view displayName = "TTK MorseSmaleComplex";
@@ -353,8 +353,8 @@ Online examples:
 };
 
 void registerttkMorseSmaleComplex(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMorseSmaleComplex>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMorseSmaleComplex>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

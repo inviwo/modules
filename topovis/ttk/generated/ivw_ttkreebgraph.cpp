@@ -1,7 +1,6 @@
 #include "ivw_ttkreebgraph.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -183,7 +182,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkReebGraph> {
+struct VTKTraits<ttkReebGraph> {
+    static constexpr std::string_view uri = "ttk.ttkReebGraph";
     static constexpr std::string_view className = "ttkReebGraph";
     static constexpr std::string_view identifier = "ttkReebGraph";
     static constexpr std::string_view displayName = "TTK ReebGraph";
@@ -220,8 +220,8 @@ Online Examples:
 };
 
 void registerttkReebGraph(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkReebGraph>>();
+    module->registerProcessor<VTKGenericProcessor<ttkReebGraph>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

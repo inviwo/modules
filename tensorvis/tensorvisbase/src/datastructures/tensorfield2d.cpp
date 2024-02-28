@@ -32,9 +32,9 @@
 
 namespace inviwo {
 TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<dmat2>& data,
-                             const dvec2& extends)
+                             const dvec2& extent)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , size_(dimensions.x * dimensions.y)
     , rank_(2)
     , dimensionality_(2)
@@ -45,9 +45,9 @@ TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<dmat2>&
 }
 
 TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<double>& data,
-                             const dvec2& extends)
+                             const dvec2& extent)
     : dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , size_(dimensions.x * dimensions.y)
     , rank_(2)
     , dimensionality_(2)
@@ -70,13 +70,13 @@ TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<double>
                              const std::vector<double>& majorEigenvalues,
                              const std::vector<double>& minorEigenvalues,
                              const std::vector<dvec2>& majorEigenvectors,
-                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extends)
+                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extent)
     : majorEigenVectors_(majorEigenvectors)
     , minorEigenVectors_(minorEigenvectors)
     , majorEigenValues_(majorEigenvalues)
     , minorEigenValues_(minorEigenvalues)
     , dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , offset_(dvec2(0.0))
     , size_(dimensions.x * dimensions.y)
     , rank_(2)
@@ -98,13 +98,13 @@ TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<dmat2>&
                              const std::vector<double>& majorEigenvalues,
                              const std::vector<double>& minorEigenvalues,
                              const std::vector<dvec2>& majorEigenvectors,
-                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extends)
+                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extent)
     : majorEigenVectors_(majorEigenvectors)
     , minorEigenVectors_(minorEigenvectors)
     , majorEigenValues_(majorEigenvalues)
     , minorEigenValues_(minorEigenvalues)
     , dimensions_(dimensions)
-    , extends_(extends)
+    , extent_(extent)
     , offset_(dvec2(0.0))
     , size_(dimensions.x * dimensions.y)
     , rank_(2)
@@ -115,9 +115,9 @@ TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<dmat2>&
 }
 
 TensorField2D::TensorField2D(const size_t x, const size_t y, const std::vector<dmat2>& data,
-                             const dvec2& extends)
+                             const dvec2& extent)
     : dimensions_(size2_t(x, y))
-    , extends_(extends)
+    , extent_(extent)
     , size_(x * y)
     , rank_(2)
     , dimensionality_(2)
@@ -128,9 +128,9 @@ TensorField2D::TensorField2D(const size_t x, const size_t y, const std::vector<d
 }
 
 TensorField2D::TensorField2D(const size_t x, const size_t y, const std::vector<double>& data,
-                             const dvec2& extends)
+                             const dvec2& extent)
     : dimensions_(size2_t(x, y))
-    , extends_(extends)
+    , extent_(extent)
     , size_(x * y)
     , rank_(2)
     , dimensionality_(2)
@@ -153,13 +153,13 @@ TensorField2D::TensorField2D(const size_t x, const size_t y, const std::vector<d
                              const std::vector<double>& majorEigenvalues,
                              const std::vector<double>& minorEigenvalues,
                              const std::vector<dvec2>& majorEigenvectors,
-                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extends)
+                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extent)
     : majorEigenVectors_(majorEigenvectors)
     , minorEigenVectors_(minorEigenvectors)
     , majorEigenValues_(majorEigenvalues)
     , minorEigenValues_(minorEigenvalues)
     , dimensions_(size2_t(x, y))
-    , extends_(extends)
+    , extent_(extent)
     , offset_(dvec3(0.0))
     , size_(x * y)
     , rank_(2)
@@ -181,13 +181,13 @@ TensorField2D::TensorField2D(const size_t x, const size_t y, const std::vector<d
                              const std::vector<double>& majorEigenvalues,
                              const std::vector<double>& minorEigenvalues,
                              const std::vector<dvec2>& majorEigenvectors,
-                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extends)
+                             const std::vector<dvec2>& minorEigenvectors, const dvec2& extent)
     : majorEigenVectors_(majorEigenvectors)
     , minorEigenVectors_(minorEigenvectors)
     , majorEigenValues_(majorEigenvalues)
     , minorEigenValues_(minorEigenvalues)
     , dimensions_(size2_t(x, y))
-    , extends_(extends)
+    , extent_(extent)
     , offset_(dvec3(0.0))
     , size_(x * y)
     , rank_(2)
@@ -197,84 +197,27 @@ TensorField2D::TensorField2D(const size_t x, const size_t y, const std::vector<d
     computeNormalizedScreenCoordinates();
 }
 
-std::string TensorField2D::getDataInfo() const {
-    std::stringstream ss;
-    ss << "<table border='0' cellspacing='0' cellpadding='0' "
-          "style='border-color:white;white-space:pre;'>/n"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Type"
-       << "</td>"
-       << "<td>"
-       << "<nobr>2D tensor field</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Number of tensors"
-       << "</td>"
-       << "<td>"
-       << "<nobr>" << tensors_.size() << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Dimensions"
-       << "</td>"
-       << "<td>"
-       << "<nobr>" << glm::to_string(dimensions_) << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Max eigenvalue (major)"
-       << "</td>"
-       << "<td>"
-       << "<nobr>"
-       << static_cast<float>(*std::max_element(majorEigenValues_.begin(), majorEigenValues_.end()))
-       << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Min eigenvalue (major)"
-       << "</td>"
-       << "<td>"
-       << "<nobr>"
-       << static_cast<float>(*std::min_element(majorEigenValues_.begin(), majorEigenValues_.end()))
-       << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Max eigenvalue (minor)"
-       << "</td>"
-       << "<td>"
-       << "<nobr>"
-       << static_cast<float>(*std::max_element(minorEigenValues_.begin(), minorEigenValues_.end()))
-       << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Min eigenvalue (minor)"
-       << "</td>"
-       << "<td>"
-       << "<nobr>"
-       << static_cast<float>(*std::min_element(minorEigenValues_.begin(), minorEigenValues_.end()))
-       << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "<tr>"
-       << "<td style='color:#bbb;padding-right:8px;'>"
-       << "Extends"
-       << "</td>"
-       << "<td>"
-       << "<nobr>" << glm::to_string(extends_) << "</nobr>"
-       << "</td>"
-       << "</tr>"
-       << "</table>";
-    return ss.str();
+Document TensorField2D::getDataInfo() const {
+    using P = Document::PathComponent;
+    using H = utildoc::TableBuilder::Header;
+    Document doc;
+    utildoc::TableBuilder tb(doc.handle(), P::end());
+
+    tb(H("Type"), "2D tensor field");
+    tb(H("Number of Tensors"), tensors_.size());
+    tb(H("Dimensions"), dimensions_);
+    tb(H("Extent"), extent_);
+
+    tb(H("Max Eigenvalue (major)"),
+       *std::max_element(majorEigenValues_.begin(), majorEigenValues_.end()));
+    tb(H("Min Eigenvalue (major)"),
+       *std::min_element(majorEigenValues_.begin(), majorEigenValues_.end()));
+    tb(H("Max Eigenvalue (minor)"),
+       *std::max_element(minorEigenValues_.begin(), minorEigenValues_.end()));
+    tb(H("Min Eigenvalue (minor)"),
+       *std::min_element(minorEigenValues_.begin(), minorEigenValues_.end()));
+
+    return doc;
 }
 
 std::shared_ptr<Image> TensorField2D::getImageRepresentation() const {
@@ -315,11 +258,11 @@ const dmat2& TensorField2D::at(const size_t index) const { return tensors_[index
 size_t TensorField2D::getSize() const { return size_; }
 
 dmat2 TensorField2D::getBasis() const {
-    return dmat2(dvec2(extends_.x, 0.0), dvec2(0.0, extends_.y));
+    return dmat2(dvec2(extent_.x, 0.0), dvec2(0.0, extent_.y));
 }
 
 dmat3 TensorField2D::getBasisAndOffset() const {
-    auto basis = dmat2(dvec2(extends_.x, 0.0), dvec2(0.0, extends_.y));
+    auto basis = dmat2(dvec2(extent_.x, 0.0), dvec2(0.0, extent_.y));
 
     dmat3 modelMatrix;
 

@@ -1,7 +1,6 @@
 #include "ivw_ttkharmonicfield.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -209,7 +208,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkHarmonicField> {
+struct VTKTraits<ttkHarmonicField> {
+    static constexpr std::string_view uri = "ttk.ttkHarmonicField";
     static constexpr std::string_view className = "ttkHarmonicField";
     static constexpr std::string_view identifier = "ttkHarmonicField";
     static constexpr std::string_view displayName = "TTK HarmonicField";
@@ -246,8 +246,8 @@ Online Examples:
 };
 
 void registerttkHarmonicField(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkHarmonicField>>();
+    module->registerProcessor<VTKGenericProcessor<ttkHarmonicField>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

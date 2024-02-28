@@ -1,7 +1,6 @@
 #include "ivw_ttkmorphologicaloperators.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -166,7 +165,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMorphologicalOperators> {
+struct VTKTraits<ttkMorphologicalOperators> {
+    static constexpr std::string_view uri = "ttk.ttkMorphologicalOperators";
     static constexpr std::string_view className = "ttkMorphologicalOperators";
     static constexpr std::string_view identifier = "MorphologicalOperators";
     static constexpr std::string_view displayName = "TTK MorphologicalOperators";
@@ -189,8 +189,8 @@ struct TTKTraits<ttkMorphologicalOperators> {
 };
 
 void registerttkMorphologicalOperators(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMorphologicalOperators>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMorphologicalOperators>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

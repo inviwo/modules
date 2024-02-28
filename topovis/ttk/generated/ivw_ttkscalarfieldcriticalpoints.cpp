@@ -1,7 +1,6 @@
 #include "ivw_ttkscalarfieldcriticalpoints.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -250,7 +249,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkScalarFieldCriticalPoints> {
+struct VTKTraits<ttkScalarFieldCriticalPoints> {
+    static constexpr std::string_view uri = "ttk.ttkScalarFieldCriticalPoints";
     static constexpr std::string_view className = "ttkScalarFieldCriticalPoints";
     static constexpr std::string_view identifier = "ttkScalarFieldCriticalPoints";
     static constexpr std::string_view displayName = "TTK ScalarFieldCriticalPoints";
@@ -324,8 +324,8 @@ Online examples:
 };
 
 void registerttkScalarFieldCriticalPoints(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkScalarFieldCriticalPoints>>();
+    module->registerProcessor<VTKGenericProcessor<ttkScalarFieldCriticalPoints>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkripscomplex.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -204,7 +203,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkRipsComplex> {
+struct VTKTraits<ttkRipsComplex> {
+    static constexpr std::string_view uri = "ttk.ttkRipsComplex";
     static constexpr std::string_view className = "ttkRipsComplex";
     static constexpr std::string_view identifier = "ttkRipsComplex";
     static constexpr std::string_view displayName = "TTK RipsComplex";
@@ -234,8 +234,8 @@ Online examples:
 };
 
 void registerttkRipsComplex(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkRipsComplex>>();
+    module->registerProcessor<VTKGenericProcessor<ttkRipsComplex>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

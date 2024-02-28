@@ -1,7 +1,6 @@
 #include "ivw_ttkcontourtree.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -194,7 +193,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkContourTree> {
+struct VTKTraits<ttkContourTree> {
+    static constexpr std::string_view uri = "ttk.ttkContourTree";
     static constexpr std::string_view className = "ttkContourTree";
     static constexpr std::string_view identifier = "ttkContourTree";
     static constexpr std::string_view displayName = "TTK ContourTree";
@@ -252,8 +252,8 @@ Online examples:
 };
 
 void registerttkContourTree(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkContourTree>>();
+    module->registerProcessor<VTKGenericProcessor<ttkContourTree>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

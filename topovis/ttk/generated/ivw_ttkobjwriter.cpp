@@ -1,7 +1,6 @@
 #include "ivw_ttkobjwriter.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -41,7 +40,8 @@ struct Wrapper0 {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkOBJWriter> {
+struct VTKTraits<ttkOBJWriter> {
+    static constexpr std::string_view uri = "ttk.ttkOBJWriter";
     static constexpr std::string_view className = "ttkOBJWriter";
     static constexpr std::string_view identifier = "ttkOBJWriter";
     static constexpr std::string_view displayName = "TTK OBJWriter";
@@ -56,8 +56,8 @@ struct TTKTraits<ttkOBJWriter> {
 };
 
 void registerttkOBJWriter(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkOBJWriter>>();
+    module->registerProcessor<VTKGenericProcessor<ttkOBJWriter>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

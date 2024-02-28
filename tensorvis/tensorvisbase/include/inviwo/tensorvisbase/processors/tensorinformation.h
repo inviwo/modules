@@ -37,32 +37,11 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorInformation, Tensor Information}
- * ![](org.inviwo.TensorInformation.png?classIdentifier=org.inviwo.TensorInformation)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorInformation
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorInformation : public Processor {
 public:
     TensorInformation();
     virtual ~TensorInformation() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;

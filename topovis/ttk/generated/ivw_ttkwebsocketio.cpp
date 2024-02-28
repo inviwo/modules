@@ -1,7 +1,6 @@
 #include "ivw_ttkwebsocketio.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -103,7 +102,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkWebSocketIO> {
+struct VTKTraits<ttkWebSocketIO> {
+    static constexpr std::string_view uri = "ttk.ttkWebSocketIO";
     static constexpr std::string_view className = "ttkWebSocketIO";
     static constexpr std::string_view identifier = "WebSocketIO";
     static constexpr std::string_view displayName = "TTK WebSocketIO";
@@ -123,8 +123,8 @@ struct TTKTraits<ttkWebSocketIO> {
 };
 
 void registerttkWebSocketIO(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkWebSocketIO>>();
+    module->registerProcessor<VTKGenericProcessor<ttkWebSocketIO>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

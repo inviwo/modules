@@ -1,7 +1,6 @@
 #include "ivw_ttkgeometrysmoother.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -153,7 +152,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkGeometrySmoother> {
+struct VTKTraits<ttkGeometrySmoother> {
+    static constexpr std::string_view uri = "ttk.ttkGeometrySmoother";
     static constexpr std::string_view className = "ttkGeometrySmoother";
     static constexpr std::string_view identifier = "ttkGeometrySmoother";
     static constexpr std::string_view displayName = "TTK GeometrySmoother";
@@ -195,8 +195,8 @@ Online examples:
 };
 
 void registerttkGeometrySmoother(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkGeometrySmoother>>();
+    module->registerProcessor<VTKGenericProcessor<ttkGeometrySmoother>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkfiber.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -172,7 +171,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkFiber> {
+struct VTKTraits<ttkFiber> {
+    static constexpr std::string_view uri = "ttk.ttkFiber";
     static constexpr std::string_view className = "ttkFiber";
     static constexpr std::string_view identifier = "ttkFiber";
     static constexpr std::string_view displayName = "TTK Fiber";
@@ -202,8 +202,8 @@ IEEE Transactions on Visualization and Computer Graphics, 2016.)";
 };
 
 void registerttkFiber(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkFiber>>();
+    module->registerProcessor<VTKGenericProcessor<ttkFiber>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkblockaggregator.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -110,7 +109,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkBlockAggregator> {
+struct VTKTraits<ttkBlockAggregator> {
+    static constexpr std::string_view uri = "ttk.ttkBlockAggregator";
     static constexpr std::string_view className = "ttkBlockAggregator";
     static constexpr std::string_view identifier = "ttkBlockAggregator";
     static constexpr std::string_view displayName = "TTK BlockAggregator";
@@ -141,8 +141,8 @@ Online examples:
 };
 
 void registerttkBlockAggregator(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkBlockAggregator>>();
+    module->registerProcessor<VTKGenericProcessor<ttkBlockAggregator>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

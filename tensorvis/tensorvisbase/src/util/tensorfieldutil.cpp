@@ -116,7 +116,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
         }
     }
 
-    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtents());
+    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtent());
 }
 
 std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
@@ -152,7 +152,7 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
         }
     }
 
-    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtents());
+    return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtent());
 }
 
 std::shared_ptr<PosTexColorMesh> generateBoundingBoxAdjacencyForTensorField(
@@ -213,7 +213,7 @@ std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorFie
                                                  const size_t sliceNr) {
     auto bounds = tensorField->getBounds<float>();
     auto bounds_t = tensorField->getBounds<size_t>();
-    auto e = tensorField->getExtents<float>();
+    auto e = tensorField->getExtent<float>();
     auto offset = tensorField->getOffset();
 
     auto mesh = std::make_shared<BasicMesh>();

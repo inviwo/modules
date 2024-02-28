@@ -1,7 +1,6 @@
 #include "ivw_ttkarrayeditor.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -218,7 +217,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkArrayEditor> {
+struct VTKTraits<ttkArrayEditor> {
+    static constexpr std::string_view uri = "ttk.ttkArrayEditor";
     static constexpr std::string_view className = "ttkArrayEditor";
     static constexpr std::string_view identifier = "ttkArrayEditor";
     static constexpr std::string_view displayName = "TTK ArrayEditor";
@@ -256,8 +256,8 @@ Online examples:
 };
 
 void registerttkArrayEditor(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkArrayEditor>>();
+    module->registerProcessor<VTKGenericProcessor<ttkArrayEditor>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -28,109 +28,207 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisio/processors/vtktotensorfield2d.h>
-
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkPointData.h>
-#include <vtkDataArray.h>
-#include <vtkDoubleArray.h>
-#include <vtkFloatArray.h>
-#include <warn/pop>
+#include <inviwo/core/network/processornetwork.h>
+#include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/formats.h>
+#include <inviwo/core/util/stdextensions.h>
+#include <inviwo/core/util/utilities.h>
 
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/util/misc.h>
-#include <inviwo/vtk/util/vtkutil.h>
-#include <fmt/format.h>
+
+#include <inviwo/vtk/util/vtkdatautils.h>
+
+#include <fmt/core.h>
+
+#include <vtkImageData.h>
+#include <vtkPointData.h>
+#include <vtkDataArray.h>
+#include <vtkAbstractArray.h>
+#include <vtkRectilinearGrid.h>
+#include <vtkStructuredGrid.h>
+#include <vtkStructuredPoints.h>
+#include <vtkArrayDispatch.h>
+#include <vtkDataObjectTypes.h>
 
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKToTensorField2D::processorInfo_{
-    "org.inviwo.VTKToTensorField2D",  // Class identifier
-    "VTK To Tensor Field 2D",         // Display name
-    "VTK",                            // Category
-    CodeState::Experimental,          // Code state
-    "VTK",                            // Tags
+    "org.inviwo.VTKToTensorField2D",         // Class identifier
+    "VTK To Tensor Field 2D",                // Display name
+    "VTK",                                   // Category
+    CodeState::Experimental,                 // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Tensor"},  // Tags
+    R"(Converts a VTK data set to a 2D tensor field. This requires that one of the dimensions 
+    of the VTK data set is 1. Additionally, the data type must be either float or double. 
+    Lastly, unstructured grids are not supported.)"_unindentHelp,
 };
 const ProcessorInfo VTKToTensorField2D::getProcessorInfo() const { return processorInfo_; }
 
-VTKToTensorField2D::VTKToTensorField2D()
-    : Processor()
-    , vtkDataSetInport_("vtkDataSetInport")
-    , tensorField2DOutport_("tensorField2DOutport") {
-    addPort(vtkDataSetInport_);
-    addPort(tensorField2DOutport_);
-}
+constexpr std::array<int, 5> supportedObjectTypes{VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID,
+                                                  VTK_IMAGE_DATA, VTK_UNIFORM_GRID,
+                                                  VTK_STRUCTURED_POINTS};
 
-void VTKToTensorField2D::process() {
-    const auto inviwoDataSet = vtkDataSetInport_.getData();
+namespace detail {
 
-    size3_t dimensions{};
-    if (auto d = inviwoDataSet->getDimensions())
-        dimensions = *d;
-    else {
-        inviwo::Exception(
-            fmt::format("VTK data set type '{}' not supported.", (*inviwoDataSet)->GetClassName()),
-            IVW_CONTEXT);
-        return;
-    }
-    if (dimensions.x != 1 && dimensions.y != 1 && dimensions.z != 1) {
-        inviwo::Exception("Data set is not 2D. Aborting.", IVW_CONTEXT);
-        return;
-    }
+std::shared_ptr<TensorField2D> vtkToTensorField(size3_t dimensions, vtkDataSet* vtkData,
+                                                int arrayIndex) {
+    auto array = vtkData->GetPointData()->GetArray(arrayIndex);
+    const int numComponents = array->GetNumberOfComponents();
 
-    const auto numberOfElements = glm::compMul(dimensions);
+    size2_t dims2D{dimensions};
+    dvec2 extent{0.0};
+    dvec2 offset{0.0};
 
-    const auto pointData = (*inviwoDataSet)->GetPointData();
-    const auto tensors = pointData->GetTensors();
+    std::vector<dmat2> data;
+    data.reserve(glm::compMul(dimensions));
 
-    if (tensors->GetDataType() != VTK_FLOAT && tensors->GetDataType() != VTK_DOUBLE) {
-        LogError("Data type is neither float nor double. Aborting.");
-        return;
-    }
-
-    std::vector<dmat2> tensorVector2D;
-    tensorVector2D.resize(numberOfElements);
-
-    // Check to see if we need to project the tensor
-    if (tensors->GetNumberOfComponents() == 9) {
-        // If so, find out onto which plane to project
-        CartesianCoordinateAxis axis = dimensions.z == 1   ? CartesianCoordinateAxis::Z
-                                       : dimensions.y == 1 ? CartesianCoordinateAxis::Y
-                                                           : CartesianCoordinateAxis::X;
-
-        std::vector<dmat3> tensorVector3D;
-        tensorVector3D.resize(numberOfElements);
-        auto tensorVector3DRawData = reinterpret_cast<double*>(tensorVector3D.data());
-
-        if (tensors->GetDataType() == VTK_DOUBLE) {
-            const double* raw = vtkDoubleArray::SafeDownCast(tensors)->GetPointer(0);
-            std::memcpy(tensorVector3DRawData, raw, 9 * sizeof(double) * tensorVector3D.size());
-        } else if (tensors->GetDataType() == VTK_FLOAT) {
-            const float* raw = vtkFloatArray::SafeDownCast(tensors)->GetPointer(0);
-            for (size_t i{0}; i < tensorVector3D.size(); ++i) {
-                tensorVector3DRawData[i] = static_cast<double>(raw[i]);
+    if (numComponents == 4) {
+        auto worker = [&]<typename T>(T* typedArray) {
+            const auto nTuples = array->GetNumberOfTuples();
+            if (static_cast<vtkIdType>(glm::compMul(dimensions)) != nTuples) {
+                throw Exception("Invalid dimensions");
             }
+
+            for (vtkIdType id = 0; id < nTuples; ++id) {
+                data.emplace_back(
+                    typedArray->GetTypedComponent(id, 0), typedArray->GetTypedComponent(id, 1),
+                    typedArray->GetTypedComponent(id, 2), typedArray->GetTypedComponent(id, 3));
+            }
+        };
+        if (!vtkArrayDispatch::Dispatch::Execute(array, worker)) {
+            throw Exception("no matching type");
+        }
+    } else if (numComponents == 9) {
+
+        // Project tensor onto plane with extent 1 to yield 2x2 tensors (mat2)
+        CartesianCoordinateAxis axis;
+        if (dimensions.z == 1) {
+            axis = CartesianCoordinateAxis::Z;
+        } else if (dimensions.y == 1) {
+            axis = CartesianCoordinateAxis::Y;
+        } else {
+            axis = CartesianCoordinateAxis::X;
+        }
+
+        auto project2D = [&](CartesianCoordinateAxis axis) {
+            const dmat4 m{*vtk::getModelMatrix(vtkData)};
+            int dstIndex = 0;
+            for (int i = 0; i < 3; ++i) {
+                if (static_cast<CartesianCoordinateAxis>(i) == axis) continue;
+                dims2D[dstIndex] = dimensions[i];
+                offset[dstIndex] = m[3][i];
+                extent[dstIndex] = glm::length(dvec3(m[i]));
+                ++dstIndex;
+            }
+        };
+        project2D(axis);
+
+        std::vector<dmat3> tensors3D;
+        tensors3D.reserve(glm::compMul(dimensions));
+
+        auto worker = [&]<typename T>(T* typedArray) {
+            const auto nTuples = array->GetNumberOfTuples();
+            if (static_cast<vtkIdType>(glm::compMul(dimensions)) != nTuples) {
+                throw Exception("Invalid dimensions");
+            }
+
+            for (vtkIdType id = 0; id < nTuples; ++id) {
+                tensors3D.emplace_back(
+                    typedArray->GetTypedComponent(id, 0), typedArray->GetTypedComponent(id, 1),
+                    typedArray->GetTypedComponent(id, 2),
+
+                    typedArray->GetTypedComponent(id, 3), typedArray->GetTypedComponent(id, 4),
+                    typedArray->GetTypedComponent(id, 5),
+
+                    typedArray->GetTypedComponent(id, 6), typedArray->GetTypedComponent(id, 7),
+                    typedArray->GetTypedComponent(id, 8));
+            }
+        };
+        if (!vtkArrayDispatch::Dispatch::Execute(array, worker)) {
+            throw Exception("no matching type");
         }
 
         std::transform(
-            tensorVector3D.begin(), tensorVector3D.end(), tensorVector2D.begin(),
+            tensors3D.begin(), tensors3D.end(), std::back_inserter(data),
             [&](const dmat3& tensor) { return tensorutil::getProjectedTensor(tensor, axis); });
     } else {
-        auto tensorVector2DRawData = reinterpret_cast<double*>(tensorVector2D.data());
-        if (tensors->GetDataType() == VTK_DOUBLE) {
-            const double* raw = vtkDoubleArray::SafeDownCast(tensors)->GetPointer(0);
-            std::memcpy(tensorVector2DRawData, raw, 4 * sizeof(double) * tensorVector2D.size());
-        } else if (tensors->GetDataType() == VTK_FLOAT) {
-            const float* raw = vtkFloatArray::SafeDownCast(tensors)->GetPointer(0);
-            for (size_t i{0}; i < tensorVector2D.size(); ++i) {
-                tensorVector2DRawData[i] = static_cast<double>(raw[i]);
-            }
+        throw Exception(IVW_CONTEXT_CUSTOM("VTKDataSetToTensorField2D::vtkToTensorField"),
+                        "unsupported number of components for tensor data ({}), expected 4 or 9",
+                        numComponents);
+    }
+
+    std::shared_ptr<TensorField2D> tensorField =
+        std::make_shared<TensorField2D>(dims2D, data, extent);
+    tensorField->setOffset(offset);
+    return tensorField;
+}
+
+}  // namespace detail
+
+VTKToTensorField2D::VTKToTensorField2D()
+    : Processor{}
+    , inport_{"vtkDataSetInport", "vtkDataSet",
+              "VTK dataset (VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID, VTK_IMAGE_DATA, "
+              "VTK_UNIFORM_GRID, VTK_STRUCTURED_POINTS)"_help}
+    , outport_{"tensorField2DOutport", "Resulting 2D Tensor field"_help}
+    , sourceTensors_{"tensors", "Tensors"} {
+
+    addPorts(inport_, outport_);
+
+    addProperties(sourceTensors_);
+}
+
+void VTKToTensorField2D::updateSources(vtkDataSet* data) {
+    std::vector<OptionPropertyOption<int>> opts;
+
+    if (data) {
+        auto arrays = data->GetPointData();
+        const auto nArrays = arrays->GetNumberOfArrays();
+        for (int i = 0; i < nArrays; ++i) {
+            auto array = arrays->GetAbstractArray(i);
+            opts.emplace_back(
+                util::stripIdentifier(array->GetName()),
+                fmt::format("{} ({}D {})", array->GetName(), array->GetNumberOfComponents(),
+                            array->GetDataTypeAsString()),
+                i);
         }
     }
 
-    tensorField2DOutport_.setData(
-        std::make_shared<TensorField2D>(size2_t{dimensions}, tensorVector2D));
+    sourceTensors_.replaceOptions(opts);
+}
+
+void VTKToTensorField2D::process() {
+    auto data = inport_.getData();
+    auto vtkData = vtkDataSet::SafeDownCast(data);
+
+    if (inport_.isChanged()) {
+        updateSources(vtkData);
+    }
+
+    if (sourceTensors_.size() == 0) {
+        outport_.detachData();
+        return;
+    }
+
+    if (int dot = vtkData->GetDataObjectType(); !util::contains(supportedObjectTypes, dot)) {
+        throw Exception(IVW_CONTEXT, "unsupported vtkDataSet {} ({})",
+                        vtkDataObjectTypes::GetClassNameFromTypeId(dot), dot);
+    }
+
+    if (inport_.isChanged() || sourceTensors_.isModified()) {
+        const ivec3 dims{*vtk::getDimensions(vtkData)};
+
+        if (glm::compMin(dims) > 1) {
+            throw Exception(IVW_CONTEXT, "VTK dataset is three dimensional {}, expected 2D input",
+                            dims);
+        }
+
+        tensorField_ = detail::vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
+    }
+
+    outport_.setData(tensorField_);
 }
 
 }  // namespace inviwo

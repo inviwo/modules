@@ -1,7 +1,6 @@
 #include "ivw_ttkmeshsubdivision.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -103,7 +102,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMeshSubdivision> {
+struct VTKTraits<ttkMeshSubdivision> {
+    static constexpr std::string_view uri = "ttk.ttkMeshSubdivision";
     static constexpr std::string_view className = "ttkMeshSubdivision";
     static constexpr std::string_view identifier = "ttkMeshSubdivision";
     static constexpr std::string_view displayName = "TTK MeshSubdivision";
@@ -140,8 +140,8 @@ fact with "Clean to Grid" under ParaView or vtkMergePoints for instance.)";
 };
 
 void registerttkMeshSubdivision(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMeshSubdivision>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMeshSubdivision>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

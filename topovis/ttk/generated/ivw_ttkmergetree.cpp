@@ -1,7 +1,6 @@
 #include "ivw_ttkmergetree.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -219,7 +218,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMergeTree> {
+struct VTKTraits<ttkMergeTree> {
+    static constexpr std::string_view uri = "ttk.ttkMergeTree";
     static constexpr std::string_view className = "ttkMergeTree";
     static constexpr std::string_view identifier = "ttkMergeTree";
     static constexpr std::string_view displayName = "TTK MergeTree";
@@ -286,8 +286,8 @@ Online examples:
 };
 
 void registerttkMergeTree(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMergeTree>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMergeTree>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

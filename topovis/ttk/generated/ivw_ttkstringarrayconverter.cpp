@@ -1,7 +1,6 @@
 #include "ivw_ttkstringarrayconverter.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -58,7 +57,8 @@ struct Wrapper0 : FieldSelection {
 
 }  // namespace
 template <>
-struct TTKTraits<ttkStringArrayConverter> {
+struct VTKTraits<ttkStringArrayConverter> {
+    static constexpr std::string_view uri = "ttk.ttkStringArrayConverter";
     static constexpr std::string_view className = "ttkStringArrayConverter";
     static constexpr std::string_view identifier = "ttkStringArrayConverter";
     static constexpr std::string_view displayName = "TTK StringArrayConverter";
@@ -76,8 +76,8 @@ to be stored in the output Field Data.)";
 };
 
 void registerttkStringArrayConverter(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkStringArrayConverter>>();
+    module->registerProcessor<VTKGenericProcessor<ttkStringArrayConverter>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

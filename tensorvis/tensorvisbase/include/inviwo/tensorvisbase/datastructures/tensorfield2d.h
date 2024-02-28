@@ -54,40 +54,40 @@ public:
 
     // Contructors with ready tensors
     TensorField2D(size2_t dimensions, const std::vector<dmat2>& data,
-                  const dvec2& extends = dvec2(1.0));
+                  const dvec2& extent = dvec2(1.0));
     TensorField2D(size_t x, size_t y, const std::vector<dmat2>& data,
-                  const dvec2& extends = dvec2(1.0));
+                  const dvec2& extent = dvec2(1.0));
     TensorField2D(size2_t dimensions, const std::vector<dmat2>& data,
                   const std::vector<double>& majorEigenvalues,
                   const std::vector<double>& minorEigenvalues,
                   const std::vector<dvec2>& majorEigenvectors,
-                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extends = dvec2(1.0));
+                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extent = dvec2(1.0));
     TensorField2D(size_t x, size_t y, const std::vector<dmat2>& data,
                   const std::vector<double>& majorEigenvalues,
                   const std::vector<double>& minorEigenvalues,
                   const std::vector<dvec2>& majorEigenvectors,
-                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extends = dvec2(1.0));
+                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extent = dvec2(1.0));
 
     // Constructors with raw data
     TensorField2D(size2_t dimensions, const std::vector<double>& data,
-                  const dvec2& extends = dvec2(1.0));
+                  const dvec2& extent = dvec2(1.0));
     TensorField2D(size_t x, size_t y, const std::vector<double>& data,
-                  const dvec2& extends = dvec2(1.0));
+                  const dvec2& extent = dvec2(1.0));
     TensorField2D(size2_t dimensions, const std::vector<double>& data,
                   const std::vector<double>& majorEigenvalues,
                   const std::vector<double>& minorEigenvalues,
                   const std::vector<dvec2>& majorEigenvectors,
-                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extends = dvec2(1.0));
+                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extent = dvec2(1.0));
     TensorField2D(size_t x, size_t y, const std::vector<double>& data,
                   const std::vector<double>& majorEigenvalues,
                   const std::vector<double>& minorEigenvalues,
                   const std::vector<dvec2>& majorEigenvectors,
-                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extends = dvec2(1.0));
+                  const std::vector<dvec2>& minorEigenvectors, const dvec2& extent = dvec2(1.0));
 
     // Destructors
     virtual ~TensorField2D() = default;
 
-    std::string getDataInfo() const;
+    Document getDataInfo() const;
     std::shared_ptr<Image> getImageRepresentation() const;
 
     dmat2& at(size2_t position);
@@ -103,8 +103,8 @@ public:
         return glm::tvec2<T>(dimensions_);
     }
     template <typename T = double>
-    glm::tvec2<T> getExtents() const {
-        return glm::tvec2<T>(extends_);
+    glm::tvec2<T> getExtent() const {
+        return glm::tvec2<T>(extent_);
     }
     template <typename T = size_t>
     const glm::tvec2<T> getBounds() const {
@@ -161,7 +161,7 @@ private:
     std::vector<dvec2> normalizedImagePositions_;
     std::vector<dvec2> coordinates_;
     size2_t dimensions_;
-    dvec2 extends_;
+    dvec2 extent_;
     dvec2 offset_;
     size_t size_;
     glm::u8 rank_;
@@ -176,10 +176,9 @@ struct DataTraits<TensorField2D> {
     static std::string dataName() { return "TensorField2D"; }
     static uvec3 colorCode() { return uvec3(10, 150, 135); }
     static Document info(const TensorField2D& data) {
-        std::ostringstream oss;
-        oss << data.getDataInfo();
         Document doc;
-        doc.append("p", oss.str());
+        doc.append("b", "TensorField2D", {{"style", "color:white;"}});
+        doc.append(data.getDataInfo());
         return doc;
     }
 };

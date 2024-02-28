@@ -32,27 +32,17 @@
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/vtk/ports/vtkdatasetport.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <modules/base/properties/basisproperty.h>
+
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
+#include <inviwo/vtk/ports/vtkinport.h>
+
+class vtkDataSet;
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VTKToTensorField2D, VTK To Tensor Field 2D}
- * ![](org.inviwo.VTKToTensorField2D.png?classIdentifier=org.inviwo.VTKToTensorField2D)
- *
- * Converts a VTK data set to a 2D tensor field.
- * This requires that one of the dimensions of the VTK data set is 1.
- * Additionally, the data type must be either float or double.
- * Lastly, unstructured grids are not supported.
- *
- *
- * ### Inports
- *   * __vtkDataSetInport__ VTK data set inport.
- *
- * ### Outports
- *   * __tensorField2DOutport__ Outputs a 2D tensor field.
- *
- */
+class TensorField2D;
 
 class IVW_MODULE_TENSORVISIO_API VTKToTensorField2D : public Processor {
 public:
@@ -65,8 +55,14 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    VTKDataSetInport vtkDataSetInport_;
-    TensorField2DOutport tensorField2DOutport_;
+    void updateSources(vtkDataSet* data);
+
+    vtk::VtkInport inport_;
+    TensorField2DOutport outport_;
+
+    OptionPropertyInt sourceTensors_;
+
+    std::shared_ptr<TensorField2D> tensorField_;
 };
 
 }  // namespace inviwo

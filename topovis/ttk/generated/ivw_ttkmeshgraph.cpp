@@ -1,7 +1,6 @@
 #include "ivw_ttkmeshgraph.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -167,7 +166,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkMeshGraph> {
+struct VTKTraits<ttkMeshGraph> {
+    static constexpr std::string_view uri = "ttk.ttkMeshGraph";
     static constexpr std::string_view className = "ttkMeshGraph";
     static constexpr std::string_view identifier = "ttkMeshGraph";
     static constexpr std::string_view displayName = "TTK MeshGraph";
@@ -193,8 +193,8 @@ Online examples:
 };
 
 void registerttkMeshGraph(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkMeshGraph>>();
+    module->registerProcessor<VTKGenericProcessor<ttkMeshGraph>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkidentifybyscalarfield.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -136,7 +135,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkIdentifyByScalarField> {
+struct VTKTraits<ttkIdentifyByScalarField> {
+    static constexpr std::string_view uri = "ttk.ttkIdentifyByScalarField";
     static constexpr std::string_view className = "ttkIdentifyByScalarField";
     static constexpr std::string_view identifier = "ttkIdentifyByScalarField";
     static constexpr std::string_view displayName = "TTK IdentifyByScalarField";
@@ -156,8 +156,8 @@ struct TTKTraits<ttkIdentifyByScalarField> {
 };
 
 void registerttkIdentifyByScalarField(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkIdentifyByScalarField>>();
+    module->registerProcessor<VTKGenericProcessor<ttkIdentifyByScalarField>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

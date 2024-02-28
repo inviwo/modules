@@ -1,7 +1,6 @@
 #include "ivw_ttkintegrallines.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -220,7 +219,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkIntegralLines> {
+struct VTKTraits<ttkIntegralLines> {
+    static constexpr std::string_view uri = "ttk.ttkIntegralLines";
     static constexpr std::string_view className = "ttkIntegralLines";
     static constexpr std::string_view identifier = "ttkIntegralLines";
     static constexpr std::string_view displayName = "TTK IntegralLines";
@@ -256,8 +256,8 @@ sources if necessary to create such an identifier field).)";
 };
 
 void registerttkIntegralLines(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkIntegralLines>>();
+    module->registerProcessor<VTKGenericProcessor<ttkIntegralLines>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

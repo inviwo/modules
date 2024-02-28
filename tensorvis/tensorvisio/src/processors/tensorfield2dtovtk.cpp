@@ -66,7 +66,7 @@ void TensorField2DToVTK::process() {
     const auto dimensions = ivec3{tensorField->getDimensions<int>(), 1};
     const auto& tensors = tensorField->tensors();
 
-    auto structuredGrid = vtkSmartPointer<vtkStructuredGrid>::New();
+    structuredGrid_ = vtkSmartPointer<vtkStructuredGrid>::New();
     auto points = vtkSmartPointer<vtkPoints>::New();
 
     for (int y{0}; y < dimensions[1]; ++y) {
@@ -75,10 +75,10 @@ void TensorField2DToVTK::process() {
         }
     }
 
-    structuredGrid->SetDimensions(glm::value_ptr(dimensions));
-    structuredGrid->SetPoints(points);
+    structuredGrid_->SetDimensions(glm::value_ptr(dimensions));
+    structuredGrid_->SetPoints(points);
 
-    auto pointData = structuredGrid->GetPointData();
+    auto pointData = structuredGrid_->GetPointData();
 
     auto tensorArray = vtkSmartPointer<vtkDoubleArray>::New();
     tensorArray->SetNumberOfComponents(4);
@@ -94,7 +94,7 @@ void TensorField2DToVTK::process() {
 
     pointData->SetTensors(tensorArray);
 
-    vtkDataSetOutport_.setData(std::make_shared<VTKDataSet>(structuredGrid));
+    vtkDataSetOutport_.setData(structuredGrid_);
 }
 
 }  // namespace inviwo

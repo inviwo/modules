@@ -1,7 +1,6 @@
 #include "ivw_ttkpersistencecurve.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -90,7 +89,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPersistenceCurve> {
+struct VTKTraits<ttkPersistenceCurve> {
+    static constexpr std::string_view uri = "ttk.ttkPersistenceCurve";
     static constexpr std::string_view className = "ttkPersistenceCurve";
     static constexpr std::string_view identifier = "ttkPersistenceCurve";
     static constexpr std::string_view displayName = "TTK PersistenceCurve";
@@ -136,8 +136,8 @@ Online examples:
 };
 
 void registerttkPersistenceCurve(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPersistenceCurve>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPersistenceCurve>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

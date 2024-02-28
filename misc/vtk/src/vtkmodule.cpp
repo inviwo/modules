@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2014-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,37 +29,68 @@
 
 #include <inviwo/vtk/vtkmodule.h>
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <vtkVersion.h>
-#include <warn/pop>
-
-#include <inviwo/vtk/datavisualizer/vtktovolumevisualizer.h>
-
-#include <inviwo/vtk/ports/vtkdatasetport.h>
-#include <inviwo/vtk/processors/vtkdatasetinformation.h>
-#include <inviwo/vtk/processors/vtkreader.h>
+#include <inviwo/vtk/ports/vtkinport.h>
+#include <inviwo/vtk/ports/vtkoutport.h>
+#include <inviwo/vtk/processors/imagetovtk.h>
+#include <inviwo/vtk/processors/layertovtk.h>
+#include <inviwo/vtk/processors/volumetovtk.h>
+#include <inviwo/vtk/processors/vtkdatasettovtkimagedata.h>
+#include <inviwo/vtk/processors/vtksource.h>
+#include <inviwo/vtk/processors/vtktodataframe.h>
+#include <inviwo/vtk/processors/vtktoimage.h>
+#include <inviwo/vtk/processors/vtktolayer.h>
+#include <inviwo/vtk/processors/vtktomesh.h>
+#include <inviwo/vtk/processors/vtktotetramesh.h>
 #include <inviwo/vtk/processors/vtktovolume.h>
-#include <inviwo/vtk/processors/vtkunstructuredgridtorectilineargrid.h>
-#include <inviwo/vtk/processors/vtkwriter.h>
+
+#include <registerfilters.h>
+
+#include <vtkLogger.h>
+#include <fmt/core.h>
 
 namespace inviwo {
 
-VTKModule::VTKModule(InviwoApplication* app)
-    : InviwoModule(app, "VTK"), vtkoutput_{std::make_unique<VtkOutputLogger>()} {
+void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
 
-    LogInfo("VTK Version: " << vtkVersion::GetVTKVersion());
+    auto level = [&]() {
+        if (message.verbosity <= vtkLogger::VERBOSITY_ERROR) {
+            return LogLevel::Error;
+        } else if (message.verbosity <= vtkLogger::VERBOSITY_WARNING) {
+            return LogLevel::Warn;
+        } else {
+            return LogLevel::Info;
+        }
+    }();
 
-    registerProcessor<VTKDataSetInformation>();
-    registerProcessor<VTKReader>();
-    registerProcessor<VTKtoVolume>();
-    registerProcessor<VTKUnstructuredGridToRectilinearGrid>();
-    registerProcessor<VTKWriter>();
+    LogCentral::getPtr()->log("VTK", level, LogAudience::Developer, message.filename, "",
+                              message.line, fmt::format("{}{}", message.prefix, message.message));
+}
 
-    registerPort<VTKDataSetInport>();
-    registerPort<VTKDataSetOutport>();
+VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK") {
+    // Add a directory to the search path of the Shadermanager
+    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    registerDataVisualizer(std::make_unique<VTKToVolumeVisualizer>(app));
+    // Register objects that can be shared with the rest of inviwo here:
+
+    // see https://vtk.org/doc/nightly/html/classvtkLogger.html
+    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr, vtkLogger::VERBOSITY_ERROR);
+    // vtkObject::GlobalWarningDisplayOn();
+    vtkObject::GlobalWarningDisplayOff();
+
+    // Processors
+    registerProcessor<ImageToVTK>();
+    registerProcessor<LayerToVTK>();
+    registerProcessor<VolumeToVTK>();
+    registerProcessor<VTKToVolume>();
+    registerProcessor<VTKDowncastData>();
+    registerProcessor<VTKToDataFrame>();
+    registerProcessor<VTKToImage>();
+    registerProcessor<VTKToLayer>();
+    registerProcessor<VTKToMesh>();
+    registerProcessor<VTKToTetraMesh>();
+    registerProcessor<vtk::VTKSource>();
+
+    vtkwrapper::registerVTKFilters(this);
 }
 
 }  // namespace inviwo

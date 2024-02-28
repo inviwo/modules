@@ -1,7 +1,6 @@
 #include "ivw_ttkcontinuousscatterplot.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -195,7 +194,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkContinuousScatterPlot> {
+struct VTKTraits<ttkContinuousScatterPlot> {
+    static constexpr std::string_view uri = "ttk.ttkContinuousScatterPlot";
     static constexpr std::string_view className = "ttkContinuousScatterPlot";
     static constexpr std::string_view identifier = "ttkContinuousScatterPlot";
     static constexpr std::string_view displayName = "TTK ContinuousScatterPlot";
@@ -233,8 +233,8 @@ Online examples:
 };
 
 void registerttkContinuousScatterPlot(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkContinuousScatterPlot>>();
+    module->registerProcessor<VTKGenericProcessor<ttkContinuousScatterPlot>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

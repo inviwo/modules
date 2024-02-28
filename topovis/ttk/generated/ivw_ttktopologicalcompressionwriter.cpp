@@ -1,7 +1,6 @@
 #include "ivw_ttktopologicalcompressionwriter.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -101,7 +100,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTopologicalCompressionWriter> {
+struct VTKTraits<ttkTopologicalCompressionWriter> {
+    static constexpr std::string_view uri = "ttk.ttkTopologicalCompressionWriter";
     static constexpr std::string_view className = "ttkTopologicalCompressionWriter";
     static constexpr std::string_view identifier = "ttkTopologicalCompressionWriter";
     static constexpr std::string_view displayName = "TTK TopologicalCompressionWriter";
@@ -127,8 +127,8 @@ Online examples:
 };
 
 void registerttkTopologicalCompressionWriter(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTopologicalCompressionWriter>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTopologicalCompressionWriter>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttktriangulationrequest.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -140,7 +139,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkTriangulationRequest> {
+struct VTKTraits<ttkTriangulationRequest> {
+    static constexpr std::string_view uri = "ttk.ttkTriangulationRequest";
     static constexpr std::string_view className = "ttkTriangulationRequest";
     static constexpr std::string_view identifier = "ttkTriangulationRequest";
     static constexpr std::string_view displayName = "TTK TriangulationRequest";
@@ -162,8 +162,8 @@ struct TTKTraits<ttkTriangulationRequest> {
 };
 
 void registerttkTriangulationRequest(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkTriangulationRequest>>();
+    module->registerProcessor<VTKGenericProcessor<ttkTriangulationRequest>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

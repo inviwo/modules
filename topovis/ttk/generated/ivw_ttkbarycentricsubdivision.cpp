@@ -1,7 +1,6 @@
 #include "ivw_ttkbarycentricsubdivision.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -103,7 +102,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkBarycentricSubdivision> {
+struct VTKTraits<ttkBarycentricSubdivision> {
+    static constexpr std::string_view uri = "ttk.ttkBarycentricSubdivision";
     static constexpr std::string_view className = "ttkBarycentricSubdivision";
     static constexpr std::string_view identifier = "ttkBarycentricSubdivision";
     static constexpr std::string_view displayName = "TTK BarycentricSubdivision";
@@ -130,8 +130,8 @@ on the new triangles.)";
 };
 
 void registerttkBarycentricSubdivision(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkBarycentricSubdivision>>();
+    module->registerProcessor<VTKGenericProcessor<ttkBarycentricSubdivision>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

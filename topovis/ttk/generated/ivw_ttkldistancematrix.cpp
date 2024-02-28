@@ -1,7 +1,6 @@
 #include "ivw_ttkldistancematrix.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -130,7 +129,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkLDistanceMatrix> {
+struct VTKTraits<ttkLDistanceMatrix> {
+    static constexpr std::string_view uri = "ttk.ttkLDistanceMatrix";
     static constexpr std::string_view className = "ttkLDistanceMatrix";
     static constexpr std::string_view identifier = "ttkLDistanceMatrix";
     static constexpr std::string_view displayName = "TTK LDistanceMatrix";
@@ -153,8 +153,8 @@ Online examples:
 };
 
 void registerttkLDistanceMatrix(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkLDistanceMatrix>>();
+    module->registerProcessor<VTKGenericProcessor<ttkLDistanceMatrix>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

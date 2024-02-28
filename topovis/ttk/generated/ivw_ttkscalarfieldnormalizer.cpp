@@ -1,7 +1,6 @@
 #include "ivw_ttkscalarfieldnormalizer.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -118,7 +117,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkScalarFieldNormalizer> {
+struct VTKTraits<ttkScalarFieldNormalizer> {
+    static constexpr std::string_view uri = "ttk.ttkScalarFieldNormalizer";
     static constexpr std::string_view className = "ttkScalarFieldNormalizer";
     static constexpr std::string_view identifier = "ttkScalarFieldNormalizer";
     static constexpr std::string_view displayName = "TTK ScalarFieldNormalizer";
@@ -146,8 +146,8 @@ Online examples:
 };
 
 void registerttkScalarFieldNormalizer(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkScalarFieldNormalizer>>();
+    module->registerProcessor<VTKGenericProcessor<ttkScalarFieldNormalizer>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

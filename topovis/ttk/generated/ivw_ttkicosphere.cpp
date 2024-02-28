@@ -1,7 +1,6 @@
 #include "ivw_ttkicosphere.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -141,7 +140,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkIcosphere> {
+struct VTKTraits<ttkIcosphere> {
+    static constexpr std::string_view uri = "ttk.ttkIcosphere";
     static constexpr std::string_view className = "ttkIcosphere";
     static constexpr std::string_view identifier = "ttkIcosphere";
     static constexpr std::string_view displayName = "TTK Icosphere";
@@ -162,8 +162,8 @@ struct TTKTraits<ttkIcosphere> {
 };
 
 void registerttkIcosphere(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkIcosphere>>();
+    module->registerProcessor<VTKGenericProcessor<ttkIcosphere>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

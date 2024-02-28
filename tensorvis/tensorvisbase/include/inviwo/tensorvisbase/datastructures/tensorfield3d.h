@@ -123,7 +123,7 @@ public:
 
     virtual const Axis* getAxis(size_t) const override { return nullptr; }
 
-    std::string getDataInfo() const;
+    Document getDataInfo() const;
     std::pair<std::shared_ptr<Volume>, std::shared_ptr<Volume>> getVolumeRepresentation() const;
 
     /*
@@ -185,12 +185,12 @@ public:
     size3_t getDimensions() const final { return dimensions_; }
 
     template <typename T = double>
-    glm::tvec3<T> getExtents() const {
+    glm::tvec3<T> getExtent() const {
         const auto basis = getBasis();
         return glm::tvec3<T>(glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2]));
     }
 
-    void setExtents(const vec3& extents);
+    void setExtent(const vec3& extent);
 
     template <typename T = size_t>
     glm::tvec3<T> getBounds() const {
@@ -201,7 +201,7 @@ public:
     glm::tvec3<T> getSpacing() const {
         auto bounds = getBounds<T>();
 
-        auto extent = getExtents<T>();
+        auto extent = getExtent<T>();
 
         return extent / bounds;
     }
@@ -361,10 +361,9 @@ struct DataTraits<TensorField3D> {
     static std::string dataName() { return "TensorField3D"; }
     static uvec3 colorCode() { return uvec3(10, 150, 135); }
     static Document info(const TensorField3D& data) {
-        std::ostringstream oss;
-        oss << data.getDataInfo();
         Document doc;
-        doc.append("p", oss.str());
+        doc.append("b", "TensorField3D", {{"style", "color:white;"}});
+        doc.append(data.getDataInfo());
         return doc;
     }
 };

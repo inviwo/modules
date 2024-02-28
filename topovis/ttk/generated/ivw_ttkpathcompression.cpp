@@ -1,7 +1,6 @@
 #include "ivw_ttkpathcompression.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -191,7 +190,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPathCompression> {
+struct VTKTraits<ttkPathCompression> {
+    static constexpr std::string_view uri = "ttk.ttkPathCompression";
     static constexpr std::string_view className = "ttkPathCompression";
     static constexpr std::string_view identifier = "ttkPathCompression";
     static constexpr std::string_view displayName = "TTK PathCompression";
@@ -228,8 +228,8 @@ Online examples:
 };
 
 void registerttkPathCompression(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPathCompression>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPathCompression>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,7 +1,6 @@
 #include "ivw_ttkpersistencediagramapproximation.h"
-
 #include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/ttk/processors/ttkgenericprocessor.h>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -20,7 +19,7 @@
 #include <warn/pop>
 
 namespace inviwo {
-namespace ttkwrapper {
+namespace vtkwrapper {
 namespace {
 
 #include <warn/push>
@@ -182,7 +181,8 @@ without changing parameters.)"_help};
 
 }  // namespace
 template <>
-struct TTKTraits<ttkPersistenceDiagramApproximation> {
+struct VTKTraits<ttkPersistenceDiagramApproximation> {
+    static constexpr std::string_view uri = "ttk.ttkPersistenceDiagramApproximation";
     static constexpr std::string_view className = "ttkPersistenceDiagramApproximation";
     static constexpr std::string_view identifier = "ttkPersistenceDiagramApproximation";
     static constexpr std::string_view displayName = "TTK PersistenceDiagramApproximation";
@@ -231,8 +231,8 @@ Online examples:)";
 };
 
 void registerttkPersistenceDiagramApproximation(InviwoModule* module) {
-    module->registerProcessor<TTKGenericProcessor<ttkPersistenceDiagramApproximation>>();
+    module->registerProcessor<VTKGenericProcessor<ttkPersistenceDiagramApproximation>>();
 }
 
-}  // namespace ttkwrapper
+}  // namespace vtkwrapper
 }  // namespace inviwo
