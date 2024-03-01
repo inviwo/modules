@@ -31,6 +31,7 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
@@ -59,7 +60,7 @@ public:
 
 private:
     TensorField2DInport inport_;
-    ImageInport noiseTexture_;
+    LayerInport noiseTexture_;
     ImageInport imageInport_;
     ImageOutport outport_;
 

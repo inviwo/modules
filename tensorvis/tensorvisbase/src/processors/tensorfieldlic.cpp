@@ -50,7 +50,7 @@ const ProcessorInfo TensorFieldLIC::getProcessorInfo() const { return processorI
 TensorFieldLIC::TensorFieldLIC()
     : Processor()
     , inport_("inport")
-    , noiseTexture_("noiseTexture", true)
+    , noiseTexture_("noiseTexture")
     , imageInport_("imageInport")
     , outport_("outport")
     , samples_("samples", "Number of steps", 20, 3, 100)
@@ -127,7 +127,7 @@ void TensorFieldLIC::process() {
     tensorutil::bindTensorFieldAsColorTexture(tensorFieldTexture, inport_.getData(), shader_,
                                               units);
     // add noise texture to texture unit container
-    utilgl::bindAndSetUniforms(shader_, units, noiseTexture_, ImageType::ColorOnly);
+    utilgl::bindAndSetUniforms(shader_, units, noiseTexture_);
 
     bool hasInputImage = imageInport_.isConnected();
 

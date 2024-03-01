@@ -34,7 +34,7 @@
 #include <inviwo/core/network/processornetwork.h>
 
 #include <modules/opengl/canvasprocessorgl.h>
-#include <modules/base/processors/noiseprocessor.h>
+#include <modules/base/processors/noisegenerator2d.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldslice.h>
 #include <inviwo/tensorvisbase/processors/tensorfieldlic.h>
@@ -76,7 +76,7 @@ std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outp
                                                                    ProcessorNetwork* net) const {
 
     auto slicer = net->addProcessor(util::makeProcessor<TensorFieldSlice>(GP{0, 3}));
-    auto noiser = net->addProcessor(util::makeProcessor<NoiseProcessor>(GP{1, 6}));
+    auto noiser = net->addProcessor(util::makeProcessor<NoiseGenerator2D>(GP{1, 6}));
     auto hlicer = net->addProcessor(util::makeProcessor<TensorFieldLIC>(GP{0, 9}));
     auto canvas = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 12}));
 
