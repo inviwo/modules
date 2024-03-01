@@ -170,7 +170,7 @@ void VolumeToVTK::process() {
     data_->AllocateScalars(vtkType, static_cast<int>(nComp));
     void* dst = data_->GetScalarPointer();
     const void* src = volume->getRepresentation<VolumeRAM>()->getData();
-    std::memcpy(dst, src, glm::compMul(dim) * volume->getDataFormat()->getSize());
+    std::memcpy(dst, src, glm::compMul(dim) * volume->getDataFormat()->getSizeInBytes());
 
     vtkInformation* info = data_->GetPointData()->GetScalars()->GetInformation();
     info->Set(vtkDataArray::UNITS_LABEL(), fmt::format("{}{: [}", volume->dataMap_.valueAxis.name,
