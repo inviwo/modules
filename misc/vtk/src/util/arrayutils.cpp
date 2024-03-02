@@ -183,24 +183,24 @@ std::shared_ptr<Volume> vtkImageDataToVolume(vtkImageData* vtkImage, int arrayIn
         std::smatch m;
         auto label = std::string{info->Get(vtkDataArray::UNITS_LABEL())};
         if (std::regex_match(label, m, re)) {
-            volume->dataMap_.valueAxis.name = util::trim(m.str(1));
-            volume->dataMap_.valueAxis.unit = units::unit_from_string(m.str(2));
+            volume->dataMap.valueAxis.name = util::trim(m.str(1));
+            volume->dataMap.valueAxis.unit = units::unit_from_string(m.str(2));
         }
     }
-    if (volume->dataMap_.valueAxis.name.empty()) {
-        volume->dataMap_.valueAxis.name = array->GetName();
+    if (volume->dataMap.valueAxis.name.empty()) {
+        volume->dataMap.valueAxis.name = array->GetName();
     }
 
     if (info->Has(vtkDataArray::COMPONENT_RANGE())) {
         auto* range = info->Get(vtkDataArray::COMPONENT_RANGE());
-        volume->dataMap_.dataRange[0] = range[0];
-        volume->dataMap_.dataRange[1] = range[1];
-        volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+        volume->dataMap.dataRange[0] = range[0];
+        volume->dataMap.dataRange[1] = range[1];
+        volume->dataMap.valueRange = volume->dataMap.dataRange;
     } else {
         auto* range = array->GetRange();
-        volume->dataMap_.dataRange[0] = range[0];
-        volume->dataMap_.dataRange[1] = range[1];
-        volume->dataMap_.valueRange = volume->dataMap_.dataRange;
+        volume->dataMap.dataRange[0] = range[0];
+        volume->dataMap.dataRange[1] = range[1];
+        volume->dataMap.valueRange = volume->dataMap.dataRange;
     }
 
     return volume;

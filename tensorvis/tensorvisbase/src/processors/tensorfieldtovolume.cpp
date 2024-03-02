@@ -129,7 +129,7 @@ void TensorFieldToVolume::process() {
             });
 
     vol->setModelMatrix(tensorField->getBasisAndOffset());
-    vol->dataMap_ = map;
+    vol->dataMap = map;
     outport_.setData(vol);
 }
 

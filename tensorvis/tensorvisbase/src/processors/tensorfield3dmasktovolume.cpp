@@ -104,8 +104,8 @@ void TensorField3DMaskToVolume::process() {
     volume->setBasis(basis);
     volume->setOffset(vec3(0.f));
 
-    volume->dataMap_.dataRange = vec2(min, max);
-    volume->dataMap_.valueRange = vec2(min, max);
+    volume->dataMap.dataRange = vec2(min, max);
+    volume->dataMap.valueRange = vec2(min, max);
 
     outport_.setData(volume);
 }

@@ -42,8 +42,8 @@ void VolumeActualDataAndValueRange::process() {
         max = std::max(max, inVolumeData[i]);
     }
 
-    outVolume->dataMap_.dataRange = vec2(min, max);
-    outVolume->dataMap_.valueRange = vec2(min, max);
+    outVolume->dataMap.dataRange = vec2(min, max);
+    outVolume->dataMap.valueRange = vec2(min, max);
 
     outport_.setData(std::make_shared<Volume>(*outVolume));
 }

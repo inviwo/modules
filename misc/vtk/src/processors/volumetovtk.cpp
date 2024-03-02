@@ -173,12 +173,12 @@ void VolumeToVTK::process() {
     std::memcpy(dst, src, glm::compMul(dim) * volume->getDataFormat()->getSizeInBytes());
 
     vtkInformation* info = data_->GetPointData()->GetScalars()->GetInformation();
-    info->Set(vtkDataArray::UNITS_LABEL(), fmt::format("{}{: [}", volume->dataMap_.valueAxis.name,
-                                                       volume->dataMap_.valueAxis.unit));
+    info->Set(vtkDataArray::UNITS_LABEL(), fmt::format("{}{: [}", volume->dataMap.valueAxis.name,
+                                                       volume->dataMap.valueAxis.unit));
     std::array<double, 8> range;
     for (size_t i = 0; i < nComp; ++i) {
-        range[i * 2] = volume->dataMap_.dataRange[0];
-        range[i * 2 + 1] = volume->dataMap_.dataRange[1];
+        range[i * 2] = volume->dataMap.dataRange[0];
+        range[i * 2 + 1] = volume->dataMap.dataRange[1];
     }
     info->Set(vtkDataArray::COMPONENT_RANGE(), range.data(), static_cast<int>(nComp * 2));
 

@@ -178,8 +178,8 @@ void TensorField3DAnisotropy::process() {
         default:
             break;
     }
-    outputVolume->dataMap_.dataRange = vec2(min, max);
-    outputVolume->dataMap_.valueRange = vec2(min, max);
+    outputVolume->dataMap.dataRange = vec2(min, max);
+    outputVolume->dataMap.valueRange = vec2(min, max);
 
     const auto extent = tensorField->getExtent();
 

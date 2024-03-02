@@ -131,8 +131,8 @@ void FlowGUIFileReader::process() {
             basis[2][2] = extents.z;
             volume->setBasis(basis);
 
-            volume->dataMap_.valueRange = vec2(min, max);
-            volume->dataMap_.dataRange = vec2(min, max);
+            volume->dataMap.valueRange = vec2(min, max);
+            volume->dataMap.dataRange = vec2(min, max);
         }
 
         outport_.setData(volumes);
