@@ -69,7 +69,7 @@ namespace inviwo {
 //
 
 GdcmVolumeReader::GdcmVolumeReader()
-    : DataReaderType<std::vector<std::shared_ptr<Volume>>>()
+    : DataReaderType<VolumeSequence>()
     , file_(std::string())
     , format_{DataUInt8::get()}
     , dimension_{0, 0, 0} {
