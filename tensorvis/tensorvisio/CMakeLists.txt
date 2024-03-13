@@ -13,8 +13,8 @@ set(HEADER_FILES
     include/inviwo/tensorvisio/processors/tensorfield2dtovtk.h
     include/inviwo/tensorvisio/processors/tensorfield3dexport.h
     include/inviwo/tensorvisio/processors/tensorfield3dimport.h
-    include/inviwo/tensorvisio/processors/vtkdatasettotensorfield3d.h
     include/inviwo/tensorvisio/processors/vtktotensorfield2d.h
+    include/inviwo/tensorvisio/processors/vtktotensorfield3d.h
     include/inviwo/tensorvisio/tensorvisiomodule.h
     include/inviwo/tensorvisio/tensorvisiomoduledefine.h
 )
@@ -31,8 +31,8 @@ set(SOURCE_FILES
     src/processors/tensorfield2dtovtk.cpp
     src/processors/tensorfield3dexport.cpp
     src/processors/tensorfield3dimport.cpp
-    src/processors/vtkdatasettotensorfield3d.cpp
     src/processors/vtktotensorfield2d.cpp
+    src/processors/vtktotensorfield3d.cpp
     src/tensorvisiomodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
