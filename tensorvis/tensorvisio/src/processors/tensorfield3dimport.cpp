@@ -34,6 +34,8 @@
 #include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
 #include <unordered_map>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming
@@ -87,14 +89,13 @@ void TensorField3DImport::initializeResources() {
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
-        LogError("Couldn't open file");
-        return;
+        throw Exception(IVW_CONTEXT, "Could not open file {}", inFile_.get());
     }
 
     size_t version;
     size3_t dimensions;
-    auto extents = dvec3(1.0);
-    auto offset = dvec3(0.0);
+    dvec3 extents{1.0};
+    dvec3 offset{0.0};
     size_t rank;
     size_t dimensionality;
     glm::uint8 hasMetaData;
@@ -110,16 +111,14 @@ void TensorField3DImport::initializeResources() {
     inFile.read(&versionStr[0], size);
 
     if (versionStr != "TFBVersion:") {
-        LogError("No valid tfb file!");
-        return;
+        throw Exception(IVW_CONTEXT, "Not a valid tfb file: {}", inFile_.get());
     }
 
     inFile.read(reinterpret_cast<char*>(&version), sizeof(size_t));
 
     if (version < TFB_CURRENT_VERSION) {
-        LogError("Please update the tfb file.");
-        LogError("Current version is " << TFB_CURRENT_VERSION << ", file has " << version);
-        return;
+        throw Exception(IVW_CONTEXT, "Version mismatch. Expected version {}, found version {}.",
+                        TFB_CURRENT_VERSION, version);
     }
 
     inFile.read(reinterpret_cast<char*>(&dimensionality), sizeof(size_t));
@@ -127,8 +126,9 @@ void TensorField3DImport::initializeResources() {
     inFile.read(reinterpret_cast<char*>(&hasMetaData), sizeof(glm::uint8));
 
     if (dimensionality != 3) {
-        LogError("The loaded file is not a 3D tensor field. Try the 2D reader.");
-        return;
+        throw Exception(IVW_CONTEXT,
+                        "The file does not contain a 3D Tensor Field (detected {} dimensions).",
+                        dimensionality);
     }
 
     inFile.read(reinterpret_cast<char*>(&dimensions.x), sizeof(size_t));
@@ -295,15 +295,15 @@ void TensorField3DImport::initializeResources() {
     inFile.read(&str[0], size);
 
     if (str != "EOFreached") {
-        LogError("EOF not reached");
-        return;
+        throw Exception(IVW_CONTEXT, "EOF not reached");
     }
 
     inFile.close();
 
     if (data.size() != numValues) {
-        LogWarn("Dimensions do not match data size");
-        return;
+        throw Exception(IVW_CONTEXT,
+                        "Dimensions do not match data size. Expected {} values, found {}.",
+                        numValues, data.size());
     }
 
     dextents_ = extents;

@@ -125,7 +125,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& o
             os << "Frobenius Norm";
             break;
         case TensorFeature::HillYieldCriterion:
-            os << "HillYieldCriterion";
+            os << "Hill Yield Criterion";
             break;
         case TensorFeature::Unspecified:
             os << "Unspecified";
