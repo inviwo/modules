@@ -33,6 +33,10 @@
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/indexmapper.h>
+#include <inviwo/core/util/volumeramutils.h>
+#include <modules/base/algorithm/dataminmax.h>
+
+#include <glm/gtx/component_wise.hpp>
 
 namespace inviwo {
 
@@ -42,7 +46,8 @@ const ProcessorInfo TensorField3DAnisotropy::processorInfo_{
     "Tensor Field 3D Anisotropy",          // Display name
     "Tensor Visualization",                // Category
     CodeState::Experimental,               // Code state
-    Tags::None,                            // Tags
+    Tags::CPU | Tag{"Tensor"},             // Tags
+    R"(Computes the anisotropy of a 3D tensor field.)"_unindentHelp,
 };
 const ProcessorInfo TensorField3DAnisotropy::getProcessorInfo() const { return processorInfo_; }
 
@@ -59,9 +64,10 @@ TensorField3DAnisotropy::TensorField3DAnisotropy()
                    {"4", "|" + tensorutil::lamda1_str + "| - |" + tensorutil::lamda2_str + "|",
                     tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2}},
                   0)
-    , interpolationScheme_(
-          "interpolationScheme", "Interpolation scheme",
-          {{"nearest", "Nearest neighbour", GL_NEAREST}, {"linear", "Linear", GL_LINEAR}}, 1) {
+    , interpolationScheme_("interpolationScheme", "Interpolation scheme",
+                           {{"nearest", "Nearest neighbour", InterpolationType::Nearest},
+                            {"linear", "Linear", InterpolationType::Linear}},
+                           1) {
     addPort(tensorFieldInport_);
     addPort(volumeOutport_);
 
@@ -71,125 +77,94 @@ TensorField3DAnisotropy::TensorField3DAnisotropy()
 
 void TensorField3DAnisotropy::process() {
     auto tensorField = tensorFieldInport_.getData();
-    std::shared_ptr<Volume> outputVolume;
-    auto dimensions = tensorField->getDimensions();
-    std::function<void(const size3_t&)> func;
-    util::IndexMapper3D indexMapper(dimensions);
-    const auto& majorEigenValues = tensorField->majorEigenValues();
-    const auto& intermediateEigenValues = tensorField->middleEigenValues();
-    const auto& minorEigenValues = tensorField->minorEigenValues();
-    auto min = std::numeric_limits<double>::max();
-    auto max = std::numeric_limits<double>::lowest();
 
-    switch (anisotropy_.get()) {
-        case tensorutil::Anisotropy::abs_lamda1_minus_lamda2:
-            outputVolume = std::make_shared<Volume>(dimensions, DataFloat32::get());
-            {
-                auto data = static_cast<glm::f32*>(
-                    outputVolume->getEditableRepresentation<VolumeRAM>()->getData());
+    auto volumeRam = [&]() -> std::shared_ptr<VolumeRAM> {
+        const size3_t dims{tensorField->getDimensions()};
 
-                tensorutil::forEachVoxelParallel(
-                    *(tensorField.get()), [&](const size3_t& pos) -> void {
-                        const auto index = indexMapper(pos);
-                        const auto val =
-                            glm::abs(majorEigenValues[index] - intermediateEigenValues[index]);
-                        max = std::max(max, val);
-                        min = std::min(min, val);
-                        data[index] = static_cast<glm::f32>(val);
-                    });
+        util::IndexMapper3D indexMapper(dims);
+        const auto& majorEigenValues = tensorField->majorEigenValues();
+        const auto& intermediateEigenValues = tensorField->middleEigenValues();
+        const auto& minorEigenValues = tensorField->minorEigenValues();
+
+        switch (anisotropy_.get()) {
+            case tensorutil::Anisotropy::abs_lamda1_minus_lamda2: {
+                auto ram = std::make_shared<VolumeRAMPrecision<float>>(dims);
+                auto data = ram->getView();
+                util::forEachVoxelParallel(dims, [&](const size3_t& pos) -> void {
+                    const auto index = indexMapper(pos);
+                    const auto val =
+                        glm::abs(majorEigenValues[index] - intermediateEigenValues[index]);
+
+                    data[index] = static_cast<float>(val);
+                });
+                return ram;
             }
-            break;
-        case tensorutil::Anisotropy::abs_lamda1_minus_lamda3:
-            outputVolume = std::make_shared<Volume>(dimensions, DataFloat32::get());
-            {
-                auto data = static_cast<glm::f32*>(
-                    outputVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            case tensorutil::Anisotropy::abs_lamda1_minus_lamda3: {
+                auto ram = std::make_shared<VolumeRAMPrecision<float>>(dims);
+                auto data = ram->getView();
+                util::forEachVoxelParallel(dims, [&](const size3_t& pos) -> void {
+                    const auto index = indexMapper(pos);
+                    const auto val = glm::abs(majorEigenValues[index] - minorEigenValues[index]);
 
-                tensorutil::forEachVoxelParallel(
-                    *(tensorField.get()), [&](const size3_t& pos) -> void {
-                        const auto index = indexMapper(pos);
-                        const auto val =
-                            glm::abs(majorEigenValues[index] - minorEigenValues[index]);
-
-                        max = std::max(max, val);
-                        min = std::min(min, val);
-                        data[index] = static_cast<glm::f32>(val);
-                    });
+                    data[index] = static_cast<float>(val);
+                });
+                return ram;
             }
-            break;
-        case tensorutil::Anisotropy::barycentric:
-            outputVolume = std::make_shared<Volume>(dimensions, DataVec3Float32::get());
-            {
-                auto data = static_cast<glm::vec3*>(
-                    outputVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            case tensorutil::Anisotropy::barycentric: {
+                auto ram = std::make_shared<VolumeRAMPrecision<vec3>>(dims);
+                auto data = ram->getView();
+                util::forEachVoxelParallel(dims, [&](const size3_t& pos) -> void {
+                    const auto index = indexMapper(pos);
+                    std::array<double, 3> eigenValues{majorEigenValues[index],
+                                                      intermediateEigenValues[index],
+                                                      minorEigenValues[index]};
 
-                tensorutil::forEachVoxelParallel(
-                    *(tensorField.get()), [&](const size3_t& pos) -> void {
-                        const auto index = indexMapper(pos);
-                        auto eigenValues = std::array<double, 3>{majorEigenValues[index],
-                                                                 intermediateEigenValues[index],
-                                                                 minorEigenValues[index]};
+                    std::transform(eigenValues.begin(), eigenValues.end(), eigenValues.begin(),
+                                   [](const double& val) { return glm::abs(val); });
+                    std::sort(eigenValues.begin(), eigenValues.end(),
+                              [](const double& valA, const double& valB) { return valA > valB; });
 
-                        std::transform(eigenValues.begin(), eigenValues.end(), eigenValues.begin(),
-                                       [](const double& val) { return glm::abs(val); });
+                    auto denominator = eigenValues[0] + eigenValues[1] + eigenValues[2];
+                    denominator = std::max(denominator, std::numeric_limits<double>::epsilon());
 
-                        std::sort(
-                            eigenValues.begin(), eigenValues.end(),
-                            [](const double& valA, const double& valB) { return valA > valB; });
-
-                        auto denominator = eigenValues[0] + eigenValues[1] + eigenValues[2];
-                        if (denominator < std::numeric_limits<double>::epsilon())
-                            denominator = std::numeric_limits<double>::epsilon();
-                        const auto c_l_ = (eigenValues[0] - eigenValues[1]) / denominator;
-                        const auto c_p_ = (2. * (eigenValues[1] - eigenValues[2])) / denominator;
-                        const auto c_s_ = (3. * eigenValues[2]) / denominator;
-
-                        const auto barycentricCoordinates = dvec3(c_l_, c_p_, c_s_);
-
-                        max = std::max(max, barycentricCoordinates.x);
-                        max = std::max(max, barycentricCoordinates.y);
-                        max = std::max(max, barycentricCoordinates.z);
-                        min = std::min(min, barycentricCoordinates.x);
-                        min = std::min(min, barycentricCoordinates.y);
-                        min = std::min(min, barycentricCoordinates.z);
-
-                        data[index] = vec3(barycentricCoordinates);
-                    });
+                    data[index] =
+                        vec3(eigenValues[0] - eigenValues[1],
+                             2. * (eigenValues[1] - eigenValues[2]), 3. * eigenValues[2]) /
+                        static_cast<float>(denominator);
+                });
+                break;
             }
-            break;
-        case tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2:
-            outputVolume = std::make_shared<Volume>(dimensions, DataFloat32::get());
-            {
-                auto data = static_cast<glm::f32*>(
-                    outputVolume->getEditableRepresentation<VolumeRAM>()->getData());
+            case tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2: {
+                auto ram = std::make_shared<VolumeRAMPrecision<float>>(dims);
+                auto data = ram->getView();
+                util::forEachVoxelParallel(dims, [&](const size3_t& pos) -> void {
+                    const auto index = indexMapper(pos);
+                    const auto val =
+                        glm::abs(majorEigenValues[index]) - glm::abs(minorEigenValues[index]);
 
-                tensorutil::forEachVoxelParallel(
-                    *(tensorField.get()), [&](const size3_t& pos) -> void {
-                        const auto index = indexMapper(pos);
-                        const auto val =
-                            glm::abs(majorEigenValues[index]) - glm::abs(minorEigenValues[index]);
-
-                        max = std::max(max, val);
-                        min = std::min(min, val);
-                        data[index] = static_cast<glm::f32>(val);
-                    });
+                    data[index] = static_cast<float>(val);
+                });
+                return ram;
             }
-            break;
-        default:
-            break;
-    }
-    outputVolume->dataMap.dataRange = vec2(min, max);
-    outputVolume->dataMap.valueRange = vec2(min, max);
+            default:
+                throw Exception(IVW_CONTEXT, "Unsupported tensorutil::Anisotropy");
+        }
+        return nullptr;
+    }();
 
-    const auto extent = tensorField->getExtent();
+    auto [min, max] = util::volumeMinMax(volumeRam.get(), IgnoreSpecialValues::No);
+    dvec2 range{glm::compMin(min), glm::compMax(max)};
 
-    outputVolume->setBasis(
-        mat3(vec3(extent.x, 0., 0.), vec3(0., extent.y, 0.), vec3(0., 0., extent.z)));
+    std::shared_ptr<Volume> volume = std::make_shared<Volume>(volumeRam);
+    volume->dataMap.dataRange = range;
+    volume->dataMap.valueRange = range;
 
-    outputVolume->setOffset(tensorField->getOffset());
-    outputVolume->setInterpolation(InterpolationType::Nearest);
+    volume->setModelMatrix(tensorField->getModelMatrix());
+    volume->setWorldMatrix(tensorField->getWorldMatrix());
+    volume->setInterpolation(interpolationScheme_);
+    volume->setSwizzleMask(swizzlemasks::defaultData(volumeRam->getDataFormat()->getComponents()));
 
-    volumeOutport_.setData(outputVolume);
+    volumeOutport_.setData(volume);
 }
 
 }  // namespace inviwo

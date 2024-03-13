@@ -38,11 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DAnisotropy, Tensor Field 3D Anisotropy}
- * ![](org.inviwo.TensorField3DAnisotropy.png?classIdentifier=org.inviwo.TensorField3DAnisotropy)
- * Explanation of how to use the processor.
- */
-
 class IVW_MODULE_TENSORVISBASE_API TensorField3DAnisotropy : public Processor {
 public:
     TensorField3DAnisotropy();
@@ -59,7 +54,7 @@ private:
 
     OptionProperty<tensorutil::Anisotropy> anisotropy_;
 
-    OptionProperty<GLint> interpolationScheme_;
+    OptionProperty<InterpolationType> interpolationScheme_;
 };
 
 }  // namespace inviwo
