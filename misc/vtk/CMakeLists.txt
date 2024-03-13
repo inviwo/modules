@@ -80,7 +80,6 @@ target_sources(inviwo-module-vtk
 )
 
 find_package(freetype CONFIG REQUIRED)
-add_library(Freetype::Freetype ALIAS freetype)
 
 find_package(utf8cpp CONFIG REQUIRED)
 
