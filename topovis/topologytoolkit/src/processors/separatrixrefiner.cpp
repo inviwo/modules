@@ -149,8 +149,7 @@ std::shared_ptr<Mesh> refine(const topology::MorseSmaleComplexData& msc,
                              const TopologyColorsProperty& colorProp,
                              const TopologyFilterProperty& filterProp, float sphereRadius,
                              float lineThickness, bool fillPBC,
-                             const SpatialSampler<dvec3>& sampler,
-                             SpringSettings springSettings) {
+                             const SpatialSampler<dvec3>& sampler, SpringSettings springSettings) {
     using Sys = SeparatrixSpringSystem<3, float, std::integer_sequence<bool, PBC, PBC, PBC>>;
 
     const auto& cp = msc.criticalPoints;
