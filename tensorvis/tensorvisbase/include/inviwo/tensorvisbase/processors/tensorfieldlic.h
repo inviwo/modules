@@ -31,20 +31,22 @@
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
 #include <modules/opengl/shader/shader.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/ordinalproperty.h>
+#include <modules/opengl/buffer/framebufferobject.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldLIC, TensorFieldLIC}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldLIC)
- * Explanation of how to use the processor.
- */
+class Layer;
 
 class IVW_MODULE_TENSORVISBASE_API TensorFieldLIC : public Processor {
 public:
@@ -58,18 +60,30 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    enum class Sizing { SameAsInput, ScalingFactor, Custom };
+
     TensorField2DInport inport_;
-    ImageInport noiseTexture_;
-    ImageInport imageInport_;
-    ImageOutport outport_;
+    LayerInport noiseTexture_;
+    LayerOutport outport_;
+
+    CompositeProperty dimensions_;
+    OptionProperty<Sizing> sizing_;
+    IntSize2Property inputDimensions_;
+    IntSize2Property outputDimensions_;
+    FloatProperty scaling_;
 
     IntProperty samples_;
     FloatProperty stepLength_;
     BoolProperty normalizeVectors_;
-    BoolProperty intensityMapping_;
     BoolProperty useRK4_;
     BoolProperty majorMinor_;
     FloatVec4Property backgroundColor_;
+
+    BoolCompositeProperty postProcessing_;
+    BoolProperty intensityMapping_;
+    FloatProperty brightness_;
+    FloatProperty contrast_;
+    FloatProperty gamma_;
 
     Shader shader_;
     Image tf_texture_;
@@ -79,6 +93,9 @@ private:
     float eigenValueRange_;
 
     void updateEigenValues();
+
+    LayerConfig config_;
+    std::vector<std::pair<FrameBufferObject, std::shared_ptr<Layer>>> cache_;
 };
 
 }  // namespace inviwo

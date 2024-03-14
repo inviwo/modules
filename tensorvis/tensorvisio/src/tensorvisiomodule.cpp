@@ -36,9 +36,12 @@
 #include <inviwo/tensorvisio/processors/tensorfield2dtovtk.h>
 #include <inviwo/tensorvisio/processors/tensorfield3dexport.h>
 #include <inviwo/tensorvisio/processors/tensorfield3dimport.h>
-#include <inviwo/tensorvisio/processors/vtkdatasettotensorfield3d.h>
 #include <inviwo/tensorvisio/processors/flowguifilereader.h>
 #include <inviwo/tensorvisio/processors/vtktotensorfield2d.h>
+#include <inviwo/tensorvisio/processors/vtktotensorfield3d.h>
+
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 
 namespace inviwo {
 
@@ -51,11 +54,33 @@ TensorVisIOModule::TensorVisIOModule(InviwoApplication* app) : InviwoModule{app,
     registerProcessor<TensorField2DToVTK>();
     registerProcessor<TensorField3DExport>();
     registerProcessor<TensorField3DImport>();
-    registerProcessor<VTKDataSetToTensorField3D>();
     registerProcessor<FlowGUIFileReader>();
     registerProcessor<VTKToTensorField2D>();
+    registerProcessor<VTKToTensorField3D>();
 }
 
-TensorVisIOModule::~TensorVisIOModule() = default;
+int TensorVisIOModule::getVersion() const { return 1; }
+
+std::unique_ptr<VersionConverter> TensorVisIOModule::getConverter(int version) const {
+    return std::make_unique<Converter>(version);
+}
+
+TensorVisIOModule::Converter::Converter(int version) : version_(version) {}
+
+bool TensorVisIOModule::Converter::convert(TxElement* root) {
+    bool res = false;
+    switch (version_) {
+        case 0: {
+            res |= xml::changeAttribute(
+                root, {{xml::Kind::processor("org.inviwo.VTKDataSetToTensorField3D")}}, "type",
+                "org.inviwo.VTKDataSetToTensorField3D", "org.inviwo.VTKToTensorField3D");
+        }
+            return res;
+
+        default:
+            return false;  // No changes
+    }
+    return true;
+}
 
 }  // namespace inviwo

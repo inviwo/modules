@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/tensorvisio/processors/vtkdatasettotensorfield3d.h>
+#include <inviwo/tensorvisio/processors/vtktotensorfield3d.h>
 #include <inviwo/core/network/networklock.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/util/stdextensions.h>
@@ -53,15 +53,15 @@
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
-const ProcessorInfo VTKDataSetToTensorField3D::processorInfo_{
-    "org.inviwo.VTKDataSetToTensorField3D",  // Class identifier
-    "VTK Data Set To Tensor Field 3D",       // Display name
+const ProcessorInfo VTKToTensorField3D::processorInfo_{
+    "org.inviwo.VTKToTensorField3D",         // Class identifier
+    "VTK To TensorField 3D",                 // Display name
     "VTK",                                   // Category
     CodeState::Experimental,                 // Code state
     Tags::CPU | Tag{"VTK"} | Tag{"Tensor"},  // Tags
     R"(Converts a VTK data set to a 3D tensor field. Unstructured grids are not supported.)"_unindentHelp,
 };
-const ProcessorInfo VTKDataSetToTensorField3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo VTKToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
 constexpr std::array<int, 5> supportedObjectTypes{VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID,
                                                   VTK_IMAGE_DATA, VTK_UNIFORM_GRID,
@@ -73,7 +73,7 @@ std::shared_ptr<TensorField3D> vtkToTensorField(size3_t dimensions, vtkDataSet* 
                                                 int arrayIndex) {
     auto array = vtkData->GetPointData()->GetArray(arrayIndex);
     if (array->GetNumberOfComponents() != 9) {
-        throw Exception(IVW_CONTEXT_CUSTOM("VTKDataSetToTensorField3D::vtkToTensorField"),
+        throw Exception(IVW_CONTEXT_CUSTOM("VTKToTensorField3D::vtkToTensorField"),
                         "unsupported number of components for tensor data ({}), expected 9",
                         array->GetNumberOfComponents());
     }
@@ -116,7 +116,7 @@ std::vector<double> vtkToScalars(vtkDataSet* vtkData, int arrayIndex) {
     auto array = vtkData->GetPointData()->GetArray(arrayIndex);
 
     if (array->GetNumberOfComponents() != 1) {
-        throw Exception(IVW_CONTEXT_CUSTOM("VTKDataSetToTensorField3D::vtkToScalars"),
+        throw Exception(IVW_CONTEXT_CUSTOM("VTKToTensorField3D::vtkToScalars"),
                         "unsupported number of components for scalar data ({}), expected 1",
                         array->GetNumberOfComponents());
     }
@@ -140,7 +140,7 @@ std::vector<double> vtkToScalars(vtkDataSet* vtkData, int arrayIndex) {
 
 }  // namespace detail
 
-VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
+VTKToTensorField3D::VTKToTensorField3D()
     : Processor{}
     , inport_{"dataSetInport", "vtkDataSet",
               "VTK dataset (VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID, VTK_IMAGE_DATA, "
@@ -155,7 +155,7 @@ VTKDataSetToTensorField3D::VTKDataSetToTensorField3D()
     addProperties(sourceTensors_, sourceScalars_, normalizeExtents_, basis_);
 }
 
-void VTKDataSetToTensorField3D::updateSources(vtkDataSet* data) {
+void VTKToTensorField3D::updateSources(vtkDataSet* data) {
     std::vector<OptionPropertyOption<int>> opts;
 
     if (data) {
@@ -177,7 +177,7 @@ void VTKDataSetToTensorField3D::updateSources(vtkDataSet* data) {
     sourceScalars_.replaceOptions(opts);
 }
 
-void VTKDataSetToTensorField3D::process() {
+void VTKToTensorField3D::process() {
     auto data = inport_.getData();
     auto vtkData = vtkDataSet::SafeDownCast(data);
 

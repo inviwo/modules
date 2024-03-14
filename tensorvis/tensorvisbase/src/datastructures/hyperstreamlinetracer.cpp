@@ -1,9 +1,37 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2019-2024 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
 #include <inviwo/tensorvisbase/datastructures/hyperstreamlinetracer.h>
 
 namespace inviwo {
-HyperStreamLineTracer::HyperStreamLineTracer(
-    std::shared_ptr<const SpatialSampler<3, double>> sampler,
-    const IntegralLineProperties& properties)
+HyperStreamLineTracer::HyperStreamLineTracer(std::shared_ptr<const SpatialSampler<dvec3>> sampler,
+                                             const IntegralLineProperties& properties)
     : integrationScheme_(properties.getIntegrationScheme())
     , steps_(properties.getNumberOfSteps())
     , stepSize_(properties.getStepSize())
@@ -22,33 +50,27 @@ typename HyperStreamLineTracer::Result HyperStreamLineTracer::traceFrom(const dv
     Result res;
     IntegralLine& line = res.line;
 
-    bool both = dir_ == IntegralLineProperties::Direction::Bidirectional;
-    bool fwd = both || dir_ == IntegralLineProperties::Direction::Forward;
-    bool bwd = both || dir_ == IntegralLineProperties::Direction::Backward;
-
-    size_t stepsFWD = 0;
-    size_t stepsBWD = 0;
-
-    if (both) {
-        stepsBWD = steps_ / 2;
-        stepsFWD = steps_ - stepsBWD;
-    } else if (fwd) {
-        line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
-        stepsFWD = steps_;
-    } else if (bwd) {
-        line.setForwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
-        stepsBWD = steps_;
-    }
-
-    stepsBWD++;  // for adjendency info
-    stepsFWD++;
+    const auto [stepsBWD, stepsFWD] = [dir = dir_, steps = steps_,
+                                       &line]() -> std::pair<size_t, size_t> {
+        switch (dir) {
+            case inviwo::IntegralLineProperties::Direction::Forward:
+                line.setBackwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
+                return {1, steps + 1};
+            case inviwo::IntegralLineProperties::Direction::Backward:
+                line.setForwardTerminationReason(IntegralLine::TerminationReason::StartPoint);
+                return {steps + 1, 1};
+            default:
+            case inviwo::IntegralLineProperties::Direction::Bidirectional: {
+                return {steps / 2 + 1, steps - (steps / 2) + 1};
+            }
+        }
+    }();
 
     line.getPositions().reserve(steps_ + 2);
     line.getMetaData<dvec3>("velocity", true).reserve(steps_ + 2);
 
     for (auto& m : metaSamplers_) {
-        line.getMetaData<typename SpatialSampler<3, double>::ReturnType>(m.first, true)
-            .reserve(steps_ + 2);
+        line.getMetaData<typename SpatialSampler<dvec3>::type>(m.first, true).reserve(steps_ + 2);
     }
 
     if (!addPoint(line, p)) {
@@ -57,7 +79,7 @@ typename HyperStreamLineTracer::Result HyperStreamLineTracer::traceFrom(const dv
 
     line.setBackwardTerminationReason(integrate(stepsBWD, p, line, false));
 
-    if (!line.getPositions().empty()) {
+    if (line.getPositions().size() > 1) {
         line.reverse();
         res.seedIndex = line.getPositions().size() - 1;
     }
@@ -68,7 +90,7 @@ typename HyperStreamLineTracer::Result HyperStreamLineTracer::traceFrom(const dv
 }
 
 void HyperStreamLineTracer::addMetaDataSampler(
-    const std::string& name, std::shared_ptr<const SpatialSampler<3, double>> sampler) {
+    const std::string& name, std::shared_ptr<const SpatialSampler<dvec3>> sampler) {
     metaSamplers_[name] = sampler;
 }
 
@@ -107,7 +129,7 @@ bool HyperStreamLineTracer::addPoint(IntegralLine& line, const dvec3& pos,
     line.getMetaData<dvec3>("velocity").emplace_back(util::glm_convert<dvec3>(worldVelocity));
 
     for (auto& m : metaSamplers_) {
-        line.getMetaData<typename SpatialSampler<3, double>::ReturnType>(m.first).emplace_back(
+        line.getMetaData<typename SpatialSampler<dvec3>::type>(m.first).emplace_back(
             util::glm_convert<dvec3>(m.second->sample(pos)));
     }
     return true;
@@ -120,15 +142,17 @@ IntegralLine::TerminationReason HyperStreamLineTracer::integrate(size_t steps, c
     DataVector worldVelocity;
     bool flipped{false};
 
+    dvec3 currentPos{pos};
     for (size_t i = 0; i < steps; i++) {
         if (!sampler_->withinBounds(pos)) {
             return IntegralLine::TerminationReason::OutOfBounds;
         }
 
         dvec3 newpos{0.0};
-        std::tie(newpos, worldVelocity, flipped) =
-            detail::hyperstep<DataVector>(pos, integrationScheme_, stepSize_ * (fwd ? 1.0 : -1.0),
-                                          invBasis_, normalizeSamples_, *sampler_, flipped);
+        std::tie(newpos, worldVelocity, flipped) = detail::hyperstep<DataVector>(
+            currentPos, integrationScheme_, stepSize_ * (fwd ? 1.0 : -1.0), invBasis_,
+            normalizeSamples_, *sampler_, flipped);
+        currentPos = newpos;
 
         if (!addPoint(line, newpos, worldVelocity)) {
             return IntegralLine::TerminationReason::ZeroVelocity;

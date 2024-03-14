@@ -28,10 +28,15 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/processors/tensorfield2danisotropy.h>
+#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/imageram.h>
 #include <inviwo/core/util/indexmapper.h>
-#include <inviwo/tensorvisbase/util/tensorfieldutil.h>
+#include <inviwo/core/util/volumeramutils.h>
+#include <modules/base/algorithm/dataminmax.h>
+
+#include <glm/gtx/component_wise.hpp>
 
 namespace inviwo {
 
@@ -41,14 +46,15 @@ const ProcessorInfo TensorField2DAnisotropy::processorInfo_{
     "Tensor Field 2D Anisotropy",          // Display name
     "Tensor visualization",                // Category
     CodeState::Experimental,               // Code state
-    Tags::None,                            // Tags
+    Tags::CPU | Tag{"Tensor"},             // Tags
+    R"(Computes the anisotropy of a 2D tensor field.)"_unindentHelp,
 };
 const ProcessorInfo TensorField2DAnisotropy::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DAnisotropy::TensorField2DAnisotropy()
     : Processor()
     , tensorFieldInport_("inport")
-    , outport_("outport", false)
+    , outport_("outport")
     , anisotropy_("anisotropy", "Anisotropy",
                   {{"1", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda2_str + "|",
                     tensorutil::Anisotropy::abs_lamda1_minus_lamda2},
@@ -63,60 +69,56 @@ TensorField2DAnisotropy::TensorField2DAnisotropy()
 
 void TensorField2DAnisotropy::process() {
     auto tensorField = tensorFieldInport_.getData();
-    std::shared_ptr<Image> outputImage;
-    auto dimensions = tensorField->getDimensions();
-    std::function<void(const size2_t&)> func;
-    util::IndexMapper2D indexMapper(dimensions);
-    const auto& majorEigenValues = tensorField->majorEigenValues();
-    const auto& minorEigenValues = tensorField->minorEigenValues();
-    auto min = std::numeric_limits<double>::max();
-    auto max = std::numeric_limits<double>::lowest();
 
-    switch (anisotropy_.get()) {
-        case tensorutil::Anisotropy::abs_lamda1_minus_lamda2:
-            outputImage = std::make_shared<Image>(dimensions, DataFloat32::get());
-            {
-                auto data =
-                    static_cast<glm::f32*>(outputImage->getEditableRepresentation<ImageRAM>()
-                                               ->getColorLayerRAM()
-                                               ->getData());
+    auto layerRam = [&]() -> std::shared_ptr<LayerRAM> {
+        const size2_t dims{tensorField->getDimensions()};
 
-                tensorutil::forEachFixelParallel(
-                    *(tensorField.get()), [&](const size2_t& pos) -> void {
-                        const auto index = indexMapper(pos);
-                        const auto val =
-                            glm::abs(majorEigenValues[index] - minorEigenValues[index]);
-                        max = std::max(max, val);
-                        min = std::min(min, val);
-                        data[index] = static_cast<glm::f32>(val);
-                    });
+        util::IndexMapper2D indexMapper(dims);
+        const auto& majorEigenValues = tensorField->majorEigenValues();
+        const auto& minorEigenValues = tensorField->minorEigenValues();
+
+        switch (anisotropy_.get()) {
+            case tensorutil::Anisotropy::abs_lamda1_minus_lamda2: {
+                auto ram = std::make_shared<LayerRAMPrecision<float>>(dims);
+                auto data = ram->getView();
+                util::forEachPixelParallel(dims, [&](const size2_t& pos) -> void {
+                    const auto index = indexMapper(pos);
+                    const auto val = glm::abs(majorEigenValues[index] - minorEigenValues[index]);
+
+                    data[index] = static_cast<float>(val);
+                });
+                return ram;
             }
-            break;
-        case tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2:
-            outputImage = std::make_shared<Image>(dimensions, DataFloat32::get());
-            {
-                auto data =
-                    static_cast<glm::f32*>(outputImage->getEditableRepresentation<ImageRAM>()
-                                               ->getColorLayerRAM()
-                                               ->getData());
+            case tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2: {
+                auto ram = std::make_shared<LayerRAMPrecision<float>>(dims);
+                auto data = ram->getView();
+                util::forEachPixelParallel(dims, [&](const size2_t& pos) -> void {
+                    const auto index = indexMapper(pos);
+                    const auto val =
+                        glm::abs(majorEigenValues[index]) - glm::abs(minorEigenValues[index]);
 
-                tensorutil::forEachFixelParallel(
-                    *(tensorField.get()), [&](const size2_t& pos) -> void {
-                        const auto index = indexMapper(pos);
-                        const auto val =
-                            glm::abs(majorEigenValues[index]) - glm::abs(minorEigenValues[index]);
-
-                        max = std::max(max, val);
-                        min = std::min(min, val);
-                        data[index] = static_cast<glm::f32>(val);
-                    });
+                    data[index] = static_cast<float>(val);
+                });
+                return ram;
             }
-            break;
-        default:
-            break;
-    }
+            default:
+                throw Exception(IVW_CONTEXT, "Unsupported tensorutil::Anisotropy");
+        }
+        return nullptr;
+    }();
 
-    outport_.setData(outputImage);
+    auto [min, max] = util::layerMinMax(layerRam.get(), IgnoreSpecialValues::No);
+    dvec2 range{glm::compMin(min), glm::compMax(max)};
+
+    std::shared_ptr<Layer> layer = std::make_shared<Layer>(layerRam);
+    layer->dataMap.dataRange = range;
+    layer->dataMap.valueRange = range;
+
+    layer->setBasis(dmat3{tensorField->getBasis()});
+    layer->setOffset(dvec3{tensorField->getOffset(), 0.0});
+    layer->setSwizzleMask(swizzlemasks::defaultData(1));
+
+    outport_.setData(layer);
 }
 
 }  // namespace inviwo

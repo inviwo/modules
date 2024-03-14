@@ -31,8 +31,7 @@
 #include "tensorutil.glsl"
 
 uniform sampler2D tensorFieldColor;
-uniform sampler2D noiseTextureColor;
-uniform sampler2D imageInportColor;
+uniform sampler2D noiseTexture;
 uniform sampler2D tf;
 uniform ImageParameters tensorFieldParameters;
 uniform ImageParameters noiseTextureParameters;
@@ -40,15 +39,19 @@ uniform ImageParameters noiseTextureParameters;
 uniform int samples;
 uniform float stepLength;
 uniform bool normalizeVectors;
-uniform bool intensityMapping;
 uniform bool useRK4;
 uniform bool useMinor;
 uniform float eigenValueRange;
 uniform float minEigenValue;
 uniform float maxEigenValue;
-uniform bool hasInputImage;
 uniform float ratio;
 uniform vec4 backgroundColor;
+
+uniform bool postProcessing = false;
+uniform bool intensityMapping = false;
+uniform float brightness = 0.0; // in [-1, 1]
+uniform float contrast = 0.0;   // in [-1, 1]
+uniform float gamma = 1.0;
 
 in vec3 texCoord_;
 
@@ -89,16 +92,12 @@ void traverse(inout float v, inout int c, vec2 posForTensorFieldSampling, float 
         // vec2 delta = vec2(1.0 / (2.0 * n));
         // vec2 newTexForNoiseTextureSampling = mix(delta, 1.0 - delta, posForTensorFieldSampling);
 
-        v += texture(noiseTextureColor, posForTensorFieldSampling).r;
+        v += texture(noiseTexture, posForTensorFieldSampling).r;
         c += 1;
     }
 }
 
 void main() {
-    // float colorValue = texture(noiseTextureColor, texCoord_.xy).r;
-
-    int c = 1;
-
     vec2 n = tensorFieldParameters.dimensions;
     vec2 delta = vec2(1.0 / (2.0 * n));
     vec2 newTexForTensorFieldSampling = texCoord_.xy;  // mix(delta, 1.0 - delta, texCoord_.xy);
@@ -114,24 +113,21 @@ void main() {
         return;
     }
 
-    float colorValue = texture(noiseTextureColor, newTexForNoiseTextureSampling).r;
+    float v = texture(noiseTexture, newTexForNoiseTextureSampling).r;
 
-    traverse(colorValue, c, newTexForTensorFieldSampling, stepLength, samples / 2);
-    traverse(colorValue, c, newTexForTensorFieldSampling, -stepLength, samples / 2);
+    int c = 1;
+    traverse(v, c, newTexForTensorFieldSampling, stepLength, samples / 2);
+    traverse(v, c, newTexForTensorFieldSampling, -stepLength, samples / 2);
 
-    colorValue /= c;
+    v /= c;
 
-    if (intensityMapping) {
-        colorValue = pow(colorValue, (4.0 / pow((colorValue + 1.0), 4)));
+    if (postProcessing) {
+        v = mix(v, pow(v, 5.0 / pow(v + 1.0, 4)), intensityMapping);
+        // brightness-contrast
+        v = clamp((v - 0.5) * (contrast + 1.0) + 0.5 + brightness, 0, 1);
+        // gamma correction
+        v = pow(v, gamma);
     }
 
-    vec4 finalColor = vec4(colorValue, colorValue, colorValue, 1.0);
-
-    finalColor = clamp(finalColor, 0.0, 1.0);
-
-    if (hasInputImage) {
-        finalColor = finalColor * texture(imageInportColor, texCoord_.xy);
-    }
-
-    FragData0 = finalColor;
+    FragData0 = vec4(v);
 }

@@ -78,16 +78,17 @@ TensorFieldToVolume::TensorFieldToVolume()
 void TensorFieldToVolume::process() {
     auto tensorField = inport_.getData();
 
-    if (!tensorField->hasMetaData(feature_.get())) {
-        LogError("Tensorfield has no metadata for \'" << feature_.get() << "\'");
+    if (!tensorField->hasMetaData(feature_.getSelectedValue())) {
+        LogError("Tensorfield has no metadata for \'" << feature_.getSelectedDisplayName() << "\'");
         return;
     }
-    if (!tensorField->hasMetaData(uint64_t(feature_.get()))) {
-        LogError("Tensorfield has no metadata (id) for \'" << feature_.get() << "\'");
+    if (!tensorField->hasMetaData(uint64_t(feature_.getSelectedValue()))) {
+        LogError("Tensorfield has no metadata (id) for \'" << feature_.getSelectedDisplayName()
+                                                           << "\'");
         return;
     }
 
-    const auto metaData = tensorField->getMetaDataContainer(uint64_t(feature_.get()));
+    const auto metaData = tensorField->getMetaDataContainer(uint64_t(feature_.getSelectedValue()));
     const auto numberOfComponents = metaData->getNumberOfComponents();
 
     auto vol =
@@ -129,7 +130,7 @@ void TensorFieldToVolume::process() {
             });
 
     vol->setModelMatrix(tensorField->getBasisAndOffset());
-    vol->dataMap_ = map;
+    vol->dataMap = map;
     outport_.setData(vol);
 }
 

@@ -177,7 +177,7 @@ void LayerToVTK::process() {
     data_->AllocateScalars(vtkType, static_cast<int>(nComp));
     void* dst = data_->GetScalarPointer();
     const void* src = layer->getRepresentation<LayerRAM>()->getData();
-    std::memcpy(dst, src, glm::compMul(dim) * layer->getDataFormat()->getSize());
+    std::memcpy(dst, src, glm::compMul(dim) * layer->getDataFormat()->getSizeInBytes());
 
     outport_.setData(data_);
 }

@@ -207,8 +207,8 @@ void NRRDReader::process() {
 
     vol->setBasis(mat3(1.f));
     vol->setOffset(vec3(0.f));
-    vol->dataMap_.dataRange = vec2(0, 1);
-    vol->dataMap_.valueRange = vec2(0, 1);
+    vol->dataMap.dataRange = vec2(0, 1);
+    vol->dataMap.valueRange = vec2(0, 1);
     volumeOutport_.setData(vol);
 
     outport3D_.setData(std::make_shared<TensorField3D>(dimensions, dataForTensorField));

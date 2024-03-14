@@ -44,10 +44,10 @@ namespace inviwo {
 
 class TensorField3D;
 
-class IVW_MODULE_TENSORVISIO_API VTKDataSetToTensorField3D : public Processor {
+class IVW_MODULE_TENSORVISIO_API VTKToTensorField3D : public Processor {
 public:
-    VTKDataSetToTensorField3D();
-    virtual ~VTKDataSetToTensorField3D() = default;
+    VTKToTensorField3D();
+    virtual ~VTKToTensorField3D() = default;
 
     virtual void process() override;
 

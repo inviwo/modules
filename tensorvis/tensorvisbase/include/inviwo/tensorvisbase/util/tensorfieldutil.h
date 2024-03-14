@@ -41,6 +41,8 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/util/settings/systemsettings.h>
 #include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/util/volumeramutils.h>
+#include <inviwo/core/util/imageramutils.h>
 
 namespace inviwo {
 namespace tensorutil {
@@ -94,96 +96,22 @@ std::shared_ptr<BasicMesh> generateSliceGeometry(std::shared_ptr<const TensorFie
 
 template <typename C>
 void forEachVoxel(const TensorField3D& v, C callback) {
-    const auto& dims = v.getDimensions();
-    size3_t pos;
-    for (pos.z = 0; pos.z < dims.z; ++pos.z) {
-        for (pos.y = 0; pos.y < dims.y; ++pos.y) {
-            for (pos.x = 0; pos.x < dims.x; ++pos.x) {
-                callback(pos);
-            }
-        }
-    }
+    util::forEachVoxel(v.getDimensions(), callback);
 }
 
 template <typename C>
 void forEachVoxelParallel(const TensorField3D& v, C callback, size_t jobs = 0) {
-    const auto& dims = v.getDimensions();
-
-    if (jobs == 0) {
-        const auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        jobs = 4 * settings->poolSize_.get();
-        if (jobs == 0) {  // if poolsize is zero
-            forEachVoxel(v, callback);
-            return;
-        }
-    }
-
-    std::vector<std::future<void>> futures;
-    for (size_t job = 0; job < jobs; ++job) {
-        const auto start = size3_t(0, 0, job * dims.z / jobs);
-        const auto stop = size3_t(dims.x, dims.y, std::min(dims.z, (job + 1) * dims.z / jobs));
-
-        futures.push_back(dispatchPool([&callback, start, stop]() {
-            size3_t pos{0};
-
-            for (pos.z = start.z; pos.z < stop.z; ++pos.z) {
-                for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
-                    for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
-                        callback(pos);
-                    }
-                }
-            }
-        }));
-    }
-
-    for (const auto& e : futures) {
-        e.wait();
-    }
+    util::forEachVoxelParallel(v.getDimensions(), callback, jobs);
 }
 
 template <typename C>
 void forEachFixel(const TensorField2D& v, C callback) {
-    const auto& dims = v.getDimensions();
-    size2_t pos;
-    for (pos.y = 0; pos.y < dims.y; ++pos.y) {
-        for (pos.x = 0; pos.x < dims.x; ++pos.x) {
-            callback(pos);
-        }
-    }
+    util::forEachPixel(v.getDimensions(), callback);
 }
 
 template <typename C>
 void forEachFixelParallel(const TensorField2D& v, C callback, size_t jobs = 0) {
-    const auto& dims = v.getDimensions();
-
-    if (jobs == 0) {
-        const auto settings = InviwoApplication::getPtr()->getSettingsByType<SystemSettings>();
-        jobs = 4 * settings->poolSize_.get();
-        if (jobs == 0) {  // if poolsize is zero
-            forEachFixel(v, callback);
-            return;
-        }
-    }
-
-    std::vector<std::future<void>> futures;
-    for (size_t job = 0; job < jobs; ++job) {
-        const auto start = size2_t(0, job * dims.y / jobs);
-        const auto stop = size2_t(dims.x, std::min(dims.y, (job + 1) * dims.y / jobs));
-
-        futures.push_back(dispatchPool([&callback, start, stop]() {
-            size2_t pos{0};
-
-            for (pos.y = start.y; pos.y < stop.y; ++pos.y) {
-                for (pos.x = start.x; pos.x < stop.x; ++pos.x) {
-                    callback(pos);
-                }
-            }
-        }));
-    }
-
-    for (const auto& e : futures) {
-        e.wait();
-    }
+    util::forEachPixelParallel(v.getDimensions(), callback, jobs);
 }
 
 }  // namespace tensorutil

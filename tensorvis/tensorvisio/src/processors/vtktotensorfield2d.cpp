@@ -56,7 +56,7 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKToTensorField2D::processorInfo_{
     "org.inviwo.VTKToTensorField2D",         // Class identifier
-    "VTK To Tensor Field 2D",                // Display name
+    "VTK To TensorField 2D",                 // Display name
     "VTK",                                   // Category
     CodeState::Experimental,                 // Code state
     Tags::CPU | Tag{"VTK"} | Tag{"Tensor"},  // Tags

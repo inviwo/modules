@@ -36,10 +36,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo TensorInformation::processorInfo_{
     "org.inviwo.TensorInformation",  // Class identifier
-    "Tensor Information",            // Display name
+    "Tensor Information 3D",         // Display name
     "Tensor visualization",          // Category
     CodeState::Experimental,         // Code state
-    Tags::CPU,                       // Tags
+    Tags::CPU | Tag{"Tensor"},       // Tags
 };
 
 const ProcessorInfo TensorInformation::getProcessorInfo() const { return processorInfo_; }
@@ -55,18 +55,27 @@ TensorInformation::TensorInformation()
                     mat3(std::numeric_limits<float>::max()))
     , eigenValues_("eigenValues", "Eigenvalues", vec3(0.f),
                    vec3(std::numeric_limits<float>::lowest()),
-                   vec3(std::numeric_limits<float>::max())) {
+                   vec3(std::numeric_limits<float>::max()))
+    , transformations_("transformations", "Transformations")
+    , basis_("basis", "Basis", mat3(1.0f), util::filled<mat3>(std::numeric_limits<float>::lowest()),
+             util::filled<mat3>(std::numeric_limits<float>::max()), util::filled<mat3>(0.001f),
+             InvalidationLevel::Valid)
+    , offset_("offset", "Offset", vec3(0.0f), vec3(std::numeric_limits<float>::lowest()),
+              vec3(std::numeric_limits<float>::max()), vec3(0.001f), InvalidationLevel::Valid,
+              PropertySemantics::Text) {
     addPort(inport_);
 
-    addProperties(index_, tensor_, eigenVectors_, eigenValues_);
+    transformations_.addProperties(basis_, offset_);
+    transformations_.setCollapsed(true);
+    transformations_.setReadOnly(true);
+
+    addProperties(index_, tensor_, eigenVectors_, eigenValues_, transformations_);
 
     tensor_.setReadOnly(true);
     eigenVectors_.setReadOnly(true);
     eigenValues_.setReadOnly(true);
 
-    tensor_.setCurrentStateAsDefault();
-    eigenVectors_.setCurrentStateAsDefault();
-    eigenValues_.setCurrentStateAsDefault();
+    setAllPropertiesCurrentStateAsDefault();
 }
 
 void TensorInformation::process() {
@@ -90,6 +99,9 @@ void TensorInformation::process() {
         vec3(eigenValuesAndEigenVectors[0].first, eigenValuesAndEigenVectors[1].first,
              eigenValuesAndEigenVectors[2].first);
     eigenValues_.set(eigenValues);
+
+    util::updateDefaultState(basis_, tensorField->getBasis(), util::OverwriteState::Yes);
+    util::updateDefaultState(offset_, tensorField->getOffset(), util::OverwriteState::Yes);
 }
 
 }  // namespace inviwo

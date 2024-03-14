@@ -42,7 +42,7 @@ public:
     static constexpr size_t Components = N;
     using Vector = typename Base::Vector;
 
-    SeparatrixSpringSystem(const SpatialSampler<3, double>& sampler, T gradientScale, T timeStep,
+    SeparatrixSpringSystem(const SpatialSampler<dvec3>& sampler, T gradientScale, T timeStep,
                            std::vector<Vector> positions, std::vector<SpringIndices> springs,
                            std::vector<topology::CellType> aTypes, T nodeMass,
                            T springLinearConstant, T springSquareConstant, T springLength,
@@ -97,7 +97,7 @@ public:
     void constrainPosition(size_t, Vector&) const {}
     void constrainVelocity(size_t, Vector&) const {}
 
-    const SpatialSampler<3, double>& sampler;
+    const SpatialSampler<dvec3>& sampler;
     T gradientScale;
     std::vector<topology::CellType> types;
     T globalNodeMass{1};
@@ -149,8 +149,7 @@ std::shared_ptr<Mesh> refine(const topology::MorseSmaleComplexData& msc,
                              const TopologyColorsProperty& colorProp,
                              const TopologyFilterProperty& filterProp, float sphereRadius,
                              float lineThickness, bool fillPBC,
-                             const SpatialSampler<3, double>& sampler,
-                             SpringSettings springSettings) {
+                             const SpatialSampler<dvec3>& sampler, SpringSettings springSettings) {
     using Sys = SeparatrixSpringSystem<3, float, std::integer_sequence<bool, PBC, PBC, PBC>>;
 
     const auto& cp = msc.criticalPoints;

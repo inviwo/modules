@@ -69,7 +69,7 @@ namespace inviwo {
 //
 
 GdcmVolumeReader::GdcmVolumeReader()
-    : DataReaderType<std::vector<std::shared_ptr<Volume>>>()
+    : DataReaderType<VolumeSequence>()
     , file_(std::string())
     , format_{DataUInt8::get()}
     , dimension_{0, 0, 0} {
@@ -113,7 +113,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
     auto volume = std::make_shared<Volume>(series.dims, format);
 
     // set data range according to used bits, e.g. 12bits for signed and unsigned
-    volume->dataMap_.dataRange = gdcmutil::getDataRange(series.pixelformat);
+    volume->dataMap.dataRange = gdcmutil::getDataRange(series.pixelformat);
 
     // TODO: determine data range based on DICOMDIR tags (largest/smallest pixel value),
     // which might not exist!
@@ -122,14 +122,14 @@ std::shared_ptr<Volume> GdcmVolumeReader::getVolumeDescription(dicomdir::Series&
         // check tags for all images
         //  - largest image pixel value gdcm::Tag(0x0028, 0x0107)
         //  - smallest image pixel value, gdm::Tag(0x0028, 0x0106)
-        volume->dataMap_.dataRange = ...;
+        volume->dataMap.dataRange = ...;
     }
     */
 
-    volume->dataMap_.valueRange = volume->dataMap_.dataRange * series.slope + series.intercept;
+    volume->dataMap.valueRange = volume->dataMap.dataRange * series.slope + series.intercept;
 
     if (series.modality == "CT") {
-        volume->dataMap_.valueAxis = Axis{"Hounsfield", units::unit_from_string("HU")};
+        volume->dataMap.valueAxis = Axis{"Hounsfield", units::unit_from_string("HU")};
     }
 
     // basis and offset computations
@@ -680,7 +680,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     volume->setBasis(basis);
     volume->setOffset(offset);
     volume->setWorldMatrix(wtm);
-    volume->dataMap_.dataRange = dvec2(pixelformat.GetMin(), pixelformat.GetMax());
+    volume->dataMap.dataRange = dvec2(pixelformat.GetMin(), pixelformat.GetMax());
 
     // image.GetSlope() and image.GetIntercept() can be incorrect (failure when calling
     // image.Read()) Use dicom attributes director
@@ -692,13 +692,13 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     // TODO: check this heuristics!!!
     if (modality == "CT") {
         // Computed Tomography
-        volume->dataMap_.valueAxis = Axis{"Hounsfield", units::unit_from_string("HU")};
+        volume->dataMap.valueAxis = Axis{"Hounsfield", units::unit_from_string("HU")};
         if (format->getPrecision() == 16) {
-            volume->dataMap_.dataRange = {0.0, 4095};
+            volume->dataMap.dataRange = {0.0, 4095};
         }
     }
 
-    volume->dataMap_.valueRange = volume->dataMap_.dataRange * slope + intercept;
+    volume->dataMap.valueRange = volume->dataMap.dataRange * slope + intercept;
 
     auto vd = std::make_shared<VolumeDisk>(file_, dimension, format);
     vd->setLoader(new GCDMVolumeRAMLoader(file_, dimension, format));

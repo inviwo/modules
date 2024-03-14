@@ -27,43 +27,21 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DANISOTROPY_H
-#define IVW_TENSORFIELD2DANISOTROPY_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/ports/layerport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/util/tensorutil.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DAnisotropy, Tensor Field2DAnisotropy}
- * ![](org.inviwo.TensorField2DAnisotropy.png?classIdentifier=org.inviwo.TensorField2DAnisotropy)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DAnisotropy
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorField2DAnisotropy : public Processor {
 public:
     TensorField2DAnisotropy();
-    virtual ~TensorField2DAnisotropy() = default;
 
     virtual void process() override;
 
@@ -72,10 +50,9 @@ public:
 
 private:
     TensorField2DInport tensorFieldInport_;
-    ImageOutport outport_;
+    LayerOutport outport_;
+
     OptionProperty<tensorutil::Anisotropy> anisotropy_;
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DANISOTROPY_H

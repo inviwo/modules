@@ -198,7 +198,7 @@ TriangulationData volumeToTTKTriangulation(const Volume& volume, size_t channel)
     const vec3 volExtent(glm::length(dataToWorld[0]), glm::length(dataToWorld[1]),
                          glm::length(dataToWorld[2]));
 
-    TriangulationData data(volume.getDimensions(), offset, volExtent, volume.dataMap_);
+    TriangulationData data(volume.getDimensions(), offset, volExtent, volume.dataMap);
 
     auto convertVolumeToBuffer = [&data](auto vrprecision, size_t channel) {
         using ValueType = util::PrecisionValueType<decltype(vrprecision)>;
@@ -256,7 +256,7 @@ std::shared_ptr<Volume> ttkTriangulationToVolume(const TriangulationData& data) 
         volume->setModelMatrix(data.getModelMatrix());
         volume->setWorldMatrix(data.getWorldMatrix());
         volume->copyMetaDataFrom(data);
-        volume->dataMap_ = data.getDataMapper();
+        volume->dataMap = data.getDataMapper();
         return volume;
     };
 

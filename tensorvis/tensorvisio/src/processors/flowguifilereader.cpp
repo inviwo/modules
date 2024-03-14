@@ -62,8 +62,8 @@ void FlowGUIFileReader::process() {
 
     const auto numElements = dimensions.x * dimensions.y * dimensions.z;
 
-    auto volumes = std::make_shared<std::vector<std::shared_ptr<Volume>>>();
-    auto volumes_vec3 = std::make_shared<std::vector<std::shared_ptr<Volume>>>();
+    auto volumes = std::make_shared<VolumeSequence>();
+    auto volumes_vec3 = std::make_shared<VolumeSequence>();
 
     if (fieldType_.get() == 1) {
         for (int i = 0; i < dimensions.w; i++) {
@@ -131,8 +131,8 @@ void FlowGUIFileReader::process() {
             basis[2][2] = extents.z;
             volume->setBasis(basis);
 
-            volume->dataMap_.valueRange = vec2(min, max);
-            volume->dataMap_.dataRange = vec2(min, max);
+            volume->dataMap.valueRange = vec2(min, max);
+            volume->dataMap.dataRange = vec2(min, max);
         }
 
         outport_.setData(volumes);

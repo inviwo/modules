@@ -44,7 +44,6 @@ target_sources(inviwo-module-ttk
 target_include_directories(inviwo-module-ttk PRIVATE generated)
 
 find_package(freetype CONFIG REQUIRED)
-add_library(Freetype::Freetype ALIAS freetype)
 
 find_package(utf8cpp CONFIG REQUIRED)
 
