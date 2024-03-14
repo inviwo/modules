@@ -31,13 +31,13 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <DataStructureAndEncodingDefinition/gdcmDataSet.h>
-#include <MediaStorageAndFileFormat/gdcmPixelFormat.h>
-#include <MediaStorageAndFileFormat/gdcmImage.h>
-#include <MediaStorageAndFileFormat/gdcmImageHelper.h>
-#include <MediaStorageAndFileFormat/gdcmImageReader.h>
-#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
-#include <DataStructureAndEncodingDefinition/gdcmMediaStorage.h>
+#include <gdcmDataSet.h>
+#include <gdcmPixelFormat.h>
+#include <gdcmImage.h>
+#include <gdcmImageHelper.h>
+#include <gdcmImageReader.h>
+#include <gdcmAttribute.h>
+#include <gdcmMediaStorage.h>
 #include <warn/pop>
 
 namespace inviwo {

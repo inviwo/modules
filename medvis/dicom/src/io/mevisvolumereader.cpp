@@ -66,15 +66,13 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <MediaStorageAndFileFormat/gdcmImage.h>
-#include <MediaStorageAndFileFormat/gdcmImageReader.h>
-#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
-#include <DataStructureAndEncodingDefinition/gdcmMediaStorage.h>
+#include <gdcmImage.h>
+#include <gdcmImageReader.h>
+#include <gdcmAttribute.h>
+#include <gdcmMediaStorage.h>
 
 #include <tiff.h>
 #include <tiffio.h>
-// #include<DataStructureAndEncodingDefinition / gdcmTag.h>
-// #include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
 #include <warn/pop>
 
 #include <fmt/format.h>

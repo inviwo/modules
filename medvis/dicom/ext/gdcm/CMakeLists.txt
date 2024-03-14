@@ -15,42 +15,34 @@ foreach(target ${gdcm_targets})
 endforeach()
 ivw_suppress_compiler_warnings(${gdcm_targets})
 
-#--------------------------------------------------------------------
-# Make package (for other projects to find)
-#ivw_default_install_targets(gdcm)
-#ivw_make_package(GDCM gdcm)
-
 add_library(gdcm INTERFACE)
+add_library(inviwo::gdcm ALIAS gdcm)
 
-
-# gdcm targets does not include interface include directories
+# gdcm target does not include interface include directories
 target_include_directories(gdcm INTERFACE
-   ${GDCM_EXT_DIR}/Source/
-   ${GDCM_EXT_DIR}/Source/DataStructureAndEncodingDefinition
-   ${GDCM_EXT_DIR}/Source/Common
    ${GDCM_EXT_DIR}/Source/Attribute
+   ${GDCM_EXT_DIR}/Source/Common
    ${GDCM_EXT_DIR}/Source/DataDictionary
+   ${GDCM_EXT_DIR}/Source/DataStructureAndEncodingDefinition
    ${GDCM_EXT_DIR}/Source/InformationObjectDefinition
+   ${GDCM_EXT_DIR}/Source/MediaStorageAndFileFormat
    ${GDCM_EXT_DIR}/Source/MessageExchangeDefinition
-   # gdcmConfigure.h
    ${GDCM_BINARY_DIR}/Source/Common/
 )
 
-find_package(TIFF REQUIRED)
 # we need the libtiff4 sources, so add it as dependency
 target_link_libraries(gdcm INTERFACE 
-    TIFF::TIFF
+    gdcmcharls
     gdcmCommon
     gdcmDICT
     gdcmDSED
+    gdcmexpat 
     gdcmIOD
-    gdcmMSFF
-    gdcmMEXD
-    gdcmcharls
-    gdcmzlib 
-    gdcmjpeg8 
     gdcmjpeg12 
     gdcmjpeg16 
-    gdcmexpat 
+    gdcmjpeg8 
+    gdcmMEXD
+    gdcmMSFF
     gdcmopenjp2
+    gdcmzlib 
 )

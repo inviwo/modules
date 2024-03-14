@@ -39,14 +39,14 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <DataStructureAndEncodingDefinition/gdcmDataSet.h>
-#include <DataStructureAndEncodingDefinition/gdcmFile.h>
-#include <MediaStorageAndFileFormat/gdcmImage.h>
+#include <gdcmDataSet.h>
+#include <gdcmFile.h>
+#include <gdcmImage.h>
 
-#include <MediaStorageAndFileFormat/gdcmImageHelper.h>
-#include <MediaStorageAndFileFormat/gdcmImageReader.h>
-#include <DataStructureAndEncodingDefinition/gdcmAttribute.h>
-#include <DataStructureAndEncodingDefinition/gdcmMediaStorage.h>
+#include <gdcmImageHelper.h>
+#include <gdcmImageReader.h>
+#include <gdcmAttribute.h>
+#include <gdcmMediaStorage.h>
 #include <warn/pop>
 
 #include <algorithm>
