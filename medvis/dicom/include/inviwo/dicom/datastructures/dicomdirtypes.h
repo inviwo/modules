@@ -37,7 +37,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
-#include <MediaStorageAndFileFormat/gdcmPixelFormat.h>
+#include <gdcmPixelFormat.h>
 #include <warn/pop>
 
 namespace gdcm {

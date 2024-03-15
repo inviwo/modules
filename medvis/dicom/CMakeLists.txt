@@ -1,5 +1,3 @@
-add_subdirectory(ext/gdcm)
-
 #--------------------------------------------------------------------
 # Inviwo DICOM Module
 ivw_module(DICOM)
@@ -32,15 +30,26 @@ ivw_group("Source Files" ${SOURCE_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
+find_package(TIFF REQUIRED)
+find_package(gdcm CONFIG REQUIRED)
+
+target_link_libraries(inviwo-module-dicom 
+    PUBLIC 
+    gdcmDICT
+    gdcmDSED
+    gdcmIOD
+    gdcmjpeg8
+    gdcmjpeg12
+    gdcmjpeg16
+    gdcmMEXD
+    gdcmMSFF
+    gdcmcharls
+    gdcmCommon
+    PRIVATE
+    TIFF::TIFF
+)
 target_include_directories(inviwo-module-dicom PUBLIC gdcm)
+ivw_vcpkg_install(gdcm MODULE DICOM)
 
 #--------------------------------------------------------------------
-# Add dependency to ext/utf 
-target_link_libraries(inviwo-module-dicom PUBLIC gdcm)
 ivw_make_package(InviwoDICOMModule inviwo-module-dicom)
-
-ivw_register_license_file(NAME "Grassroots DICOM (GDCM)" VERSION 3.0.0 MODULE DICOM
-    URL https://sourceforge.net/projects/gdcm/
-    TYPE "Copyright (c) 2006-2016 Mathieu Malaterre, BSD License"
-    FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm/gdcm/Copyright.txt
-)

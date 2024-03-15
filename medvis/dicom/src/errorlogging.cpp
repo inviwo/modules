@@ -49,7 +49,7 @@
 #include <tiff.h>
 #include <tiffio.h>
 
-#include <Common/gdcmTrace.h>
+#include <gdcmTrace.h>
 #include <warn/pop>
 
 namespace inviwo {
