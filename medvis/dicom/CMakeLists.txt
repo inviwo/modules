@@ -31,37 +31,25 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(TIFF REQUIRED)
+find_package(gdcm CONFIG REQUIRED)
 
-option(IVW_USE_EXTERNAL_GDCM  "gdcm is provided externaly" OFF)
-if(NOT IVW_USE_EXTERNAL_GDCM)
-    add_subdirectory(ext/gdcm)
-    ivw_register_license_file(NAME "Grassroots DICOM (GDCM)" VERSION 3.0.0 MODULE DICOM
-        URL https://sourceforge.net/projects/gdcm/
-        TYPE "Copyright (c) 2006-2016 Mathieu Malaterre, BSD License"
-        FILES ${CMAKE_CURRENT_SOURCE_DIR}/ext/gdcm/gdcm/Copyright.txt
-    )
-    target_link_libraries(inviwo-module-dicom PUBLIC inviwo::gdcm)
-    target_include_directories(inviwo-module-dicom PUBLIC inviwo::gdcm)
-else()
-    find_package(gdcm CONFIG REQUIRED)
-    target_link_libraries(inviwo-module-dicom 
-        PUBLIC 
-        gdcmDICT
-        gdcmDSED
-        gdcmIOD
-        gdcmjpeg8
-        gdcmjpeg12
-        gdcmjpeg16
-        gdcmMEXD
-        gdcmMSFF
-        gdcmcharls
-        gdcmCommon
-    )
-    target_include_directories(inviwo-module-dicom PUBLIC gdcm)
-    ivw_vcpkg_install(gdcm MODULE DICOM)
-endif()
-
-target_link_libraries(inviwo-module-dicom PRIVATE TIFF::TIFF)
+target_link_libraries(inviwo-module-dicom 
+    PUBLIC 
+    gdcmDICT
+    gdcmDSED
+    gdcmIOD
+    gdcmjpeg8
+    gdcmjpeg12
+    gdcmjpeg16
+    gdcmMEXD
+    gdcmMSFF
+    gdcmcharls
+    gdcmCommon
+    PRIVATE
+    TIFF::TIFF
+)
+target_include_directories(inviwo-module-dicom PUBLIC gdcm)
+ivw_vcpkg_install(gdcm MODULE DICOM)
 
 #--------------------------------------------------------------------
 ivw_make_package(InviwoDICOMModule inviwo-module-dicom)
