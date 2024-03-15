@@ -6,7 +6,7 @@ To use this module, make sure that you include the following in your CMake prese
 
 ```json
 {
-  "inherits" : ["modules", "msvc-dev-vcpkg"],
+  "inherits" : ["modules", "vcpkg"],
   "cacheVariables": {
     "VCPKG_MANIFEST_FEATURES": "dicom",
     "IVW_MODULE_DICOM" :       { "type": "BOOL", "value": "ON" }
