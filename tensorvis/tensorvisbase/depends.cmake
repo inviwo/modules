@@ -7,6 +7,5 @@ set(dependencies
     InviwoBaseGLModule
     InviwoEigenUtilsModule
     InviwoVectorFieldVisualizationModule
-	InviwoNanoVGUtilsModule
-	InviwoPlottingModule
+	InviwoDataFrameModule
 )
