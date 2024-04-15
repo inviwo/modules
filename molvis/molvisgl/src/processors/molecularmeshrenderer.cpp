@@ -64,7 +64,14 @@ MolecularMeshRenderer::MolecularMeshRenderer()
     , forceRadius_("forceRadius", "Force Radius", false, InvalidationLevel::InvalidResources)
     , defaultRadius_("defaultRadius", "Default Radius", 0.15f, 0.00001f, 2.0f, 0.01f)
     , camera_("camera", "Camera", util::boundingBox(inport_))
-    , lighting_("lighting", "Lighting", &camera_)
+    , lighting_("lighting", "Lighting", "Light settings for illuminating the molecular mesh"_help,
+                LightingConfig{
+                    .ambient = vec3{0.515f},
+                    .diffuse = vec3{0.48f},
+                    .specular = vec3{0.09f},
+                    .specularExponent = 1.9f,
+                },
+                &camera_)
     , trackball_(&camera_)
 
     , vdwShaders_{{{ShaderType::Vertex, std::string{"vdw.vert"}},
@@ -103,14 +110,7 @@ MolecularMeshRenderer::MolecularMeshRenderer()
     addProperties(representation_, radiusScaling_, forceRadius_, defaultRadius_, camera_, lighting_,
                   trackball_);
 
-    lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
-    lighting_.ambientColor_.set(vec3(0.515f));
-    lighting_.diffuseColor_.set(vec3(0.48f));
-    lighting_.specularColor_.set(vec3(0.09f));
-    lighting_.specularExponent_.set(1.9f);
     lighting_.setCollapsed(true);
-
-    lighting_.setCurrentStateAsDefault();
 }
 
 void MolecularMeshRenderer::process() {
