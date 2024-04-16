@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,4 +29,31 @@
 
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <ttk/vtk/ttkAlgorithm.h>
+#include <vtkInformation.h>
+#include <vtkAlgorithm.h>
+
+namespace inviwo {
+
+namespace ttk {
+
+std::optional<std::string> getOutportDataType(vtkAlgorithm* filter, int portNumber) {
+    vtkInformation* info = filter->GetOutputPortInformation(portNumber);
+    std::optional<std::string> dataType;
+    if (info->Has(ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT())) {
+        int inportNum = info->Get(ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT());
+        vtkInformation* inportInfo = filter->GetInputPortInformation(inportNum);
+        if (inportInfo->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
+            dataType = inportInfo->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
+        } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+            dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+        }
+    } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+        dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+    }
+    return dataType;
+}
+
+}  // namespace ttk
+
+}  // namespace inviwo

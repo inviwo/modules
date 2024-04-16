@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,47 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/processors/vtkgenericprocessor.h>
+#pragma once
 
-namespace inviwo {}  // namespace inviwo
+#include <inviwo/ttk/ttkmoduledefine.h>
+
+#include <optional>
+#include <string>
+#include <functional>
+
+class vtkInformation;
+class vtkAlgorithm;
+
+namespace inviwo {
+
+namespace ttk {
+
+/**
+ * To be used in conjunction with VTKGenericProcessor. If the VTKTraits struct has a member
+ * <tt>outportDataTypeFunc</tt> of this type, the function will be used to infer the type of the
+ * nth outport.
+ * This is necessary to account for TTK's <tt>ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT()</tt>.
+ *
+ * \code{.cpp} template <> struct VTKTraits<ttkDistanceField> {
+ *     ...
+ *     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
+ *     ...
+ * };
+ * \endcode
+ *
+ * \see getOutportDataType
+ */
+using OutportDataTypeFunc = std::function<std::optional<std::string>(vtkAlgorithm*, int)>;
+
+/**
+ * Infer the data type of outport \p portNumber of the VTK filter \p filter. This function allows
+ * for the outport having the same data type as its corresponding inport as defined by
+ * <tt>ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT()</tt>.
+ *
+ */
+IVW_MODULE_TTK_API std::optional<std::string> getOutportDataType(vtkAlgorithm* filter,
+                                                                 int portNumber);
+
+}  // namespace ttk
+
+}  // namespace inviwo
