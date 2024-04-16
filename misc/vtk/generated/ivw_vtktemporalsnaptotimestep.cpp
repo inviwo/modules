@@ -56,6 +56,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(This file modifies the time range or time steps of the
 data without changing the data itself. The data is not

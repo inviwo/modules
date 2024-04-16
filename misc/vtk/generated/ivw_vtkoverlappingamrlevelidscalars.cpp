@@ -42,6 +42,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(The Level
 Scalars filter uses colors to show levels of a
 hierarchical dataset.)";

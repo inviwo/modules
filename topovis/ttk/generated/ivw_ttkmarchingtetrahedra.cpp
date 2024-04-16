@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -149,6 +150,7 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
                "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options", {"Scalar Field"}}, Group{"Output options", {"SurfaceType"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(Given an input point data array and triangulation this class executes the marching tetrahedra/triangles algorithm. It has three options that either separate each label with a single separating geometry inbetween two labels, or a separating geometry enclosing each label (detailed and fast mode).
 

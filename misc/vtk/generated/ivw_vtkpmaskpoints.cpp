@@ -166,6 +166,7 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
         properties;
+
     static constexpr std::string_view doc = R"(The Mask Points
 filter reduces the number of points in the dataset. It
 operates on any type of dataset, but produces only points

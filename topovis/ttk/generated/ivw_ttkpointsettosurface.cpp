@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -98,6 +99,7 @@ struct VTKTraits<ttkPointSetToSurface> {
     inline static std::array<Group, 1> groups = {
         Group{"Input options", {"InputOrderingXArray", "InputOrderingYArray"}}};
     std::tuple<Wrapper0, Wrapper1> properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(This filter generates a surface between points in a Point Set
 according to the ordering of two given Point Data arrays.

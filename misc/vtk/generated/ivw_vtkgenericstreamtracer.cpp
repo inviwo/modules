@@ -212,6 +212,7 @@ the streamlines will be generated.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10>
         properties;
+
     static constexpr std::string_view doc = R"(The
 Generic Stream Tracer filter generates streamlines in a
 vector field from a collection of seed points. The vector

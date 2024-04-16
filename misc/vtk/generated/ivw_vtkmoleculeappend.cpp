@@ -40,6 +40,7 @@ struct VTKTraits<vtkMoleculeAppend> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc =
         R"(Appends one or more molecules into a single molecule. It also appends  the associated atom data and edge data.
 Note that input data arrays should match (same number of arrays with same names in each input))";

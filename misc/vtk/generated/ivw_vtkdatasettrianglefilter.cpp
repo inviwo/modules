@@ -42,6 +42,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(The
 Tetrahedralize filter converts the 3D cells of any type of
 dataset to tetrahedrons and the 2D ones to triangles. This

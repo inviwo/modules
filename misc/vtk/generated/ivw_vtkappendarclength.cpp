@@ -41,6 +41,7 @@ struct VTKTraits<vtkAppendArcLength> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(vtkAppendArcLength is used for filter such as
 plot-over-line. In such cases, we need to add an attribute
 array that is the arc_length over the length of the probed

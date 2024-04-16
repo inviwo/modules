@@ -126,6 +126,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
+
     static constexpr std::string_view doc =
         R"(The Warp (scalar) filter translates the points of the
 input data set along a vector by a distance determined by

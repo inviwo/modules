@@ -141,6 +141,7 @@ Generation filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+
     static constexpr std::string_view doc = R"(This filter
 generates surface normals at the points of the input
 polygonal dataset to provide smooth shading of the

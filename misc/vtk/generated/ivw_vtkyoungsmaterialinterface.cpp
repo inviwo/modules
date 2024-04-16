@@ -102,6 +102,7 @@ struct VTKTraits<vtkYoungsMaterialInterface> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
+
     static constexpr std::string_view doc =
         R"(Computes linear material interfaces in 2D or 3D mixed
 cells produced by Eulerian or ALE simulation

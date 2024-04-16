@@ -209,6 +209,7 @@ struct VTKTraits<vtkTensorGlyph> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9>
         properties;
+
     static constexpr std::string_view doc =
         R"(The Tensor Glyph filter generates an ellipsoid, cuboid, cylinder or superquadric glyph at every point in
 the input data set. The glyphs are oriented and scaled according to eigenvalues and eigenvectors of tensor

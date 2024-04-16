@@ -149,6 +149,7 @@ the contour filter.)"}};
     inline static std::array<Group, 2> groups = {Group{"Isosurfaces", {"ContourValues"}},
                                                  Group{"Point Locator", {"Locator"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
+
     static constexpr std::string_view doc = R"(The Contour
 filter computes isolines or isosurfaces using a selected
 point-centered scalar array. The Contour filter operates

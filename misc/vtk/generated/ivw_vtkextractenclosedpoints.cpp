@@ -95,6 +95,7 @@ struct VTKTraits<vtkExtractEnclosedPoints> {
                                                         OutputData{"outport1", "Outliers", 1}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(Evaluates all points in the input dataset to determine whether they are contained within
 an enclosing surface, defined by the **Surface**. The filter assumes that the surface

@@ -42,6 +42,7 @@ struct VTKTraits<vtkStructuredGridOutlineFilter> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(The Outline filter
 generates an outline of the outside edges of the input
 dataset, rather than the dataset's bounding box. This

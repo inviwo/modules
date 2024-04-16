@@ -41,6 +41,7 @@ struct VTKTraits<vtkHyperTreeGridToUnstructuredGrid> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc =
         R"(This filter converts vtkHyperTreeGrid data to vtkUnstructuredGrid. The converted output consumes much more memory but is compatible with most of the standard filters.)";
 };

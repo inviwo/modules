@@ -52,6 +52,7 @@ struct VTKTraits<vtkPassArrays> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(The Pass Arrays filter makes a shallow copy of the output
 data object from the input data object except for passing

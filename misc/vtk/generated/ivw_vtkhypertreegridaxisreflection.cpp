@@ -67,6 +67,7 @@ struct VTKTraits<vtkHyperTreeGridAxisReflection> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
+
     static constexpr std::string_view doc =
         R"(This filter reflect the cells of a hyper tree grid with respect to
 one of the planes parallel to the bounding box of the data set.)";

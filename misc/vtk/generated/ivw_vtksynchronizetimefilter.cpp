@@ -59,6 +59,7 @@ the time step values.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(Synchronize time step values in the first input (Input) to time step
 values in the second input (Source) that are considered close enough.

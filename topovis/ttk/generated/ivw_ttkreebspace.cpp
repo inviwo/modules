@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -513,6 +514,7 @@ struct VTKTraits<ttkReebSpace> {
                Wrapper23, Wrapper24, Wrapper25, Wrapper26, Wrapper27, Wrapper28, Wrapper29,
                Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34, Wrapper35>
         properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(The Reeb space is a useful topological abstraction of bivariate scalar
 fields for data segmentation purposes. Intuitively, it allows the automatic

@@ -40,6 +40,7 @@ struct VTKTraits<vtkMoleculeToLinesFilter> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc =
         R"(Convert a molecule into lines. Each atom of the input becomes a point of the output polydata, each bond a line.)";
 };

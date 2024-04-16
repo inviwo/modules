@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -162,6 +163,7 @@ struct VTKTraits<ttkConnectedComponents> {
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
         properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(This filter consumes a scalar field with a feature mask and computes for each edge connected group of vertices with a non-background mask value a so-called connected component via flood-filling, where the background is masked with values smaller-equal zero. The computed components store the size, seed, and center of mass of each component. The flag UseSeedIdAsComponentId controls if the resulting segmentation is either labeled by the index of the component, or by its seed location (which can be used as a deterministic component label).)";
 };

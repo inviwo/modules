@@ -120,6 +120,7 @@ Extrusion filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
+
     static constexpr std::string_view doc = R"(The Rotational Extrusion filter forms a surface by
 rotating the input about the Z axis. This filter is
 intended to operate on 2D polygonal data. It produces

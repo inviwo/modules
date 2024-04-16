@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -69,6 +70,7 @@ struct VTKTraits<ttkStringArrayConverter> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {Group{"Input options", {"Input String Array"}}};
     std::tuple<Wrapper0> properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc = R"(This filter converts an input vtkStringArray into an
 vtkIntArray to make it easier to apply Threshold on the data
 set. The correspondence between a string value and an int is

@@ -108,6 +108,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc = R"(The
 Reflect filter reflects the input dataset across the
 specified plane. This filter operates on any type of data

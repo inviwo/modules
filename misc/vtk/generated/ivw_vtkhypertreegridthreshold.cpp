@@ -85,6 +85,7 @@ struct VTKTraits<vtkHyperTreeGridThreshold> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
+
     static constexpr std::string_view doc =
         R"(This filter thresholds directly from HyperTreeGrid input datasets.)";
 };

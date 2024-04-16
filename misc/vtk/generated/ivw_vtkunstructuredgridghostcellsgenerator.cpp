@@ -93,6 +93,7 @@ generator.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(The GhostCellGenerator operates on unstructured grids only.
 This filter does not redistribute the input data, it only

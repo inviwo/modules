@@ -77,6 +77,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
+
     static constexpr std::string_view doc = R"(The Extract
 Surface filter extracts the polygons forming the outer
 surface of the input dataset. This filter operates on any

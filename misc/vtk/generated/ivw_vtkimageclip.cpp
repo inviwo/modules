@@ -42,6 +42,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(The Crop filter
 extracts an area/volume of interest from a 2D image or a
 3D volume by allowing the user to specify the minimum and
