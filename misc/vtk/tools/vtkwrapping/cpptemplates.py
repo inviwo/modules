@@ -38,13 +38,14 @@ void register{className}(InviwoModule* module);
 """
 
 sourceTemplate = """#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/vtk/processors/vtkgenericprocessor.h>
+#include <{processorInclude}>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+{customIncludes}
 
 #include <tuple>
 #include <array>
@@ -80,11 +81,12 @@ struct VTKTraits<{className}> {{
     inline static std::array<OutputData, {nOutput}> outports = {{{outputData}}};
     inline static std::array<Group, {nGroup}> groups = {{{groupList}}};
     std::tuple<{proplist}> properties;
+    {customTraits}
     static constexpr std::string_view doc = R"({doc})";
 }};
 
 void register{className}(InviwoModule* module) {{
-    module->registerProcessor<VTKGenericProcessor<{className}>>();
+    module->registerProcessor<{processorName}<{className}>>();
 }}
 
 }}  // namespace vtkwrapper

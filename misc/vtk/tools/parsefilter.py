@@ -181,13 +181,18 @@ if __name__ == '__main__':
     if config.mode == vtkwrapping.Mode.custom:
         prefix = ""
 
-    # FIXME: consider proper prefix based on mode, which will break old Inviwo Workspaces
-    # prefix = "ttk"
+    traits: list[vtkwrapping.CustomTrait] = []
+    if config.mode == vtkwrapping.Mode.ttk:
+        traits.append(vtkwrapping.CustomTrait(
+            trait="ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;",
+            include="#include <inviwo/ttk/util/ttkprocessorutils.h>"
+        ))
 
     vtkwrapping.generatefiles.generate_files(
         destination=config.destination,
         filters=filters,
         uriPrefix=prefix,
+        customTraits=traits,
         remove_old_files=config.remove_old_files,
         property_fixes=vtkwrapping.fixes.get_fixes_vtk(),
         clangformat=config.clangformat)
