@@ -133,7 +133,14 @@ MolecularRenderer::MolecularRenderer()
     , enableTooltips_("enableTooltips", "Enable Tooltips",
                       "Show tooltips with detailed information for atoms"_help, true)
     , camera_("camera", "Camera", molvis::boundingBox(inport_))
-    , lighting_("lighting", "Lighting", &camera_)
+    , lighting_("lighting", "Lighting", "Light settings for illuminating the molecular mesh"_help,
+                LightingConfig{
+                    .ambient = vec3{0.515f},
+                    .diffuse = vec3{0.48f},
+                    .specular = vec3{0.09f},
+                    .specularExponent = 1.9f,
+                },
+                &camera_)
     , trackball_(&camera_)
 
     , vdwShaders_{{{ShaderType::Vertex, std::string{"vdw.vert"}},
@@ -188,14 +195,7 @@ MolecularRenderer::MolecularRenderer()
     showSelected_.setCollapsed(true);
     showFiltered_.setCollapsed(true);
 
-    lighting_.lightPosition_.set(vec3(550.0f, 680.0f, 1000.0f));
-    lighting_.ambientColor_.set(vec3(0.515f));
-    lighting_.diffuseColor_.set(vec3(0.48f));
-    lighting_.specularColor_.set(vec3(0.09f));
-    lighting_.specularExponent_.set(1.9f);
     lighting_.setCollapsed(true);
-
-    lighting_.setCurrentStateAsDefault();
 }
 
 void MolecularRenderer::process() {
