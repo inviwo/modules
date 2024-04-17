@@ -38,7 +38,7 @@ void register{className}(InviwoModule* module);
 """
 
 sourceTemplate = """#include <inviwo/core/common/inviwomodule.h>
-#include <{processorInclude}>
+#include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
@@ -86,7 +86,7 @@ struct VTKTraits<{className}> {{
 }};
 
 void register{className}(InviwoModule* module) {{
-    module->registerProcessor<{processorName}<{className}>>();
+    module->registerProcessor<VTKGenericProcessor<{className}>>();
 }}
 
 }}  // namespace vtkwrapper

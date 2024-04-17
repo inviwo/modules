@@ -44,12 +44,6 @@ _T = TypeVar("T")
 
 
 @dataclasses.dataclass
-class BaseProcessor:
-    name: str = "VTKGenericProcessor"
-    include: str = "inviwo/vtk/processors/vtkgenericprocessor.h"
-
-
-@dataclasses.dataclass
 class CustomTrait:
     trait: str
     include: str = ""
@@ -60,7 +54,6 @@ def generate_files(destination: Path,
                    *,
                    uriPrefix: str = "vtk",
                    customTraits: list[CustomTrait] = [],
-                   baseProcessor: BaseProcessor = BaseProcessor(),
                    remove_old_files: bool = False,
                    property_fixes: Optional[dict[fixes.PropertyKey,
                                                  fixes.TextReplacement]] = None,
@@ -79,8 +72,6 @@ def generate_files(destination: Path,
         inserted between 'org.inviwo.' and '.className'
     customTraits: list[CustomTrait]
         list of additional traits to be added to the template
-    baseProcessor : BaseProcessor
-        Processor the filters are derived from.
     remove_old_files : bool, optional
         If set, existing header and source files matching 'ivw_*' are deleted. The
         default is False.
@@ -109,7 +100,7 @@ def generate_files(destination: Path,
         name = data.className
         header, source = generate_source_files(
             data, uriPrefix, customTraits=customTraits,
-            baseProcessor=baseProcessor, property_fixes=property_fixes)
+            property_fixes=property_fixes)
         with open(destination / f"ivw_{name.lower()}.h", 'w') as f:
             f.write(header)
         with open(destination / f"ivw_{name.lower()}.cpp", 'w') as f:
@@ -143,7 +134,6 @@ def formatFile(file: Path, clangformat: Path = Path("clang-format")) -> None:
 
 def generate_source_files(data: vtkdata.FilterData, uriPrefix: str, *,
                           customTraits: list[CustomTrait] = [],
-                          baseProcessor: BaseProcessor = BaseProcessor(),
                           property_fixes: Optional[dict[fixes.PropertyKey,
                                                         fixes.TextReplacement]] = None
                           ) -> Tuple[str, str]:
@@ -156,8 +146,6 @@ def generate_source_files(data: vtkdata.FilterData, uriPrefix: str, *,
         annotated vtk filter.
     customTraits: list[CustomTrait]
         list of additional traits to be added to the template
-    baseProcessor : BaseProcessor
-        Processor the filters are derived from. Default is "VTKGenericProcessor".
     property_fixes: dict[fixes.PropertyKey, fixes.TextReplacement], optional
         applies textual replacements to properties listed in the dictionary after source code
         has been generated
@@ -306,8 +294,6 @@ def generate_source_files(data: vtkdata.FilterData, uriPrefix: str, *,
     includes: str = "\n".join(t.include for t in customTraits)
 
     source = cpptemplates.sourceTemplate.format(
-        processorName=baseProcessor.name,
-        processorInclude=baseProcessor.include,
         customIncludes=includes,
         customTraits=traits,
         identifier=data.identifier,
