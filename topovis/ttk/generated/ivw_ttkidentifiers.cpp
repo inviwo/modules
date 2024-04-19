@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -104,6 +105,7 @@ struct VTKTraits<ttkIdentifiers> {
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(TTK plugin that computes the global identifiers for each
 vertex and each cell as point data and cell data scalar fields.

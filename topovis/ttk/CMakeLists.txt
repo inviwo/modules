@@ -1,12 +1,14 @@
 ivw_module(ttk)
 
 set(HEADER_FILES
+    include/inviwo/ttk/util/ttkprocessorutils.h
     include/inviwo/ttk/ttkmodule.h
     include/inviwo/ttk/ttkmoduledefine.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
 set(SOURCE_FILES
+    src/util/ttkprocessorutils.cpp
     src/ttkmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

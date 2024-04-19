@@ -136,6 +136,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(CellDerivatives is a filter that computes derivatives of
 scalars and vectors at the center of cells. You can choose

@@ -114,6 +114,7 @@ selection as the input)"}};
                                                         OutputData{"outport1", "Particles", 1}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(Particle Pathlines takes any dataset as input, it extracts the
 point locations of all cells over time to build up a polyline

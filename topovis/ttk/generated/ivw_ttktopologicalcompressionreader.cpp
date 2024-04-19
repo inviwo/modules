@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -51,6 +52,7 @@ struct VTKTraits<ttkTopologicalCompressionReader> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {Group{"Select file", {"FileName"}}};
     std::tuple<Wrapper0> properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(This plugin specifies the file name for the TTK reader.
 

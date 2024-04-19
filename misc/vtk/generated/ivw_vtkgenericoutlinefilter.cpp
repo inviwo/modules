@@ -42,6 +42,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(The Generic Outline
 filter generates an axis-aligned bounding box for the
 input data set. The Input menu specifies the data set for

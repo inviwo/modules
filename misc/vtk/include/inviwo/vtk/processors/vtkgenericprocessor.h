@@ -68,17 +68,9 @@
 
 #include <warn/pop>
 
-class vtkInformationIntegerKey;
-
 namespace inviwo {
 
 namespace vtkwrapper {
-
-namespace vtkhelper {
-
-IVW_MODULE_VTK_API vtkInformationIntegerKey* SAME_DATA_TYPE_AS_INPUT_PORT();
-
-}  // namespace vtkhelper
 
 struct IVW_MODULE_VTK_API InputData {
     std::string identifier;
@@ -166,16 +158,7 @@ public:
         const auto nOutputs = filter_->GetNumberOfOutputPorts();
 
         for (int i = 0; i < nInputs; ++i) {
-            vtkInformation* info = filter_->GetInputPortInformation(i);
-
-            std::optional<std::string> dataType;
-            if (info->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
-                dataType = info->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
-            } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
-                dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
-            }
-
-            if (dataType) {
+            if (auto dataType = getInportDataType(i); dataType) {
                 auto id = i < static_cast<int>(VTKTraits<VTKFilter>::inports.size())
                               ? util::stripIdentifier(VTKTraits<VTKFilter>::inports[i].identifier)
                               : fmt::format("inport{}", i);
@@ -185,6 +168,7 @@ public:
                                : Document{};
                 addPort(std::make_unique<vtk::VtkInport>(id, *dataType, std::move(doc)));
             } else {
+                vtkInformation* info = filter_->GetInputPortInformation(i);
                 throw Exception(
                     fmt::format("missing inport for {}, unknown VTK dataType. Port info: {}",
                                 VTKTraits<VTKFilter>::identifier, toString(info)));
@@ -192,21 +176,7 @@ public:
         }
 
         for (int i = 0; i < nOutputs; ++i) {
-            vtkInformation* info = filter_->GetOutputPortInformation(i);
-            std::optional<std::string> dataType;
-            if (info->Has(vtkhelper::SAME_DATA_TYPE_AS_INPUT_PORT())) {
-                int inportNum = info->Get(vtkhelper::SAME_DATA_TYPE_AS_INPUT_PORT());
-                vtkInformation* inportInfo = filter_->GetInputPortInformation(inportNum);
-                if (inportInfo->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
-                    dataType = inportInfo->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
-                } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
-                    dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
-                }
-            } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
-                dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
-            }
-
-            if (dataType) {
+            if (auto dataType = getOutportDataType(i); dataType) {
                 auto id = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
                               ? util::stripIdentifier(VTKTraits<VTKFilter>::outports[i].identifier)
                               : fmt::format("output{}", i);
@@ -216,6 +186,7 @@ public:
                                : Document{};
                 addPort(std::make_unique<vtk::VtkOutport>(id, *dataType, std::move(doc)));
             } else {
+                vtkInformation* info = filter_->GetOutputPortInformation(i);
                 throw Exception(
                     fmt::format("missing outport for {}, dataType not known, port info: {}",
                                 VTKTraits<VTKFilter>::identifier, toString(info)));
@@ -329,7 +300,33 @@ public:
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-private:
+protected:
+    std::optional<std::string> getInportDataType(int portNumber) const {
+        vtkInformation* info = filter_->GetInputPortInformation(portNumber);
+        std::optional<std::string> dataType;
+        if (info->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
+            dataType = info->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
+        } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+            dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+        }
+        return dataType;
+    }
+    std::optional<std::string> getOutportDataType(int portNumber) const {
+        if constexpr (requires {
+                          traits_.outportDataTypeFunc;
+                          std::invocable<decltype(traits_.outportDataTypeFunc), vtkAlgorithm*, int>;
+                      }) {
+            return traits_.outportDataTypeFunc(filter_, portNumber);
+        } else {
+            vtkInformation* info = filter_->GetOutputPortInformation(portNumber);
+            std::optional<std::string> dataType;
+            if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+                dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+            }
+            return dataType;
+        }
+    }
+
     vtkNew<VTKFilter> filter_;
     VTKTraits<VTKFilter> traits_;
     vtkSmartPointer<Command> observer_;

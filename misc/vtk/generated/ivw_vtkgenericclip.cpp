@@ -97,6 +97,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
+
     static constexpr std::string_view doc =
         R"(The Generic Clip filter cuts away a portion of the input
 data set using a plane, a sphere, a box, or a scalar

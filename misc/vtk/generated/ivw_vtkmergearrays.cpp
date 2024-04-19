@@ -42,6 +42,7 @@ Attributes filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc =
         R"(The Append Attributes filter takes multiple input data
 sets with the same geometry and merges their point and

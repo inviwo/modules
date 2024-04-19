@@ -106,6 +106,7 @@ struct VTKTraits<vtkExtractTimeSteps> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {Group{"Time Step Indices", {"TimeStepIndices"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(This filter extracts specified time steps from its input.)";
 };

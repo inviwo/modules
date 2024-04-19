@@ -91,6 +91,7 @@ struct VTKTraits<vtkHyperTreeGridAxisClip> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(Clip an hyper tree grid along an axis aligned plane or box and output
 a hyper tree grid with same dimensionality.)";

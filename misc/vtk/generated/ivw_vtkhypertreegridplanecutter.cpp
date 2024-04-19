@@ -69,6 +69,7 @@ struct VTKTraits<vtkHyperTreeGridPlaneCutter> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
+
     static constexpr std::string_view doc =
         R"(Takes as input an hyper tree grid and a single plane and generates the
 polygonal data intersection surface.)";

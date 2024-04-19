@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -666,6 +667,7 @@ struct VTKTraits<ttkDimensionReduction> {
                Wrapper44, Wrapper45, Wrapper46, Wrapper47, Wrapper48, Wrapper49, Wrapper50,
                Wrapper51, Wrapper52, Wrapper53>
         properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc = R"(TTK dimensionReduction plugin documentation.
 
 Online examples:

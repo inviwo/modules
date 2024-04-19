@@ -138,6 +138,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
+
     static constexpr std::string_view doc = R"(The Temporal
 Shift Scale filter linearly transforms the time values of
 a pipeline object by applying a shift and then scale.

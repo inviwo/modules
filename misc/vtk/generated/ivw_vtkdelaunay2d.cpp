@@ -115,6 +115,7 @@ Delaunay 2D filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
+
     static constexpr std::string_view doc = R"(Delaunay2D is a filter that constructs a 2D Delaunay
 triangulation from a list of input points. These points
 may be represented by any dataset of type vtkPointSet and

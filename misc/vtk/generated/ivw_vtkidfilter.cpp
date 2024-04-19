@@ -80,6 +80,7 @@ Point Data filter.)"}};
         Group{"Point Ids", {"GeneratePointIds", "PointIdsArrayName"}},
         Group{"Cell Ids", {"GenerateCellIds", "CellIdsArrayName"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
+
     static constexpr std::string_view doc =
         R"(This filter generates scalars using cell and point ids.
 That is, the point attribute data scalars are generated

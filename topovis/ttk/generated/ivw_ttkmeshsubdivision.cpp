@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -118,6 +119,7 @@ struct VTKTraits<ttkMeshSubdivision> {
                "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{"Input options", {"IterationNumber"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(This filter subdivides an input mesh with a strategy inspired by
 Discrete Morse theory. It does not modify the position of the original

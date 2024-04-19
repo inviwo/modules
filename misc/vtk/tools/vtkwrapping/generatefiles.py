@@ -43,9 +43,17 @@ console = Console()
 _T = TypeVar("T")
 
 
+@dataclasses.dataclass
+class CustomTrait:
+    trait: str
+    include: str = ""
+
+
 def generate_files(destination: Path,
                    filters: list[vtkdata.FilterData],
+                   *,
                    uriPrefix: str = "vtk",
+                   customTraits: list[CustomTrait] = [],
                    remove_old_files: bool = False,
                    property_fixes: Optional[dict[fixes.PropertyKey,
                                                  fixes.TextReplacement]] = None,
@@ -62,6 +70,8 @@ def generate_files(destination: Path,
         list of filters
     uriPrefix : str
         inserted between 'org.inviwo.' and '.className'
+    customTraits: list[CustomTrait]
+        list of additional traits to be added to the template
     remove_old_files : bool, optional
         If set, existing header and source files matching 'ivw_*' are deleted. The
         default is False.
@@ -88,7 +98,9 @@ def generate_files(destination: Path,
 
         used.append(data.className)
         name = data.className
-        header, source = generate_source_files(data, uriPrefix, property_fixes)
+        header, source = generate_source_files(
+            data, uriPrefix, customTraits=customTraits,
+            property_fixes=property_fixes)
         with open(destination / f"ivw_{name.lower()}.h", 'w') as f:
             f.write(header)
         with open(destination / f"ivw_{name.lower()}.cpp", 'w') as f:
@@ -120,7 +132,8 @@ def formatFile(file: Path, clangformat: Path = Path("clang-format")) -> None:
     subprocess.run([clangformat, "-i", file])
 
 
-def generate_source_files(data: vtkdata.FilterData, uriPrefix: str,
+def generate_source_files(data: vtkdata.FilterData, uriPrefix: str, *,
+                          customTraits: list[CustomTrait] = [],
                           property_fixes: Optional[dict[fixes.PropertyKey,
                                                         fixes.TextReplacement]] = None
                           ) -> Tuple[str, str]:
@@ -131,6 +144,11 @@ def generate_source_files(data: vtkdata.FilterData, uriPrefix: str,
     ----------
     data : vtkdata.FilterData
         annotated vtk filter.
+    customTraits: list[CustomTrait]
+        list of additional traits to be added to the template
+    property_fixes: dict[fixes.PropertyKey, fixes.TextReplacement], optional
+        applies textual replacements to properties listed in the dictionary after source code
+        has been generated
 
     Returns
     -------
@@ -272,22 +290,28 @@ def generate_source_files(data: vtkdata.FilterData, uriPrefix: str,
 
     uri = f'{uriPrefix}.{data.className}' if uriPrefix else data.className
 
-    source = cpptemplates.sourceTemplate.format(identifier=data.identifier,
-                                                displayName=data.displayName,
-                                                uri=uri,
-                                                className=data.className,
-                                                category=data.category,
-                                                tags=data.tags,
-                                                doc=data.doc,
-                                                proplist=', '.join(proplist),
-                                                propClasses=propClasses,
-                                                nInput=len(data.inports),
-                                                nOutput=len(data.outports),
-                                                nGroup=len(data.groups),
-                                                inputData=inputData,
-                                                outputData=outputData,
-                                                groupList=", ".join(groups)
-                                                )
+    traits: str = "\n    ".join(t.trait for t in customTraits)
+    includes: str = "\n".join(t.include for t in customTraits)
+
+    source = cpptemplates.sourceTemplate.format(
+        customIncludes=includes,
+        customTraits=traits,
+        identifier=data.identifier,
+        displayName=data.displayName,
+        uri=uri,
+        className=data.className,
+        category=data.category,
+        tags=data.tags,
+        doc=data.doc,
+        proplist=', '.join(proplist),
+        propClasses=propClasses,
+        nInput=len(data.inports),
+        nOutput=len(data.outports),
+        nGroup=len(data.groups),
+        inputData=inputData,
+        outputData=outputData,
+        groupList=", ".join(groups)
+    )
 
     header = cpptemplates.headerTemplate.format(className=data.className)
 

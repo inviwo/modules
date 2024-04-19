@@ -42,6 +42,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(This filter
 extracts the portion of the input dataset that lies along
 the specified plane. The Slice filter takes any type of

@@ -42,6 +42,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(The Extract Edges
 filter produces a wireframe version of the input dataset
 by extracting all the edges of the dataset's cells as

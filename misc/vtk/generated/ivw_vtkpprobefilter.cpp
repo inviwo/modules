@@ -121,6 +121,7 @@ be used in determining positions to probe.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
+
     static constexpr std::string_view doc =
         R"(Internal filter used by (filters, ProbeLine). The Plot
 Over Line filter samples the data set attributes of the current data set

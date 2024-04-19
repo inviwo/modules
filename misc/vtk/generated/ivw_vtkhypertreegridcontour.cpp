@@ -71,6 +71,7 @@ struct VTKTraits<vtkHyperTreeGridContour> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(This filter extracts isocontours directly from HyperTreeGrid input datasets.)";
 };

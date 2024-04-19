@@ -57,6 +57,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc = R"(The Temporal Cache
 can be used to save multiple copies of a data set at
 different time steps to prevent thrashing in the pipeline

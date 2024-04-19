@@ -57,6 +57,7 @@ Subdivision filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(The Loop Subdivision filter increases the granularity of a
 polygonal mesh. It works by dividing each triangle in the

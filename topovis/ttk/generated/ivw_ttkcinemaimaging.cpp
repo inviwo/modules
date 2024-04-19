@@ -7,6 +7,7 @@
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/ttk/util/ttkprocessorutils.h>
 
 #include <tuple>
 #include <array>
@@ -234,6 +235,7 @@ struct VTKTraits<ttkCinemaImaging> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14>
         properties;
+    ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
         R"(This filter takes images of a vtkDataObject (first input) from angles specified on a vtkPointSet (second input). Each image will be a block of a vtkMultiBlockDataSet where block order corresponds to point order. Each sample point can optionally have vtkDoubleArrays to override the default rendering parameters, i.e, the resolution, camera direction, clipping planes, and viewport height.
 

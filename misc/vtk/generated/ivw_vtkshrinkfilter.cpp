@@ -58,6 +58,7 @@ filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc = R"(The Shrink filter
 causes the individual cells of a dataset to break apart
 from each other by moving each cell's points toward the

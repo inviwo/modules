@@ -42,6 +42,7 @@ information filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
+
     static constexpr std::string_view doc = R"(Removes ghost
 cells and point data and cell data ghost arrays.)";
 };

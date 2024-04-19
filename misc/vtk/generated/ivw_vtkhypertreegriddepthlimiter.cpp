@@ -54,6 +54,7 @@ struct VTKTraits<vtkHyperTreeGridDepthLimiter> {
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(Extract all levels down to a specified depth from a hyper tree grid.
 If the required depth is greater or equal to the maximum level of the

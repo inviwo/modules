@@ -54,6 +54,7 @@ Attributes filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
+
     static constexpr std::string_view doc =
         R"(The Integrate Attributes filter integrates point and cell
 data over lines and surfaces. It also computes length of

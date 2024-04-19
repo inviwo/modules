@@ -29,17 +29,4 @@
 
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 
-#include <vtkInformationKey.h>
-#include <vtkInformationIntegerKey.h>
-
-namespace inviwo::vtkwrapper::vtkhelper {
-
-// manual expansion of vtkInformationKeyMacro(ttkAlgorithm, SAME_DATA_TYPE_AS_INPUT_PORT, Integer);
-// so it can be used without a class. This information key is otherwise defined in ttkAlgorithm.
-
-static vtkInformationIntegerKey* ttkInformationKey =
-    new vtkInformationIntegerKey("SAME_DATA_TYPE_AS_INPUT_PORT", "ttkAlgorithm");
-
-vtkInformationIntegerKey* SAME_DATA_TYPE_AS_INPUT_PORT() { return ttkInformationKey; };
-
-}  // namespace inviwo::vtkwrapper::vtkhelper
+namespace inviwo {}  // namespace inviwo
