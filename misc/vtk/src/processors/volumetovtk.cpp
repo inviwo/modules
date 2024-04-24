@@ -41,11 +41,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToVTK::processorInfo_{
-    "org.inviwo.VolumeToVTK",              // Class identifier
-    "Volume To VTK",                       // Display name
-    "VTK",                                 // Category
-    CodeState::Experimental,               // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Volume"}  // Tags
+    "org.inviwo.VolumeToVTK",               // Class identifier
+    "Volume To VTK",                        // Display name
+    "VTK",                                  // Category
+    CodeState::Experimental,                // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Volume"}  // Tags
 };
 const ProcessorInfo VolumeToVTK::getProcessorInfo() const { return processorInfo_; }
 

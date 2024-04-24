@@ -54,11 +54,11 @@ using RangeType = decltype(std::declval<T>()->getRange(std::declval<int>()));
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKToDataFrame::processorInfo_{
-    "org.inviwo.VTKToDataFrame",               // Class identifier
-    "VTK To Data Frame",                       // Display name
-    "VTK",                                     // Category
-    CodeState::Experimental,                   // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"DataFrame"},  // Tags
+    "org.inviwo.VTKToDataFrame",                // Class identifier
+    "VTK To Data Frame",                        // Display name
+    "VTK",                                      // Category
+    CodeState::Experimental,                    // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"DataFrame"},  // Tags
     R"(Convert VTK DataSet cell and point array data to dataframes)"_unindentHelp};
 
 const ProcessorInfo VTKToDataFrame::getProcessorInfo() const { return processorInfo_; }

@@ -44,11 +44,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKToLayer::processorInfo_{
-    "org.inviwo.VTKToLayer",               // Class identifier
-    "VTK To Layer",                        // Display name
-    "VTK",                                 // Category
-    CodeState::Experimental,               // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Layer"},  // Tags
+    "org.inviwo.VTKToLayer",                // Class identifier
+    "VTK To Layer",                         // Display name
+    "VTK",                                  // Category
+    CodeState::Experimental,                // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Layer"},  // Tags
     R"(Converts a VTKImageData dataset to an Inviwo Layer)"_unindentHelp};
 
 const ProcessorInfo VTKToLayer::getProcessorInfo() const { return processorInfo_; }

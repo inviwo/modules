@@ -55,11 +55,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKToMesh::processorInfo_{
-    "org.inviwo.VTKToMesh",               // Class identifier
-    "VTK To Mesh",                        // Display name
-    "VTK",                                // Category
-    CodeState::Experimental,              // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Mesh"},  // Tags
+    "org.inviwo.VTKToMesh",                // Class identifier
+    "VTK To Mesh",                         // Display name
+    "VTK",                                 // Category
+    CodeState::Experimental,               // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Mesh"},  // Tags
     R"(Convert VTK DataSet to an Inviwo Mesh)"_unindentHelp};
 
 const ProcessorInfo VTKToMesh::getProcessorInfo() const { return processorInfo_; }
