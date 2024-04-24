@@ -77,7 +77,8 @@ EigenvalueFieldToImage::EigenvalueFieldToImage()
 }
 
 void EigenvalueFieldToImage::initializeResources() {
-    tf_texture_ = Image(std::shared_ptr<Layer>(tf_.get().getData()->clone()));
+    tf_texture_ = Image(std::make_shared<Layer>(
+        std::shared_ptr<LayerRAM>(tf_.getRepresentation<LayerRAM>()->clone())));
 
     if (!inport_.hasData() || !inport_.getData().get()) return;
 }
