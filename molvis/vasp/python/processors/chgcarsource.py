@@ -37,7 +37,6 @@ import vasputil
 import ivwbnl
 
 import numpy as np
-from pathlib import Path
 
 import importlib
 importlib.reload(molviscommon)
@@ -48,20 +47,28 @@ class ChgcarSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.volumeOutport = ivw.data.VolumeOutport("chargedensity", 
-            help=ivw.md2doc('Charge density volume'))
+        self.volumeOutport = ivw.data.VolumeOutport(
+            "chargedensity",
+            help=ivw.md2doc('Charge density volume')
+        )
         self.addOutport(self.volumeOutport, owner=False)
 
-        self.meshOutport = ivw.data.MeshOutport("atoms", 
-            help=ivw.md2doc('SphereMesh (positions, radii, and colors) of the atoms'))
+        self.meshOutport = ivw.data.MeshOutport(
+            "atoms",
+            help=ivw.md2doc('SphereMesh (positions, radii, and colors) of the atoms')
+        )
         self.addOutport(self.meshOutport)
 
-        self.dataframeOutport = df.DataFrameOutport("atomInformation",
-            help=ivw.md2doc('DataFrame holding atom positions and atomic type'))
+        self.dataframeOutport = df.DataFrameOutport(
+            "atomInformation",
+            help=ivw.md2doc('DataFrame holding atom positions and atomic type')
+        )
         self.addOutport(self.dataframeOutport)
 
-        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule",
-            help=ivw.md2doc('MolecularStructure representing all atoms')))
+        self.addOutport(ivwmolvis.MolecularStructureOutport(
+            "molecule",
+            help=ivw.md2doc('MolecularStructure representing all atoms'))
+        )
 
         self.bnlInport = ivwbnl.BrushingAndLinkingInport("bnl", [])
         self.addInport(self.bnlInport)
@@ -124,8 +131,10 @@ class ChgcarSource(ivw.Processor):
 
         self.colormap = ivw.properties.OptionPropertyInt(
             "colormap", "Colormap",
-            [ivw.properties.IntOption("cpk", "Rasmol CPK", ivwmolvis.atomicelement.Colormap.RasmolCPK),
-             ivw.properties.IntOption("cpknew", "Rasmol CPK new", ivwmolvis.atomicelement.Colormap.RasmolCPKnew),
+            [ivw.properties.IntOption("cpk", "Rasmol CPK",
+                                      ivwmolvis.atomicelement.Colormap.RasmolCPK),
+             ivw.properties.IntOption("cpknew", "Rasmol CPK new",
+                                      ivwmolvis.atomicelement.Colormap.RasmolCPKnew),
              ivw.properties.IntOption("jmol", "Jmol", ivwmolvis.atomicelement.Colormap.Jmol)], 1)
         self.addProperty(self.colormap, owner=False)
 
@@ -138,7 +147,7 @@ class ChgcarSource(ivw.Processor):
             displayName="Chgcar Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("VASP"),
+            tags=ivw.Tags([ivw.Tags.PY, ivw.Tag("VASP"),
                            ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")]),
             help=ivw.md2doc(r'''
 Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
@@ -154,7 +163,6 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
     def process(self):
         if not self.chgcarFilePath.value.exists():
             return
-            
 
         self.volume, self.atomPos, self.elem, self.nelem, self.atomTypes = vasputil.parseFile(
             self.chgcarFilePath.value, self.flipSign.value, self.centerData.value)
@@ -167,11 +175,13 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
 
         self.volume.wrapping = [ivw.data.Wrapping(self.wrapX.value), ivw.data.Wrapping(
             self.wrapY.value), ivw.data.Wrapping(self.wrapZ.value)]
-        self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
-                                            basis=self.volume.basis, offset=self.volume.offset,
-                                            pm=self.pm, margin=self.margin.value,
-                                            radiusscaling=self.radiusScaling.value,
-                                            colormap=ivwmolvis.atomicelement.Colormap(self.colormap.value))
+        self.mesh = molviscommon.createMesh(
+            pos=self.atomPos, elements=self.atomTypes,
+            basis=self.volume.basis, offset=self.volume.offset,
+            pm=self.pm, margin=self.margin.value,
+            radiusscaling=self.radiusScaling.value,
+            colormap=ivwmolvis.atomicelement.Colormap(self.colormap.value)
+        )
 
         self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
                                                       modelmat=self.volume.modelMatrix)

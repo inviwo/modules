@@ -59,7 +59,7 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
             displayName="NetCDF Volume Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("NetCDF"),
+            tags=ivw.Tags([ivw.Tags.PY, ivw.Tag("NetCDF"),
                            ivw.Tag("Volume")])
         )
 
@@ -76,7 +76,7 @@ class NetCDFVolumeSource(genericnetcdfsource.GenericNetCDFSource):
             maxVal = numpy.amax(buffer)
             volume.dataMap.dataRange = dvec2(minVal, maxVal)
         volume.dataMap.valueRange = volume.dataMap.dataRange
-        
+
         if self.overwriteModel:
             volume.modelMatrix = self.modelMatrix.value
         else:
