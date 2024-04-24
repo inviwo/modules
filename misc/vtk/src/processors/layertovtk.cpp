@@ -52,7 +52,7 @@ const ProcessorInfo LayerToVTK::processorInfo_{
 
 const ProcessorInfo LayerToVTK::getProcessorInfo() const { return processorInfo_; }
 
-LayerToVTK::LayerToVTK() : Processor{}, inport_{"inport"}, outport_{"outport"} {
+LayerToVTK::LayerToVTK() : Processor{}, inport_{"inport"}, outport_{"outport", VTK_IMAGE_DATA} {
 
     addPorts(inport_, outport_);
 }
