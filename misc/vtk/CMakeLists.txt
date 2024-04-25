@@ -8,7 +8,7 @@ set(HEADER_FILES
     include/inviwo/vtk/processors/imagetovtk.h
     include/inviwo/vtk/processors/layertovtk.h
     include/inviwo/vtk/processors/volumetovtk.h
-    include/inviwo/vtk/processors/vtkdatasettovtkimagedata.h
+    include/inviwo/vtk/processors/vtkdowncastdata.h
     include/inviwo/vtk/processors/vtkgenericprocessor.h
     include/inviwo/vtk/processors/vtksource.h
     include/inviwo/vtk/processors/vtktodataframe.h
@@ -33,7 +33,7 @@ set(SOURCE_FILES
     src/processors/imagetovtk.cpp
     src/processors/layertovtk.cpp
     src/processors/volumetovtk.cpp
-    src/processors/vtkdatasettovtkimagedata.cpp
+    src/processors/vtkdowncastdata.cpp
     src/processors/vtkgenericprocessor.cpp
     src/processors/vtksource.cpp
     src/processors/vtktodataframe.cpp

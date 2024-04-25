@@ -34,7 +34,7 @@
 #include <inviwo/vtk/processors/imagetovtk.h>
 #include <inviwo/vtk/processors/layertovtk.h>
 #include <inviwo/vtk/processors/volumetovtk.h>
-#include <inviwo/vtk/processors/vtkdatasettovtkimagedata.h>
+#include <inviwo/vtk/processors/vtkdowncastdata.h>
 #include <inviwo/vtk/processors/vtksource.h>
 #include <inviwo/vtk/processors/vtktodataframe.h>
 #include <inviwo/vtk/processors/vtktoimage.h>
