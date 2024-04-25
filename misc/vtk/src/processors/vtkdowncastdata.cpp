@@ -27,7 +27,7 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vtk/processors/vtkdatasettovtkimagedata.h>
+#include <inviwo/vtk/processors/vtkdowncastdata.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 #include <vtkImageData.h>
@@ -55,7 +55,7 @@ VTKDowncastData::VTKDowncastData()
                        for (int typeId = VTK_POLY_DATA; typeId <= VTK_IMAGE_STENCIL_DATA;
                             ++typeId) {
 
-                           if (vtkDataObjectTypes::TypeIdIsA(typeId, VTK_DATA_SET)) {
+                           if (vtkDataObjectTypes::TypeIdIsA(typeId, VTK_DATA_OBJECT)) {
                                if (typeId == VTK_IMAGE_DATA) {
                                    state.selectedIndex = state.options.size();
                                }
@@ -68,7 +68,7 @@ VTKDowncastData::VTKDowncastData()
                    }()
 
       }
-    , inport_{"inport", VTK_DATA_SET}
+    , inport_{"inport", VTK_DATA_OBJECT}
     , outport_{"outport", outportType_.getSelectedValue()} {
 
     addPorts(inport_, outport_);
@@ -78,14 +78,14 @@ VTKDowncastData::VTKDowncastData()
 }
 
 void VTKDowncastData::process() {
-    if (auto vtkDataSet = inport_.getData()) {
-        if (!vtkDataSet->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()))) {
+    if (auto vtkDataObject = inport_.getData()) {
+        if (!vtkDataObject->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()))) {
             outport_.setData(nullptr);
             throw Exception(IVW_CONTEXT, "Data is not of type '{}' got '{}'",
                             vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()),
-                            vtkDataSet->GetClassName());
+                            vtkDataObject->GetClassName());
         }
-        outport_.setData(vtkDataSet);
+        outport_.setData(vtkDataObject);
     }
 }
 }  // namespace inviwo
