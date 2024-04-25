@@ -59,7 +59,7 @@ class NetCDFVolumeSequenceSource(genericnetcdfsource.GenericNetCDFSource):
             displayName="NetCDF Volume Sequence Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("NetCDF"),
+            tags=ivw.Tags([ivw.Tags.PY, ivw.Tag("NetCDF"),
                            ivw.Tag("Volume Sequence")])
         )
 

@@ -44,11 +44,11 @@ class CubeSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.volumeOutport = ivw.data.VolumeOutport("chargedensity", 
+        self.volumeOutport = ivw.data.VolumeOutport("chargedensity",
             help=ivw.md2doc('Charge density volume'))
         self.addOutport(self.volumeOutport, owner=False)
 
-        self.meshOutport = ivw.data.MeshOutport("atoms", 
+        self.meshOutport = ivw.data.MeshOutport("atoms",
             help=ivw.md2doc('SphereMesh (positions, radii, and colors) of the atoms'))
         self.addOutport(self.meshOutport)
 
@@ -125,7 +125,7 @@ class CubeSource(ivw.Processor):
             displayName="Cube Source",
             category="Source",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags([ivw.Tag.PY, ivw.Tag("Cube"), ivw.Tag("Gaussian"),
+            tags=ivw.Tags([ivw.Tags.PY, ivw.Tag("Cube"), ivw.Tag("Gaussian"),
                            ivw.Tag("Volume"), ivw.Tag("Mesh"), ivw.Tag("MolVis")]),
             help=ivw.md2doc(r'''
 Loads CUBE files stemming from [Gaussian](https://www.gaussian.com) calculations.

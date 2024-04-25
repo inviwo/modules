@@ -37,11 +37,11 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VTKToTetraMesh::processorInfo_{
-    "org.inviwo.VTKToTetraMesh",                  // Class identifier
-    "VTK To TetraMesh",                           // Display name
-    "Unstructured Grids",                         // Category
-    CodeState::Experimental,                      // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Unstructured"},  // Tags
+    "org.inviwo.VTKToTetraMesh",                   // Class identifier
+    "VTK To TetraMesh",                            // Display name
+    "Unstructured Grids",                          // Category
+    CodeState::Experimental,                       // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Unstructured"},  // Tags
     R"(Use a VTK Unstructured Grid dataSet as input for an Inviwo TetraMesh)"_unindentHelp};
 
 const ProcessorInfo VTKToTetraMesh::getProcessorInfo() const { return processorInfo_; }

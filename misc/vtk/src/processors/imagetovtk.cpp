@@ -61,11 +61,11 @@ OrdinalPropertyState<T> transformState(T val = T{1}) {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo ImageToVTK::processorInfo_{
-    "org.inviwo.ImageToVTK",               // Class identifier
-    "Image To VTK",                        // Display name
-    "VTK",                                 // Category
-    CodeState::Experimental,               // Code state
-    Tag::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
+    "org.inviwo.ImageToVTK",                // Class identifier
+    "Image To VTK",                         // Display name
+    "VTK",                                  // Category
+    CodeState::Experimental,                // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
     R"(Converts an Inviwo Image to a VTKImageData )"_unindentHelp};
 
 const ProcessorInfo ImageToVTK::getProcessorInfo() const { return processorInfo_; }
