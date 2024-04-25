@@ -19,7 +19,7 @@ vcpkg_configure_cmake(
 
         -DTTK_ENABLE_EIGEN=ON
         -DTTK_ENABLE_ZLIB=ON
-        -DTTK_ENABLE_OPENMP=ON
+        -DTTK_ENABLE_OPENMP=OFF
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
 )
 vcpkg_install_cmake()
