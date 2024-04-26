@@ -43,19 +43,23 @@ class CubeSource(ivw.Processor):
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
 
-        self.volumeOutport = ivw.data.VolumeOutport("chargedensity",
+        self.volumeOutport = ivw.data.VolumeOutport(
+            "chargedensity",
             help=ivw.md2doc('Charge density volume'))
         self.addOutport(self.volumeOutport, owner=False)
 
-        self.meshOutport = ivw.data.MeshOutport("atoms",
+        self.meshOutport = ivw.data.MeshOutport(
+            "atoms",
             help=ivw.md2doc('SphereMesh (positions, radii, and colors) of the atoms'))
         self.addOutport(self.meshOutport)
 
-        self.dataframeOutport = df.DataFrameOutport("atomInformation",
+        self.dataframeOutport = df.DataFrameOutport(
+            "atomInformation",
             help=ivw.md2doc('DataFrame holding atom positions and atomic type'))
         self.addOutport(self.dataframeOutport)
 
-        self.addOutport(ivwmolvis.MolecularStructureOutport("molecule",
+        self.addOutport(ivwmolvis.MolecularStructureOutport(
+            "molecule",
             help=ivw.md2doc('MolecularStructure representing all atoms')))
 
         self.cubeFilePath = ivw.properties.FileProperty("cube", "cube", "", "cubefile")
@@ -110,8 +114,10 @@ class CubeSource(ivw.Processor):
 
         self.colormap = ivw.properties.OptionPropertyInt(
             "colormap", "Colormap",
-            [ivw.properties.IntOption("cpk", "Rasmol CPK", ivwmolvis.atomicelement.Colormap.RasmolCPK),
-             ivw.properties.IntOption("cpknew", "Rasmol CPK new", ivwmolvis.atomicelement.Colormap.RasmolCPKnew),
+            [ivw.properties.IntOption("cpk", "Rasmol CPK",
+                                      ivwmolvis.atomicelement.Colormap.RasmolCPK),
+             ivw.properties.IntOption("cpknew", "Rasmol CPK new",
+                                      ivwmolvis.atomicelement.Colormap.RasmolCPKnew),
              ivw.properties.IntOption("jmol", "Jmol", ivwmolvis.atomicelement.Colormap.Jmol)], 1)
         self.addProperty(self.colormap, owner=False)
 
@@ -153,10 +159,11 @@ Loads CUBE files stemming from [Gaussian](https://www.gaussian.com) calculations
         self.volume.wrapping = [ivw.data.Wrapping(self.wrapX.value), ivw.data.Wrapping(
             self.wrapY.value), ivw.data.Wrapping(self.wrapZ.value)]
 
-        self.mesh = molviscommon.createMesh(pos=self.atomPos, elements=self.atomTypes,
-                                            basis=None, offset=self.volume.offset,
-                                            pm=self.pm, radiusscaling=self.radiusScaling.value,
-                                            colormap=ivwmolvis.atomicelement.Colormap(self.colormap.value))
+        self.mesh = molviscommon.createMesh(
+            pos=self.atomPos, elements=self.atomTypes,
+            basis=None, offset=self.volume.offset,
+            pm=self.pm, radiusscaling=self.radiusScaling.value,
+            colormap=ivwmolvis.atomicelement.Colormap(self.colormap.value))
 
         self.dataframe = molviscommon.createDataFrame(pos=self.atomPos, elements=self.atomTypes,
                                                       modelmat=ivw.glm.mat4(1.0))
