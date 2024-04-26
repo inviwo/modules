@@ -36,7 +36,6 @@ import molviscommon
 import gaussianutil
 
 import numpy as np
-from pathlib import Path
 
 
 # Description found at https://h5cube-spec.readthedocs.io/en/latest/cubeformat.html
@@ -139,7 +138,7 @@ Loads CUBE files stemming from [Gaussian](https://www.gaussian.com) calculations
         pass
 
     def process(self):
-        if not Path(self.cubeFilePath.value).exists():
+        if not self.cubeFilePath.value.is_file():
             return
 
         self.volume, self.atomPos, self.atomTypes = gaussianutil.parseCubeFile(
