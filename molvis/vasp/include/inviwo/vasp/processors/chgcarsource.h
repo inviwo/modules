@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2019-2024 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,17 +27,49 @@
  *
  *********************************************************************************/
 
-#include <inviwo/vasp/vaspmodule.h>
-#include <inviwo/vasp/processors/chgcarsource.h>
+#pragma once
+
+#include <inviwo/vasp/vaspmoduledefine.h>
+#include <inviwo/core/processors/poolprocessor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <modules/base/properties/basisproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+
+#include <modules/base/properties/volumeinformationproperty.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+#include <inviwo/dataframe/datastructures/dataframe.h>
+#include <inviwo/molvisbase/ports/molecularstructureport.h>
 
 namespace inviwo {
 
-VASPModule::VASPModule(InviwoApplication* app)
-    : InviwoModule(app, "VASP")
-    , scripts_{getPath() / "python"}
-    , pythonFolderObserver_{app, getPath() / "python" / "processors", *this} {
+class IVW_MODULE_VASP_API ChgcarSource : public PoolProcessor {
+public:
+    ChgcarSource();
 
-    registerProcessor<ChgcarSource>();
-}
+    virtual void process() override;
+
+    virtual const ProcessorInfo getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeOutport chargeOutport_;
+    MeshOutport atomsOutport_;
+    DataFrameOutport atomInformationOutport_;
+    molvis::MolecularStructureOutport moleculeOutport_;
+    BrushingAndLinkingInport bnlInport_;
+
+    FileProperty file_;
+    VolumeInformationProperty information_;
+    BasisProperty basis_;
+    OptionProperty<molvis::element::Colormap> colormap_;
+    DoubleProperty radiusScaling_;
+    DoubleProperty borderMargin_;
+    
+    PickingMapper pm_;
+};
 
 }  // namespace inviwo

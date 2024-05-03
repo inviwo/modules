@@ -164,6 +164,9 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
         if not self.chgcarFilePath.value.is_file():
             return
 
+        if not self.chgcarFilePath.value.exists():
+            return
+
         self.volume, self.atomPos, self.elem, self.nelem, self.atomTypes = vasputil.parseFile(
             self.chgcarFilePath.value, self.flipSign.value, self.centerData.value)
         self.dataRange.value = self.volume.dataMap.dataRange
