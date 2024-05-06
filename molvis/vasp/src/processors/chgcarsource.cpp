@@ -32,6 +32,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
@@ -47,6 +48,8 @@
 #include <ranges>
 #include <numeric>
 #include <algorithm>
+#include <array>
+#include <string_view>
 
 /*
 0: unknown system
@@ -69,10 +72,44 @@
 60:  -.32067707343E-03 -.32168462724E-03 -.32169411543E-03 -.32108324240E-03 -.32047497439E-03
 ...
 ...
+augmentation occupancies   1  33
+  0.9171881E+00 -0.4694991E+00 -0.4258742E-01 -0.7362697E-01  0.3280824E-05
+  0.1388477E-01  0.4189455E-01 -0.1198004E-05  0.6993045E-01  0.1220388E-01
+  0.6665500E-01 -0.1082870E-05 -0.3460060E-02 -0.1718538E-01  0.5094644E-06
+  0.2403475E+01  0.1298231E-05  0.1608450E-01 -0.2671053E+00 -0.5273834E-06
+  0.8953507E-01 -0.1260738E+01 -0.4249313E-06  0.7984281E-04  0.2247795E+00
+  0.1107842E-05 -0.5135760E-01  0.1763209E+00  0.6364891E-07 -0.5156355E-03
+ -0.4001328E-01 -0.2421517E-06  0.8458568E-02
+augmentation occupancies   2 138
+  0.5628734E+00 -0.2339283E-01 -0.1037611E-04  0.1179873E-04  0.2025907E-04
+ -0.2705897E-04  0.2961381E-04  0.3133694E-04 -0.5720380E-03  0.1444370E-03
+ -0.7370506E-02 -0.5848981E-05  0.1186330E-02  0.4859838E-03 -0.1277535E-03
+  0.6321534E-02  0.2100453E-04 -0.1038597E-02  0.3362825E+00 -0.2280994E-03
+...
+...
+  216  216  300
+ -.14445251069E-03 -.14420052582E-03 -.14352027883E-03 -.14254002376E-03 -.14144594269E-03
+ -.14044872189E-03 -.13974044584E-03 -.13944650061E-03 -.13958317550E-03 -.14003806953E-03
+ ...
+ ...
+augmentation occupancies   1  33
+  0.9171881E+00 -0.4694991E+00 -0.4258742E-01 -0.7362697E-01  0.3280824E-05
+  0.1388477E-01  0.4189455E-01 -0.1198004E-05  0.6993045E-01  0.1220388E-01
+  0.6665500E-01 -0.1082870E-05 -0.3460060E-02 -0.1718538E-01  0.5094644E-06
+  0.2403475E+01  0.1298231E-05  0.1608450E-01 -0.2671053E+00 -0.5273834E-06
+  0.8953507E-01 -0.1260738E+01 -0.4249313E-06  0.7984281E-04  0.2247795E+00
+  0.1107842E-05 -0.5135760E-01  0.1763209E+00  0.6364891E-07 -0.5156355E-03
+ -0.4001328E-01 -0.2421517E-06  0.8458568E-02
+augmentation occupancies   2 138
+  0.5628734E+00 -0.2339283E-01 -0.1037611E-04  0.1179873E-04  0.2025907E-04
+ -0.2705897E-04  0.2961381E-04  0.3133694E-04 -0.5720380E-03  0.1444370E-03
+ -0.7370506E-02 -0.5848981E-05  0.1186330E-02  0.4859838E-03 -0.1277535E-03
+  0.6321534E-02  0.2100453E-04 -0.1038597E-02  0.3362825E+00 -0.2280994E-03
+...
+...
 */
 
 namespace inviwo {
-namespace {
 
 struct Chgcar {
     std::string desc = "";
@@ -84,57 +121,93 @@ struct Chgcar {
 
     std::vector<std::string> elem;
     std::vector<size_t> nelem;
+    size_t ntot;
     bool direct = false;
     std::vector<glm::dvec3> pos;
     glm::size3_t dims;
 };
 
-template <typename Func>
-constexpr void forEachPart(std::string_view str, Func&& func) {
-    if (str.empty()) return;
+namespace {
+
+template <size_t n = std::numeric_limits<size_t>::max(), typename Func>
+constexpr size_t forEachPart(std::string_view str, Func&& func) {
+    if (str.empty()) return 0;
+    size_t i{0};
     for (size_t first = 0; first < str.size();) {
         const auto second = str.find(' ', first);
-        std::invoke(func, str.substr(first, second - first));
+        if constexpr (n != std::numeric_limits<size_t>::max()) {
+            if (i >= n) {
+                throw Exception(IVW_CONTEXT_CUSTOM("forEachPart"),
+                                "Expected {} elements, in str '{}'", n, str);
+            }
+        }
+        std::invoke(func, str.substr(first, second - first), i);
+        ++i;
         if (second == std::string_view::npos) break;
         first = str.find_first_not_of(' ', second + 1);
     }
+    if constexpr (n != std::numeric_limits<size_t>::max()) {
+        if (i != n) {
+            throw Exception(IVW_CONTEXT_CUSTOM("forEachPart"),
+                            "Expected {} elements, found {}, in str '{}'", n, i, str);
+        }
+    }
+    return i;
+}
+
+template <size_t N>
+constexpr std::array<std::string_view, N> split(std::string_view str) {
+    std::array<std::string_view, N> res;
+    forEachPart<N>(str, [&](auto elem, size_t i) { res[i] = elem; });
+    return res;
 }
 
 struct File {
-    File(std::filesystem::path file) : stream{file.generic_string()}, buffer{}, currentLine{0} {
+    File(std::filesystem::path file)
+        : stream{file.generic_string(), std::ios_base::in | std::ios_base::binary}
+        , buffer{}
+        , currentLine{0} {
         if (!stream) {
             throw Exception(IVW_CONTEXT, "Error opening file at {}", file);
         }
     }
 
-    void line(auto&& func) {
+    auto line(auto&& func) {
         ++currentLine;
         if (std::getline(stream, buffer)) {
-            func(util::trim(buffer));
+            return func(util::trim(buffer));
         } else {
             throw Exception(IVW_CONTEXT, "Invalid format at line {}", currentLine);
         }
     }
 
+    bool peekLine(auto&& func) {
+        const auto pos = stream.tellg();
+        if (std::getline(stream, buffer)) {
+            stream.seekg(pos, std::ios_base::beg);
+            return func(util::trim(buffer));
+        } else {
+            stream.seekg(pos, std::ios_base::beg);
+            return false;
+        }
+    }
+
     template <size_t n = std::numeric_limits<size_t>::max()>
-    void lineParts(auto&& func) {
-        line([&](std::string_view line) {
-            size_t i{0};
-            forEachPart(line, [&](std::string_view elem) {
-                if (i >= n) {
-                    throw Exception(IVW_CONTEXT, "Expected {} elements in line {}, found {}", n,
-                                    currentLine, line);
-                }
-                func(util::trim(elem), i);
-                ++i;
-            });
-            if constexpr (n != std::numeric_limits<size_t>::max()) {
-                if (i != n) {
-                    throw Exception(IVW_CONTEXT, "Expected {} elements in line {}, found {}", n,
-                                    currentLine, line);
-                }
-            }
-        });
+    size_t lineParts(auto&& func) {
+        try {
+            return line([&](std::string_view line) { return forEachPart<n>(line, func); });
+        } catch (const Exception& e) {
+            throw Exception(e.getContext(), "Error on line {}: {}", currentLine, e.getMessage());
+        }
+    }
+
+    template <size_t n>
+    std::array<std::string_view, n> lineSplit() {
+        try {
+            return line([&](std::string_view line) { return split<n>(line); });
+        } catch (const Exception& e) {
+            throw Exception(e.getContext(), "Error on line {}: {}", currentLine, e.getMessage());
+        }
     }
 
 private:
@@ -143,7 +216,7 @@ private:
     size_t currentLine;
 };
 
-auto toNum(std::string_view elem, auto& dest) {
+void toNum(std::string_view elem, auto& dest) {
     const auto answer = fast_float::from_chars(elem.data(), elem.data() + elem.size(), dest);
     if (answer.ec != std::errc()) {
         throw Exception(IVW_CONTEXT_CUSTOM("ChgcarSource"), "Invalid number: {}", elem);
@@ -257,6 +330,63 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
     return ms;
 }
 
+std::shared_ptr<Volume> readVolume(const Chgcar& chg, File& file, std::string_view name,
+                                   pool::Stop stop, pool::Progress progress) {
+    const auto voxels = glm::compMul(chg.dims);
+
+    auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
+        VolumeReprConfig{.dimensions = chg.dims, .wrapping = wrapping3d::repeatAll});
+
+    const auto ram = volumeRep->getView();
+    for (size_t i = 0; i < voxels;) {
+        file.lineParts([&](std::string_view elem, size_t) { toNum(elem, ram[i++]); });
+
+        if (stop) return {};
+        if (i % 1'000'000 == 0) {
+            progress(static_cast<float>(i) / voxels);
+        }
+    }
+
+    const auto [minIt, maxIt] = std::minmax_element(ram.begin(), ram.end());
+
+    auto volume = std::make_shared<Volume>(
+        VolumeConfig{.dimensions = chg.dims,
+                     .format = DataFormat<float>::get(),
+                     .wrapping = wrapping3d::repeatAll,
+                     .xAxis = Axis{"x", units::unit_from_string("Angstrom")},
+                     .yAxis = Axis{"y", units::unit_from_string("Angstrom")},
+                     .zAxis = Axis{"z", units::unit_from_string("Angstrom")},
+                     .valueAxis = Axis{std::string{name}, units::unit_from_string("e")},
+                     .dataRange = glm::dvec2{*minIt, *maxIt},
+                     .valueRange = glm::dvec2{*minIt, *maxIt},
+                     .model = chg.model});
+    volume->addRepresentation(volumeRep);
+
+    return volume;
+}
+
+void discardAugmentationOccupancies(const Chgcar& chg, File& file) {
+    if (!file.peekLine([](std::string_view line) {
+            const auto [str1, str2, num, strSize] = split<4>(line);
+            return str1 == "augmentation" && str2 == "occupancies";
+        })) {
+        return;
+    }
+
+    for (size_t i = 0; i < chg.ntot; ++i) {
+        const auto [str1, str2, num, strSize] = file.lineSplit<4>();
+        size_t size{0};
+        toNum(strSize, size);
+        for (size_t c = 0; c < size;) {
+            file.lineParts([&](std::string_view, size_t) { c++; });
+        }
+    }
+    // here comes ntot numbers of something?
+    for (size_t c = 0; c < chg.ntot;) {
+        file.lineParts([&](std::string_view, size_t) { c++; });
+    }
+}
+
 }  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -273,14 +403,19 @@ const ProcessorInfo ChgcarSource::getProcessorInfo() const { return processorInf
 
 ChgcarSource::ChgcarSource()
     : PoolProcessor{}
-    , chargeOutport_{"chargedensity", "Charge density volume"_help}
+    , chargeOutport_{"chargedensity",
+                     "Charge density (spin up + spin down, if spin polarized)"_help}
+    , magnetizationOutport_{"magnetization",
+                            "Charge density (spin up - spin down, "
+                            "if spin polarized, otherwise empty"_help}
     , atomsOutport_{"atoms", "SphereMesh (positions, radii, and colors) of the atoms"_help}
     , atomInformationOutport_{"atomInformation",
                               "DataFrame holding atom positions and atomic type"_help}
     , moleculeOutport_{"molecule", "MolecularStructure representing all atoms"_help}
-    , bnlInport_{"bnl"}
+    , bnlInport_{"bnl", ""_help, {}}
     , file_{"chgcar", "CHGCAR", "", "chgcarfile"}
-    , information_{"information", "information"}
+    , chgInfo_{"chgInfo", "Charge information"}
+    , magInfo_{"magInfo", "Magnetization information"}
     , basis_{"basis", "basis"}
     , colormap_{"colormap",
                 "colormap",
@@ -290,18 +425,32 @@ ChgcarSource::ChgcarSource()
                 0}
     , radiusScaling_{"radiusScaling", "radiusScaling", 0.25, 0.0, 2.0, 0.01}
     , borderMargin_{"borderMargin", "borderMargin", 0.05, 0.0, 0.5}
-    , pm_{this, 1, [](PickingEvent*) {}} {
+    , pm_{this, 1, [this](PickingEvent* event) { picking(event); }}
+    , data_{}
+    , chg_{}
+    , mag_{} {
 
-    addPorts(chargeOutport_, atomsOutport_, atomInformationOutport_, moleculeOutport_, bnlInport_);
-    addProperties(file_, information_, basis_, colormap_, radiusScaling_, borderMargin_);
+    addPorts(chargeOutport_, magnetizationOutport_, atomsOutport_, atomInformationOutport_,
+             moleculeOutport_, bnlInport_);
+    addProperties(file_, chgInfo_, magInfo_, basis_, colormap_, radiusScaling_, borderMargin_);
 }
+
+ChgcarSource::~ChgcarSource() = default;
 
 void ChgcarSource::process() {
     if (file_->empty()) {
+        data_.reset();
+        chg_.reset();
+        mag_.reset();
+        chargeOutport_.clear();
+        magnetizationOutport_.clear();
+        atomsOutport_.clear();
+        atomInformationOutport_.clear();
+        moleculeOutport_.clear();
         return;
     }
 
-    if constexpr (true) {
+    if constexpr (false) {
         bxz::ifstream stream(file_.get().string());
         std::string line;
         uint32_t i = 0;
@@ -311,16 +460,40 @@ void ChgcarSource::process() {
         }
     }
 
+    if (!file_.isModified()) {
+        if (chg_) {
+            chgInfo_.updateVolume(*chg_);
+            basis_.updateEntity(*chg_);
+            chargeOutport_.setData(chg_);
+        }
 
-    using Result =
-        std::tuple<std::shared_ptr<Volume>, std::shared_ptr<Mesh>, std::shared_ptr<DataFrame>,
-                   std::shared_ptr<molvis::MolecularStructure>>;
+        if (mag_) {
+            magInfo_.updateVolume(*mag_);
+            basis_.updateEntity(*mag_);
+            magnetizationOutport_.setData(mag_);
+        }
 
-    auto calc = [path = file_.get(), colormap = colormap_.get(),
-                 radiusScaling = radiusScaling_.get(), borderMargin = borderMargin_.get(),
-                 this](pool::Stop stop, pool::Progress progress) -> Result {
+        if (data_) {
+            pm_.resize(data_->pos.size());
+            auto mesh =
+                createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
+            auto df = createDataFrame(*data_);
+            auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+
+            basis_.updateEntity(*mesh);
+            basis_.updateEntity(*ms);
+
+            atomsOutport_.setData(mesh);
+            atomInformationOutport_.setData(df);
+            moleculeOutport_.setData(ms);
+        }
+
+        return;
+    }
+
+    using Result = std::tuple<Chgcar, std::shared_ptr<Volume>, std::shared_ptr<Volume>>;
+    auto calc = [path = file_.get()](pool::Stop stop, pool::Progress progress) -> Result {
         File file{path};
-
         Chgcar chg;
 
         file.line([&](std::string_view line) { chg.desc = line; });
@@ -346,9 +519,9 @@ void ChgcarSource::process() {
         chg.model = glm::mat4{basis};
         chg.model[3][3] = 1.0;
 
-        const auto ntot = std::reduce(chg.nelem.begin(), chg.nelem.end(), size_t{0}, std::plus<>{});
+        chg.ntot = std::reduce(chg.nelem.begin(), chg.nelem.end(), size_t{0}, std::plus<>{});
 
-        for ([[maybe_unused]] auto _ : std::views::iota(size_t{0}, ntot)) {
+        for ([[maybe_unused]] auto _ : std::views::iota(size_t{0}, chg.ntot)) {
             auto& pos = chg.pos.emplace_back();
             file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, pos[i]); });
         }
@@ -363,54 +536,127 @@ void ChgcarSource::process() {
 
         file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, chg.dims[i]); });
 
-        const auto voxels = glm::compMul(chg.dims);
-
-        auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
-            VolumeReprConfig{.dimensions = chg.dims, .wrapping = wrapping3d::repeatAll});
-
-        auto ram = volumeRep->getView();
-
-        for (size_t i = 0; i < voxels;) {
-            file.lineParts([&](std::string_view elem, size_t) { toNum(elem, ram[i++]); });
-
-            if (stop) return {};
-            if (i % 1'000'000 == 0) {
-                progress(static_cast<float>(i) / voxels);
-            }
+        auto charge = readVolume(chg, file, "Charge Density", stop, progress);
+        if (!charge) {
+            return {std::move(chg), nullptr, nullptr};
         }
 
-        auto [minIt, maxIt] = std::minmax_element(ram.begin(), ram.end());
+        // Optionally read augmentation occupancies, might not be there in a chg file
+        discardAugmentationOccupancies(chg, file);
 
-        auto volume = std::make_shared<Volume>(
-            VolumeConfig{.dimensions = chg.dims,
-                         .format = DataFormat<float>::get(),
-                         .wrapping = wrapping3d::repeatAll,
-                         .xAxis = Axis{"x", units::unit_from_string("Angstrom")},
-                         .yAxis = Axis{"y", units::unit_from_string("Angstrom")},
-                         .zAxis = Axis{"z", units::unit_from_string("Angstrom")},
-                         .valueAxis = Axis{"Charge Density", units::unit_from_string("e")},
-                         .dataRange = glm::dvec2{*minIt, *maxIt},
-                         .valueRange = glm::dvec2{*minIt, *maxIt},
-                         .model = chg.model});
-        volume->addRepresentation(volumeRep);
+        // Check if we have magnetization data?
+        auto magnetization = std::shared_ptr<Volume>{};
+        if (file.peekLine([&](std::string_view line) {
+                try {
+                    size3_t dims;
+                    forEachPart<3>(line,
+                                   [&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
+                    return true;
+                } catch (...) {
+                    return false;
+                }
+            })) {
 
-        pm_.resize(chg.pos.size());
+            size3_t dims;
+            file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
+            if (chg.dims != dims) {
+                throw Exception(IVW_CONTEXT_CUSTOM("ChgcarSource"),
+                                "Dimensions for charge density {}, does not match dimensions "
+                                "for magnetization density {}",
+                                chg.dims, dims);
+            }
 
-        auto mesh = createMesh(chg, pm_.getPickingId(0), colormap, radiusScaling, borderMargin);
-        auto df = createDataFrame(chg);
-        auto ms = createMolecularStructure(chg, borderMargin, path.generic_string());
+            magnetization = readVolume(chg, file, "Magnetization Density", stop, progress);
+        }
 
-        return {volume, mesh, df, ms};
+        return {
+            std::move(chg),
+            charge,
+            magnetization,
+        };
     };
 
     chargeOutport_.setData(nullptr);
     dispatchOne(calc, [this](Result result) {
-        chargeOutport_.setData(std::get<0>(result));
-        atomsOutport_.setData(std::get<1>(result));
-        atomInformationOutport_.setData(std::get<2>(result));
-        moleculeOutport_.setData(std::get<3>(result));
+        data_ = std::make_unique<Chgcar>(std::move(std::get<0>(result)));
+        chg_ = std::get<1>(result);
+        mag_ = std::get<2>(result);
+
+        if (chg_) {
+            chgInfo_.updateForNewVolume(
+                *chg_, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
+            chgInfo_.updateVolume(*chg_);
+            basis_.updateForNewEntity(*chg_, deserialized_);
+            basis_.updateEntity(*chg_);
+            chargeOutport_.setData(chg_);
+        } else {
+            chargeOutport_.clear();
+        }
+
+        if (mag_) {
+            magInfo_.updateForNewVolume(
+                *mag_, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
+            magInfo_.updateVolume(*mag_);
+            basis_.updateEntity(*mag_);
+            magnetizationOutport_.setData(mag_);
+        } else {
+            magnetizationOutport_.clear();
+        }
+
+        if (data_) {
+            pm_.resize(data_->pos.size());
+            auto mesh =
+                createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
+            auto df = createDataFrame(*data_);
+            auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+            basis_.updateEntity(*mesh);
+            basis_.updateEntity(*ms);
+
+            atomsOutport_.setData(mesh);
+            atomInformationOutport_.setData(df);
+            moleculeOutport_.setData(ms);
+        } else {
+            atomsOutport_.clear();
+            atomInformationOutport_.clear();
+            moleculeOutport_.clear();
+        }
+
+        deserialized_ = false;
         newResults();
     });
+}
+
+void ChgcarSource::deserialize(Deserializer& d) {
+    PoolProcessor::deserialize(d);
+    deserialized_ = true;
+}
+
+void ChgcarSource::picking(const PickingEvent* event) {
+    if (event->getPressState() == PickingPressState::None) {
+        if (event->getHoverState() == PickingHoverState::Enter) {
+            auto i = event->getPickedId();
+            bnlInport_.highlight(BitSet{i});
+            auto pos = data_ ? glm::dmat3{data_->model} * data_->pos.at(i) : dvec3{};
+            // auto elem = molvis::atomicelement::symbol(self.atomTypes[i]);
+            // event->setToolTip(fmt::format("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}"),
+            // i,
+            //                   elem, pos, atomsPos);
+
+            event->setToolTip(fmt::format("Atom id: {}\nType: {}", i, pos));
+        } else if (event->getHoverState() == PickingHoverState::Exit) {
+            bnlInport_.highlight(BitSet{});
+            event->setToolTip("");
+        }
+    }
+    if (event->getPressState() == PickingPressState::Release &&
+        event->getPressItem() == PickingPressItem::Primary &&
+        std::abs(event->getDeltaPressedPosition().x) < 0.01 &&
+        std::abs(event->getDeltaPressedPosition().y) < 0.01) {
+
+        auto selection = bnlInport_.getSelectedIndices();
+        selection.flip(static_cast<uint32_t>(event->getPickedId()));
+        bnlInport_.select(selection);
+    }
 }
 
 }  // namespace inviwo

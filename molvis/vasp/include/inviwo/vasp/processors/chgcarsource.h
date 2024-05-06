@@ -46,30 +46,43 @@
 
 namespace inviwo {
 
+class Chgcar;
+
 class IVW_MODULE_VASP_API ChgcarSource : public PoolProcessor {
 public:
     ChgcarSource();
+    virtual ~ChgcarSource();
 
     virtual void process() override;
 
     virtual const ProcessorInfo getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
+    virtual void deserialize(Deserializer& d) override;
 private:
+    void picking(const PickingEvent* event);
+
     VolumeOutport chargeOutport_;
+    VolumeOutport magnetizationOutport_;
     MeshOutport atomsOutport_;
     DataFrameOutport atomInformationOutport_;
     molvis::MolecularStructureOutport moleculeOutport_;
     BrushingAndLinkingInport bnlInport_;
 
     FileProperty file_;
-    VolumeInformationProperty information_;
+    VolumeInformationProperty chgInfo_;
+    VolumeInformationProperty magInfo_;
     BasisProperty basis_;
     OptionProperty<molvis::element::Colormap> colormap_;
     DoubleProperty radiusScaling_;
     DoubleProperty borderMargin_;
     
     PickingMapper pm_;
+    
+    std::unique_ptr<Chgcar> data_;
+    std::shared_ptr<Volume> chg_;
+    std::shared_ptr<Volume> mag_;
+    bool deserialized_ = false;
 };
 
 }  // namespace inviwo
