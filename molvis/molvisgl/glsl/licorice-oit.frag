@@ -105,7 +105,7 @@ void main() {
     float depth = (curr_clip_coord.z / curr_clip_coord.w) * 0.5 + 0.5;
 
 #if defined(USE_FRAGMENT_LIST)
-    abufferRender(ivec2(gl_FragCoord.xy), depth, color);
+    abufferMeshRender(ivec2(gl_FragCoord.xy), depth, color);
     discard;
 #else
     FragData0 = color;
