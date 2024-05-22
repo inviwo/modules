@@ -192,7 +192,7 @@ struct Wrapper8 {
         filter.SetZeroSheetValue(property.get());
         return true;
     }
-    BoolProperty property{"0-scalar", "With field values",
+    BoolProperty property{"0scalar", "With field values",
                           R"(Check this box to save the input field values on the 0-sheets.)"_help,
                           true};
 };
@@ -202,7 +202,7 @@ struct Wrapper9 {
         filter.SetZeroSheetVertexId(property.get());
         return true;
     }
-    BoolProperty property{"0-vertexId", "With vertex Ids",
+    BoolProperty property{"0vertexId", "With vertex Ids",
                           R"(Check this box to save the vertex Ids on the 0-sheets.)"_help, true};
 };
 
@@ -211,7 +211,7 @@ struct Wrapper10 {
         filter.SetZeroSheetType(property.get());
         return true;
     }
-    BoolProperty property{"0-type", "With sheet type",
+    BoolProperty property{"0type", "With sheet type",
                           R"(Check this box to save the sheet type on the 0-sheets.)"_help, true};
 };
 
@@ -220,7 +220,7 @@ struct Wrapper11 {
         filter.SetZeroSheetId(property.get());
         return true;
     }
-    BoolProperty property{"0-sheetId", "With sheet Ids",
+    BoolProperty property{"0sheetId", "With sheet Ids",
                           R"(Check this box to save the sheet Ids on the 0-sheets.)"_help, true};
 };
 
@@ -229,7 +229,7 @@ struct Wrapper12 {
         filter.SetOneSheetValue(property.get());
         return true;
     }
-    BoolProperty property{"1-scalar", "With field values",
+    BoolProperty property{"1scalar", "With field values",
                           R"(Check this box to save the input field values on the 1-sheets.)"_help,
                           true};
 };
@@ -239,7 +239,7 @@ struct Wrapper13 {
         filter.SetOneSheetVertexId(property.get());
         return true;
     }
-    BoolProperty property{"1-vertexId", "With vertex Ids",
+    BoolProperty property{"1vertexId", "With vertex Ids",
                           R"(Check this box to save the vertex Ids on the 1-sheets.)"_help, true};
 };
 
@@ -248,7 +248,7 @@ struct Wrapper14 {
         filter.SetOneSheetEdgeId(property.get());
         return true;
     }
-    BoolProperty property{"1-edgeId", "With edge Ids",
+    BoolProperty property{"1edgeId", "With edge Ids",
                           R"(Check this box to save the edge Ids on the 1-sheets.)"_help, true};
 };
 
@@ -257,7 +257,7 @@ struct Wrapper15 {
         filter.SetOneSheetType(property.get());
         return true;
     }
-    BoolProperty property{"1-type", "With sheet type",
+    BoolProperty property{"1type", "With sheet type",
                           R"(Check this box to save the sheet type on the 1-sheets.)"_help, true};
 };
 
@@ -266,7 +266,7 @@ struct Wrapper16 {
         filter.SetOneSheetId(property.get());
         return true;
     }
-    BoolProperty property{"1-sheetId", "With sheet Ids",
+    BoolProperty property{"1sheetId", "With sheet Ids",
                           R"(Check this box to save the sheet Ids on the 1-sheets.)"_help, true};
 };
 
@@ -275,7 +275,7 @@ struct Wrapper17 {
         filter.SetTwoSheets(property.get());
         return true;
     }
-    BoolProperty property{"2-sheets", "With 2-sheets",
+    BoolProperty property{"2sheets", "With 2-sheets",
                           R"(Check this box to visualize the 2-sheets.)"_help, false};
 };
 
@@ -284,7 +284,7 @@ struct Wrapper18 {
         filter.SetTwoSheetValue(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetValue", "With field values",
+    BoolProperty property{"2sheetValue", "With field values",
                           R"(Check this box to save the input field values on the 2-sheets.)"_help,
                           true};
 };
@@ -294,7 +294,7 @@ struct Wrapper19 {
         filter.SetTwoSheetParameterization(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetParameterization", "With edge length parameterization",
+    BoolProperty property{"2sheetParameterization", "With edge length parameterization",
                           R"(Check this box to save the edge-length parameterization
 on the 2-sheets.)"_help,
                           true};
@@ -305,7 +305,7 @@ struct Wrapper20 {
         filter.SetTwoSheetId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetId", "With sheet Ids",
+    BoolProperty property{"2sheetId", "With sheet Ids",
                           R"(Check this box to save the sheet Ids on the 2-sheets.)"_help, true};
 };
 
@@ -314,7 +314,7 @@ struct Wrapper21 {
         filter.SetTwoSheetEdgeId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetEdgeId", "With edge Ids",
+    BoolProperty property{"2sheetEdgeId", "With edge Ids",
                           R"(Check this box to save the 1-sheet edgeIds on the 2-sheets.)"_help,
                           true};
 };
@@ -324,7 +324,7 @@ struct Wrapper22 {
         filter.SetTwoSheetTetId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetTetId", "With tet Ids",
+    BoolProperty property{"2sheetTetId", "With tet Ids",
                           R"(Check this box to save the tetIds on the 2-sheets.)"_help, true};
 };
 
@@ -333,7 +333,7 @@ struct Wrapper23 {
         filter.SetTwoSheetCaseId(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetCaseId", "With case Ids",
+    BoolProperty property{"2sheetCaseId", "With case Ids",
                           R"(Check this box to save the case Ids for each 2-sheet triangle.)"_help,
                           true};
 };
@@ -343,7 +343,7 @@ struct Wrapper24 {
         filter.SetTwoSheetEdgeType(property.get());
         return true;
     }
-    BoolProperty property{"2-sheetEdgeType", "With edge type",
+    BoolProperty property{"2sheetEdgeType", "With edge type",
                           R"(Check this box to save the edge type of the corresponding edge in the
 1-sheet.)"_help,
                           true};
@@ -354,7 +354,7 @@ struct Wrapper25 {
         filter.SetThreeSheetVertexNumber(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetVertexNumber", "3-sheet vertex number",
+    BoolProperty property{"3sheetVertexNumber", "3-sheet vertex number",
                           R"(Check this box to save the number of vertices per 3-sheet as an extra
 attribute field.)"_help,
                           true};
@@ -365,7 +365,7 @@ struct Wrapper26 {
         filter.SetThreeSheetTetNumber(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetTetNumber", "3-sheet tet number",
+    BoolProperty property{"3sheetTetNumber", "3-sheet tet number",
                           R"(Check this box to save the number of tetrahedra per 3-sheet as an
 extra attribute field.)"_help,
                           true};
@@ -376,7 +376,7 @@ struct Wrapper27 {
         filter.SetThreeSheetExpansion(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetExpansion", "3-sheet expansion",
+    BoolProperty property{"3sheetExpansion", "3-sheet expansion",
                           R"(Check this box to trigger the expansion of the 3-sheets to their
 maximal extent.)"_help,
                           true};
@@ -387,7 +387,7 @@ struct Wrapper28 {
         filter.SetThreeSheetDomainVolume(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetDomainVolume", "3-sheet domain volume",
+    BoolProperty property{"3sheetDomainVolume", "3-sheet domain volume",
                           R"(Check this box to save the volume in the domain of each 3-sheet as an
 extra attribute field.)"_help,
                           true};
@@ -398,7 +398,7 @@ struct Wrapper29 {
         filter.SetThreeSheetRangeArea(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetRangeArea", "3-sheet range area",
+    BoolProperty property{"3sheetRangeArea", "3-sheet range area",
                           R"(Check this box to save the area in the range of each 3-sheet as an
 extra attribute field.)"_help,
                           true};
@@ -409,7 +409,7 @@ struct Wrapper30 {
         filter.SetThreeSheetHyperVolume(property.get());
         return true;
     }
-    BoolProperty property{"3-sheetHyperVolume", "3-sheet hyper volume",
+    BoolProperty property{"3sheetHyperVolume", "3-sheet hyper volume",
                           R"(Check this box to save the hyper-volume of each 3-sheet as an
 extra attribute field.)"_help,
                           true};

@@ -46,6 +46,50 @@ T = TypeVar('T')
 R = TypeVar('R')
 
 
+def isValidIdentifierCharacter(char: str, extra: str = "") -> bool:
+    """
+    check whether the given character char is valid when used in an identifier
+
+    see core/util/utilities.h
+
+    Parameters
+    ----------
+    char : str
+        single character.
+    extra : str, optional
+        additional characters allowed in identifiers. The default is "".
+
+    Returns
+    -------
+    bool
+        true if character is valid, false otherwise
+
+    """
+    return char.isalnum() or char == '_' or char in extra
+
+
+def cleanIdentifier(identifier: str, extra: str = "") -> str:
+    """
+    create a valid identifer from the given string
+
+    see core/util/utilities.h
+
+    Parameters
+    ----------
+    identifier : str
+        string to be cleaned up
+    extra : str, optional
+        additional characters allowed in identifiers. The default is "".
+
+    Returns
+    -------
+    str
+        valid identifier
+
+    """
+    return "".join([c for c in identifier if isValidIdentifierCharacter(c, extra)])
+
+
 def chain(val: Optional[T], *funcs: Callable[[T], R]):
     '''
         Apply a chain of functions 'funcs' to a value 'val'
@@ -140,7 +184,7 @@ def parseHelperProperty(xml: ET.Element) -> vtkdata.FilterPropertyData:
     Helper that parses information that is in most properties
     '''
     data = vtkdata.FilterPropertyData(
-        identifier=xml.attrib["name"].replace(' ', ''),
+        identifier=cleanIdentifier(xml.attrib["name"]),
         displayName=xml.attrib["label" if "label" in xml.attrib else "name"],
         command=xml.attrib["command"] if "command" in xml.attrib else "",
         numElem=(int(xml.attrib["number_of_elements"])
