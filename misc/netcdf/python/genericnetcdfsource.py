@@ -1,6 +1,5 @@
 import numpy
 import inspect
-from pathlib import Path
 from netCDF4 import Dataset, Dimension, Variable
 
 import inviwopy as ivw
@@ -97,7 +96,7 @@ class GenericNetCDFSource(ivw.Processor):
     def process(self):
         first = self.firstRun
         self.firstRun = False
-        if not self.filePath.value or not self.filePath.value.exists():
+        if not self.filePath.value.is_file():
             self.variables.clear()
             self.dimensions.clear()
             return
@@ -188,7 +187,7 @@ class GenericNetCDFSource(ivw.Processor):
                 self.dataLoaded(data, extents)  # implemented in child
 
     def displayDataInfo(self):
-        if not self.filePath.value or not self.filePath.value.exists():
+        if not self.filePath.value.is_file():
             self.log(f"{self.filePath.value} does not exist")
             return
 

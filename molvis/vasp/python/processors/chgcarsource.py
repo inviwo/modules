@@ -161,7 +161,7 @@ Loads CHGCAR files stemming from [VASP](https://www.vasp.at) calculations.
         pass
 
     def process(self):
-        if not self.chgcarFilePath.value.exists():
+        if not self.chgcarFilePath.value.is_file():
             return
 
         self.volume, self.atomPos, self.elem, self.nelem, self.atomTypes = vasputil.parseFile(
