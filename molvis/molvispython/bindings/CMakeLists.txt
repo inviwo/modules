@@ -12,8 +12,20 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_add_py_wrapper(ivwmolvis ${SOURCE_FILES} ${HEADER_FILES})
+ivw_add_py_wrapper(ivwmolvis)
+target_sources(ivwmolvis
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS include
+    FILES
+        ${HEADER_FILES}
+    PRIVATE
+        ${SOURCE_FILES}
+)
 target_link_libraries(ivwmolvis PUBLIC inviwo::module::molvisbase inviwo::module::python3)
-target_include_directories(ivwmolvis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ivw_default_install_targets(ivwmolvis)
+ivw_install_helper(TARGET ivwmolvis
+    NAMESPACE inviwo
+    DESTINATION inviwo
+)
