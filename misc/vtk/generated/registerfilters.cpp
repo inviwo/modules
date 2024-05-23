@@ -135,7 +135,6 @@
 #include "ivw_vtktransformfilter.h"
 #include "ivw_vtktrianglefilter.h"
 #include "ivw_vtktubefilter.h"
-#include "ivw_vtkunstructuredgridghostcellsgenerator.h"
 #include "ivw_vtkwarpscalar.h"
 #include "ivw_vtkwarpvector.h"
 #include "ivw_vtkxmldataobjectwriter.h"
@@ -301,7 +300,6 @@ void registerVTKFilters(InviwoModule* module) {
     registervtkTransformFilter(module);
     registervtkTriangleFilter(module);
     registervtkTubeFilter(module);
-    registervtkUnstructuredGridGhostCellsGenerator(module);
     registervtkWarpScalar(module);
     registervtkWarpVector(module);
     registervtkXMLDataObjectWriter(module);
