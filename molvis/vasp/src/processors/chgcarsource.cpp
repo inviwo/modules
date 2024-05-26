@@ -239,10 +239,10 @@ void forEachAtom(const Chgcar& chg, double borderMargin, auto&& func) {
             for (auto x : {-1.0, 0.0, 1.0}) {
                 for (auto y : {-1.0, 0.0, 1.0}) {
                     for (auto z : {-1.0, 0.0, 1.0}) {
-                        const auto newpos = pos + glm::dvec3{x, y, z};
-                        if (glm::all(glm::greaterThan(newpos, -glm::dvec3{borderMargin})) &&
-                            glm::all(glm::lessThan(newpos, glm::dvec3{1.0 + borderMargin}))) {
-                            std::invoke(func, elem, newpos, atomIndex, runningIndex);
+                        const auto newPos = pos + glm::dvec3{x, y, z};
+                        if (glm::all(glm::greaterThan(newPos, -glm::dvec3{borderMargin})) &&
+                            glm::all(glm::lessThan(newPos, glm::dvec3{1.0 + borderMargin}))) {
+                            std::invoke(func, elem, newPos, atomIndex, runningIndex);
                             ++runningIndex;
                         }
                     }
@@ -262,7 +262,8 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
 
     auto mesh =
         std::make_shared<TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer,
-                                   buffertraits::RadiiBuffer, buffertraits::PickingBuffer>>();
+                                   buffertraits::RadiiBuffer, buffertraits::PickingBuffer,
+                                   buffertraits::IndexBuffer>>();
 
     auto& ib = mesh->addIndexBuffer(DrawType::Points, ConnectivityType::None)->getDataContainer();
 
@@ -274,7 +275,7 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
             const auto color = molvis::element::color(elem, colormap);
             const auto radius = molvis::element::vdwRadius(elem) * radiusScale;
             const auto pi = startPickId + atomIndex;
-            mesh->addVertex(pos, color, radius, pi);
+            mesh->addVertex(pos, color, radius, pi, atomIndex);
             ib.push_back(static_cast<uint32_t>(runningIndex));
         });
 
@@ -330,8 +331,8 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
     return ms;
 }
 
-std::shared_ptr<Volume> readVolume(const Chgcar& chg, File& file, std::string_view name,
-                                   pool::Stop stop, pool::Progress progress) {
+std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file, pool::Stop stop,
+                                                   pool::Progress progress) {
     const auto voxels = glm::compMul(chg.dims);
 
     auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
@@ -347,22 +348,47 @@ std::shared_ptr<Volume> readVolume(const Chgcar& chg, File& file, std::string_vi
         }
     }
 
-    const auto [minIt, maxIt] = std::minmax_element(ram.begin(), ram.end());
+    return volumeRep;
+}
 
+dvec2 calcDataRange(const std::shared_ptr<VolumeRAMPrecision<float>>& rep) {
+    const auto [minIt, maxIt] = std::minmax_element(rep->getView().begin(), rep->getView().end());
+    return dvec2{*minIt, *maxIt};
+}
+
+std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2> readChgAndRange(
+    const Chgcar& chg, File& file, pool::Stop stop, pool::Progress progress) {
+    const auto data = readChg(chg, file, stop, progress);
+    if (!data) {
+        return {nullptr, {}};
+    }
+    const auto dataRange = calcDataRange(data);
+    return {data, dataRange};
+}
+
+std::shared_ptr<Volume> createVolume(std::string_view name, dvec2 dataRange, const mat4& model,
+                                     std::shared_ptr<VolumeRAMPrecision<float>> rep) {
     auto volume = std::make_shared<Volume>(
-        VolumeConfig{.dimensions = chg.dims,
+        VolumeConfig{.dimensions = rep->getDimensions(),
                      .format = DataFormat<float>::get(),
                      .wrapping = wrapping3d::repeatAll,
                      .xAxis = Axis{"x", units::unit_from_string("Angstrom")},
                      .yAxis = Axis{"y", units::unit_from_string("Angstrom")},
                      .zAxis = Axis{"z", units::unit_from_string("Angstrom")},
                      .valueAxis = Axis{std::string{name}, units::unit_from_string("e")},
-                     .dataRange = glm::dvec2{*minIt, *maxIt},
-                     .valueRange = glm::dvec2{*minIt, *maxIt},
-                     .model = chg.model});
-    volume->addRepresentation(volumeRep);
-
+                     .dataRange = dataRange,
+                     .valueRange = dataRange,
+                     .model = model});
+    volume->addRepresentation(rep);
     return volume;
+}
+std::shared_ptr<Volume> createChg(dvec2 dataRange, const mat4& model,
+                                  std::shared_ptr<VolumeRAMPrecision<float>> rep) {
+    return createVolume("Charge Density", dataRange, model, rep);
+}
+std::shared_ptr<Volume> createMag(dvec2 dataRange, const mat4& model,
+                                  std::shared_ptr<VolumeRAMPrecision<float>> rep) {
+    return createVolume("Magnetization Density", dataRange, model, rep);
 }
 
 void discardAugmentationOccupancies(const Chgcar& chg, File& file) {
@@ -414,25 +440,45 @@ ChgcarSource::ChgcarSource()
     , moleculeOutport_{"molecule", "MolecularStructure representing all atoms"_help}
     , bnlInport_{"bnl", ""_help, {}}
     , file_{"chgcar", "CHGCAR", "", "chgcarfile"}
+    , reload_("reload", "Reload data")
+    , readChg_{"readChg", "Read charge density", true, InvalidationLevel::Valid}
+    , readMag_{"readMag", "Read magnetisation density", true, InvalidationLevel::Valid}
     , chgInfo_{"chgInfo", "Charge information"}
     , magInfo_{"magInfo", "Magnetization information"}
-    , basis_{"basis", "basis"}
+    , basis_{"basis", "Basis and offset"}
     , colormap_{"colormap",
-                "colormap",
+                "Colormap",
                 {{"cpk", "Rasmol CPK", molvis::element::Colormap::RasmolCPK},
                  {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew},
                  {"jmol", "Jmol", molvis::element::Colormap::Jmol}},
                 0}
-    , radiusScaling_{"radiusScaling", "radiusScaling", 0.25, 0.0, 2.0, 0.01}
-    , borderMargin_{"borderMargin", "borderMargin", 0.05, 0.0, 0.5}
+    , radiusScaling_{"radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01}
+    , borderMargin_{"borderMargin", "Border Repetition Margin", 0.05, 0.0, 0.5}
     , pm_{this, 1, [this](PickingEvent* event) { picking(event); }}
     , data_{}
     , chg_{}
-    , mag_{} {
+    , chgDataRange_{}
+    , mag_{}
+    , magDataRange_{} {
+
+    isReady_.setUpdate([this]() -> ProcessorStatus {
+        if (const auto& err = error()) {
+            return {ProcessorStatus::Error, err.value()};
+        } else if (file_.get().empty()) {
+            static constexpr std::string_view reason{"File not set"};
+            return {ProcessorStatus::NotReady, reason};
+        } else if (!std::filesystem::is_regular_file(file_.get())) {
+            static constexpr std::string_view reason{"Invalid or missing file"};
+            return {ProcessorStatus::Error, reason};
+        } else {
+            return ProcessorStatus::Ready;
+        }
+    });
 
     addPorts(chargeOutport_, magnetizationOutport_, atomsOutport_, atomInformationOutport_,
              moleculeOutport_, bnlInport_);
-    addProperties(file_, chgInfo_, magInfo_, basis_, colormap_, radiusScaling_, borderMargin_);
+    addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, colormap_,
+                  radiusScaling_, borderMargin_);
 }
 
 ChgcarSource::~ChgcarSource() = default;
@@ -450,49 +496,41 @@ void ChgcarSource::process() {
         return;
     }
 
-    if constexpr (false) {
-        bxz::ifstream stream(file_.get().string());
-        std::string line;
-        uint32_t i = 0;
-        while (std::getline(stream, line) && i < 100) {
-            util::logInfo(IVW_CONTEXT, "{}: {}", i, line);
-            ++i;
-        }
-    }
-
-    if (!file_.isModified()) {
+    if (data_ && !file_.isModified() && !reload_.isModified()) {
         if (chg_) {
-            chgInfo_.updateVolume(*chg_);
-            basis_.updateEntity(*chg_);
-            chargeOutport_.setData(chg_);
+            auto chg = createChg(chgDataRange_, data_->model, chg_);
+            chgInfo_.updateVolume(*chg);
+            basis_.updateEntity(*chg);
+            chargeOutport_.setData(chg);
         }
 
         if (mag_) {
-            magInfo_.updateVolume(*mag_);
-            basis_.updateEntity(*mag_);
-            magnetizationOutport_.setData(mag_);
+            auto mag = createMag(magDataRange_, data_->model, mag_);
+            magInfo_.updateVolume(*mag);
+            basis_.updateEntity(*mag);
+            magnetizationOutport_.setData(mag);
         }
 
-        if (data_) {
-            pm_.resize(data_->pos.size());
-            auto mesh =
-                createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
-            auto df = createDataFrame(*data_);
-            auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+        pm_.resize(data_->pos.size());
+        auto mesh =
+            createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
+        auto df = createDataFrame(*data_);
+        auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
 
-            basis_.updateEntity(*mesh);
-            basis_.updateEntity(*ms);
+        basis_.updateEntity(*mesh);
+        basis_.updateEntity(*ms);
 
-            atomsOutport_.setData(mesh);
-            atomInformationOutport_.setData(df);
-            moleculeOutport_.setData(ms);
-        }
+        atomsOutport_.setData(mesh);
+        atomInformationOutport_.setData(df);
+        moleculeOutport_.setData(ms);
 
         return;
     }
 
-    using Result = std::tuple<Chgcar, std::shared_ptr<Volume>, std::shared_ptr<Volume>>;
-    auto calc = [path = file_.get()](pool::Stop stop, pool::Progress progress) -> Result {
+    using Result = std::tuple<Chgcar, std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2>,
+                              std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2>>;
+    auto calc = [path = file_.get(), readChg = readChg_.get(), readMag = readMag_.get()](
+                    pool::Stop stop, pool::Progress progress) -> Result {
         File file{path};
         Chgcar chg;
 
@@ -536,90 +574,108 @@ void ChgcarSource::process() {
 
         file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, chg.dims[i]); });
 
-        auto charge = readVolume(chg, file, "Charge Density", stop, progress);
-        if (!charge) {
-            return {std::move(chg), nullptr, nullptr};
+        if (!readChg && !readMag) {
+            return {std::move(chg), {nullptr, {}}, {nullptr, {}}};
+        }
+
+        auto charge = readChgAndRange(chg, file, stop, progress);
+        if (!charge.first) {
+            return {std::move(chg), {nullptr, {}}, {nullptr, {}}};
+        }
+
+        if (!readMag) {
+            return {std::move(chg), std::move(charge), {nullptr, {}}};
         }
 
         // Optionally read augmentation occupancies, might not be there in a chg file
         discardAugmentationOccupancies(chg, file);
 
-        // Check if we have magnetization data?
-        auto magnetization = std::shared_ptr<Volume>{};
-        if (file.peekLine([&](std::string_view line) {
-                try {
-                    size3_t dims;
-                    forEachPart<3>(line,
-                                   [&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
-                    return true;
-                } catch (...) {
-                    return false;
+        const auto mag = [&]() -> std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2> {
+            // Check if we have magnetization data?
+            if (file.peekLine([&](std::string_view line) {
+                    try {
+                        size3_t dims;
+                        forEachPart<3>(
+                            line, [&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
+                        return true;
+                    } catch (...) {
+                        return false;
+                    }
+                })) {
+
+                size3_t dims;
+                file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
+                if (chg.dims != dims) {
+                    throw Exception(IVW_CONTEXT_CUSTOM("ChgcarSource"),
+                                    "Dimensions for charge density {}, does not match dimensions "
+                                    "for magnetization density {}",
+                                    chg.dims, dims);
                 }
-            })) {
 
-            size3_t dims;
-            file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
-            if (chg.dims != dims) {
-                throw Exception(IVW_CONTEXT_CUSTOM("ChgcarSource"),
-                                "Dimensions for charge density {}, does not match dimensions "
-                                "for magnetization density {}",
-                                chg.dims, dims);
+                return readChgAndRange(chg, file, stop, progress);
+            } else {
+                return {nullptr, {}};
             }
+        }();
 
-            magnetization = readVolume(chg, file, "Magnetization Density", stop, progress);
-        }
-
-        return {
-            std::move(chg),
-            charge,
-            magnetization,
-        };
+        return {std::move(chg), std::move(charge), std::move(mag)};
     };
 
-    chargeOutport_.setData(nullptr);
+    chargeOutport_.clear();
+    magnetizationOutport_.clear();
+    atomsOutport_.clear();
+    atomInformationOutport_.clear();
+    moleculeOutport_.clear();
+
     dispatchOne(calc, [this](Result result) {
         data_ = std::make_unique<Chgcar>(std::move(std::get<0>(result)));
-        chg_ = std::get<1>(result);
-        mag_ = std::get<2>(result);
+        std::tie(chg_, chgDataRange_) = std::get<1>(result);
+        std::tie(mag_, magDataRange_) = std::get<2>(result);
+
+        if (!data_) {
+            chargeOutport_.clear();
+            magnetizationOutport_.clear();
+            atomsOutport_.clear();
+            atomInformationOutport_.clear();
+            moleculeOutport_.clear();
+            newResults();
+            return;
+        }
 
         if (chg_) {
+            auto chg = createChg(chgDataRange_, data_->model, chg_);
             chgInfo_.updateForNewVolume(
-                *chg_, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
-            chgInfo_.updateVolume(*chg_);
-            basis_.updateForNewEntity(*chg_, deserialized_);
-            basis_.updateEntity(*chg_);
-            chargeOutport_.setData(chg_);
+                *chg, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
+            chgInfo_.updateVolume(*chg);
+            basis_.updateForNewEntity(*chg, deserialized_);
+            basis_.updateEntity(*chg);
+            chargeOutport_.setData(chg);
         } else {
             chargeOutport_.clear();
         }
 
         if (mag_) {
+            auto mag = createMag(magDataRange_, data_->model, mag_);
             magInfo_.updateForNewVolume(
-                *mag_, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
-            magInfo_.updateVolume(*mag_);
-            basis_.updateEntity(*mag_);
-            magnetizationOutport_.setData(mag_);
+                *mag, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
+            magInfo_.updateVolume(*mag);
+            basis_.updateEntity(*mag);
+            magnetizationOutport_.setData(mag);
         } else {
             magnetizationOutport_.clear();
         }
 
-        if (data_) {
-            pm_.resize(data_->pos.size());
-            auto mesh =
-                createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
-            auto df = createDataFrame(*data_);
-            auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
-            basis_.updateEntity(*mesh);
-            basis_.updateEntity(*ms);
+        pm_.resize(data_->pos.size());
+        auto mesh =
+            createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
+        auto df = createDataFrame(*data_);
+        auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+        basis_.updateEntity(*mesh);
+        basis_.updateEntity(*ms);
 
-            atomsOutport_.setData(mesh);
-            atomInformationOutport_.setData(df);
-            moleculeOutport_.setData(ms);
-        } else {
-            atomsOutport_.clear();
-            atomInformationOutport_.clear();
-            moleculeOutport_.clear();
-        }
+        atomsOutport_.setData(mesh);
+        atomInformationOutport_.setData(df);
+        moleculeOutport_.setData(ms);
 
         deserialized_ = false;
         newResults();
@@ -634,15 +690,27 @@ void ChgcarSource::deserialize(Deserializer& d) {
 void ChgcarSource::picking(const PickingEvent* event) {
     if (event->getPressState() == PickingPressState::None) {
         if (event->getHoverState() == PickingHoverState::Enter) {
-            auto i = event->getPickedId();
+            const auto i = event->getPickedId();
             bnlInport_.highlight(BitSet{i});
-            auto pos = data_ ? glm::dmat3{data_->model} * data_->pos.at(i) : dvec3{};
-            // auto elem = molvis::atomicelement::symbol(self.atomTypes[i]);
-            // event->setToolTip(fmt::format("Atom id: {}\nType: {}\nPosition: {}\nFractional: {}"),
-            // i,
-            //                   elem, pos, atomsPos);
+            if (data_) {
 
-            event->setToolTip(fmt::format("Atom id: {}\nType: {}", i, pos));
+                const auto pos = glm::dmat3{data_->model} * data_->pos.at(i);
+                const auto elem = [&]() {
+                    size_t count = 0;
+                    for (auto&& [num, type] : util::zip(data_->nelem, data_->elem)) {
+                        count += num;
+                        if (i < count) {
+                            return type;
+                        }
+                    }
+                    return std::string{""};
+                }();
+                event->setToolTip(fmt::format("Atom id: {}\nType: {}\nPosition: {}\nFractional:{}",
+                                              i, elem, pos, data_->pos.at(i)));
+
+            } else {
+                event->setToolTip(fmt::format("Atom id: {}", i));
+            }
         } else if (event->getHoverState() == PickingHoverState::Exit) {
             bnlInport_.highlight(BitSet{});
             event->setToolTip("");
