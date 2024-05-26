@@ -30,10 +30,12 @@
 #pragma once
 
 #include <inviwo/vasp/vaspmoduledefine.h>
+#include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
 #include <modules/base/properties/basisproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
@@ -70,6 +72,9 @@ private:
     BrushingAndLinkingInport bnlInport_;
 
     FileProperty file_;
+    ButtonProperty reload_;
+    BoolProperty readChg_;
+    BoolProperty readMag_;
     VolumeInformationProperty chgInfo_;
     VolumeInformationProperty magInfo_;
     BasisProperty basis_;
@@ -80,8 +85,10 @@ private:
     PickingMapper pm_;
     
     std::unique_ptr<Chgcar> data_;
-    std::shared_ptr<Volume> chg_;
-    std::shared_ptr<Volume> mag_;
+    std::shared_ptr<VolumeRAMPrecision<float>> chg_;
+    dvec2 chgDataRange_;
+    std::shared_ptr<VolumeRAMPrecision<float>> mag_;
+    dvec2 magDataRange_;
     bool deserialized_ = false;
 };
 
