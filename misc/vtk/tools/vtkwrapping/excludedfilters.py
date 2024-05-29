@@ -92,5 +92,6 @@ vtk_paraview_filters = [
     "vtkSliceAlongPolyPlane",
     "vtkSurfaceVectors",
     "vtkTimeStepProgressFilter",
-    "vtkTimeToTextConvertor"
+    "vtkTimeToTextConvertor",
+    "vtkUnstructuredGridGhostCellsGenerator"
 ]
