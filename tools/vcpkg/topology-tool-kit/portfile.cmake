@@ -21,6 +21,7 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_ZLIB=ON
         -DTTK_ENABLE_OPENMP=OFF
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
+		-DTTK_ENABLE_GRAPHVIZ=ON
 )
 vcpkg_install_cmake()
 vcpkg_copy_pdbs()
