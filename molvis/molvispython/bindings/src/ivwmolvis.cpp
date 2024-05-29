@@ -32,12 +32,13 @@
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pybindmodule.h>
 
 #include <ivwmolvis/pymolvis.h>
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(ivwmolvis, m) {
+INVIWO_PYBIND_MODULE(ivwmolvis, m) {
     py::module::import("inviwopy");
 
     using namespace inviwo;
