@@ -6,14 +6,19 @@
   "homepage": "https://github.com/topology-tool-kit/ttk",
   "dependencies": [
     "vtk",
-    "boost-system",
     "boost-heap",
-    "boost-variant",
     "boost-math",
     "boost-interprocess",
     "boost-algorithm",
     "boost-property-tree",
-    "eigen3", 
-    "zlib"
+    "boost-container",
+    "boost-variant",
+    "boost-optional",
+    "boost-geometry",
+    "boost-functional",
+
+    "eigen3",
+    "zlib",
+    "graphviz"
   ]
 }
