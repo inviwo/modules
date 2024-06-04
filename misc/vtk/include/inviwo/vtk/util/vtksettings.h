@@ -29,18 +29,21 @@
 #pragma once
 
 #include <inviwo/vtk/vtkmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/vtk/util/vtksettings.h>
 
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+
+#include <vtkLogger.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VTK_API VTKModule : public InviwoModule {
+class IVW_MODULE_VTK_API VTKSettings : public Settings {
 public:
-    VTKModule(InviwoApplication* app);
-    virtual ~VTKModule() = default;
+    VTKSettings();
 
-    VTKSettings settings;
+    BoolProperty globalWarningDisplay;
+    OptionProperty<vtkLogger::Verbosity> verbosity;
 };
 
 }  // namespace inviwo

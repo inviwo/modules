@@ -58,9 +58,12 @@ VolumeToVTK::VolumeToVTK()
     : Processor()
     , inport_("inport")
     , optionalVolumes_("volumes")
-    , outport_("outport", "vtkImageData") {
-    optionalVolumes_.setOptional(true);
+    , outport_("outport", "vtkImageData")
+    , space_{
+          "space", "Space", {{"data", "Data", Space::Data}, {"model", "Model", Space::Model}}, 1} {
     addPorts(inport_, optionalVolumes_, outport_);
+    optionalVolumes_.setOptional(true);
+    addProperty(space_);
 }
 
 void VolumeToVTK::process() {
@@ -75,19 +78,31 @@ void VolumeToVTK::process() {
     }
 
     const auto dim = static_cast<ivec3>(volume->getDimensions());
-    const dvec3 offset = volume->getOffset();
-    const dmat3 basis = volume->getBasis();
-
     const dvec3 ddim{dim};
-    const dvec3 length{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])};
-    const dvec3 spacing{length / ddim};
-    const dmat3 direction{basis[0] / length[0], basis[1] / length[1], basis[2] / length[2]};
-
     data_ = vtkSmartPointer<vtkImageData>::New();
     data_->SetDimensions(dim.x, dim.y, dim.z);
-    data_->SetSpacing(spacing.x, spacing.y, spacing.z);
-    data_->SetOrigin(glm::value_ptr(offset));
-    data_->SetDirectionMatrix(glm::value_ptr(direction));
+
+    switch (space_.getSelectedValue()) {
+        case Space::Data: {
+            const dvec3 spacing{dvec3{1.0} / ddim};
+            const dvec3 offset{0.0};
+            const dmat3 direction{1.0};
+            data_->SetSpacing(spacing.x, spacing.y, spacing.z);
+            data_->SetOrigin(glm::value_ptr(offset));
+            data_->SetDirectionMatrix(glm::value_ptr(direction));
+            break;
+        }
+        case Space::Model:
+            const dvec3 offset = volume->getOffset();
+            const dmat3 basis = volume->getBasis();
+            const dvec3 length{glm::length(basis[0]), glm::length(basis[1]), glm::length(basis[2])};
+            const dvec3 spacing{length / ddim};
+            const dmat3 direction{basis[0] / length[0], basis[1] / length[1], basis[2] / length[2]};
+            data_->SetSpacing(spacing.x, spacing.y, spacing.z);
+            data_->SetOrigin(glm::value_ptr(offset));
+            data_->SetDirectionMatrix(glm::value_ptr(direction));
+            break;
+    }
 
     const auto vtkType = [&](DataFormatId formatId) {
         switch (formatId) {
