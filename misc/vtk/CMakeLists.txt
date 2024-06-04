@@ -20,6 +20,7 @@ set(HEADER_FILES
     include/inviwo/vtk/util/arrayutils.h
     include/inviwo/vtk/util/vtkbufferutils.h
     include/inviwo/vtk/util/vtkdatautils.h
+    include/inviwo/vtk/util/vtksettings.h
     include/inviwo/vtk/vtkmodule.h
     include/inviwo/vtk/vtkmoduledefine.h
 )
@@ -45,6 +46,7 @@ set(SOURCE_FILES
     src/util/arrayutils.cpp
     src/util/vtkbufferutils.cpp
     src/util/vtkdatautils.cpp
+    src/util/vtksettings.cpp
     src/vtkmodule.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})

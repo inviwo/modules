@@ -26,21 +26,34 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-#pragma once
 
-#include <inviwo/vtk/vtkmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/vtk/util/vtksettings.h>
-
 
 namespace inviwo {
 
-class IVW_MODULE_VTK_API VTKModule : public InviwoModule {
-public:
-    VTKModule(InviwoApplication* app);
-    virtual ~VTKModule() = default;
+VTKSettings::VTKSettings()
+    : Settings("VTK Settings")
+    , globalWarningDisplay{"globalWarningDisplay", "Global Warning Display ", true}
+    , verbosity{"verbosity",
+                "Log Verbosity",
+                {{"OFF", "OFF", vtkLogger::VERBOSITY_OFF},
+                 {"ERROR", "ERROR", vtkLogger::VERBOSITY_ERROR},
+                 {"WARNING", "WARNING", vtkLogger::VERBOSITY_WARNING},
+                 {"INFO", "INFO", vtkLogger::VERBOSITY_INFO},
+                 {"0", "0", vtkLogger::VERBOSITY_0},
+                 {"1", "1", vtkLogger::VERBOSITY_1},
+                 {"2", "2", vtkLogger::VERBOSITY_2},
+                 {"3", "3", vtkLogger::VERBOSITY_3},
+                 {"4", "4", vtkLogger::VERBOSITY_4},
+                 {"5", "5", vtkLogger::VERBOSITY_5},
+                 {"6", "6", vtkLogger::VERBOSITY_6},
+                 {"7", "7", vtkLogger::VERBOSITY_7},
+                 {"8", "8", vtkLogger::VERBOSITY_8},
+                 {"9", "9", vtkLogger::VERBOSITY_9}},
+                3} {
 
-    VTKSettings settings;
-};
+    addProperties(globalWarningDisplay, verbosity);
+    load();
+}
 
 }  // namespace inviwo
