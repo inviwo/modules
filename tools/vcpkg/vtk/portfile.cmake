@@ -41,6 +41,7 @@ vcpkg_from_github(
         hdf5helper.patch
         opencascade-7.8.0.patch
         xmlreader.patch
+        remove-find-json-cpp.patch
 )
 
 # =============================================================================
@@ -245,7 +246,8 @@ vcpkg_cmake_configure(
         -DVTK_USE_EXTERNAL:BOOL=ON
         -DVTK_MODULE_USE_EXTERNAL_VTK_gl2ps:BOOL=OFF # Not yet in VCPKG
         -DVTK_MODULE_USE_EXTERNAL_VTK_token:BOOL=OFF # Not yet in VCPKG
-        #-DVTK_MODULE_ENABLE_VTK_jsoncpp=YES
+        -DVTK_MODULE_ENABLE_VTK_jsoncpp:BOOL=YES
+        -DVTK_MODULE_USE_EXTERNAL_VTK_jsoncpp:BOOL=YES
         ${ADDITIONAL_OPTIONS}
         -DVTK_DEBUG_MODULE_ALL=ON
         -DVTK_DEBUG_MODULE=ON
