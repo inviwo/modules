@@ -54,6 +54,7 @@
 
 #include <warn/push>
 #include <warn/ignore/all>
+#include <vtkAlgorithm.h>
 #include <vtkNew.h>
 #include <vtkInformation.h>
 #include <vtkInformationStringVectorKey.h>
@@ -119,7 +120,7 @@ inline std::string toString(vtkInformation* info) {
     vtkIndent indent;
     std::stringstream ss;
     info->PrintSelf(ss, indent);
-    return std::move(ss.str());
+    return std::move(ss).str();
 }
 
 /**

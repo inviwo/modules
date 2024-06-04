@@ -32,6 +32,7 @@
 #include <inviwo/vtk/vtkmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 #include <inviwo/vtk/ports/vtkoutport.h>
 #include <vtkImageData.h>
@@ -52,6 +53,8 @@ public:
 private:
     VolumeInport inport_;
     vtk::VtkOutport outport_;
+    enum class Space { Data, Model };
+    OptionProperty<Space> space_;
 
     vtkSmartPointer<vtkImageData> data_;
 };
