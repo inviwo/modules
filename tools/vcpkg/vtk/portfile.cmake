@@ -346,7 +346,9 @@ file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
 vcpkg_copy_tool_dependencies("${CURRENT_PACKAGES_DIR}/tools/vtk")
 
-include("${CMAKE_CURRENT_LIST_DIR}/z_vcpkg_fixup_install_name_rpath.cmake")
+if(NOT VCPKG_TARGET_IS_WINDOWS)
+    include("${CMAKE_CURRENT_LIST_DIR}/z_vcpkg_fixup_install_name_rpath.cmake")
+endif()
 
 ## Files Modules needed by ParaView
 if("paraview" IN_LIST FEATURES)
