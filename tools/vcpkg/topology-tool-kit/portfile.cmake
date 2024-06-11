@@ -6,6 +6,8 @@ vcpkg_from_github(
     HEAD_REF master
     PATCHES
         openmp.patch
+        int128.patch
+
 )
 
 vcpkg_configure_cmake(
