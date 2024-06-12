@@ -35,6 +35,7 @@
 
 #include <inviwo/vtk/ports/vtkoutport.h>
 #include <vtkImageData.h>
+#include <vtkDataArray.h>
 #include <vtkSmartPointer.h>
 
 namespace inviwo {
@@ -51,9 +52,11 @@ public:
 
 private:
     VolumeInport inport_;
+    MultiDataInport<Volume> optionalVolumes_;
     vtk::VtkOutport outport_;
 
     vtkSmartPointer<vtkImageData> data_;
+    std::vector<vtkSmartPointer<vtkDataArray>> volumeData_;
 };
 
 }  // namespace inviwo

@@ -31,6 +31,8 @@
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
 #include <inviwo/core/util/glm.h>
+#include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/exception.h>
 
 #include <vtkImageData.h>
 #include <vtkPointData.h>
@@ -41,20 +43,36 @@ namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo VolumeToVTK::processorInfo_{
-    "org.inviwo.VolumeToVTK",               // Class identifier
-    "Volume To VTK",                        // Display name
-    "VTK",                                  // Category
-    CodeState::Experimental,                // Code state
-    Tags::CPU | Tag{"VTK"} | Tag{"Volume"}  // Tags
+    "org.inviwo.VolumeToVTK",                // Class identifier
+    "Volume To VTK",                         // Display name
+    "VTK",                                   // Category
+    CodeState::Experimental,                 // Code state
+    Tags::CPU | Tag{"VTK"} | Tag{"Volume"},  // Tags
+    R"(Creates a vtkImageData dataset from a volume. The volume from the optional 
+       inport are included as additional arrays. The volumes are required to have 
+       the same dimensions.)"_unindentHelp,
 };
 const ProcessorInfo VolumeToVTK::getProcessorInfo() const { return processorInfo_; }
 
-VolumeToVTK::VolumeToVTK() : Processor(), inport_("inport"), outport_("outport", "vtkImageData") {
-    addPorts(inport_, outport_);
+VolumeToVTK::VolumeToVTK()
+    : Processor()
+    , inport_("inport")
+    , optionalVolumes_("volumes")
+    , outport_("outport", "vtkImageData") {
+    optionalVolumes_.setOptional(true);
+    addPorts(inport_, optionalVolumes_, outport_);
 }
 
 void VolumeToVTK::process() {
     auto volume = inport_.getData();
+
+    for (auto&& [index, v] : util::enumerate(optionalVolumes_.getVectorData())) {
+        if (volume->getDimensions() != v->getDimensions()) {
+            throw Exception(IVW_CONTEXT,
+                            "Volume dimensions must match, expected {} and got {} from input {}",
+                            volume->getDimensions(), v->getDimensions(), index);
+        }
+    }
 
     const auto dim = static_cast<ivec3>(volume->getDimensions());
     const dvec3 offset = volume->getOffset();
@@ -71,8 +89,8 @@ void VolumeToVTK::process() {
     data_->SetOrigin(glm::value_ptr(offset));
     data_->SetDirectionMatrix(glm::value_ptr(direction));
 
-    const auto vtkType = [&]() {
-        switch (volume->getDataFormat()->getId()) {
+    const auto vtkType = [&](DataFormatId formatId) {
+        switch (formatId) {
             case DataFormatId::Int8:
             case DataFormatId::Vec2Int8:
             case DataFormatId::Vec3Int8:
@@ -164,13 +182,31 @@ void VolumeToVTK::process() {
                 throw Exception("Cannot map type to VTK.", IVW_CONTEXT_CUSTOM("VolumeToVtk"));
             }
         }
-    }();
+    };
 
     const auto nComp = volume->getDataFormat()->getComponents();
-    data_->AllocateScalars(vtkType, static_cast<int>(nComp));
+    data_->AllocateScalars(vtkType(volume->getDataFormat()->getId()), static_cast<int>(nComp));
     void* dst = data_->GetScalarPointer();
     const void* src = volume->getRepresentation<VolumeRAM>()->getData();
     std::memcpy(dst, src, glm::compMul(dim) * volume->getDataFormat()->getSizeInBytes());
+
+    volumeData_.clear();
+    for (auto&& [outport, v] : optionalVolumes_.getSourceVectorData()) {
+        auto* dataFormat = v->getDataFormat();
+
+        auto scalars = vtkSmartPointer<vtkDataArray>(
+            vtkDataArray::CreateDataArray(vtkType(dataFormat->getId())));
+        scalars->SetNumberOfComponents(static_cast<int>(dataFormat->getComponents()));
+        scalars->SetName(outport->getProcessor()->getIdentifier().c_str());
+        scalars->SetNumberOfTuples(glm::compMul(dim));
+
+        void* dstData = scalars->GetVoidPointer(0);
+        const void* srcData = v->getRepresentation<VolumeRAM>()->getData();
+        std::memcpy(dstData, srcData, glm::compMul(dim) * dataFormat->getSizeInBytes());
+
+        data_->GetPointData()->AddArray(scalars);
+        volumeData_.push_back(scalars);
+    }
 
     vtkInformation* info = data_->GetPointData()->GetScalars()->GetInformation();
     info->Set(vtkDataArray::UNITS_LABEL(), fmt::format("{}{: [}", volume->dataMap.valueAxis.name,
