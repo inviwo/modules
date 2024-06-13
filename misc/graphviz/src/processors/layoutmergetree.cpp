@@ -30,39 +30,31 @@
 #include <inviwo/graphviz/processors/layoutmergetree.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/raiiutils.h>
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 
-#include <cgraph.h>
-#include <gvc.h>
-#include <gvplugin.h>
-#include <gvplugin_layout.h>
+#include <graphviz/cgraph.h>
+#include <graphviz/gvc.h>
+#include <graphviz/gvplugin.h>
+#include <graphviz/gvplugin_layout.h>
 
-extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-
-/*
-#include "builtins.h"
+extern "C" {
 
 extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
-extern gvplugin_library_t gvplugin_core_LTX_library;
-extern gvplugin_library_t gvplugin_quartz_LTX_library;
-extern gvplugin_library_t gvplugin_visio_LTX_library;
-
-void loadGraphvizLibraries(GVC_t *gvc) {
-    gvAddLibrary(gvc, &gvplugin_dot_layout_LTX_library);
-    gvAddLibrary(gvc, &gvplugin_neato_layout_LTX_library);
-    gvAddLibrary(gvc, &gvplugin_core_LTX_library);
-    gvAddLibrary(gvc, &gvplugin_quartz_LTX_library);
-    gvAddLibrary(gvc, &gvplugin_visio_LTX_library);
+// extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
+// extern gvplugin_library_t gvplugin_core_LTX_library;
+// extern gvplugin_library_t gvplugin_quartz_LTX_library;
+// extern gvplugin_library_t gvplugin_visio_LTX_library;
 }
 
-#include "/Users/wizardofkneup/graphviz/lib/gvc/gvplugin.h" //
-#include "gvc.h"
-
-extern lt_symlist_t lt_preloaded_symbols[];
-void loadGraphvizLibraries(GVC_t *gvc);
-
-*/
+void loadGraphvizLibraries(GVC_t* gvc) {
+    gvAddLibrary(gvc, &gvplugin_dot_layout_LTX_library);
+    // gvAddLibrary(gvc, &gvplugin_neato_layout_LTX_library);
+    // gvAddLibrary(gvc, &gvplugin_core_LTX_library);
+    // gvAddLibrary(gvc, &gvplugin_quartz_LTX_library);
+    // gvAddLibrary(gvc, &gvplugin_visio_LTX_library);
+}
 
 namespace inviwo {
 
@@ -79,44 +71,71 @@ const ProcessorInfo LayoutMergeTree::getProcessorInfo() const { return processor
 
 LayoutMergeTree::LayoutMergeTree()
     : Processor{}
-    , dataFrame_{"dataFrame", ""_help}
+    , edges_{"edges",
+             "A data frame with a row per edge in the tree. "
+             "The up and down Column properties defined the edge nodes"_help}
+    , nodes_{"nodes",
+             "A data frame with a row per node in the tree, "
+             "the Node Id Column property should contain the "
+             "same node ids as in the edge table"_help}
+    , bnl_{"bnl", ""_help, {}}
     , outport_{"outport", "merge tree mesh"_help}
-    , upColumn_{"upColumn", "Up Column", dataFrame_}
-    , downColumn_{"downColumn", "Down Column", dataFrame_} {
+    , upColumn_{"upColumn", "Up Column", edges_}
+    , downColumn_{"downColumn", "Down Column", edges_}
+    , nodeIdColumn_{"nodeIdColumn", "Node Id Column", nodes_}
+    , nodeColorColumn_{"nodeColorColumn", "Node Color Column", nodes_}
+    , nodeColorMap_{"nodeColorMap", "Node Color Map"}
+    , pm_{this, 1, [this](PickingEvent* event) { picking(event); }} {
 
-    addPorts(dataFrame_, outport_);
-    addProperties(upColumn_, downColumn_);
+    addPorts(edges_, nodes_, bnl_, outport_);
+    addProperties(upColumn_, downColumn_, nodeIdColumn_, nodeColorColumn_, nodeColorMap_);
+}
+
+LayoutMergeTree::~LayoutMergeTree() {
+    if (gvc) {
+        gvFreeContext(gvc);
+    }
 }
 
 void LayoutMergeTree::process() {
+    if (!gvc) {
+        gvc = gvContext();
+        loadGraphvizLibraries(gvc);
+    }
 
-    const auto ups = dataFrame_.getData()->getColumn(upColumn_.getSelectedValue());
-    const auto downs = dataFrame_.getData()->getColumn(downColumn_.getSelectedValue());
+    const auto ups = edges_.getData()->getColumn(upColumn_.getSelectedValue());
+    const auto downs = edges_.getData()->getColumn(downColumn_.getSelectedValue());
+    const auto ids = nodes_.getData()->getColumn(nodeIdColumn_.getSelectedValue());
+
+    const auto colors = nodes_.getData()->getColumn(nodeColorColumn_.getSelectedValue());
 
     auto* upsTyped = dynamic_cast<const TemplateColumn<std::int64_t>*>(ups.get());
     auto* downsTyped = dynamic_cast<const TemplateColumn<std::int64_t>*>(downs.get());
+    auto* idsTyped = dynamic_cast<const TemplateColumn<std::int64_t>*>(ids.get());
 
-    if (!upsTyped || !downsTyped) {
+    if (!upsTyped || !downsTyped || !idsTyped) {
         throw Exception("Unexpected types");
     }
 
     StrBuffer buff{"digraph G {{\n"};
-
     for (auto&& [up, down] : util::zip(*upsTyped, *downsTyped)) {
         buff.append("{} -> {};\n", up, down);
     }
     buff.append("}}");
 
-    LogInfo(buff.view());
-
     Agraph_t* G = agmemread(buff.c_str());
-    GVC_t* gvc = gvContext();
-    gvAddLibrary(gvc, &gvplugin_dot_layout_LTX_library);
     gvLayout(gvc, G, "dot");
+    util::OnScopeExit freeG{[&]() {
+        gvFreeLayout(gvc, G);
+        agclose(G);
+    }};
 
     buff.clear();
 
-    size_t startPickId = 0;
+    std::unordered_map<size_t, size_t> nodeToIndex;
+    for (auto&& [index, node] : util::enumerate(*idsTyped)) {
+        nodeToIndex[node] = index;
+    }
 
     auto mesh =
         std::make_shared<TypedMesh<buffertraits::PositionsBuffer, buffertraits::ColorsBuffer,
@@ -125,25 +144,27 @@ void LayoutMergeTree::process() {
     auto& lines = mesh->addIndexBuffer(DrawType::Lines, ConnectivityType::None)->getDataContainer();
     mesh->reserveSizeInVertexBuffer(downsTyped->getSize());
 
-    std::unordered_map<size_t, uint32_t> nodeToVertex;
+    pm_.resize(downsTyped->getSize());
+    size_t startPickId = pm_.getPickingId(0);
 
-        for (auto&& [index, node] : util::enumerate(*downsTyped)) {
+    const auto colorRange = colors->getRange();
+
+    std::unordered_map<size_t, uint32_t> nodeToVertex;
+    for (auto&& [index, node] : util::enumerate(*downsTyped)) {
         Agnode_t* n = agnode(G, const_cast<char*>(buff.replace("{}", node).c_str()), 0);
         if (n != nullptr) {
             auto& coord = ND_coord(n);
 
             const auto pos = vec3{static_cast<float>(coord.x), static_cast<float>(coord.y), 0.0};
-            const auto color = vec4{1.0, 0.7, 0.3, 1.0};
+            const auto nodeIndex = nodeToIndex[node];
+            const auto color =
+                colorRange.x + colors->getAsDouble(nodeIndex) / (colorRange.y - colorRange.x);
             const auto pi = startPickId + index;
-            mesh->addVertex(pos, color, pi, index);
+            mesh->addVertex(pos, nodeColorMap_->sample(color), pi, index);
             ib.push_back(static_cast<uint32_t>(index));
             nodeToVertex[node] = static_cast<uint32_t>(index);
         }
     }
-
-    gvFreeLayout(gvc, G);
-    agclose(G);
-    gvFreeContext(gvc);
 
     for (auto&& [up, down] : util::zip(*upsTyped, *downsTyped)) {
         auto upIt = nodeToVertex.find(up);
@@ -155,6 +176,40 @@ void LayoutMergeTree::process() {
     }
 
     outport_.setData(mesh);
+}
+
+void LayoutMergeTree::picking(const PickingEvent* event) {
+    if (event->getPressState() == PickingPressState::None) {
+        if (event->getHoverState() == PickingHoverState::Enter) {
+            const auto i = event->getPickedId();
+            bnl_.highlight(BitSet{i});
+
+            if (auto data = nodes_.getData()) {
+                StrBuffer buff{};
+                for (auto col : *data) {
+                    if (i < col->getSize()) {
+                        buff.append(" {}: {}", col->getHeader(), col->getAsString(i));
+                    }
+                }
+                event->setToolTip(buff.view());
+            } else {
+                event->setToolTip(fmt::format("Row {}", i + 1));
+            }
+
+        } else if (event->getHoverState() == PickingHoverState::Exit) {
+            bnl_.highlight(BitSet{});
+            event->setToolTip("");
+        }
+    }
+    if (event->getPressState() == PickingPressState::Release &&
+        event->getPressItem() == PickingPressItem::Primary &&
+        std::abs(event->getDeltaPressedPosition().x) < 0.01 &&
+        std::abs(event->getDeltaPressedPosition().y) < 0.01) {
+
+        auto selection = bnl_.getSelectedIndices();
+        selection.flip(static_cast<uint32_t>(event->getPickedId()));
+        bnl_.select(selection);
+    }
 }
 
 }  // namespace inviwo
