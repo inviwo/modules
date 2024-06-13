@@ -29,17 +29,49 @@
 #pragma once
 
 #include <inviwo/graphviz/graphvizmoduledefine.h>
-#include <inviwo/core/common/inviwomodule.h>
-#include <inviwo/graphviz/graphvizsettings.h>
+
+#include <inviwo/core/util/settings/settings.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+
+#include <inviwo/core/network/processornetworkobserver.h>
+#include <inviwo/core/metadata/processormetadata.h>
 
 namespace inviwo {
 
-class IVW_MODULE_GRAPHVIZ_API GraphvizModule : public InviwoModule {
-public:
-    GraphvizModule(InviwoApplication* app);
-    virtual ~GraphvizModule() = default;
+class InviwoApplication;
 
-    GraphvizSettings settings;
+class IVW_MODULE_GRAPHVIZ_API GraphvizSettings : public Settings,
+                                                 public ProcessorNetworkObserver,
+                                                 public ProcessorMetaDataObserver {
+public:
+    GraphvizSettings(InviwoApplication* app);
+
+    BoolProperty autoLayout;
+
+    BoolProperty alignSources;
+    BoolProperty alignSinks;
+    DoubleVec2Property separation;
+
+    ButtonProperty layout;
+    ButtonProperty print;
+
+
+private:
+    void doLayoutNetwork();
+    void autoLayoutNetwork();
+
+    virtual void onProcessorNetworkDidAddProcessor(Processor*) override;
+    virtual void onProcessorNetworkDidRemoveProcessor(Processor*) override;
+    virtual void onProcessorNetworkDidAddConnection(const PortConnection&) override;
+    virtual void onProcessorNetworkDidRemoveConnection(const PortConnection&) override;
+
+    virtual void onProcessorMetaDataPositionChange() override;
+
+    InviwoApplication* app_;
+    bool isApplyingLayout_;
 };
 
 }  // namespace inviwo

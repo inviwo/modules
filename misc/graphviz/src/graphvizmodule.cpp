@@ -32,43 +32,15 @@
 
 namespace inviwo {
 
-GraphvizModule::GraphvizModule(InviwoApplication* app) : InviwoModule(app, "Graphviz") {
+GraphvizModule::GraphvizModule(InviwoApplication* app)
+    : InviwoModule(app, "Graphviz"), settings{app} {
     // Add a directory to the search path of the Shadermanager
     // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
     // Register objects that can be shared with the rest of inviwo here:
 
-    // Processors
-    // registerProcessor<GraphvizProcessor>();
     registerProcessor<LayoutMergeTree>();
-
-    // Properties
-    // registerProperty<GraphvizProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<GraphvizReader>());
-    // registerDataWriter(std::make_unique<GraphvizWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<GraphvizDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<GraphvizOutport>();
-    // registerPort<GraphvizInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<GraphvizPropertyWidget, GraphvizProperty>("Default");
-
-    // Dialogs
-    // registerDialog<GraphvizDialog>(GraphvizOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<GraphvizCapabilities>());
-    // registerSettings(std::make_unique<GraphvizSettings>());
-    // registerMetaData(std::make_unique<GraphvizMetaData>());
-    // registerPortInspector("GraphvizOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(std::make_unique_ptr<GraphvizDrawer>());
+    registerSettings(&settings);
 }
 
 }  // namespace inviwo
