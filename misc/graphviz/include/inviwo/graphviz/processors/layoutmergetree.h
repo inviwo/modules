@@ -32,17 +32,23 @@
 #include <inviwo/graphviz/graphvizmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/dataframe/properties/columnoptionproperty.h>
+#include <inviwo/core/interaction/pickingmapper.h>
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
+#include <graphviz/gvc.h>
 
 namespace inviwo {
 
 class IVW_MODULE_GRAPHVIZ_API LayoutMergeTree : public Processor {
 public:
     LayoutMergeTree();
+    virtual ~LayoutMergeTree() override;
 
     virtual void process() override;
 
@@ -50,12 +56,25 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    DataInport<DataFrame> dataFrame_;
+    void picking(const PickingEvent* event);
+
+    DataInport<DataFrame> edges_;
+    DataInport<DataFrame> nodes_;
+    BrushingAndLinkingInport bnl_;
+
     MeshOutport outport_;
 
     ColumnOptionProperty upColumn_;
     ColumnOptionProperty downColumn_;
 
+    ColumnOptionProperty nodeIdColumn_;
+    ColumnOptionProperty nodeColorColumn_;
+
+    TransferFunctionProperty nodeColorMap_;
+
+    PickingMapper pm_;
+
+    GVC_t* gvc = nullptr;
 };
 
 }  // namespace inviwo
