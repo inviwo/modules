@@ -1,0 +1,28 @@
+{
+  "name": "graphviz",
+  "version-semver": "10.0.1",
+  "port-version": 1,
+  "description": "Graph Visualization Tools",
+  "homepage": "https://graphviz.org/",
+  "license": "EPL-1.0",
+  "supports": "!staticcrt",
+  "dependencies": [
+    {
+      "name": "cairo",
+      "default-features": false
+    },
+    "getopt",
+    "libgd",
+    "libwebp",
+    "expat",
+    {
+      "name": "pkgconf",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    "zlib"
+  ]
+}
