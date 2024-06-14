@@ -41,7 +41,7 @@
 #include <inviwo/core/interaction/pickingmapper.h>
 #include <modules/brushingandlinking/ports/brushingandlinkingports.h>
 
-#include <graphviz/gvc.h>
+typedef struct GVC_s GVC_t;
 
 namespace inviwo {
 
