@@ -80,7 +80,7 @@ private:
 
     CompositeProperty columns_;
 
-    PythonScriptDisk script_;
+    PythonScript script_;
 
     void onDataFrameChange();
 };

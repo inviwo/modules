@@ -86,8 +86,9 @@ DataFrameClustering::DataFrameClustering(InviwoApplication* app)
                 {"ward", "ward"}})
 
     , columns_("columns", "Columns")
-    , script_(app->getModuleByType<DataFrameClusteringModule>()->getPath(ModulePath::Scripts) /
-              "dataframeclustering.py") {
+    , script_(PythonScript::fromFile(
+          app->getModuleByType<DataFrameClusteringModule>()->getPath(ModulePath::Scripts) /
+          "dataframeclustering.py")) {
 
     numberOfClusters_.setSerializationMode(PropertySerializationMode::All);
 
@@ -110,8 +111,6 @@ DataFrameClustering::DataFrameClustering(InviwoApplication* app)
         method_, [](const auto& p) { return p.getSelectedIdentifier() == "spectral"; });
 
     method_.set("agglo");
-
-    script_.onChange([&]() { this->invalidate(InvalidationLevel::InvalidOutput); });
 
     dataFrame_.onChange([&]() { onDataFrameChange(); });
 }

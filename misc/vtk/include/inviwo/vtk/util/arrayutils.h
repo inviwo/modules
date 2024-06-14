@@ -77,7 +77,7 @@ constexpr auto typemap() {
 
 template <size_t Precision, typename Src>
 constexpr auto changePrecision(Src) {
-    using SrcE = util::glmtype_t<Src>;
+    using SrcE = util::value_type_t<Src>;
     using DstE = decltype(detail::typemap<std::is_floating_point_v<SrcE>, std::is_signed_v<SrcE>,
                                           Precision>());
     using Dst = util::same_extent_t<Src, DstE>;
