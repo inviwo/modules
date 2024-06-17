@@ -4,6 +4,7 @@ set(HEADER_FILES
     include/inviwo/graphviz/graphvizmodule.h
     include/inviwo/graphviz/graphvizmoduledefine.h
     include/inviwo/graphviz/graphvizsettings.h
+    include/inviwo/graphviz/graphvizutil.h
     include/inviwo/graphviz/processors/layoutmergetree.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
@@ -11,6 +12,7 @@ ivw_group("Header Files" ${HEADER_FILES})
 set(SOURCE_FILES
     src/graphvizmodule.cpp
     src/graphvizsettings.cpp
+    src/graphvizutil.cpp
     src/processors/layoutmergetree.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
