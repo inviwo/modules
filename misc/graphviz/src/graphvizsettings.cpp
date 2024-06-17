@@ -35,36 +35,13 @@
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/stringconversion.h>
 
+#include <inviwo/graphviz/graphvizutil.h>
+
 #include <graphviz/cgraph.h>
 #include <graphviz/gvc.h>
-#include <graphviz/gvplugin.h>
-#include <graphviz/gvplugin_layout.h>
 
 #include <algorithm>
 #include <ranges>
-
-extern "C" {
-
-#ifdef _WIN32
-#define IMPORT_API __declspec(dllimport)
-#else
-#define IMPORT_API
-#endif
-
-IMPORT_API extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-// extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
-// extern gvplugin_library_t gvplugin_core_LTX_library;
-// extern gvplugin_library_t gvplugin_quartz_LTX_library;
-// extern gvplugin_library_t gvplugin_visio_LTX_library;
-}
-
-void loadGraphvizLibraries2(GVC_t* gvc) {
-    gvAddLibrary(gvc, &gvplugin_dot_layout_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_neato_layout_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_core_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_quartz_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_visio_LTX_library);
-}
 
 namespace inviwo {
 
@@ -167,7 +144,7 @@ StrBuffer& createDotGraph(StrBuffer& buff, ProcessorNetwork* net, glm::dvec2 sep
 template <typename Func>
 void calculateLayout(StrBuffer& buff, ProcessorNetwork* net, const Func& func) {
     auto* gvc = gvContext();
-    loadGraphvizLibraries2(gvc);
+    util::loadGraphvizLibraries(gvc);
 
     Agraph_t* G = agmemread(buff.c_str());
     gvLayout(gvc, G, "dot");

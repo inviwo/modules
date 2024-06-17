@@ -34,33 +34,10 @@
 #include <inviwo/core/datastructures/geometry/typedmesh.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 
+#include <inviwo/graphviz/graphvizutil.h>
+
 #include <graphviz/cgraph.h>
 #include <graphviz/gvc.h>
-#include <graphviz/gvplugin.h>
-#include <graphviz/gvplugin_layout.h>
-
-extern "C" {
-
-#ifdef _WIN32
-#define IMPORT_API __declspec(dllimport)
-#else
-#define IMPORT_API
-#endif
-
-IMPORT_API extern gvplugin_library_t gvplugin_dot_layout_LTX_library;
-// extern gvplugin_library_t gvplugin_neato_layout_LTX_library;
-// extern gvplugin_library_t gvplugin_core_LTX_library;
-// extern gvplugin_library_t gvplugin_quartz_LTX_library;
-// extern gvplugin_library_t gvplugin_visio_LTX_library;
-}
-
-void loadGraphvizLibraries(GVC_t* gvc) {
-    gvAddLibrary(gvc, &gvplugin_dot_layout_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_neato_layout_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_core_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_quartz_LTX_library);
-    // gvAddLibrary(gvc, &gvplugin_visio_LTX_library);
-}
 
 namespace inviwo {
 
@@ -106,7 +83,7 @@ LayoutMergeTree::~LayoutMergeTree() {
 void LayoutMergeTree::process() {
     if (!gvc) {
         gvc = gvContext();
-        loadGraphvizLibraries(gvc);
+        util::loadGraphvizLibraries(gvc);
     }
 
     const auto ups = edges_.getData()->getColumn(upColumn_.getSelectedValue());
