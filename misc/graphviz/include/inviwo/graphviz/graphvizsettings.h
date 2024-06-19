@@ -58,7 +58,6 @@ public:
     ButtonProperty layout;
     ButtonProperty print;
 
-
 private:
     void doLayoutNetwork();
     void autoLayoutNetwork();
