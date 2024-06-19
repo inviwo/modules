@@ -338,9 +338,16 @@ std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file
     auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
         VolumeReprConfig{.dimensions = chg.dims, .wrapping = wrapping3d::repeatAll});
 
+    const double volume = glm::dot(chg.a1, glm::cross(chg.a2, chg.a3));
+    const float scale = static_cast<float>(1.0 / volume);
+
     const auto ram = volumeRep->getView();
     for (size_t i = 0; i < voxels;) {
-        file.lineParts([&](std::string_view elem, size_t) { toNum(elem, ram[i++]); });
+        file.lineParts([&](std::string_view elem, size_t) {
+            toNum(elem, ram[i]);
+            ram[i] *= scale;
+            ++i;
+        });
 
         if (stop) return {};
         if (i % 1'000'000 == 0) {
@@ -375,7 +382,7 @@ std::shared_ptr<Volume> createVolume(std::string_view name, dvec2 dataRange, con
                      .xAxis = Axis{"x", units::unit_from_string("Angstrom")},
                      .yAxis = Axis{"y", units::unit_from_string("Angstrom")},
                      .zAxis = Axis{"z", units::unit_from_string("Angstrom")},
-                     .valueAxis = Axis{std::string{name}, units::unit_from_string("e")},
+                     .valueAxis = Axis{std::string{name}, units::unit_from_string("e/Angstrom^3")},
                      .dataRange = dataRange,
                      .valueRange = dataRange,
                      .model = model});
