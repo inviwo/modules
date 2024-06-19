@@ -29,7 +29,6 @@
 
 #include <inviwo/graphviz/graphvizutil.h>
 
-
 #include <graphviz/gvc.h>
 #include <graphviz/gvplugin.h>
 
@@ -58,4 +57,4 @@ void loadGraphvizLibraries(GVC_t* gvc) {
     // gvAddLibrary(gvc, &gvplugin_visio_LTX_library);
 }
 
-}  // namespace inviwo
+}  // namespace inviwo::util

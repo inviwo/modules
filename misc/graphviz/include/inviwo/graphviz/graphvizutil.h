@@ -36,4 +36,4 @@ namespace inviwo::util {
 
 IVW_MODULE_GRAPHVIZ_API void loadGraphvizLibraries(GVC_t* gvc);
 
-}  // namespace inviwo
+}  // namespace inviwo::util
