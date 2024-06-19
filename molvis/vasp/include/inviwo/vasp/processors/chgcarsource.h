@@ -61,6 +61,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void deserialize(Deserializer& d) override;
+
 private:
     void picking(const PickingEvent* event);
 
@@ -81,9 +82,9 @@ private:
     OptionProperty<molvis::element::Colormap> colormap_;
     DoubleProperty radiusScaling_;
     DoubleProperty borderMargin_;
-    
+
     PickingMapper pm_;
-    
+
     std::unique_ptr<Chgcar> data_;
     std::shared_ptr<VolumeRAMPrecision<float>> chg_;
     dvec2 chgDataRange_;
