@@ -189,7 +189,7 @@ void MorseSmaleComplexToMesh::handleExtremaPicking(PickingEvent* p) {
             tb(H("Cell Id"), cp.cellIds[id]);
             tb(H("On Boundary"), cp.isOnBoundary[id] ? "True" : "False");
 
-            p->setToolTip(doc);
+            p->setToolTip(doc.str());
 
         } else {
             p->setToolTip(fmt::format("Extrema: {}", p->getPickedId()));
@@ -252,7 +252,7 @@ void MorseSmaleComplexToMesh::handleSeperatrixPicking(PickingEvent* p) {
             tb(H("z"), msc->separatrixPoints.points[3 * srcInd + 2],
                msc->separatrixPoints.points[3 * dstInd + 2]);
 
-            p->setToolTip(doc);
+            p->setToolTip(doc.str());
 
         } else {
             p->setToolTip("Seperatrix: " + toString(p->getPickedId()));

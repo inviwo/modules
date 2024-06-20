@@ -66,16 +66,21 @@ void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
                               message.line, fmt::format("{}{}", message.prefix, message.message));
 }
 
-VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
-
-    // Register objects that can be shared with the rest of inviwo here:
+VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK"), settings{} {
 
     // see https://vtk.org/doc/nightly/html/classvtkLogger.html
-    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr, vtkLogger::VERBOSITY_ERROR);
-    // vtkObject::GlobalWarningDisplayOn();
-    vtkObject::GlobalWarningDisplayOff();
+    vtkLogger::AddCallback("inviwolog", &logCallback, nullptr,
+                           settings.verbosity.getSelectedValue());
+    vtkObject::SetGlobalWarningDisplay(settings.globalWarningDisplay);
+
+    settings.globalWarningDisplay.onChange(
+        [this]() { vtkObject::SetGlobalWarningDisplay(settings.globalWarningDisplay); });
+
+    settings.verbosity.onChange([this]() {
+        vtkLogger::RemoveCallback("inviwolog");
+        vtkLogger::AddCallback("inviwolog", &logCallback, nullptr,
+                               settings.verbosity.getSelectedValue());
+    });
 
     // Processors
     registerProcessor<ImageToVTK>();
@@ -91,6 +96,8 @@ VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK") {
     registerProcessor<vtk::VTKSource>();
 
     vtkwrapper::registerVTKFilters(this);
+
+    registerSettings(&settings);
 }
 
 }  // namespace inviwo
