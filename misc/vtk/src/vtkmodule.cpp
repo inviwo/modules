@@ -68,7 +68,6 @@ void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
 
 VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK"), settings{} {
 
-
     // see https://vtk.org/doc/nightly/html/classvtkLogger.html
     vtkLogger::AddCallback("inviwolog", &logCallback, nullptr,
                            settings.verbosity.getSelectedValue());

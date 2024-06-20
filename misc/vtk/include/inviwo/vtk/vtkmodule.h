@@ -32,7 +32,6 @@
 #include <inviwo/core/common/inviwomodule.h>
 #include <inviwo/vtk/util/vtksettings.h>
 
-
 namespace inviwo {
 
 class IVW_MODULE_VTK_API VTKModule : public InviwoModule {
