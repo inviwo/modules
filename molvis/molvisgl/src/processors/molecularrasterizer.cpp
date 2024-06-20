@@ -61,7 +61,7 @@ const ProcessorInfo MolecularRasterizer::processorInfo_{
         Create a rasterization object to render one or more molecular datastructure objects in a
         molecular representation. The molecular data is colored using standard color maps. If residue or
         chain information is present, the data can also be colored according to residues and chains.
-        
+
         The result is depending on the chosen molecular representation.
         + VDW (van der Waals): considers only atoms
         + Licorice:            considers both atoms and bonds
@@ -491,7 +491,8 @@ void MolecularRasterizer::handlePicking(PickingEvent* p) {
                     const auto atomCount = structure->atoms().positions.size();
                     if (atomId < offset + atomCount) {
                         p->setToolTip(
-                            molvis::createToolTip(*structure, static_cast<int>(atomId - offset)));
+                            molvis::createToolTip(*structure, static_cast<int>(atomId - offset))
+                                .str());
                         break;
                     }
                     offset += atomCount;

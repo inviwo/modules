@@ -111,7 +111,7 @@ void MolecularStructureToMesh::handlePicking(PickingEvent* p) {
     if (enableTooltips_ && p->getPressState() == PickingPressState::None) {
         if (p->getHoverState() == PickingHoverState::Move ||
             p->getHoverState() == PickingHoverState::Enter) {
-            p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId));
+            p->setToolTip(molvis::createToolTip(*inport_.getData(), atomId).str());
         } else if (p->getHoverState() == PickingHoverState::Exit) {
             p->setToolTip("");
         }
