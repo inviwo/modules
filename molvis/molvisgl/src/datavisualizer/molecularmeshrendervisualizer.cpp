@@ -72,21 +72,23 @@ bool MolecularMeshRenderVisualizer::hasSourceProcessor() const { return true; }
 bool MolecularMeshRenderVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> MolecularMeshRenderVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
-    auto source =
-        net->addProcessor(util::makeProcessor<MolecularStructureSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
+    auto* source = net->addProcessor(
+        util::makeProcessor<MolecularStructureSource>(GP{0, 0} + origin, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> MolecularMeshRenderVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
-    auto msm = net->addProcessor(util::makeProcessor<MolecularStructureToMesh>(GP{0, 3}));
-    auto mmr = net->addProcessor(util::makeProcessor<MolecularMeshRenderer>(GP{0, 6}));
-    auto bg = net->addProcessor(util::makeProcessor<Background>(GP{0, 8}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 10}));
+    const ivec2 origin = util::getPosition(outport->getProcessor());
 
-    auto bgProc = static_cast<Background*>(bg);
+    auto* msm = net->addProcessor(util::makeProcessor<MolecularStructureToMesh>(GP{0, 3} + origin));
+    auto* mmr = net->addProcessor(util::makeProcessor<MolecularMeshRenderer>(GP{0, 6} + origin));
+    auto* bg = net->addProcessor(util::makeProcessor<Background>(GP{0, 8} + origin));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 10} + origin));
+
+    auto* bgProc = static_cast<Background*>(bg);
     bgProc->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
     bgProc->bgColor1_ = vec4{1.0f, 1.0f, 1.0f, 1.0f};
 
@@ -99,9 +101,9 @@ std::vector<Processor*> MolecularMeshRenderVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> MolecularMeshRenderVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);

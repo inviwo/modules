@@ -66,16 +66,17 @@ bool HyperLICVisualizer2D::hasSourceProcessor() const { return false; }
 bool HyperLICVisualizer2D::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> HyperLICVisualizer2D::addSourceProcessor(
-    const std::filesystem::path&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
     return {nullptr, nullptr};
 }
 
 std::vector<Processor*> HyperLICVisualizer2D::addVisualizerNetwork(Outport* outport,
                                                                    ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto noiser = net->addProcessor(util::makeProcessor<NoiseGenerator2D>(GP{1, 3}));
-    auto hlicer = net->addProcessor(util::makeProcessor<TensorFieldLIC>(GP{0, 6}));
-    auto canvas = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9}));
+    auto* noiser = net->addProcessor(util::makeProcessor<NoiseGenerator2D>(GP{1, 3} + initialPos));
+    auto* hlicer = net->addProcessor(util::makeProcessor<TensorFieldLIC>(GP{0, 6} + initialPos));
+    auto* canvas = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 9} + initialPos));
 
     net->addConnection(noiser->getOutports()[0], hlicer->getInports()[1]);
     net->addConnection(hlicer->getOutports()[0], canvas->getInports()[0]);
@@ -86,9 +87,9 @@ std::vector<Processor*> HyperLICVisualizer2D::addVisualizerNetwork(Outport* outp
 }
 
 std::vector<Processor*> HyperLICVisualizer2D::addSourceAndVisualizerNetwork(
-    const std::filesystem::path&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
 
-    return {nullptr};
+    return {};
 }
 
 }  // namespace inviwo

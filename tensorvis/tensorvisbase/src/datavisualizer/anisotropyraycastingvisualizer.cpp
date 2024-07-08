@@ -70,18 +70,20 @@ bool AnisotropyRaycastingVisualizer::hasSourceProcessor() const { return false; 
 bool AnisotropyRaycastingVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> AnisotropyRaycastingVisualizer::addSourceProcessor(
-    const std::filesystem::path&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
     return {nullptr, nullptr};
 }
 
 std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto aniso = net->addProcessor(util::makeProcessor<TensorField3DAnisotropy>(GP{0, 3}));
-    auto cubep = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 6}));
-    auto entry = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 9}));
-    auto volra = net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 12}));
-    auto canva = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15}));
+    auto* aniso =
+        net->addProcessor(util::makeProcessor<TensorField3DAnisotropy>(GP{0, 3} + initialPos));
+    auto* cubep = net->addProcessor(util::makeProcessor<CubeProxyGeometry>(GP{1, 6} + initialPos));
+    auto* entry = net->addProcessor(util::makeProcessor<EntryExitPoints>(GP{1, 9} + initialPos));
+    auto* volra = net->addProcessor(util::makeProcessor<VolumeRaycaster>(GP{0, 12} + initialPos));
+    auto* canva = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 15} + initialPos));
 
     net->addConnection(aniso->getOutports()[0], cubep->getInports()[0]);
     net->addConnection(cubep->getOutports()[0], entry->getInports()[0]);
@@ -96,9 +98,8 @@ std::vector<Processor*> AnisotropyRaycastingVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> AnisotropyRaycastingVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path&, ProcessorNetwork*) const {
-
-    return {nullptr};
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
+    return {};
 }
 
 }  // namespace inviwo
