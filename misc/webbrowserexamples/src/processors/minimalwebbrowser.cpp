@@ -47,21 +47,34 @@ MinimalWebBrowser::MinimalWebBrowser(InviwoApplication* app)
     : Processor{}
     , background_{"background", "Background image"_help}
     , outport_{"webpage", "Rendered web page"_help, DataVec4UInt8::get()}
-    , url_{"url", "URL", "URL of the webpage to show"_help, "https://www.inviwo.org",
-           InvalidationLevel::Valid}
+    , fileName_{"fileName", "HTML file", {}, "html", InvalidationLevel::Valid}
+    , autoReloadFile_{"autoReloadFile", "Auto Reload", true, InvalidationLevel::Valid}
     , reloadButton_("reloadButton", "Reload")
     , zoom_{"zoom", "Zoom Factor", 1.0, 0.2, 5.0}
     , browser_{new WebBrowserBase(app, this)} {
 
     addPorts(background_, outport_);
     background_.setOptional(true);
-    addProperties(url_, reloadButton_, zoom_);
+    addProperties(fileName_, autoReloadFile_, reloadButton_, zoom_);
 
-    url_.onChange([this]() { browser_->load(std::string_view{url_.get()}); });
+    fileName_.onChange([this]() {
+        if (autoReloadFile_) {
+            fileObserver_.setFilename(fileName_);
+        }
+        browser_->load(fileName_);
+    });
+    autoReloadFile_.onChange([this]() {
+        if (autoReloadFile_) {
+            fileObserver_.setFilename(fileName_);
+        } else {
+            fileObserver_.stop();
+        }
+    });
+
     reloadButton_.onChange([this]() { browser_->reload(); });
 
     addInteractionHandler(browser_->getInteractionHandler());
-    browser_->load(std::string_view{url_.get()});
+    browser_->load(fileName_);
 }
 
 void MinimalWebBrowser::process() {
@@ -76,7 +89,7 @@ void MinimalWebBrowser::process() {
 
 void MinimalWebBrowser::deserialize(Deserializer& d) {
     Processor::deserialize(d);
-    browser_->load(std::string_view{url_.get()});
+    browser_->load(fileName_);
 }
 
 }  // namespace inviwo
