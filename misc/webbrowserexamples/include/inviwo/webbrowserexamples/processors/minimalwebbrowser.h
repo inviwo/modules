@@ -34,7 +34,9 @@
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/fileproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/util/singlefileobserver.h>
 
 #include <modules/webbrowser/processors/webbrowserbase.h>
 
@@ -57,10 +59,12 @@ private:
     ImageInport background_;
     ImageOutport outport_;
 
-    StringProperty url_;
+    FileProperty fileName_;
+    BoolProperty autoReloadFile_;
     ButtonProperty reloadButton_;
     DoubleProperty zoom_;
 
+    SingleFileObserver fileObserver_;
     CefRefPtr<WebBrowserBase> browser_;
 };
 
