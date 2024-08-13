@@ -68,17 +68,19 @@ bool HyperLICVisualizer3D::hasSourceProcessor() const { return false; }
 bool HyperLICVisualizer3D::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> HyperLICVisualizer3D::addSourceProcessor(
-    const std::filesystem::path&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
     return {nullptr, nullptr};
 }
 
 std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outport,
                                                                    ProcessorNetwork* net) const {
+    const ivec2 initialPos = util::getPosition(outport->getProcessor());
 
-    auto slicer = net->addProcessor(util::makeProcessor<TensorFieldSlice>(GP{0, 3}));
-    auto noiser = net->addProcessor(util::makeProcessor<NoiseGenerator2D>(GP{1, 6}));
-    auto hlicer = net->addProcessor(util::makeProcessor<TensorFieldLIC>(GP{0, 9}));
-    auto canvas = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 12}));
+    auto* slicer = net->addProcessor(util::makeProcessor<TensorFieldSlice>(GP{0, 3} + initialPos));
+    auto* noiser = net->addProcessor(util::makeProcessor<NoiseGenerator2D>(GP{1, 6} + initialPos));
+    auto* hlicer = net->addProcessor(util::makeProcessor<TensorFieldLIC>(GP{0, 9} + initialPos));
+    auto* canvas =
+        net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 12} + initialPos));
 
     net->addConnection(slicer->getOutports()[0], hlicer->getInports()[0]);
     net->addConnection(noiser->getOutports()[0], hlicer->getInports()[1]);
@@ -90,9 +92,9 @@ std::vector<Processor*> HyperLICVisualizer3D::addVisualizerNetwork(Outport* outp
 }
 
 std::vector<Processor*> HyperLICVisualizer3D::addSourceAndVisualizerNetwork(
-    const std::filesystem::path&, ProcessorNetwork*) const {
+    const std::filesystem::path&, ProcessorNetwork*, const ivec2&) const {
 
-    return {nullptr};
+    return {};
 }
 
 }  // namespace inviwo

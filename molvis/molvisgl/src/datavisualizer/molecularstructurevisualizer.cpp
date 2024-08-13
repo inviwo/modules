@@ -71,18 +71,20 @@ bool MolecularStructureVisualizer::hasSourceProcessor() const { return true; }
 bool MolecularStructureVisualizer::hasVisualizerNetwork() const { return true; }
 
 std::pair<Processor*, Outport*> MolecularStructureVisualizer::addSourceProcessor(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
-    auto source =
-        net->addProcessor(util::makeProcessor<MolecularStructureSource>(GP{0, 0}, app_, filename));
-    auto outport = source->getOutports().front();
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
+    auto* source = net->addProcessor(
+        util::makeProcessor<MolecularStructureSource>(GP{0, 0} + origin, app_, filename));
+    auto* outport = source->getOutports().front();
     return {source, outport};
 }
 
 std::vector<Processor*> MolecularStructureVisualizer::addVisualizerNetwork(
     Outport* outport, ProcessorNetwork* net) const {
-    auto mr = net->addProcessor(util::makeProcessor<MolecularRenderer>(GP{0, 3}));
-    auto bg = net->addProcessor(util::makeProcessor<Background>(GP{0, 5}));
-    auto cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 7}));
+    const ivec2 origin = util::getPosition(outport->getProcessor());
+
+    auto* mr = net->addProcessor(util::makeProcessor<MolecularRenderer>(GP{0, 3} + origin));
+    auto* bg = net->addProcessor(util::makeProcessor<Background>(GP{0, 5} + origin));
+    auto* cvs = net->addProcessor(util::makeProcessor<CanvasProcessorGL>(GP{0, 7} + origin));
 
     auto bgProc = static_cast<Background*>(bg);
     bgProc->backgroundStyle_.setSelectedValue(Background::BackgroundStyle::Uniform);
@@ -96,9 +98,9 @@ std::vector<Processor*> MolecularStructureVisualizer::addVisualizerNetwork(
 }
 
 std::vector<Processor*> MolecularStructureVisualizer::addSourceAndVisualizerNetwork(
-    const std::filesystem::path& filename, ProcessorNetwork* net) const {
+    const std::filesystem::path& filename, ProcessorNetwork* net, const ivec2& origin) const {
 
-    auto sourceAndOutport = addSourceProcessor(filename, net);
+    auto sourceAndOutport = addSourceProcessor(filename, net, origin);
     auto processors = addVisualizerNetwork(sourceAndOutport.second, net);
 
     processors.push_back(sourceAndOutport.first);
