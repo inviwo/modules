@@ -32,6 +32,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/glm.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/interaction/events/pickingevent.h>
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -49,7 +50,6 @@
 #include <numeric>
 #include <algorithm>
 #include <array>
-#include <string_view>
 
 /*
 0: unknown system
@@ -284,14 +284,78 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
     return mesh;
 }
 
-std::shared_ptr<DataFrame> createDataFrame(const Chgcar& chg) {
+std::string supToUnicode(std::string_view str) {
+    static const std::map<char, std::string> map{{
+        {'.', "\u22C5"},
+        {'0', "\u2070"},
+        {'1', "\u00B9"},
+        {'2', "\u00B2"},
+        {'3', "\u00B3"},
+        {'4', "\u2074"},
+        {'5', "\u2075"},
+        {'6', "\u2076"},
+        {'7', "\u2077"},
+        {'8', "\u2078"},
+        {'9', "\u2079"},
+    }};
+
+    std::string res;
+    for (auto n = str.find("<sup>"); n != std::string_view::npos; n = str.find("<sup>")) {
+        res.append(str, 0, n);
+        const auto m = str.find("</sup>");
+        if (m == std::string_view::npos) {
+            throw Exception(IVW_CONTEXT_CUSTOM("supToUnicode"), "Invalid html in str: {}", str);
+        }
+
+        const auto sup = str.substr(n + 5, m - (n + 5));
+        for (char c : sup) {
+            auto it = map.find(c);
+            if (it != map.end()) {
+                res += it->second;
+            } else {
+                res += c;
+            }
+        }
+
+        str = str.substr(m + 6);
+    }
+    res.append(str);
+    return res;
+}
+
+std::shared_ptr<DataFrame> createDataFrame(const Chgcar& chg, vasp::PotentialType potential,
+                                           std::string_view potcarNames) {
+
+    std::map<std::string_view, std::string_view> potcars;
+    util::forEachStringPart(potcarNames, "\n", [&](std::string_view line) {
+        auto [elem, potcar] = util::splitByFirst(line, "->");
+        potcars[util::trim(elem)] = util::trim(potcar);
+    });
+
+    std::map<molvis::Element, vasp::Potential> potmap;
+    for (const auto& name : chg.elem) {
+        const auto elem = molvis::element::fromAbbr(name);
+        const auto potname = [&]() -> std::string_view {
+            if (auto it = potcars.find(name); it != potcars.end()) {
+                return it->second;
+            } else {
+                return name;
+            }
+        }();
+        const auto maybePot = vasp::findPotential(potential, potname);
+        potmap[elem] = maybePot.value_or(vasp::Potential{});
+    }
+
     auto df = std::make_shared<DataFrame>();
 
     auto ct = df->addCategoricalColumn("type");
-    auto cx = df->addColumn<float>("x", 0, units::unit_from_string("Angstrom"));
-    auto cy = df->addColumn<float>("y", 0, units::unit_from_string("Angstrom"));
-    auto cz = df->addColumn<float>("z", 0, units::unit_from_string("Angstrom"));
-    auto cr = df->addColumn<float>("r", 0, units::unit_from_string("Angstrom"));
+    auto cx = df->addColumn<double>("x", 0, units::unit_from_string("Angstrom"));
+    auto cy = df->addColumn<double>("y", 0, units::unit_from_string("Angstrom"));
+    auto cz = df->addColumn<double>("z", 0, units::unit_from_string("Angstrom"));
+    auto cr = df->addColumn<double>("r", 0, units::unit_from_string("Angstrom"));
+
+    auto ce = df->addColumn<double>("Valence Electrons", 0, units::unit_from_string("e"));
+    auto cc = df->addCategoricalColumn("Valence Config");
 
     forEachAtom(chg, 0.0, [&](molvis::Element elem, const glm::dvec3& pos, size_t, size_t) {
         const auto mp = chg.model * vec4(pos, 1.0f);
@@ -299,7 +363,11 @@ std::shared_ptr<DataFrame> createDataFrame(const Chgcar& chg) {
         cx->add(mp.x);
         cy->add(mp.y);
         cz->add(mp.z);
-        cr->add(static_cast<float>(molvis::element::vdwRadius(elem)));
+        cr->add(static_cast<double>(molvis::element::vdwRadius(elem)));
+
+        const auto& pot = potmap[elem];
+        ce->add(pot.valenceElectrons);
+        cc->add(supToUnicode(pot.valenceConfiguration));
     });
 
     df->updateIndexBuffer();
@@ -325,8 +393,7 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
     auto ms = std::make_shared<molvis::MolecularStructure>(molvis::MolecularData{
         .source = source, .atoms = std::move(atoms), .bonds = std::move(bonds)});
 
-    ms->setBasis(glm::mat3{chg.model});
-    ms->setOffset(glm::vec3{chg.model[3]});
+    ms->setModelMatrix(chg.model);
 
     return ms;
 }
@@ -338,7 +405,7 @@ std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file
     auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
         VolumeReprConfig{.dimensions = chg.dims, .wrapping = wrapping3d::repeatAll});
 
-    const double volume = glm::dot(chg.a1, glm::cross(chg.a2, chg.a3));
+    const double volume = glm::abs(glm::dot(chg.a1, glm::cross(chg.a2, chg.a3)));
     const float scale = static_cast<float>(1.0 / volume);
 
     const auto ram = volumeRep->getView();
@@ -453,6 +520,26 @@ ChgcarSource::ChgcarSource()
     , chgInfo_{"chgInfo", "Charge information"}
     , magInfo_{"magInfo", "Magnetization information"}
     , basis_{"basis", "Basis and offset"}
+    , potential_{"potential",
+                 "Potential",
+                 "Select a potential type, "
+                 "See https://www.vasp.at/wiki/index.php/Available_pseudopotentials"
+                 " for documentation. This refer to the potpaw.64 potentials"_help,
+                 {{"standard_lda", "Standard LDA", vasp::PotentialType::Standard_LDA},
+                  {"standard_pbe", "Standard PBE", vasp::PotentialType::Standard_PBE},
+                  {"gw_lda", "GW LDA", vasp::PotentialType::GW_LDA},
+                  {"gw_pbe", "GW PBE", vasp::PotentialType::GW_PBE}},
+                 0}
+    , potcars_{"potcars",
+               "Potcar Names",
+               "Add POTCAR name mappings here in the format [elem] -> [potcar name], one per line."
+               " For example:<br> Mo->Mo_sv<br>Ti->Ti_sv<br>If noting is given the element name is"
+               " used directly. See "
+               "https://www.vasp.at/wiki/index.php/Available_pseudopotentials"
+               " for documentation."_help,
+               "",
+               InvalidationLevel::InvalidOutput,
+               PropertySemantics::Multiline}
     , colormap_{"colormap",
                 "Colormap",
                 {{"cpk", "Rasmol CPK", molvis::element::Colormap::RasmolCPK},
@@ -484,8 +571,8 @@ ChgcarSource::ChgcarSource()
 
     addPorts(chargeOutport_, magnetizationOutport_, atomsOutport_, atomInformationOutport_,
              moleculeOutport_, bnlInport_);
-    addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, colormap_,
-                  radiusScaling_, borderMargin_);
+    addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, potential_,
+                  potcars_, colormap_, radiusScaling_, borderMargin_);
 }
 
 ChgcarSource::~ChgcarSource() = default;
@@ -521,7 +608,7 @@ void ChgcarSource::process() {
         pm_.resize(data_->pos.size());
         auto mesh =
             createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
-        auto df = createDataFrame(*data_);
+        auto df = createDataFrame(*data_, potential_.getSelectedValue(), potcars_.get());
         auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
 
         basis_.updateEntity(*mesh);
@@ -559,7 +646,8 @@ void ChgcarSource::process() {
         const auto factor =
             chg.scale > 0.0
                 ? chg.scale
-                : std::pow(-chg.scale / glm::dot(chg.a1, glm::cross(chg.a2, chg.a1)), 1.0 / 3.0);
+                : std::pow(-chg.scale / glm::abs(glm::dot(chg.a1, glm::cross(chg.a2, chg.a1))),
+                           1.0 / 3.0);
         const auto basis = factor * dmat3{chg.a1, chg.a2, chg.a3};
         chg.model = glm::mat4{basis};
         chg.model[3][3] = 1.0;
@@ -675,7 +763,7 @@ void ChgcarSource::process() {
         pm_.resize(data_->pos.size());
         auto mesh =
             createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
-        auto df = createDataFrame(*data_);
+        auto df = createDataFrame(*data_, potential_.getSelectedValue(), potcars_.get());
         auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
         basis_.updateEntity(*mesh);
         basis_.updateEntity(*ms);
@@ -698,7 +786,7 @@ void ChgcarSource::picking(const PickingEvent* event) {
     if (event->getPressState() == PickingPressState::None) {
         if (event->getHoverState() == PickingHoverState::Enter) {
             const auto i = event->getPickedId();
-            bnlInport_.highlight(BitSet{i});
+            bnlInport_.highlight(BitSet{static_cast<uint32_t>(i)});
             if (data_) {
 
                 const auto pos = glm::dmat3{data_->model} * data_->pos.at(i);
@@ -734,4 +822,749 @@ void ChgcarSource::picking(const PickingEvent* event) {
     }
 }
 
+namespace vasp {
+
+std::optional<Potential> findPotential(PotentialType type, std::string_view name) {
+    static constexpr std::array<Potential, 170> standard_LDA{
+        {{"H", 1, "1s<sup>1</sup>"},
+         {"H.25", 0.25, "1s<sup>0.25</sup>"},
+         {"H.33", 0.33, "1s<sup>0.33</sup>"},
+         {"H.42", 0.42, "1s<sup>0.42</sup>"},
+         {"H.5", 0.5, "1s<sup>0.5</sup>"},
+         {"H.58", 0.58, "1s<sup>0.58</sup>"},
+         {"H.66", 0.66, "1s<sup>0.66</sup>"},
+         {"H.75", 0.75, "1s<sup>0.75</sup>"},
+         {"H1.25", 1.25, "1s<sup>1.25</sup>"},
+         {"H1.33", 1.33, "1s<sup>1.33</sup>"},
+         {"H1.5", 1.5, "1s<sup>1.5</sup>"},
+         {"H1.66", 1.66, "1s<sup>1.66</sup>"},
+         {"H1.75", 1.75, "1s<sup>1.75</sup>"},
+         {"H_AE", 1, ""},
+         {"H_h", 1, "1s<sup>1</sup>"},
+         {"H_s", 1, "1s<sup>1</sup>"},
+         {"He", 2, "1s<sup>2</sup>"},
+         {"Li", 1, "2s<sup>1</sup>"},
+         {"Li_sv", 3, "1s<sup>2</sup> 2s<sup>1</sup>"},
+         {"Be", 2, "2s<sup>1.9999</sup> 2p<sup>0.001</sup>"},
+         {"Be_sv", 4, "1s<sup>2</sup> 2s<sup>1.9999</sup> 2p<sup>0.001</sup>"},
+         {"B", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_h", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_s", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"C", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_h", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_s", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"N", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_h", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_s", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"O", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_h", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_s", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"F", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_h", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_s", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"Ne", 8, "2s<sup>2</sup> 2p<sup>6</sup>"},
+         {"Na", 1, "3s<sup>1</sup>"},
+         {"Na_pv", 7, "2p<sup>6</sup> 3s<sup>1</sup>"},
+         {"Na_sv", 9, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>1</sup>"},
+         {"Mg", 2, "3s<sup>1.999</sup> 3p<sup>0.001</sup>"},
+         {"Mg_pv", 8, "2p<sup>6</sup> 3s<sup>2</sup>"},
+         {"Mg_sv", 10, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup>"},
+         {"Al", 3, "3s<sup>2</sup> 3p<sup>1</sup>"},
+         {"Si", 4, "3s<sup>2</sup> 3p<sup>2</sup>"},
+         {"P", 5, "3s<sup>2</sup> 3p<sup>3</sup>"},
+         {"P_h", 5, "3s<sup>2</sup> 3p<sup>3</sup>"},
+         {"S", 6, "3s<sup>2</sup> 3p<sup>4</sup>"},
+         {"S_h", 6, "3s<sup>2</sup> 3p<sup>4</sup>"},
+         {"Cl", 7, "3s<sup>2</sup> 3p<sup>5</sup>"},
+         {"Cl_h", 7, "3s<sup>2</sup> 3p<sup>5</sup>"},
+         {"Ar", 8, "3s<sup>2</sup> 3p<sup>6</sup>"},
+         {"K_pv", 7, "3p<sup>6</sup> 4s<sup>1</sup>"},
+         {"K_sv", 9, "3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>1</sup>"},
+         {"Ca_pv", 8, "3p<sup>6</sup> 4s<sup>2</sup>"},
+         {"Ca_sv", 10, "3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>2</sup>"},
+         {"Sc", 3, "3d<sup>2</sup> 4s<sup>1</sup>"},
+         {"Sc_sv", 11, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>2</sup> 4s<sup>1</sup>"},
+         {"Ti", 4, "3d<sup>3</sup> 4s<sup>1</sup>"},
+         {"Ti_pv", 10, "3p<sup>6</sup> 3d<sup>3</sup> 4s<sup>1</sup>"},
+         {"Ti_sv", 12, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>3</sup> 4s<sup>1</sup>"},
+         {"V", 5, "3d<sup>4</sup> 4s<sup>1</sup>"},
+         {"V_pv", 11, "3p<sup>6</sup> 3d<sup>4</sup> 4s<sup>1</sup>"},
+         {"V_sv", 13, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>4</sup> 4s<sup>1</sup>"},
+         {"Cr", 6, "3d<sup>5</sup> 4s<sup>1</sup>"},
+         {"Cr_pv", 12, "3p<sup>6</sup> 3d<sup>5</sup> 4s<sup>1</sup>"},
+         {"Cr_sv", 14, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>5</sup> 4s<sup>1</sup>"},
+         {"Mn", 7, "3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Mn_pv", 13, "3p<sup>6</sup> 3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Mn_sv", 15, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Fe", 8, "3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Fe_pv", 14, "3p<sup>6</sup> 3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Fe_sv", 16, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Co", 9, "3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Co_pv", 15, "3p<sup>6</sup> 3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Co_sv", 17, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Ni", 10, "3d<sup>9</sup> 4s<sup>1</sup>"},
+         {"Ni_pv", 16, "3p<sup>6</sup> 3d<sup>9</sup> 4s<sup>1</sup>"},
+         {"Cu", 11, "3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Cu_pv", 17, "3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Zn", 12, "3d<sup>10</sup> 4s<sup>2</sup>"},
+         {"Ga", 3, "4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_d", 13, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_h", 13, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ge", 4, "4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_d", 14, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_h", 14, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"As", 5, "4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"As_d", 15, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"Se", 6, "4s<sup>2</sup> 4p<sup>4</sup>"},
+         {"Br", 7, "4s<sup>2</sup> 4p<sup>5</sup>"},
+         {"Kr", 8, "4s<sup>2</sup> 4p<sup>6</sup>"},
+         {"Rb_pv", 7, "4p<sup>6</sup> 4d<sup>0.001</sup> 5s<sup>0.999</sup>"},
+         {"Rb_sv", 9, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>0.001</sup> 5s<sup>0.999</sup>"},
+         {"Sr_sv", 10, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>0.001</sup> 5s<sup>1.999</sup>"},
+         {"Y_sv", 11, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>2</sup> 5s<sup>1</sup>"},
+         {"Zr_sv", 12, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>3</sup> 5s<sup>1</sup>"},
+         {"Nb_pv", 11, "4p<sup>6</sup> 4d<sup>4</sup> 5s<sup>1</sup>"},
+         {"Nb_sv", 13, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>4</sup> 5s<sup>1</sup>"},
+         {"Mo", 6, "4d<sup>5</sup> 5s<sup>1</sup>"},
+         {"Mo_pv", 12, "4p<sup>6</sup> 4d<sup>5</sup> 5s<sup>1</sup>"},
+         {"Mo_sv", 14, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>5</sup> 5s<sup>1</sup>"},
+         {"Tc", 7, "4d<sup>6</sup> 5s<sup>1</sup>"},
+         {"Tc_pv", 13, "4p<sup>6</sup> 4d<sup>6</sup> 5s<sup>1</sup>"},
+         {"Tc_sv", 15, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>6</sup> 5s<sup>1</sup>"},
+         {"Ru", 8, "4d<sup>7</sup> 5s<sup>1</sup>"},
+         {"Ru_pv", 14, "4p<sup>6</sup> 4d<sup>7</sup> 5s<sup>1</sup>"},
+         {"Ru_sv", 16, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>7</sup> 5s<sup>1</sup>"},
+         {"Rh", 9, "4d<sup>8</sup> 5s<sup>1</sup>"},
+         {"Rh_pv", 15, "4p<sup>6</sup> 4d<sup>8</sup> 5s<sup>1</sup>"},
+         {"Pd", 10, "4d<sup>9</sup> 5s<sup>1</sup>"},
+         {"Pd_pv", 16, "4p<sup>6</sup> 4d<sup>9</sup> 5s<sup>1</sup>"},
+         {"Ag", 11, "4d<sup>10</sup> 5s<sup>1</sup>"},
+         {"Ag_pv", 17, "4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>1</sup>"},
+         {"Cd", 12, "4d<sup>10</sup> 5s<sup>2</sup>"},
+         {"In", 3, "5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"In_d", 13, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"Sn", 4, "5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sn_d", 14, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sb", 5, "5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Te", 6, "5s<sup>2</sup> 5p<sup>4</sup>"},
+         {"I", 7, "5s<sup>2</sup> 5p<sup>5</sup>"},
+         {"Xe", 8, "5s<sup>2</sup> 5p<sup>6</sup>"},
+         {"Cs_sv", 9, "5s<sup>2</sup> 5p<sup>6</sup> 6s<sup>1</sup>"},
+         {"Ba_sv", 10, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.001</sup> 6s<sup>1.999</sup>"},
+         {"La", 11,
+          "4f<sup>0.0001</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.9999</sup> 6s<sup>2</sup>"},
+         {"La_s", 9, "4f<sup>0.0001</sup> 5p<sup>6</sup> 5d<sup>0.9999</sup> 6s<sup>2</sup>"},
+         {"Ce", 12, "4f<sup>1</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Ce_h", 12, "4f<sup>1</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Hf", 4, "5d<sup>3</sup> 6s<sup>1</sup>"},
+         {"Hf_pv", 10, "5p<sup>6</sup> 5d<sup>3</sup> 6s<sup>1</sup>"},
+         {"Hf_sv", 12, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>4</sup>"},
+         {"Ta", 5, "5d<sup>4</sup> 6s<sup>1</sup>"},
+         {"Ta_pv", 11, "5p<sup>6</sup> 5d<sup>4</sup> 6s<sup>1</sup>"},
+         {"W", 6, "5d<sup>5</sup> 6s<sup>1</sup>"},
+         {"W_sv", 14, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>5</sup> 6s<sup>1</sup>"},
+         {"Re", 7, "5d<sup>6</sup> 6s<sup>1</sup>"},
+         {"Re_pv", 13, "5p<sup>6</sup> 5d<sup>6</sup> 6s<sup>1</sup>"},
+         {"Os", 8, "5d<sup>7</sup> 6s<sup>1</sup>"},
+         {"Os_pv", 14, "5p<sup>6</sup> 5d<sup>7</sup> 6s<sup>1</sup>"},
+         {"Ir", 9, "5d<sup>8</sup> 6s<sup>1</sup>"},
+         {"Pt", 10, "5d<sup>9</sup> 6s<sup>1</sup>"},
+         {"Pt_pv", 16, "5p<sup>6</sup> 5d<sup>9</sup> 6s<sup>1</sup>"},
+         {"Au", 11, "5d<sup>10</sup> 6s<sup>1</sup>"},
+         {"Hg", 12, "5d<sup>10</sup> 6s<sup>2</sup>"},
+         {"Tl", 3, "6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Tl_d", 13, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Pb", 4, "6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Pb_d", 14, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Bi", 5, "6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Bi_d", 15, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Po", 6, "6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"Po_d", 16, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"At", 7, "6s<sup>2</sup> 6p<sup>5</sup>"},
+         {"Rn", 8, "6s<sup>2</sup> 6p<sup>6</sup>"},
+         {"Fr_sv", 9, "6s<sup>2</sup> 6p<sup>6</sup> 7s<sup>1</sup>"},
+         {"Ra_sv", 10, "6s<sup>2</sup> 6p<sup>6</sup> 7s<sup>2</sup>"},
+         {"Ac", 11,
+          "5f<sup>0.0001</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>0.9999</sup> 7s<sup>2</sup>"},
+         {"Th", 12, "5f<sup>1</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>1</sup> 7s<sup>2</sup>"},
+         {"Th_s", 10, "5f<sup>1</sup> 6p<sup>6</sup> 6d<sup>1</sup> 7s<sup>2</sup>"},
+         {"Pa", 13, "5f<sup>1</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Pa_s", 11, "5f<sup>1</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"U", 14, "5f<sup>2</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"U_s", 14, "5f<sup>2</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Np", 15, "5f<sup>3</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Np_s", 15, "5f<sup>3</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Pu", 16, "5f<sup>4</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Pu_s", 16, "5f<sup>4</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Am", 17, "5f<sup>5</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Cm", 18, "5f<sup>6</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"}}};
+
+    static constexpr std::array<Potential, 214> standard_PBE{
+        {{"H", 1, "1s<sup>1</sup>"},
+         {"H.25", 0.25, "1s<sup>0.25</sup>"},
+         {"H.33", 0.33, "1s<sup>0.33</sup>"},
+         {"H.42", 0.42, "1s<sup>0.42</sup>"},
+         {"H.5", 0.5, "1s<sup>0.5</sup>"},
+         {"H.58", 0.58, "1s<sup>0.58</sup>"},
+         {"H.66", 0.66, "1s<sup>0.66</sup>"},
+         {"H.75", 0.75, "1s<sup>0.75</sup>"},
+         {"H1.25", 1.25, "1s<sup>1.25</sup>"},
+         {"H1.33", 1.33, "1s<sup>1.33</sup>"},
+         {"H1.5", 1.5, "1s<sup>1.5</sup>"},
+         {"H1.66", 1.66, "1s<sup>1.66</sup>"},
+         {"H1.75", 1.75, "1s<sup>1.75</sup>"},
+         {"H_AE", 1, ""},
+         {"H_h", 1, "1s<sup>1</sup>"},
+         {"H_s", 1, "1s<sup>1</sup>"},
+         {"He", 2, "1s<sup>2</sup>"},
+         {"He_AE", 2, "1s<sup>2</sup>"},
+         {"Li", 1, "2s<sup>1</sup>"},
+         {"Li_sv", 3, "1s<sup>2</sup> 2s<sup>1</sup>"},
+         {"Be", 2, "2s<sup>1.99</sup> 2p<sup>0.01</sup>"},
+         {"Be_sv", 4, "1s<sup>2</sup> 2s<sup>1.99</sup> 2p<sup>0.01</sup>"},
+         {"B", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_h", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_s", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"C", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_h", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_s", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"N", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_h", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_s", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"O", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_h", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_s", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"F", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_h", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_s", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"Ne", 8, "2s<sup>2</sup> 2p<sup>6</sup>"},
+         {"Na", 1, "3s<sup>1</sup>"},
+         {"Na_pv", 7, "2p<sup>6</sup> 3s<sup>1</sup>"},
+         {"Na_sv", 9, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>1</sup>"},
+         {"Mg", 2, "3s<sup>2</sup>"},
+         {"Mg_pv", 8, "2p<sup>6</sup> 3s<sup>2</sup>"},
+         {"Mg_sv", 10, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup>"},
+         {"Al", 3, "3s<sup>2</sup> 3p<sup>1</sup>"},
+         {"Si", 4, "3s<sup>2</sup> 3p<sup>2</sup>"},
+         {"P", 5, "3s<sup>2</sup> 3p<sup>3</sup>"},
+         {"P_h", 5, "3s<sup>2</sup> 3p<sup>3</sup>"},
+         {"S", 6, "3s<sup>2</sup> 3p<sup>4</sup>"},
+         {"S_h", 6, "3s<sup>2</sup> 3p<sup>4</sup>"},
+         {"Cl", 7, "3s<sup>2</sup> 3p<sup>5</sup>"},
+         {"Cl_h", 7, "3s<sup>2</sup> 3p<sup>5</sup>"},
+         {"Ar", 8, "3s<sup>2</sup> 3p<sup>6</sup>"},
+         {"K_pv", 7, "3p<sup>6</sup> 4s<sup>1</sup>"},
+         {"K_sv", 9, "3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>1</sup>"},
+         {"Ca_pv", 8, "3p<sup>6</sup> 4s<sup>2</sup>"},
+         {"Ca_sv", 10, "3s<sup>2</sup> 3p<sup>6</sup> 4s<sup>2</sup>"},
+         {"Sc", 3, "3d<sup>2</sup> 4s<sup>1</sup>"},
+         {"Sc_sv", 11, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>2</sup> 4s<sup>1</sup>"},
+         {"Ti", 4, "3d<sup>3</sup> 4s<sup>1</sup>"},
+         {"Ti_pv", 10, "3p<sup>6</sup> 3d<sup>3</sup> 4s<sup>1</sup>"},
+         {"Ti_sv", 12, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>3</sup> 4s<sup>1</sup>"},
+         {"V", 5, "3d<sup>4</sup> 4s<sup>1</sup>"},
+         {"V_pv", 11, "3p<sup>6</sup> 3d<sup>4</sup> 4s<sup>1</sup>"},
+         {"V_sv", 13, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>4</sup> 4s<sup>1</sup>"},
+         {"Cr", 6, "3d<sup>5</sup> 4s<sup>1</sup>"},
+         {"Cr_pv", 12, "3p<sup>6</sup> 3d<sup>5</sup> 4s<sup>1</sup>"},
+         {"Cr_sv", 14, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>5</sup> 4s<sup>1</sup>"},
+         {"Mn", 7, "3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Mn_pv", 13, "3p<sup>6</sup> 3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Mn_sv", 15, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Fe", 8, "3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Fe_pv", 14, "3p<sup>6</sup> 3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Fe_sv", 16, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Co", 9, "3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Co_pv", 15, "3p<sup>6</sup> 3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Co_sv", 17, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Ni", 10, "3d<sup>9</sup> 4s<sup>1</sup>"},
+         {"Ni_pv", 16, "3p<sup>6</sup> 3d<sup>9</sup> 4s<sup>1</sup>"},
+         {"Cu", 11, "3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Cu_pv", 17, "3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Zn", 12, "3d<sup>10</sup> 4s<sup>2</sup>"},
+         {"Ga", 3, "4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_d", 13, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_h", 13, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ge", 4, "4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_d", 14, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_h", 14, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"As", 5, "4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"As_d", 15, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"Se", 6, "4s<sup>2</sup> 4p<sup>4</sup>"},
+         {"Br", 7, "4s<sup>2</sup> 4p<sup>5</sup>"},
+         {"Kr", 8, "4s<sup>2</sup> 4p<sup>6</sup>"},
+         {"Rb_pv", 7, "4p<sup>6</sup> 4d<sup>0.001</sup> 5s<sup>0.999</sup>"},
+         {"Rb_sv", 9, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>0.001</sup> 5s<sup>0.999</sup>"},
+         {"Sr_sv", 10, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>0.001</sup> 5s<sup>1.999</sup>"},
+         {"Y_sv", 11, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>2</sup> 5s<sup>1</sup>"},
+         {"Zr_sv", 12, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>3</sup> 5s<sup>1</sup>"},
+         {"Nb_pv", 11, "4p<sup>6</sup> 4d<sup>4</sup> 5s<sup>1</sup>"},
+         {"Nb_sv", 13, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>4</sup> 5s<sup>1</sup>"},
+         {"Mo", 6, "4d<sup>5</sup> 5s<sup>1</sup>"},
+         {"Mo_pv", 12, "4p<sup>6</sup> 4d<sup>5</sup> 5s<sup>1</sup>"},
+         {"Mo_sv", 14, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>5</sup> 5s<sup>1</sup>"},
+         {"Tc", 7, "4d<sup>6</sup> 5s<sup>1</sup>"},
+         {"Tc_pv", 13, "4p<sup>6</sup> 4d<sup>6</sup> 5s<sup>1</sup>"},
+         {"Tc_sv", 15, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>6</sup> 5s<sup>1</sup>"},
+         {"Ru", 8, "4d<sup>7</sup> 5s<sup>1</sup>"},
+         {"Ru_pv", 14, "4p<sup>6</sup> 4d<sup>7</sup> 5s<sup>1</sup>"},
+         {"Ru_sv", 16, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>7</sup> 5s<sup>1</sup>"},
+         {"Rh", 9, "4d<sup>8</sup> 5s<sup>1</sup>"},
+         {"Rh_pv", 15, "4p<sup>6</sup> 4d<sup>8</sup> 5s<sup>1</sup>"},
+         {"Pd", 10, "4d<sup>9</sup> 5s<sup>1</sup>"},
+         {"Pd_pv", 16, "4p<sup>6</sup> 4d<sup>9</sup> 5s<sup>1</sup>"},
+         {"Ag", 11, "4d<sup>10</sup> 5s<sup>1</sup>"},
+         {"Ag_pv", 17, "4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>1</sup>"},
+         {"Cd", 12, "4d<sup>10</sup> 5s<sup>2</sup>"},
+         {"In", 3, "5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"In_d", 13, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"Sn", 4, "5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sn_d", 14, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sb", 5, "5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Te", 6, "5s<sup>2</sup> 5p<sup>4</sup>"},
+         {"I", 7, "5s<sup>2</sup> 5p<sup>5</sup>"},
+         {"Xe", 8, "5s<sup>2</sup> 5p<sup>6</sup>"},
+         {"Cs_sv", 9, "5s<sup>2</sup> 5p<sup>6</sup> 6s<sup>1</sup>"},
+         {"Ba_sv", 10, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.01</sup> 6s<sup>1.99</sup>"},
+         {"La", 11,
+          "4f<sup>0.0001</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.9999</sup> 6s<sup>2</sup>"},
+         {"La_s", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Ce", 12, "4f<sup>1</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Ce_3", 11, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Ce_h", 12, "4f<sup>1</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Pr", 13,
+          "4f<sup>2.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Pr_3", 11, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Pr_h", 13,
+          "4f<sup>2.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Nd", 14,
+          "4f<sup>3.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Nd_3", 11, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Nd_h", 14,
+          "4f<sup>3.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Pm", 15,
+          "4f<sup>4.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Pm_3", 11, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Pm_h", 15,
+          "4f<sup>4.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Sm", 16,
+          "4f<sup>5.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Sm_3", 11, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Sm_h", 16,
+          "4f<sup>5.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Eu", 17,
+          "4f<sup>6.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Eu_2", 8, "5p<sup>6</sup> 6s<sup>2</sup>"},
+         {"Eu_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Eu_h", 17,
+          "4f<sup>6.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Gd", 18,
+          "4f<sup>7.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Gd_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Gd_h", 18,
+          "4f<sup>7.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Tb", 19,
+          "4f<sup>8.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Tb_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Tb_h", 19,
+          "4f<sup>8.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Dy", 20,
+          "4f<sup>9.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Dy_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Dy_h", 20,
+          "4f<sup>9.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Ho", 21,
+          "4f<sup>10.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Ho_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Ho_h", 21,
+          "4f<sup>10.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Er", 22,
+          "4f<sup>11.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Er_2", 8, "5p<sup>6</sup> 6s<sup>2</sup>"},
+         {"Er_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Er_h", 22,
+          "4f<sup>11.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Tm", 23,
+          "4f<sup>12.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Tm_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Tm_h", 23,
+          "4f<sup>12.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Yb", 24,
+          "4f<sup>13.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Yb_2", 8, "5p<sup>6</sup> 6s<sup>2</sup>"},
+         {"Yb_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Yb_h", 24,
+          "4f<sup>13.5</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.5</sup> 6s<sup>2</sup>"},
+         {"Lu", 25, "4f<sup>14</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Lu_3", 9, "5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Hf", 4, "5d<sup>3</sup> 6s<sup>1</sup>"},
+         {"Hf_pv", 10, "5p<sup>6</sup> 5d<sup>3</sup> 6s<sup>1</sup>"},
+         {"Hf_sv", 12, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>4</sup>"},
+         {"Ta", 5, "5d<sup>4</sup> 6s<sup>1</sup>"},
+         {"Ta_pv", 11, "5p<sup>6</sup> 5d<sup>4</sup> 6s<sup>1</sup>"},
+         {"W", 6, "5d<sup>5</sup> 6s<sup>1</sup>"},
+         {"W_sv", 14, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>5</sup> 6s<sup>1</sup>"},
+         {"Re", 7, "5d<sup>6</sup> 6s<sup>1</sup>"},
+         {"Re_pv", 13, "5p<sup>6</sup> 5d<sup>6</sup> 6s<sup>1</sup>"},
+         {"Os", 8, "5d<sup>7</sup> 6s<sup>1</sup>"},
+         {"Os_pv", 14, "5p<sup>6</sup> 5d<sup>7</sup> 6s<sup>1</sup>"},
+         {"Ir", 9, "5d<sup>8</sup> 6s<sup>1</sup>"},
+         {"Pt", 10, "5d<sup>9</sup> 6s<sup>1</sup>"},
+         {"Pt_pv", 16, "5p<sup>6</sup> 5d<sup>9</sup> 6s<sup>1</sup>"},
+         {"Au", 11, "5d<sup>10</sup> 6s<sup>1</sup>"},
+         {"Hg", 12, "5d<sup>10</sup> 6s<sup>2</sup>"},
+         {"Tl", 3, "6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Tl_d", 13, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Pb", 4, "6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Pb_d", 14, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Bi", 5, "6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Bi_d", 15, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Po", 6, "6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"Po_d", 16, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"At", 7, "6s<sup>2</sup> 6p<sup>5</sup>"},
+         {"Rn", 8, "6s<sup>2</sup> 6p<sup>6</sup>"},
+         {"Fr_sv", 9, "6s<sup>2</sup> 6p<sup>6</sup> 7s<sup>1</sup>"},
+         {"Ra_sv", 10, "6s<sup>2</sup> 6p<sup>6</sup> 7s<sup>2</sup>"},
+         {"Ac", 11, "6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>1</sup> 7s<sup>2</sup>"},
+         {"Th", 12, "5f<sup>1</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>1</sup> 7s<sup>2</sup>"},
+         {"Th_s", 10, "5f<sup>1</sup> 6p<sup>6</sup> 6d<sup>1</sup> 7s<sup>2</sup>"},
+         {"Pa", 13, "5f<sup>1</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Pa_s", 11, "5f<sup>1</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"U", 14, "5f<sup>2</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"U_s", 14, "5f<sup>2</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Np", 15, "5f<sup>3</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Np_s", 15, "5f<sup>3</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Pu", 16, "5f<sup>4</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Pu_s", 16, "5f<sup>4</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Am", 17, "5f<sup>5</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Cm", 18, "5f<sup>6</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"},
+         {"Cf", 20, "5f<sup>8</sup> 6s<sup>2</sup> 6p<sup>6</sup> 6d<sup>2</sup> 7s<sup>2</sup>"}}};
+
+    static constexpr std::array<Potential, 127> GW_LDA{
+        {{"H_GW", 1, "1s<sup>1</sup>"},
+         {"H_h_GW", 1, "1s<sup>1</sup>"},
+         {"He_GW", 2, "1s<sup>2</sup>"},
+         {"Li_AE_GW", 3, "1s<sup>2</sup> 2p<sup>1</sup>"},
+         {"Li_GW", 1, "2s<sup>1</sup>"},
+         {"Li_sv_GW", 3, "1s<sup>2</sup> 2p<sup>1</sup>"},
+         {"Be_GW", 2, "2s<sup>1.9999</sup> 2p<sup>0.001</sup>"},
+         {"Be_sv_GW", 4, "1s<sup>2</sup> 2p<sup>2</sup>"},
+         {"B_GW", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_GW_new", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"C_GW", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_GW_new", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_h_GW", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_s_GW", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"N_GW", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_GW_new", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_h_GW", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_s_GW", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"O_GW", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_GW_new", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_h_GW", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_s_GW", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"F_GW", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_GW_new", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_h_GW", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"Ne_GW", 8, "2s<sup>2</sup> 2p<sup>6</sup>"},
+         {"Ne_s_GW", 8, "2s<sup>2</sup> 2p<sup>6</sup>"},
+         {"Na_sv_GW", 9, "2s<sup>2</sup> 2p<sup>6</sup> 3p<sup>1</sup>"},
+         {"Mg_GW", 2, "3s<sup>2</sup>"},
+         {"Mg_pv_GW", 8, "2p<sup>6</sup> 3s<sup>2</sup>"},
+         {"Mg_sv_GW", 10, "2s<sup>2</sup> 2p<sup>6</sup> 3d<sup>2</sup>"},
+         {"Al_GW", 3, "3s<sup>2</sup> 3p<sup>1</sup>"},
+         {"Al_sv_GW", 11, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>1</sup>"},
+         {"Si_GW", 4, "3s<sup>2</sup> 3p<sup>2</sup>"},
+         {"Si_sv_GW", 12, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>2</sup>"},
+         {"P_GW", 5, "3s<sup>2</sup> 3p<sup>3</sup>"},
+         {"S_GW", 6, "3s<sup>2</sup> 3p<sup>4</sup>"},
+         {"Cl_GW", 7, "3s<sup>2</sup> 3p<sup>5</sup>"},
+         {"Ar_GW", 8, "3s<sup>2</sup> 3p<sup>6</sup>"},
+         {"K_sv_GW", 9, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>1</sup>"},
+         {"Ca_sv_GW", 10, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>2</sup>"},
+         {"Sc_sv_GW", 11, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>3</sup>"},
+         {"Ti_sv_GW", 12, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>4</sup>"},
+         {"V_sv_GW", 13, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>5</sup>"},
+         {"Cr_sv_GW", 14, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>6</sup>"},
+         {"Mn_GW", 7, "3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Mn_sv_GW", 15, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>7</sup>"},
+         {"Fe_GW", 8, "3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Fe_sv_GW", 16, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>8</sup>"},
+         {"Co_GW", 9, "3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Co_sv_GW", 17, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>9</sup>"},
+         {"Ni_GW", 10, "3d<sup>9</sup> 4s<sup>1</sup>"},
+         {"Ni_sv_GW", 18, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup>"},
+         {"Cu_GW", 11, "3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Cu_sv_GW", 19, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Zn_GW", 12, "3d<sup>10</sup> 4s<sup>2</sup>"},
+         {"Zn_sv_GW", 20, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup>"},
+         {"Ga_GW", 3, "4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_d_GW", 13, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_sv_GW", 21,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ge_GW", 4, "4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_d_GW", 14, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_sv_GW", 22,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"As_GW", 5, "4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"As_sv_GW", 23,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"Se_GW", 6, "4s<sup>2</sup> 4p<sup>4</sup>"},
+         {"Se_sv_GW", 24,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>4</sup>"},
+         {"Br_GW", 7, "4s<sup>2</sup> 4p<sup>5</sup>"},
+         {"Br_sv_GW", 25,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>5</sup>"},
+         {"Kr_GW", 8, "4s<sup>2</sup> 4p<sup>6</sup>"},
+         {"Rb_sv_GW", 9, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>1</sup>"},
+         {"Sr_sv_GW", 10, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>2</sup>"},
+         {"Y_sv_GW", 11, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>3</sup>"},
+         {"Zr_sv_GW", 12, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>4</sup>"},
+         {"Nb_sv_GW", 13, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>5</sup>"},
+         {"Mo_sv_GW", 14, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>6</sup>"},
+         {"Tc_sv_GW", 15, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>7</sup>"},
+         {"Ru_sv_GW", 16, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>8</sup>"},
+         {"Rh_GW", 9, "4d<sup>8</sup> 5s<sup>1</sup>"},
+         {"Rh_sv_GW", 17, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>9</sup>"},
+         {"Pd_GW", 10, "4d<sup>9</sup> 5s<sup>1</sup>"},
+         {"Pd_sv_GW", 18, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup>"},
+         {"Ag_GW", 11, "4d<sup>10</sup> 5s<sup>1</sup>"},
+         {"Ag_sv_GW", 19, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>11</sup>"},
+         {"Cd_GW", 12, "4d<sup>10</sup> 5s<sup>2</sup>"},
+         {"Cd_sv_GW", 20, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup>"},
+         {"In_d_GW", 13, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"In_sv_GW", 21,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"Sn_d_GW", 14, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sn_sv_GW", 22,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sb_GW", 5, "5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Sb_d_GW", 15, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Sb_sv_GW", 23,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Te_GW", 6, "5s<sup>2</sup> 5p<sup>4</sup>"},
+         {"Te_sv_GW", 24,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>4</sup>"},
+         {"I_GW", 7, "5s<sup>2</sup> 5p<sup>5</sup>"},
+         {"I_sv_GW", 25,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>5</sup>"},
+         {"Xe_GW", 8, "5s<sup>2</sup> 5p<sup>6</sup>"},
+         {"Xe_sv_GW", 26,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>6</sup>"},
+         {"Cs_sv_GW", 9, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup>"},
+         {"Ba_sv_GW", 10, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>2</sup>"},
+         {"La_GW", 11,
+          "4f<sup>0.2</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.8</sup> 6s<sup>2</sup>"},
+         {"Ce_GW", 12,
+          "4f<sup>1</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Hf_sv_GW", 12, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>4</sup>"},
+         {"Ta_sv_GW", 13, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>5</sup>"},
+         {"W_sv_GW", 14, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>6</sup>"},
+         {"Re_sv_GW", 15, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>7</sup>"},
+         {"Os_sv_GW", 16, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>8</sup>"},
+         {"Ir_sv_GW", 17, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>9</sup>"},
+         {"Pt_GW", 10, "5d<sup>9</sup> 6s<sup>1</sup>"},
+         {"Pt_sv_GW", 18, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup>"},
+         {"Au_GW", 11, "5d<sup>10</sup> 6s<sup>1</sup>"},
+         {"Au_sv_GW", 19, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>11</sup>"},
+         {"Hg_sv_GW", 20, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup>"},
+         {"Tl_d_GW", 15, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Tl_sv_GW", 21,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Pb_d_GW", 16, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Pb_sv_GW", 22,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Bi_GW", 5, "6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Bi_d_GW", 17, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Bi_sv_GW", 23,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Po_d_GW", 18, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"Po_sv_GW", 24,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"At_d_GW", 17, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>5</sup>"},
+         {"At_sv_GW", 25,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>5</sup>"},
+         {"Rn_d_GW", 18, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>6</sup>"},
+         {"Rn_sv_GW", 26,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>6</sup>"}}};
+
+    static constexpr std::array<Potential, 129> GW_PBE{
+        {{"H_GW", 1, "1s<sup>1</sup>"},
+         {"H_GW_new", 1, "1s<sup>1</sup>"},
+         {"H_h_GW", 1, "1s<sup>1</sup>"},
+         {"He_GW", 2, "1s<sup>2</sup>"},
+         {"Li_AE_GW", 3, "1s<sup>2</sup> 2p<sup>1</sup>"},
+         {"Li_GW", 1, "2s<sup>1</sup>"},
+         {"Li_sv_GW", 3, "1s<sup>2</sup> 2p<sup>1</sup>"},
+         {"Be_GW", 2, "2s<sup>1.9999</sup> 2p<sup>0.001</sup>"},
+         {"Be_sv_GW", 4, "1s<sup>2</sup> 2p<sup>2</sup>"},
+         {"B_GW", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_GW_new", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"B_h_GW", 3, "2s<sup>2</sup> 2p<sup>1</sup>"},
+         {"C_GW", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_GW_new", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_h_GW", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"C_s_GW", 4, "2s<sup>2</sup> 2p<sup>2</sup>"},
+         {"N_GW", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_GW_new", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_h_GW", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"N_s_GW", 5, "2s<sup>2</sup> 2p<sup>3</sup>"},
+         {"O_GW", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_GW_new", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_h_GW", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"O_s_GW", 6, "2s<sup>2</sup> 2p<sup>4</sup>"},
+         {"F_GW", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_GW_new", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"F_h_GW", 7, "2s<sup>2</sup> 2p<sup>5</sup>"},
+         {"Ne_GW", 8, "2s<sup>2</sup> 2p<sup>6</sup>"},
+         {"Ne_s_GW", 8, "2s<sup>2</sup> 2p<sup>6</sup>"},
+         {"Na_sv_GW", 9, "2s<sup>2</sup> 2p<sup>6</sup> 3p<sup>1</sup>"},
+         {"Mg_GW", 2, "3s<sup>2</sup>"},
+         {"Mg_pv_GW", 8, "2p<sup>6</sup> 3s<sup>2</sup>"},
+         {"Mg_sv_GW", 10, "2s<sup>2</sup> 2p<sup>6</sup> 3d<sup>2</sup>"},
+         {"Al_GW", 3, "3s<sup>2</sup> 3p<sup>1</sup>"},
+         {"Al_sv_GW", 11, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>1</sup>"},
+         {"Si_GW", 4, "3s<sup>2</sup> 3p<sup>2</sup>"},
+         {"Si_sv_GW", 12, "2s<sup>2</sup> 2p<sup>6</sup> 3s<sup>2</sup> 3p<sup>2</sup>"},
+         {"P_GW", 5, "3s<sup>2</sup> 3p<sup>3</sup>"},
+         {"S_GW", 6, "3s<sup>2</sup> 3p<sup>4</sup>"},
+         {"Cl_GW", 7, "3s<sup>2</sup> 3p<sup>5</sup>"},
+         {"Ar_GW", 8, "3s<sup>2</sup> 3p<sup>6</sup>"},
+         {"K_sv_GW", 9, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>1</sup>"},
+         {"Ca_sv_GW", 10, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>2</sup>"},
+         {"Sc_sv_GW", 11, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>3</sup>"},
+         {"Ti_sv_GW", 12, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>4</sup>"},
+         {"V_sv_GW", 13, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>5</sup>"},
+         {"Cr_sv_GW", 14, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>6</sup>"},
+         {"Mn_GW", 7, "3d<sup>6</sup> 4s<sup>1</sup>"},
+         {"Mn_sv_GW", 15, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>7</sup>"},
+         {"Fe_GW", 8, "3d<sup>7</sup> 4s<sup>1</sup>"},
+         {"Fe_sv_GW", 16, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>8</sup>"},
+         {"Co_GW", 9, "3d<sup>8</sup> 4s<sup>1</sup>"},
+         {"Co_sv_GW", 17, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>9</sup>"},
+         {"Ni_GW", 10, "3d<sup>9</sup> 4s<sup>1</sup>"},
+         {"Ni_sv_GW", 18, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup>"},
+         {"Cu_GW", 11, "3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Cu_sv_GW", 19, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>1</sup>"},
+         {"Zn_GW", 12, "3d<sup>10</sup> 4s<sup>2</sup>"},
+         {"Zn_sv_GW", 20, "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup>"},
+         {"Ga_GW", 3, "4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_d_GW", 13, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ga_sv_GW", 21,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>1</sup>"},
+         {"Ge_GW", 4, "4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_d_GW", 14, "3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"Ge_sv_GW", 22,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>2</sup>"},
+         {"As_GW", 5, "4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"As_sv_GW", 23,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>3</sup>"},
+         {"Se_GW", 6, "4s<sup>2</sup> 4p<sup>4</sup>"},
+         {"Se_sv_GW", 24,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>4</sup>"},
+         {"Br_GW", 7, "4s<sup>2</sup> 4p<sup>5</sup>"},
+         {"Br_sv_GW", 25,
+          "3s<sup>2</sup> 3p<sup>6</sup> 3d<sup>10</sup> 4s<sup>2</sup> 4p<sup>5</sup>"},
+         {"Kr_GW", 8, "4s<sup>2</sup> 4p<sup>6</sup>"},
+         {"Rb_sv_GW", 9, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>1</sup>"},
+         {"Sr_sv_GW", 10, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>2</sup>"},
+         {"Y_sv_GW", 11, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>3</sup>"},
+         {"Zr_sv_GW", 12, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>4</sup>"},
+         {"Nb_sv_GW", 13, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>5</sup>"},
+         {"Mo_sv_GW", 14, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>6</sup>"},
+         {"Tc_sv_GW", 15, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>7</sup>"},
+         {"Ru_sv_GW", 16, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>8</sup>"},
+         {"Rh_GW", 9, "4d<sup>8</sup> 5s<sup>1</sup>"},
+         {"Rh_sv_GW", 17, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>9</sup>"},
+         {"Pd_GW", 10, "4d<sup>9</sup> 5s<sup>1</sup>"},
+         {"Pd_sv_GW", 18, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup>"},
+         {"Ag_GW", 11, "4d<sup>10</sup> 5s<sup>1</sup>"},
+         {"Ag_sv_GW", 19, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>11</sup>"},
+         {"Cd_GW", 12, "4d<sup>10</sup> 5s<sup>2</sup>"},
+         {"Cd_sv_GW", 20, "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup>"},
+         {"In_d_GW", 13, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"In_sv_GW", 21,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>1</sup>"},
+         {"Sn_d_GW", 14, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sn_sv_GW", 22,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>2</sup>"},
+         {"Sb_GW", 5, "5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Sb_d_GW", 15, "4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Sb_sv_GW", 23,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>3</sup>"},
+         {"Te_GW", 6, "5s<sup>2</sup> 5p<sup>4</sup>"},
+         {"Te_sv_GW", 24,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>4</sup>"},
+         {"I_GW", 7, "5s<sup>2</sup> 5p<sup>5</sup>"},
+         {"I_sv_GW", 25,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>5</sup>"},
+         {"Xe_GW", 8, "5s<sup>2</sup> 5p<sup>6</sup>"},
+         {"Xe_sv_GW", 26,
+          "4s<sup>2</sup> 4p<sup>6</sup> 4d<sup>10</sup> 5s<sup>2</sup> 5p<sup>6</sup>"},
+         {"Cs_sv_GW", 9, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup>"},
+         {"Ba_sv_GW", 10, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>1</sup>"},
+         {"La_GW", 11,
+          "4f<sup>0.2</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>0.8</sup> 6s<sup>2</sup>"},
+         {"Ce_GW", 12,
+          "4f<sup>1</sup> 5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>1</sup> 6s<sup>2</sup>"},
+         {"Hf_sv_GW", 12, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>4</sup>"},
+         {"Ta_sv_GW", 13, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>5</sup>"},
+         {"W_sv_GW", 14, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>6</sup>"},
+         {"Re_sv_GW", 15, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>7</sup>"},
+         {"Os_sv_GW", 16, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>8</sup>"},
+         {"Ir_sv_GW", 17, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>9</sup>"},
+         {"Pt_GW", 10, "5d<sup>9</sup> 6s<sup>1</sup>"},
+         {"Pt_sv_GW", 18, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup>"},
+         {"Au_GW", 11, "5d<sup>10</sup> 6s<sup>1</sup>"},
+         {"Au_sv_GW", 19, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>11</sup>"},
+         {"Hg_sv_GW", 20, "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup>"},
+         {"Tl_d_GW", 15, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Tl_sv_GW", 21,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>1</sup>"},
+         {"Pb_d_GW", 16, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Pb_sv_GW", 22,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>2</sup>"},
+         {"Bi_GW", 5, "6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Bi_d_GW", 17, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Bi_sv_GW", 23,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>3</sup>"},
+         {"Po_d_GW", 18, "5s<sup>2</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"Po_sv_GW", 24,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>4</sup>"},
+         {"At_d_GW", 17, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>5</sup>"},
+         {"At_sv_GW", 25,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>5</sup>"},
+         {"Rn_d_GW", 18, "5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>6</sup>"},
+         {"Rn_sv_GW", 26,
+          "5s<sup>2</sup> 5p<sup>6</sup> 5d<sup>10</sup> 6s<sup>2</sup> 6p<sup>6</sup>"}}};
+
+    const auto pots = [&]() -> std::span<const Potential> {
+        switch (type) {
+            case PotentialType::Standard_LDA:
+                return standard_LDA;
+            case PotentialType::Standard_PBE:
+                return standard_PBE;
+            case PotentialType::GW_LDA:
+                return GW_LDA;
+            case PotentialType::GW_PBE:
+                return GW_PBE;
+        }
+        return standard_LDA;
+    }();
+
+    const auto itFullName = std::ranges::find(pots, name, &Potential::name);
+    if (itFullName != pots.end()) {
+        return *itFullName;
+    }
+
+    const auto itStartsWith = std::ranges::find_if(
+        pots, [&](const Potential& pot) { return pot.name.starts_with(name); });
+
+    if (itStartsWith != pots.end()) {
+        return *itStartsWith;
+    }
+
+    return std::nullopt;
+}
+}  // namespace vasp
 }  // namespace inviwo

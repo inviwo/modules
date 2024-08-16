@@ -46,7 +46,24 @@
 #include <inviwo/dataframe/datastructures/dataframe.h>
 #include <inviwo/molvisbase/ports/molecularstructureport.h>
 
+#include <string_view>
+#include <optional>
+
 namespace inviwo {
+
+namespace vasp {
+
+struct Potential {
+    std::string_view name = "";
+    double valenceElectrons = 0.0;
+    std::string_view valenceConfiguration = "";
+};
+
+enum struct PotentialType { Standard_LDA, Standard_PBE, GW_LDA, GW_PBE };
+
+std::optional<Potential> findPotential(PotentialType type, std::string_view name);
+
+}  // namespace vasp
 
 class Chgcar;
 
@@ -61,6 +78,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual void deserialize(Deserializer& d) override;
+
 private:
     void picking(const PickingEvent* event);
 
@@ -78,12 +96,15 @@ private:
     VolumeInformationProperty chgInfo_;
     VolumeInformationProperty magInfo_;
     BasisProperty basis_;
+
+    OptionProperty<vasp::PotentialType> potential_;
+    StringProperty potcars_;
     OptionProperty<molvis::element::Colormap> colormap_;
     DoubleProperty radiusScaling_;
     DoubleProperty borderMargin_;
-    
+
     PickingMapper pm_;
-    
+
     std::unique_ptr<Chgcar> data_;
     std::shared_ptr<VolumeRAMPrecision<float>> chg_;
     dvec2 chgDataRange_;
