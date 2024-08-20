@@ -1,25 +1,3 @@
-diff --git forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
-index 4de544e55d6e45f7c7bac1587314d2dfbf94082b..8c6f31a53b35e06cb70ee7751e86b513a170abfe 100644
---- forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
-+++ forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
-@@ -9,7 +9,7 @@ void ttk::PDFHistograms::getVertexHistogram(
- 
-   histogram.resize(numberOfBins_);
-   if(vertexId < numberOfVertices_) {
--#ifdef TTK_ENABLE_OPENMP
-+#ifdef TTK_ENABLE_OPENMP4
- #pragma omp parallel for num_threads(threadNumber_) \
-   schedule(static, numberOfBins_ / threadNumber_)
- #endif
-@@ -27,7 +27,7 @@ void ttk::PDFHistograms::getVertexHistogram(
- 
- void ttk::PDFHistograms::normalize() {
-   const double normalization = 1.0 / static_cast<double>(numberOfInputs_);
--#ifdef TTK_ENABLE_OPENMP
-+#ifdef TTK_ENABLE_OPENMP4
- #pragma omp parallel for num_threads(threadNumber_) collapse(2) \
-   schedule(static, (numberOfBins_ * numberOfVertices_) / threadNumber_)
- #endif
 diff --git forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h
 index f3563953d840080124a0c4e6f414fe0960bff1da..05885c720839907362403cfb3955c66b50369f12 100644
 --- forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.h
@@ -69,3 +47,385 @@ index f3563953d840080124a0c4e6f414fe0960bff1da..05885c720839907362403cfb3955c66b
  #pragma omp parallel for private(idx) num_threads(threadNumber_)
  #endif
      for(SimplexId v = 0; v < vertexNumber_; v++) {
+diff --git forkSrcPrefix/core/base/discreteGradient/DiscreteGradient.cpp forkDstPrefix/core/base/discreteGradient/DiscreteGradient.cpp
+index 8535d9b06e25b27edbddae0d3fd956270d903182..5806254f15ab2baa200e9bc091b1e847f3b7eda1 100644
+--- forkSrcPrefix/core/base/discreteGradient/DiscreteGradient.cpp
++++ forkDstPrefix/core/base/discreteGradient/DiscreteGradient.cpp
+@@ -24,19 +24,19 @@ void DiscreteGradient::initMemory(const AbstractTriangulation &triangulation) {
+   }
+ 
+   // clear & init gradient memory
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel master num_threads(threadNumber_)
+ #endif
+   {
+     for(int i = 0; i < dimensionality_; ++i) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+       {
+         (*gradient_)[2 * i].clear();
+         (*gradient_)[2 * i].resize(numberOfCells[i], -1);
+       }
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+       {
+diff --git forkSrcPrefix/core/base/discreteGradient/DiscreteGradient_Template.h forkDstPrefix/core/base/discreteGradient/DiscreteGradient_Template.h
+index 25af590fd89410890723bc60768f14d0fa24a228..8bb34556f5a967442099f87848bee43ae350f723 100644
+--- forkSrcPrefix/core/base/discreteGradient/DiscreteGradient_Template.h
++++ forkDstPrefix/core/base/discreteGradient/DiscreteGradient_Template.h
+@@ -46,13 +46,13 @@ int DiscreteGradient::buildGradient(const triangulationType &triangulation,
+     return cacheHandler.get(this->inputScalarField_);
+   };
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+   if(!bypassCache && omp_in_parallel()) {
+     this->printWrn(
+       "buildGradient() called inside a parallel region, disabling cache...");
+     bypassCache = true;
+   }
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+ 
+   // set member variables at each buildGradient() call
+   this->dimensionality_ = triangulation.getCellVertexNumber(0) - 1;
+@@ -120,9 +120,9 @@ int DiscreteGradient::setCriticalPoints(
+   PLVertexIdentifiers.resize(nCritPoints);
+ 
+   for(size_t i = 0; i < criticalCellsByDim.size(); ++i) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t j = 0; j < criticalCellsByDim[i].size(); ++j) {
+       const SimplexId cellId = criticalCellsByDim[i][j];
+       const int cellDim = i;
+@@ -186,15 +186,15 @@ int DiscreteGradient::getCriticalPoints(
+     // use static scheduling to ensure that critical cells
+     // are sorted by id
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(this->threadNumber_) schedule(static)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(SimplexId j = 0; j < numberOfCells; ++j) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+       const auto tid = omp_get_thread_num();
+ #else
+       const auto tid = 0;
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+       if(this->isCellCritical(i, j)) {
+         critCellsPerThread[tid].emplace_back(j);
+       }
+@@ -741,10 +741,10 @@ int DiscreteGradient::processLowerStars(
+   // store lower star structure
+   lowerStarType Lx;
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_) \
+   firstprivate(Lx, pqZero, pqOne)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   for(SimplexId x = 0; x < nverts; x++) {
+ 
+     // clear priority queues (they should be empty at the end of the
+@@ -906,10 +906,10 @@ int DiscreteGradient::processLowerStarsWithMask(
+   // store lower star structure
+   lowerStarType Lx;
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_) \
+   firstprivate(Lx, pqZero, pqOne)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   for(SimplexId x = 0; x < nverts; x++) {
+ 
+     if((updateMask != nullptr) && ((*updateMask)[x] == false)) {
+@@ -2052,9 +2052,9 @@ int DiscreteGradient::setGradientGlyphs(
+   // number of glyphs per dimension
+   std::vector<size_t> nGlyphsPerDim(nDims);
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   for(int i = 0; i < nDims - 1; ++i) {
+     const auto nCells = this->getNumberOfCells(i, triangulation);
+     for(SimplexId j = 0; j < nCells; ++j) {
+@@ -2080,9 +2080,9 @@ int DiscreteGradient::setGradientGlyphs(
+   cellIds.resize(2 * nGlyphs);
+   cellDimensions.resize(2 * nGlyphs);
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   for(int i = 0; i < nDims - 1; ++i) {
+     const SimplexId nCells = getNumberOfCells(i, triangulation);
+     size_t nProcessedGlyphs{offsets[i]};
+diff --git forkSrcPrefix/core/base/discreteMorseSandwich/DiscreteMorseSandwich.h forkDstPrefix/core/base/discreteMorseSandwich/DiscreteMorseSandwich.h
+index 1446d8e663b96da8273c18d45c6c1b3d9902a94a..66d7b918b5a653092106fc88fcdebc52d41c71db 100644
+--- forkSrcPrefix/core/base/discreteMorseSandwich/DiscreteMorseSandwich.h
++++ forkDstPrefix/core/base/discreteMorseSandwich/DiscreteMorseSandwich.h
+@@ -434,52 +434,52 @@ namespace ttk {
+       if(dim > 3 || dim < 1) {
+         return;
+       }
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel master num_threads(threadNumber_)
+ #endif
+       {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+         this->firstRepMin_.resize(triangulation.getNumberOfVertices());
+         if(dim > 1) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->firstRepMax_.resize(triangulation.getNumberOfCells());
+         }
+         if(dim > 2) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->critEdges_.resize(triangulation.getNumberOfEdges());
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->edgeTrianglePartner_.resize(
+             triangulation.getNumberOfEdges(), -1);
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->onBoundary_.resize(triangulation.getNumberOfEdges(), false);
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->s2Mapping_.resize(triangulation.getNumberOfTriangles(), -1);
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->s1Mapping_.resize(triangulation.getNumberOfEdges(), -1);
+         }
+         for(int i = 0; i < dim + 1; ++i) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->pairedCritCells_[i].resize(
+             this->dg_.getNumberOfCells(i, triangulation), false);
+         }
+         for(int i = 1; i < dim + 1; ++i) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp task
+ #endif
+           this->critCellsOrder_[i].resize(
+@@ -534,7 +534,7 @@ std::vector<std::vector<SimplexId>>
+   std::vector<std::vector<SimplexId>> res(criticalEdges.size());
+ 
+   // follow vpaths from 1-saddles to minima
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+ #endif
+   for(size_t i = 0; i < criticalEdges.size(); ++i) {
+@@ -581,7 +581,7 @@ std::vector<std::vector<SimplexId>>
+   std::vector<std::vector<SimplexId>> res(criticalCells.size());
+ 
+   // follow vpaths from 2-saddles to maxima
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+ #endif
+   for(size_t i = 0; i < criticalCells.size(); ++i) {
+@@ -820,9 +820,9 @@ SimplexId ttk::DiscreteMorseSandwich::eliminateBoundariesSandwich(
+     if(pTau == -1) {
+       // maybe tau is critical and paired to a critical triangle
+       do {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp atomic read
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+         pTau = partners[tau];
+         if(pTau == -1 || s2Boundaries[s2Mapping[pTau]].empty()) {
+           break;
+@@ -958,18 +958,18 @@ void ttk::DiscreteMorseSandwich::getSaddleSaddlePairs(
+ 
+   // unpaired critical triangle id -> index in saddle2 vector
+   auto &s2Mapping{this->s2Mapping_};
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   for(size_t i = 0; i < saddles2.size(); ++i) {
+     s2Mapping[saddles2[i]] = i;
+   }
+ 
+   // unpaired critical edge id -> index in saddle1 vector
+   auto &s1Mapping{this->s1Mapping_};
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   for(size_t i = 0; i < saddles1.size(); ++i) {
+     s1Mapping[saddles1[i]] = i;
+   }
+@@ -981,10 +981,10 @@ void ttk::DiscreteMorseSandwich::getSaddleSaddlePairs(
+ 
+   // compute 2-saddles boundaries in parallel
+ 
+-#ifdef TTK_ENABLE_OPENMP4
++#ifdef TTK_ENABLE_OPENMP44
+ #pragma omp parallel for num_threads(threadNumber_) schedule(dynamic) \
+   firstprivate(onBoundary)
+-#endif // TTK_ENABLE_OPENMP4
++#endif // TTK_ENABLE_OPENMP44
+   for(size_t i = 0; i < saddles2.size(); ++i) {
+     // 2-saddles sorted in increasing order
+     const auto s2 = saddles2[i];
+@@ -1061,37 +1061,37 @@ void ttk::DiscreteMorseSandwich::extractCriticalCells(
+   std::vector<TriangleSimplex> critTriangles(criticalCellsByDim[2].size());
+   std::vector<TetraSimplex> critTetras(criticalCellsByDim[3].size());
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   {
+     if(sortEdges) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for nowait
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+       for(size_t i = 0; i < critEdges.size(); ++i) {
+         critEdges[i].fillEdge(i, offsets, triangulation);
+       }
+     } else {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for nowait
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+       for(size_t i = 0; i < critEdges.size(); ++i) {
+         critEdges[i].fillEdge(criticalCellsByDim[1][i], offsets, triangulation);
+       }
+     }
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for nowait
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t i = 0; i < critTriangles.size(); ++i) {
+       critTriangles[i].fillTriangle(
+         criticalCellsByDim[2][i], offsets, triangulation);
+     }
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t i = 0; i < critTetras.size(); ++i) {
+       critTetras[i].fillTetra(criticalCellsByDim[3][i], offsets, triangulation);
+     }
+@@ -1101,28 +1101,28 @@ void ttk::DiscreteMorseSandwich::extractCriticalCells(
+   TTK_PSORT(this->threadNumber_, critTriangles.begin(), critTriangles.end());
+   TTK_PSORT(this->threadNumber_, critTetras.begin(), critTetras.end());
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+   {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for nowait
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t i = 0; i < critEdges.size(); ++i) {
+       critCellsOrder[1][critEdges[i].id_] = i;
+     }
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for nowait
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t i = 0; i < critTriangles.size(); ++i) {
+       criticalCellsByDim[2][i] = critTriangles[i].id_;
+       critCellsOrder[2][critTriangles[i].id_] = i;
+     }
+ 
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp for
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t i = 0; i < critTetras.size(); ++i) {
+       criticalCellsByDim[3][i] = critTetras[i].id_;
+       critCellsOrder[3][critTetras[i].id_] = i;
+@@ -1136,9 +1136,9 @@ void ttk::DiscreteMorseSandwich::extractCriticalCells(
+                 return critCellsOrder[1][a] < critCellsOrder[1][b];
+               });
+   } else {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_)
+-#endif // TTK_ENABLE_OPENMP
++#endif // TTK_ENABLE_OPENMP4
+     for(size_t i = 0; i < critEdges.size(); ++i) {
+       criticalCellsByDim[1][i] = critEdges[i].id_;
+     }
+diff --git forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
+index 4de544e55d6e45f7c7bac1587314d2dfbf94082b..8c6f31a53b35e06cb70ee7751e86b513a170abfe 100644
+--- forkSrcPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
++++ forkDstPrefix/core/base/uncertainDataEstimator/UncertainDataEstimator.cpp
+@@ -9,7 +9,7 @@ void ttk::PDFHistograms::getVertexHistogram(
+ 
+   histogram.resize(numberOfBins_);
+   if(vertexId < numberOfVertices_) {
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_) \
+   schedule(static, numberOfBins_ / threadNumber_)
+ #endif
+@@ -27,7 +27,7 @@ void ttk::PDFHistograms::getVertexHistogram(
+ 
+ void ttk::PDFHistograms::normalize() {
+   const double normalization = 1.0 / static_cast<double>(numberOfInputs_);
+-#ifdef TTK_ENABLE_OPENMP
++#ifdef TTK_ENABLE_OPENMP4
+ #pragma omp parallel for num_threads(threadNumber_) collapse(2) \
+   schedule(static, (numberOfBins_ * numberOfVertices_) / threadNumber_)
+ #endif
