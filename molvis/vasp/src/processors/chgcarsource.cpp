@@ -405,6 +405,31 @@ std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file
     auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
         VolumeReprConfig{.dimensions = chg.dims, .wrapping = wrapping3d::repeatAll});
 
+    // Here we actually read the data out of the chgcar.
+    // According to https://www.vasp.at/wiki/index.php/CHGCAR (2024-08-19)
+    // the values in the file should be converted to the density n(r) according to
+    // n(r) = data(r) / (Vgrid * Vcell) = data(r) / Ngxf * Ngyf * Ngzf * dot(a, cross(b,c))
+    // from the context one would assume here that Vcell and a,b,c refer to the full simulation
+    // cell, not a individual voxel. For example in the integral below Vcell has to refer to the
+    // whole volume.
+    // But it is also stated that
+    // Nelectons = Int_Vcell n(r) d^3r = Sum_(nx,ny,nz) data(i) / (Ngxf * Ngyf * Ngzf)
+    // and if we substitute data(r) into that from above we find
+    // Nelectons = Sum_(nx,ny,nz) n(i) * Vgrid * Vcell / (Ngxf * Ngyf * Ngzf)
+    //           = Sum_(nx,ny,nz) n(i) * Vcell
+    // But a discretization of Nelectrons = Int_Vcell n(r) d^3r should result in
+    // Sum_(nx,ny,nz) n(i) * Vvoxel
+    //
+    // If we instead assume that Vcell refer to a voxel we get
+    // n(r) = data(r) / (Vgrid * Vcell) // Vcell -> Vvoxel // = data(r) / (Vgrid * Vvoxel)
+    // Vvoxel = Vtot / (Ngxf * Ngyf * Ngzf) , Vtot is the full volume Vcell before.
+    // then we get
+    // n(r) = data(r) / (Ngxf * Ngyf * Ngzf * Vtot / (Ngxf * Ngyf * Ngzf)) = data(r) / Vtot
+    // And if we use that in
+    // Nelectons = Sum_(nx,ny,nz) data(i) / (Ngxf * Ngyf * Ngzf)
+    //           = Sum_(nx,ny,nz) n(r) * Vtot / (Ngxf * Ngyf * Ngzf)
+    //           = Sum_(nx,ny,nz) n(r) * Vvoxel
+    // Which is what we expect.
     const double volume = glm::abs(glm::dot(chg.a1, glm::cross(chg.a2, chg.a3)));
     const float scale = static_cast<float>(1.0 / volume);
 
