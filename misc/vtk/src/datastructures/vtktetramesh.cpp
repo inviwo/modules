@@ -69,8 +69,6 @@ void getNodes(vtkUnstructuredGrid* vtkData, const std::shared_ptr<BufferBase>& s
         scalarBuffer->getRepresentation<BufferRAM>()
             ->template dispatch<void, dispatching::filter::Scalars>([&](auto br) {
                 const auto& data = br->getDataContainer();
-                using ValueType = util::PrecisionValueType<decltype(br)>;
-
                 for (auto&& elem : util::zip(nodes, data)) {
                     elem.first().w = static_cast<float>(elem.second());
                 }
@@ -82,8 +80,6 @@ void getNodeIds(vtkUnstructuredGrid* vtkData, std::vector<ivec4>& nodeIds) {
     const vtkIdType numCells = vtkData->GetNumberOfCells();
 
     nodeIds.reserve(numCells);
-
-    const glm::imat4x3 triIndices{ivec3{1, 2, 3}, ivec3{2, 0, 3}, ivec3{3, 0, 1}, ivec3{0, 2, 1}};
 
     int skippedCells = 0;
     vtkSmartPointer<vtkCellIterator> it = vtkData->NewCellIterator();

@@ -1,13 +1,11 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO topology-tool-kit/ttk
-    REF 0d168a38be152d0843c7fa38a8d7fd278cb7279f
-    SHA512 8d7c566b3627db891d9fa6dddc6df1b3566a78cca44ddc1352c2caaa09c2db432be9beab5d0d75d9fe0fce4e0283a179948fb6975dbd43c29d379b903b813b66
+    REF cf44e5f40991582dbef04bb1cdcbc3758485c1eb
+    SHA512 c354c025ad05c470f955fd94f2c2012978d016daa8a5d031cda1e4a753e37d4c009e19760bbbacd33375bdb53ab5d96bf85a17a4ba4358dd24515c2edf48b496
     HEAD_REF master
     PATCHES
         openmp.patch
-        int128.patch
-
 )
 
 vcpkg_configure_cmake(
@@ -23,7 +21,7 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_EIGEN=ON
         -DTTK_ENABLE_ZLIB=ON
         -DTTK_ENABLE_GRAPHVIZ=ON
-        -DTTK_ENABLE_OPENMP=OFF
+        -DTTK_ENABLE_OPENMP=ON
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
 )
 vcpkg_install_cmake()
@@ -41,4 +39,3 @@ file(
     DESTINATION ${CURRENT_PACKAGES_DIR}/share/topology-tool-kit 
     RENAME copyright
 )
-
