@@ -28,7 +28,7 @@ node {
                         "MOLVISBASE", "MOLVISGL", "MOLVISPYTHON",
                         "DATAFRAMECLUSTERING", "GRAPHVIZ"],
             offModules: ["VTK", "TENSORVISIO"],
-            opts: ["VCPKG_MANIFEST_FEATURES": "graphviz;vtk;ttk"]
+            opts: ["VCPKG_MANIFEST_FEATURES": "\"graphviz;vtk;ttk\""]
         )
         util.warn(this, 'daily/modules/appleclang')
         util.unittest(this)
