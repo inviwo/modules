@@ -7,8 +7,6 @@ node {
         }
         dir('inviwo') {
             git([url: 'https://github.com/inviwo/inviwo.git', branches: '*/master'])
-            sh 'git submodule sync --recursive'
-            sh 'git submodule update --init --recursive'
         }
     }
 
@@ -25,12 +23,12 @@ node {
         util.buildStandard(
             state: this,
             modulePaths: modulePaths,
-            onModules: ["TOPOLOGYTOOLKIT", "OPENMESH", "SPRINGSYSTEM", "VASP",
+            onModules: ["TTK", "OPENMESH", "SPRINGSYSTEM", "VASP",
                         "NANOVGUTILS", "TENSORVISBASE", "INTEGRALLINEFILTERING",
                         "MOLVISBASE", "MOLVISGL", "MOLVISPYTHON",
-                        "DATAFRAMECLUSTERING"],
-            offModules: ["ABUFFERGL", "VTK", "TENSORVISIO"],
-            opts: [:]
+                        "DATAFRAMECLUSTERING", "GRAPHVIZ"],
+            offModules: ["VTK", "TENSORVISIO"],
+            opts: ["VCPKG_MANIFEST_FEATURES": "graphviz;vtk;ttk"]
         )
         util.warn(this, 'daily/modules/appleclang')
         util.unittest(this)
