@@ -21,10 +21,10 @@ node {
             {
                 "name": "ninja-developer-modules",
                 "displayName": "Ninja Developer configuration",
-                "inherits" : ["ninja-developer", "modules", "modules-vcpkg"]
+                "inherits" : ["ninja-developer", "modules", "modules-vcpkg"],
                 "cacheVariables": {
                     "VCPKG_TARGET_TRIPLET" : "x64-osx-dynamic",
-                    "VCPKG_MANIFEST_FEATURES" : "graphviz;vtk;ttk",
+                    "VCPKG_MANIFEST_FEATURES" : "graphviz;vtk;ttk"
                 }
             }
         ]
