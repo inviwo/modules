@@ -13,6 +13,24 @@ node {
     def util = load "${env.WORKSPACE}/inviwo/tools/jenkins/util.groovy"
     util.config(this)
 
+    writeFile file: 'inviwo/CMakeUserPresets.json', text: """
+    {
+        "version": 6,
+        "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+        "configurePresets": [
+            {
+                "name": "ninja-developer-modules",
+                "displayName": "Ninja Developer configuration",
+                "inherits" : ["ninja-developer", "modules", "modules-vcpkg"]
+                "cacheVariables": {
+                    "VCPKG_TARGET_TRIPLET" : "x64-osx-dynamic",
+                    "VCPKG_MANIFEST_FEATURES" : "graphviz;vtk;ttk",
+                }
+            }
+        ]
+    }
+    """
+
     def modulePaths = ["${env.WORKSPACE}/modules/misc",
                        "${env.WORKSPACE}/modules/molvis",
                        "${env.WORKSPACE}/modules/tensorvis",
@@ -28,7 +46,8 @@ node {
                         "MOLVISBASE", "MOLVISGL", "MOLVISPYTHON",
                         "DATAFRAMECLUSTERING", "GRAPHVIZ"],
             offModules: ["VTK", "TENSORVISIO"],
-            opts: ["VCPKG_MANIFEST_FEATURES": "\"graphviz;vtk;ttk\""]
+            opts: [:],
+            preset: "ninja-developer-modules"
         )
         util.warn(this, 'daily/modules/appleclang')
         util.unittest(this)
