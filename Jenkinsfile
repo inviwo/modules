@@ -24,7 +24,7 @@ node {
                 "inherits" : ["ninja-developer", "modules", "modules-vcpkg"],
                 "cacheVariables": {
                     "VCPKG_TARGET_TRIPLET" : "x64-osx-dynamic",
-                    "VCPKG_MANIFEST_FEATURES" : "graphviz;vtk;ttk"
+                    "VCPKG_MANIFEST_FEATURES" : "vtk;ttk"
                 }
             }
         ]
