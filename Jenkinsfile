@@ -24,7 +24,7 @@ node {
                 "inherits" : ["ninja-developer", "modules", "modules-vcpkg"],
                 "cacheVariables": {
                     "VCPKG_TARGET_TRIPLET" : "x64-osx-dynamic",
-                    "VCPKG_MANIFEST_FEATURES" : "vtk;ttk"
+                    "VCPKG_MANIFEST_FEATURES" : ""
                 }
             }
         ]
@@ -41,11 +41,11 @@ node {
         util.buildStandard(
             state: this,
             modulePaths: modulePaths,
-            onModules: ["TTK", "OPENMESH", "SPRINGSYSTEM", "VASP",
+            onModules: ["OPENMESH", "SPRINGSYSTEM", "VASP",
                         "NANOVGUTILS", "TENSORVISBASE", "INTEGRALLINEFILTERING",
                         "MOLVISBASE", "MOLVISGL", "MOLVISPYTHON",
-                        "DATAFRAMECLUSTERING", "GRAPHVIZ"],
-            offModules: ["VTK", "TENSORVISIO"],
+                        "DATAFRAMECLUSTERING"],
+            offModules: ["VTK", "TENSORVISIO", "TTK", "GRAPHVIZ"],
             opts: [:],
             preset: "ninja-developer-modules"
         )
