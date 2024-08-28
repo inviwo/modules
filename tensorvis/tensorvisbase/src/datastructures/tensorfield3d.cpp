@@ -6,8 +6,6 @@
 #include <inviwo/tensorvisbase/util/misc.h>
 #include <inviwo/core/util/exception.h>
 
-#include <glm/gtx/range.hpp>
-
 namespace inviwo {
 
 TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, const vec3& extent,
@@ -688,7 +686,8 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
         const auto eigenValues = util::eigen2glm<double, 3, 1>(solver.eigenvalues().real());
         const auto eigenVectors = util::eigen2glm<double, 3, 3>(solver.eigenvectors().real());
 
-        const auto ordering = util::ordering(eigenValues, std::greater<double>());
+        const std::array range{eigenValues[0], eigenValues[1], eigenValues[2]};
+        const auto ordering = util::ordering(range, std::greater<double>());
 
         return {{std::make_pair(eigenValues[ordering[0]], eigenVectors[ordering[0]]),
                  std::make_pair(eigenValues[ordering[1]], eigenVectors[ordering[1]]),
