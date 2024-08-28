@@ -6,6 +6,8 @@
 #include <inviwo/tensorvisbase/util/misc.h>
 #include <inviwo/core/util/exception.h>
 
+#include <glm/gtx/range.hpp>
+
 namespace inviwo {
 
 TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, const vec3& extent,
