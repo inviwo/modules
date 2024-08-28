@@ -688,10 +688,7 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
         const auto eigenValues = util::eigen2glm<double, 3, 1>(solver.eigenvalues().real());
         const auto eigenVectors = util::eigen2glm<double, 3, 3>(solver.eigenvectors().real());
 
-        const auto range =
-            util::as_range(glm::value_ptr(eigenValues), glm::value_ptr(eigenValues) + 3);
-
-        const auto ordering = util::ordering(range, std::greater<double>());
+        const auto ordering = util::ordering(eigenValues, std::greater<double>());
 
         return {{std::make_pair(eigenValues[ordering[0]], eigenVectors[ordering[0]]),
                  std::make_pair(eigenValues[ordering[1]], eigenVectors[ordering[1]]),
