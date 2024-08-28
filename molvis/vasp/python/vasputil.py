@@ -94,7 +94,7 @@ def parseFile(file, flipSign=False, centerData=True):
 
     chgdata = numpy.array(chg, dtype=numpy.float32)
     volume = numpy.dot(basis[0], numpy.cross(basis[1], basis[2]))
-    chgdata = chgdata / volume
+    chgdata = chgdata / numpy.float32(volume)
 
 
     chgdata.shape = (dims[2], dims[1], dims[0])
