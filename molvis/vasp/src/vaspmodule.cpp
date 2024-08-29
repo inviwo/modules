@@ -28,12 +28,16 @@
  *********************************************************************************/
 
 #include <inviwo/vasp/vaspmodule.h>
+#include <inviwo/vasp/processors/chgcarsource.h>
 
 namespace inviwo {
 
 VASPModule::VASPModule(InviwoApplication* app)
     : InviwoModule(app, "VASP")
     , scripts_{getPath() / "python"}
-    , pythonFolderObserver_{app, getPath() / "python" / "processors", *this} {}
+    , pythonFolderObserver_{app, getPath() / "python" / "processors", *this} {
+
+    registerProcessor<ChgcarSource>();
+}
 
 }  // namespace inviwo

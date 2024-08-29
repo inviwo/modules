@@ -91,7 +91,12 @@ def parseFile(file, flipSign=False, centerData=True):
         for c in line.strip().split():
             chg.append(sign * float(c))
 
-    chgdata = numpy.array(chg).astype(numpy.float32)
+
+    chgdata = numpy.array(chg, dtype=numpy.float32)
+    volume = numpy.dot(basis[0], numpy.cross(basis[1], basis[2]))
+    chgdata = chgdata / numpy.float32(volume)
+
+
     chgdata.shape = (dims[2], dims[1], dims[0])
 
     pyvolume = ivw.data.VolumePy(chgdata,
@@ -110,7 +115,7 @@ def parseFile(file, flipSign=False, centerData=True):
     volume.axes[2].name = "z"
     volume.axes[2].unit = ivw.data.Unit("Angstrom")
     volume.dataMap.valueAxis.name = "Charge Density"
-    volume.dataMap.valueAxis.unit = ivw.data.Unit("e")
+    volume.dataMap.valueAxis.unit = ivw.data.Unit("e/Angstrom^3")
 
     volume.basis = ivw.glm.mat3(basis)
     volume.offset = ivw.glm.vec3(offset)
