@@ -273,9 +273,10 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
         chg, borderMargin,
         [&](molvis::Element elem, const glm::dvec3& pos, size_t atomIndex, size_t runningIndex) {
             const auto color = molvis::element::color(elem, colormap);
-            const auto radius = molvis::element::vdwRadius(elem) * radiusScale;
+            const auto radius = static_cast<float>(molvis::element::vdwRadius(elem) * radiusScale);
             const auto pi = startPickId + atomIndex;
-            mesh->addVertex(pos, color, radius, pi, atomIndex);
+            mesh->addVertex(vec3{pos}, color, radius, static_cast<uint32_t>(pi),
+                            static_cast<uint32_t>(atomIndex));
             ib.push_back(static_cast<uint32_t>(runningIndex));
         });
 
@@ -380,13 +381,12 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
 
     molvis::Atoms atoms;
 
-    forEachAtom(
-        chg, borderMargin,
-        [&](molvis::Element elem, const glm::dvec3& pos, size_t atomIndex, size_t runningIndex) {
-            atoms.positions.push_back(pos);
-            atoms.serialNumbers.push_back(static_cast<int>(atomIndex));
-            atoms.atomicNumbers.push_back(elem);
-        });
+    forEachAtom(chg, borderMargin,
+                [&](molvis::Element elem, const glm::dvec3& pos, size_t atomIndex, size_t) {
+                    atoms.positions.push_back(pos);
+                    atoms.serialNumbers.push_back(static_cast<int>(atomIndex));
+                    atoms.atomicNumbers.push_back(elem);
+                });
 
     auto bonds = molvis::computeCovalentBonds(atoms);
 
