@@ -65,7 +65,7 @@ std::optional<Potential> findPotential(PotentialType type, std::string_view name
 
 }  // namespace vasp
 
-class Chgcar;
+struct Chgcar;
 
 class IVW_MODULE_VASP_API ChgcarSource : public PoolProcessor {
 public:
