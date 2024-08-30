@@ -34,7 +34,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/metadata/processormetadata.h>
 #include <inviwo/core/util/stringconversion.h>
-
+#include <inviwo/core/network/networkutils.h>
 #include <inviwo/graphviz/graphvizutil.h>
 
 #include <graphviz/cgraph.h>
@@ -153,10 +153,29 @@ void calculateLayout(StrBuffer& buff, ProcessorNetwork* net, const Func& func) {
         agclose(G);
     }};
 
+    const auto oldCenter = util::getCenterPosition(net);
+    const auto newCenter = [&]() {
+        ivec2 center{0};
+        int count = 0;
+        net->forEachProcessor([&](Processor* p) {
+            if (auto* n = agnode(G, const_cast<char*>(p->getIdentifier().c_str()), 0)) {
+                const auto& coord = ND_coord(n);
+                center += ivec2{coord.x, -coord.y};
+                ++count;
+            }
+        });
+        if (count == 0) {
+            return center;
+        } else {
+            return center / count;
+        }
+    }();
+    const dvec2 offset = oldCenter - newCenter;
+
     net->forEachProcessor([&](Processor* p) {
         if (auto* n = agnode(G, const_cast<char*>(p->getIdentifier().c_str()), 0)) {
             const auto& coord = ND_coord(n);
-            func(p, dvec2{coord.x, -coord.y});
+            func(p, dvec2{coord.x, -coord.y} + offset);
         }
     });
 }
