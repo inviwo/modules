@@ -1,46 +1,19 @@
-set(VCPKG_POLICY_DLLS_IN_STATIC_LIBRARY enabled) # for plugins
-set(VCPKG_POLICY_DLLS_WITHOUT_EXPORTS enabled) # kitty and vt plugin not ready yet?
 
 vcpkg_from_gitlab(
     GITLAB_URL https://gitlab.com
     OUT_SOURCE_PATH SOURCE_PATH
     REPO graphviz/graphviz
-    REF "${VERSION}"
-    SHA512 6b0cffaf4bde7df260894b1b9d74e8a1d5aec11736511a86d99bc369e3f8db99f7050ae917cf1a066cc7d87695a57ef5b9c19521d211fee48c8a0c41ad0f4aac
+    REF 788ed120ba9a9f6b3923bcf67f4fa532f890e027
+    SHA512 11b1174e75d859511780be21807873e2e1bfa1c72d83cd683577b0ec85651946ada4ded3071fcaf7897b7a8427ecdc8004b72ee90659a0164e93112342d35d8c
     HEAD_REF main
     PATCHES
-        disable-pragma-lib.patch
-        fix-dependencies.patch
-        no-absolute-paths.patch
-        select-plugins.patch
-        static-linkage.patch
-        webp-install.patch
+        minimal.patch
 )
-
-vcpkg_list(SET OPTIONS)
-if(VCPKG_TARGET_IS_WINDOWS AND NOT VCPKG_TARGET_IS_MINGW)
-    vcpkg_download_distfile(
-        LTDL_H_PATH
-        URLS "https://gitlab.com/graphviz/graphviz-windows-dependencies/-/raw/141d3a21be904fa8dc2ae3ed01d36684db07a35d/x64/include/ltdl.h"
-        FILENAME graphviz-ltdl-141d3a21.h
-        SHA512 f2d20e849e35060536265f47014c40eb70e57dacd600a9db112fc465fbfa6a66217b44a8c3dc33039c260a27f09d9034b329b03cc28c32a22ec503fcd17b78cd
-    )
-    file(INSTALL "${LTDL_H_PATH}" DESTINATION "${SOURCE_PATH}/libltdl" RENAME ltdl.h)
-    vcpkg_list(APPEND OPTIONS "-DLTDL_INCLUDE_DIR=${SOURCE_PATH}/libltdl")
-endif()
-
-if(VCPKG_HOST_IS_WINDOWS)
-    vcpkg_acquire_msys(MSYS_ROOT PACKAGES gawk)
-    vcpkg_add_to_path("${MSYS_ROOT}/usr/bin")
-    unset(ENV{MSYSTEM_PREFIX})
-endif()
 
 vcpkg_find_acquire_program(BISON)
 vcpkg_find_acquire_program(FLEX)
-vcpkg_find_acquire_program(GIT)
+#vcpkg_find_acquire_program(GIT)
 vcpkg_find_acquire_program(PYTHON3)
-
-file(COPY ${CMAKE_CURRENT_LIST_DIR}/CMakeLists.txt DESTINATION ${SOURCE_PATH})
 
 vcpkg_cmake_configure(
     SOURCE_PATH "${SOURCE_PATH}"
@@ -48,118 +21,55 @@ vcpkg_cmake_configure(
         "-DVERSION=${VERSION}"
         "-DBISON_EXECUTABLE=${BISON}"
         "-DFLEX_EXECUTABLE=${FLEX}"
-        "-DGIT=${GIT}"
         "-DPython3_EXECUTABLE=${PYTHON3}"
         "-DPKG_CONFIG_EXECUTABLE=${CURRENT_HOST_INSTALLED_DIR}/tools/pkgconf/pkgconf"
-        "-DCMAKE_PROJECT_INCLUDE=${CMAKE_CURRENT_LIST_DIR}/cmake-project-include.cmake"
-        -Dinstall_win_dependency_dlls=OFF
-        -Duse_win_pre_inst_libs=OFF
-        -Dwith_gvedit=OFF
-        -Dwith_smyrna=OFF
-        -Dwith_expat=OFF
 
-        -Denable_ltdl=OFF
-        -Dwith_expat=ON
+        -DENABLE_D=OFF
+        -DENABLE_GO=OFF
+        -DENABLE_GUILE=OFF
+        -DENABLE_JAVA=OFF
+        -DENABLE_JAVASCRIPT=OFF
+        -DENABLE_LTDL=OFF
+        -DENABLE_LUA=OFF
+        -DENABLE_SHARP=OFF
+        -DENABLE_SWIG=OFF
+        -DENABLE_TCL=OFF
+        -DGRAPHVIZ_CLI=OFF
+        -Duse_coverage=OFF
+        -Duse_win_pre_inst_libs=OFF
+        -Dwith_cxx_api=OFF
+        -Dwith_cxx_tests=OFF
         -Dwith_digcola=OFF
-        -Dwith_gvedit=OFF
+        -DWITH_EXPAT=ON  # We need export for html table nodes
+        -DWITH_GVEDIT=OFF
         -Dwith_ipsepcola=OFF
         -Dwith_ortho=OFF
         -Dwith_sfdp=OFF
-        -Dwith_smyrna=OFF
-        -Dwith_zlib=OFF
-        -Duse_coverage=OFF
-        -Dwith_cxx_api=OFF
-        -Dwith_cxx_tests=OFF
-        -Duse_win_pre_inst_libs=OFF
-        -Dwith_tclpkg=OFF
+        -DWITH_SMYRNA=OFF
+        -DWITH_ZLIB=OFF
 
-        -DCMAKE_REQUIRE_FIND_PACKAGE_CAIRO=ON
-        -DCMAKE_REQUIRE_FIND_PACKAGE_WEBP=ON
         -DCMAKE_REQUIRE_FIND_PACKAGE_EXPAT=ON
 
+        -DCMAKE_DISABLE_FIND_PACKAGE_GZIP=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_ANN=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_DevIL=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_CAIRO=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_GTS=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_GD=ON
-        -DCMAKE_DISABLE_FIND_PACKAGE_LTDL=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_GS=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_DevIL=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_Freetype=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_PANGOCAIRO=ON
+
+        -DCMAKE_DISABLE_FIND_PACKAGE_WEBP=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_LTDL=ON
+
         ${OPTIONS}
-    MAYBE_UNUSED_VARIABLES
-        install_win_dependency_dlls
 )
-vcpkg_cmake_install(ADD_BIN_TO_PATH)
-vcpkg_fixup_pkgconfig()
+vcpkg_cmake_install()
+vcpkg_fixup_cmake_targets()
 
-if(VCPKG_TARGET_IS_WINDOWS)
-    file(GLOB headers "${CURRENT_PACKAGES_DIR}/include/graphviz/*.h")
-    foreach(file IN LISTS headers)
-        vcpkg_replace_string("${file}" "#ifdef GVDLL" "#if 1")
-    endforeach()
-    if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
-        # static libs built with dllexport must be used with dllexport
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/cdt.h" "#ifdef EXPORT_CDT" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/cgraph.h" "#ifdef EXPORT_CGRAPH" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/gvc.h" "#ifdef GVC_EXPORTS" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/gvplugin_loadimage.h" "#ifdef GVC_EXPORTS" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/pack.h" "#ifdef GVC_EXPORTS" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/pathgeom.h" "#ifdef PATHPLAN_EXPORTS" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/pathplan.h" "#ifdef PATHPLAN_EXPORTS" "#if 1")
-        vcpkg_replace_string("${CURRENT_PACKAGES_DIR}/include/graphviz/xdot.h" "#ifdef EXPORT_XDOT" "#if 1")
-    endif()
-endif()
-
-file(REMOVE_RECURSE
-    "${CURRENT_PACKAGES_DIR}/debug/include"
-    "${CURRENT_PACKAGES_DIR}/debug/share"
-    "${CURRENT_PACKAGES_DIR}/share/man"
-)
-
-file(MAKE_DIRECTORY "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-foreach(script_or_link IN ITEMS "dot2gxl${VCPKG_TARGET_EXECUTABLE_SUFFIX}" gvmap.sh)
-    if(EXISTS "${CURRENT_PACKAGES_DIR}/bin/${script_or_link}")
-        file(RENAME "${CURRENT_PACKAGES_DIR}/bin/${script_or_link}" "${CURRENT_PACKAGES_DIR}/tools/${PORT}/${script_or_link}")
-        file(REMOVE "${CURRENT_PACKAGES_DIR}/debug/bin/${script_or_link}")
-    endif()
-endforeach()
-
-#[[
-vcpkg_copy_tools(
-    TOOL_NAMES
-        acyclic
-        bcomps
-        ccomps
-        circo
-        cluster
-        diffimg
-        dijkstra
-        dot
-        edgepaint
-        fdp
-        gc
-        gml2gv
-        graphml2gv
-        gv2gml
-        gv2gxl
-        gvcolor
-        gvgen
-        gvmap
-        gvpack
-        gvpr
-        gxl2dot
-        gxl2gv
-        mm2gv
-        neato
-        nop
-        osage
-        patchwork
-        prune
-        sccmap
-        sfdp
-        tred
-        twopi
-        unflatten
-    AUTO_CLEAN
-)
-]]
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
+file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share")
 
 file(GLOB plugin_config "${CURRENT_PACKAGES_DIR}/lib/graphviz/config*" "${CURRENT_PACKAGES_DIR}/bin/config*")
 if(NOT plugin_config)
@@ -169,11 +79,5 @@ if(NOT plugin_config)
     )
 endif()
 
-if(VCPKG_TARGET_IS_WINDOWS)
-    file(GLOB plugins "${CURRENT_PACKAGES_DIR}/bin/gvplugin_*")
-    file(COPY ${plugins} ${plugin_config} DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-else()
-    file(COPY "${CURRENT_PACKAGES_DIR}/lib/graphviz" DESTINATION "${CURRENT_PACKAGES_DIR}/tools/${PORT}")
-endif()
 
 vcpkg_install_copyright(FILE_LIST "${SOURCE_PATH}/LICENSE")
