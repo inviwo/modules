@@ -18,6 +18,7 @@
       "name": "pkgconf",
       "host": true
     },
-    "expat"
+    "expat",
+    "getopt"
   ]
 }

@@ -63,6 +63,8 @@ vcpkg_cmake_configure(
         -DCMAKE_DISABLE_FIND_PACKAGE_WEBP=ON
         -DCMAKE_DISABLE_FIND_PACKAGE_LTDL=ON
 
+        -Dinstall_win_dependency_dlls=OFF
+
         ${OPTIONS}
 )
 vcpkg_cmake_install()
