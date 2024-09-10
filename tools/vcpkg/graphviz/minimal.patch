@@ -1,0 +1,182 @@
+diff --git forkSrcPrefix/template-config.cmake forkDstPrefix/template-config.cmake
+new file mode 100644
+index 0000000000000000000000000000000000000000..b3116196cd405815689873703806a4dcc3039a60
+--- /dev/null
++++ forkDstPrefix/template-config.cmake
+@@ -0,0 +1,7 @@
++@PACKAGE_INIT@
++
++include(CMakeFindDependencyMacro)
++
++include("${CMAKE_CURRENT_LIST_DIR}/graphviz-targets.cmake")
++
++check_required_components(graphviz)
+diff --git forkSrcPrefix/CMakeLists.txt forkDstPrefix/CMakeLists.txt
+index 786623f2df960a08b35098f3addae4dacc8deb14..c496c7e111b91161af472344057d5e2b500cc3ce 100644
+--- forkSrcPrefix/CMakeLists.txt
++++ forkDstPrefix/CMakeLists.txt
+@@ -586,8 +586,8 @@ include(CPack)
+ include(CTest)
+ 
+ # ======================= Specify subdirectories to build ======================
+-add_subdirectory(contrib/diffimg)
+-add_subdirectory(contrib/prune)
++#add_subdirectory(contrib/diffimg)
++#add_subdirectory(contrib/prune)
+ add_subdirectory(graphs)
+ add_subdirectory(lib)
+ add_subdirectory(plugin)
+@@ -600,6 +600,7 @@ if(with_cxx_tests)
+   add_subdirectory(tests)
+ endif()
+ 
++#[[
+ MATH(EXPR GRAPHVIZ_PLUGIN_VERSION "${GRAPHVIZ_PLUGIN_VERSION}+1")
+ set(GVPLUGIN_VERSION "${GRAPHVIZ_PLUGIN_VERSION}")
+ set(VERSION "${GRAPHVIZ_VERSION_STRING}")
+@@ -622,6 +623,7 @@ file(GLOB pcfiles "${CMAKE_CURRENT_BINARY_DIR}/*.pc")
+ foreach(file "${pcfiles}")
+   install(FILES ${file} DESTINATION "${PKGCONFIG_DIR}")
+ endforeach(file)
++]]
+ 
+ feature_summary(
+   WHAT
+@@ -629,3 +631,34 @@ feature_summary(
+   INCLUDE_QUIET_PACKAGES
+   FATAL_ON_MISSING_REQUIRED_PACKAGES
+ )
++
++include(CMakePackageConfigHelpers)
++
++install(TARGETS pathplan xdot cdt cgraph gvc gvplugin_dot_layout
++    EXPORT "graphviz-targets"
++    RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
++    LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
++    ARCHIVE DESTINATION ${LIBRARY_INSTALL_DIR}
++    PUBLIC_HEADER DESTINATION ${HEADER_INSTALL_DIR}
++    FILE_SET HEADERS DESTINATION ${HEADER_INSTALL_DIR}
++)
++install(EXPORT graphviz-targets
++        FILE graphviz-targets.cmake
++        NAMESPACE unofficial::graphviz::
++        DESTINATION share/graphviz
++)
++configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/template-config.cmake
++    "${CMAKE_CURRENT_BINARY_DIR}/cmake/graphviz-config.cmake"
++    INSTALL_DESTINATION share/graphviz
++)
++install(FILES
++    "${CMAKE_CURRENT_BINARY_DIR}/cmake/graphviz-config.cmake"
++    DESTINATION share/graphviz
++    COMPONENT Development
++)
++
++
++
++
++
++
+diff --git forkSrcPrefix/lib/common/CMakeLists.txt forkDstPrefix/lib/common/CMakeLists.txt
+index de63c52a6b37b79a768c2e6b517e2ffe362b396d..87cab8dc4d2d5b3373c848deac4da99eeb0341e9 100644
+--- forkSrcPrefix/lib/common/CMakeLists.txt
++++ forkDstPrefix/lib/common/CMakeLists.txt
+@@ -138,11 +138,11 @@ if(APPLE)
+   target_compile_options(common_obj PRIVATE "-fno-common")
+ endif()
+ 
+-add_library(common STATIC
++add_library(common INTERFACE
+   $<TARGET_OBJECTS:common_obj>
+ )
+ 
+-target_link_libraries(common PRIVATE
++target_link_libraries(common INTERFACE
+   cgraph
+   pathplan
+   label
+@@ -151,7 +151,7 @@ target_link_libraries(common PRIVATE
+ )
+ 
+ if(EXPAT_FOUND)
+-  target_link_libraries(common PRIVATE
++  target_link_libraries(common INTERFACE
+     ${EXPAT_LIBRARIES}
+   )
+ endif()
+diff --git forkSrcPrefix/lib/gvc/CMakeLists.txt forkDstPrefix/lib/gvc/CMakeLists.txt
+index ad7c529158d443f2b5c366d03b05ec30381dc808..6b19a18a955f442bff82d26ecbf4118a8a6ee5ab 100644
+--- forkSrcPrefix/lib/gvc/CMakeLists.txt
++++ forkDstPrefix/lib/gvc/CMakeLists.txt
+@@ -57,12 +57,14 @@ target_link_libraries(gvc PRIVATE
+   $<TARGET_OBJECTS:pack_obj>
+ )
+ 
+-target_link_libraries(gvc PRIVATE
+-  cdt
+-  cgraph
+-  common
+-  pack
+-  util
++target_link_libraries(gvc
++  PUBLIC
++    cdt
++    cgraph
++  PRIVATE
++    common
++    pack
++    util
+ )
+ 
+ if(LTDL_FOUND)
+diff --git forkSrcPrefix/lib/pack/CMakeLists.txt forkDstPrefix/lib/pack/CMakeLists.txt
+index b667691b94c3cda3e538568c7825d0d7cd4f0ef3..6f6236591e30242e201d9c5bbd8eb759c7f16a2c 100644
+--- forkSrcPrefix/lib/pack/CMakeLists.txt
++++ forkDstPrefix/lib/pack/CMakeLists.txt
+@@ -19,7 +19,7 @@ target_include_directories(pack_obj PRIVATE
+   ../pathplan
+ )
+ 
+-add_library(pack STATIC
++add_library(pack INTERFACE
+   $<TARGET_OBJECTS:pack_obj>
+ )
+ 
+diff --git forkSrcPrefix/plugin/CMakeLists.txt forkDstPrefix/plugin/CMakeLists.txt
+index 0416e7c7ce9ef4843a57a1405b39fd386e67cb4d..5020e62d8346950b3fccf4f5236f075ee36e8435 100644
+--- forkSrcPrefix/plugin/CMakeLists.txt
++++ forkDstPrefix/plugin/CMakeLists.txt
+@@ -7,19 +7,19 @@ else()
+ endif()
+ 
+ add_subdirectory(core)
+-add_subdirectory(devil)
++#add_subdirectory(devil)
+ add_subdirectory(dot_layout)
+-add_subdirectory(gd)
+-add_subdirectory(gdiplus)
+-add_subdirectory(gdk)
+-add_subdirectory(gs)
+-add_subdirectory(kitty)
+-add_subdirectory(lasi)
++#add_subdirectory(gd)
++#add_subdirectory(gdiplus)
++#add_subdirectory(gdk)
++#add_subdirectory(gs)
++#add_subdirectory(kitty)
++#add_subdirectory(lasi)
+ add_subdirectory(neato_layout)
+-add_subdirectory(pango)
+-add_subdirectory(poppler)
+-add_subdirectory(quartz)
+-add_subdirectory(rsvg)
+-add_subdirectory(vt)
+-add_subdirectory(webp)
+-add_subdirectory(xlib)
++#add_subdirectory(pango)
++#add_subdirectory(poppler)
++#add_subdirectory(quartz)
++#add_subdirectory(rsvg)
++#add_subdirectory(vt)
++#add_subdirectory(webp)
++#add_subdirectory(xlib)
