@@ -33,28 +33,11 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
-
-/** \docpage{org.inviwo.ComputeShaderImageExample, Compute Shader Image Example}
- * ![](org.inviwo.ComputeShaderImageExample.png?classIdentifier=org.inviwo.ComputeShaderImageExample)
- *
- * An processor to show how compute shaders can be utilized to create images. Uses shader
- * roll.comp to create a simple procedural image.
- * C++ and glsl source code is havily inspired by http://wili.cc/blog/opengl-cs.html
- *
- *
- * ### Outports
- *   * __outport__ The produced image.
- *
- * ### Properties
- *   * __Roll__ Used as offset in to the sin function in the shader to create an rolling effect.
- *
- */
 
 class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderImageExample : public Processor {
 public:
