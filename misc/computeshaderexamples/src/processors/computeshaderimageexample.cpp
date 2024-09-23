@@ -28,8 +28,6 @@
  *********************************************************************************/
 
 #include <inviwo/computeshaderexamples/processors/computeshaderimageexample.h>
-#include <modules/opengl/openglmodule.h>
-#include <modules/opengl/shader/shadermanager.h>
 
 #include <inviwo/core/datastructures/image/image.h>
 #include <inviwo/core/datastructures/image/layer.h>
@@ -37,6 +35,7 @@
 #include <modules/opengl/image/layergl.h>
 
 #include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/textureunit.h>
 #include <modules/opengl/shader/shaderutils.h>
 
 namespace inviwo {
@@ -48,14 +47,23 @@ const ProcessorInfo ComputeShaderImageExample::processorInfo_{
     "Example",                               // Category
     CodeState::Experimental,                 // Code state
     Tags::GL,                                // Tags
+    R"(An processor to show how compute shaders can be utilized to create images. Uses shader 
+    `roll.comp` to create a simple procedural image. C++ and GLSL source code is heavily inspired 
+    by [wili.cc/blog/opengl-cs.html](http://wili.cc/blog/opengl-cs.html)
+    )"_unindentHelp,
 };
 const ProcessorInfo& ComputeShaderImageExample::getProcessorInfo() const { return processorInfo_; }
 
 ComputeShaderImageExample::ComputeShaderImageExample()
     : Processor()
-    , outport_("outport")
+    , outport_("outport", "Output image"_help)
     , shader_({{ShaderType::Compute, "roll.comp"}})
-    , roll_{"roll", "Roll", 0, 0, 10} {
+    , roll_{"roll",
+            "Roll",
+            "Used as offset in to the sin function in the shader to create an rolling effect."_help,
+            0.0f,
+            {0.0f, ConstraintBehavior::Ignore},
+            {10.0f, ConstraintBehavior::Ignore}} {
 
     addPort(outport_);
 
@@ -67,13 +75,14 @@ ComputeShaderImageExample::ComputeShaderImageExample()
 void ComputeShaderImageExample::process() {
     // http://wili.cc/blog/opengl-cs.html
 
-    glActiveTexture(GL_TEXTURE0);
+    TextureUnit unit;
+    unit.activate();
 
     auto img = std::make_shared<Image>(size2_t{512, 512}, DataFormat<float>::get());
 
     auto layerGL = img->getColorLayer()->getEditableRepresentation<LayerGL>();
     auto texHandle = layerGL->getTexture()->getID();
-    glBindImageTexture(0, texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
+    glBindImageTexture(unit.getUnitNumber(), texHandle, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
 
     layerGL->setSwizzleMask(swizzlemasks::luminance);
 
@@ -82,7 +91,7 @@ void ComputeShaderImageExample::process() {
 
     layerGL->getTexture()->bind();
 
-    shader_.setUniform("dest", 0);
+    shader_.setUniform("dest", unit.getUnitNumber());
 
     glDispatchCompute(512 / 16, 512 / 16, 1);  // 512^2 threads in blocks of 16^2
 
