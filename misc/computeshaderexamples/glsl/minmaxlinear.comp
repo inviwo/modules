@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,35 +27,46 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
-
-#include <modules/opengl/shader/shader.h>
-
-namespace inviwo {
-
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderImageExample : public Processor {
-public:
-    ComputeShaderImageExample();
-    virtual ~ComputeShaderImageExample() = default;
-
-    virtual void initializeResources() override;
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-
-    static const ProcessorInfo processorInfo_;
-
-private:
-    ImageOutport outport_;
-    Shader shader_;
-
-    FloatProperty roll_;
+layout (std430, binding=3) buffer BufferObject {
+    vec4 minmax[];
 };
 
-}  // namespace inviwo
+uniform uint arrayLength;
+
+shared vec4 workgroup_min[256 / 32];
+shared vec4 workgroup_max[256 / 32];
+
+layout(local_size_x = 256, local_size_y = 1, local_size_z = 1) in;
+
+void main(){
+    uint threadId = gl_LocalInvocationIndex;
+    uint gridSize = gl_WorkGroupSize.x * gl_NumWorkGroups.x;
+    uint i = gl_WorkGroupID.x * gl_WorkGroupSize.x + threadId; 
+
+    vec4 minVal = vec4(1.0 / 0.0);
+    vec4 maxVal = vec4(-1.0 / 0.0);
+
+    while (i < arrayLength) {
+        minVal = min(minVal, minmax[2 * i]);
+        maxVal = max(maxVal, minmax[2 * i + 1]);
+        i += gridSize;
+    }
+
+    minVal = subgroupMin(minVal);
+    maxVal = subgroupMax(maxVal);
+    if (subgroupElect()) {
+        workgroup_min[gl_SubgroupID] = minVal;
+        workgroup_max[gl_SubgroupID] = maxVal;
+    }
+    barrier();
+
+    if (gl_LocalInvocationIndex == 0) {
+        for (uint i = 0; i < gl_NumSubgroups; ++i) {
+            minVal = min(minVal, workgroup_min[i]);
+            maxVal = max(maxVal, workgroup_max[i]);
+        }
+        uint index = gl_WorkGroupID.x;
+        minmax[2 * index] = minVal;
+        minmax[2 * index + 1] = maxVal;
+    }
+}

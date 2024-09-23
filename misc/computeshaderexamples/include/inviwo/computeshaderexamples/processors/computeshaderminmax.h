@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2024 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,32 +30,34 @@
 #pragma once
 
 #include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/ports/imageport.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
 
 #include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderImageExample : public Processor {
+class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderMinMax : public Processor {
 public:
-    ComputeShaderImageExample();
-    virtual ~ComputeShaderImageExample() = default;
+    ComputeShaderMinMax();
 
     virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
-
     static const ProcessorInfo processorInfo_;
 
 private:
-    ImageOutport outport_;
-    Shader shader_;
+    VolumeInport volume_;
 
-    FloatProperty roll_;
+    FloatVec4Property minValues_;
+    FloatVec4Property maxValues_;
+    BoolProperty logErrorOnly_;
+
+    Shader shaderSampleVolume_;
+    Shader shaderLinear_;
 };
 
 }  // namespace inviwo
