@@ -30,8 +30,11 @@
 #if !defined IMAGE_FORMAT
 #define IMAGE_FORMAT r32f
 #endif
+#if !defined IMAGE_TYPE
+#define IMAGE_TYPE image3D
+#endif
 
-uniform layout(binding=0, IMAGE_FORMAT) readonly image3D volume;
+uniform layout(binding=0, IMAGE_FORMAT) readonly IMAGE_TYPE volume;
 
 layout (std430, binding=3) buffer BufferObject {
     vec4 minmax[];
@@ -50,7 +53,6 @@ void main(){
     vec4 minVal = vec4(1.0 / 0.0);
     vec4 maxVal = vec4(-1.0 / 0.0);
 
-    // strided texture access by 2 voxels in x
     ivec3 volIndex = ivec3(gl_GlobalInvocationID.x, gl_GlobalInvocationID.y, gl_GlobalInvocationID.z);
 
     if (all(lessThan(volIndex, volDims))) {

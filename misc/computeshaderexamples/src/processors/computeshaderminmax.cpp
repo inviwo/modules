@@ -84,13 +84,13 @@ ComputeShaderMinMax::ComputeShaderMinMax()
                                             .readOnly = ReadOnly::Yes}}
     , logErrorOnly_{"logErrorOnly", "Log Only Errors", true}
     , shaderSampleVolume_{{{ShaderType::Compute, "minmaxvolume.comp"}}, Shader::Build::No}
-    , shaderRecursive_{{{ShaderType::Compute, "minmaxlinear.comp"}}, Shader::Build::No} {
+    , shaderLinear_{{{ShaderType::Compute, "minmaxlinear.comp"}}, Shader::Build::No} {
 
     addPorts(volume_);
     addProperties(minValues_, maxValues_, logErrorOnly_);
 
     shaderSampleVolume_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
-    shaderRecursive_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
+    shaderLinear_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
 void ComputeShaderMinMax::initializeResources() {
@@ -98,21 +98,18 @@ void ComputeShaderMinMax::initializeResources() {
         "GL_KHR_shader_subgroup_basic", ShaderObject::ExtensionBehavior::Require);
     shaderSampleVolume_.getComputeShaderObject()->addShaderExtension(
         "GL_KHR_shader_subgroup_arithmetic", ShaderObject::ExtensionBehavior::Require);
+    shaderSampleVolume_.getComputeShaderObject()->addShaderDefine("IMAGE_FORMAT", "r32f");
     shaderSampleVolume_.build();
 
-    shaderRecursive_.getComputeShaderObject()->addShaderExtension(
+    shaderLinear_.getComputeShaderObject()->addShaderExtension(
         "GL_KHR_shader_subgroup_basic", ShaderObject::ExtensionBehavior::Require);
-    shaderRecursive_.getComputeShaderObject()->addShaderExtension(
+    shaderLinear_.getComputeShaderObject()->addShaderExtension(
         "GL_KHR_shader_subgroup_arithmetic", ShaderObject::ExtensionBehavior::Require);
-    shaderRecursive_.build();
+    shaderLinear_.build();
 }
 
 void ComputeShaderMinMax::process() {
     const auto* volumeGL = volume_.getData()->getRepresentation<VolumeGL>();
-
-    GLint invocations = 0;
-    glGetIntegerv(GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, &invocations);
-    LogInfo("max invocations " << invocations);
 
     const uvec3 groupSize{32, 32, 1};
     const uvec3 dims{volumeGL->getDimensions()};
@@ -120,8 +117,33 @@ void ComputeShaderMinMax::process() {
     const uvec3 numGroups{(uvec3{dims.x, dims.y, 1} + groupSize - uvec3{1}) / groupSize};
 
     // TODO: set image format specifier in shader to match internal format of the volume
+    auto glFormat = GLFormats::get(volumeGL->getDataFormat()->getId());
+
+    const bool layoutQualifierIsSet =
+        [defines = shaderSampleVolume_.getComputeShaderObject()->getShaderDefines()](
+            std::string_view qualifier) {
+            if (auto it = defines.find("IMAGE_FORMAT"); it != defines.end()) {
+                return it->second == qualifier;
+            }
+            return false;
+        }(glFormat.layoutQualifier);
+
+    if (!layoutQualifierIsSet) {
+        auto* computeShader = shaderSampleVolume_.getComputeShaderObject();
+
+        computeShader->addShaderDefine("IMAGE_FORMAT", glFormat.layoutQualifier);
+        if (glFormat.layoutQualifier.ends_with("ui")) {
+            computeShader->addShaderDefine("IMAGE_TYPE", "uimage3D");
+        } else if (glFormat.layoutQualifier.ends_with("i")) {
+            computeShader->addShaderDefine("IMAGE_TYPE", "iimage3D");
+        } else {
+            computeShader->addShaderDefine("IMAGE_TYPE", "image3D");
+        }
+        shaderSampleVolume_.build();
+    }
+
     glBindImageTexture(0, volumeGL->getTexture()->getID(), 0, GL_TRUE, 0, GL_READ_ONLY,
-                       GLFormats::get(volumeGL->getDataFormat()->getId()).internalFormat);
+                       glFormat.internalFormat);
 
     // global buffer for min/max values for all work groups
     const size_t bufSize = 2 * glm::compMul(numGroups);
@@ -134,11 +156,10 @@ void ComputeShaderMinMax::process() {
         glDispatchCompute(numGroups.x, numGroups.y, numGroups.z);
     }
     const uint32_t arrayLen = glm::compMul(numGroups);
-    ;
     {
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        utilgl::Activate activateShader(&shaderRecursive_);
-        shaderRecursive_.setUniform("arrayLength", arrayLen);
+        utilgl::Activate activateShader(&shaderLinear_);
+        shaderLinear_.setUniform("arrayLength", arrayLen);
         glDispatchCompute(1, 1, 1);
     }
 
@@ -149,6 +170,18 @@ void ComputeShaderMinMax::process() {
     glGetBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, 2 * sizeof(glm::vec4), minmaxGL.data());
 
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, 0);
+
+    if (volumeGL->getDataFormat()->getComponents() < 4) {
+        // reset alpha channel since imageLoad in the shader returns 1.0 for non-rgba formats
+        minmaxGL[0].a = 0.0;
+        minmaxGL[1].a = 0.0;
+    }
+
+    // undo GL format normalization
+    if (glFormat.normalization != utilgl::Normalization::None) {
+        minmaxGL[0] = volume_.getData()->dataMap.mapFromNormalizedToData(minmaxGL[0]);
+        minmaxGL[1] = volume_.getData()->dataMap.mapFromNormalizedToData(minmaxGL[1]);
+    }
 
     // reference implementation
     auto [ramMin, ramMax] = util::volumeMinMax(volume_.getData().get(), IgnoreSpecialValues::No);

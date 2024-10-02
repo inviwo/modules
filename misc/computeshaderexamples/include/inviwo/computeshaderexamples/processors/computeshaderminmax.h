@@ -57,7 +57,7 @@ private:
     BoolProperty logErrorOnly_;
 
     Shader shaderSampleVolume_;
-    Shader shaderRecursive_;
+    Shader shaderLinear_;
 };
 
 }  // namespace inviwo
