@@ -102,9 +102,9 @@ struct IVW_MODULE_DICOM_API Series {
      *   * pixel format
      *   * color space (i.e. Photometric Interpretation) containing  no. of samples per pixel
      *   * intercept and slope
-     *   * TODO: pixel spacing
-     *   * TODO: image orientation (patient) with summed squared difference < 1e-4
-     *   * TODO: image position (patient) with summed squared difference < 1e-4
+     *   * pixel spacing
+     *   * image orientation (patient) with summed squared difference < 1e-4
+     *   * image position (patient) with summed squared difference < 1e-4
      *
      * @param series     series containing images with valid paths
      * @param dicompath  used only in case of an error and should refer to the main DICOM dataset
@@ -119,7 +119,6 @@ struct IVW_MODULE_DICOM_API Series {
      * TODO: proper volume sorting with more heuristics according to
      * https://nipy.org/nibabel/dicom/spm_dicom.html#spm-volume-sorting
      */
-
     void sortImages();
 
     bool empty() const;
