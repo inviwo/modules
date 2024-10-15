@@ -1,0 +1,617 @@
+name: "Build Inviwo Modules"
+
+on: 
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
+
+permissions:
+  contents: write  # Enable vcpkg to write to the dependency graph
+
+env:
+  VCPKG_BINARY_SOURCES: 'clear;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer ${{ secrets.VCPKG_CACHE_TOKEN }}'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  VCPKG_FEATURE_FLAGS: dependencygraph
+  # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
+
+# Information about the github runners can be found here
+# https://github.com/actions/runner-images
+
+jobs:
+  build:
+    name: "Build"
+    strategy:
+      matrix:
+        system: [windows, macos, linux]
+        linkage: [dynamic, static]
+        configuration: [Release, Debug]
+        
+        include:
+          - system: windows
+            os: 'windows-2022'
+            cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_MODULE_TETRAMESH=ON
+              -DIVW_DOXYGEN_PROJECT=ON 
+              -DIVW_DOXYGEN_LATEX_PATH="C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+              -DIVW_MODULE_SGCT=ON
+              -DIVW_APP_INVIWO_DOME=ON
+              -DVCPKG_MANIFEST_FEATURES="sgct"
+            preset: msvc-developer
+            targets: 'ALL_BUILD'
+            installer: 'inviwo-installer-win'
+            artifact: 'build/inviwo-v*.exe'
+            run: |
+              ./Release/inviwo-cli.exe --logconsole --quit
+              if [ $? -nq 0 ]
+              then
+                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/gflags.exe /i ./Release/inviwo-cli.exe +sls
+                 C:/'Program Files (x86)'/'Windows Kits'/10/Debuggers/x64/cdb.exe -g -c q ./Release/inviwo-cli.exe
+              fi
+          
+          - system: macos
+            os: 'macos-15'
+            cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_MODULE_TETRAMESH=ON
+            preset: ninja-developer
+            targets: 'all'
+            installer: 'inviwo-installer-macos'
+            artifact: 'build/inviwo-v*.dmg'
+            run: './inviwo.app/Contents/MacOS/inviwo --logconsole --quit'
+          
+          - system: linux
+            os: 'ubuntu-24.04'
+            # Disable benchmark for now due to error: 
+            # memcpy’ is not a member of ‘std’; did you mean ‘wmemcpy’
+            cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=OFF
+              -DIVW_MODULE_WEBBROWSER=OFF
+              -DIVW_MODULE_TETRAMESH=ON
+              -DIVW_TEST_BENCHMARKS=OFF
+            preset: ninja-developer
+            targets: 'all'
+            installer: 'inviwo-installer-ubuntu'
+            artifact: 'build/inviwo-v*.deb'
+            run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
+          
+          # linkage
+          - linkage: 'dynamic'
+            cmake_linkage: 'ON'
+          - linkage: 'static'
+            cmake_linkage: 'OFF'
+          
+          # set triplets
+          - system: 'windows'
+            linkage: 'dynamic'
+            triplet: 'x64-windows'
+          - system: 'windows'
+            linkage: 'static'
+            triplet: 'x64-windows-static-md'
+            
+          - system: 'macos'
+            linkage: 'dynamic'
+            triplet: 'arm64-osx-dynamic'
+          - system: 'macos'
+            linkage: 'static'
+            triplet: 'arm64-osx'
+            
+          - system: 'linux'
+            linkage: 'dynamic'
+            triplet: 'x64-linux-dynamic'
+          - system: 'linux'
+            linkage: 'static'
+            triplet: 'x64-linux'
+
+          # extra targets 
+          - system: windows
+            linkage: dynamic
+            configuration: Release
+            targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
+          #- system: macos  # Disable mac packaging since it probably runs out of diskspace
+          #  linkage: dynamic
+          #  configuration: Release
+          #  targets: 'all package'
+          - system: linux
+            linkage: dynamic
+            configuration: Release
+            targets: 'all package'
+
+          # need /MD for static to go with x64-windows-static-md
+          - system: windows
+            linkage: static
+            cmake: >
+              -DIVW_MODULE_EIGENUTILS=ON
+              -DIVW_MODULE_HDF5=ON
+              -DIVW_MODULE_FFMPEG=ON
+              -DIVW_MODULE_WEBBROWSER=ON
+              -DIVW_CFG_MSVC_FORCE_SHARED_CRT=ON
+
+        exclude:
+          # Windows debug build are to big, they run out of diskspace
+          - system: windows
+            configuration: Debug
+          # This build fails very close to the end with "ninja: build stopped: interrupted by user."
+          - system: linux
+            linkage: static
+            configuration: Debug
+
+      fail-fast: false
+      
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 360
+    
+    steps:
+    - name: "Clone Modules"
+      uses: actions/checkout@v4
+      with:
+        path: modules
+        submodules: true
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with:
+        repository: inviwo/inviwo
+        ref: master
+        path: inviwo
+        submodules: false
+
+    - name: Install dependencies
+      uses: ./inviwo/.github/actions/install-dependencies
+    
+    - name: Configure build environment
+      uses: ./inviwo/.github/actions/configure-build-env
+
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ${{ matrix.preset }}
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DVCPKG_TARGET_TRIPLET=${{ matrix.triplet }}
+        -DVCPKG_HOST_TRIPLET=${{ matrix.triplet }}
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
+        -DBUILD_SHARED_LIBS=${{ matrix.cmake_linkage }}
+        -DCMAKE_BUILD_TYPE=${{ matrix.configuration }}
+        -DCMAKE_C_COMPILER_LAUNCHER=ccache
+        -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        -DIVW_CFG_USE_CCACHE_MSVC=ON
+        ${{ matrix.cmake }}
+        
+    - name: "Build"
+      timeout-minutes: 360
+      shell: bash
+      run: |
+        echo "::add-matcher::inviwo/.github/matchers/${{ matrix.system }}.json"
+        cmake --build build --config ${{ matrix.configuration }} --parallel --target ${{ matrix.targets }}
+        echo "::remove-matcher owner=compiler::"
+        echo "::remove-matcher owner=linker::"
+
+    - name: "Run"
+      shell: bash
+      working-directory: "build/bin"
+      run: ${{ matrix.run }}
+
+    - name: "Unittests"
+      shell: bash
+      working-directory: "build"
+      run: ctest -C ${{ matrix.configuration }} --output-on-failure
+
+    - name: "Upload installer"
+      if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.installer }}
+        path: ${{ matrix.artifact }}
+
+    - name: "Upload doxygen"
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: inviwo-cpp-api
+        path: build/docs/inviwo/html/*
+
+    - name: "Upload shpinx"
+      if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: inviwo-python-api
+        path: build/docs/python-api/*
+    
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
+      with:
+        limit-access-to-actor: true
+
+  regression:
+    name: "Regression"
+    runs-on: [regression, macOS]
+    timeout-minutes: 320
+    steps:
+
+    - name: "Clone Modules"
+      uses: actions/checkout@v4
+      with:
+        path: modules
+        submodules: true
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with:
+        repository: inviwo/inviwo
+        ref: master
+        path: inviwo
+        submodules: false
+
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
+        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
+        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
+        -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+        -DIVW_MODULE_TETRAMESH=OFF
+        -DIVW_MODULE_WEBBROWSER=ON
+
+    - name: "Build"
+      timeout-minutes: 360
+      shell: bash
+      run: |
+        echo "::add-matcher::inviwo/.github/matchers/macos.json"
+        cmake --build build --config RelWithDebInfo --parallel --target all
+        echo "::remove-matcher owner=compiler::"
+        echo "::remove-matcher owner=linker::"
+
+    - name: "Unit Tests"
+      shell: bash
+      working-directory: "build"
+      continue-on-error: true
+      run: ctest -C RelWithDebInfo --output-on-failure
+
+    - name: "Integration Tests"
+      shell: bash
+      working-directory: "build/bin"
+      continue-on-error: true
+      run: ./inviwo-integrationtests
+
+    - name: "Clone Regression"
+      uses: actions/checkout@v4
+      with:
+        repository: inviwo/regression
+        ref: main
+        token: ${{ secrets.INVIWO_TEAM_SECRET }}
+        path: regression
+
+    - name: "Regression Tests"
+      shell: bash
+      continue-on-error: true
+      run: |
+        mkdir -p regression/macos/${{ github.ref }}
+        python3 inviwo/tools/regression.py \
+          --config build/pyconfig.ini \
+          --build_type RelWithDebInfo \
+          --output regression/macos/${{ github.ref }} \
+          --modules inviwo/modules \
+          --summary
+
+    - name: Push report
+      shell: bash
+      run: |
+        cd regression
+        git config --global user.name 'Inviwo-Team'
+        git config --global user.email 'team@inviwo.org'
+        git add .
+        git commit -am "Regression report for macos ${{ github.ref }}"
+        git push
+
+        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html " >> $GITHUB_STEP_SUMMARY
+
+  clang-tidy:
+    name: "Clang-tidy"
+    if: github.ref != 'refs/heads/master'
+    permissions:
+      pull-requests: write
+    env:
+      LLVM_VERSION: 17
+    runs-on: ubuntu-24.04
+    timeout-minutes: 320
+    steps:
+    - name: "Apt Install"
+      shell: bash
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt install --fix-missing libgl-dev libglew-dev libglu1-mesa-dev \
+          libxcursor-dev libxi-dev libxinerama-dev libxinerama-dev \
+          libxmu-dev nasm ninja-build pkg-config xorg-dev
+
+    - name: "Install Qt"
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: 6.7.0
+        dir: ${{ github.workspace }}
+
+    - name: Install LLVM and Clang
+      uses: KyleMayes/install-llvm-action@v2
+      with:
+        version: ${{ env.LLVM_VERSION }}
+        env: true
+           
+    - name: "Setup Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version: '>=3.10'
+        architecture: 'x64'
+    
+    - name: "Install Python Modules" 
+      shell: bash
+      run: pip3 install numpy
+
+    - name: "VCPKG Update"
+      shell: bash
+      run: |
+        echo $VCPKG_INSTALLATION_ROOT
+        cd $VCPKG_INSTALLATION_ROOT
+        git reset --hard
+        git pull
+    
+    - name: "VCPKG Cache config"
+      uses: actions/github-script@v7
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+    - name: "Clone Modules"
+      uses: actions/checkout@v4
+      with:
+        path: modules
+        submodules: true
+
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v4
+      with:
+        repository: inviwo/inviwo
+        ref: master
+        path: inviwo
+        submodules: false
+        
+    - name: "Configure CMake"
+      shell: bash
+      run: >
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_CXX_FLAGS='-stdlib=libc++'
+        -DVCPKG_TARGET_TRIPLET=x64-linux-dynamic
+        -DVCPKG_INSTALL_OPTIONS='--clean-after-build'
+        -DBUILD_SHARED_LIBS=ON
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+        -DIVW_MODULE_EIGENUTILS=ON
+        -DIVW_MODULE_HDF5=ON
+        -DIVW_MODULE_SGCT=ON
+        -DIVW_MODULE_TETRAMESH=ON
+        -DIVW_MODULE_WEBBROWSER=ON
+        -DIVW_APP_INVIWO_DOME=ON
+        -DVCPKG_MANIFEST_FEATURES="sgct"
+
+    - uses: cpp-linter/cpp-linter-action@v2.13.1
+      id: linter
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        repo-root: inviwo
+        database: ../build
+        style: 'file'
+        tidy-checks: ''
+        version: ${{ env.LLVM_PATH }}
+        tidy-review: true
+        format-review: false
+        step-summary: true
+        no-lgtm: false
+        lines-changed-only: true
+        thread-comments: update
+        file-annotations: false
+        verbosity: debug
+        
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
+      with:
+        limit-access-to-actor: true
+
+  test-installer:
+    name: "Test Installer"
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest] # macos-latest,
+        include:
+          - os: 'windows-latest'
+            installer: 'inviwo-installer-win'
+          #- os: 'macos-latest'
+          #  installer: 'inviwo-installer-macos'
+        
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: "Download artifact"
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ matrix.installer }}
+
+    # Windows
+    - name: "Run Windows Installer"
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        # find the name of the installer
+        $exe = Get-ChildItem -Name inviwo-*.exe
+        # launch the nsis installer in "silent mode" (/S), should run without user interaction
+        Invoke-expression "./$exe /S"
+        # this will spawn the installer in the background so we need to wait for it to finish
+        $proc = Get-Process | where {$_.ProcessName -like "inviwo-*"} | Select-Object -First 1
+        if ($proc) { 
+          Wait-Process -Id $proc.id
+        }
+        
+    - name: "Run Inviwo"
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $ver = (Get-ChildItem -Name C:/"Program Files"/Inviwo/*)
+        Invoke-expression "C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe --logconsole --quit"
+        if($LASTEXITCODE -ne 0) {
+          Invoke-expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\gflags.exe /i C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe +sls"
+          Invoke-Expression "C:\'Program Files (x86)'\'Windows Kits'\10\Debuggers\x64\cdb.exe -g -c q C:/'Program Files'/Inviwo/$ver/bin/inviwo-cli.exe"
+        }
+    
+    # Macos
+    - name: "Run MacOS Installer"
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        # Find the name of the installer 
+        DMG=$(ls Inviwo-*.dmg)
+        # Mount installer image
+        hdiutil attach $DMG
+        # Install by copying Inviwo.app to applications folder
+        cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
+        hdiutil detach /Volumes/${DMG%%.dmg}/
+
+    - name: "Run Inviwo"
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        cd /Applications/Inviwo.app/Contents/MacOS/
+        ./inviwo --logconsole --quit
+
+    - name: "Setup tmate session (on failure and debug_enabled)"
+      if: "${{ failure() && ((github.event_name == 'workflow_dispatch' && inputs.debug_enabled) || contains( github.event.pull_request.labels.*.name, 'CI: Debug')) }}"
+      uses: mxschmitt/action-tmate@v3
+      timeout-minutes: 30
+      with:
+        limit-access-to-actor: true
+ 
+ 
+  create-changelog:
+    name: "Create Changelog"
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Generate Changelog"
+      id: changelog
+      uses: mikepenz/release-changelog-builder-action@v5
+      with:
+        toTag: ${{ github.ref }}
+        outputFile: changelog.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: "Log Changelog"
+      shell: bash
+      run: |
+        echo "-- Changes --"
+        echo "${{ steps.changelog.outputs.changelog }}"
+        echo "-- End --"
+    - name: "Upload Changelog"
+      uses: actions/upload-artifact@v3
+      with:
+        name: changelog.md
+        path: changelog.md
+
+  update-api-docs:
+    name: "Publish updated API Docs"
+    if: github.ref == 'refs/heads/master'
+    needs: [build, test-installer, regression]
+
+    runs-on: windows-latest
+    steps:
+      - name: "Clone Inviwo"
+        uses: actions/checkout@v4
+        with: 
+          ref: gh-pages
+          path: inviwo
+          submodules: false
+
+      - name: "Download python-api"
+        uses: actions/download-artifact@v4
+        with:
+          name: inviwo-python-api
+          path: inviwo/python-api
+
+      - name: "Download cpp-api"
+        uses: actions/download-artifact@v4
+        with:
+          name: inviwo-cpp-api
+          path: inviwo/cpp-api
+
+      - name: "Publish python-api"
+        run: |
+          cd inviwo
+          git config --global user.email "team@inviwo.org"
+          git config --global user.name "Inviwo Team"
+          git add python-api
+          git commit -m "Update Python API Docs"
+          git push
+
+      - name: "Publish cpp-api"
+        run: |
+          cd inviwo
+          git config --global user.email "team@inviwo.org"
+          git config --global user.name "Inviwo Team"
+          git add cpp-api
+          git commit -m "Update C++ API Docs"
+          git push
+
+  update-latest-release:
+    name: "Update latest release"
+    if: github.ref == 'refs/heads/master'
+    needs: [build, test-installer, regression, create-changelog]
+    strategy:
+      matrix:
+        os: [windows-latest] # macos-latest,
+        include:
+          - os: 'windows-latest'
+            installer: 'inviwo-installer-win'
+          #- os: 'macos-latest'
+          #  installer: 'inviwo-installer-macos'
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: "Download installer"
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ matrix.installer }}
+
+    - name: "Upload binaries to release"
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: Inviwo-*
+        file_glob: true
+        tag: latest
+        overwrite: true
+        body: "The latest inviwo build, updated for every merged pull request."
