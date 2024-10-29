@@ -8,7 +8,7 @@ The ttk module depends on the Inviwo VTK module (`misc/vtk`) as well as the TTK 
     {
       "name": "ttk-msvc-vcpkg",
       "displayName": "TTK MSVC VCPKG",
-      "inherits" : ["modules", "msvc-dev-vcpkg"],
+      "inherits" : ["msvc-developer-modules"],
       "cacheVariables": {
         "VCPKG_OVERLAY_PORTS" :    "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg",
         "VCPKG_MANIFEST_FEATURES": "vtk;ttk",

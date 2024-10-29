@@ -9,7 +9,7 @@ Use a CMake preset similar to this to enable this VTK module:
     {
       "name": "vtk-msvc-vcpkg",
       "displayName": "VTK MSVC VCPKG",
-      "inherits" : ["modules", "msvc-dev-vcpkg"],
+      "inherits" : ["msvc-developer-modules"],
       "cacheVariables": {
         "VCPKG_OVERLAY_PORTS" :    "${sourceDir}/tools/vcpkg;${sourceParentDir}/modules/tools/vcpkg",
         "VCPKG_MANIFEST_FEATURES": "vtk",
@@ -26,7 +26,7 @@ You can add `dumpbin.exe` (MSVC build) to the path in the same preset to reduce 
       },
 ```
 
-The inherited `msvc-dev-vcpkg` preset assumes that vcpkg is located next to the Inviwo repo.
+The inherited `msvc-developer-modules` preset assumes that vcpkg is located next to the Inviwo repo.
 Recommended folder structure:
 
 ```
