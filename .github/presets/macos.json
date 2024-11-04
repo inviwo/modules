@@ -1,6 +1,6 @@
 {
-  "version": 6,
-  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "version": 9,
+  "cmakeMinimumRequired": { "major": 3, "minor": 30, "patch": 0 },
   "include" : [
     "${parentSourceDir}/modules/.github/presets/macos.json",
     "${sourceDir}.github/presets/common.json"
