@@ -1,0 +1,18 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
+  "include" : [
+    "${parentSourceDir}/modules/.github/presets/macos.json",
+    "${sourceDir}.github/presets/common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "gha-modules-static",
+      "inherits" : ["gha-modules", "gha-static"]
+    },
+    {
+      "name": "gha-modules-dynamic",
+      "inherits" : ["gha-modules", "gha-dynamic"]
+    }
+  ]
+}
