@@ -2,8 +2,8 @@
   "version": 9,
   "cmakeMinimumRequired": { "major": 3, "minor": 30, "patch": 0 },
   "include" : [
-    "${parentSourceDir}/modules/.github/presets/common.json",
-    "${parentSourceDir}/inviwo/.github/presets/windows.json"
+    "${sourceParentDir}/modules/.github/presets/common.json",
+    "${sourceDir}/.github/presets/windows.json"
   ],
   "configurePresets": [
     {

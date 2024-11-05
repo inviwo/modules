@@ -1,9 +1,6 @@
 {
   "version": 6,
   "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
-  "include" : [
-    "${parentSourceDir}/modules/.github/presets/linux.json"
-  ],
   "configurePresets": [
     {
       "name": "gha-modules",
