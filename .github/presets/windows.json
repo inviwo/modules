@@ -2,17 +2,36 @@
   "version": 9,
   "cmakeMinimumRequired": { "major": 3, "minor": 30, "patch": 0 },
   "include" : [
-    "${sourceParentDir}/modules/.github/presets/common.json",
-    "${sourceDir}/.github/presets/windows.json"
+    "${sourceParentDir}/modules/.github/presets/common.json"
   ],
   "configurePresets": [
     {
-      "name": "gha-modules-static",
-      "inherits" : ["gha-modules", "gha-static"]
+      "name": "gha",
+      "inherits" : ["common", "modules", "modules-vcpkg", "msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "cacheVariables": {
+        "IVW_CFG_USE_CCACHE_MSVC": "ON",
+        "IVW_MODULE_SGCT": "ON",
+        "IVW_APP_INVIWO_DOME": "ON",
+        "VCPKG_MANIFEST_FEATURES": "sgct"
+      }
     },
     {
-      "name": "gha-modules-dynamic",
-      "inherits" : ["gha-modules", "gha-dynamic"]
+      "name": "gha-static",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON"},
+        "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF"},
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "VCPKG_HOST_TRIPLET": "x64-windows-static-md"
+      }
+    },
+    {
+      "name": "gha-dynamic",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "IVW_DOXYGEN_PROJECT": "ON",
+        "IVW_DOXYGEN_LATEX_PATH": "C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+      }
     }
   ]
 }

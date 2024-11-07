@@ -3,20 +3,25 @@
   "cmakeMinimumRequired": { "major": 3, "minor": 23, "patch": 0 },
   "configurePresets": [
     {
-      "name": "gha-modules",
+      "name": "common",
       "displayName": "Modules GHA",
-      "inherits" : ["modules", "modules-vcpkg"],
       "cacheVariables": {
-         "IVW_MODULE_OPENMESH":              { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_SPRINGSYSTEM":          { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_VASP":                  { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_NANOVGUTILS":           { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_TENSORVISBASE":         { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_INTEGRALLINEFILTERING": { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_MOLVISBASE":            { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_MOLVISGL":              { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_MOLVISPYTHON":          { "type": "BOOL", "value": "ON"},
-         "IVW_MODULE_DATAFRAMECLUSTERING":   { "type": "BOOL", "value": "ON"}
+        "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_WEBBROWSER":            { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_TETRAMESH":             { "type": "BOOL", "value": "ON"},
+
+        "IVW_MODULE_OPENMESH":              { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_SPRINGSYSTEM":          { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_VASP":                  { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_NANOVGUTILS":           { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_TENSORVISBASE":         { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_INTEGRALLINEFILTERING": { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_MOLVISBASE":            { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_MOLVISGL":              { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_MOLVISPYTHON":          { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_DATAFRAMECLUSTERING":   { "type": "BOOL", "value": "ON"}
       }
     }
   ]
