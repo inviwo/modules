@@ -137,6 +137,12 @@ jobs:
     - name: Install dependencies
       uses: ./inviwo/.github/actions/install-dependencies
     
+    - name: "Brew Install"
+      shell: bash
+      if: runner.os == 'macOS'
+      run: |
+        brew bison
+
     - name: Configure build environment
       uses: ./inviwo/.github/actions/configure-build-env
       with:
