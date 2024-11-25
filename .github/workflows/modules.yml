@@ -205,7 +205,7 @@ jobs:
       if: "${{ failure() }}"
       uses: actions/upload-artifact@v4
       with:
-        name: vcpkg-logs
+        name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: vcpkg/buildtrees/**/*.log
 
   regression:
@@ -230,7 +230,7 @@ jobs:
 
     - name: Copy Preset
       shell: bash
-      run: cp modules/.github/presets/${{ matrix.system }}.json inviwo/CMakeUserPresets.json
+      run: cp modules/.github/presets/macos.json inviwo/CMakeUserPresets.json
 
     - name: "Configure CMake"
       shell: bash

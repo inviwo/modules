@@ -38,10 +38,10 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-find_package(openmesh REQUIRED)
+find_package(OpenMesh REQUIRED)
 target_link_libraries( ${${mod}_target} PUBLIC 
-    openmesh::OpenMeshCore
-    openmesh::OpenMeshTools
+    OpenMeshCore
+    OpenMeshTools
 )
 
 # Add shader directory to pack
