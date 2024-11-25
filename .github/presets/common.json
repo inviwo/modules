@@ -6,7 +6,7 @@
       "name": "common",
       "displayName": "Modules GHA",
       "cacheVariables": {
-        "VCPKG_MANIFEST_FEATURES" : "graphviz,openmesh,nanovg",
+        "VCPKG_MANIFEST_FEATURES" : "graphviz;openmesh;nanovg",
 
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
