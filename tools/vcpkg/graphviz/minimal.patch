@@ -49,7 +49,7 @@ index 786623f2df960a08b35098f3addae4dacc8deb14..c496c7e111b91161af472344057d5e2b
 +
 +include(CMakePackageConfigHelpers)
 +
-+install(TARGETS pathplan xdot cdt cgraph gvc gvplugin_dot_layout
++install(TARGETS pack common util label dotgen pathplan xdot cdt cgraph gvc gvplugin_dot_layout
 +    EXPORT "graphviz-targets"
 +    RUNTIME DESTINATION ${BINARY_INSTALL_DIR}
 +    LIBRARY DESTINATION ${LIBRARY_INSTALL_DIR}
