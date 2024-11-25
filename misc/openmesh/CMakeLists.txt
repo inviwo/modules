@@ -38,7 +38,7 @@ ivw_add_unittest(${TEST_FILES})
 # Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-find_package(openmesh REQUIERD)
+find_package(openmesh REQUIRED)
 target_link_libraries( ${${mod}_target} PUBLIC 
     openmesh::OpenMeshCore
     openmesh::OpenMeshTools

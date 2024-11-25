@@ -200,6 +200,13 @@ jobs:
       timeout-minutes: 30
       with:
         limit-access-to-actor: true
+    
+    - name: "Upload Vcpkg build Logs"
+      if: "${{ failure() }}"
+      uses: actions/upload-artifact@v4
+      with:
+        name: vcpkg-logs
+        path: vcpkg/buildtrees/**/*.log
 
   regression:
     name: "Regression"
@@ -221,10 +228,14 @@ jobs:
         path: inviwo
         submodules: false
 
+    - name: Copy Preset
+      shell: bash
+      run: cp modules/.github/presets/${{ matrix.system }}.json inviwo/CMakeUserPresets.json
+
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset ninja-developer
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha-dynamic
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
