@@ -23,6 +23,6 @@ ivw_group("Source Files" ${SOURCE_FILES})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-find_packages(nanovg REQUIERD)
+find_package(nanovg REQUIERD)
 target_link_libraries(inviwo-module-nanovgutils PUBLIC nanovg::nanovg)
 
