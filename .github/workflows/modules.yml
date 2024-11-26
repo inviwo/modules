@@ -141,7 +141,7 @@ jobs:
       shell: bash
       if: runner.os == 'macOS'
       run: |
-        brew bison
+        brew install bison
 
     - name: Configure build environment
       uses: ./inviwo/.github/actions/configure-build-env
