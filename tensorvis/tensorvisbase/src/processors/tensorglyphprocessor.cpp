@@ -41,7 +41,7 @@ const ProcessorInfo TensorGlyphProcessor::processorInfo_{
     Tags::CPU,                          // Tags
 };
 
-const ProcessorInfo TensorGlyphProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorGlyphProcessor::getProcessorInfo() const { return processorInfo_; }
 
 TensorGlyphProcessor::TensorGlyphProcessor()
     : Processor()

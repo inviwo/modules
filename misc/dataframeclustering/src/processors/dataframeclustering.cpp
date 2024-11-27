@@ -44,7 +44,7 @@ const ProcessorInfo DataFrameClustering::processorInfo_{
     CodeState::Stable,                 // Code state
     Tags::CPU | Tags::PY,              // Tags
 };
-const ProcessorInfo DataFrameClustering::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& DataFrameClustering::getProcessorInfo() const { return processorInfo_; }
 
 DataFrameClustering::DataFrameClustering(InviwoApplication* app)
     : Processor()

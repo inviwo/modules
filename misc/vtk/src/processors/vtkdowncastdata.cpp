@@ -45,7 +45,7 @@ const ProcessorInfo VTKDowncastData::processorInfo_{
     CodeState::Experimental,       // Code state
     Tags::CPU | Tag{"VTK"},        // Tags
 };
-const ProcessorInfo VTKDowncastData::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKDowncastData::getProcessorInfo() const { return processorInfo_; }
 
 VTKDowncastData::VTKDowncastData()
     : Processor()

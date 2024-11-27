@@ -10,7 +10,7 @@ const ProcessorInfo HyperStreamlines::processorInfo_{
     CodeState::Experimental,        // Code state
     "CPU",                          // Tags
 };
-const ProcessorInfo HyperStreamlines::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HyperStreamlines::getProcessorInfo() const { return processorInfo_; }
 
 HyperStreamlines::HyperStreamlines()
     : sampler_("sampler")

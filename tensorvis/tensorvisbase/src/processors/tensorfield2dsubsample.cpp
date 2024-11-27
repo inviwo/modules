@@ -40,7 +40,7 @@ const ProcessorInfo TensorField2DSubsample::processorInfo_{
     Tags::GL,                             // Tags
 };
 
-const ProcessorInfo TensorField2DSubsample::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField2DSubsample::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DSubsample::TensorField2DSubsample()
     : Processor()

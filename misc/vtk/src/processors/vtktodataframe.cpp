@@ -61,7 +61,7 @@ const ProcessorInfo VTKToDataFrame::processorInfo_{
     Tags::CPU | Tag{"VTK"} | Tag{"DataFrame"},  // Tags
     R"(Convert VTK DataSet cell and point array data to dataframes)"_unindentHelp};
 
-const ProcessorInfo VTKToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 VTKToDataFrame::VTKToDataFrame()
     : Processor{}

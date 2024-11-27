@@ -40,7 +40,7 @@ const ProcessorInfo InvariantSpaceFilter::processorInfo_{
     CodeState::Experimental,            // Code state
     Tags::CPU,                          // Tags
 };
-const ProcessorInfo InvariantSpaceFilter::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& InvariantSpaceFilter::getProcessorInfo() const { return processorInfo_; }
 
 InvariantSpaceFilter::InvariantSpaceFilter()
     : Processor()

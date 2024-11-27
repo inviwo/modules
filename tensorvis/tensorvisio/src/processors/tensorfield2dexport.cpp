@@ -39,7 +39,7 @@ const ProcessorInfo TensorField2DExport::processorInfo_{
     CodeState::Experimental,           // Code state
     Tags::CPU,                         // Tags
 };
-const ProcessorInfo TensorField2DExport::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField2DExport::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DExport::TensorField2DExport()
     : Processor()

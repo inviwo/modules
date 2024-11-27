@@ -39,7 +39,7 @@ const ProcessorInfo InvariantSpaceToDataFrame::processorInfo_{
     CodeState::Experimental,                 // Code state
     Tags::CPU,                               // Tags
 };
-const ProcessorInfo InvariantSpaceToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& InvariantSpaceToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 InvariantSpaceToDataFrame::InvariantSpaceToDataFrame()
     : Processor(), inport_("inport"), outport_("outport") {

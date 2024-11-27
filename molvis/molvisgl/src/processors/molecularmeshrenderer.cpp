@@ -48,7 +48,7 @@ const ProcessorInfo MolecularMeshRenderer::processorInfo_{
     CodeState::Stable,                          // Code state
     "GL, MolVis",                               // Tags
 };
-const ProcessorInfo MolecularMeshRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MolecularMeshRenderer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularMeshRenderer::MolecularMeshRenderer()
     : Processor()

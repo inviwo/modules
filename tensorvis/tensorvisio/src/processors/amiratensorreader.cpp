@@ -13,7 +13,7 @@ const ProcessorInfo AmiraTensorReader::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo AmiraTensorReader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& AmiraTensorReader::getProcessorInfo() const { return processorInfo_; }
 
 AmiraTensorReader::AmiraTensorReader()
     : Processor()

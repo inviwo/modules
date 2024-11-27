@@ -137,7 +137,7 @@ const ProcessorInfo MorseSmaleComplexToMesh::processorInfo_{
     CodeState::Experimental,               // Code state
     "CPU, Topology, TTK, Contour Tree",    // Tags
 };
-const ProcessorInfo MorseSmaleComplexToMesh::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MorseSmaleComplexToMesh::getProcessorInfo() const { return processorInfo_; }
 
 MorseSmaleComplexToMesh::MorseSmaleComplexToMesh()
     : Processor()

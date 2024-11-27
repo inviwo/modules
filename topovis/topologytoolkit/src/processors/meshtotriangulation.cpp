@@ -44,7 +44,7 @@ const ProcessorInfo MeshToTriangulation::processorInfo_{
     CodeState::Experimental,               // Code state
     "CPU, Topology, TTK, Triangulation",   // Tags
 };
-const ProcessorInfo MeshToTriangulation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshToTriangulation::getProcessorInfo() const { return processorInfo_; }
 
 MeshToTriangulation::MeshToTriangulation()
     : Processor()

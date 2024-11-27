@@ -51,7 +51,7 @@ const ProcessorInfo VTKToImage::processorInfo_{
     Tags::CPU | Tag{"VTK"} | Tag{"Image"},  // Tags
     R"(Converts a VTKImageData dataset to an Inviwo image)"_unindentHelp};
 
-const ProcessorInfo VTKToImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToImage::getProcessorInfo() const { return processorInfo_; }
 
 VTKToImage::VTKToImage()
     : Processor{}

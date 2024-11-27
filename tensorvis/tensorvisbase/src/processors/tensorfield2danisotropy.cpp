@@ -49,7 +49,7 @@ const ProcessorInfo TensorField2DAnisotropy::processorInfo_{
     Tags::CPU | Tag{"Tensor"},             // Tags
     R"(Computes the anisotropy of a 2D tensor field.)"_unindentHelp,
 };
-const ProcessorInfo TensorField2DAnisotropy::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField2DAnisotropy::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DAnisotropy::TensorField2DAnisotropy()
     : Processor()

@@ -50,7 +50,7 @@ const ProcessorInfo TopologicalSimplification::processorInfo_{
     CodeState::Experimental,                     // Code state
     "CPU, Topology, TTK, Simplification",        // Tags
 };
-const ProcessorInfo TopologicalSimplification::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TopologicalSimplification::getProcessorInfo() const { return processorInfo_; }
 
 TopologicalSimplification::TopologicalSimplification()
     : PoolProcessor()

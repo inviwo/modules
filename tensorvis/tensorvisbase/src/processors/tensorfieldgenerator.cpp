@@ -40,7 +40,7 @@ const ProcessorInfo TensorFieldGenerator::processorInfo_{
     Tags::CPU,                          // Tags
 };
 
-const ProcessorInfo TensorFieldGenerator::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorFieldGenerator::getProcessorInfo() const { return processorInfo_; }
 
 TensorFieldGenerator::TensorFieldGenerator()
     : Processor()

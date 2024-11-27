@@ -43,7 +43,7 @@ const ProcessorInfo ContourTreeToMesh::processorInfo_{
     CodeState::Experimental,             // Code state
     "CPU, Topology, TTK, Contour Tree",  // Tags
 };
-const ProcessorInfo ContourTreeToMesh::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ContourTreeToMesh::getProcessorInfo() const { return processorInfo_; }
 
 ContourTreeToMesh::ContourTreeToMesh()
     : treeType_("treeType", "Tree Type", "", InvalidationLevel::Valid)

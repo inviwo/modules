@@ -45,7 +45,7 @@ const ProcessorInfo TensorFieldToVolume::processorInfo_{
     CodeState::Stable,                 // Code state
     Tags::CPU,                         // Tags
 };
-const ProcessorInfo TensorFieldToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorFieldToVolume::getProcessorInfo() const { return processorInfo_; }
 
 TensorFieldToVolume::TensorFieldToVolume()
     : Processor()

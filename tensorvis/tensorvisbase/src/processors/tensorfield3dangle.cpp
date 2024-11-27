@@ -40,7 +40,7 @@ const ProcessorInfo TensorField3DAngle::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::CPU,                        // Tags
 };
-const ProcessorInfo TensorField3DAngle::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DAngle::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DAngle::TensorField3DAngle()
     : Processor()

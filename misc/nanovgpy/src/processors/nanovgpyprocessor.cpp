@@ -50,7 +50,7 @@ const ProcessorInfo NanoVGPyProcessor::processorInfo_{
     CodeState::Experimental,         // Code state
     "Python",                        // Tags
 };
-const ProcessorInfo NanoVGPyProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& NanoVGPyProcessor::getProcessorInfo() const { return processorInfo_; }
 
 NanoVGPyProcessor::NanoVGPyProcessor()
     : Processor()

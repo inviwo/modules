@@ -52,7 +52,7 @@ const ProcessorInfo VolumeToVTK::processorInfo_{
        inport are included as additional arrays. The volumes are required to have 
        the same dimensions.)"_unindentHelp,
 };
-const ProcessorInfo VolumeToVTK::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeToVTK::getProcessorInfo() const { return processorInfo_; }
 
 VolumeToVTK::VolumeToVTK()
     : Processor()

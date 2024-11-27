@@ -53,7 +53,7 @@ public:
     MolecularStructureSource(InviwoApplication* app, const std::filesystem::path& file = {});
     virtual ~MolecularStructureSource() = default;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 };
 

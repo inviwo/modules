@@ -64,7 +64,7 @@ const ProcessorInfo MolecularRenderer::processorInfo_{
         + Licorice:            considers both atoms and bonds
         + Ball & Stick:        considers both atoms and bonds
 )"_unindentHelp};
-const ProcessorInfo MolecularRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MolecularRenderer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularRenderer::MolecularRenderer()
     : Processor()

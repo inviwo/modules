@@ -47,7 +47,7 @@ const ProcessorInfo SpringSystemProcessor::processorInfo_{
     CodeState::Stable,                          // Code state
     Tags::CPU,                                  // Tags
 };
-const ProcessorInfo SpringSystemProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SpringSystemProcessor::getProcessorInfo() const { return processorInfo_; }
 
 SpringSystemProcessor::SpringSystemProcessor()
     : Processor()

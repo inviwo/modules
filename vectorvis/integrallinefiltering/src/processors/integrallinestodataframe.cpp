@@ -178,7 +178,7 @@ const ProcessorInfo IntegralLinesToDataFrame::processorInfo_{
     CodeState::Experimental,                // Code state
     Tags::CPU,                              // Tags
 };
-const ProcessorInfo IntegralLinesToDataFrame::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& IntegralLinesToDataFrame::getProcessorInfo() const { return processorInfo_; }
 
 IntegralLinesToDataFrame::IntegralLinesToDataFrame()
     : Processor()

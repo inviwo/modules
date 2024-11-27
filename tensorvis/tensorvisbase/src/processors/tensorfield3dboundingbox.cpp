@@ -41,7 +41,7 @@ const ProcessorInfo TensorField3DBoundingBox::processorInfo_{
     CodeState::Stable,                      // Code state
     Tags::None,                             // Tags
 };
-const ProcessorInfo TensorField3DBoundingBox::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DBoundingBox::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DBoundingBox::TensorField3DBoundingBox()
     : Processor()

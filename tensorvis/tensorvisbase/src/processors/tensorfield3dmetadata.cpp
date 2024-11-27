@@ -41,7 +41,7 @@ const ProcessorInfo TensorField3DMetaData::processorInfo_{
     CodeState::Experimental,             // Code state
     Tags::CPU,                           // Tags
 };
-const ProcessorInfo TensorField3DMetaData::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DMetaData::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DMetaData::TensorField3DMetaData()
     : Processor()

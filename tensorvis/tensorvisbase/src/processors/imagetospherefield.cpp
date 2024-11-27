@@ -39,7 +39,7 @@ const ProcessorInfo ImageToSphereField::processorInfo_{
     CodeState::Experimental,          // Code state
     Tags::None,                       // Tags
 };
-const ProcessorInfo ImageToSphereField::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ImageToSphereField::getProcessorInfo() const { return processorInfo_; }
 
 ImageToSphereField::ImageToSphereField()
     : Processor()

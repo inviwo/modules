@@ -61,7 +61,7 @@ const ProcessorInfo VTKToTensorField3D::processorInfo_{
     Tags::CPU | Tag{"VTK"} | Tag{"Tensor"},  // Tags
     R"(Converts a VTK data set to a 3D tensor field. Unstructured grids are not supported.)"_unindentHelp,
 };
-const ProcessorInfo VTKToTensorField3D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
 constexpr std::array<int, 5> supportedObjectTypes{VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID,
                                                   VTK_IMAGE_DATA, VTK_UNIFORM_GRID,

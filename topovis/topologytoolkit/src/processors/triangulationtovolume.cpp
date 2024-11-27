@@ -40,7 +40,7 @@ const ProcessorInfo TriangulationToVolume::processorInfo_{
     CodeState::Experimental,                 // Code state
     "CPU, Topology, TTK, Triangulation",     // Tags
 };
-const ProcessorInfo TriangulationToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TriangulationToVolume::getProcessorInfo() const { return processorInfo_; }
 
 TriangulationToVolume::TriangulationToVolume()
     : Processor(), inport_("triangulation"), outport_("outport") {

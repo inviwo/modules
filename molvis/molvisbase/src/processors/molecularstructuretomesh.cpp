@@ -46,7 +46,7 @@ const ProcessorInfo MolecularStructureToMesh::processorInfo_{
     CodeState::Stable,                             // Code state
     "CPU, MolVis, Mesh",                           // Tags
 };
-const ProcessorInfo MolecularStructureToMesh::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MolecularStructureToMesh::getProcessorInfo() const { return processorInfo_; }
 
 MolecularStructureToMesh::MolecularStructureToMesh()
     : Processor()
