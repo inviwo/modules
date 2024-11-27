@@ -58,7 +58,7 @@ const ProcessorInfo ComputeShaderMinMax::processorInfo_{
     )"_unindentHelp,
 };
 
-const ProcessorInfo ComputeShaderMinMax::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ComputeShaderMinMax::getProcessorInfo() const { return processorInfo_; }
 
 ComputeShaderMinMax::ComputeShaderMinMax()
     : Processor{}
