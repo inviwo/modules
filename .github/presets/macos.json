@@ -10,7 +10,11 @@
       "displayName": "Xcode Developer configuration",
       "inherits" : ["common", "modules", "modules-vcpkg", "xcode", "developer", "vcpkg", "vcpkg-cache-write", "build"],
       "cacheVariables": {
-        "IVW_CFG_USE_CCACHE_XCODE": "ON"
+        "IVW_CFG_USE_CCACHE_XCODE": "ON",
+
+        // CEF has codesign issues
+        "IVW_MODULE_WEBBROWSER":      { "type": "BOOL", "value": "OFF"},
+        "IVW_MODULE_WEBQT":           { "type": "BOOL", "value": "OFF"}
       }
     },
     {
@@ -19,7 +23,11 @@
       "cacheVariables": {
         "BUILD_SHARED_LIBS":    { "type": "BOOL", "value": "OFF"},
         "VCPKG_TARGET_TRIPLET": "arm64-osx",
-        "VCPKG_HOST_TRIPLET":   "arm64-osx"
+        "VCPKG_HOST_TRIPLET":   "arm64-osx",
+
+        // The vcpkg graphvis package file in static mode
+        "VCPKG_MANIFEST_FEATURES" : "openmesh;nanovg",
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"}
       }
     },
     {

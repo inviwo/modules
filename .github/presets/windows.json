@@ -30,7 +30,12 @@
       "inherits" : ["gha"],
       "cacheVariables": {
         "IVW_DOXYGEN_PROJECT": "ON",
-        "IVW_DOXYGEN_LATEX_PATH": "C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+        "IVW_DOXYGEN_LATEX_PATH": "C:/tools/TinyTeX/bin/win32/pdflatex.exe",
+
+        // The vcpkg graphvis package file in static mode
+        "VCPKG_MANIFEST_FEATURES" : "sgct;openmesh;nanovg",
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"} 
+
       }
     }
   ]
