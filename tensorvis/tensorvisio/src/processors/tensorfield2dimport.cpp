@@ -71,12 +71,12 @@ void TensorField2DImport::process() {
         return;
     }
 
-    size_t version;
-    size2_t dimensions;
+    size_t version{0};
+    size2_t dimensions{1};
     auto extents = dvec2(1.0);
-    size_t rank;
-    size_t dimensionality;
-    bool hasEigenInfo;
+    size_t rank{0};
+    size_t dimensionality{0};
+    bool hasEigenInfo = false;
 
     std::string versionStr;
     size_t size;

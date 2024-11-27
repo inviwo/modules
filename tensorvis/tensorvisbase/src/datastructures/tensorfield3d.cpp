@@ -677,9 +677,6 @@ void TensorField3D::computeEigenValuesAndEigenVectors() {
         if (tensor == dmat3(0.0)) {
             return {{std::make_pair(0, dvec3{0}), std::make_pair(0, dvec3{0}),
                      std::make_pair(0, dvec3{0})}};
-            return std::array<std::pair<double, dvec3>, 3>{std::pair<double, dvec3>{0, dvec3(0)},
-                                                           std::pair<double, dvec3>{0, dvec3(0)},
-                                                           std::pair<double, dvec3>{0, dvec3(0)}};
         }
 
         Eigen::EigenSolver<Eigen::Matrix3d> solver(util::glm2eigen(tensor));
