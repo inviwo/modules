@@ -54,7 +54,7 @@ Example network:
 )"_unindentHelp,
 };
 
-const ProcessorInfo HeatmapD3::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& HeatmapD3::getProcessorInfo() const { return processorInfo_; }
 
 HeatmapD3::HeatmapD3(InviwoApplication* app)
     : Processor{}

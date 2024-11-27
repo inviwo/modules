@@ -41,7 +41,7 @@ const ProcessorInfo MinimalWebBrowser::processorInfo_{
     R"(Example processor demonstrating the use of the web browser functionality.)"_unindentHelp,
 };
 
-const ProcessorInfo MinimalWebBrowser::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MinimalWebBrowser::getProcessorInfo() const { return processorInfo_; }
 
 MinimalWebBrowser::MinimalWebBrowser(InviwoApplication* app)
     : Processor{}

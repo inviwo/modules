@@ -52,7 +52,7 @@ public:
 
     void deserialize(Deserializer& d) override;
 
-    const ProcessorInfo getProcessorInfo() const override;
+    const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
