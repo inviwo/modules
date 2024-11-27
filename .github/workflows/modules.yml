@@ -258,7 +258,7 @@ jobs:
       shell: bash
       run: |
         echo "::add-matcher::inviwo/.github/matchers/macos.json"
-        cmake --build build --config RelWithDebInfo --parallel --target all
+        cmake --build build --config RelWithDebInfo --parallel --target ALL_BUILD
         echo "::remove-matcher owner=compiler::"
         echo "::remove-matcher owner=linker::"
 
@@ -286,11 +286,11 @@ jobs:
       shell: bash
       continue-on-error: true
       run: |
-        mkdir -p regression/macos/${{ github.ref }}
+        mkdir -p regression/modules/macos/${{ github.ref }}
         python3 inviwo/tools/regression.py \
           --config build/pyconfig.ini \
           --build_type RelWithDebInfo \
-          --output regression/macos/${{ github.ref }} \
+          --output regression/modules/macos/${{ github.ref }} \
           --modules inviwo/modules \
           --summary
 
@@ -304,7 +304,7 @@ jobs:
         git commit -am "Regression report for macos ${{ github.ref }}"
         git push
 
-        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/macos/${{ github.ref }}/report.html " >> $GITHUB_STEP_SUMMARY
+        echo "### :chart_with_upwards_trend: Regression report at https://inviwo.org/regression/modules/macos/${{ github.ref }}/report.html " >> $GITHUB_STEP_SUMMARY
 
   clang-tidy:
     name: "Clang-tidy"
