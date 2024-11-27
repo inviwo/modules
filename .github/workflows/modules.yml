@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         system: [windows, macos, linux]
-        linkage: [dynamic]
+        linkage: [dynamic, static]
         configuration: [Release, Debug]
         
         include:
