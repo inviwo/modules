@@ -33,6 +33,7 @@
 #include <inviwo/core/datastructures/buffer/buffer.h>
 #include <modules/opengl/glformats.h>
 #include <modules/opengl/openglutils.h>
+#include <modules/opengl/openglcapabilities.h>
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/buffer/buffergl.h>
 #include <modules/opengl/buffer/bufferobject.h>
@@ -108,6 +109,37 @@ void ComputeShaderMinMax::initializeResources() {
     shaderLinear_.build();
 }
 
+namespace detail {
+
+std::string_view getSamplerPrefix(const GLFormat& glFormat) {
+    if (glFormat.normalization != utilgl::Normalization::None) {
+        return {};
+    }
+    const auto* format = DataFormatBase::get(GLFormats::get(glFormat));
+    using namespace std::string_view_literals;
+    switch (format->getNumericType()) {
+        case NumericType::UnsignedInteger:
+            return "u"sv;
+        case NumericType::SignedInteger:
+            return "i"sv;
+        default:
+            return {};
+    }
+}
+
+std::string_view getImagePrefix(const GLFormat& glFormat) {
+    using namespace std::string_view_literals;
+    if (glFormat.layoutQualifier.ends_with("ui")) {
+        return "u"sv;
+    } else if (glFormat.layoutQualifier.ends_with("i")) {
+        return "i"sv;
+    } else {
+        return {};
+    }
+}
+
+}  // namespace detail
+
 void ComputeShaderMinMax::process() {
     const auto* volumeGL = volume_.getData()->getRepresentation<VolumeGL>();
 
@@ -116,34 +148,32 @@ void ComputeShaderMinMax::process() {
     // ignore z dimension since the compute shader iterates over all voxels in z direction
     const uvec3 numGroups{(uvec3{dims.x, dims.y, 1} + groupSize - uvec3{1}) / groupSize};
 
-    // TODO: set image format specifier in shader to match internal format of the volume
-    auto glFormat = GLFormats::get(volumeGL->getDataFormat()->getId());
+    const auto& glFormat = GLFormats::get(volumeGL->getDataFormat()->getId());
+    const bool useImageLoadStore = (glFormat.channels != 3);
 
-    const bool layoutQualifierIsSet =
-        [defines = shaderSampleVolume_.getComputeShaderObject()->getShaderDefines()](
-            std::string_view qualifier) {
-            if (auto it = defines.find("IMAGE_FORMAT"); it != defines.end()) {
-                return it->second == qualifier;
-            }
-            return false;
-        }(glFormat.layoutQualifier);
-
-    if (!layoutQualifierIsSet) {
+    if (true) {
         auto* computeShader = shaderSampleVolume_.getComputeShaderObject();
 
-        computeShader->addShaderDefine("IMAGE_FORMAT", glFormat.layoutQualifier);
-        if (glFormat.layoutQualifier.ends_with("ui")) {
-            computeShader->addShaderDefine("IMAGE_TYPE", "uimage3D");
-        } else if (glFormat.layoutQualifier.ends_with("i")) {
-            computeShader->addShaderDefine("IMAGE_TYPE", "iimage3D");
+        StrBuffer buf;
+        if (useImageLoadStore) {
+            // use image and imageLoad()
+            computeShader->addShaderDefine("IMAGE_FORMAT", glFormat.layoutQualifier);
+            computeShader->removeShaderDefine("USE_IMAGE_SAMPLER");
+            buf.append("{}image{}D", detail::getImagePrefix(glFormat), 3);
         } else {
-            computeShader->addShaderDefine("IMAGE_TYPE", "image3D");
+            // use regular texture sampler since imageLoad() does not support RGB formats
+            computeShader->addShaderDefine("USE_IMAGE_SAMPLER");
+            buf.append("{}sampler{}D", detail::getSamplerPrefix(glFormat), 3);
         }
+        computeShader->addShaderDefine("IMAGE_SOURCE", buf);
+
         shaderSampleVolume_.build();
     }
 
-    glBindImageTexture(0, volumeGL->getTexture()->getID(), 0, GL_TRUE, 0, GL_READ_ONLY,
-                       glFormat.internalFormat);
+    if (useImageLoadStore) {
+        glBindImageTexture(0, volumeGL->getTexture()->getID(), 0, GL_TRUE, 0, GL_READ_ONLY,
+                           glFormat.internalFormat);
+    }
 
     // global buffer for min/max values for all work groups
     const size_t bufSize = 2 * glm::compMul(numGroups);
@@ -153,6 +183,15 @@ void ComputeShaderMinMax::process() {
 
     {
         utilgl::Activate activateShader(&shaderSampleVolume_);
+
+        if (!useImageLoadStore) {
+            TextureUnit texUnit;
+            texUnit.activate();
+            volumeGL->getTexture()->bind();
+            shaderSampleVolume_.setUniform("volume", texUnit.getUnitNumber());
+            TextureUnit::setZeroUnit();
+        }
+
         glDispatchCompute(numGroups.x, numGroups.y, numGroups.z);
     }
     const uint32_t arrayLen = glm::compMul(numGroups);
@@ -178,32 +217,47 @@ void ComputeShaderMinMax::process() {
     }
 
     // undo GL format normalization
-    if (glFormat.normalization != utilgl::Normalization::None) {
-        minmaxGL[0] = volume_.getData()->dataMap.mapFromNormalizedToData(minmaxGL[0]);
-        minmaxGL[1] = volume_.getData()->dataMap.mapFromNormalizedToData(minmaxGL[1]);
+    if (glFormat.normalization == utilgl::Normalization::Normalized) {
+        DataMapper dataMapper{DataFormatBase::get(GLFormats::get(glFormat))};
+
+        minmaxGL[0] = dataMapper.mapFromNormalizedToData(minmaxGL[0]);
+        minmaxGL[1] = dataMapper.mapFromNormalizedToData(minmaxGL[1]);
+    } else if (glFormat.normalization == utilgl::Normalization::SignNormalized) {
+        using enum DataMapper::SignedNormalization;
+        DataMapper dataMapper{
+            DataFormatBase::get(GLFormats::get(glFormat)),
+            OpenGLCapabilities::isSignedIntNormalizationSymmetric() ? Symmetric : Asymmetric};
+
+        minmaxGL[0] = dataMapper.mapFromSignNormalizedToData(minmaxGL[0]);
+        minmaxGL[1] = dataMapper.mapFromSignNormalizedToData(minmaxGL[1]);
     }
 
     // reference implementation
-    auto [ramMin, ramMax] = util::volumeMinMax(volume_.getData().get(), IgnoreSpecialValues::No);
+    auto [refMin, refMax] = util::volumeMinMax(volume_.getData().get(), IgnoreSpecialValues::No);
 
-    const float deltaMin = std::abs(minmaxGL[0].x - static_cast<float>(ramMin.x));
-    const float deltaMax = std::abs(minmaxGL[1].x - static_cast<float>(ramMax.x));
-    const bool diffDetected = (deltaMin > std::numeric_limits<float>::epsilon() ||
-                               deltaMax > std::numeric_limits<float>::epsilon());
-    const auto loglevel = diffDetected ? inviwo::LogLevel::Warn : inviwo::LogLevel::Info;
+    auto checkResult = [&](const dvec4& minTest, const dvec4& maxTest, std::string_view name) {
+        const double deltaMin = std::abs(refMin.x - minTest.x);
+        const double deltaMax = std::abs(refMax.x - maxTest.x);
+        const bool diffDetected = (deltaMin > std::numeric_limits<double>::epsilon() ||
+                                   deltaMax > std::numeric_limits<double>::epsilon());
+        const auto loglevel = diffDetected ? inviwo::LogLevel::Warn : inviwo::LogLevel::Info;
 
-    if (!logErrorOnly_ || diffDetected) {
-        LogInfo(fmt::format("dispatch num groups: {} / dims: {}", numGroups, dims));
-        LogInfo(fmt::format("group size: {}  / buf size: {}", groupSize, bufSize));
+        if (!logErrorOnly_ || diffDetected) {
+            // LogInfo(fmt::format("dispatch num groups: {} / dims: {}", numGroups, dims));
+            // LogInfo(fmt::format("group size: {}  / buf size: {}", groupSize, bufSize));
 
-        LogSpecial(inviwo::LogCentral::getPtr(), loglevel,
-                   fmt::format("GL  min/max: {} / {}", minmaxGL[0].x, minmaxGL[1].x));
-        LogSpecial(inviwo::LogCentral::getPtr(), loglevel,
-                   fmt::format("RAM min/max: {:f} / {:f}", ramMin.x, ramMax.x));
-        if (diffDetected) {
-            LogWarn(fmt::format("delta min/max: {:.8} / {:.8}", deltaMin, deltaMax));
+            LogSpecial(inviwo::LogCentral::getPtr(), loglevel,
+                       fmt::format("{} min/max: {:.8} / {:.8}", name, minTest.x, maxTest.x));
+            LogSpecial(inviwo::LogCentral::getPtr(), loglevel,
+                       fmt::format("ref min/max:     {:.8} / {:.8}", refMin.x, refMax.x));
+            if (diffDetected) {
+                LogInfo(fmt::format("delta min/max: {:.8} / {:.8}", deltaMin, deltaMax));
+            }
         }
-    }
+    };
+
+    checkResult(minmaxGL[0], minmaxGL[1], "GL");
+
     minValues_.set(minmaxGL[0]);
     maxValues_.set(minmaxGL[1]);
 }

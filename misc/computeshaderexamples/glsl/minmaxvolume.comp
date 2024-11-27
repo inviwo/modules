@@ -30,11 +30,23 @@
 #if !defined IMAGE_FORMAT
 #define IMAGE_FORMAT r32f
 #endif
-#if !defined IMAGE_TYPE
-#define IMAGE_TYPE image3D
+#if !defined IMAGE_SOURCE
+#  define IMAGE_SOURCE image3D
 #endif
 
-uniform layout(binding=0, IMAGE_FORMAT) readonly IMAGE_TYPE volume;
+#if defined USE_IMAGE_SAMPLER
+#  define GetValue(gsampler, imageCoord) texelFetch(gsampler, imageCoord, 0)
+#  define GetSize(gsampler) textureSize(gsampler, 0)
+#else
+#  define GetValue(gimage, imageCoord) imageLoad(gimage, imageCoord)
+#  define GetSize(gimage) imageSize(gimage)
+#endif  // USE_IMAGE_SAMPLER
+
+#if defined USE_IMAGE_SAMPLER
+uniform IMAGE_SOURCE volume;
+#else
+uniform layout(binding=0, IMAGE_FORMAT) readonly IMAGE_SOURCE volume;
+#endif  // USE_IMAGE_SAMPLER
 
 layout (std430, binding=3) buffer BufferObject {
     vec4 minmax[];
@@ -47,8 +59,7 @@ shared vec4 workgroup_max[1024 / 32];
 layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
 void main(){
-    ivec3 volDims = imageSize(volume);
-    const int maxVolIndex = volDims.x * volDims.y * volDims.z;
+    ivec3 volDims = GetSize(volume);
 
     vec4 minVal = vec4(1.0 / 0.0);
     vec4 maxVal = vec4(-1.0 / 0.0);
@@ -57,7 +68,7 @@ void main(){
 
     if (all(lessThan(volIndex, volDims))) {
         for (int z = 0; z < volDims.z; ++z) {
-            vec4 val = imageLoad(volume, volIndex + ivec3(0, 0, z));
+            vec4 val = GetValue(volume, volIndex + ivec3(0, 0, z));
             minVal = min(minVal, val);
             maxVal = max(maxVal, val);
         }
