@@ -66,11 +66,10 @@ bool NanoVGUtilsModule::Converter::convert(TxElement* root) {
     switch (version_) {
         case 0: {
             TraversingVersionConverter conv{[&](TxElement* node) -> bool {
-                std::string key;
-                node->GetValue(&key);
+                const auto key = node->Value();
                 if (key != "Property") return true;
-                const auto& type = node->GetAttribute("type");
-                if (type != "org.inviwo.NanoVGFontProperty") {
+                const auto type = node->Attribute("type");
+                if (!type || *type != "org.inviwo.NanoVGFontProperty") {
                     return true;
                 }
 
