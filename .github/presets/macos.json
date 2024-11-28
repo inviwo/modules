@@ -10,11 +10,7 @@
       "displayName": "Xcode Developer configuration",
       "inherits" : ["common", "modules", "modules-vcpkg", "xcode", "developer", "vcpkg", "vcpkg-cache-write", "build"],
       "cacheVariables": {
-        "IVW_CFG_USE_CCACHE_XCODE": "ON",
-
-        // CEF has codesign issues
-        "IVW_MODULE_WEBBROWSER":      { "type": "BOOL", "value": "OFF"},
-        "IVW_MODULE_WEBQT":           { "type": "BOOL", "value": "OFF"}
+        "IVW_CFG_USE_CCACHE_XCODE": "ON"
       }
     },
     {

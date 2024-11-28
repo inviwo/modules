@@ -26,7 +26,10 @@
 
         // The vcpkg graphvis package file in static mode
         "VCPKG_MANIFEST_FEATURES" : "sgct;openmesh;nanovg",
-        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"} 
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
+
+        // Linker issues with STB being defined in both nanovgutils and sgct
+        "IVW_MODULE_NANOVGUTILS":   { "type": "BOOL", "value": "OFF"}
         
       }
     },
