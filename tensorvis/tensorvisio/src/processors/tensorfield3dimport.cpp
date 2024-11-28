@@ -47,7 +47,7 @@ const ProcessorInfo TensorField3DImport::processorInfo_{
     CodeState::Experimental,           // Code state
     Tags::None,                        // Tags
 };
-const ProcessorInfo TensorField3DImport::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DImport::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DImport::TensorField3DImport()
     : Processor()

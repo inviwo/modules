@@ -11,7 +11,7 @@ const ProcessorInfo VolumeActualDataAndValueRange::processorInfo_{
     CodeState::Experimental,                     // Code state
     Tags::CPU,                                   // Tags
 };
-const ProcessorInfo VolumeActualDataAndValueRange::getProcessorInfo() const {
+const ProcessorInfo& VolumeActualDataAndValueRange::getProcessorInfo() const {
     return processorInfo_;
 }
 

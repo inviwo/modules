@@ -352,7 +352,7 @@ const ProcessorInfo SeparatrixRefiner::processorInfo_{
     CodeState::Experimental,         // Code state
     "CPU, Topology, TTK",            // Tags
 };
-const ProcessorInfo SeparatrixRefiner::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& SeparatrixRefiner::getProcessorInfo() const { return processorInfo_; }
 
 SeparatrixRefiner::SeparatrixRefiner()
     : Processor()

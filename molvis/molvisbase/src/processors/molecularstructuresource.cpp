@@ -41,7 +41,7 @@ const ProcessorInfo MolecularStructureSource::processorInfo_{
     CodeState::Stable,                      // Code state
     "MolVis, Source, PDB"                   // Tags
 };
-const ProcessorInfo MolecularStructureSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MolecularStructureSource::getProcessorInfo() const { return processorInfo_; }
 
 MolecularStructureSource::MolecularStructureSource(InviwoApplication* app,
                                                    const std::filesystem::path& file)

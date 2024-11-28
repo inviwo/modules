@@ -68,7 +68,7 @@ const ProcessorInfo MolecularRasterizer::processorInfo_{
         + Ball & Stick:        considers both atoms and bonds
     )"_unindentHelp};
 
-const ProcessorInfo MolecularRasterizer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MolecularRasterizer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularRasterizer::MolecularRasterizer()
     : Rasterizer()

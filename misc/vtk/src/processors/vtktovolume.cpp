@@ -54,7 +54,7 @@ const ProcessorInfo VTKToVolume::processorInfo_{
     CodeState::Experimental,   // Code state
     Tags::CPU,                 // Tags
 };
-const ProcessorInfo VTKToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToVolume::getProcessorInfo() const { return processorInfo_; }
 
 VTKToVolume::VTKToVolume()
     : Processor()

@@ -10,7 +10,7 @@ const ProcessorInfo TensorField3DBasisManipulation::processorInfo_{
     CodeState::Experimental,                      // Code state
     Tags::CPU,                                    // Tags
 };
-const ProcessorInfo TensorField3DBasisManipulation::getProcessorInfo() const {
+const ProcessorInfo& TensorField3DBasisManipulation::getProcessorInfo() const {
     return processorInfo_;
 }
 

@@ -41,7 +41,7 @@ const ProcessorInfo MeshSequenceDecimationProcessor::processorInfo_{
     CodeState::Experimental,                       // Code state
     "Mesh, Geometry, OpenMesh",                    // Tags
 };
-const ProcessorInfo MeshSequenceDecimationProcessor::getProcessorInfo() const {
+const ProcessorInfo& MeshSequenceDecimationProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

@@ -50,7 +50,7 @@ const ProcessorInfo PersistenceDiagram::processorInfo_{
     CodeState::Experimental,                           // Code state
     "CPU, Topology, TTK, Triangulation, Persistence",  // Tags
 };
-const ProcessorInfo PersistenceDiagram::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PersistenceDiagram::getProcessorInfo() const { return processorInfo_; }
 
 PersistenceDiagram::PersistenceDiagram()
     : PoolProcessor()

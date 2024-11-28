@@ -1,0 +1,44 @@
+{
+  "version": 9,
+  "cmakeMinimumRequired": { "major": 3, "minor": 30, "patch": 0 },
+  "include" : [
+    "${sourceParentDir}/modules/.github/presets/common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "gha",
+      "displayName": "Ninja Developer configuration",
+      "inherits" : ["common", "modules", "modules-vcpkg", "ninja", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "cacheVariables": {
+        "CMAKE_C_COMPILER_LAUNCHER": "ccache",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+
+        "IVW_MODULE_FFMPEG": "OFF",
+        "IVW_MODULE_WEBBROWSER": "OFF",
+        "IVW_TEST_BENCHMARKS": "OFF"
+      }
+    },
+    {
+      "name": "gha-static",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "OFF"},
+        "VCPKG_TARGET_TRIPLET": "x64-linux",
+        "VCPKG_HOST_TRIPLET": "x64-linux",
+
+        // The vcpkg graphvis package file in static mode
+        "VCPKG_MANIFEST_FEATURES" : "openmesh;nanovg",
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"} 
+      }
+    },
+    {
+      "name": "gha-dynamic",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS":  { "type": "BOOL", "value": "ON"},
+        "VCPKG_TARGET_TRIPLET": "x64-linux-dynamic",
+        "VCPKG_HOST_TRIPLET": "x64-linux-dynamic"
+      }
+    }
+  ]
+}

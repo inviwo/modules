@@ -53,7 +53,7 @@ const ProcessorInfo TTKTestProcessor::processorInfo_{
     CodeState::Experimental,            // Code state
     "CPU, TTK, Testing",                // Tags
 };
-const ProcessorInfo TTKTestProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TTKTestProcessor::getProcessorInfo() const { return processorInfo_; }
 
 TTKTestProcessor::TTKTestProcessor()
     : Processor()

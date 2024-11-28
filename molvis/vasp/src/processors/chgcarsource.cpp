@@ -524,7 +524,7 @@ const ProcessorInfo ChgcarSource::processorInfo_{"org.inviwo.ChgcarSource.CPu", 
     https://www.vasp.at/wiki/index.php/CHGCAR
     )"_unindentHelp};
 
-const ProcessorInfo ChgcarSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ChgcarSource::getProcessorInfo() const { return processorInfo_; }
 
 ChgcarSource::ChgcarSource()
     : PoolProcessor{}

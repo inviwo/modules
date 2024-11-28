@@ -39,7 +39,7 @@ const ProcessorInfo TensorField3DSubset::processorInfo_{
     CodeState::Stable,                 // Code state
     Tags::CPU,                         // Tags
 };
-const ProcessorInfo TensorField3DSubset::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DSubset::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DSubset::TensorField3DSubset()
     : Processor()

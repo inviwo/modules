@@ -49,7 +49,7 @@ const ProcessorInfo PersistenceCurve::processorInfo_{
     CodeState::Experimental,                           // Code state
     "CPU, Topology, TTK, Triangulation, Persistence",  // Tags
 };
-const ProcessorInfo PersistenceCurve::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& PersistenceCurve::getProcessorInfo() const { return processorInfo_; }
 
 PersistenceCurve::PersistenceCurve()
     : PoolProcessor(), inport_("triangulation"), outport_("outport") {

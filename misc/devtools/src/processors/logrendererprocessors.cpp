@@ -45,7 +45,7 @@ const ProcessorInfo LogRendererProcessors::processorInfo_{
     CodeState::Experimental,             // Code state
     Tags::None,                          // Tags
 };
-const ProcessorInfo LogRendererProcessors::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LogRendererProcessors::getProcessorInfo() const { return processorInfo_; }
 
 LogRendererProcessors::LogRendererProcessors()
     : Processor()

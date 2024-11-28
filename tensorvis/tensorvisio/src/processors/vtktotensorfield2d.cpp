@@ -64,7 +64,7 @@ const ProcessorInfo VTKToTensorField2D::processorInfo_{
     of the VTK data set is 1. Additionally, the data type must be either float or double. 
     Lastly, unstructured grids are not supported.)"_unindentHelp,
 };
-const ProcessorInfo VTKToTensorField2D::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToTensorField2D::getProcessorInfo() const { return processorInfo_; }
 
 constexpr std::array<int, 5> supportedObjectTypes{VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID,
                                                   VTK_IMAGE_DATA, VTK_UNIFORM_GRID,

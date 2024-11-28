@@ -47,7 +47,7 @@ const ProcessorInfo InvariantSpaceCombine::processorInfo_{
     CodeState::Experimental,             // Code state
     Tags::CPU,                           // Tags
 };
-const ProcessorInfo InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& InvariantSpaceCombine::getProcessorInfo() const { return processorInfo_; }
 
 InvariantSpaceCombine::InvariantSpaceCombine()
     : Processor()

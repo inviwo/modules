@@ -11,7 +11,7 @@ const ProcessorInfo TensorField3DMaskToVolume::processorInfo_{
     CodeState::Experimental,                 // Code state
     Tags::CPU,                               // Tags
 };
-const ProcessorInfo TensorField3DMaskToVolume::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DMaskToVolume::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DMaskToVolume::TensorField3DMaskToVolume()
     : Processor()

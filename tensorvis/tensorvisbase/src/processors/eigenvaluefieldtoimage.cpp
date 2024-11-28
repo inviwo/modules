@@ -44,7 +44,7 @@ const ProcessorInfo EigenvalueFieldToImage::processorInfo_{
     CodeState::Experimental,              // Code state
     Tags::None,                           // Tags
 };
-const ProcessorInfo EigenvalueFieldToImage::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& EigenvalueFieldToImage::getProcessorInfo() const { return processorInfo_; }
 
 EigenvalueFieldToImage::EigenvalueFieldToImage()
     : Processor()

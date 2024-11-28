@@ -42,7 +42,7 @@ const ProcessorInfo TensorInformation::processorInfo_{
     Tags::CPU | Tag{"Tensor"},       // Tags
 };
 
-const ProcessorInfo TensorInformation::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorInformation::getProcessorInfo() const { return processorInfo_; }
 
 TensorInformation::TensorInformation()
     : Processor()

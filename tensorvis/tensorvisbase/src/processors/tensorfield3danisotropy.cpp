@@ -49,7 +49,7 @@ const ProcessorInfo TensorField3DAnisotropy::processorInfo_{
     Tags::CPU | Tag{"Tensor"},             // Tags
     R"(Computes the anisotropy of a 3D tensor field.)"_unindentHelp,
 };
-const ProcessorInfo TensorField3DAnisotropy::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField3DAnisotropy::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DAnisotropy::TensorField3DAnisotropy()
     : Processor()

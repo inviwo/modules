@@ -50,7 +50,7 @@ const ProcessorInfo LayoutMergeTree::processorInfo_{
     Tags::None,                    // Tags
     R"(<Explanation of how to use the processor.>)"_unindentHelp};
 
-const ProcessorInfo LayoutMergeTree::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& LayoutMergeTree::getProcessorInfo() const { return processorInfo_; }
 
 LayoutMergeTree::LayoutMergeTree()
     : Processor{}

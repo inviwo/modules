@@ -41,7 +41,7 @@ const ProcessorInfo NanoVGExampleProcessor::processorInfo_{
     CodeState::Experimental,              // Code state
     "NanoVG,Example",                     // Tags
 };
-const ProcessorInfo NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& NanoVGExampleProcessor::getProcessorInfo() const { return processorInfo_; }
 
 NanoVGExampleProcessor::NanoVGExampleProcessor()
     : Processor(), outport_("outport"), fontProperty_("fontProperty", "Font settings") {

@@ -41,7 +41,7 @@ const ProcessorInfo MeshDecimationProcessor::processorInfo_{
     CodeState::Experimental,                        // Code state
     Tags::CPU,                                      // Tags
 };
-const ProcessorInfo MeshDecimationProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& MeshDecimationProcessor::getProcessorInfo() const { return processorInfo_; }
 
 MeshDecimationProcessor::MeshDecimationProcessor() : Processor() {
     addPort(inmesh_);

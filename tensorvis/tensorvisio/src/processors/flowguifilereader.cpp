@@ -13,7 +13,7 @@ const ProcessorInfo FlowGUIFileReader::processorInfo_{
     CodeState::Experimental,         // Code state
     Tags::CPU,                       // Tags
 };
-const ProcessorInfo FlowGUIFileReader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& FlowGUIFileReader::getProcessorInfo() const { return processorInfo_; }
 
 FlowGUIFileReader::FlowGUIFileReader()
     : Processor()

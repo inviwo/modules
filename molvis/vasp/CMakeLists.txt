@@ -47,7 +47,7 @@ find_package(BZip2 REQUIRED)
 find_package(ZLIB REQUIRED)
 find_package(liblzma CONFIG REQUIRED)
 find_package(FastFloat CONFIG REQUIRED)
-target_link_libraries(inviwo-module-vasp PUBLIC BZip2::BZip2 ZLIB::ZLIB liblzma::liblzma  FastFloat::fast_float)
+target_link_libraries(inviwo-module-vasp PUBLIC BZip2::BZip2 ZLIB::ZLIB liblzma::liblzma FastFloat::fast_float)
 
 
 ivw_vcpkg_install(bzip2 MODULE VASP)

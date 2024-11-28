@@ -49,7 +49,7 @@ const ProcessorInfo TensorFieldLIC::processorInfo_{
     Tags::GL,                     // Tags
 };
 
-const ProcessorInfo TensorFieldLIC::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorFieldLIC::getProcessorInfo() const { return processorInfo_; }
 
 TensorFieldLIC::TensorFieldLIC()
     : Processor()

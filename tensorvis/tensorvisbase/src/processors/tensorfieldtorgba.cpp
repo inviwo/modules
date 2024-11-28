@@ -49,7 +49,7 @@ const ProcessorInfo TensorFieldToRGBA::processorInfo_{
     Tags::GL,                           // Tags
 };
 
-const ProcessorInfo TensorFieldToRGBA::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorFieldToRGBA::getProcessorInfo() const { return processorInfo_; }
 
 TensorFieldToRGBA::TensorFieldToRGBA()
     : Processor()

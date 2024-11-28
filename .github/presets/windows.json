@@ -1,0 +1,45 @@
+{
+  "version": 9,
+  "cmakeMinimumRequired": { "major": 3, "minor": 30, "patch": 0 },
+  "include" : [
+    "${sourceParentDir}/modules/.github/presets/common.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "gha",
+      "inherits" : ["common", "modules", "modules-vcpkg", "msvc", "developer", "vcpkg", "vcpkg-cache-write", "build"],
+      "cacheVariables": {
+        "IVW_CFG_USE_CCACHE_MSVC": "ON",
+        "IVW_MODULE_SGCT": "ON",
+        "IVW_APP_INVIWO_DOME": "ON",
+        "VCPKG_MANIFEST_FEATURES": "sgct;graphviz;openmesh;nanovg"
+      }
+    },
+    {
+      "name": "gha-static",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "IVW_CFG_MSVC_FORCE_SHARED_CRT": { "type": "BOOL", "value": "ON"},
+        "BUILD_SHARED_LIBS":             { "type": "BOOL", "value": "OFF"},
+        "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
+        "VCPKG_HOST_TRIPLET": "x64-windows-static-md",
+
+        // The vcpkg graphvis package file in static mode
+        "VCPKG_MANIFEST_FEATURES" : "sgct;openmesh;nanovg",
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
+
+        // Linker issues with STB being defined in both nanovgutils and sgct
+        "IVW_MODULE_NANOVGUTILS":   { "type": "BOOL", "value": "OFF"}
+        
+      }
+    },
+    {
+      "name": "gha-dynamic",
+      "inherits" : ["gha"],
+      "cacheVariables": {
+        "IVW_DOXYGEN_PROJECT": "ON",
+        "IVW_DOXYGEN_LATEX_PATH": "C:/tools/TinyTeX/bin/win32/pdflatex.exe"
+      }
+    }
+  ]
+}

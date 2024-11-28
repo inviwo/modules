@@ -298,7 +298,8 @@ public:
         getProgressBar().setActive(false);
     }
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+
     static const ProcessorInfo processorInfo_;
 
 protected:
@@ -350,8 +351,9 @@ struct ProcessorTraits<vtkwrapper::VTKGenericProcessor<VTKFilter>> {
 };
 
 template <typename VTKFilter>
-inline const ProcessorInfo vtkwrapper::VTKGenericProcessor<VTKFilter>::getProcessorInfo() const {
-    return ProcessorTraits<VTKGenericProcessor<VTKFilter>>::getProcessorInfo();
+inline const ProcessorInfo& vtkwrapper::VTKGenericProcessor<VTKFilter>::getProcessorInfo() const {
+    static const ProcessorInfo info = ProcessorTraits<VTKGenericProcessor<VTKFilter>>::getProcessorInfo();
+    return info;
 }
 
 }  // namespace inviwo

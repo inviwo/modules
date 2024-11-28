@@ -42,7 +42,7 @@ const ProcessorInfo NRRDReader::processorInfo_{
     CodeState::Experimental,  // Code state
     Tags::None,               // Tags
 };
-const ProcessorInfo NRRDReader::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& NRRDReader::getProcessorInfo() const { return processorInfo_; }
 
 NRRDReader::NRRDReader()
     : Processor()

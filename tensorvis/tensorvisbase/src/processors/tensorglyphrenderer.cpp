@@ -44,7 +44,7 @@ const ProcessorInfo TensorGlyphRenderer::processorInfo_{
     CodeState::Experimental,           // Code state
     Tags::None,                        // Tags
 };
-const ProcessorInfo TensorGlyphRenderer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorGlyphRenderer::getProcessorInfo() const { return processorInfo_; }
 
 TensorGlyphRenderer::TensorGlyphRenderer()
     : Processor()

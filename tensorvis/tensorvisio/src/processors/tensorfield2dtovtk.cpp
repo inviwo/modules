@@ -50,7 +50,7 @@ const ProcessorInfo TensorField2DToVTK::processorInfo_{
     CodeState::Experimental,          // Code state
     "VTK",                            // Tags
 };
-const ProcessorInfo TensorField2DToVTK::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorField2DToVTK::getProcessorInfo() const { return processorInfo_; }
 
 TensorField2DToVTK::TensorField2DToVTK()
     : Processor()

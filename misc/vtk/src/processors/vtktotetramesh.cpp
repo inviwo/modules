@@ -44,7 +44,7 @@ const ProcessorInfo VTKToTetraMesh::processorInfo_{
     Tags::CPU | Tag{"VTK"} | Tag{"Unstructured"},  // Tags
     R"(Use a VTK Unstructured Grid dataSet as input for an Inviwo TetraMesh)"_unindentHelp};
 
-const ProcessorInfo VTKToTetraMesh::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToTetraMesh::getProcessorInfo() const { return processorInfo_; }
 
 VTKToTetraMesh::VTKToTetraMesh()
     : Processor{}

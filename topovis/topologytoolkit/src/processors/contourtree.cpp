@@ -57,7 +57,7 @@ const ProcessorInfo ContourTree::processorInfo_{
     CodeState::Experimental,             // Code state
     "CPU, Topology, TTK, Contour Tree",  // Tags
 };
-const ProcessorInfo ContourTree::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ContourTree::getProcessorInfo() const { return processorInfo_; }
 
 ContourTree::ContourTree()
     : inport_("triangulation")

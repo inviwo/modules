@@ -41,7 +41,7 @@ const ProcessorInfo VertexNormals::processorInfo_{
     CodeState::Stable,                    // Code state
     Tags::CPU,                            // Tags
 };
-const ProcessorInfo VertexNormals::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VertexNormals::getProcessorInfo() const { return processorInfo_; }
 
 VertexNormals::VertexNormals() : Processor() {
 

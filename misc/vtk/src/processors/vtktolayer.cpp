@@ -51,7 +51,7 @@ const ProcessorInfo VTKToLayer::processorInfo_{
     Tags::CPU | Tag{"VTK"} | Tag{"Layer"},  // Tags
     R"(Converts a VTKImageData dataset to an Inviwo Layer)"_unindentHelp};
 
-const ProcessorInfo VTKToLayer::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKToLayer::getProcessorInfo() const { return processorInfo_; }
 
 VTKToLayer::VTKToLayer()
     : Processor{}

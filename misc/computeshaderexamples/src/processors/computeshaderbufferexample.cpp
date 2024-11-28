@@ -48,7 +48,7 @@ const ProcessorInfo ComputeShaderBufferExample::processorInfo_{
     CodeState::Experimental,                  // Code state
     Tags::GL,                                 // Tags
 };
-const ProcessorInfo ComputeShaderBufferExample::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& ComputeShaderBufferExample::getProcessorInfo() const { return processorInfo_; }
 
 ComputeShaderBufferExample::ComputeShaderBufferExample()
     : Processor()

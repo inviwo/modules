@@ -34,6 +34,9 @@
 #include <warn/push>
 #include <warn/ignore/all>
 #include <nanovg.h>
+
+
+#define NANOVG_GL3_IMPLEMENTATION
 #include <nanovg_gl.h>
 #include <warn/pop>
 

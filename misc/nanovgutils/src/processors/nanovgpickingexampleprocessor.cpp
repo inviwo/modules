@@ -43,7 +43,7 @@ const ProcessorInfo NanoVGPickingExampleProcessor::processorInfo_{
     CodeState::Experimental,                     // Code state
     Tags::None,                                  // Tags
 };
-const ProcessorInfo NanoVGPickingExampleProcessor::getProcessorInfo() const {
+const ProcessorInfo& NanoVGPickingExampleProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

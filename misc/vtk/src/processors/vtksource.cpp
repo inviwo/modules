@@ -45,7 +45,7 @@ const ProcessorInfo VTKSource::processorInfo_{"org.inviwo.VTKSource",   // Class
                                               Tags::CPU,                // Tags
                                               R"(Loads VTK data from a given file)"_unindentHelp};
 
-const ProcessorInfo VTKSource::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VTKSource::getProcessorInfo() const { return processorInfo_; }
 
 VTKSource::VTKSource(const std::filesystem::path& filePath)
     : Processor{}

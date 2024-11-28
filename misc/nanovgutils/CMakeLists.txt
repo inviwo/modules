@@ -1,7 +1,5 @@
 ivw_module(NanoVGUtils)
 
-add_subdirectory(ext/nanovg)
-
 set(HEADER_FILES
     include/inviwo/nanovgutils/nanovgcontext.h
     include/inviwo/nanovgutils/nanovgutils.h
@@ -23,11 +21,8 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-#--------------------------------------------------------------------
-# Create module
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
-ivw_make_package(InviwoNanoVGUtilsModule inviwo-module-nanovgutils)
-
-target_link_libraries(inviwo-module-nanovgutils PUBLIC nanovg)
+find_package(nanovg REQUIRED)
+target_link_libraries(inviwo-module-nanovgutils PUBLIC nanovg::nanovg)
 

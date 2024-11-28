@@ -43,7 +43,7 @@ const ProcessorInfo TensorFieldSlice::processorInfo_{
     Tags::CPU,                      // Tags
 };
 
-const ProcessorInfo TensorFieldSlice::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& TensorFieldSlice::getProcessorInfo() const { return processorInfo_; }
 
 TensorFieldSlice::TensorFieldSlice()
     : Processor()

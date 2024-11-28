@@ -41,7 +41,7 @@ const ProcessorInfo VectorFieldLIC::processorInfo_{
     Tags::GL,                     // Tags
 };
 
-const ProcessorInfo VectorFieldLIC::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VectorFieldLIC::getProcessorInfo() const { return processorInfo_; }
 
 VectorFieldLIC::VectorFieldLIC()
     : Processor()

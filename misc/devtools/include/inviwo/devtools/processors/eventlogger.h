@@ -76,7 +76,7 @@ public:
     virtual ~EventLogger() = default;
 
     virtual void process() override;
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     virtual void invokeEvent(Event* event) override;
 
 private:
@@ -162,8 +162,10 @@ void EventLogger<Inport, Outport>::invokeEvent(Event* event) {
 }
 
 template <typename Inport, typename Outport>
-const ProcessorInfo EventLogger<Inport, Outport>::getProcessorInfo() const {
-    return ProcessorTraits<EventLogger<Inport, Outport>>::getProcessorInfo();
+const ProcessorInfo& EventLogger<Inport, Outport>::getProcessorInfo() const {
+    static const ProcessorInfo info{
+        ProcessorTraits<EventLogger<Inport, Outport>>::getProcessorInfo()};
+    return info;
 }
 
 using ImageEventLogger = EventLogger<ImageInport, ImageOutport>;
