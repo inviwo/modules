@@ -86,6 +86,8 @@ find_package(freetype CONFIG REQUIRED)
 find_package(utf8cpp CONFIG REQUIRED)
 
 find_package(VTK CONFIG REQUIRED)
+ivw_vcpkg_install(freetype MODULE VTK)
+ivw_vcpkg_install(VTK MODULE VTK)
 
 target_link_libraries(inviwo-module-vtk 
     PRIVATE

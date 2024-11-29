@@ -1,6 +1,14 @@
 # OpenMesh module
 
-Inviwo module to interface the C++ library OpenMesh
+Inviwo module to interface the C++ library OpenMesh.
+
+When using vcpk, include `openmesh` as vcpkg feature in your CMake preset.
+```json
+"cacheVariables": {
+    "VCPKG_MANIFEST_FEATURES":  "openmesh"
+}
+```
+
 
 ## Example: Mesh Decimation
 ```c++
