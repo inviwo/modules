@@ -34,7 +34,7 @@
  */
 
 #include "utils/structs.glsl"
-#include "colortools.glsl"
+#include "utils/colorconversion.glsl"
 #include "utils/selectioncolor.glsl"
 #include "utils/vertexflags.glsl"
 

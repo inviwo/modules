@@ -28,7 +28,7 @@
  *********************************************************************************/
 
 #include "utils/shading.glsl"
-#include "colortools.glsl"
+#include "utils/colorconversion.glsl"
 
 // Same as geometryrendering.frag with the exception of picking
 uniform vec3 pickingColor;
