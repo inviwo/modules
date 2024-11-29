@@ -33,6 +33,7 @@
 #include <inviwo/core/io/datareaderexception.h>
 #include <inviwo/core/util/stdextensions.h>
 #include <inviwo/core/util/filesystem.h>
+#include <inviwo/core/util/glmmat.h>
 
 #include <fmt/format.h>
 #include <fmt/std.h>
@@ -50,6 +51,7 @@
 #include <warn/pop>
 
 #include <algorithm>
+#include <array>
 
 namespace inviwo {
 
@@ -147,14 +149,14 @@ struct ImageMetaData {
         slope = interceptSlopeVec[1];
     }
 
-    size2_t dims;
-    gdcm::PixelFormat pixelformat;
-    gdcm::PhotometricInterpretation photometric;
-    double intercept;
-    double slope;
-    dvec3 pixelSpacing;
-    dvec3 orientation[2];
-    dvec3 origin;
+    size2_t dims{0};
+    gdcm::PixelFormat pixelformat = gdcm::PixelFormat::UNKNOWN;
+    gdcm::PhotometricInterpretation photometric = gdcm::PhotometricInterpretation::UNKNOWN;
+    double intercept{0.0};
+    double slope{1.0};
+    dvec3 pixelSpacing{0.0};
+    std::array<dvec3, 2> orientation = {dvec3{0.0}, dvec3{0.0}};
+    dvec3 origin{0.0};
 };
 
 }  // namespace
@@ -167,16 +169,19 @@ void Series::updateImageInformation(const std::filesystem::path& dicompath) {
     // series:
     //   * dimensions
     //   * pixel format
-    //   * color space (i.e. Photometric Interpretation) containing  no. of samples per
-    //   pixel
+    //   * color space (i.e. Photometric Interpretation) containing no. of samples per
+    //     pixel
     //   * intercept and slope
     //   * pixel spacing
     //   * image orientation (patient) with summed squared difference < 1e-4
-    //   * image position (patient) with summed squared difference < 1e-4
+    //   * image position (patient) with summed squared difference < 1e-4 execpt along axis
+    //     orthogonal to image orientation
+
     bool warnSlopeIntercept = false;
     bool warnPixelSpacing = false;
     bool warnOrientation = false;
     bool warnOrigin = false;
+    auto squaredSum = [](auto vec) { return glm::dot(vec, vec); };
     auto sanityCheck = [&](const ImageMetaData& ref, const ImageMetaData& img) {
         if (ref.dims != img.dims) {
             throw DataReaderException(
@@ -197,22 +202,20 @@ void Series::updateImageInformation(const std::filesystem::path& dicompath) {
         }
         const double dicomDelta = 1.0e-4;
         if (std::abs(ref.slope - img.slope) > dicomDelta ||
-            std::abs(ref.intercept - img.intercept) < dicomDelta) {
+            std::abs(ref.intercept - img.intercept) > dicomDelta) {
             warnSlopeIntercept = true;
         }
 
-        auto ssd = [](auto vec) {  // compute squared sums
-            return glm::dot(vec, vec);
-        };
-
-        if (ssd(ref.pixelSpacing - img.pixelSpacing) > dicomDelta) {
+        if (squaredSum(ref.pixelSpacing - img.pixelSpacing) > dicomDelta) {
             warnPixelSpacing = true;
         }
-        if ((ssd(ref.orientation[0] - img.orientation[0]) > dicomDelta) ||
-            (ssd(ref.orientation[1] - img.orientation[1]) > dicomDelta)) {
+        if ((squaredSum(ref.orientation[0] - img.orientation[0]) > dicomDelta) ||
+            (squaredSum(ref.orientation[1] - img.orientation[1]) > dicomDelta)) {
             warnOrientation = true;
         }
-        if (ssd(ref.origin - img.origin) > dicomDelta) {
+        const dmat3 refT{ref.orientation[0], ref.orientation[1], dvec3{0.0}};
+        const dmat3 imgT{img.orientation[0], img.orientation[1], dvec3{0.0}};
+        if (squaredSum(refT * ref.origin - imgT * img.origin) > dicomDelta) {
             warnOrigin = true;
         }
     };

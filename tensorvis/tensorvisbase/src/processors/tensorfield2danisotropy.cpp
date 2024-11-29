@@ -104,13 +104,12 @@ void TensorField2DAnisotropy::process() {
             default:
                 throw Exception(IVW_CONTEXT, "Unsupported tensorutil::Anisotropy");
         }
-        return nullptr;
     }();
 
     auto [min, max] = util::layerMinMax(layerRam.get(), IgnoreSpecialValues::No);
     dvec2 range{glm::compMin(min), glm::compMax(max)};
 
-    std::shared_ptr<Layer> layer = std::make_shared<Layer>(layerRam);
+    auto layer = std::make_shared<Layer>(layerRam);
     layer->dataMap.dataRange = range;
     layer->dataMap.valueRange = range;
 

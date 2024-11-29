@@ -664,7 +664,7 @@ std::shared_ptr<Volume> GdcmVolumeReader::generateVolume(const gdcm::Image& imag
     LogInfo("spacing: " << spacestr);
     LogInfo("volume size: " << size);
     LogInfo("voxel size: " << voxelsz << "(components: " << (format->getComponents())
-                           << ", component size: " << (format->getSize()) << ")");
+                           << ", component size: " << (format->getSizeInBytes()) << ")");
     LogInfo("sample value range is [" << pixelformat.GetMin() << ", " << pixelformat.GetMax()
                                       << "].");
     pixelformat.Print(gdcm::Trace::GetDebugStream());
