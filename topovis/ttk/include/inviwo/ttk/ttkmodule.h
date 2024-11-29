@@ -30,16 +30,10 @@
 
 #include <inviwo/ttk/ttkmoduledefine.h>
 #include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/io/serialization/ticpp.h>
 #include <inviwo/core/io/serialization/versionconverter.h>
 
-namespace ticpp {
-class Element;
-class Document;
-}  // namespace ticpp
-
 namespace inviwo {
-
-using TxElement = ticpp::Element;
 
 class IVW_MODULE_TTK_API ttkModule : public InviwoModule {
 public:
