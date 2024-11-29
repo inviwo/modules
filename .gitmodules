@@ -1,9 +1,0 @@
-[submodule "misc/ext/OpenMesh"]
-	path = misc/openmesh/ext/OpenMesh
-	url = https://www.graphics.rwth-aachen.de:9000/OpenMesh/OpenMesh.git
-[submodule "topovis/topologytoolkit/ext/ttk/ttk"]
-	path = topovis/topologytoolkit/ext/ttk/ttk
-	url = https://github.com/inviwo/ttk
-[submodule "misc/nanovgutils/ext/nanovg"]
-	path = misc/nanovgutils/ext/nanovg/nanovg
-	url = https://github.com/memononen/nanovg.git

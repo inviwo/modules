@@ -39,12 +39,9 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(OpenMesh REQUIRED)
+ivw_vcpkg_install(OpenMesh MODULE OpenMesh)
+
 target_link_libraries( ${${mod}_target} PUBLIC 
     OpenMeshCore
     OpenMeshTools
 )
-
-# Add shader directory to pack
-# ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
-
-
