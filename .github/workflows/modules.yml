@@ -124,7 +124,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: modules
-        submodules: true
+        submodules: false
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v4
@@ -223,7 +223,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: modules
-        submodules: true
+        submodules: false
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v4
@@ -321,7 +321,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         path: modules
-        submodules: true
+        submodules: false
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v4
