@@ -7,7 +7,8 @@
       "displayName": "Modules GHA",
       "cacheVariables": {
         "VCPKG_MANIFEST_FEATURES" : "graphviz;openmesh;nanovg",
-
+        "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
+        
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},
