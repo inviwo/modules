@@ -53,7 +53,7 @@ public:
 
     using type = vtkDataObject;
 
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
@@ -75,12 +75,10 @@ private:
 
 template <>
 struct PortTraits<vtk::VtkOutport> {
-    static const std::string& classIdentifier() {
-        static std::string id{"org.inviwo.vtk.outport"};
-        return id;
-    }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.vtk.outport"; }
 };
-inline std::string vtk::VtkOutport::getClassIdentifier() const {
+
+inline std::string_view vtk::VtkOutport::getClassIdentifier() const {
     return PortTraits<vtk::VtkOutport>::classIdentifier();
 }
 
