@@ -35,9 +35,7 @@
 
 namespace inviwo {
 
-const std::string TopologyColorsProperty::classIdentifier =
-    "org.inviwo.topology.TopologyColorsProperty";
-std::string TopologyColorsProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view TopologyColorsProperty::getClassIdentifier() const { return classIdentifier; }
 
 TopologyColorsProperty::TopologyColorsProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)

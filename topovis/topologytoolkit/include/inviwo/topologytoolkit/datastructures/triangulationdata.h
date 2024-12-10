@@ -293,9 +293,9 @@ void TriangulationData::setScalarValues(std::vector<T>&& values) {
 
 template <>
 struct DataTraits<topology::TriangulationData> {
-    static std::string classIdentifier() { return "TriangulationData"; }
-    static std::string dataName() { return "TriangulationData"; }
-    static uvec3 colorCode() { return uvec3(34, 96, 150); }
+    static constexpr std::string_view classIdentifier() { return "TriangulationData"; }
+    static constexpr std::string_view dataName() { return "TriangulationData"; }
+    static constexpr uvec3 colorCode() { return {34, 96, 150}; }
     static Document info(const topology::TriangulationData& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

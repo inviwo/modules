@@ -32,9 +32,7 @@
 
 namespace inviwo {
 
-const std::string TopologyFilterProperty::classIdentifier =
-    "org.inviwo.topology.TopologyFilterProperty";
-std::string TopologyFilterProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view TopologyFilterProperty::getClassIdentifier() const { return classIdentifier; }
 
 TopologyFilterProperty::TopologyFilterProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)
