@@ -45,6 +45,8 @@
 #include <inviwo/molvisbase/util/aminoacid.h>
 #include <inviwo/molvisbase/util/chain.h>
 #include <modules/python3/pyportutils.h>
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <fmt/format.h>
 

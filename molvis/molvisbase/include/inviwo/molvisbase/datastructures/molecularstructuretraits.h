@@ -38,9 +38,9 @@ namespace inviwo {
 
 template <>
 struct DataTraits<molvis::MolecularStructure> {
-    static std::string classIdentifier() { return "org.inviwo.molvis.MolecularStructure"; }
-    static std::string dataName() { return "Molecular Structure"; }
-    static uvec3 colorCode() { return uvec3(56, 127, 66); }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.molvis.MolecularStructure"; }
+    static constexpr std::string_view dataName() { return "Molecular Structure"; }
+    static constexpr uvec3 colorCode() { return uvec3(56, 127, 66); }
     static Document info(const molvis::MolecularStructure& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;
