@@ -33,9 +33,9 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 
-namespace inviwo {
-namespace openmeshutil {
-namespace detail {
+namespace inviwo::openmeshutil {
+
+namespace {
 
 void createVertexBuffers(TriMesh& mesh, const BasicMesh& inmesh, TransformCoordinates transform) {
     auto& vertices = inmesh.getVertices()->getRAMRepresentation()->getDataContainer();
@@ -188,17 +188,17 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
     }
 }
 
-}  // namespace detail
+}  // namespace
 
 TriMesh fromInviwo(const Mesh& inmesh, TransformCoordinates transform) {
     TriMesh mesh;
 
     if (auto bm = dynamic_cast<const BasicMesh*>(&inmesh)) {
-        detail::createVertexBuffers(mesh, *bm, transform);
+        createVertexBuffers(mesh, *bm, transform);
     } else if (auto sm = dynamic_cast<const SimpleMesh*>(&inmesh)) {
-        detail::createVertexBuffers(mesh, *sm, transform);
+        createVertexBuffers(mesh, *sm, transform);
     } else {
-        detail::createVertexBuffers(mesh, inmesh, transform);
+        createVertexBuffers(mesh, inmesh, transform);
     }
 
     for (auto& ib : inmesh.getIndexBuffers()) {
@@ -214,5 +214,4 @@ TriMesh fromInviwo(const Mesh& inmesh, TransformCoordinates transform) {
     return mesh;
 }
 
-}  // namespace openmeshutil
-}  // namespace inviwo
+}  // namespace inviwo::openmeshutil

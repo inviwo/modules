@@ -167,9 +167,6 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
     }
 }
 
-const std::string IntegralLinesToDataFrame::MetaDataSettings::classIdentifier =
-    "org.inviwo.IntegralLinesToDataFrame.MetaDataProperty";
-
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo IntegralLinesToDataFrame::processorInfo_{
     "org.inviwo.IntegralLinesToDataFrame",  // Class identifier

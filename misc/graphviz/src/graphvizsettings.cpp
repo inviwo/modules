@@ -185,7 +185,7 @@ void layoutNetwork(ProcessorNetwork* net, glm::dvec2 sep, bool alignSources, boo
     createDotGraph(buff, net, sep, alignSources, alignSinks);
 
     calculateLayout(buff, net, [](Processor* p, const dvec2 pos) {
-        if (auto* meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+        if (auto* meta = p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)) {
             meta->setPosition(snap(pos));
         }
     });
@@ -221,7 +221,7 @@ GraphvizSettings::GraphvizSettings(InviwoApplication* app)
         calculateLayout(buff, app_->getProcessorNetwork(), [](Processor* p, const dvec2 pos) {
             dvec2 cpos{-1, -1};
             if (auto* meta =
-                    p->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER)) {
+                    p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)) {
                 cpos = meta->getPosition();
             }
             LogInfo(fmt::format("{:30} New: {:20} Snapped: {:20} Current: {:20}",
@@ -244,12 +244,12 @@ void GraphvizSettings::autoLayoutNetwork() {
 
 void GraphvizSettings::onProcessorNetworkDidAddProcessor(Processor* processor) {
     autoLayoutNetwork();
-    auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     meta->addObserver(this);
 }
 void GraphvizSettings::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
     autoLayoutNetwork();
-    auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::CLASS_IDENTIFIER);
+    auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     meta->removeObserver(this);
 }
 void GraphvizSettings::onProcessorNetworkDidAddConnection(const PortConnection&) {
