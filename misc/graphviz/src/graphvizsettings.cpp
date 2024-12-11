@@ -244,12 +244,12 @@ void GraphvizSettings::autoLayoutNetwork() {
 
 void GraphvizSettings::onProcessorNetworkDidAddProcessor(Processor* processor) {
     autoLayoutNetwork();
-    auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+    auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     meta->addObserver(this);
 }
 void GraphvizSettings::onProcessorNetworkDidRemoveProcessor(Processor* processor) {
     autoLayoutNetwork();
-    auto meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
+    auto* meta = processor->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier);
     meta->removeObserver(this);
 }
 void GraphvizSettings::onProcessorNetworkDidAddConnection(const PortConnection&) {

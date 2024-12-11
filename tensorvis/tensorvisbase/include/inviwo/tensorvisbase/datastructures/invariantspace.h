@@ -180,7 +180,7 @@ template <>
 struct DataTraits<InvariantSpace> {
     static constexpr std::string_view classIdentifier() { return "org.inviwo.InvariantSpace"; }
     static constexpr std::string_view dataName() { return "InvariantSpace"; }
-    static constexpr uvec3 colorCode() { return uvec3(10, 150, 235); }
+    static constexpr uvec3 colorCode() { return {10, 150, 235}; }
     static Document info(const InvariantSpace& data) {
         std::ostringstream oss;
         oss << data.getDataInfo();
