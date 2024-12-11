@@ -195,15 +195,15 @@ TriMesh fromInviwo(const Mesh& inmesh, TransformCoordinates transform) {
 
     if (auto bm = dynamic_cast<const BasicMesh*>(&inmesh)) {
         createVertexBuffers(mesh, *bm, transform);
-    } else if (auto sm = dynamic_cast<const SimpleMesh*>(&inmesh)) {
+    } else if (const auto* sm = dynamic_cast<const SimpleMesh*>(&inmesh)) {
         createVertexBuffers(mesh, *sm, transform);
     } else {
         createVertexBuffers(mesh, inmesh, transform);
     }
 
-    for (auto& ib : inmesh.getIndexBuffers()) {
-        if (ib.first.dt == DrawType::Triangles) {
-            meshutil::forEachTriangle(ib.first, *ib.second,
+    for (auto&& [meshInfo, buffer] : inmesh.getIndexBuffers()) {
+        if (meshInfo.dt == DrawType::Triangles) {
+            meshutil::forEachTriangle(meshInfo, *buffer,
                                       [&mesh](uint32_t i0, uint32_t i1, uint32_t i2) {
                                           using VH = OpenMesh::VertexHandle;
                                           mesh.add_face(VH(i0), VH(i1), VH(i2));

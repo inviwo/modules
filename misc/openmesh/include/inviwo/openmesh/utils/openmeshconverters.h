@@ -82,7 +82,7 @@ void convertOMtoInviwoBuffer(inviwo::Mesh& ivwMesh, const OM_Mesh& omMesh, Buffe
             vec.push_back(callback(v_it));
         }
     } else {
-        using value_type = Vector<T::dim(), typename T::value_type>;
+        using value_type = glm::vec<T::dim(), typename T::value_type, glm::defaultp>;
         auto convertValue = [](const T& v) {
             value_type res{0};
             for (int i = 0; i < T::dim(); i++) {
