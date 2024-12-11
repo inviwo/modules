@@ -81,7 +81,8 @@ public:
     class MetaDataSettings : public BoolCompositeProperty {
     public:
         virtual std::string_view getClassIdentifier() const override { return classIdentifier; }
-        static constexpr std::string_view classIdentifier{"org.inviwo.IntegralLinesToDataFrame.MetaDataProperty"};
+        static constexpr std::string_view classIdentifier{
+            "org.inviwo.IntegralLinesToDataFrame.MetaDataProperty"};
 
         MetaDataSettings(std::string identifier, std::string displayName);
         MetaDataSettings(const MetaDataSettings& that);

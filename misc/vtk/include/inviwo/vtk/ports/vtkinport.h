@@ -72,9 +72,7 @@ private:
 
 template <>
 struct PortTraits<vtk::VtkInport> {
-    static constexpr std::string_view classIdentifier() {
-        return "org.inviwo.vtk.inport";
-    }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.vtk.inport"; }
 };
 
 inline std::string_view vtk::VtkInport::getClassIdentifier() const {
