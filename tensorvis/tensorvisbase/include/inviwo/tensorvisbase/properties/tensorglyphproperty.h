@@ -47,8 +47,8 @@ namespace inviwo {
  */
 class IVW_MODULE_TENSORVISBASE_API TensorGlyphProperty : public CompositeProperty {
 public:
-    virtual std::string getClassIdentifier() const override;
-    static const std::string classIdentifier;
+    virtual std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.TensorGlyphProperty"};
 
     enum class GlyphType {
         Reynolds,

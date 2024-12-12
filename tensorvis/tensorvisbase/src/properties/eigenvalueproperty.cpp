@@ -33,8 +33,7 @@
 
 namespace inviwo {
 
-const std::string EigenValueProperty::classIdentifier{"org.inviwo.EigenValueProperty"};
-std::string EigenValueProperty::getClassIdentifier() const { return classIdentifier; }
+std::string_view EigenValueProperty::getClassIdentifier() const { return classIdentifier; }
 
 EigenValueProperty::EigenValueProperty(std::string identifier, std::string displayName)
     : CompositeProperty(identifier, displayName)

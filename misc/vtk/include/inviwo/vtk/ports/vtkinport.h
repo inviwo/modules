@@ -55,7 +55,7 @@ public:
 
     virtual bool canConnectTo(const Port* port) const override;
     virtual size_t getMaxNumberOfConnections() const override;
-    virtual std::string getClassIdentifier() const override;
+    virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
@@ -72,13 +72,10 @@ private:
 
 template <>
 struct PortTraits<vtk::VtkInport> {
-    static const std::string& classIdentifier() {
-        static std::string id{"org.inviwo.vtk.inport"};
-        return id;
-    }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.vtk.inport"; }
 };
 
-inline std::string vtk::VtkInport::getClassIdentifier() const {
+inline std::string_view vtk::VtkInport::getClassIdentifier() const {
     return PortTraits<vtk::VtkInport>::classIdentifier();
 }
 

@@ -59,7 +59,7 @@
 namespace inviwo {
 
 struct CustomMeshTraits : public OpenMesh::DefaultTraits {
-    typedef OpenMesh::Vec4f Color;
+    using Color = OpenMesh::Vec4f;
 
     VertexAttributes(OpenMesh::Attributes::Normal | OpenMesh::Attributes::TexCoord3D |
                      OpenMesh::Attributes::Color);
@@ -68,37 +68,35 @@ struct CustomMeshTraits : public OpenMesh::DefaultTraits {
 using TriMesh = OpenMesh::TriMesh_ArrayKernelT<CustomMeshTraits>;
 
 namespace openmeshutil {
+
 namespace detail {
-
-template <typename T>
-struct BufferConvertHelper {
-    using type = Buffer<T>;
-    using value_type = T;
-    static T convertValue(const T& v) { return v; }
-};
-
-template <typename T, unsigned D>
-struct BufferConvertHelper<OpenMesh::VectorT<T, D>> {
-    using type = Buffer<Vector<D, T>>;
-    using value_type = Vector<D, T>;
-    static glm::vec<D, T> convertValue(const OpenMesh::VectorT<T, D>& v) {
-        glm::vec<D, T> res;
-        for (unsigned i = 0; i < D; i++) {
-            res[i] = v[i];
-        }
-        return res;
-    }
-};
 
 template <typename T, typename OM_Mesh, typename Func>
 void convertOMtoInviwoBuffer(inviwo::Mesh& ivwMesh, const OM_Mesh& omMesh, BufferType bufferType,
                              Func callback) {
-    using Helper = typename detail::BufferConvertHelper<T>;
-    auto vertices = std::make_shared<typename Helper::type>();
-    auto& vec = vertices->getEditableRAMRepresentation()->getDataContainer();
-    ivwMesh.addBuffer(bufferType, vertices);
-    for (const OpenMesh::VertexHandle& v_it : omMesh.vertices()) {
-        vec.push_back(Helper::convertValue(callback(v_it)));
+    if constexpr (std::is_arithmetic_v<T>) {
+        auto vertices = std::make_shared<Buffer<T>>();
+        auto& vec = vertices->getEditableRAMRepresentation()->getDataContainer();
+        ivwMesh.addBuffer(bufferType, vertices);
+        for (const OpenMesh::VertexHandle& v_it : omMesh.vertices()) {
+            vec.push_back(callback(v_it));
+        }
+    } else {
+        using value_type = glm::vec<T::dim(), typename T::value_type, glm::defaultp>;
+        auto convertValue = [](const T& v) {
+            value_type res{0};
+            for (int i = 0; i < T::dim(); i++) {
+                res[i] = v[i];
+            }
+            return res;
+        };
+
+        auto vertices = std::make_shared<Buffer<value_type>>();
+        auto& vec = vertices->getEditableRAMRepresentation()->getDataContainer();
+        ivwMesh.addBuffer(bufferType, vertices);
+        for (const OpenMesh::VertexHandle& v_it : omMesh.vertices()) {
+            vec.push_back(convertValue(callback(v_it)));
+        }
     }
 };
 

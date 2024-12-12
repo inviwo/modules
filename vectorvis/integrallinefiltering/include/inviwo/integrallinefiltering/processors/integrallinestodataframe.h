@@ -80,9 +80,9 @@ public:
     using MetricCalcFunction = std::function<void(const IntegralLine& line)>;
     class MetaDataSettings : public BoolCompositeProperty {
     public:
-        virtual std::string getClassIdentifier() const override { return classIdentifier; }
-
-        static const std::string classIdentifier;
+        virtual std::string_view getClassIdentifier() const override { return classIdentifier; }
+        static constexpr std::string_view classIdentifier{
+            "org.inviwo.IntegralLinesToDataFrame.MetaDataProperty"};
 
         MetaDataSettings(std::string identifier, std::string displayName);
         MetaDataSettings(const MetaDataSettings& that);

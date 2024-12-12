@@ -33,8 +33,8 @@
 #include <inviwo/tensorvisbase/datastructures/deformablecylinder.h>
 
 namespace inviwo {
-const std::string TensorGlyphProperty::classIdentifier{"org.inviwo.TensorGlyphProperty"};
-std::string TensorGlyphProperty::getClassIdentifier() const { return classIdentifier; }
+
+std::string_view TensorGlyphProperty::getClassIdentifier() const { return classIdentifier; }
 
 // constexpr std::array<std::array<dvec2, 3>, 10> TensorGlyphProperty::tri_uv;
 

@@ -117,9 +117,11 @@ struct IVW_MODULE_TOPOLOGYTOOLKIT_API MorseSmaleComplexData {
 
 template <>
 struct DataTraits<topology::MorseSmaleComplexData> {
-    static std::string classIdentifier() { return "org.inviwo.topology.morsesmalecomplexdata"; }
-    static std::string dataName() { return "TTK Morse-Smale Complex"; }
-    static uvec3 colorCode() { return uvec3(105, 152, 188); }
+    static constexpr std::string_view classIdentifier() {
+        return "org.inviwo.topology.morsesmalecomplexdata";
+    }
+    static constexpr std::string_view dataName() { return "TTK Morse-Smale Complex"; }
+    static constexpr uvec3 colorCode() { return {105, 152, 188}; }
     static Document info(const topology::MorseSmaleComplexData& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

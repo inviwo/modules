@@ -3,8 +3,8 @@
 #include <inviwo/core/network/networklock.h>
 
 namespace inviwo {
-const std::string NanoVGFontProperty::classIdentifier{"org.inviwo.NanoVGFontProperty"};
-std::string NanoVGFontProperty::getClassIdentifier() const { return classIdentifier; }
+
+std::string_view NanoVGFontProperty::getClassIdentifier() const { return classIdentifier; }
 
 auto NanoVGFontProperty::props() {
     return std::tie(fontSize_, fontColor_, fontFace_, fontAlignment_, enableFontBlur_,

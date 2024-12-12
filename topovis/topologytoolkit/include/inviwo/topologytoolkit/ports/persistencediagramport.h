@@ -65,9 +65,11 @@ using PersistenceDiagramOutport = DataOutport<topology::PersistenceDiagramData>;
 
 template <>
 struct DataTraits<topology::PersistenceDiagramData> {
-    static std::string classIdentifier() { return "org.topology.persistencediagramdata"; }
-    static std::string dataName() { return "PersistenceDiagramData"; }
-    static uvec3 colorCode() { return uvec3(65, 122, 155); }  // uvec3(73, 153, 175); }
+    static constexpr std::string_view classIdentifier() {
+        return "org.topology.persistencediagramdata";
+    }
+    static constexpr std::string_view dataName() { return "PersistenceDiagramData"; }
+    static constexpr uvec3 colorCode() { return {65, 122, 155}; }
     static Document info(const topology::PersistenceDiagramData& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

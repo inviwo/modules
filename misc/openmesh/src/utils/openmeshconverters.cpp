@@ -33,9 +33,9 @@
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/datastructures/geometry/simplemesh.h>
 
-namespace inviwo {
-namespace openmeshutil {
-namespace detail {
+namespace inviwo::openmeshutil {
+
+namespace {
 
 void createVertexBuffers(TriMesh& mesh, const BasicMesh& inmesh, TransformCoordinates transform) {
     auto& vertices = inmesh.getVertices()->getRAMRepresentation()->getDataContainer();
@@ -188,22 +188,22 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
     }
 }
 
-}  // namespace detail
+}  // namespace
 
 TriMesh fromInviwo(const Mesh& inmesh, TransformCoordinates transform) {
     TriMesh mesh;
 
     if (auto bm = dynamic_cast<const BasicMesh*>(&inmesh)) {
-        detail::createVertexBuffers(mesh, *bm, transform);
-    } else if (auto sm = dynamic_cast<const SimpleMesh*>(&inmesh)) {
-        detail::createVertexBuffers(mesh, *sm, transform);
+        createVertexBuffers(mesh, *bm, transform);
+    } else if (const auto* sm = dynamic_cast<const SimpleMesh*>(&inmesh)) {
+        createVertexBuffers(mesh, *sm, transform);
     } else {
-        detail::createVertexBuffers(mesh, inmesh, transform);
+        createVertexBuffers(mesh, inmesh, transform);
     }
 
-    for (auto& ib : inmesh.getIndexBuffers()) {
-        if (ib.first.dt == DrawType::Triangles) {
-            meshutil::forEachTriangle(ib.first, *ib.second,
+    for (auto&& [meshInfo, buffer] : inmesh.getIndexBuffers()) {
+        if (meshInfo.dt == DrawType::Triangles) {
+            meshutil::forEachTriangle(meshInfo, *buffer,
                                       [&mesh](uint32_t i0, uint32_t i1, uint32_t i2) {
                                           using VH = OpenMesh::VertexHandle;
                                           mesh.add_face(VH(i0), VH(i1), VH(i2));
@@ -214,5 +214,4 @@ TriMesh fromInviwo(const Mesh& inmesh, TransformCoordinates transform) {
     return mesh;
 }
 
-}  // namespace openmeshutil
-}  // namespace inviwo
+}  // namespace inviwo::openmeshutil

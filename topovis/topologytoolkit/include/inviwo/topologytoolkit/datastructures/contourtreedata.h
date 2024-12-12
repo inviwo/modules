@@ -91,9 +91,11 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 
 template <>
 struct DataTraits<topology::ContourTreeData> {
-    static std::string classIdentifier() { return "org.inviwo.topology.contourtreedata"; }
-    static std::string dataName() { return "TTK Contour Tree"; }
-    static uvec3 colorCode() { return uvec3(94, 152, 224); }
+    static constexpr std::string_view classIdentifier() {
+        return "org.inviwo.topology.contourtreedata";
+    }
+    static constexpr std::string_view dataName() { return "TTK Contour Tree"; }
+    static constexpr uvec3 colorCode() { return {94, 152, 224}; }
     static Document info(const topology::ContourTreeData& data) {
         using H = utildoc::TableBuilder::Header;
         using P = Document::PathComponent;

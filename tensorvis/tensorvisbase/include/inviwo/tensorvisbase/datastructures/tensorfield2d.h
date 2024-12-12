@@ -172,9 +172,9 @@ private:
 
 template <>
 struct DataTraits<TensorField2D> {
-    static std::string classIdentifier() { return "org.inviwo.TensorField2D"; }
-    static std::string dataName() { return "TensorField2D"; }
-    static uvec3 colorCode() { return uvec3(10, 150, 135); }
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.TensorField2D"; }
+    static constexpr std::string_view dataName() { return "TensorField2D"; }
+    static constexpr uvec3 colorCode() { return {10, 150, 135}; }
     static Document info(const TensorField2D& data) {
         Document doc;
         doc.append("b", "TensorField2D", {{"style", "color:white;"}});
