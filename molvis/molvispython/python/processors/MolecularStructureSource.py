@@ -99,11 +99,11 @@ class MolecularStructureSource(ivw.Processor):
         structure = parser.get_structure(structureName, filename)
 
         pos = []
-        serialNumbers = []
-        bfactors = []
-        modelId = []
-        chainId = []
-        residueId = []
+        serialNumbers: ivw.intVector = ivw.intVector()
+        bfactors: ivw.doubleVector = ivw.doubleVector()
+        modelId: ivw.intVector = ivw.intVector()
+        chainId: ivw.intVector = ivw.intVector()
+        residueId: ivw.intVector = ivw.intVector()
         atomFullName = []
         elements = []
 
@@ -132,7 +132,7 @@ class MolecularStructureSource(ivw.Processor):
             elements.append(ivwmolvis.atomicelement.fromAbbr(atom.element))
 
         atoms = ivwmolvis.Atoms()
-        dvec3pos = []
+        dvec3pos: ivw.dvec3Vector = ivw.dvec3Vector()
         for p in pos:
             dvec3pos.append(ivw.glm.dvec3(p[0], p[1], p[2]))
         atoms.positions = dvec3pos
