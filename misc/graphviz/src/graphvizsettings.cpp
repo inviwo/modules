@@ -181,6 +181,8 @@ void calculateLayout(StrBuffer& buff, ProcessorNetwork* net, const Func& func) {
 }
 
 void layoutNetwork(ProcessorNetwork* net, glm::dvec2 sep, bool alignSources, bool alignSinks) {
+    if (!net) return;
+
     StrBuffer buff;
     createDotGraph(buff, net, sep, alignSources, alignSinks);
 
@@ -217,15 +219,15 @@ GraphvizSettings::GraphvizSettings(InviwoApplication* app)
     print.onChange([this]() {
         StrBuffer buff;
         createDotGraph(buff, app_->getProcessorNetwork(), separation, alignSources, alignSinks);
-        LogInfo(buff.view());
+        log::report(LogLevel::Info, buff.view());
         calculateLayout(buff, app_->getProcessorNetwork(), [](Processor* p, const dvec2 pos) {
             dvec2 cpos{-1, -1};
             if (auto* meta =
                     p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)) {
                 cpos = meta->getPosition();
             }
-            LogInfo(fmt::format("{:30} New: {:20} Snapped: {:20} Current: {:20}",
-                                p->getIdentifier(), pos, snap(pos), cpos));
+            log::info("{:30} New: {:20} Snapped: {:20} Current: {:20}", p->getIdentifier(),
+                            pos, snap(pos), cpos);
         });
     });
 
