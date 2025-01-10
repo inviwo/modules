@@ -8,10 +8,17 @@ vcpkg_from_github(
         openmp.patch
 )
 
+if(VCPKG_TARGET_IS_WINDOWS)
+    set(TTK_USE_OPENMP OFF)
+else()
+    set(TTK_USE_OPENMP ON)
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
+        -DParaView_FOUND=OFF # Don't try finding paraview.
         -DTTK_BUILD_VTK_WRAPPERS=ON
         -DTTK_BUILD_DOCUMENTATION=OFF
         -DTTK_BUILD_PARAVIEW_PLUGINS=OFF
@@ -21,8 +28,10 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_EIGEN=ON
         -DTTK_ENABLE_ZLIB=ON
         -DTTK_ENABLE_GRAPHVIZ=ON
-        -DTTK_ENABLE_OPENMP=ON
+        -DTTK_ENABLE_OPENMP=${TTK_USE_OPENMP}
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
+
+        -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
 )
 vcpkg_install_cmake()
 vcpkg_copy_pdbs()
