@@ -12,6 +12,7 @@ vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
+        -DParaView_FOUND=OFF # Don't try finding paraview.
         -DTTK_BUILD_VTK_WRAPPERS=ON
         -DTTK_BUILD_DOCUMENTATION=OFF
         -DTTK_BUILD_PARAVIEW_PLUGINS=OFF
@@ -21,7 +22,7 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_EIGEN=ON
         -DTTK_ENABLE_ZLIB=ON
         -DTTK_ENABLE_GRAPHVIZ=ON
-        -DTTK_ENABLE_OPENMP=ON
+        -DTTK_ENABLE_OPENMP=OFF
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
 )
 vcpkg_install_cmake()
