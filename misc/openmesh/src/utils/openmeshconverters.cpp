@@ -120,8 +120,7 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
                     return vec3(tmp) / tmp.w;
                 });
             } else {
-                throw inviwo::Exception("Unknown position buffer type",
-                                        IvwContextCustom("openmeshutil::meshHelper"));
+                throw inviwo::Exception("Unknown position buffer type");
             }
         }
     }
@@ -135,8 +134,7 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
                     mesh.set_normal(VH(i++), {n.x, n.y, n.z});
                 }
             } else {
-                throw inviwo::Exception("Unknown normals buffer type",
-                                        IvwContextCustom("openmeshutil::meshHelper"));
+                throw inviwo::Exception("Unknown normals buffer type");
             }
         } else if (buf.first.type == BufferType::ColorAttrib) {
             auto loop = [&](auto& buf, auto toVec4) {
@@ -156,8 +154,7 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
             } else if (auto u3 = std::dynamic_pointer_cast<const Buffer<glm::u8vec3>>(buf.second)) {
                 loop(u3, [](glm::u8vec3 v) { return vec4(v, 255.0f) / 255.0f; });
             } else {
-                throw inviwo::Exception("Unknown normals buffer type",
-                                        IvwContextCustom("openmeshutil::meshHelper"));
+                throw inviwo::Exception("Unknown normals buffer type");
             }
         } else if (buf.first.type == BufferType::TexCoordAttrib) {
             if (auto t1 = std::dynamic_pointer_cast<const Buffer<float>>(buf.second)) {
@@ -181,8 +178,7 @@ void createVertexBuffers(TriMesh& mesh, const Mesh& inmesh, TransformCoordinates
                     mesh.set_texcoord3D(VH(i++), {v.x, v.y, v.z});
                 }
             } else {
-                throw inviwo::Exception("Unknown normals buffer type",
-                                        IvwContextCustom("openmeshutil::meshHelper"));
+                throw inviwo::Exception("Unknown normals buffer type");
             }
         }
     }
