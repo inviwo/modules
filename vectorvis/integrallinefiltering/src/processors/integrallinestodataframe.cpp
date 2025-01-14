@@ -361,7 +361,7 @@ IntegralLinesToDataFrame::MetaDataSettings* IntegralLinesToDataFrame::geMetaData
         if (auto mdp = dynamic_cast<MetaDataSettings*>(p)) {
             return mdp;
         }
-        throw inviwo::Exception("Not a MetaDataSettings", IvwContext);
+        throw inviwo::Exception("Not a MetaDataSettings");
     }
     auto newProp = std::make_unique<MetaDataSettings>(id, key);
     auto newPropPtr = newProp.get();

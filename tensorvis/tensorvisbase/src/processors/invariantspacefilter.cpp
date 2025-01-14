@@ -86,10 +86,9 @@ void InvariantSpaceFilter::process() {
         }
     }
 
-    LogProcessorInfo(
-        std::to_string((float(numberOfFilteredTensors) / float(numberOfElements)) * 100.f)
-        << "% filtered (" << std::to_string(numberOfFilteredTensors) << " out of "
-        << std::to_string(numberOfElements) << ").");
+    log::info("{}% filtered ({} out of {})",
+              (float(numberOfFilteredTensors) / float(numberOfElements)) * 100.f,
+              numberOfFilteredTensors, numberOfElements);
 
     invariantSpaceOutport_.setData(filteredInvariantSpace);
 }
