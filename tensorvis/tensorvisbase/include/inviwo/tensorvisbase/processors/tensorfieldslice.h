@@ -35,7 +35,9 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/ports/dataoutport.h>
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
 
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 

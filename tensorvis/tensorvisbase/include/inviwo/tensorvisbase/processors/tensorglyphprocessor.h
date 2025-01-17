@@ -41,6 +41,8 @@
 
 namespace inviwo {
 
+class Mesh;
+
 /** \docpage{org.inviwo.TensorGlyphProcessor, Tensor Glyph Processor}
  * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorGlyphProcessor)
  * Explanation of how to use the processor.

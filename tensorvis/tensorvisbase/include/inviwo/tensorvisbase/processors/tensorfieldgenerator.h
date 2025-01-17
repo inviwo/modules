@@ -33,6 +33,10 @@
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 

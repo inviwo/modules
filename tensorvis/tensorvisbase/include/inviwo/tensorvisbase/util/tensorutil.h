@@ -29,14 +29,19 @@
 
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <Eigen/Dense>
-#include <warn/pop>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <modules/eigenutils/eigenutils.h>
-#include <modules/opengl/shader/shaderutils.h>
+//#include <warn/push>
+//#include <warn/ignore/all>
+//#include <Eigen/Dense>
+//#include <warn/pop>
+//#include <inviwo/core/datastructures/geometry/basicmesh.h>
+//#include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
+
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <iostream>
 
 namespace inviwo {
 namespace tensorutil {

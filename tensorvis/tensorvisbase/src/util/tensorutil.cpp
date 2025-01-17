@@ -28,6 +28,7 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <modules/eigenutils/eigenutils.h>
 
 #include <inviwo/core/util/exception.h>
 

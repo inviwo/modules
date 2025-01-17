@@ -35,6 +35,7 @@
 #include <inviwo/core/processors/processor.h>
 #include <modules/opengl/shader/shader.h>
 #include <inviwo/core/properties/eventproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 
 namespace inviwo {
 
