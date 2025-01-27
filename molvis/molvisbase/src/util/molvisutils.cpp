@@ -36,6 +36,7 @@
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/zip.h>
+#include <inviwo/core/util/docutils.h>
 
 #include <inviwo/molvisbase/util/atomicelement.h>
 #include <inviwo/molvisbase/util/aminoacid.h>
