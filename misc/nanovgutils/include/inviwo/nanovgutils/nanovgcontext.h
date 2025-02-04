@@ -40,6 +40,8 @@
 #include <nanovg.h>
 #include <warn/pop>
 
+#include <filesystem>
+
 namespace inviwo {
 class IVW_MODULE_NANOVGUTILS_API NanoVGContext {
     friend class NanoVGUtilsModule;
