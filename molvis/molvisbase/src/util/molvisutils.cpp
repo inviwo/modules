@@ -94,11 +94,10 @@ std::optional<size_t> getGlobalAtomIndex(const Atoms& atoms, std::string_view fu
                                          int residueId, int chainId) {
     if ((atoms.residueIds.size() != atoms.chainIds.size()) ||
         (atoms.residueIds.size() != atoms.fullNames.size())) {
-        throw Exception(
-            fmt::format("Number of residue IDs ({}) does not match size of chain IDs ({}) or full "
+        throw Exception(SourceContext{},
+                        "Number of residue IDs ({}) does not match size of chain IDs ({}) or full "
                         "atom names ({})",
-                        atoms.residueIds.size(), atoms.chainIds.size(), atoms.fullNames.size()),
-            IVW_CONTEXT_CUSTOM("getGlobalAtomIndex"));
+                        atoms.residueIds.size(), atoms.chainIds.size(), atoms.fullNames.size());
     }
 
     for (size_t i = 0; i < atoms.fullNames.size(); ++i) {
@@ -143,10 +142,9 @@ std::vector<Bond> computeCovalentBonds(const Atoms& atoms) {
     if (atoms.positions.empty()) return {};
 
     if (atoms.positions.size() != atoms.atomicNumbers.size()) {
-        throw Exception(
-            fmt::format("Number of atoms ({}) does not match size of atomic numbers ({})",
-                        atoms.positions.size(), atoms.atomicNumbers.size()),
-            IVW_CONTEXT_CUSTOM("computeCovalentBonds"));
+        throw Exception(SourceContext{},
+                        "Number of atoms ({}) does not match size of atomic numbers ({})",
+                        atoms.positions.size(), atoms.atomicNumbers.size());
     }
 
     const double maxCovalentBondLength = 4.0;

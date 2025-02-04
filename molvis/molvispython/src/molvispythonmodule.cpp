@@ -42,7 +42,7 @@ MolVisPythonModule::MolVisPythonModule(InviwoApplication* app) try
     pybind11::module::import("ivwmolvis");
 
 } catch (const std::exception& e) {
-    throw ModuleInitException(e.what(), IVW_CONTEXT);
+    throw ModuleInitException(e.what());
 }
 
 }  // namespace inviwo

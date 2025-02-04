@@ -173,10 +173,10 @@ void MolecularMeshRenderer::process() {
             drawLicorice(radiusScaling_ * BallAndStickLicoriceScale);
             break;
         case Representation::Ribbon:
-            throw Exception("Unsupported representation: 'Ribbon'", IVW_CONTEXT);
+            throw Exception("Unsupported representation: 'Ribbon'");
             break;
         case Representation::Cartoon:
-            throw Exception("Unsupported representation: 'Cartoon'", IVW_CONTEXT);
+            throw Exception("Unsupported representation: 'Cartoon'");
             break;
         default:
             drawVdW(radiusScaling_);

@@ -351,10 +351,10 @@ void MolecularRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMat
                 drawLicorice(mesh, drawer, radiusScaling_ * BallAndStickLicoriceScale);
                 break;
             case MolecularRasterizer::Representation::Ribbon:
-                throw Exception("Unsupported representation: 'Ribbon'", IVW_CONTEXT);
+                throw Exception("Unsupported representation: 'Ribbon'");
                 break;
             case MolecularRasterizer::Representation::Cartoon:
-                throw Exception("Unsupported representation: 'Cartoon'", IVW_CONTEXT);
+                throw Exception("Unsupported representation: 'Cartoon'");
                 break;
             default:
                 drawVdW(mesh, drawer, radiusScaling_);
