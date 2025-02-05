@@ -320,7 +320,7 @@ private:
 
 template <>
 struct EnumTraits<NanoVGContext::Alignment> {
-    static std::string name() { return "Text Alignment"; }
+    static std::string_view name() { return "Text Alignment"; }
 };
 
 }  // namespace inviwo
