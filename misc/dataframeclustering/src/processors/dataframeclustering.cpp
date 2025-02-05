@@ -29,6 +29,7 @@
 
 #include <inviwo/dataframeclustering/processors/dataframeclustering.h>
 #include <inviwo/dataframeclustering/dataframeclusteringmodule.h>
+#include <inviwo/core/util/moduleutils.h>
 #include <modules/python3/pybindutils.h>
 
 #include <inviwo/core/common/inviwoapplication.h>
@@ -46,7 +47,7 @@ const ProcessorInfo DataFrameClustering::processorInfo_{
 };
 const ProcessorInfo& DataFrameClustering::getProcessorInfo() const { return processorInfo_; }
 
-DataFrameClustering::DataFrameClustering(InviwoApplication* app)
+DataFrameClustering::DataFrameClustering()
     : Processor()
     , dataFrame_("dataFrame")
     , newDataFrame_("newDataFrame")
@@ -87,7 +88,7 @@ DataFrameClustering::DataFrameClustering(InviwoApplication* app)
 
     , columns_("columns", "Columns")
     , script_(PythonScript::fromFile(
-          app->getModuleByType<DataFrameClusteringModule>()->getPath(ModulePath::Scripts) /
+          util::getModuleByType<DataFrameClusteringModule>()->getPath(ModulePath::Scripts) /
           "dataframeclustering.py")) {
 
     numberOfClusters_.setSerializationMode(PropertySerializationMode::All);

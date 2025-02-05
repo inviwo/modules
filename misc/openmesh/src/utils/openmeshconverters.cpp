@@ -50,13 +50,13 @@ void createVertexBuffers(TriMesh& mesh, const BasicMesh& inmesh, TransformCoordi
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (const auto& [pos, normal, texCoord, color] :
+    for (const auto&& [pos, normal, texCoord, color] :
          util::zip(vertices, normals, texCoords, colors)) {
-        auto i = [&](const auto& pos) {
+        auto i = [&](const auto& position) {
             if (transform == TransformCoordinates::NoTransform) {
-                return mesh.add_vertex({pos.x, pos.y, pos.z});
+                return mesh.add_vertex({position.x, position.y, position.z});
             } else {
-                auto pos4 = m * vec4{pos, 1};
+                auto pos4 = m * vec4{position, 1};
                 return mesh.add_vertex({pos4.x / pos4.w, pos4.y / pos4.w, pos4.z / pos4.w});
             }
         }(pos);
@@ -80,12 +80,12 @@ void createVertexBuffers(TriMesh& mesh, const SimpleMesh& inmesh, TransformCoord
         m = inmesh.getCoordinateTransformer().getDataToWorldMatrix();
     }
 
-    for (const auto& [pos, texCoord, color] : util::zip(vertices, texCoords, colors)) {
-        auto i = [&](const auto& pos) {
+    for (const auto&& [pos, texCoord, color] : util::zip(vertices, texCoords, colors)) {
+        auto i = [&](const auto& position) {
             if (transform == TransformCoordinates::NoTransform) {
-                return mesh.add_vertex({pos.x, pos.y, pos.z});
+                return mesh.add_vertex({position.x, position.y, position.z});
             } else {
-                auto pos4 = m * vec4{pos, 1};
+                auto pos4 = m * vec4{position, 1};
                 return mesh.add_vertex({pos4.x / pos4.w, pos4.y / pos4.w, pos4.z / pos4.w});
             }
         }(pos);

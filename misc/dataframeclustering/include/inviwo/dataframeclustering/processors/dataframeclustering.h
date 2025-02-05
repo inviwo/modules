@@ -48,7 +48,7 @@ namespace inviwo {
  */
 class IVW_MODULE_DATAFRAMECLUSTERING_API DataFrameClustering : public Processor {
 public:
-    DataFrameClustering(InviwoApplication* app);
+    DataFrameClustering();
     virtual ~DataFrameClustering() = default;
 
     virtual void process() override;

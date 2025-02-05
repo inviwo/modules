@@ -35,6 +35,7 @@
 #include <inviwo/core/util/logcentral.h>
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>
+#include <inviwo/core/common/inviwomodulefactoryobject.h>
 #include <modules/python3/python3modulesharedlibrary.h>
 #include <modules/base/basemodulesharedlibrary.h>
 #include <inviwo/tensorvispython/tensorvispythonmodulesharedlibrary.h>
