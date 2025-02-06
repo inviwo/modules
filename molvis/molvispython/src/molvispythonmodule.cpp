@@ -29,17 +29,20 @@
 
 #include <inviwo/molvispython/molvispythonmodule.h>
 
+#include <pybind11/pybind11.h>
+
 namespace inviwo {
 
-// clang-format off
 MolVisPythonModule::MolVisPythonModule(InviwoApplication* app) try
     : InviwoModule(app, "MolVisPython")
-    , module_{pybind11::module::import("ivwmolvis")}
     , scripts_{getPath() / "python"}
     , pythonFolderObserver_{app, getPath() / "python/processors", *this} {
+
+    const pybind11::gil_scoped_acquire gil;
+    pybind11::module::import("ivwmolvis");
+
 } catch (const std::exception& e) {
     throw ModuleInitException(e.what(), IVW_CONTEXT);
 }
-// clang-format on
 
 }  // namespace inviwo
