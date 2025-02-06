@@ -124,11 +124,12 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
     }
 
     if (c == 1) {  // scalars
-        ram->dispatch<void, dispatching::filter::Scalars>([=, &funcs, df = &dataFrame](auto ramT) {
-            using T = typename util::PrecisionValueType<decltype(ramT)>;
-            createFunction<T>(funcs, *df, percentiles, name,
-                              [=](const T& v) -> float { return static_cast<float>(v); });
-        });
+        ram->dispatch<void, dispatching::filter::Scalars>(
+            [=, this, &funcs, df = &dataFrame](auto ramT) {
+                using T = typename util::PrecisionValueType<decltype(ramT)>;
+                createFunction<T>(funcs, *df, percentiles, name,
+                                  [=](const T& v) -> float { return static_cast<float>(v); });
+            });
 
     } else {  // vectors
         return ram->dispatch<void, dispatching::filter::Vecs>([this, &funcs, name, percentiles, c,

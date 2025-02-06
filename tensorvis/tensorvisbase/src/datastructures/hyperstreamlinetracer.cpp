@@ -161,4 +161,5 @@ IntegralLine::TerminationReason HyperStreamLineTracer::integrate(size_t steps, c
 
     return IntegralLine::TerminationReason::Steps;
 }
+
 }  // namespace inviwo

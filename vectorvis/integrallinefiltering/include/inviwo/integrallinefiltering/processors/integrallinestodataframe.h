@@ -134,7 +134,7 @@ public:
                          ->getEditableRAMRepresentation()
                          ->getDataContainer());
             }
-            funcs.push_back([=](const IntegralLine& line) {
+            funcs.push_back([=, this](const IntegralLine& line) {
                 auto& vec = line.getMetaData<T>(Property::getDisplayName());
                 std::vector<float> values;
                 std::transform(vec.begin() + 1, vec.end() - 1, std::back_inserter(values),

@@ -390,8 +390,12 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
 
     auto bonds = molvis::computeCovalentBonds(atoms);
 
-    auto ms = std::make_shared<molvis::MolecularStructure>(molvis::MolecularData{
-        .source = source, .atoms = std::move(atoms), .bonds = std::move(bonds)});
+    auto ms = std::make_shared<molvis::MolecularStructure>(
+        molvis::MolecularData{.source = source,
+                              .atoms = std::move(atoms),
+                              .residues = {},
+                              .chains = {},
+                              .bonds = std::move(bonds)});
 
     ms->setModelMatrix(chg.model);
 
