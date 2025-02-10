@@ -33,8 +33,6 @@
 #include <modules/python3/pythonprocessorfolderobserver.h>
 #include <modules/python3/pyutils.h>
 
-#include <pybind11/pybind11.h>
-
 namespace inviwo {
 
 class IVW_MODULE_TENSORVISPYTHON_API TensorVisPythonModule : public InviwoModule {
@@ -42,7 +40,6 @@ public:
     TensorVisPythonModule(InviwoApplication* app);
     virtual ~TensorVisPythonModule() = default;
 
-    pybind11::module module_;
     pyutil::ModulePath scripts_;
     PythonProcessorFolderObserver pythonFolderObserver_;
 };
