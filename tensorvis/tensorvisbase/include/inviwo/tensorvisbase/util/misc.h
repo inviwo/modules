@@ -30,8 +30,8 @@
 #pragma once
 #include <inviwo/core/common/inviwo.h>
 
-namespace inviwo {
-namespace tensorutil {
+namespace inviwo::tensorutil {
+
 namespace detail {
 inline std::string getHTMLTableColumnString(const std::string& item) {
     return "  <td style='color:#bbb;padding-right:8px;'>"
@@ -217,5 +217,4 @@ std::string to_string(const std::array<T, N>& arr) {
     return str;
 }
 
-}  // namespace tensorutil
-}  // namespace inviwo
+}  // namespace inviwo::tensorutil

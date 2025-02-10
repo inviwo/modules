@@ -204,8 +204,8 @@ InternalState createInternalState(const MolecularData& data) {
             return r.id == id && r.chainId == chainId;
         });
         if (it == data.residues.end()) {
-            throw Exception(fmt::format("Invalid residue ID '{}' in atom {}", resId, atomToStr(i)),
-                            IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+            throw Exception(SourceContext{}, "Invalid residue ID '{}' in atom {}", resId,
+                            atomToStr(i));
         }
         // add atom to residue
         state.residueAtoms[{resId, chainId}].push_back(i);
@@ -224,9 +224,8 @@ InternalState createInternalState(const MolecularData& data) {
             auto chainIt = util::find_if(data.chains,
                                          [id = res.chainId](const Chain& c) { return c.id == id; });
             if (chainIt == data.chains.end()) {
-                throw Exception(fmt::format("Invalid chain ID '{}' in residue {} '{}'", res.chainId,
-                                            res.id, aminoacid::symbol(res.aminoacid)),
-                                IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+                throw Exception(SourceContext{}, "Invalid chain ID '{}' in residue {} '{}'",
+                                res.chainId, res.id, aminoacid::symbol(res.aminoacid));
             }
             state.chainResidues[res.chainId].push_back(residueIndex);
         }
@@ -249,41 +248,39 @@ void verifyData(const MolecularData& data) {
     auto sizeValid = [atomCount](const auto& v) { return (v.empty() || (v.size() == atomCount)); };
 
     if (!sizeValid(data.atoms.serialNumbers)) {
-        throw Exception(
-            fmt::format("Inconsistent MolecularData: expected {} serial numbers, found {}",
-                        atomCount, data.atoms.serialNumbers.size()),
-            IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} serial numbers, found {}",
+                        atomCount, data.atoms.serialNumbers.size());
     }
     if (!sizeValid(data.atoms.bFactors)) {
-        throw Exception(fmt::format("Inconsistent MolecularData: expected {} b Factors, found {}",
-                                    atomCount, data.atoms.bFactors.size()),
-                        IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} b Factors, found {}", atomCount,
+                        data.atoms.bFactors.size());
     }
     if (!sizeValid(data.atoms.modelIds)) {
-        throw Exception(fmt::format("Inconsistent MolecularData: expected {} model IDs, found {}",
-                                    atomCount, data.atoms.modelIds.size()),
-                        IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} model IDs, found {}", atomCount,
+                        data.atoms.modelIds.size());
     }
     if (!sizeValid(data.atoms.chainIds)) {
-        throw Exception(fmt::format("Inconsistent MolecularData: expected {} chain IDs, found {}",
-                                    atomCount, data.atoms.chainIds.size()),
-                        IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} chain IDs, found {}", atomCount,
+                        data.atoms.chainIds.size());
     }
     if (!sizeValid(data.atoms.residueIds)) {
-        throw Exception(fmt::format("Inconsistent MolecularData: expected {} residue Ids, found {}",
-                                    atomCount, data.atoms.residueIds.size()),
-                        IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} residue Ids, found {}", atomCount,
+                        data.atoms.residueIds.size());
     }
     if (!sizeValid(data.atoms.atomicNumbers)) {
-        throw Exception(
-            fmt::format("Inconsistent MolecularData: expected {} atomic numbers, found {}",
-                        atomCount, data.atoms.atomicNumbers.size()),
-            IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} atomic numbers, found {}",
+                        atomCount, data.atoms.atomicNumbers.size());
     }
     if (!sizeValid(data.atoms.fullNames)) {
-        throw Exception(fmt::format("Inconsistent MolecularData: expected {} full names, found {}",
-                                    atomCount, data.atoms.fullNames.size()),
-                        IVW_CONTEXT_CUSTOM("MolecularStructure::MolecularStructure()"));
+        throw Exception(SourceContext{},
+                        "Inconsistent MolecularData: expected {} full names, found {}", atomCount,
+                        data.atoms.fullNames.size());
     }
 }
 
@@ -361,9 +358,8 @@ const std::vector<size_t>& MolecularStructure::getResidueAtoms(int residueId, in
     if (auto it = residueAtoms_.find({residueId, chainId}); it != residueAtoms_.end()) {
         return it->second;
     } else {
-        throw Exception(fmt::format("Residue with ID '{}' and chain ID '{}' does not exist",
-                                    residueId, chainId),
-                        IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Residue with ID '{}' and chain ID '{}' does not exist",
+                        residueId, chainId);
     }
 }
 
@@ -371,8 +367,7 @@ const std::vector<size_t>& MolecularStructure::getChainResidues(int chainId) con
     if (auto it = chainResidues_.find(chainId); it != chainResidues_.end()) {
         return it->second;
     } else {
-        throw Exception(fmt::format("Chain with chain ID '{}' does not exist", chainId),
-                        IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Chain with chain ID '{}' does not exist", chainId);
     }
 }
 
@@ -381,8 +376,7 @@ auto MolecularStructure::getBackboneSegments(int chainId) const
     if (auto it = chainSegments_.find(chainId); it != chainSegments_.end()) {
         return it->second;
     } else {
-        throw Exception(fmt::format("Chain with chain ID '{}' does not exist", chainId),
-                        IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Chain with chain ID '{}' does not exist", chainId);
     }
 }
 

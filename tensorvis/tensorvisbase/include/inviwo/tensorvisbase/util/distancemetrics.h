@@ -73,6 +73,6 @@ T squaredSumDistance(const std::vector<T>& a, const std::vector<T>& b) {
 }  // namespace tensorutil
 template <>
 struct EnumTraits<tensorutil::DistanceMetric> {
-    static std::string name() { return "DistanceMetric"; }
+    static constexpr std::string_view name() { return "DistanceMetric"; }
 };
 }  // namespace inviwo

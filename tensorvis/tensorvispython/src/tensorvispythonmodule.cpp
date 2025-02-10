@@ -33,9 +33,12 @@ namespace inviwo {
 
 TensorVisPythonModule::TensorVisPythonModule(InviwoApplication* app) try
     : InviwoModule(app, "TensorVis Python")
-    , module_{pybind11::module::import("ivwtensorvis")}
     , scripts_{getPath() / "python"}
     , pythonFolderObserver_{app, getPath() / "python/processors", *this} {
+
+    const pybind11::gil_scoped_acquire gil;
+    pybind11::module::import("ivwtensorvis");
+
 } catch (const std::exception& e) {
     throw ModuleInitException(e.what(), IVW_CONTEXT);
 }

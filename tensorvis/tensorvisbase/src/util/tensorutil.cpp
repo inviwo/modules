@@ -28,11 +28,12 @@
  *********************************************************************************/
 
 #include <inviwo/tensorvisbase/util/tensorutil.h>
+#include <modules/eigenutils/eigenutils.h>
 
 #include <inviwo/core/util/exception.h>
 
-namespace inviwo {
-namespace tensorutil {
+namespace inviwo::tensorutil {
+
 vec4 tensor2DToDvec4(const dmat2& tensor) {
     return vec4(tensor[0][0], tensor[1][0], tensor[1][1], 1.0);
 }
@@ -314,5 +315,4 @@ dmat3 reconstruct(const std::array<double, 3>& eigenvalues,
     return S * lambda * S_inv;
 }
 
-}  // namespace tensorutil
-}  // namespace inviwo
+}  // namespace inviwo::tensorutil

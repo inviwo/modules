@@ -29,6 +29,7 @@
 
 #include <inviwo/tensorvisbase/datastructures/tensorfield2d.h>
 #include <inviwo/core/datastructures/image/imageram.h>
+#include <modules/eigenutils/eigenutils.h>
 
 namespace inviwo {
 TensorField2D::TensorField2D(const size2_t dimensions, const std::vector<dmat2>& data,

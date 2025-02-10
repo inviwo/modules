@@ -37,6 +37,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/datastructures/geometry/typedmesh.h>
 
 namespace inviwo {
 

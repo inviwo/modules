@@ -137,7 +137,7 @@ constexpr size_t forEachPart(std::string_view str, Func&& func) {
         const auto second = str.find(' ', first);
         if constexpr (n != std::numeric_limits<size_t>::max()) {
             if (i >= n) {
-                throw Exception(IVW_CONTEXT_CUSTOM("forEachPart"),
+                throw Exception(SourceContext{},
                                 "Expected {} elements, in str '{}'", n, str);
             }
         }
@@ -148,7 +148,7 @@ constexpr size_t forEachPart(std::string_view str, Func&& func) {
     }
     if constexpr (n != std::numeric_limits<size_t>::max()) {
         if (i != n) {
-            throw Exception(IVW_CONTEXT_CUSTOM("forEachPart"),
+            throw Exception(SourceContext{},
                             "Expected {} elements, found {}, in str '{}'", n, i, str);
         }
     }
@@ -168,7 +168,7 @@ struct File {
         , buffer{}
         , currentLine{0} {
         if (!stream) {
-            throw Exception(IVW_CONTEXT, "Error opening file at {}", file);
+            throw Exception(SourceContext{},"Error opening file at {}", file);
         }
     }
 
@@ -177,7 +177,7 @@ struct File {
         if (std::getline(stream, buffer)) {
             return func(util::trim(buffer));
         } else {
-            throw Exception(IVW_CONTEXT, "Invalid format at line {}", currentLine);
+            throw Exception(SourceContext{},"Invalid format at line {}", currentLine);
         }
     }
 
@@ -219,7 +219,7 @@ private:
 void toNum(std::string_view elem, auto& dest) {
     const auto answer = fast_float::from_chars(elem.data(), elem.data() + elem.size(), dest);
     if (answer.ec != std::errc()) {
-        throw Exception(IVW_CONTEXT_CUSTOM("ChgcarSource"), "Invalid number: {}", elem);
+        throw Exception(SourceContext{}, "Invalid number: {}", elem);
     }
 }
 
@@ -305,7 +305,7 @@ std::string supToUnicode(std::string_view str) {
         res.append(str, 0, n);
         const auto m = str.find("</sup>");
         if (m == std::string_view::npos) {
-            throw Exception(IVW_CONTEXT_CUSTOM("supToUnicode"), "Invalid html in str: {}", str);
+            throw Exception(SourceContext{}, "Invalid html in str: {}", str);
         }
 
         const auto sup = str.substr(n + 5, m - (n + 5));
@@ -390,8 +390,12 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
 
     auto bonds = molvis::computeCovalentBonds(atoms);
 
-    auto ms = std::make_shared<molvis::MolecularStructure>(molvis::MolecularData{
-        .source = source, .atoms = std::move(atoms), .bonds = std::move(bonds)});
+    auto ms = std::make_shared<molvis::MolecularStructure>(
+        molvis::MolecularData{.source = source,
+                              .atoms = std::move(atoms),
+                              .residues = {},
+                              .chains = {},
+                              .bonds = std::move(bonds)});
 
     ms->setModelMatrix(chg.model);
 
@@ -726,7 +730,7 @@ void ChgcarSource::process() {
                 size3_t dims;
                 file.lineParts<3>([&](std::string_view elem, size_t i) { toNum(elem, dims[i]); });
                 if (chg.dims != dims) {
-                    throw Exception(IVW_CONTEXT_CUSTOM("ChgcarSource"),
+                    throw Exception(SourceContext{},
                                     "Dimensions for charge density {}, does not match dimensions "
                                     "for magnetization density {}",
                                     chg.dims, dims);

@@ -157,9 +157,7 @@ void EventLogger<Inport, Outport>::invokeEvent(Event* event) {
     const auto it = eventMap_.find(event->hash());
     if ((it == eventMap_.end() && enableOtherEvents_.get()) ||
         (it != eventMap_.end() && it->second.get())) {
-        std::ostringstream oss;
-        event->print(oss);
-        log::info("Processor {:>15}: {}", getDisplayName(), oss.str());
+        log::info("{:25} {}", getDisplayName(), *event);
     }
 }
 

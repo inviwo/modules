@@ -36,6 +36,7 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 

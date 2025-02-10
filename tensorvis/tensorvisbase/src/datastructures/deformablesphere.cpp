@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisbase/datastructures/deformablesphere.h>
 
 namespace inviwo {
+
 DeformableSphere::DeformableSphere(const size_t& numTheta, const size_t& numPhi,
                                    const vec4& color) {
     createSphere(numTheta, numPhi, color);
@@ -312,4 +313,5 @@ void DeformableSphere::calculateNormals() {
         i++;
     }
 }
+
 }  // namespace inviwo

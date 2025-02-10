@@ -40,6 +40,8 @@
 #include <nanovg.h>
 #include <warn/pop>
 
+#include <filesystem>
+
 namespace inviwo {
 class IVW_MODULE_NANOVGUTILS_API NanoVGContext {
     friend class NanoVGUtilsModule;
@@ -318,7 +320,7 @@ private:
 
 template <>
 struct EnumTraits<NanoVGContext::Alignment> {
-    static std::string name() { return "Text Alignment"; }
+    static constexpr std::string_view name() { return "Text Alignment"; }
 };
 
 }  // namespace inviwo

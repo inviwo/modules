@@ -31,6 +31,7 @@
 
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/safecstr.h>
+#include <inviwo/core/util/docutils.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
 

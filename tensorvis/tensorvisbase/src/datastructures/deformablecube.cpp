@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisbase/datastructures/deformablecube.h>
 
 namespace inviwo {
+
 DeformableCube::DeformableCube(const vec4& color) {
     createCube(color);
 
@@ -183,4 +184,5 @@ void DeformableCube::calculateNormals() {
         i++;
     }
 }
+
 }  // namespace inviwo

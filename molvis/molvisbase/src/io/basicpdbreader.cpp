@@ -97,7 +97,7 @@ T parseSection(std::string_view line, size_t begin, size_t size, std::string_vie
                std::string_view desc, int lineNumber, bool parseHexadecimal = false) {
     T res = T{};
     if (!detail::fromStr(line.substr(begin, size), res, parseHexadecimal)) {
-        throw DataReaderException(IVW_CONTEXT_CUSTOM("BasicPDBReader"),
+        throw DataReaderException(SourceContext{},
                                   "BasicPDBReader: invalid {} entry detected{} ({})\n'{}'", tag,
                                   desc.empty() ? "" : fmt::format(", {}", desc), lineNumber, line);
     }

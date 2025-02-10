@@ -30,6 +30,7 @@
 #include <inviwo/tensorvisbase/datastructures/deformablecylinder.h>
 
 namespace inviwo {
+
 DeformableCylinder::DeformableCylinder(const size_t& numTheta, const vec4& color) {
     createCylinder(numTheta, color);
 
@@ -204,4 +205,5 @@ void DeformableCylinder::calculateNormals() {
 
     for (auto& normal : normals) normal = -glm::normalize(normal);
 }
+
 }  // namespace inviwo

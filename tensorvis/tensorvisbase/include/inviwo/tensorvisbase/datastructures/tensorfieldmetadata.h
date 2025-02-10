@@ -45,7 +45,7 @@ enum class TensorFeature : size_t {
 
 template <>
 struct EnumTraits<TensorFeature> {
-    static std::string name() { return "TensorFeature"; }
+    static constexpr std::string_view name() { return "TensorFeature"; }
 };
 
 template <class Elem, class Traits>

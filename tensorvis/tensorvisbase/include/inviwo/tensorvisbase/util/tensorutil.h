@@ -29,17 +29,15 @@
 
 #pragma once
 
-#include <warn/push>
-#include <warn/ignore/all>
-#include <Eigen/Dense>
-#include <warn/pop>
-#include <inviwo/core/datastructures/geometry/basicmesh.h>
-#include <modules/eigenutils/eigenutils.h>
-#include <modules/opengl/shader/shaderutils.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 
-namespace inviwo {
-namespace tensorutil {
+#include <inviwo/core/datastructures/geometry/geometrytype.h>
+#include <inviwo/core/util/glmmat.h>
+#include <inviwo/core/util/glmvec.h>
+
+#include <iostream>
+
+namespace inviwo::tensorutil {
 
 enum class Anisotropy {
     abs_lamda1_minus_lamda2,
@@ -216,6 +214,5 @@ static const std::string j2_str{"J₂"};
 static const std::string j3_str{"J₃"};
 
 static const std::string tau_str{"τ"};
-}  // namespace tensorutil
 
-}  // namespace inviwo
+}  // namespace inviwo::tensorutil
