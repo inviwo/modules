@@ -39,7 +39,7 @@ const ProcessorInfo VolumeShrinkToNormalRangeGLProcessor::processorInfo_{
     CodeState::Stable,                                  // Code state
     "range, normal, shrink, feature",                   // Tags
 };
-const ProcessorInfo VolumeShrinkToNormalRangeGLProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeShrinkToNormalRangeGLProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

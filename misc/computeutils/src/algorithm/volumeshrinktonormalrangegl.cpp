@@ -32,6 +32,8 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/texture3d.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -71,9 +73,9 @@ void VolumeShrinkToNormalRangeGL::reset() { setShrinkChannels({true, false, fals
 std::shared_ptr<Volume> VolumeShrinkToNormalRangeGL::shrink(const Volume& volume) {
     std::shared_ptr<Volume> outVolume;
 
-    const auto offset = (volume.dataMap_.dataRange.x < 0.0 && volume.dataMap_.dataRange.y > 0.0)
-                            ? volume.dataMap_.dataRange.x /
-                                  (volume.dataMap_.dataRange.y - volume.dataMap_.dataRange.x)
+    const auto offset = (volume.dataMap.dataRange.x < 0.0 && volume.dataMap.dataRange.y > 0.0)
+                            ? volume.dataMap.dataRange.x /
+                                  (volume.dataMap.dataRange.y - volume.dataMap.dataRange.x)
                             : 0.0;
 
     // Don't dispatch if we don't have to
@@ -137,7 +139,7 @@ std::shared_ptr<Volume> VolumeShrinkToNormalRangeGL::shrink(const Volume& volume
 
     shader_.deactivate();
 
-    outVolume->dataMap_.dataRange = outVolume->dataMap_.valueRange = dvec2{0 + offset, 1 + offset};
+    outVolume->dataMap.dataRange = outVolume->dataMap.valueRange = dvec2{0 + offset, 1 + offset};
 
     return outVolume;
 }

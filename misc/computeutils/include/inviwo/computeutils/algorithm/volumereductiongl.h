@@ -30,12 +30,43 @@
 #pragma once
 
 #include <inviwo/computeutils/computeutilsmoduledefine.h>
-#include <modules/opengl/shader/shader.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/util/exception.h>
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 enum class ReductionOperator { Min = 0, Max = 1, Sum = 2, None = 3 };
 enum class DisregardingStatus { Off = 0, On = 1, Unset = 2 };
+
+constexpr std::string_view format_as(ReductionOperator op) {
+    using enum ReductionOperator;
+    switch (op) {
+        case Min:
+            return "min";
+        case Max:
+            return "max";
+        case Sum:
+            return "sum";
+        case None:
+            return "none";
+        default:
+            throw Exception{"Invalid enum value"};
+    }
+}
+
+constexpr std::string_view format_as(DisregardingStatus op) {
+    using enum DisregardingStatus;
+    switch (op) {
+        case Off:
+            return "off";
+        case On:
+            return "on";
+        case Unset:
+            return "unset";
+        default:
+            throw Exception{"Invalid enum value"};
+    }
+}
 
 /** \class VolumeReductionGL
  *
@@ -44,7 +75,7 @@ enum class DisregardingStatus { Off = 0, On = 1, Unset = 2 };
 class IVW_MODULE_COMPUTEUTILS_API VolumeReductionGL {
 public:
     template <typename Callback>
-    VolumeReductionGL(Callback C) : VolumeReductionGL() {
+    explicit VolumeReductionGL(Callback C) : VolumeReductionGL() {
         shader_.onReload(C);
     }
 
@@ -59,14 +90,14 @@ public:
      * @param volume Input volume.
      * @param op Reduction operator that is applied to calculate the reduced value, i.e.
      * min/max/sum.
-     * @param disregardingStatus Indicating whether or not the calculation of the min/max/sum value
-     * should disregard a certain value range. This is for example handy for volumes where special
-     * regions are marked with voxel values of INT_MAX or the like.
-     * Example: Your data array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the
-     * max value. In addition, you know that outliers are marked with a value of INT_MAX so you
-     * would like those values to not be considered. In that case, you call
-     * reduce(myVolume, ReductionOperator::Max, DisregardingStatus::On,
-     *        vec2{myVolume->dataMap_.dataRange.x, std::numeric_limits<int>::max() - 1});
+     * @param disregardingStatus Indicating whether or not the calculation of the min/max/sum
+     * value should disregard a certain value range. This is for example handy for volumes where
+     * special regions are marked with voxel values of INT_MAX or the like. Example: Your data
+     * array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the max value. In
+     * addition, you know that outliers are marked with a value of INT_MAX so you would like
+     * those values to not be considered. In that case, you call reduce(myVolume,
+     * ReductionOperator::Max, DisregardingStatus::On, vec2{myVolume->dataMap.dataRange.x,
+     * std::numeric_limits<int>::max() - 1});
      * @param range The range that should be disregarded.
      *
      * @returns Reduced volume (dimensions 1x1x1) according to selected operator.
@@ -82,14 +113,14 @@ public:
      * @param volume Input volume.
      * @param op Reduction operator that is applied to calculate the reduced value, i.e.
      * min/max/sum.
-     * @param disregardingStatus Indicating whether or not the calculation of the min/max/sum value
-     * should be clamped to a certain range. This is for example handy for volumes where special
-     * regions are marked with voxel values of INT_MAX or the like.
-     * Example: Your data array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the
-     * max value. In addition, you know that outliers are marked with a value of INT_MAX so you
-     * would like those values to not be considered. In that case, you call
-     * reduce(myVolume, ReductionOperator::Max, DisregardingStatus::On,
-     *        vec2{myVolume->dataMap_.dataRange.x, std::numeric_limits<int>::max() - 1});
+     * @param disregardingStatus Indicating whether or not the calculation of the min/max/sum
+     * value should be clamped to a certain range. This is for example handy for volumes where
+     * special regions are marked with voxel values of INT_MAX or the like. Example: Your data
+     * array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the max value. In
+     * addition, you know that outliers are marked with a value of INT_MAX so you would like
+     * those values to not be considered. In that case, you call reduce(myVolume,
+     * ReductionOperator::Max, DisregardingStatus::On, vec2{myVolume->dataMap.dataRange.x,
+     * std::numeric_limits<int>::max() - 1});
      * @param range The range that should be disregarded.
      *
      * @returns Reduced value according to selected operator.

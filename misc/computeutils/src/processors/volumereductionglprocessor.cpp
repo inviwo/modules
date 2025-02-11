@@ -39,7 +39,7 @@ const ProcessorInfo VolumeReductionGLProcessor::processorInfo_{
     CodeState::Experimental,                  // Code state
     Tags::GL,                                 // Tags
 };
-const ProcessorInfo VolumeReductionGLProcessor::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& VolumeReductionGLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeReductionGLProcessor::VolumeReductionGLProcessor()
     : Processor()
