@@ -38,9 +38,32 @@ const ProcessorInfo VolumeMinMaxGLProcessor::processorInfo_{
     "Volume Min Max",                      // Display name
     "Volume Operation",                    // Category
     CodeState::Experimental,               // Code state
-    "range, minmax",                       // Tags
+    Tags::GL | Tag{"Data Range"},          // Tags
 };
-const ProcessorInfo VolumeMinMaxGLProcessor::getProcessorInfo() const { return processorInfo_; }
+
+/** \docpage{org.inviwo.VolumeMinMaxGLProcessor, Volume Min Max GLProcessor}
+ * ![](org.inviwo.VolumeMinMaxGLProcessor.png?classIdentifier=org.inviwo.VolumeMinMaxGLProcessor)
+ *
+ * This method calculates min and max values of a volume. If you need min/max per channel you should
+ * look at VolumeReductionGL. The disregarding status indicates whether or not the calculation of
+ * the min/max values should disregard a certain value range. This is for example handy for volumes
+ * where special regions are marked with voxel values of INT_MAX or the like. Example: Your data
+ * array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the max value. In addition,
+ * you know that outliers are marked with a value of INT_MAX so you would like those values to not
+ * be considered.
+ *
+ * ### Inputs
+ *   * __Volume inport__ Input volume.
+ *
+ * ### Outports
+ *   * __Volume outport__ Reduced volume.
+ *
+ * ### Properties
+ *   * __Disregarding status__ Enable/disable value discarding
+ *   * __Disregarding range__ Value range to be discarded when computing minmax values.
+ */
+
+const ProcessorInfo& VolumeMinMaxGLProcessor::getProcessorInfo() const { return processorInfo_; }
 
 VolumeMinMaxGLProcessor::VolumeMinMaxGLProcessor()
     : Processor()
@@ -53,9 +76,8 @@ VolumeMinMaxGLProcessor::VolumeMinMaxGLProcessor()
 
     addPorts(volumeInport_, volumeOutport_);
 
-    disregardingRange_.visibilityDependsOn(disregardingStatus_, [](Property& prop) {
-        const auto status = dynamic_cast<TemplateOptionProperty<DisregardingStatus>&>(prop).get();
-
+    disregardingRange_.visibilityDependsOn(disregardingStatus_, [](auto& prop) {
+        const auto status = prop.get();
         return status == DisregardingStatus::On;
     });
 
@@ -78,7 +100,7 @@ VolumeMinMaxGLProcessor::VolumeMinMaxGLProcessor()
 
 void VolumeMinMaxGLProcessor::process() {
     auto outVolume = std::shared_ptr<Volume>(volumeInport_.getData()->clone());
-    outVolume->dataMap_.dataRange = outVolume->dataMap_.valueRange = volumeMinMaxGl_.minmax(
+    outVolume->dataMap.dataRange = outVolume->dataMap.valueRange = volumeMinMaxGl_.minmax(
         volumeInport_.getData(), disregardingStatus_.get(), disregardingRange_.get());
 
     volumeOutport_.setData(outVolume);

@@ -28,14 +28,20 @@
  *********************************************************************************/
 
 #include <inviwo/computeutils/algorithm/volumereductiongl.h>
+#include <inviwo/core/util/stringconversion.h>
 
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/texture3d.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
+
+#include <fmt/base.h>
 
 namespace inviwo {
 

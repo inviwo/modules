@@ -39,7 +39,7 @@ const ProcessorInfo VolumeChannelSplitGLProcessor::processorInfo_{
     CodeState::Experimental,                     // Code state
     Tags::GL,                                    // Tags
 };
-const ProcessorInfo VolumeChannelSplitGLProcessor::getProcessorInfo() const {
+const ProcessorInfo& VolumeChannelSplitGLProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 

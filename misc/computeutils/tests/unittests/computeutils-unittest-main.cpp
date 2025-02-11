@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2021-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,48 +27,31 @@
  *
  *********************************************************************************/
 
-#pragma once
+#ifdef _MSC_VER
+#pragma comment(linker, "/SUBSYSTEM:CONSOLE")
+#endif
 
-#include <inviwo/computeutils/computeutilsmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/computeutils/algorithm/volumereductiongl.h>
-#include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/util/logcentral.h>
+#include <inviwo/core/util/consolelogger.h>
+#include <inviwo/testutil/configurablegtesteventlistener.h>
 
-namespace inviwo {
+#include <warn/push>
+#include <warn/ignore/all>
+#include <gtest/gtest.h>
+#include <warn/pop>
 
-/** \docpage{org.inviwo.VolumeReductionGLProcessor, Volume Reduction Processor}
- * ![](org.inviwo.VolumeReductionGLProcessor.png?classIdentifier=org.inviwo.VolumeReductionGLProcessor)
- *
- * GL implementation of add, min, and max reductions for 3D textures (volumes).
- *
- * ### Inputs
- *   * __Volume inport__ Input volume.
- *
- * ### Outports
- *   * __Volume outport__ Reduced volume.
- *
- * ### Properties
- *   * __Reduction operator__ Operator for reduction.
- *
- */
-class IVW_MODULE_COMPUTEUTILS_API VolumeReductionGLProcessor : public Processor {
-public:
-    VolumeReductionGLProcessor();
-    virtual ~VolumeReductionGLProcessor() = default;
+int main(int argc, char** argv) {
+    using namespace inviwo;
+    LogCentral::init();
+    auto logger = std::make_shared<ConsoleLogger>();
+    LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
+    LogCentral::getPtr()->registerLogger(logger);
 
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-    static const ProcessorInfo processorInfo_;
-
-private:
-    VolumeInport volumeInport_;
-    VolumeOutport volumeOutport_;
-
-    OptionProperty<ReductionOperator> reductionOperator_;
-
-    VolumeReductionGL gpuReduction_;
-};
-
-}  // namespace inviwo
+    int ret = -1;
+    {
+        ::testing::InitGoogleTest(&argc, argv);
+        inviwo::ConfigurableGTestEventListener::setup();
+        ret = RUN_ALL_TESTS();
+    }
+    return ret;
+}

@@ -32,6 +32,8 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/texture3d.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -131,7 +133,7 @@ std::shared_ptr<Volume> VolumeNormalizationGL::normalize(const Volume& volume) {
 
     shader_.deactivate();
 
-    outVolume->dataMap_.dataRange = outVolume->dataMap_.valueRange = dvec2{0, 1};
+    outVolume->dataMap.dataRange = outVolume->dataMap.valueRange = dvec2{0, 1};
 
     return outVolume;
 }
