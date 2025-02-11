@@ -31,18 +31,22 @@
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/stringconversion.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/opengl/volume/volumegl.h>
 #include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/core/network/networklock.h>
+#include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/texture/textureutils.h>
 #include <modules/opengl/shader/shaderutils.h>
-#include <fmt/format.h>
-#include <inviwo/core/network/networklock.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/texture/texture3d.h>
 #include <modules/base/algorithm/dataminmax.h>
-#include <algorithm>
 #include <inviwo/featurelevelsetsgl/util/util.h>
 #include <inviwo/featurelevelsetsgl/properties/implicitfunctiontraitproperty.h>
 #include <inviwo/featurelevelsetsgl/properties/pointtraitproperty.h>
 #include <inviwo/featurelevelsetsgl/properties/rangetraitproperty.h>
+
+#include <algorithm>
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -55,7 +59,7 @@ const ProcessorInfo FeatureLevelSetProcessorGL::processorInfo_{
     Tags::GL,                                 // Tags
 };
 
-const ProcessorInfo FeatureLevelSetProcessorGL::getProcessorInfo() const { return processorInfo_; }
+const ProcessorInfo& FeatureLevelSetProcessorGL::getProcessorInfo() const { return processorInfo_; }
 
 void FeatureLevelSetProcessorGL::serialize(Serializer& s) const {
     Processor::serialize(s);
@@ -312,7 +316,7 @@ void FeatureLevelSetProcessorGL::process() {
         min = min - max;
     }*/
 
-    outputTexture->dataMap_.valueRange = outputTexture->dataMap_.dataRange =
+    outputTexture->dataMap.valueRange = outputTexture->dataMap.dataRange =
         dvec2(min, capMaxDistance_.get() ? std::min(max, maxDist_) : max);
 
     distanceVolumeOutport_.setData(outputTexture);
@@ -386,7 +390,7 @@ std::vector<vec2> FeatureLevelSetProcessorGL::gatherVolumeRanges() const {
     std::vector<vec2> ranges{};
 
     for (const auto volume : volumes_.getVectorData()) {
-        ranges.emplace_back(volume->dataMap_.dataRange);
+        ranges.emplace_back(volume->dataMap.dataRange);
     }
 
     return ranges;
@@ -505,7 +509,7 @@ void FeatureLevelSetProcessorGL::updateDataRangesCache() {
 
     for (auto&& [index, volume] : util::enumerate(volumes)) {
         if (auto& range = dataRangesCache_[index]; useVolumesDataMap_.get()) {
-            range = volume->dataMap_.valueRange;
+            range = volume->dataMap.valueRange;
         } else {
             auto [mins, maxs] = util::volumeMinMax(volume.get());
             range = dvec2(mins.x, maxs.x);

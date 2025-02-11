@@ -27,6 +27,16 @@
  *
  *********************************************************************************/
 
+#if !defined(IMPLICIT_FUNCTION_1)
+#define IMPLICIT_FUNCTION_1
+#endif
+#if !defined(IMPLICIT_FUNCTION_2)
+#define IMPLICIT_FUNCTION_2
+#endif
+#if !defined(IMPLICIT_FUNCTION_3)
+#define IMPLICIT_FUNCTION_3
+#endif
+
 #include "utils/structs.glsl"
 #include "pointtrait.glsl"
 #include "rangetrait.glsl"
@@ -47,19 +57,16 @@ uniform int numRangeTraits;
 
 layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-// #define ENABLE_IMPLICIT_FUNCTION_1
 void implicitFunction1(in float point[NUM_VOLUMES], in vec2[NUM_VOLUMES] ranges, out float result) {
-    // #IMPLICIT_FUNCTION_1
+    IMPLICIT_FUNCTION_1
 }
 
-// #define ENABLE_IMPLICIT_FUNCTION_2
 void implicitFunction2(in float point[NUM_VOLUMES], in vec2[NUM_VOLUMES] ranges, out float result) {
-    // #IMPLICIT_FUNCTION_2
+    IMPLICIT_FUNCTION_2
 }
 
-// #define ENABLE_IMPLICIT_FUNCTION_3
 void implicitFunction3(in float point[NUM_VOLUMES], in vec2[NUM_VOLUMES] ranges, out float result) {
-    // #IMPLICIT_FUNCTION_3
+    IMPLICIT_FUNCTION_3
 }
 
 void main() {
