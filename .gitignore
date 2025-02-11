@@ -35,3 +35,6 @@
 *.pyc
 **/__pycache__/**
 .DS_Store
+
+# Spyder project files
+.spyproject/
