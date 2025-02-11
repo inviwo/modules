@@ -38,27 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeMinMaxGLProcessor, Volume Min Max GLProcessor}
- * ![](org.inviwo.VolumeMinMaxGLProcessor.png?classIdentifier=org.inviwo.VolumeMinMaxGLProcessor)
- *
- * This method calculates min and max values of a volume. If you need min/max per channel you should
- * look at VolumeReductionGL. The disregarding status indicates whether or not the calculation of
- * the min/max values should disregard a certain value range. This is for example handy for volumes
- * where special regions are marked with voxel values of INT_MAX or the like. Example: Your data
- * array consists of {0, 1, 2, 3, INT_MAX} and you would like to compute the max value. In addition,
- * you know that outliers are marked with a value of INT_MAX so you would like those values to not
- * be considered.
- *
- * ### Inputs
- *   * __Volume inport__ Input volume.
- *
- * ### Outports
- *   * __Volume outport__ Reduced volume.
- *
- * ### Properties
- *   * __Disregarding status__ Enable/disable value discarding
- *   * __Disregarding range__ Value range to be discarded when computing minmax values.
- */
 class IVW_MODULE_COMPUTEUTILS_API VolumeMinMaxGLProcessor : public Processor {
 public:
     VolumeMinMaxGLProcessor();
@@ -66,7 +45,7 @@ public:
 
     virtual void process() override;
 
-    virtual const ProcessorInfo getProcessorInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
 private:
@@ -75,7 +54,7 @@ private:
 
     VolumeMinMaxGL volumeMinMaxGl_;
 
-    TemplateOptionProperty<DisregardingStatus> disregardingStatus_;
+    OptionProperty<DisregardingStatus> disregardingStatus_;
     FloatMinMaxProperty disregardingRange_;
 };
 
