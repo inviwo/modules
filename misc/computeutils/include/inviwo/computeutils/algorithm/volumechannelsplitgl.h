@@ -56,7 +56,7 @@ public:
      * @param volume Volume to be split.
      * @return Set of single-channel volumes
      */
-    std::vector<std::shared_ptr<Volume>> split(std::shared_ptr<const Volume> volume);
+    VolumeSequence split(std::shared_ptr<const Volume> volume);
 
 protected:
     Shader shader_;

@@ -32,6 +32,8 @@
 #include <modules/opengl/volume/volumegl.h>
 #include <modules/opengl/shader/shaderutils.h>
 #include <modules/opengl/volume/volumeutils.h>
+#include <modules/opengl/texture/textureunit.h>
+#include <modules/opengl/texture/texture3d.h>
 
 #include <inviwo/core/datastructures/volume/volume.h>
 #include <inviwo/core/datastructures/volume/volumeram.h>
@@ -42,7 +44,7 @@ VolumeChannelSplitGL::VolumeChannelSplitGL()
     : shader_({{ShaderType::Compute, utilgl::findShaderResource("volumesplit.comp")}},
               Shader::Build::No) {}
 
-std::vector<std::shared_ptr<Volume>> VolumeChannelSplitGL::split(
+VolumeSequence VolumeChannelSplitGL::split(
     std::shared_ptr<const Volume> volume) {
     std::vector<std::shared_ptr<Volume>> outVolumes;
 
@@ -104,12 +106,12 @@ std::vector<std::shared_ptr<Volume>> VolumeChannelSplitGL::split(
     }
 
     for (auto outVolume : outVolumes) {
-        outVolume->dataMap_.dataRange = outVolume->dataMap_.valueRange =
+        outVolume->dataMap.dataRange = outVolume->dataMap.valueRange =
             dvec2{volumeReductionGl_.reduce_v(outVolume, ReductionOperator::Min),
                   volumeReductionGl_.reduce_v(outVolume, ReductionOperator::Max)};
     }
 
-    return outVolumes;
+    return VolumeSequence{outVolumes};
 }
 
 }  // namespace inviwo

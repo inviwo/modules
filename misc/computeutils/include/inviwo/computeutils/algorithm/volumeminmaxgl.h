@@ -58,7 +58,7 @@ public:
      * the max value. In addition, you know that outliers are marked with a value of INT_MAX so you
      * would like those values to not be considered. In that case, you call
      * minmax(myVolume, DisregardingStatus::On,
-     *        vec2{myVolume->dataMap_.dataRange.x, std::numeric_limits<int>::max() - 1});
+     *        vec2{myVolume->dataMap.dataRange.x, std::numeric_limits<int>::max() - 1});
      * @param range The range that should be disregarded.
      *
      * @returns Aggregated min/max values.
