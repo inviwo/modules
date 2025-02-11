@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2024-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,26 +27,37 @@
  *
  *********************************************************************************/
 
-#include <inviwo/computeshaderexamples/computeshaderexamplesmodule.h>
-#include <inviwo/computeshaderexamples/processors/computeshaderbufferexample.h>
-#include <inviwo/computeshaderexamples/processors/computeshaderimageexample.h>
+#pragma once
 
-#include <inviwo/computeshaderexamples/processors/computeshaderminmax.h>
-#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+
+#include <modules/opengl/shader/shader.h>
 
 namespace inviwo {
 
-ComputeShaderExamplesModule::ComputeShaderExamplesModule(InviwoApplication* app)
-    : InviwoModule(app, "ComputeShaderExamples") {
-    // Add a directory to the search path of the Shadermanager
-    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderMinMax : public Processor {
+public:
+    ComputeShaderMinMax();
 
-    // Register objects that can be shared with the rest of inviwo here:
+    virtual void initializeResources() override;
+    virtual void process() override;
 
-    // Processors
-    registerProcessor<ComputeShaderBufferExample>();
-    registerProcessor<ComputeShaderImageExample>();
-    registerProcessor<ComputeShaderMinMax>();
-}
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
+
+private:
+    VolumeInport volume_;
+
+    FloatVec4Property minValues_;
+    FloatVec4Property maxValues_;
+    BoolProperty logErrorOnly_;
+
+    Shader shaderSampleVolume_;
+    Shader shaderLinear_;
+};
 
 }  // namespace inviwo
