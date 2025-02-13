@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2022-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,43 +26,36 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
-
 #pragma once
 
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/featurelevelsetsgl/featurelevelsetsglmoduledefine.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/datastructures/volume/volume.h>
 
 namespace inviwo {
-
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
+class IVW_MODULE_FEATURELEVELSETSGL_API TraitProperty : public CompositeProperty {
 public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+    TraitProperty() = delete;
+    TraitProperty(const std::string& identifier, const std::string& displayName)
+        : CompositeProperty(identifier, displayName), numInitializedAttributes_(0) {}
+    TraitProperty(const TraitProperty& p) : CompositeProperty(p), numInitializedAttributes_(0) {}
 
-    virtual void initializeResources() override;
-    virtual void process() override;
+    virtual ~TraitProperty() override = default;
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
+    TraitProperty* clone() const override = 0;
 
-    static const ProcessorInfo processorInfo_;
+    std::string_view getClassIdentifier() const override;
+    static constexpr std::string_view classIdentifier{"org.inviwo.TraitProperty"};
+
+    virtual void addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+                              bool useVolumeDataMap) = 0;
+
+    size_t numInitializedAttributes() const { return numInitializedAttributes_; }
+    void inc() { numInitializedAttributes_++; }
+    void reset() { numInitializedAttributes_ = 0; }
 
 private:
-    MeshOutport mesh_;
-
-    Shader shader_;
-
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
+    size_t numInitializedAttributes_;
 };
 
 }  // namespace inviwo

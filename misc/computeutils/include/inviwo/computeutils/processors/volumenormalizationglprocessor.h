@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2021-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,40 +29,42 @@
 
 #pragma once
 
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/computeutils/computeutilsmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/core/properties/compositeproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/computeutils/algorithm/volumenormalizationgl.h>
 
 namespace inviwo {
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
+/**
+ * Enables the usage of the VolumeNormalizationGL algorithm.
+ * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
+ * volume in terms of vector norms!
+ * \see VolumeNormalizationGL
+ */
+class IVW_MODULE_COMPUTEUTILS_API VolumeNormalizationGLProcessor : public Processor {
 public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+    VolumeNormalizationGLProcessor();
+    virtual ~VolumeNormalizationGLProcessor() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
-
     static const ProcessorInfo processorInfo_;
 
 private:
-    MeshOutport mesh_;
+    VolumeInport volumeInport_;
+    VolumeOutport volumeOutport_;
 
-    Shader shader_;
+    CompositeProperty channels_;
+    BoolProperty normalizeChannel0_;
+    BoolProperty normalizeChannel1_;
+    BoolProperty normalizeChannel2_;
+    BoolProperty normalizeChannel3_;
 
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
+    VolumeNormalizationGL volumeNormalization_;
 };
 
 }  // namespace inviwo

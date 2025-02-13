@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2021-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,40 +29,46 @@
 
 #pragma once
 
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
+#include <inviwo/computeutils/computeutilsmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/computeutils/algorithm/volumereductiongl.h>
+#include <inviwo/core/ports/volumeport.h>
+#include <inviwo/core/properties/optionproperty.h>
 
 namespace inviwo {
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
+/** \docpage{org.inviwo.VolumeReductionGLProcessor, Volume Reduction Processor}
+ * ![](org.inviwo.VolumeReductionGLProcessor.png?classIdentifier=org.inviwo.VolumeReductionGLProcessor)
+ *
+ * GL implementation of add, min, and max reductions for 3D textures (volumes).
+ *
+ * ### Inputs
+ *   * __Volume inport__ Input volume.
+ *
+ * ### Outports
+ *   * __Volume outport__ Reduced volume.
+ *
+ * ### Properties
+ *   * __Reduction operator__ Operator for reduction.
+ *
+ */
+class IVW_MODULE_COMPUTEUTILS_API VolumeReductionGLProcessor : public Processor {
 public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+    VolumeReductionGLProcessor();
+    virtual ~VolumeReductionGLProcessor() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
-
     static const ProcessorInfo processorInfo_;
 
 private:
-    MeshOutport mesh_;
+    VolumeInport volumeInport_;
+    VolumeOutport volumeOutport_;
 
-    Shader shader_;
+    OptionProperty<ReductionOperator> reductionOperator_;
 
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
+    VolumeReductionGL gpuReduction_;
 };
 
 }  // namespace inviwo

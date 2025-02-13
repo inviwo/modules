@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2021-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,30 @@
  *
  *********************************************************************************/
 
-#pragma once
+uniform sampler3D inputTexture;
 
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+writeonly uniform image3D outputTexture;
 
-namespace inviwo {
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
-public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+void main() {
+    ivec3 pos = ivec3(gl_GlobalInvocationID);
 
-    virtual void initializeResources() override;
-    virtual void process() override;
+    vec4 val = texelFetch(inputTexture, pos, 0);
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
+#if CHANNEL == 0
+    imageStore(outputTexture, pos, vec4(val.x));
+#endif
 
-    static const ProcessorInfo processorInfo_;
+#if CHANNEL == 1
+    imageStore(outputTexture, pos, vec4(val.y));
+#endif
 
-private:
-    MeshOutport mesh_;
+#if CHANNEL == 2
+    imageStore(outputTexture, pos, vec4(val.z));
+#endif
 
-    Shader shader_;
-
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
-};
-
-}  // namespace inviwo
+#if CHANNEL == 3
+    imageStore(outputTexture, pos, vec4(val.w));
+#endif
+}

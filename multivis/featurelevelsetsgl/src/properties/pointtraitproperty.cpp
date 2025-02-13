@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2022-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,33 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/featurelevelsetsgl/properties/pointtraitproperty.h>
+#include <modules/base/algorithm/dataminmax.h>
 
 namespace inviwo {
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
-public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+std::string_view PointTraitProperty::getClassIdentifier() const { return classIdentifier; }
 
-    virtual void initializeResources() override;
-    virtual void process() override;
+vec4 PointTraitProperty::getAsVec4() const {
+    return vec4(attribute1_.get(), attribute2_.get(), attribute3_.get(), attribute4_.get());
+}
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
+void PointTraitProperty::addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+                                      bool useVolumeDataMap) {
+    const auto minVal = useVolumeDataMap
+                            ? vec2(volume->dataMap.valueRange).x
+                            : static_cast<float>(util::volumeMinMax(volume.get()).first.x);
+    const auto maxVal = useVolumeDataMap
+                            ? vec2(volume->dataMap.valueRange).y
+                            : static_cast<float>(util::volumeMinMax(volume.get()).second.x);
 
-    static const ProcessorInfo processorInfo_;
+    attributes_[numInitializedAttributes()]->setVisible(true);
+    attributes_[numInitializedAttributes()]->set(minVal);
+    attributes_[numInitializedAttributes()]->setMinValue(minVal);
+    attributes_[numInitializedAttributes()]->setMaxValue(maxVal);
+    attributes_[numInitializedAttributes()]->setDisplayName(name);
 
-private:
-    MeshOutport mesh_;
-
-    Shader shader_;
-
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
-};
+    inc();
+}
 
 }  // namespace inviwo

@@ -48,24 +48,32 @@ const ProcessorInfo ComputeShaderImageExample::processorInfo_{
     "Example",                               // Category
     CodeState::Experimental,                 // Code state
     Tags::GL,                                // Tags
+    R"(A processor to show how compute shaders can be utilized to create images. 
+    Uses shader `roll.comp` to create a simple procedural image.
+ 
+    C++ and GSLS source code is heavily inspired by http://wili.cc/blog/opengl-cs.html)"_help,
 };
 const ProcessorInfo& ComputeShaderImageExample::getProcessorInfo() const { return processorInfo_; }
 
 ComputeShaderImageExample::ComputeShaderImageExample()
-    : Processor()
-    , outport_("outport")
-    , shader_({{ShaderType::Compute, "roll.comp"}})
-    , roll_{"roll", "Roll", 0, 0, 10} {
+    : Processor{}
+    , outport_{"outport", "Generated output image"_help}
+    , shader_{{{ShaderType::Compute, "roll.comp"}}, Shader::Build::No}
+    , roll_{"roll", "Roll",
+            util::ordinalLength(0.0f, 10.0f)
+                .set("Used as offset in the sin function used in the shader to "
+                     "create a rolling effect"_help)} {
 
     addPort(outport_);
-
     addProperty(roll_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
 
+void ComputeShaderImageExample::initializeResources() { shader_.build(); }
+
 void ComputeShaderImageExample::process() {
-    // http://wili.cc/blog/opengl-cs.html
+    // inspired by http://wili.cc/blog/opengl-cs.html
 
     glActiveTexture(GL_TEXTURE0);
 

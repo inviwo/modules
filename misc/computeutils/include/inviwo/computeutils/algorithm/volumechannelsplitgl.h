@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2016-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,40 +29,39 @@
 
 #pragma once
 
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
+#include <inviwo/computeutils/computeutilsmoduledefine.h>
 #include <modules/opengl/shader/shader.h>
+#include <inviwo/core/datastructures/volume/volume.h>
+#include <inviwo/computeutils/algorithm/volumereductiongl.h>
 
 namespace inviwo {
-
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
+/** \class VolumeChannelSplitGL
+ *
+ * Splits multi-channel volumes into several single-channel volumes.
+ */
+class IVW_MODULE_COMPUTEUTILS_API VolumeChannelSplitGL {
 public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+    template <typename Callback>
+    VolumeChannelSplitGL(Callback C) : VolumeChannelSplitGL() {
+        shader_.onReload(C);
+    }
 
-    virtual void initializeResources() override;
-    virtual void process() override;
+    VolumeChannelSplitGL();
 
-    virtual const ProcessorInfo& getProcessorInfo() const override;
+    virtual ~VolumeChannelSplitGL() = default;
 
-    static const ProcessorInfo processorInfo_;
+    /**
+     * Splits multi-channel volumes into several single-channel volumes
+     *
+     * @param volume Volume to be split.
+     * @return Set of single-channel volumes
+     */
+    VolumeSequence split(std::shared_ptr<const Volume> volume);
 
-private:
-    MeshOutport mesh_;
-
+protected:
     Shader shader_;
 
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
+    VolumeReductionGL volumeReductionGl_;
 };
 
 }  // namespace inviwo

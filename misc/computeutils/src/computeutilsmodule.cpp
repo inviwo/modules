@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2021-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,24 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/computeutils/computeutilsmodule.h>
+#include <inviwo/computeutils/processors/volumechannelsplitglprocessor.h>
+#include <inviwo/computeutils/processors/volumeminmaxglprocessor.h>
+#include <inviwo/computeutils/processors/volumereductionglprocessor.h>
+#include <modules/opengl/shader/shadermanager.h>
+#include <inviwo/computeutils/processors/volumenormalizationglprocessor.h>
+#include <inviwo/computeutils/processors/volumeshrinktonormalrangeglprocessor.h>
 
 namespace inviwo {
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
-public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+ComputeUtilsModule::ComputeUtilsModule(InviwoApplication* app) : InviwoModule(app, "ComputeUtils") {
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    virtual void initializeResources() override;
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-
-    static const ProcessorInfo processorInfo_;
-
-private:
-    MeshOutport mesh_;
-
-    Shader shader_;
-
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
-};
+    registerProcessor<VolumeChannelSplitGLProcessor>();
+    registerProcessor<VolumeMinMaxGLProcessor>();
+    registerProcessor<VolumeNormalizationGLProcessor>();
+    registerProcessor<VolumeReductionGLProcessor>();
+    registerProcessor<VolumeShrinkToNormalRangeGLProcessor>();
+}
 
 }  // namespace inviwo

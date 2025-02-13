@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2020-2025 Inviwo Foundation
+ * Copyright (c) 2021-2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,42 +27,23 @@
  *
  *********************************************************************************/
 
-#pragma once
-
-#include <inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h>
-#include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/transferfunctionproperty.h>
-#include <inviwo/core/ports/imageport.h>
-#include <inviwo/core/ports/meshport.h>
-#include <modules/opengl/shader/shader.h>
+#include <inviwo/featurelevelsetsgl/featurelevelsetsglmodule.h>
+#include <inviwo/featurelevelsetsgl/processors/featurelevelsetprocessorgl.h>
+#include <inviwo/featurelevelsetsgl/properties/implicitfunctiontraitproperty.h>
+#include <inviwo/featurelevelsetsgl/properties/pointtraitproperty.h>
+#include <inviwo/featurelevelsetsgl/properties/rangetraitproperty.h>
+#include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
 
-class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
-public:
-    ComputeShaderBufferExample();
-    virtual ~ComputeShaderBufferExample() = default;
+FeatureLevelSetsGLModule::FeatureLevelSetsGLModule(InviwoApplication* app)
+    : InviwoModule(app, "FeatureLevelSetsGL") {
+    ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
 
-    virtual void initializeResources() override;
-    virtual void process() override;
-
-    virtual const ProcessorInfo& getProcessorInfo() const override;
-
-    static const ProcessorInfo processorInfo_;
-
-private:
-    MeshOutport mesh_;
-
-    Shader shader_;
-
-    IntProperty numPoints_;
-    FloatProperty radius_;
-    FloatProperty rotations_;
-    FloatProperty height_;
-
-    TransferFunctionProperty tf_;
-};
+    registerProcessor<FeatureLevelSetProcessorGL>();
+    registerProperty<ImplicitFunctionTraitProperty>();
+    registerProperty<PointTraitProperty>();
+    registerProperty<RangeTraitProperty>();
+}
 
 }  // namespace inviwo
