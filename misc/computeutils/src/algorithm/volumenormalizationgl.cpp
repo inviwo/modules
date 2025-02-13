@@ -46,7 +46,6 @@ VolumeNormalizationGL::VolumeNormalizationGL()
               Shader::Build::No)
     , needsCompilation_(false) {
     shader_.getShaderObject(ShaderType::Compute)->addShaderDefine("NORMALIZE_CHANNEL_0");
-    shader_.build();
 }
 
 void VolumeNormalizationGL::setNormalizeChannel(const size_t channel, const bool normalize) {
@@ -97,7 +96,7 @@ std::shared_ptr<Volume> VolumeNormalizationGL::normalize(const Volume& volume) {
     outVolume->setWorldMatrix(volume.getWorldMatrix());
     outVolume->copyMetaDataFrom(volume);
 
-    if (needsCompilation_) {
+    if (needsCompilation_ || !shader_.isReady()) {
         needsCompilation_ = false;
         shader_.build();
     }
