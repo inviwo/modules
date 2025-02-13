@@ -40,30 +40,12 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ComputeShaderBufferExample, Compute Shader Buffer Example}
- * ![](org.inviwo.ComputeShaderBufferExample.png?classIdentifier=org.inviwo.ComputeShaderBufferExample)
- *
- * An processor to show how compute shaders can be utilized to create vertex buffers. Uses shader
- * spiral.comp to create a simple spiral.
- *
- *
- * ### Outports
- *   * __mesh__ Mesh containing the created vertex buffers.
- *
- * ### Properties
- *   * __Number of points__ Number of points used to represent the spiral.
- *   * __Radius__ The radius of the spiral.
- *   * __Rotations__ How many rotations the spiral will have.
- *   * __Height__ Hight difference between start and end point of the spiral.
- *   * __Color Mapping__ Used to colorize the spiral.
- *
- */
-
 class IVW_MODULE_COMPUTESHADEREXAMPLES_API ComputeShaderBufferExample : public Processor {
 public:
     ComputeShaderBufferExample();
     virtual ~ComputeShaderBufferExample() = default;
 
+    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
