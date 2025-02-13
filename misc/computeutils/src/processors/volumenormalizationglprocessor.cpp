@@ -38,21 +38,25 @@ const ProcessorInfo VolumeNormalizationGLProcessor::processorInfo_{
     "Volume Operation",                           // Category
     CodeState::Stable,                            // Code state
     Tags::GL,                                     // Tags
+    R"( Normalizes the selected channels of the input volume to range [0,1].
+    Note that this algorithm normalizes channels independently, it does not 
+    normalize a multi-channel volume in terms of vector norms!)"_unindentHelp,
 };
 const ProcessorInfo& VolumeNormalizationGLProcessor::getProcessorInfo() const {
     return processorInfo_;
 }
 
 VolumeNormalizationGLProcessor::VolumeNormalizationGLProcessor()
-    : Processor()
-    , volumeInport_("volumeInport")
-    , volumeOutport_("volumeOutport")
-    , channels_("channels", "Channels")
-    , normalizeChannel0_("normalizeChannel0", "Channel 1", true)
-    , normalizeChannel1_("normalizeChannel1", "Channel 2", false)
-    , normalizeChannel2_("normalizeChannel2", "Channel 3", false)
-    , normalizeChannel3_("normalizeChannel3", "Channel 4", false)
-    , volumeNormalization_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
+    : Processor{}
+    , volumeInport_{"volumeInport", "Input Volume"_help}
+    , volumeOutport_{"volumeOutport", "Normalized volume"_help}
+    , channels_{"channels", "Channels",
+                "Select the channels you wish to normalize to range [0,1]"_help}
+    , normalizeChannel0_{"normalizeChannel0", "Channel 1", true}
+    , normalizeChannel1_{"normalizeChannel1", "Channel 2", false}
+    , normalizeChannel2_{"normalizeChannel2", "Channel 3", false}
+    , normalizeChannel3_{"normalizeChannel3", "Channel 4", false}
+    , volumeNormalization_{[this]() { this->invalidate(InvalidationLevel::InvalidOutput); }} {
 
     addPorts(volumeInport_, volumeOutport_);
 

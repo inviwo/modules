@@ -38,33 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.VolumeShrinkToNormalRangeGLProcessor, Volume Shrink To Normal Range
- * Processor}
- * ![](org.inviwo.VolumeShrinkToNormalRangeGLProcessor.png?classIdentifier=org.inviwo.VolumeShrinkToNormalRangeGLProcessor)
- *
- * Shrinks the selected channels of the input volume to range [0 + offset, 1 + offset] where offset
- * is the percentual deviaton of the minimum from 0. For example, range [-0.5, 1.0] will be shrunk
- * to [-0.33, 0.66].
- *
- * ### Inputs
- *   * __Volume inport__ Input Volume
- *
- * ### Outports
- *   * __Volume outport__ Shrunk volume (if so selected)
- *
- * ### Properties
- *   * __Channels__ Check the boxes for those channels you wish to shrink to range [0 + offset, 1 +
- * offset]
- */
-
-/**
- * \class VolumeShrinkToNormalRangeGLProcessor
- *
- * Enables the usage of the %VolumeNormalization algorithm. For details about the algorithm,
- * please see VolumeNormalization.
- * Note that this algorithm normalizes channels independently, it does not normalize a multi-channel
- * volume in terms of vector norms!
- */
 class IVW_MODULE_COMPUTEUTILS_API VolumeShrinkToNormalRangeGLProcessor : public Processor {
 public:
     VolumeShrinkToNormalRangeGLProcessor();
