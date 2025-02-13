@@ -37,7 +37,10 @@ const ProcessorInfo VolumeShrinkToNormalRangeGLProcessor::processorInfo_{
     "Volume Shrink to Normal Range",                    // Display name
     "Volume Operation",                                 // Category
     CodeState::Stable,                                  // Code state
-    "range, normal, shrink, feature",                   // Tags
+    Tags::GL | Tag{"Normalization"},                    // Tags
+    R"(Shrinks the selected channels of the input volume to range 
+    [0 + offset, 1 + offset] where offset is the percentual deviaton of the minimum 
+    from 0. For example, range [-0.5, 1.0] will be shrunk to [-0.33, 0.66].)"_unindentHelp,
 };
 const ProcessorInfo& VolumeShrinkToNormalRangeGLProcessor::getProcessorInfo() const {
     return processorInfo_;
@@ -45,14 +48,15 @@ const ProcessorInfo& VolumeShrinkToNormalRangeGLProcessor::getProcessorInfo() co
 
 VolumeShrinkToNormalRangeGLProcessor::VolumeShrinkToNormalRangeGLProcessor()
     : Processor()
-    , volumeInport_("volumeInport")
-    , volumeOutport_("volumeOutport")
-    , channels_("channels", "Channels")
-    , shrinkChannel0_("shrinkChannel0", "Channel 1", true)
-    , shrinkChannel1_("shrinkChannel1", "Channel 2", false)
-    , shrinkChannel2_("shrinkChannel2", "Channel 3", false)
-    , shrinkChannel3_("shrinkChannel3", "Channel 4", false)
-    , volumeShrinkToNormalRangeGl_([&]() { this->invalidate(InvalidationLevel::InvalidOutput); }) {
+    , volumeInport_{"volumeInport", "Input Volume"_help}
+    , volumeOutport_{"volumeOutport", "Shrunk volume"_help}
+    , channels_{"channels", "Channels",
+                "Select those channels you wish to shrink to range [0 + offset, 1 + offset]"_help}
+    , shrinkChannel0_{"shrinkChannel0", "Channel 1", true}
+    , shrinkChannel1_{"shrinkChannel1", "Channel 2", false}
+    , shrinkChannel2_{"shrinkChannel2", "Channel 3", false}
+    , shrinkChannel3_{"shrinkChannel3", "Channel 4", false}
+    , volumeShrinkToNormalRangeGl_{[&]() { this->invalidate(InvalidationLevel::InvalidOutput); }} {
 
     addPorts(volumeInport_, volumeOutport_);
 
