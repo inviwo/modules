@@ -46,7 +46,6 @@ VolumeShrinkToNormalRangeGL::VolumeShrinkToNormalRangeGL()
               Shader::Build::No)
     , needsCompilation_(false) {
     shader_.getShaderObject(ShaderType::Compute)->addShaderDefine("SHRINK_CHANNEL_0");
-    shader_.build();
 }
 
 void VolumeShrinkToNormalRangeGL::setShrinkChannel(const size_t channel, const bool shrink) {
@@ -73,10 +72,10 @@ void VolumeShrinkToNormalRangeGL::reset() { setShrinkChannels({true, false, fals
 std::shared_ptr<Volume> VolumeShrinkToNormalRangeGL::shrink(const Volume& volume) {
     std::shared_ptr<Volume> outVolume;
 
-    const auto offset = (volume.dataMap.dataRange.x < 0.0 && volume.dataMap.dataRange.y > 0.0)
-                            ? volume.dataMap.dataRange.x /
-                                  (volume.dataMap.dataRange.y - volume.dataMap.dataRange.x)
-                            : 0.0;
+    const auto offset =
+        (volume.dataMap.dataRange.x < 0.0 && volume.dataMap.dataRange.y > 0.0)
+            ? volume.dataMap.dataRange.x / (volume.dataMap.dataRange.y - volume.dataMap.dataRange.x)
+            : 0.0;
 
     // Don't dispatch if we don't have to
     if (volume.getDataFormat()->getNumericType() == NumericType::Float) {
@@ -102,7 +101,7 @@ std::shared_ptr<Volume> VolumeShrinkToNormalRangeGL::shrink(const Volume& volume
     outVolume->setWorldMatrix(volume.getWorldMatrix());
     outVolume->copyMetaDataFrom(volume);
 
-    if (needsCompilation_) {
+    if (needsCompilation_ || !shader_.isReady()) {
         needsCompilation_ = false;
         shader_.build();
     }
