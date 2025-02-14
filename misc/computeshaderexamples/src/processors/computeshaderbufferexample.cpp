@@ -47,24 +47,36 @@ const ProcessorInfo ComputeShaderBufferExample::processorInfo_{
     "Example",                                // Category
     CodeState::Experimental,                  // Code state
     Tags::GL,                                 // Tags
+    R"(An processor to show how compute shaders can be utilized to create vertex buffers. 
+    Uses shader `spiral.comp` to create a simple spiral.)"_unindentHelp,
 };
 const ProcessorInfo& ComputeShaderBufferExample::getProcessorInfo() const { return processorInfo_; }
 
 ComputeShaderBufferExample::ComputeShaderBufferExample()
-    : Processor()
-    , mesh_("mesh")
-    , shader_({{ShaderType::Compute, "spiral.comp"}})
-    , numPoints_("numPoints", "Number of points", 1024, 1, 10000)
-    , radius_("radius", "Radius", 1, 0, 10)
-    , rotations_("rotations", "Rotations", 1, 0, 10)
-    , height_("height", "Height", 1, 0, 10)
-    , tf_("tf", "Color Mapping") {
-    addPort(mesh_);
+    : Processor{}
+    , mesh_{"mesh", "Mesh containing the created vertex buffers"_help}
+    , shader_{{{ShaderType::Compute, "spiral.comp"}}, Shader::Build::No}
+    , numPoints_{"numPoints", "Number of points",
+                 util::ordinalCount(1024, 10000)
+                     .setMin(1)
+                     .set("Number of points used to represent the spiral"_help)}
+    , radius_{"radius", "Radius",
+              util::ordinalScale(1.0f, 10.0f).set("The radius of the spiral"_help)}
+    , rotations_{"rotations", "Rotations",
+                 util::ordinalScale(1.0f, 10.0f)
+                     .set("Number of rotations the spiral will have"_help)}
+    , height_{"height", "Height",
+              util::ordinalScale(1.0f, 10.0f)
+                  .set("Height difference between start and end point of the spiral"_help)}
+    , tf_{"tf", "Color Mapping", "Used to colorize the spiral"_help} {
 
+    addPort(mesh_);
     addProperties(numPoints_, radius_, rotations_, height_, tf_);
 
-    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidOutput); });
+    shader_.onReload([this]() { invalidate(InvalidationLevel::InvalidResources); });
 }
+
+void ComputeShaderBufferExample::initializeResources() { shader_.build(); }
 
 void ComputeShaderBufferExample::process() {
     shader_.activate();
