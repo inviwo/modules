@@ -149,7 +149,8 @@ void ComputeShaderMinMax::process() {
     const auto& glFormat = GLFormats::get(volumeGL->getDataFormat()->getId());
     const bool useImageLoadStore = (glFormat.channels != 3);
 
-    if (true) {
+    {
+        // Note: inefficient to recompile the shader every frame
         auto* computeShader = shaderSampleVolume_.getComputeShaderObject();
 
         StrBuffer buf;
@@ -175,15 +176,15 @@ void ComputeShaderMinMax::process() {
 
     // global buffer for min/max values for all work groups
     const size_t bufSize = 2 * glm::compMul(numGroups);
-    BufferObject buf(bufSize * sizeof(ivec4), GLFormats::get(DataFormatId::Vec4Float32),
-                     GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
+    const BufferObject buf(bufSize * sizeof(ivec4), GLFormats::get(DataFormatId::Vec4Float32),
+                           GL_DYNAMIC_READ, GL_SHADER_STORAGE_BUFFER);
     buf.bindBase(3);
 
     {
-        utilgl::Activate activateShader(&shaderSampleVolume_);
+        const utilgl::Activate activateShader(&shaderSampleVolume_);
 
         if (!useImageLoadStore) {
-            TextureUnit texUnit;
+            const TextureUnit texUnit;
             texUnit.activate();
             volumeGL->getTexture()->bind();
             shaderSampleVolume_.setUniform("volume", texUnit.getUnitNumber());
@@ -195,7 +196,7 @@ void ComputeShaderMinMax::process() {
     const uint32_t arrayLen = glm::compMul(numGroups);
     {
         glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
-        utilgl::Activate activateShader(&shaderLinear_);
+        const utilgl::Activate activateShader(&shaderLinear_);
         shaderLinear_.setUniform("arrayLength", arrayLen);
         glDispatchCompute(1, 1, 1);
     }
@@ -216,13 +217,13 @@ void ComputeShaderMinMax::process() {
 
     // undo GL format normalization
     if (glFormat.normalization == utilgl::Normalization::Normalized) {
-        DataMapper dataMapper{DataFormatBase::get(GLFormats::get(glFormat))};
+        const DataMapper dataMapper{DataFormatBase::get(GLFormats::get(glFormat))};
 
         minmaxGL[0] = dataMapper.mapFromNormalizedToData(minmaxGL[0]);
         minmaxGL[1] = dataMapper.mapFromNormalizedToData(minmaxGL[1]);
     } else if (glFormat.normalization == utilgl::Normalization::SignNormalized) {
         using enum DataMapper::SignedNormalization;
-        DataMapper dataMapper{
+        const DataMapper dataMapper{
             DataFormatBase::get(GLFormats::get(glFormat)),
             OpenGLCapabilities::isSignedIntNormalizationSymmetric() ? Symmetric : Asymmetric};
 

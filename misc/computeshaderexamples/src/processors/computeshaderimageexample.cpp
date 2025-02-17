@@ -75,7 +75,7 @@ void ComputeShaderImageExample::initializeResources() { shader_.build(); }
 void ComputeShaderImageExample::process() {
     // inspired by http://wili.cc/blog/opengl-cs.html
 
-    TextureUnit unit;
+    const TextureUnit unit;
     unit.activate();
 
     auto img = std::make_shared<Image>(size2_t{512, 512}, DataFormat<float>::get());
