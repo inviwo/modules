@@ -53,7 +53,7 @@ namespace inviwo {
 
 void exposeTensorVis(pybind11::module& m) {
 
-    py::class_<TensorField3D>(m, "TensorField3D")
+    py::classh<TensorField3D>(m, "TensorField3D")
         .def(py::init([](size3_t dims, std::vector<dmat3> data, vec3 extent,
                          float sliceCoord) -> TensorField3D {
             return TensorField3D{dims, data, extent, sliceCoord};
