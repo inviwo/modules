@@ -31,6 +31,7 @@
 #include <inviwo/computeshaderexamples/processors/computeshaderbufferexample.h>
 #include <inviwo/computeshaderexamples/processors/computeshaderimageexample.h>
 
+#include <inviwo/computeshaderexamples/processors/computeshaderminmax.h>
 #include <modules/opengl/shader/shadermanager.h>
 
 namespace inviwo {
@@ -45,6 +46,7 @@ ComputeShaderExamplesModule::ComputeShaderExamplesModule(InviwoApplication* app)
     // Processors
     registerProcessor<ComputeShaderBufferExample>();
     registerProcessor<ComputeShaderImageExample>();
+    registerProcessor<ComputeShaderMinMax>();
 }
 
 }  // namespace inviwo

@@ -9,6 +9,7 @@ set(HEADER_FILES
     include/inviwo/computeshaderexamples/computeshaderexamplesmoduledefine.h
     include/inviwo/computeshaderexamples/processors/computeshaderbufferexample.h
     include/inviwo/computeshaderexamples/processors/computeshaderimageexample.h
+    include/inviwo/computeshaderexamples/processors/computeshaderminmax.h
 )
 ivw_group("Header Files" ${HEADER_FILES})
 
@@ -18,6 +19,7 @@ set(SOURCE_FILES
     src/computeshaderexamplesmodule.cpp
     src/processors/computeshaderbufferexample.cpp
     src/processors/computeshaderimageexample.cpp
+    src/processors/computeshaderminmax.cpp
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
@@ -26,6 +28,8 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(SHADER_FILES
     glsl/roll.comp
     glsl/spiral.comp
+    glsl/minmaxlinear.comp
+    glsl/minmaxvolume.comp
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
