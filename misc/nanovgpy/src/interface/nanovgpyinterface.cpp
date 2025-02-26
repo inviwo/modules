@@ -68,7 +68,7 @@ void init(py::module ivwmodule, InviwoApplication* app) {
         .value("Right_Bottom", NanoVGContext::Alignment::Right_Bottom)
         .value("Right_Baseline", NanoVGContext::Alignment::Right_Baseline);
 
-    py::class_<NanoVGContext> nanoVGContext(m, "NanoVGContext");
+    py::classh<NanoVGContext> nanoVGContext(m, "NanoVGContext");
     nanoVGContext.def(
         "activate",
         [](NanoVGContext* self, int windowWidth, int windowHeight, float pixelRatio) {

@@ -336,7 +336,7 @@ void exposeMolVis(pybind11::module& m) {
     auto mUtil = m.def_submodule("util", "MolVis utils");
     detail::exposeMolVisUtil(mUtil);
 
-    py::class_<Atoms>(m, "Atoms")
+    py::classh<Atoms>(m, "Atoms")
         .def(py::init())
         .def_readwrite("positions", &Atoms::positions)
         .def_readwrite("serialnumbers", &Atoms::serialNumbers)
@@ -356,7 +356,7 @@ void exposeMolVis(pybind11::module& m) {
                 a.chainIds.size(), a.residueIds.size(), a.atomicNumbers.size(), a.fullNames.size());
         });
 
-    py::class_<Residue>(m, "Residue")
+    py::classh<Residue>(m, "Residue")
         .def(py::init())
         .def(py::init([](int id, AminoAcid aminoacid, const std::string& fullname,
                          int chainid) -> Residue {
@@ -378,7 +378,7 @@ void exposeMolVis(pybind11::module& m) {
                                r.fullName, r.chainId);
         });
 
-    py::class_<Chain>(m, "Chain")
+    py::classh<Chain>(m, "Chain")
         .def(py::init())
         .def(py::init([](int id, const std::string& name) -> Chain {
                  return {id, name};
@@ -388,7 +388,7 @@ void exposeMolVis(pybind11::module& m) {
         .def_readwrite("name", &Chain::name)
         .def("__repr__", [](Chain& c) { return fmt::format("<Chain: {}, '{}'>", c.id, c.name); });
 
-    py::class_<MolecularData>(m, "MolecularData")
+    py::classh<MolecularData>(m, "MolecularData")
         .def(py::init())
         .def(py::init([](const std::string& source, Atoms atoms,
                          const std::vector<Residue>& residues = {},
@@ -410,7 +410,7 @@ void exposeMolVis(pybind11::module& m) {
                 md.chains.size(), md.bonds.size());
         });
 
-    py::class_<MolecularStructure>(m, "MolecularStructure")
+    py::classh<MolecularStructure>(m, "MolecularStructure")
         .def(py::init([](MolecularData data) -> MolecularStructure { return {std::move(data)}; }),
              py::arg("data"))
         .def_readwrite("axes", &MolecularStructure::axes)
