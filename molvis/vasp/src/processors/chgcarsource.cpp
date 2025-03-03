@@ -137,8 +137,7 @@ constexpr size_t forEachPart(std::string_view str, Func&& func) {
         const auto second = str.find(' ', first);
         if constexpr (n != std::numeric_limits<size_t>::max()) {
             if (i >= n) {
-                throw Exception(SourceContext{},
-                                "Expected {} elements, in str '{}'", n, str);
+                throw Exception(SourceContext{}, "Expected {} elements, in str '{}'", n, str);
             }
         }
         std::invoke(func, str.substr(first, second - first), i);
@@ -148,8 +147,8 @@ constexpr size_t forEachPart(std::string_view str, Func&& func) {
     }
     if constexpr (n != std::numeric_limits<size_t>::max()) {
         if (i != n) {
-            throw Exception(SourceContext{},
-                            "Expected {} elements, found {}, in str '{}'", n, i, str);
+            throw Exception(SourceContext{}, "Expected {} elements, found {}, in str '{}'", n, i,
+                            str);
         }
     }
     return i;
@@ -168,7 +167,7 @@ struct File {
         , buffer{}
         , currentLine{0} {
         if (!stream) {
-            throw Exception(SourceContext{},"Error opening file at {}", file);
+            throw Exception(SourceContext{}, "Error opening file at {}", file);
         }
     }
 
@@ -177,7 +176,7 @@ struct File {
         if (std::getline(stream, buffer)) {
             return func(util::trim(buffer));
         } else {
-            throw Exception(SourceContext{},"Invalid format at line {}", currentLine);
+            throw Exception(SourceContext{}, "Invalid format at line {}", currentLine);
         }
     }
 
@@ -283,6 +282,20 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
     mesh->setModelMatrix(chg.model);
 
     return mesh;
+}
+
+void updateTF(TransferFunction& tf, const Chgcar& chg, molvis::element::Colormap colormap,
+              double borderMargin) {
+    std::vector<TFPrimitiveData> points;
+    forEachAtom(
+        chg, borderMargin,
+        [&](molvis::Element elem, const glm::dvec3& pos, size_t atomIndex, size_t runningIndex) {
+            const auto color = molvis::element::color(elem, colormap);
+            points.emplace_back(static_cast<double>(runningIndex), color);
+            points.emplace_back(static_cast<double>(runningIndex + 1) - 0.00001, color);
+        });
+    std::ranges::for_each(points, [&](auto& p) { p.pos *= 2.0 / points.size(); });
+    tf.set(points);
 }
 
 std::string supToUnicode(std::string_view str) {
@@ -575,6 +588,7 @@ ChgcarSource::ChgcarSource()
                  {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew},
                  {"jmol", "Jmol", molvis::element::Colormap::Jmol}},
                 0}
+    , tf_{"tf", "Atom index TF", TransferFunction{}, TFData{}, InvalidationLevel::Valid}
     , radiusScaling_{"radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01}
     , borderMargin_{"borderMargin", "Border Repetition Margin", 0.05, 0.0, 0.5}
     , pm_{this, 1, [this](PickingEvent* event) { picking(event); }}
@@ -601,7 +615,7 @@ ChgcarSource::ChgcarSource()
     addPorts(chargeOutport_, magnetizationOutport_, atomsOutport_, atomInformationOutport_,
              moleculeOutport_, bnlInport_);
     addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, potential_,
-                  potcars_, colormap_, radiusScaling_, borderMargin_);
+                  potcars_, colormap_, tf_, radiusScaling_, borderMargin_);
 }
 
 ChgcarSource::~ChgcarSource() = default;
@@ -639,6 +653,7 @@ void ChgcarSource::process() {
             createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
         auto df = createDataFrame(*data_, potential_.getSelectedValue(), potcars_.get());
         auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+        updateTF(tf_.get(), *data_, colormap_, borderMargin_);
 
         basis_.updateEntity(*mesh);
         basis_.updateEntity(*ms);
@@ -794,6 +809,7 @@ void ChgcarSource::process() {
             createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
         auto df = createDataFrame(*data_, potential_.getSelectedValue(), potcars_.get());
         auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+        updateTF(tf_.get(), *data_, colormap_, borderMargin_);
         basis_.updateEntity(*mesh);
         basis_.updateEntity(*ms);
 
