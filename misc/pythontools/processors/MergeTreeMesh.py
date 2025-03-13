@@ -73,14 +73,15 @@ class MergeTreeMesh(ivw.Processor):
         return MergeTreeMesh.processorInfo()
 
     @staticmethod
-    def traverse(node, downMap, start, end, leaf, parent = -1, depth = 0, index = 0, count = 1):
-        if node in downMap:
-            start(node, depth, parent, index, count)
-            for i, c in enumerate(downMap[node]):
-                MergeTreeMesh.traverse(c, downMap, start, end, leaf, node, depth+1,i, len(downMap[node]))
-            end(node, depth, parent, index, count)
-        else:
-            leaf(node, depth, parent, index, count)
+    def traverse(node, map, preorder = None, inorder = None, postorder = None):
+        def recursive(n, parent, depth, index):
+            children = map[n] if n in map else []
+            if preorder is not None: preorder(n, depth, parent, index)
+            if len(children) > 0: recursive(children[0], n, depth + 1, 0)
+            if inorder is not None: inorder(n, depth, parent, index)
+            if len(children) > 1: recursive(children[1], n, depth + 1, 1)
+            if postorder is not None: postorder(n, depth, parent, index)
+        recursive(node, None, 0, 0)
 
     def updateTF(self, iso):
         tfd = inviwopy.data.TFPrimitiveData
@@ -93,65 +94,32 @@ class MergeTreeMesh(ivw.Processor):
             tfd(iso + 0.00000001, 1.0, [1,1,1])
         ])
 
-
-    def calcNodeSpace(self):
-        def space(n):
-            if n in self.downMap:
-                return 1 + sum(space(c) for c in self.downMap[n])
-            else:
-                return 1
-
-        self.nodeSpace = [ space(n) for n in range(len(self.upMap)+1) ]
-
-        for key, value in self.downMap.items():
-            if len(value) == 2:
-                r = self.nodeSpace[value[0]]
-                l = self.nodeSpace[value[1]]
-                if r < l:
-                    self.downMap[key] = [value[1], value[0]]
-
-
     def buildTree(self, info):
         picking = [ self.pm.pickingId(node) for node in info.getColumn("NodeId") ]
         colors = [ self.colorTf.value.sample(type / 3.0) for type in info.getColumn("CriticalType") ]
-
-        positions = [ [0, s, 0] for i,s in enumerate(info.getColumn("Scalar")) ]
+        positions = [ [0, s, 0] for s in info.getColumn("Scalar") ]
         labelInds = [ node for node in info.getColumn("NodeId") ]
         pointInds = [ node for node in info.getColumn("NodeId") ]
-
-        lineInds = []
-        def start(node, depth, parent, index, count):
-            ppos = positions[parent][0] if parent >=0 else 0
-
-            if parent >= 0:
-                lineInds.append(node)
-                lineInds.append(parent)
-
-            if index == 0:
-                if node in self.downMap and len(self.downMap[node]) > 1:
-                    positions[node][0] = ppos - 1 - self.nodeSpace[self.downMap[node][1]]
-                else:
-                    positions[node][0] = ppos - 1
-
-            elif index == 1:
-                if node in self.downMap and len(self.downMap[node]) > 0:
-                    positions[node][0] = ppos + 1 + self.nodeSpace[self.downMap[node][0]]
-                else:
-                    positions[node][0] = ppos + 1
-
-            else:
-                raise Exception("Unexpected tree structure")
-
-
-        def end(node, depth, parent, index, count):
-            pass
-
 
         root = next(iter(self.upMap))
         while root in self.upMap:
             root = self.upMap[root]
 
-        MergeTreeMesh.traverse(root, self.downMap, start, end, start)
+        xpos = 0
+        def inorder(node, depth, parent, index):
+            nonlocal xpos
+            positions[node][0] = xpos
+            xpos += 1
+
+        MergeTreeMesh.traverse(root, self.downMap, inorder = inorder)
+
+        lineInds = []
+        def preorder(node, depth, parent, index):
+            if parent is not None:
+                lineInds.append(node)
+                lineInds.append(parent)
+
+        MergeTreeMesh.traverse(root, self.downMap, preorder = preorder)
 
         mesh = ivw.data.Mesh()
 
@@ -237,7 +205,6 @@ class MergeTreeMesh(ivw.Processor):
         self.pm.resize(len(self.upMap)+1)
 
         if self.mode.value == 0:
-            self.calcNodeSpace()
             mesh = self.buildTree(info)
             self.outport.setData(mesh)
 
