@@ -2,7 +2,7 @@
  *
  * Inviwo - Interactive Visualization Workshop
  *
- * Copyright (c) 2023-2025 Inviwo Foundation
+ * Copyright (c) 2025 Inviwo Foundation
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,61 +26,51 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/vtk/vtkmoduledefine.h>
+#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/directoryproperty.h>
+#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/network/processornetworkevaluationobserver.h>
 
-#include <inviwo/core/ports/outport.h>
-#include <inviwo/core/ports/porttraits.h>
-
-#include <string_view>
-#include <string>
-
-#include <vtkType.h>
-#include <vtkSmartPointer.h>
-
-class vtkDataObject;
+#include <inviwo/vtk/ports/vtkoutport.h>
+#include <inviwo/vtk/ports/vtkinport.h>
 
 namespace inviwo {
 
-namespace vtk {
-
-class IVW_MODULE_VTK_API VtkOutport : public Outport {
+class IVW_MODULE_VTK_API VTKFileCache : public Processor,
+                                        public ProcessorNetworkEvaluationObserver {
 public:
-    VtkOutport(std::string_view identifier, int typeId = VTK_DATA_OBJECT,
-               Document help = Document{});
-    VtkOutport(std::string_view identifier, std::string_view vtkDataClassName,
-               Document help = Document{});
+    VTKFileCache(InviwoApplication* app);
 
-    using type = vtkDataObject;
+    virtual void process() override;
 
-    virtual std::string_view getClassIdentifier() const override;
-    virtual glm::uvec3 getColorCode() const override;
-    virtual Document getInfo() const override;
+    virtual const ProcessorInfo& getProcessorInfo() const override;
+    static const ProcessorInfo processorInfo_;
 
-    vtkDataObject* getData() const;
-    void setData(vtkDataObject* data);
-    virtual bool hasData() const override;
-    virtual void clear() override;
-    int getTypeId() const;
-    void setTypeId(int typeId);
+    virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
 
-    static void addTable(Document::DocumentHandle& h, std::string_view str);
+    virtual void onProcessorNetworkEvaluationBegin() override;
 
 private:
-    int typeId_;
-    vtkSmartPointer<vtkDataObject> data_ = nullptr;
+    void castData(vtkDataObject* data);
+
+    DirectoryProperty cacheDir_;
+    OptionPropertyInt outportType_;
+
+    vtk::VtkInport inport_;
+    vtk::VtkOutport outport_;
+
+    struct Cache {
+        std::string key;
+        std::filesystem::path file;
+    };
+    std::pmr::string xml_;
+    std::optional<Cache> cache_ = std::nullopt;
+    bool isCached_ = false;
+    std::string loadedKey_;
 };
-
-}  // namespace vtk
-
-template <>
-struct PortTraits<vtk::VtkOutport> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.vtk.outport"; }
-};
-
-inline std::string_view vtk::VtkOutport::getClassIdentifier() const {
-    return PortTraits<vtk::VtkOutport>::classIdentifier();
-}
 
 }  // namespace inviwo
