@@ -35,21 +35,6 @@ class MergeTreeMesh(ivw.Processor):
         self.colorTf = ivw.properties.TransferFunctionProperty("colorTf", "Critical Point Colors")
         self.addProperty(self.colorTf, owner=False)
 
-        self.dataRange = ivw.properties.DoubleMinMaxProperty("dataRange", "Data Range")
-        self.addProperty(self.dataRange, owner=False)
-        self.dataRange.semantics = inviwopy.properties.PropertySemantics.Text
-
-        self.tf = ivw.properties.TransferFunctionProperty("tf", "TF")
-        self.addProperty(self.tf, owner=False)
-        self.tf.invalidationLevel = inviwopy.properties.InvalidationLevel.Valid
-
-        self.iso = ivw.properties.FloatProperty("iso", "Critical Point ISO", 0.0, -10.0, 10.0, 0.001)
-        self.addProperty(self.iso, owner=False)
-        self.iso.readOnly = True
-
-        self.shift = ivw.properties.FloatProperty("shift", "ISO Shift", 0.0, -0.10, 0.10, 0.001)
-        self.addProperty(self.shift, owner=False)
-
         self.scale = ivw.properties.FloatProperty("scale", "Vertical Scale", 1, -2, 2, 0.01)
         self.addProperty(self.scale, owner=False)
 
@@ -82,17 +67,6 @@ class MergeTreeMesh(ivw.Processor):
             if len(children) > 1: recursive(children[1], n, depth + 1, 1)
             if postorder is not None: postorder(n, depth, parent, index)
         recursive(node, None, 0, 0)
-
-    def updateTF(self, iso):
-        tfd = inviwopy.data.TFPrimitiveData
-
-        iso = 0 if iso < 0 else iso
-        iso = 1 if iso > 1 else iso
-
-        self.tf.value.set([
-            tfd(iso, 0.0, [0,0,0]),
-            tfd(iso + 0.00000001, 1.0, [1,1,1])
-        ])
 
     def buildTree(self, info):
         picking = [ self.pm.pickingId(node) for node in info.getColumn("NodeId") ]
@@ -212,9 +186,6 @@ class MergeTreeMesh(ivw.Processor):
             mesh = self.buildBars(info)
             self.outport.setData(mesh)
 
-        [min, max] = self.dataRange.value
-        self.updateTF((self.iso.value + self.shift.value - min) / (max - min))
-
     def children(self, n):
         if n in self.downMap:
             item = [n]
@@ -266,15 +237,3 @@ class MergeTreeMesh(ivw.Processor):
             selection.flip(pickEvent.pickedId)
             # selection = inviwopy.data.BitSet([pickEvent.pickedId])
             self.cpBnlInport.select(selection)
-
-            [min, max] = self.dataRange.value
-
-            if selection.contains(pickEvent.pickedId):
-                iso = self.nodeInfo.getData().getColumn("Scalar").get(pickEvent.pickedId)
-            elif not selection.empty():
-                iso = self.nodeInfo.getData().getColumn("Scalar").get(selection.min())
-            else:
-                iso = min
-
-            self.iso.value = iso
-            self.updateTF((iso + self.shift.value - min) / (max - min))
