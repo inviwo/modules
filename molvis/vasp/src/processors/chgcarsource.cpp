@@ -616,6 +616,9 @@ ChgcarSource::ChgcarSource()
              moleculeOutport_, bnlInport_);
     addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, potential_,
                   potcars_, colormap_, tf_, radiusScaling_, borderMargin_);
+
+    tf_.setReadOnly(true);
+    tf_.setSerializationMode(PropertySerializationMode::None);
 }
 
 ChgcarSource::~ChgcarSource() = default;
