@@ -763,11 +763,13 @@ void ChgcarSource::process() {
         return {std::move(chg), std::move(charge), std::move(mag)};
     };
 
+    /*
     chargeOutport_.clear();
     magnetizationOutport_.clear();
     atomsOutport_.clear();
     atomInformationOutport_.clear();
     moleculeOutport_.clear();
+    */
 
     dispatchOne(calc, [this](Result result) {
         data_ = std::make_unique<Chgcar>(std::move(std::get<0>(result)));
@@ -775,6 +777,7 @@ void ChgcarSource::process() {
         std::tie(mag_, magDataRange_) = std::get<2>(result);
 
         if (!data_) {
+            basis_.updateForNewEntity(mat4{1.0}, size3_t{1}, deserialized_);
             chargeOutport_.clear();
             magnetizationOutport_.clear();
             atomsOutport_.clear();
@@ -784,12 +787,13 @@ void ChgcarSource::process() {
             return;
         }
 
+        basis_.updateForNewEntity(data_->model, data_->dims, deserialized_);
+
         if (chg_) {
             auto chg = createChg(chgDataRange_, data_->model, chg_);
             chgInfo_.updateForNewVolume(
                 *chg, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
             chgInfo_.updateVolume(*chg);
-            basis_.updateForNewEntity(*chg, deserialized_);
             basis_.updateEntity(*chg);
             chargeOutport_.setData(chg);
         } else {
