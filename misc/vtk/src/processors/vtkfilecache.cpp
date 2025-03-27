@@ -95,15 +95,12 @@ VTKFileCache::VTKFileCache(InviwoApplication* app)
 }
 
 void VTKFileCache::onProcessorNetworkEvaluationBegin() {
-    log::info("onProcessorNetworkEvaluationBegin: {}", isValid());
     if (isValid()) return;
 
     const auto key = detail::cacheState(this, *getNetwork(), xml_);
 
     const auto cf = cacheDir_.get() / fmt::format("{}.vtu", key);
     const auto isCached = std::filesystem::exists(cf);
-
-    log::info("IsCached: {:6} change: {:6} key: {}", isCached, isCached_ != isCached, key);
 
     if (isCached_ != isCached) {
         isCached_ = isCached;
@@ -115,10 +112,8 @@ void VTKFileCache::onProcessorNetworkEvaluationBegin() {
 
 bool VTKFileCache::isConnectionActive(Inport* inport, Outport*) const {
     if (inport == &inport_) {
-        log::info("Active: {}", !isCached_);
         return !isCached_;
     } else {
-        log::info("Active: {}", true);
         return true;
     }
 }
@@ -144,14 +139,14 @@ void VTKFileCache::process() {
         return;
     } else if (cache_ && isCached_) {
         auto reader = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
-        reader->SetFileName(cache_->file.c_str());
+        reader->SetFileName(cache_->file.generic_string().c_str());
         reader->Update();               // Process the file
         castData(reader->GetOutput());  // Return as vtkDataSet
         loadedKey_ = cache_->key;
     } else if (cache_ && !isCached_) {
         if (auto data = inport_.getData()) {
             auto writer = vtkSmartPointer<vtkXMLDataSetWriter>::New();
-            writer->SetFileName(cache_->file.c_str());
+            writer->SetFileName(cache_->file.generic_string().c_str());
             writer->SetInputData(data);
             if (writer->Write() != 1) {
                 throw Exception(SourceContext{}, "Could not write to vtk file: {}/{}.vtu",
