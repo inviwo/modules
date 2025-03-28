@@ -32,6 +32,7 @@
 #include <modules/base/processors/filecache.h>
 
 #include <vtkSmartPointer.h>
+#include <vtkDataObject.h>
 #include <vtkDataSet.h>
 #include <vtkXMLDataSetWriter.h>
 #include <vtkXMLGenericDataObjectReader.h>
@@ -53,11 +54,7 @@ const ProcessorInfo VTKFileCache::processorInfo_{
 const ProcessorInfo& VTKFileCache::getProcessorInfo() const { return processorInfo_; }
 
 VTKFileCache::VTKFileCache(InviwoApplication* app)
-    : Processor{}
-    , cacheDir_{"cacheDir", "Cache Dir",
-                "Directory to save cached dataset too. "
-                "You might want to manually clear it regularly to save space"_help,
-                filesystem::getPath(PathType::Cache)}
+    : CacheBase{app}
     , outportType_{"outportType", "Derived Type",
                    []() {
                        OptionPropertyState<int> state;
@@ -78,44 +75,26 @@ VTKFileCache::VTKFileCache(InviwoApplication* app)
 
       }
     , inport_{"inport", VTK_DATA_OBJECT, "data to cache"_help}
-    , outport_{"outport", outportType_.getSelectedValue(), "cached data"_help} {
+    , outport_{"outport", outportType_.getSelectedValue(), "cached data"_help}
+    , ram_{} {
 
     addPorts(inport_, outport_);
-    addProperties(cacheDir_, outportType_);
-
-    isReady_.setUpdate([this]() {
-        return isCached_ ||
-               (inport_.isConnected() && util::all_of(inport_.getConnectedOutports(),
-                                                      [](Outport* p) { return p->isReady(); }));
-    });
+    addProperties(cacheDir_, refDir_, currentKey_, outportType_, ram_.size);
 
     outportType_.onChange([this]() { outport_.setTypeId(outportType_.getSelectedValue()); });
-
-    app->getProcessorNetworkEvaluator()->addObserver(this);
 }
 
-void VTKFileCache::onProcessorNetworkEvaluationBegin() {
-    if (isValid()) return;
-
-    const auto key = detail::cacheState(this, *getNetwork(), xml_);
-
-    const auto cf = cacheDir_.get() / fmt::format("{}.vtu", key);
-    const auto isCached = std::filesystem::exists(cf);
-
-    if (isCached_ != isCached) {
-        isCached_ = isCached;
-        isReady_.update();
-        notifyObserversActiveConnectionsChange(this);
-    }
-    cache_ = Cache{std::move(key), std::move(cf)};
+std::optional<std::filesystem::path> VTKFileCache::pathForKey(std::string_view key) {
+    if (cacheDir_.get().empty()) return std::nullopt;
+    return cacheDir_.get() / fmt::format("{}.vtu", key);
 }
 
-bool VTKFileCache::isConnectionActive(Inport* inport, Outport*) const {
-    if (inport == &inport_) {
-        return !isCached_;
-    } else {
-        return true;
-    }
+bool VTKFileCache::hasCache(std::string_view key) {
+    return ram_.has(key) || pathForKey(key)
+                                .transform([](const std::filesystem::path& path) -> bool {
+                                    return std::filesystem::exists(path);
+                                })
+                                .value_or(false);
 }
 
 void VTKFileCache::castData(vtkDataObject* data) {
@@ -131,42 +110,42 @@ void VTKFileCache::castData(vtkDataObject* data) {
 }
 
 void VTKFileCache::process() {
-    if (cacheDir_.get().empty()) {
-        throw Exception("No cache dir set");
-    }
+    if (loadedKey_ == key_) return;
 
-    if (cache_ && loadedKey_ == cache_->key) {
-        return;
-    } else if (cache_ && isCached_) {
-        auto reader = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
-        reader->SetFileName(cache_->file.generic_string().c_str());
-        reader->Update();               // Process the file
-        castData(reader->GetOutput());  // Return as vtkDataSet
-        loadedKey_ = cache_->key;
-    } else if (cache_ && !isCached_) {
-        if (auto data = inport_.getData()) {
+    if (isCached_) {
+        if (auto ramData = ram_.get(key_)) {
+            castData(ramData->Get());
+            loadedKey_ = key_;
+        } else if (auto maybePath = pathForKey(key_)) {
+            auto reader = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
+            reader->SetFileName(maybePath->generic_string().c_str());
+            reader->Update();  // Process the file
+            auto diskData = reader->GetOutput();
+            castData(diskData);  // Return as vtkDataSet
+            ram_.add(key_, vtkSmartPointer<vtkDataObject>(diskData));
+            loadedKey_ = key_;
+        } else {
+            throw Exception("No file found");
+        }
+    } else if (auto data = inport_.getData()) {
+        if (auto maybePath = pathForKey(key_)) {
             auto writer = vtkSmartPointer<vtkXMLDataSetWriter>::New();
-            writer->SetFileName(cache_->file.generic_string().c_str());
+            writer->SetFileName(maybePath->generic_string().c_str());
             writer->SetInputData(data);
             if (writer->Write() != 1) {
-                throw Exception(SourceContext{}, "Could not write to vtk file: {}/{}.vtu",
-                                cacheDir_.get(), cache_->key);
+                throw Exception(SourceContext{}, "Could not write to vtk file: {:?g}", *maybePath);
             }
-
-            if (auto f = std::ofstream(cacheDir_.get() / fmt::format("{}.inv", cache_->key))) {
-                f << xml_;
-            } else {
-                throw Exception(SourceContext{}, "Could not write to xml file: {}/{}.inv",
-                                cacheDir_.get(), cache_->key);
-            }
-
-            castData(data);
-            loadedKey_ = cache_->key;
-        } else {
-            throw Exception("Port had no data");
         }
+        writeXML();
+
+        // We need to clone the data here, since the filter above might change the data later.
+        vtkSmartPointer<vtkDataObject> clonedData = vtkSmartPointer<vtkDataObject>::New();
+        clonedData->DeepCopy(data);
+        ram_.add(key_, clonedData);
+        castData(data);
+        loadedKey_ = key_;
     } else {
-        castData(inport_.getData());
+        throw Exception("Port had no data");
     }
 }
 

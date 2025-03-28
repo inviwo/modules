@@ -34,14 +34,14 @@
 #include <inviwo/core/properties/directoryproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/network/processornetworkevaluationobserver.h>
+#include <modules/base/processors/filecache.h>
 
 #include <inviwo/vtk/ports/vtkoutport.h>
 #include <inviwo/vtk/ports/vtkinport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_VTK_API VTKFileCache : public Processor,
-                                        public ProcessorNetworkEvaluationObserver {
+class IVW_MODULE_VTK_API VTKFileCache : public CacheBase {
 public:
     VTKFileCache(InviwoApplication* app);
 
@@ -50,26 +50,19 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 
-    virtual bool isConnectionActive(Inport* inport, Outport* outport) const override;
-
-    virtual void onProcessorNetworkEvaluationBegin() override;
-
 private:
     void castData(vtkDataObject* data);
 
-    DirectoryProperty cacheDir_;
+    std::optional<std::filesystem::path> pathForKey(std::string_view key);
+    virtual bool hasCache(std::string_view key) override;
+
     OptionPropertyInt outportType_;
 
     vtk::VtkInport inport_;
     vtk::VtkOutport outport_;
 
-    struct Cache {
-        std::string key;
-        std::filesystem::path file;
-    };
-    std::pmr::string xml_;
-    std::optional<Cache> cache_ = std::nullopt;
-    bool isCached_ = false;
+    RamCache<vtkSmartPointer<vtkDataObject>> ram_;
+
     std::string loadedKey_;
 };
 
