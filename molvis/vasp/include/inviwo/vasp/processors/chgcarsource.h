@@ -104,6 +104,7 @@ private:
     TransferFunctionProperty tf_;
     DoubleProperty radiusScaling_;
     DoubleProperty borderMargin_;
+    BoolProperty clearPorts_;
 
     PickingMapper pm_;
 

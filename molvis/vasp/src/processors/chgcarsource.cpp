@@ -591,6 +591,7 @@ ChgcarSource::ChgcarSource()
     , tf_{"tf", "Atom index TF", TransferFunction{}, TFData{}, InvalidationLevel::Valid}
     , radiusScaling_{"radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01}
     , borderMargin_{"borderMargin", "Border Repetition Margin", 0.05, 0.0, 0.5}
+    , clearPorts_{"clearPorts", "Clear Ports While Loading", true}
     , pm_{this, 1, [this](PickingEvent* event) { picking(event); }}
     , data_{}
     , chg_{}
@@ -615,7 +616,7 @@ ChgcarSource::ChgcarSource()
     addPorts(chargeOutport_, magnetizationOutport_, atomsOutport_, atomInformationOutport_,
              moleculeOutport_, bnlInport_);
     addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, potential_,
-                  potcars_, colormap_, tf_, radiusScaling_, borderMargin_);
+                  potcars_, colormap_, tf_, radiusScaling_, borderMargin_, clearPorts_);
 
     tf_.setReadOnly(true);
     tf_.setSerializationMode(PropertySerializationMode::None);
@@ -763,13 +764,13 @@ void ChgcarSource::process() {
         return {std::move(chg), std::move(charge), std::move(mag)};
     };
 
-    /*
-    chargeOutport_.clear();
-    magnetizationOutport_.clear();
-    atomsOutport_.clear();
-    atomInformationOutport_.clear();
-    moleculeOutport_.clear();
-    */
+    if (clearPorts_) {
+        chargeOutport_.clear();
+        magnetizationOutport_.clear();
+        atomsOutport_.clear();
+        atomInformationOutport_.clear();
+        moleculeOutport_.clear();
+    }
 
     dispatchOne(calc, [this](Result result) {
         data_ = std::make_unique<Chgcar>(std::move(std::get<0>(result)));
