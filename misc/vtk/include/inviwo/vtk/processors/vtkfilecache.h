@@ -61,7 +61,7 @@ private:
     vtk::VtkInport inport_;
     vtk::VtkOutport outport_;
 
-    RamCache<vtkSmartPointer<vtkDataObject>> ram_;
+    RAMCache<vtkSmartPointer<vtkDataObject>> ram_;
 
     std::string loadedKey_;
 };

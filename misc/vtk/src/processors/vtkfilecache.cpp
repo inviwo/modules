@@ -79,7 +79,7 @@ VTKFileCache::VTKFileCache(InviwoApplication* app)
     , ram_{} {
 
     addPorts(inport_, outport_);
-    addProperties(cacheDir_, refDir_, currentKey_, outportType_, ram_.size);
+    addProperties(enabled_, cacheDir_, refDir_, currentKey_, outportType_, ram_.capacity);
 
     outportType_.onChange([this]() { outport_.setTypeId(outportType_.getSelectedValue()); });
 }
