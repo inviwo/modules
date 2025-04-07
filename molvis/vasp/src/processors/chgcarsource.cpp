@@ -620,6 +620,8 @@ ChgcarSource::ChgcarSource()
 
     tf_.setReadOnly(true);
     tf_.setSerializationMode(PropertySerializationMode::None);
+
+    bnlInport_.setInvalidationLevels({});
 }
 
 ChgcarSource::~ChgcarSource() = default;
