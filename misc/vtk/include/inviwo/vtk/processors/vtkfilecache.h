@@ -55,6 +55,7 @@ private:
 
     std::optional<std::filesystem::path> pathForKey(std::string_view key);
     virtual bool hasCache(std::string_view key) override;
+    const std::string& loadedKey() const override { return loadedKey_; }
 
     OptionPropertyInt outportType_;
 
