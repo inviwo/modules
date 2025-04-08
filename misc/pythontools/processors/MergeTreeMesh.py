@@ -2,9 +2,9 @@
 
 import inviwopy as ivw
 import ivwmolvis
-
-
 from inviwopy.glm import mat4, vec4
+
+from functools import cmp_to_key
 
 class MergeTreeMesh(ivw.Processor):
     """
@@ -121,13 +121,14 @@ class MergeTreeMesh(ivw.Processor):
         return mesh
 
 
-    def buildBars(self, info):
-
+    def findNodeMeta(self, info):
         ct = info.getColumn("CriticalType")
         types = info.getColumn("Type");
         ind = info.getColumn("assigned_atom_index");
         atomsTypes = {}
         atoms = {}
+        childCount = {}
+
 
         def postorder(node, depth, parent, index):
             if not node in atomsTypes:
@@ -144,13 +145,20 @@ class MergeTreeMesh(ivw.Processor):
             atomsTypes[parent].update(atomsTypes[node])
             atoms[parent].update(atoms[node])
 
+            if not node in childCount:
+                childCount[node] = 1
+            if not parent in childCount:
+                childCount[parent] = 1
+
+            childCount[parent] += childCount[node]
+
         MergeTreeMesh.traverse(self.root, self.downMap, postorder = postorder)
-
-        #print(self.root, atomsTypes)
-        #print(self.root, atoms)
-
         self.atoms = atoms
+        self.atomsTypes = atomsTypes
+        self.childCount = childCount
 
+
+    def buildBars(self, info):
 
         def sizeFun(x):
             return 10*(1 - math.exp(-x/6))
@@ -162,14 +170,12 @@ class MergeTreeMesh(ivw.Processor):
             positions = []
             labelInds = []
             for i, node in enumerate(info.getColumn("NodeId")):
-                if (node in atomsTypes and self.filter.value in atomsTypes[node]):
+                if (node in self.atomsTypes and self.filter.value in self.atomsTypes[node]):
                     na = len(self.atoms[i])
                     satoms = sorted(self.atoms[i], key=lambda x: x[1])
                     for ia, a in enumerate(satoms):
                         pi = self.pm.pickingId(node)
                         picking.append([pi, pi])
-                        #color = self.colorTf.value.sample(info.getColumn("CriticalType")[i] / 3.0)
-                        #color = self.colorTf.value.sample(a[0])
                         color = ivwmolvis.atomicelement.color(ivwmolvis.atomicelement.fromAbbr(a[1]), ivwmolvis.atomicelement.Colormap.RasmolCPKnew)
                         colors.append([color, color])
                         s = info.getColumn("Scalar")[i]
@@ -213,6 +219,40 @@ class MergeTreeMesh(ivw.Processor):
         return mesh
 
 
+    def orderTree(self, treeMap, prioAtomType):
+        def sortFun(n):
+            return (-1000 * sum(1 for x in self.atoms[n] if x[1] == prioAtomType)
+                    - 1 * self.childCount[n]
+                    + len(self.atoms[n]))
+
+        def cmp(n1, n2):
+            s1 = sum(1 for x in self.atoms[n1] if x[1] == prioAtomType)
+            s2 = sum(1 for x in self.atoms[n2] if x[1] == prioAtomType)
+            if s1 < s2:
+                return 1
+            elif s2 < s1:
+                return -1
+            c1 = self.childCount[n1]
+            c2 = self.childCount[n2]
+            if s1 > 0:
+                if c1 < c2:
+                    return 1
+                elif c2 < c1:
+                    return -1
+            else:
+                if c1 < c2:
+                    return -1
+                elif c2 < c1:
+                    return 1
+
+            return 0
+
+        sortedTreeMap = {}
+        for node in treeMap.keys():
+            sortedTreeMap[node] = sorted(treeMap[node], key=cmp_to_key(cmp))
+
+        return sortedTreeMap
+
     def process(self):
         df = self.inport.getData()
         info = self.nodeInfo.getData()
@@ -239,6 +279,11 @@ class MergeTreeMesh(ivw.Processor):
         self.root = root
 
         self.pm.resize(len(self.upMap) + 1)
+
+        self.findNodeMeta(info)
+
+        if len(self.filter.value) != 0:
+            self.downMap = self.orderTree(self.downMap, self.filter.value)
 
         if self.mode.value == 0:
             mesh = self.buildTree(info)
