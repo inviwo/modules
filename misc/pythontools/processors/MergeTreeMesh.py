@@ -3,8 +3,10 @@
 import inviwopy as ivw
 import ivwmolvis
 from inviwopy.glm import mat4, vec4
+import ivwdataframe
 
 from functools import cmp_to_key
+import math
 
 class MergeTreeMesh(ivw.Processor):
     """
@@ -13,7 +15,7 @@ class MergeTreeMesh(ivw.Processor):
 
     def __init__(self, id, name):
         ivw.Processor.__init__(self, id, name)
-        self.inport = df.DataFrameInport("inport")
+        self.inport = ivwdataframe.DataFrameInport("inport")
         self.addInport(self.inport, owner=False)
 
         self.nodeInfo = df.DataFrameInport("nodeInfo")
@@ -41,8 +43,20 @@ class MergeTreeMesh(ivw.Processor):
         self.filter = ivw.properties.StringProperty("filter", "Filter")
         self.addProperty(self.filter, owner=False)
 
+        self.collapse = ivw.properties.BoolProperty("collapse", "Collapse Nodes", False)
+        self.addProperty(self.collapse, owner=False)
+
+        self.clampPositions = ivw.properties.BoolCompositeProperty("clampPositions", "Clamp Positions", False)
+        self.addProperty(self.clampPositions, owner=False)
+
+        self.clampRange = ivw.properties.DoubleMinMaxProperty("clampRange", "Clamp Range",
+            valueMin=0, valueMax=2, rangeMin=-1000, rangeMax=1000, increment=0.001,
+            semantics=inviwopy.properties.PropertySemantics.Text)
+        self.clampPositions.addProperty(self.clampRange, owner=False)
+
         self.text = ivw.properties.StringProperty("text", "Text")
         self.addProperty(self.text, owner=False)
+
 
         self.pm = ivw.PickingMapper(self, 1, lambda x: self.pickCallback(x))
 
@@ -72,31 +86,89 @@ class MergeTreeMesh(ivw.Processor):
             if postorder is not None: postorder(n, depth, parent, index)
         recursive(node, None, 0, 0)
 
-    def buildTree(self, info):
-        picking = [ self.pm.pickingId(node) for node in info.getColumn("NodeId") ]
-        colors = [ self.colorTf.value.sample(type / 4.0) for type in info.getColumn("CriticalType") ]
-        positions = [ [0, s, 0] for s in info.getColumn("Scalar") ]
-        labelInds = [ node for node in info.getColumn("NodeId") ]
-        pointInds = [ node for node in info.getColumn("NodeId") ]
+
+    @staticmethod
+    def atomColor(type):
+        return ivwmolvis.atomicelement.color(ivwmolvis.atomicelement.fromAbbr(type), ivwmolvis.atomicelement.Colormap.RasmolCPKnew)
+
+    def clamp(self, value):
+        if self.clampPositions.checked:
+            return max(self.clampRange.start, min(value, self.clampRange.end))
+        else:
+            return value
+
+    def buildTree(self, root, tree, info):
+
+        def findColor(n):
+            if self.collapse.value:
+                if len(self.atoms[n]) == 1:
+                    (_, type) = next(iter(self.atoms[n]))
+                    color = MergeTreeMesh.atomColor(type)
+                else:
+                    color = self.colorTf.value.sample(criticalTypes[n] / 4.0)
+            else:
+                color = self.colorTf.value.sample(criticalTypes[n] / 4.0)
+
+            s = scalars[n]
+            if s != self.clamp(s):
+                color[3] /= 2
+            return color
+
+
+
+        criticalTypes = info.getColumn("CriticalType")
+        scalars = info.getColumn("Scalar")
+
+        nods = set([i for sub in tree.values() for i in sub]) | set(tree.keys())
+        indexMap = {n:i for i,n in enumerate(nods)}
+
+        picking = [ self.pm.pickingId(n) for n in nods]
+        colors = [ findColor(n) for n in nods]
+        positions = [ [0, self.clamp(scalars[n]), 0] for n in nods]
+        labelInds = [ node for node in nods]
+        pointInds = [ indexMap[node] for node in nods]
+
 
         xpos = 0
         def inorder(node, depth, parent, index):
             nonlocal xpos
-            positions[node][0] = xpos
+            positions[indexMap[node]][0] = xpos
             xpos += 1
 
-        MergeTreeMesh.traverse(self.root, self.downMap, inorder = inorder)
+        MergeTreeMesh.traverse(root, tree, inorder = inorder)
+
+        # fix for the root item, which only have 1 child.
+        positions[indexMap[root]][0] = positions[indexMap[tree[root][0]]][0]
 
         lineInds = []
-        def preorder(node, depth, parent, index):
+        def straitLines(node, depth, parent, index):
+            nonlocal lineInds
             if parent is not None:
-                lineInds.append(node)
-                lineInds.append(parent)
+                lineInds.append(indexMap[node])
+                lineInds.append(indexMap[parent])
 
-        MergeTreeMesh.traverse(self.root, self.downMap, preorder = preorder)
+        def kneeLines(node, depth, parent, index):
+            nonlocal lineInds
+            if parent is not None:
+                np = positions[indexMap[node]]
+                pp = positions[indexMap[parent]]
+
+                kp = [np[0], pp[1], 0]
+                kIndex = len(positions)
+
+                picking.append(0)
+                colors.append([0,0,0,1])
+                positions.append(kp)
+                labelInds.append(0)
+
+                lineInds.append(indexMap[parent])
+                lineInds.append(kIndex)
+                lineInds.append(kIndex)
+                lineInds.append(indexMap[node])
+
+        MergeTreeMesh.traverse(root, tree, preorder = kneeLines)
 
         mesh = ivw.data.Mesh()
-
         scale = math.pow(10, self.scale.value)
         mesh.worldMatrix = mat4(vec4(1.0, 0.0, 0.0, 0.0),
                                 vec4(0.0, scale, 0.0, 0.0),
@@ -163,12 +235,12 @@ class MergeTreeMesh(ivw.Processor):
         def sizeFun(x):
             return 10*(1 - math.exp(-x/6))
 
+        picking = []
+        colors = []
+        positions = []
+        labelInds = []
 
         if len(self.filter.value) != 0:
-            picking = []
-            colors = []
-            positions = []
-            labelInds = []
             for i, node in enumerate(info.getColumn("NodeId")):
                 if (node in self.atomsTypes and self.filter.value in self.atomsTypes[node]):
                     na = len(self.atoms[i])
@@ -182,11 +254,10 @@ class MergeTreeMesh(ivw.Processor):
                         positions.append([[sizeFun(ia), s, 0], [sizeFun(ia + 0.9), s, 0]])
                         labelInds.append([node, node])
 
-            if len(positions) == 0:
-                raise RuntimeError(f"No critical points found matching '{self.filter.value}'")
+        if len(positions) == 0:
+            print(f"No critical points found matching '{self.filter.value}'")
 
-
-        else:
+        if len(positions) == 0:
             picking = [ [self.pm.pickingId(node),self.pm.pickingId(node)]
                         for node in info.getColumn("NodeId") ]
             colors = [ [self.colorTf.value.sample(type / 4.0), self.colorTf.value.sample(type / 4.0) ]
@@ -253,6 +324,21 @@ class MergeTreeMesh(ivw.Processor):
 
         return sortedTreeMap
 
+
+    def collapseNodes(self, root, tree):
+        collapsed = {}
+        def postorder(node, depth, parent, index):
+            nonlocal collapsed
+            if not parent is None:
+                if len(self.atoms[parent]) > 1:
+                    if parent in collapsed:
+                        collapsed[parent].append(node)
+                    else:
+                        collapsed[parent] = [node]
+        MergeTreeMesh.traverse(root, tree, postorder = postorder)
+        return collapsed
+
+
     def process(self):
         df = self.inport.getData()
         info = self.nodeInfo.getData()
@@ -285,8 +371,13 @@ class MergeTreeMesh(ivw.Processor):
         if len(self.filter.value) != 0:
             self.downMap = self.orderTree(self.downMap, self.filter.value)
 
+        if self.collapse.value:
+            tree = self.collapseNodes(self.root, self.downMap)
+        else:
+            tree = self.downMap
+
         if self.mode.value == 0:
-            mesh = self.buildTree(info)
+            mesh = self.buildTree(self.root, tree, info)
             self.outport.setData(mesh)
 
         elif self.mode.value == 1:
@@ -326,9 +417,7 @@ class MergeTreeMesh(ivw.Processor):
 
                 self.text.value = tooltip
 
-                if self.mode.value == 1:
-                    #print(f"NodeID {i} {self.atoms[i] if i in self.atoms else '-'}")
-                    pickEvent.setToolTip(f"NodeID {i} {self.atoms[i] if i in self.atoms else '-'}")
+                pickEvent.setToolTip(f"NodeID {i} {self.atoms[i] if i in self.atoms else '-'}")
 
             elif pickEvent.hoverState == ivw.PickingHoverState.Exit:
                 self.cpBnlInport.highlight(ivw.data.BitSet())
@@ -336,8 +425,7 @@ class MergeTreeMesh(ivw.Processor):
                 # self.atomBnlInport.filter("foo", ivw.data.BitSet())
 
                 self.text.value = ""
-                if self.mode.value == 1:
-                    pickEvent.setToolTip("")
+                pickEvent.setToolTip("")
 
         if (pickEvent.pressState == ivw.PickingPressState.Release
             and pickEvent.pressItem == ivw.PickingPressItem.Primary
