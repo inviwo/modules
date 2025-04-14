@@ -371,6 +371,10 @@ std::shared_ptr<DataFrame> createDataFrame(const Chgcar& chg, vasp::PotentialTyp
     auto ce = df->addColumn<double>("Valence Electrons", 0, units::unit_from_string("e"));
     auto cc = df->addCategoricalColumn("Valence Config");
 
+    cx->setMetaData<DoubleMat4MetaData>("basis", chg.model);
+    cy->setMetaData<DoubleMat4MetaData>("basis", chg.model);
+    cz->setMetaData<DoubleMat4MetaData>("basis", chg.model);
+
     forEachAtom(chg, 0.0, [&](molvis::Element elem, const glm::dvec3& pos, size_t, size_t) {
         const auto mp = chg.model * vec4(pos, 1.0f);
         ct->add(molvis::element::symbol(elem));
