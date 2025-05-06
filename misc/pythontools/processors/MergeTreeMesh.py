@@ -7,6 +7,20 @@ import ivwdataframe
 
 from functools import cmp_to_key
 import math
+import enum
+
+class Marker(enum.Enum):
+    Circle = 0
+    Diamond = 1
+    Square = 2
+    Hexagon = 3
+    Plus = 4
+    Cross = 5
+    TriangleUp = 6
+    TriangleLeft = 7
+    TriangleDown = 8
+    TriangleRight = 9
+
 
 class MergeTreeMesh(ivw.Processor):
     """
@@ -29,6 +43,9 @@ class MergeTreeMesh(ivw.Processor):
 
         self.outport = ivw.data.MeshOutport("outport")
         self.addOutport(self.outport, owner=False)
+
+        self.labels = ivw.StringVectorOutport("labels")
+        self.addOutport(self.labels, owner=False)
 
         self.mode = ivw.properties.OptionPropertyInt("mode", "Mode",
             [("tree", "Tree", 0),("bar", "Bar", 1)], 0)
@@ -109,9 +126,9 @@ class MergeTreeMesh(ivw.Processor):
             else:
                 color = self.colorTf.value.sample(criticalTypes[n] / 4.0)
 
-            s = scalars[n]
-            if s != self.clamp(s):
-                color[3] /= 2
+            #s = scalars[n]
+            #if s != self.clamp(s):
+            #    color[3] /= 2
             return color
 
 
@@ -126,6 +143,28 @@ class MergeTreeMesh(ivw.Processor):
         colors = [ findColor(n) for n in nods]
         positions = [ [0, self.clamp(scalars[n]), 0] for n in nods]
         labelInds = [ node for node in nods]
+
+        def findMarker(n):
+            s = scalars[n]
+            if s < self.clampRange.start:
+                return Marker.TriangleUp.value
+
+            if s > self.clampRange.end:
+                return Marker.TriangleDown.value
+
+            if n == root:
+                return Marker.Hexagon.value
+
+            if len(self.atoms[n]) == 1:
+                if self.collapse.value:
+                    return Marker.Circle.value
+                else:
+                    return Marker.Square.value
+            else:
+                return Marker.Diamond.value
+
+        markers = [findMarker(n) for n in nods]
+
         pointInds = [ indexMap[node] for node in nods]
 
 
@@ -160,6 +199,7 @@ class MergeTreeMesh(ivw.Processor):
                 colors.append([0,0,0,1])
                 positions.append(kp)
                 labelInds.append(0)
+                markers.append(0)
 
                 lineInds.append(indexMap[parent])
                 lineInds.append(kIndex)
@@ -184,6 +224,8 @@ class MergeTreeMesh(ivw.Processor):
             np.array(picking).astype(np.uint32)))
         mesh.addBuffer(ivw.data.BufferType.IndexAttrib, ivw.data.BufferUINT32(
             np.array(labelInds).astype(np.uint32)))
+        mesh.addBuffer(ivw.data.BufferType.IntMetaAttrib, ivw.data.BufferUINT32(
+            np.array(markers).astype(np.uint32)))
 
         lineNone = ivw.data.MeshInfo(ivw.data.DrawType.Lines, ivw.data.ConnectivityType.Unconnected)
         mesh.addIndices(lineNone, ivw.data.IndexBufferUINT32(np.array(lineInds).astype(np.uint32)))
@@ -346,6 +388,8 @@ class MergeTreeMesh(ivw.Processor):
         ups = df.getColumn("upNodeId")
         downs = df.getColumn("downNodeId") 
 
+        self.nodeLabels = []
+
         self.downMap = {}
         self.upMap = {}
         for (up, down) in zip(ups, downs):
@@ -379,6 +423,11 @@ class MergeTreeMesh(ivw.Processor):
         if self.mode.value == 0:
             mesh = self.buildTree(self.root, tree, info)
             self.outport.setData(mesh)
+
+            nods = set([i for sub in self.downMap.values() for i in sub]) | set(self.downMap.keys())
+            nodeLabels = [str(list(self.atoms[node])[0][1]) if len(self.atoms[node]) == 1 else ""
+                            for node in nods]
+            self.labels.setData(nodeLabels)
 
         elif self.mode.value == 1:
             mesh = self.buildBars(info)
