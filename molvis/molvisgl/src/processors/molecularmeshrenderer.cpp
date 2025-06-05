@@ -47,14 +47,24 @@ const ProcessorInfo MolecularMeshRenderer::processorInfo_{
     "MolVis",                                   // Category
     CodeState::Stable,                          // Code state
     "GL, MolVis",                               // Tags
+    R"(Renders the input mesh in a molecular representation. The input mesh is expected to contain
+    molecular data, that is points representing individual atoms (including their radius) and lines
+    indicating bonds.
+    
+    The result is depending on the chosen molecular representation.
+      - VDW (van der Waals): considers only points
+      - Licorice:            considers both points and lines
+     - Ball & Stick:        considers both points and lines
+    If the mesh does not contain points or lines, the resulting rendering will lack either
+    atoms/spheres or bonds.)"_unindentHelp,
 };
 const ProcessorInfo& MolecularMeshRenderer::getProcessorInfo() const { return processorInfo_; }
 
 MolecularMeshRenderer::MolecularMeshRenderer()
     : Processor()
-    , inport_("geometry")
-    , imageInport_("imageInport")
-    , outport_("outport")
+    , inport_("geometry", "input meshes containing molecular data"_help)
+    , imageInport_("imageInport", "Optional background image"_help)
+    , outport_("outport", "output image containing the moleculare rendering of the input"_help)
     , representation_("representation", "Representation",
                       {{"vdw", "VDW", Representation::VDW},
                        {"licorice", "Licorice", Representation::Licorice},

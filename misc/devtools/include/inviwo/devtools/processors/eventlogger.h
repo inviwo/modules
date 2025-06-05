@@ -55,20 +55,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EventLogger, Event Printer}
- * ![](org.inviwo.EventLogger.png?classIdentifier=org.inviwo.EventLogger)
- * The event printer will listen for events and log them.
- *
- * ### Inports
- *   * __Inport__ The inport, only used for pass through.
- *
- * ### Outports
- *   * __Outport__ The outport.
- *
- * ### Properties
- *   * __Enable__ Enable or disable logging of events.
- */
-
 template <typename Inport, typename Outport>
 class EventLogger : public Processor {
 public:
@@ -100,9 +86,9 @@ private:
 template <typename Inport, typename Outport>
 EventLogger<Inport, Outport>::EventLogger()
     : Processor()
-    , inport_("inport")
+    , inport_("inport", "The inport, only used for pass through."_help)
     , outport_("outport")
-    , enable_("enable", "Enable Logging", true)
+    , enable_("enable", "Enable Logging", "Enable or disable logging of events."_help, true)
     , eventToggle_("eventToggle", "Toggle Events",
                    {{"Set All", std::nullopt, "Enable logging of all event types",
                      [this]() {
@@ -177,7 +163,8 @@ struct ProcessorTraits<ImageEventLogger> {
             "ImageEventLogger",             // Display name
             "Testing",                      // Category
             CodeState::Stable,              // Code state
-            Tags::CPU                       // Tags
+            Tags::CPU,                       // Tags
+            "The event printer will listen for events and log them."_help,
         };
     }
 };
@@ -191,7 +178,8 @@ struct ProcessorTraits<VolumeEventLogger> {
             "VolumeEventLogger",             // Display name
             "Testing",                       // Category
             CodeState::Stable,               // Code state
-            Tags::CPU                        // Tags
+            Tags::CPU,                        // Tags
+            "The event printer will listen for events and log them."_help,
         };
     }
 };
@@ -205,7 +193,8 @@ struct ProcessorTraits<MeshEventLogger> {
             "MeshEventLogger",             // Display name
             "Testing",                     // Category
             CodeState::Stable,             // Code state
-            Tags::CPU                      // Tags
+            Tags::CPU,                      // Tags
+            "The event printer will listen for events and log them."_help,
         };
     }
 };

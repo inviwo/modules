@@ -45,26 +45,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MolecularMeshRenderer, Molecular Mesh Renderer}
- * ![](org.inviwo.MolecularMeshRenderer.png?classIdentifier=org.inviwo.MolecularMeshRenderer)
- * Renders the input mesh in a molecular representation. The input mesh is expected to contain
- * molecular data, that is points representing individual atoms (including their radius) and lines
- * indicating bonds.
- *
- * The result is depending on the chosen molecular representation.
- *    - VDW (van der Waals): considers only points
- *    - Licorice:            considers both points and lines
- *    - Ball & Stick:        considers both points and lines
- * If the mesh does not contain points or lines, the resulting rendering will lack either
- * atoms/spheres or bonds.
- *
- * ### Inports
- *   * __geometry__ input meshes containing molecular data
- *   * __imageInport__ Optional background image
- *
- * ### Outports
- *   * __outport__ output image containing the moleculare rendering of the input
- */
 class IVW_MODULE_MOLVISGL_API MolecularMeshRenderer : public Processor {
 public:
     MolecularMeshRenderer();

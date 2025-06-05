@@ -45,12 +45,6 @@ namespace inviwo {
 
 class PickingEvent;
 
-/** \docpage{org.inviwo.MolecularStructureToMesh, Molecular Structure To Mesh}
- * ![](org.inviwo.MolecularStructureToMesh.png?classIdentifier=org.inviwo.MolecularStructureToMesh)
- * Converts a molecular datastructure object into a mesh consisting of point and line meshes. This
- * mesh can be rendered with a MolecularRenderer resulting in various molecular representations or,
- * alternatively, with any Mesh renderer, e.g. a SphereRenderer.
- */
 class IVW_MODULE_MOLVISBASE_API MolecularStructureToMesh : public Processor {
 public:
     MolecularStructureToMesh();

@@ -172,6 +172,7 @@ std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& s
 }  // namespace molvis
 }  // namespace inviwo
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
 template <>
 struct fmt::formatter<inviwo::molvis::PeptideType> : fmt::formatter<std::string_view> {
     template <typename FormatContext>
@@ -197,6 +198,7 @@ struct fmt::formatter<inviwo::molvis::PeptideType> : fmt::formatter<std::string_
         return formatter<string_view>::format(name, ctx);
     }
 };
+#endif
 
 namespace inviwo {
 namespace molvis {
