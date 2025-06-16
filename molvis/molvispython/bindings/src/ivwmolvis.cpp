@@ -29,6 +29,13 @@
 
 #include <ivwmolvis/ivwmolvis.h>
 
+#include <warn/push>
+#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <warn/pop>
+
 #include <modules/python3/python3module.h>
 #include <modules/python3/pybindutils.h>
 #include <modules/python3/pythoninterpreter.h>
@@ -46,5 +53,10 @@ INVIWO_PYBIND_MODULE(ivwmolvis, m) {
         MolVis Module API
         )doc";
 
-    exposeMolVis(m);
+#ifdef INVIWO_ALL_DYN_LINK
+   py::bind_vector<std::vector<std::string>, py::smart_holder>(m, "StringVector");
+   py::implicitly_convertible<py::list, std::vector<std::string>>();
+#endif
+
+    inviwo::exposeMolVis(m);
 }
