@@ -287,13 +287,13 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
 void updateTF(TransferFunction& tf, const Chgcar& chg, molvis::element::Colormap colormap,
               double borderMargin) {
     std::vector<TFPrimitiveData> points;
-    forEachAtom(
-        chg, borderMargin,
-        [&](molvis::Element elem, const glm::dvec3& pos, size_t atomIndex, size_t runningIndex) {
-            const auto color = molvis::element::color(elem, colormap);
-            points.emplace_back(static_cast<double>(runningIndex), color);
-            points.emplace_back(static_cast<double>(runningIndex + 1) - 0.00001, color);
-        });
+    forEachAtom(chg, borderMargin,
+                [&](molvis::Element elem, [[maybe_unused]] const glm::dvec3& pos,
+                    [[maybe_unused]] size_t atomIndex, size_t runningIndex) {
+                    const auto color = molvis::element::color(elem, colormap);
+                    points.emplace_back(static_cast<double>(runningIndex), color);
+                    points.emplace_back(static_cast<double>(runningIndex + 1) - 0.00001, color);
+                });
     std::ranges::for_each(points, [&](auto& p) { p.pos *= 2.0 / points.size(); });
     tf.set(points);
 }
