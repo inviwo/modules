@@ -42,7 +42,7 @@ const ProcessorInfo VTKDowncastData::processorInfo_{
     "org.inviwo.VTKDowncastData",  // Class identifier
     "VTK Downcast Data",           // Display name
     "VTK",                         // Category
-    CodeState::Stable,       // Code state
+    CodeState::Stable,             // Code state
     Tags::CPU | Tag{"VTK"},        // Tags
 };
 const ProcessorInfo& VTKDowncastData::getProcessorInfo() const { return processorInfo_; }

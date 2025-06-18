@@ -384,7 +384,7 @@ jobs:
     permissions:
       pull-requests: write
     env:
-      LLVM_VERSION: 17
+      LLVM_VERSION: 18
     runs-on: ubuntu-24.04
     timeout-minutes: 320
     steps:

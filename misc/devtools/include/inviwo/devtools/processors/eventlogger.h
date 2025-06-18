@@ -163,7 +163,7 @@ struct ProcessorTraits<ImageEventLogger> {
             "ImageEventLogger",             // Display name
             "Testing",                      // Category
             CodeState::Stable,              // Code state
-            Tags::CPU,                       // Tags
+            Tags::CPU,                      // Tags
             "The event printer will listen for events and log them."_help,
         };
     }
@@ -178,7 +178,7 @@ struct ProcessorTraits<VolumeEventLogger> {
             "VolumeEventLogger",             // Display name
             "Testing",                       // Category
             CodeState::Stable,               // Code state
-            Tags::CPU,                        // Tags
+            Tags::CPU,                       // Tags
             "The event printer will listen for events and log them."_help,
         };
     }
@@ -193,7 +193,7 @@ struct ProcessorTraits<MeshEventLogger> {
             "MeshEventLogger",             // Display name
             "Testing",                     // Category
             CodeState::Stable,             // Code state
-            Tags::CPU,                      // Tags
+            Tags::CPU,                     // Tags
             "The event printer will listen for events and log them."_help,
         };
     }
