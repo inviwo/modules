@@ -45,9 +45,10 @@ const ProcessorInfo MolecularStructureToMesh::processorInfo_{
     "MolVis",                                      // Category
     CodeState::Stable,                             // Code state
     "CPU, MolVis, Mesh",                           // Tags
-    R"(Converts a molecular datastructure object into a mesh consisting of point and line meshes.
-    This mesh can be rendered with a MolecularRenderer resulting in various molecular
-    representations or, alternatively, with any Mesh renderer, e.g. a SphereRenderer.
+    R"(Converts a `MolecularStructure` datastructure object into a mesh consisting of
+    point and line meshes. This mesh can be rendered with a MolecularRenderer resulting
+    in various molecular representations or, alternatively, with any Mesh renderer,
+    e.g. a SphereRenderer.
     )"_unindentHelp,
 };
 const ProcessorInfo& MolecularStructureToMesh::getProcessorInfo() const { return processorInfo_; }

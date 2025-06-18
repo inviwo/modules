@@ -45,7 +45,7 @@ namespace inviwo {
 const ProcessorInfo VTKFileCache::processorInfo_{
     "org.inviwo.VTKFileCache",  // Class identifier
     "VTK File Cache",           // Display name
-    "Undefined",                // Category
+    "Cache",                    // Category
     CodeState::Stable,          // Code state
     Tags::CPU,                  // Tags
     R"(Provides a file cache for vtk data)"_unindentHelp,
@@ -97,7 +97,7 @@ bool VTKFileCache::hasCache(std::string_view key) {
                                 .value_or(false);
 }
 
-void VTKFileCache::castData(vtkDataObject* data) {
+void VTKFileCache::castAndSetOutportData(vtkDataObject* data) {
     if (data) {
         if (!data->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()))) {
             outport_.setData(nullptr);
@@ -114,14 +114,14 @@ void VTKFileCache::process() {
 
     if (isCached_) {
         if (auto ramData = ram_.get(key_)) {
-            castData(ramData->Get());
+            castAndSetOutportData(ramData->Get());
             loadedKey_ = key_;
         } else if (auto maybePath = pathForKey(key_)) {
             auto reader = vtkSmartPointer<vtkXMLGenericDataObjectReader>::New();
             reader->SetFileName(maybePath->generic_string().c_str());
             reader->Update();  // Process the file
             auto diskData = reader->GetOutput();
-            castData(diskData);  // Return as vtkDataSet
+            castAndSetOutportData(diskData);  // Return as vtkDataSet
             ram_.add(key_, vtkSmartPointer<vtkDataObject>(diskData));
             loadedKey_ = key_;
         } else {
@@ -142,7 +142,7 @@ void VTKFileCache::process() {
         vtkSmartPointer<vtkDataObject> clonedData = vtkSmartPointer<vtkDataObject>::New();
         clonedData->DeepCopy(data);
         ram_.add(key_, clonedData);
-        castData(data);
+        castAndSetOutportData(data);
         loadedKey_ = key_;
     } else {
         throw Exception("Port had no data");

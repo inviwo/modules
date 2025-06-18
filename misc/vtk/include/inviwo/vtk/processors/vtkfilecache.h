@@ -51,7 +51,7 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void castData(vtkDataObject* data);
+    void castAndSetOutportData(vtkDataObject* data);
 
     std::optional<std::filesystem::path> pathForKey(std::string_view key);
     virtual bool hasCache(std::string_view key) override;
