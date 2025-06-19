@@ -187,7 +187,7 @@ arrays: downNodeId: int, upNodeId: int.)"}};
                Wrapper8>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK contourAroundPoint plugin.)";
+    static constexpr std::string_view doc = R"ivw(TTK contourAroundPoint plugin.)ivw";
 };
 
 void registerttkContourAroundPoint(InviwoModule* module) {

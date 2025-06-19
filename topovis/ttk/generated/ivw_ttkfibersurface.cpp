@@ -319,7 +319,7 @@ struct VTKTraits<ttkFiberSurface> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Fiber surfaces are defined as the pre-images of curves drawn in the
+        R"ivw(Fiber surfaces are defined as the pre-images of curves drawn in the
 range of bivariate volumetric functions, typically on top of the continuous
 scatterplot. Fiber surfaces generalize the segmentation features of
 isosurfaces to bivariate data.
@@ -340,7 +340,7 @@ IEEE Transactions on Visualization and Computer Graphics, 2016.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/builtInExample2/)";
+- https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
 void registerttkFiberSurface(InviwoModule* module) {

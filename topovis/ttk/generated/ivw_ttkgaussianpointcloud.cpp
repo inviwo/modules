@@ -146,8 +146,8 @@ struct VTKTraits<ttkGaussianPointCloud> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This module generates a 1D, 2D or 3D point cloud by randomly
-casting samples from a Gaussian distribution.)";
+        R"ivw(This module generates a 1D, 2D or 3D point cloud by randomly
+casting samples from a Gaussian distribution.)ivw";
 };
 
 void registerttkGaussianPointCloud(InviwoModule* module) {

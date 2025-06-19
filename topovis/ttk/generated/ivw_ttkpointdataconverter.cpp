@@ -167,8 +167,9 @@ struct VTKTraits<ttkPointDataConverter> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK plugin that converts data types for point-based
-scalar fields (for instance, from double to float).)";
+    static constexpr std::string_view doc =
+        R"ivw(TTK plugin that converts data types for point-based
+scalar fields (for instance, from double to float).)ivw";
 };
 
 void registerttkPointDataConverter(InviwoModule* module) {

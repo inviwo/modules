@@ -107,13 +107,13 @@ struct VTKTraits<ttkComponentSize> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin computes the connected component of a point-set
+        R"ivw(This plugin computes the connected component of a point-set
 data-set and computes their size (number of vertices, number of cells, etc).
 The size information is attached on the output, either as point or cell data.
 The identifier of each connected component is also attached to the geometry
 as point or cell data. This plugin is useful when used in conjunction with
 some thresholding, to only display the largest connected components of a
-data-set.)";
+data-set.)ivw";
 };
 
 void registerttkComponentSize(InviwoModule* module) {

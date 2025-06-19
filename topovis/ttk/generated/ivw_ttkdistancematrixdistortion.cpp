@@ -167,7 +167,7 @@ struct VTKTraits<ttkDistanceMatrixDistortion> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin, given two distance matrices representing the same points, computes the distortion between the two, according the SIM formula. It also provides, for each point, the distortion for its own distances to the other points.)";
+        R"ivw(This plugin, given two distance matrices representing the same points, computes the distortion between the two, according the SIM formula. It also provides, for each point, the distortion for its own distances to the other points.)ivw";
 };
 
 void registerttkDistanceMatrixDistortion(InviwoModule* module) {

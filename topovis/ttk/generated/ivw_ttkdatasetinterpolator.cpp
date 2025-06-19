@@ -107,7 +107,8 @@ struct VTKTraits<ttkDataSetInterpolator> {
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK dataSetInterpolator plugin documentation.)";
+    static constexpr std::string_view doc =
+        R"ivw(TTK dataSetInterpolator plugin documentation.)ivw";
 };
 
 void registerttkDataSetInterpolator(InviwoModule* module) {

@@ -17,6 +17,7 @@
 #include "ivw_ttkdatasettotable.h"
 #include "ivw_ttkdepthimagebasedgeometryapproximation.h"
 #include "ivw_ttkdimensionreduction.h"
+#include "ivw_ttkdimensionreductionmetrics.h"
 #include "ivw_ttkdiscretegradient.h"
 #include "ivw_ttkdistancefield.h"
 #include "ivw_ttkdistancematrixdistortion.h"
@@ -48,6 +49,8 @@
 #include "ivw_ttkmatrixtoheatmap.h"
 #include "ivw_ttkmergeblocktables.h"
 #include "ivw_ttkmergetree.h"
+#include "ivw_ttkmergetreeautoencoder.h"
+#include "ivw_ttkmergetreeautoencoderdecoding.h"
 #include "ivw_ttkmergetreeprincipalgeodesics.h"
 #include "ivw_ttkmergetreeprincipalgeodesicsdecoding.h"
 #include "ivw_ttkmergetreetemporalreduction.h"
@@ -78,9 +81,12 @@
 #include "ivw_ttkreebgraph.h"
 #include "ivw_ttkreebspace.h"
 #include "ivw_ttkripscomplex.h"
+#include "ivw_ttkripspersistencediagram.h"
+#include "ivw_ttkripspersistencegenerators.h"
 #include "ivw_ttkscalarfieldcriticalpoints.h"
 #include "ivw_ttkscalarfieldnormalizer.h"
 #include "ivw_ttkscalarfieldsmoother.h"
+#include "ivw_ttksigneddistancefield.h"
 #include "ivw_ttkspherefrompoint.h"
 #include "ivw_ttkstablemanifoldpersistence.h"
 #include "ivw_ttkstringarrayconverter.h"
@@ -123,6 +129,7 @@ void registerVTKFilters(InviwoModule* module) {
     registerttkDataSetToTable(module);
     registerttkDepthImageBasedGeometryApproximation(module);
     registerttkDimensionReduction(module);
+    registerttkDimensionReductionMetrics(module);
     registerttkDiscreteGradient(module);
     registerttkDistanceField(module);
     registerttkDistanceMatrixDistortion(module);
@@ -154,6 +161,8 @@ void registerVTKFilters(InviwoModule* module) {
     registerttkMatrixToHeatMap(module);
     registerttkMergeBlockTables(module);
     registerttkMergeTree(module);
+    registerttkMergeTreeAutoencoder(module);
+    registerttkMergeTreeAutoencoderDecoding(module);
     registerttkMergeTreePrincipalGeodesics(module);
     registerttkMergeTreePrincipalGeodesicsDecoding(module);
     registerttkMergeTreeTemporalReduction(module);
@@ -184,9 +193,12 @@ void registerVTKFilters(InviwoModule* module) {
     registerttkReebGraph(module);
     registerttkReebSpace(module);
     registerttkRipsComplex(module);
+    registerttkRipsPersistenceDiagram(module);
+    registerttkRipsPersistenceGenerators(module);
     registerttkScalarFieldCriticalPoints(module);
     registerttkScalarFieldNormalizer(module);
     registerttkScalarFieldSmoother(module);
+    registerttkSignedDistanceField(module);
     registerttkSphereFromPoint(module);
     registerttkStableManifoldPersistence(module);
     registerttkStringArrayConverter(module);

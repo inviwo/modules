@@ -190,7 +190,7 @@ struct VTKTraits<ttkForEach> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter works in conjunction with the ttkEndFor filter to iterate over blocks, rows, array values, and arrays.
+        R"ivw(This filter works in conjunction with the ttkEndFor filter to iterate over blocks, rows, array values, and arrays.
 
 Online examples:
 
@@ -198,7 +198,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/contourTreeAlignment/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkForEach(InviwoModule* module) {

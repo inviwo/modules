@@ -160,7 +160,8 @@ struct VTKTraits<ttkTriangulationRequest> {
                Wrapper8>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK triangulationRequest plugin documentation.)";
+    static constexpr std::string_view doc =
+        R"ivw(TTK triangulationRequest plugin documentation.)ivw";
 };
 
 void registerttkTriangulationRequest(InviwoModule* module) {

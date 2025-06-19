@@ -246,7 +246,7 @@ struct VTKTraits<ttkArrayEditor> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter adds data arrays to a 'vtkDataObject' (called target) based on a string or point/cell/field data of an optional second 'vtkDataObject' (called source). This filter can also be used to directly edit an array (including renaming, type conversion, and reindexing).
+        R"ivw(This filter adds data arrays to a 'vtkDataObject' (called target) based on a string or point/cell/field data of an optional second 'vtkDataObject' (called source). This filter can also be used to directly edit an array (including renaming, type conversion, and reindexing).
 
 Online examples:
 
@@ -254,7 +254,9 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/contourTreeAlignment/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkArrayEditor(InviwoModule* module) {

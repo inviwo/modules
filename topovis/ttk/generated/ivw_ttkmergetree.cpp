@@ -246,7 +246,7 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin takes a scalar field attached as point data to a geometry
+        R"ivw(This plugin takes a scalar field attached as point data to a geometry
 (either 2D or 3D, either regular grids or triangulations) and computes
 its merge tree. Several outputs are produced to encode the nodes of
 the tree (as points in 3D space), the arcs of the tree and the data
@@ -284,7 +284,9 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
-- https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/
+
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/)ivw";
 };
 
 void registerttkMergeTree(InviwoModule* module) {

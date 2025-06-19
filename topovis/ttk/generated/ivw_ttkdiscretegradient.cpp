@@ -191,7 +191,7 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
                Wrapper8>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK discreteGradient plugin documentation.)";
+    static constexpr std::string_view doc = R"ivw(TTK discreteGradient plugin documentation.)ivw";
 };
 
 void registerttkDiscreteGradient(InviwoModule* module) {

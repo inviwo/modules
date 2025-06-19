@@ -226,13 +226,13 @@ struct VTKTraits<ttkRipsComplex> {
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK ripsComplex plugin documentation.
+    static constexpr std::string_view doc = R"ivw(TTK ripsComplex plugin documentation.
 
 Online examples:
 
 - https://topology-tool-kit.github.io/examples/persistentGenerators_householdAnalysis/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
 void registerttkRipsComplex(InviwoModule* module) {

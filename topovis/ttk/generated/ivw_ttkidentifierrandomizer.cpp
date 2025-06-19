@@ -161,7 +161,7 @@ struct VTKTraits<ttkIdentifierRandomizer> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK filter to shuflle ids randomly. Useful to reduce the number of neighbor
+        R"ivw(TTK filter to shuflle ids randomly. Useful to reduce the number of neighbor
 regions with close ids.
 
 Online examples:
@@ -172,7 +172,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/tectonicPuzzle/
 
-- https://topology-tool-kit.github.io/examples/tribute/)";
+- https://topology-tool-kit.github.io/examples/tribute/)ivw";
 };
 
 void registerttkIdentifierRandomizer(InviwoModule* module) {

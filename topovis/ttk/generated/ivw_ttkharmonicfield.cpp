@@ -233,7 +233,7 @@ struct VTKTraits<ttkHarmonicField> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin takes a list of sources (a set of points with
+        R"ivw(This plugin takes a list of sources (a set of points with
 their global identifiers attached to them) with a scalar
 constraint on each of them and computes an harmonic field by
 solving a laplacian equation.
@@ -244,7 +244,7 @@ Computers and Graphics 2009.
 
 Online Examples:
 
-- https://topology-tool-kit.github.io/examples/harmonicSkeleton/)";
+- https://topology-tool-kit.github.io/examples/harmonicSkeleton/)ivw";
 };
 
 void registerttkHarmonicField(InviwoModule* module) {

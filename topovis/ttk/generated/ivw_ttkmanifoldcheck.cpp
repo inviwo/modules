@@ -107,7 +107,7 @@ struct VTKTraits<ttkManifoldCheck> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin performs a manifold check for each simplex, by counting
+        R"ivw(This plugin performs a manifold check for each simplex, by counting
 the number of connected components of link. On a d-dimensional triangulation,
 this number should be equal to 1 for all but (d-1)-simplices, for which
 it can be 1 (boundary simplices) or 2 (interior simplices). Other values
@@ -115,7 +115,7 @@ indicate a non-manifold simplex.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/manifoldCheck/)";
+- https://topology-tool-kit.github.io/examples/manifoldCheck/)ivw";
 };
 
 void registerttkManifoldCheck(InviwoModule* module) {

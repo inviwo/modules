@@ -121,14 +121,14 @@ struct VTKTraits<ttkBarycentricSubdivision> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(BarycentricSubdivision generates a new, finer triangulation
+        R"ivw(BarycentricSubdivision generates a new, finer triangulation
 from an input triangulation. Every triangle is divided in six
 new triangles using the 3 edges middles and the triangle
 barycenter.
 Scalar data on vertices (point data) with continuous values
 (float/double) can be interpolated on the new
 triangulation. Scalar data on input triangles can be replicated
-on the new triangles.)";
+on the new triangles.)ivw";
 };
 
 void registerttkBarycentricSubdivision(InviwoModule* module) {

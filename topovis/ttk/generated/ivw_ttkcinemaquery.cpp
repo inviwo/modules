@@ -140,7 +140,7 @@ struct VTKTraits<ttkCinemaQuery> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter evaluates a SQL statement on multiple InputTables.
+        R"ivw(This filter evaluates a SQL statement on multiple InputTables.
 
 Online examples:
 
@@ -152,7 +152,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreeFeatureTracking/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkCinemaQuery(InviwoModule* module) {

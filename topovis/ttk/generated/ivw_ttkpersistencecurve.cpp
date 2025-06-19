@@ -111,7 +111,7 @@ struct VTKTraits<ttkPersistenceCurve> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK plugin for the computation of persistence curves.
+        R"ivw(TTK plugin for the computation of persistence curves.
 
 This plugin takes a persistence diagram as input and computes the
 number of pairs as a function of persistence (i.e. the number of pairs
@@ -134,7 +134,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/interactionSites/
 
-- https://topology-tool-kit.github.io/examples/morsePersistence/)";
+- https://topology-tool-kit.github.io/examples/morsePersistence/)ivw";
 };
 
 void registerttkPersistenceCurve(InviwoModule* module) {

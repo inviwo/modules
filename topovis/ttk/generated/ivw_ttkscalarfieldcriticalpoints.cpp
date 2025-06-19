@@ -274,7 +274,7 @@ struct VTKTraits<ttkScalarFieldCriticalPoints> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin computes the list of critical points of the input scalar
+        R"ivw(This plugin computes the list of critical points of the input scalar
 field and classify them according to their type.
 
 Two backends are available for the computation of critical points:
@@ -322,7 +322,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/interactionSites/
 
-- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)";
+- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
 void registerttkScalarFieldCriticalPoints(InviwoModule* module) {

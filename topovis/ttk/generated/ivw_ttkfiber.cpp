@@ -192,7 +192,7 @@ struct VTKTraits<ttkFiber> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Given a point in the range, this plugin computes its fiber (i.e.
+        R"ivw(Given a point in the range, this plugin computes its fiber (i.e.
 pre-image) on bivariate volumetric data. The bivariate input data must be
 provided as two independent scalar fields attached as point data to the
 input geometry.
@@ -200,7 +200,7 @@ input geometry.
 Related publication:
 "Fast and Exact Fiber Surface Extraction for Tetrahedral Meshes",
 Pavol Klacansky, Julien Tierny, Hamish Carr, Zhao Geng
-IEEE Transactions on Visualization and Computer Graphics, 2016.)";
+IEEE Transactions on Visualization and Computer Graphics, 2016.)ivw";
 };
 
 void registerttkFiber(InviwoModule* module) {

@@ -192,16 +192,24 @@ struct VTKTraits<ttkScalarFieldSmoother> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This class is a dummy example for the development of TTK filters. It
+        R"ivw(This class is a dummy example for the development of TTK filters. It
 smooths an input scalar field by averaging the scalar values on the link
 of each vertex.
 
 See also GeometrySmoother.
 Online examples:
 
+- https://topology-tool-kit.github.io/examples/cosmicWeb/
+
 - https://topology-tool-kit.github.io/examples/morsePersistence/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_darkSky/)";
+- https://topology-tool-kit.github.io/examples/mpiExample/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_darkSky/
+
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_darkSky/
+
+https://topology-tool-kit.github.io/examples/topologicalOptimization_pegasus/)ivw";
 };
 
 void registerttkScalarFieldSmoother(InviwoModule* module) {

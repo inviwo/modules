@@ -134,7 +134,7 @@ struct VTKTraits<ttkScalarFieldNormalizer> {
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK plugin that normalizes an input scalar field.
+    static constexpr std::string_view doc = R"ivw(TTK plugin that normalizes an input scalar field.
 
 Online examples:
 
@@ -142,9 +142,13 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/
 
+- https://topology-tool-kit.github.io/examples/cosmicWeb/
+
 - https://topology-tool-kit.github.io/examples/harmonicSkeleton/
 
-- https://topology-tool-kit.github.io/examples/morseSmaleQuadrangulation/)";
+- https://topology-tool-kit.github.io/examples/morseSmaleQuadrangulation/
+
+- https://topology-tool-kit.github.io/examples/mpiExample/)ivw";
 };
 
 void registerttkScalarFieldNormalizer(InviwoModule* module) {

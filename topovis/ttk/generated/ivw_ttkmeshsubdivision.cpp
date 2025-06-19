@@ -121,7 +121,7 @@ struct VTKTraits<ttkMeshSubdivision> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter subdivides an input mesh with a strategy inspired by
+        R"ivw(This filter subdivides an input mesh with a strategy inspired by
 Discrete Morse theory. It does not modify the position of the original
 vertices.
 
@@ -138,7 +138,7 @@ and any 3D mesh into a hexadrehal mesh.
 
 This filter assumes that all the cells of the input mesh are of the same
 type. Also, the filter creates duplicate points, to be merged after the
-fact with "Clean to Grid" under ParaView or vtkMergePoints for instance.)";
+fact with "Clean to Grid" under ParaView or vtkMergePoints for instance.)ivw";
 };
 
 void registerttkMeshSubdivision(InviwoModule* module) {

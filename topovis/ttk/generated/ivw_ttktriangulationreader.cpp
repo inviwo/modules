@@ -118,9 +118,9 @@ struct VTKTraits<ttkTriangulationReader> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter reads the content of an already preconditioned TTK
+        R"ivw(This filter reads the content of an already preconditioned TTK
 Explicit Triangulation File to import it into the current
-dataset.)";
+dataset.)ivw";
 };
 
 void registerttkTriangulationReader(InviwoModule* module) {

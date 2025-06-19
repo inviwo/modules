@@ -137,7 +137,7 @@ struct VTKTraits<ttkCinemaReader> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This source reads the content of a Cinema Spec D database by converting the corresponding data.csv file into a vtkTable.
+        R"ivw(This source reads the content of a Cinema Spec D database by converting the corresponding data.csv file into a vtkTable.
 
 Online examples:
 
@@ -155,13 +155,19 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/
 
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
 - https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/
 
 - https://topology-tool-kit.github.io/examples/persistenceDiagramClustering/
 
 - https://topology-tool-kit.github.io/examples/persistenceDiagramDistance/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramWAE/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
 void registerttkCinemaReader(InviwoModule* module) {

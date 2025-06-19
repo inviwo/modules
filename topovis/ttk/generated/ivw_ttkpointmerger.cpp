@@ -130,8 +130,8 @@ struct VTKTraits<ttkPointMerger> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin merges the points of a mesh whose distance is lower than
-a user defined threshold.)";
+        R"ivw(This plugin merges the points of a mesh whose distance is lower than
+a user defined threshold.)ivw";
 };
 
 void registerttkPointMerger(InviwoModule* module) {

@@ -225,7 +225,8 @@ struct VTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 5> inports = {
-        InputData{"Barycenter", "vtkMultiBlockDataSet", 1, R"(Merge trees to process.)"},
+        InputData{"Barycenter", "vtkMultiBlockDataSet", 1,
+                  R"(Barycenter of the input merge trees.)"},
         InputData{"Coefficients", "vtkTable", 1,
                   R"(Projection coefficients of the input trees in the new basis.)"},
         InputData{"Geodesics Vectors", "vtkTable", 1,
@@ -251,7 +252,7 @@ struct VTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter reconstructs merge trees (or persistence diagrams) given their coordinates in a basis computed via Principal Geodesic Analysis.
+        R"ivw(This filter reconstructs merge trees (or persistence diagrams) given their coordinates in a basis computed via Principal Geodesic Analysis.
 
 Related publication:
 
@@ -261,7 +262,9 @@ IEEE Transactions on Visualization and Computer Graphics, 2022
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/mergeTreePGA/)";
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
 void registerttkMergeTreePrincipalGeodesicsDecoding(InviwoModule* module) {

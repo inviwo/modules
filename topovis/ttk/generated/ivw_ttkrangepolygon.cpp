@@ -130,7 +130,7 @@ struct VTKTraits<ttkRangePolygon> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Given an input 2D selection, this plugin produces a polygon to be used as
+        R"ivw(Given an input 2D selection, this plugin produces a polygon to be used as
 an input to vtkFiberSurface. Typically, users generate a 2D selection from
 the continuous scatterplot and this plugin translates this selection into
 a valid range polygon.
@@ -157,7 +157,7 @@ See also ContinuousScatterplot, FiberSurface, Fiber, ProjectionFromField.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/builtInExample2/)";
+- https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
 void registerttkRangePolygon(InviwoModule* module) {

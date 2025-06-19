@@ -127,7 +127,7 @@ struct VTKTraits<ttkBlockAggregator> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter appends every input vtkDataObject as a block to an output vtkMultiBlockDataSet.
+        R"ivw(This filter appends every input vtkDataObject as a block to an output vtkMultiBlockDataSet.
 
 Online examples:
 
@@ -139,7 +139,11 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
 void registerttkBlockAggregator(InviwoModule* module) {

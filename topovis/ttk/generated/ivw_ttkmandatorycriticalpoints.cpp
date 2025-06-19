@@ -288,7 +288,7 @@ struct VTKTraits<ttkMandatoryCriticalPoints> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter computes the mandatory critical points of uncertain scalar
+        R"ivw(This filter computes the mandatory critical points of uncertain scalar
 fields defined on triangulations. The input uncertain data is represented
 by reliable bound fields for each vertex. In particular, the input geometry
 (either 2D or 3D, either regular grids or triangulations) must be associated
@@ -308,7 +308,7 @@ Computer Graphics Forum, 2014.
 
 Online Examples:
 
-- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)";
+- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
 void registerttkMandatoryCriticalPoints(InviwoModule* module) {

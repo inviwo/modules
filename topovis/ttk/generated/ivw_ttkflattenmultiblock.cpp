@@ -107,7 +107,7 @@ struct VTKTraits<ttkFlattenMultiBlock> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter flattens the top-level hierarchy of a tree
+        R"ivw(This filter flattens the top-level hierarchy of a tree
 vtkMultiBlockDataSet structure.
 
 The main use-case is to flatten a "Group Datasets" of several
@@ -119,7 +119,11 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
 void registerttkFlattenMultiBlock(InviwoModule* module) {

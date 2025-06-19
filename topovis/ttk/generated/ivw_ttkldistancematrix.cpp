@@ -147,11 +147,11 @@ struct VTKTraits<ttkLDistanceMatrix> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter computes a matrix of Lp distances between scalar fields.
+        R"ivw(This filter computes a matrix of Lp distances between scalar fields.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)";
+- https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)ivw";
 };
 
 void registerttkLDistanceMatrix(InviwoModule* module) {

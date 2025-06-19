@@ -130,7 +130,7 @@ struct VTKTraits<ttkCinemaProductReader> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter reads the products that are referenced in a vtkTable. The results are stored in a vtkMultiBlockDataSet where each block corresponds to a row of the table with consistent ordering.
+        R"ivw(This filter reads the products that are referenced in a vtkTable. The results are stored in a vtkMultiBlockDataSet where each block corresponds to a row of the table with consistent ordering.
 
 Online examples:
 
@@ -148,13 +148,19 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/
 
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
 - https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/
 
 - https://topology-tool-kit.github.io/examples/persistenceDiagramClustering/
 
 - https://topology-tool-kit.github.io/examples/persistenceDiagramDistance/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramWAE/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
 void registerttkCinemaProductReader(InviwoModule* module) {

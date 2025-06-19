@@ -208,7 +208,7 @@ struct VTKTraits<ttkReebGraph> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK filter to compute the Reeb graph of a manifold data set.
+        R"ivw(TTK filter to compute the Reeb graph of a manifold data set.
 This filter is based on a parallel algorithm.
 
 related article:
@@ -218,7 +218,7 @@ EGPGV 2019
 
 Online Examples:
 
-- https://topology-tool-kit.github.io/examples/harmonicSkeleton/)";
+- https://topology-tool-kit.github.io/examples/harmonicSkeleton/)ivw";
 };
 
 void registerttkReebGraph(InviwoModule* module) {

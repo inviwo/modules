@@ -254,7 +254,7 @@ struct VTKTraits<ttkJacobiSet> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Given a bivariate scalar field defined on a PL 3-manifold, this filter
+        R"ivw(Given a bivariate scalar field defined on a PL 3-manifold, this filter
 produces the list of Jacobi edges.
 
 The input bivariate data must be provided as two independent scalar fields
@@ -267,7 +267,7 @@ Foundations of Computational Mathematics. Cambridge University Press, 2002.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/builtInExample2/)";
+- https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
 void registerttkJacobiSet(InviwoModule* module) {

@@ -107,7 +107,7 @@ struct VTKTraits<ttkPeriodicGhostsGeneration> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter creates additional ghosts for periodic grids when used in a distributed setting.)";
+        R"ivw(This filter creates additional ghosts for periodic grids when used in a distributed setting.)ivw";
 };
 
 void registerttkPeriodicGhostsGeneration(InviwoModule* module) {

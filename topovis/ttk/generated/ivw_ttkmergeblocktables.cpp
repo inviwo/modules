@@ -107,14 +107,16 @@ struct VTKTraits<ttkMergeBlockTables> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter merges vtkTables stored in a vtkMultiBlockDataSet
+        R"ivw(This filter merges vtkTables stored in a vtkMultiBlockDataSet
 into one unique vtkTable.
 
 Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
 void registerttkMergeBlockTables(InviwoModule* module) {

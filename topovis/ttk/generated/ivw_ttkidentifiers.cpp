@@ -107,11 +107,11 @@ struct VTKTraits<ttkIdentifiers> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK plugin that computes the global identifiers for each
+        R"ivw(TTK plugin that computes the global identifiers for each
 vertex and each cell as point data and cell data scalar fields.
 
 This filter is useful to retrieve the global identifiers of vertices or
-cells in subsequent filters throughout the VTK pipeline.)";
+cells in subsequent filters throughout the VTK pipeline.)ivw";
 };
 
 void registerttkIdentifiers(InviwoModule* module) {

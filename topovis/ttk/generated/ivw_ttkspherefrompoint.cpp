@@ -199,7 +199,7 @@ struct VTKTraits<ttkSphereFromPoint> {
                Wrapper8, Wrapper9, Wrapper10, Wrapper11>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK plugin that produces sphere-only glyphs.)";
+    static constexpr std::string_view doc = R"ivw(TTK plugin that produces sphere-only glyphs.)ivw";
 };
 
 void registerttkSphereFromPoint(InviwoModule* module) {

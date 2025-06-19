@@ -135,11 +135,11 @@ struct VTKTraits<ttkIcosphereFromObject> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter creates an IcosphereFromObject with a specified radius, center, and number of subdivisions. Alternatively, by providing an optional input, the filter will automatically determine the radius and center such that the resulting IcosphereFromObject encapsulates the input object. In this case, the entered radius parameter is used as a scaling factor.
+        R"ivw(This filter creates an IcosphereFromObject with a specified radius, center, and number of subdivisions. Alternatively, by providing an optional input, the filter will automatically determine the radius and center such that the resulting IcosphereFromObject encapsulates the input object. In this case, the entered radius parameter is used as a scaling factor.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/geometryApproximation/)";
+- https://topology-tool-kit.github.io/examples/geometryApproximation/)ivw";
 };
 
 void registerttkIcosphereFromObject(InviwoModule* module) {

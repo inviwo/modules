@@ -139,11 +139,11 @@ struct VTKTraits<ttkUncertainDataEstimator> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK plugin that takes an input ensemble data set (represented
+        R"ivw(TTK plugin that takes an input ensemble data set (represented
 by a list of scalar fields) and which computes various vertexwise statistics
 (PDF estimation, bounds, moments, etc.).
 
-See also MandatoryCriticalPoints.)";
+See also MandatoryCriticalPoints.)ivw";
 };
 
 void registerttkUncertainDataEstimator(InviwoModule* module) {

@@ -212,6 +212,18 @@ fraction (0-1) of the function range.)"_help,
 
 struct Wrapper15 {
     bool set(ttkMorseSmaleComplex& filter) {
+        filter.SetForceLoopFreeGradient(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "ForceLoopFreeGradient", "Force loop-free gradient",
+        R"(If set to true, the saddle connectors that would create a loop in the whole gradient after returning them will not be processed.
+Otherwise, only the saddle connectors that will create a loop in the wall of the corresponding 2-saddle will not be processed.)"_help,
+        true};
+};
+
+struct Wrapper16 {
+    bool set(ttkMorseSmaleComplex& filter) {
         filter.SetUseAllCores(property.get());
         return true;
     }
@@ -219,7 +231,7 @@ struct Wrapper15 {
                           true};
 };
 
-struct Wrapper16 {
+struct Wrapper17 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -232,7 +244,7 @@ struct Wrapper16 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper17 {
+struct Wrapper18 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -245,7 +257,7 @@ struct Wrapper17 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper18 {
+struct Wrapper19 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -259,7 +271,7 @@ ratio with respect to the total cluster number.)"_help,
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper19 {
+struct Wrapper20 {
     bool set(ttkMorseSmaleComplex& filter) {
         filter.Modified();
         return true;
@@ -299,14 +311,15 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
                "ComputeAscendingSeparatrices2", "ComputeDescendingSeparatrices2",
                "ComputeAscendingSegmentation", "ComputeDescendingSegmentation",
                "ComputeFinalSegmentation", "ReturnSaddleConnectors",
-               "SaddleConnectorsPersistenceThreshold", "ThresholdIsAbsolute"}}};
+               "SaddleConnectorsPersistenceThreshold", "ThresholdIsAbsolute",
+               "ForceLoopFreeGradient"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
-               Wrapper16, Wrapper17, Wrapper18, Wrapper19>
+               Wrapper16, Wrapper17, Wrapper18, Wrapper19, Wrapper20>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK plugin for the computation of Morse-Smale complexes.
+        R"ivw(TTK plugin for the computation of Morse-Smale complexes.
 
 Morse-Smale complexes are useful topological abstractions of scalar
 fields for data segmentation, feature extraction, etc.
@@ -324,6 +337,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/1manifoldLearningCircles/
 
 - https://topology-tool-kit.github.io/examples/2manifoldLearning/
+
+- https://topology-tool-kit.github.io/examples/cosmicWeb/
 
 - https://topology-tool-kit.github.io/examples/imageProcessing/
 
@@ -351,7 +366,9 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/tectonicPuzzle/
 
-- https://topology-tool-kit.github.io/examples/tribute/)";
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_darkSky/
+
+- https://topology-tool-kit.github.io/examples/tribute/)ivw";
 };
 
 void registerttkMorseSmaleComplex(InviwoModule* module) {

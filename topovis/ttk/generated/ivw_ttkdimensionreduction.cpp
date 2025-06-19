@@ -52,18 +52,18 @@ struct Wrapper2 {
         filter.SetMethod(property.get());
         return true;
     }
-    OptionPropertyInt property{
-        "Method",
-        "Method",
-        R"()"_help,
-        {{"Spectral Embedding", "Spectral Embedding", 0},
-         {"Locally Linear Embedding", "Locally Linear Embedding", 1},
-         {"Multi-Dimensional Scaling", "Multi-Dimensional Scaling", 2},
-         {"t-distributed Stochastic Neighbor Embedding",
-          "t-distributed Stochastic Neighbor Embedding", 3},
-         {"Isomap Embedding", "Isomap Embedding", 4},
-         {"Principal Component Analysis", "Principal Component Analysis", 5}},
-        2};
+    OptionPropertyInt property{"Method",
+                               "Method",
+                               R"()"_help,
+                               {{"Spectral Embedding", "Spectral Embedding", 0},
+                                {"Locally Linear Embedding", "Locally Linear Embedding", 1},
+                                {"Multi-Dimensional Scaling", "Multi-Dimensional Scaling", 2},
+                                {"t-distributed Stochastic Neighbor Embedding",
+                                 "t-distributed Stochastic Neighbor Embedding", 3},
+                                {"Isomap Embedding", "Isomap Embedding", 4},
+                                {"Principal Component Analysis", "Principal Component Analysis", 5},
+                                {"TopoMap (IEEE VIS 2020)", "TopoMap (IEEE VIS 2020)", 6}},
+                               2};
 };
 
 struct Wrapper3 {
@@ -524,6 +524,43 @@ struct Wrapper44 {
 
 struct Wrapper45 {
     bool set(ttkDimensionReduction& filter) {
+        filter.Settopomap_Strategy(property.get());
+        return true;
+    }
+    OptionPropertyInt property{"topomap_Strategy",
+                               "MST Algorithm",
+                               R"()"_help,
+                               {{"Kruskal", "Kruskal", 0}, {"Prim", "Prim", 1}},
+                               0};
+};
+
+struct Wrapper46 {
+    bool set(ttkDimensionReduction& filter) {
+        filter.Settopomap_AngularSampleNb(property.get());
+        return true;
+    }
+    IntProperty property{
+        "topomap_AngularSampleNb",
+        "Angular samples",
+        R"(When projecting in 2D, we regularly need to merge two already projected subsets of the points. We put them apart the right distance, but we may rotate each by some angle between two bounds. We test several angles and keep the best one. This parameter defines how many tests we do for each rotation. Beware, this parameter appears squared in the algorithm complexity.)"_help,
+        2,
+        std::pair{1, ConstraintBehavior::Ignore},
+        std::pair{100, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper47 {
+    bool set(ttkDimensionReduction& filter) {
+        filter.Settopomap_CheckMST(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "topomap_CheckMST", "MST Preservation Check",
+        R"(This way to embedd points in 2D is based on preserving the lengths of the edges selected by Kruskal Algortihm to build a spanning tree. Checking this box enables testing that these lengths are indeed preserved. This test is very quick.)"_help,
+        false};
+};
+
+struct Wrapper48 {
+    bool set(ttkDimensionReduction& filter) {
         if (property.get().empty()) return false;
         filter.SetModulePath(property.get().string().c_str());
         return true;
@@ -532,7 +569,7 @@ struct Wrapper45 {
                           std::filesystem::path{"default"}};
 };
 
-struct Wrapper46 {
+struct Wrapper49 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetModuleName(property.get().c_str());
         return true;
@@ -541,7 +578,7 @@ struct Wrapper46 {
                             R"(Set the name of the Python module.)"_help, "dimensionReduction"};
 };
 
-struct Wrapper47 {
+struct Wrapper50 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetFunctionName(property.get().c_str());
         return true;
@@ -550,7 +587,7 @@ struct Wrapper47 {
                             R"(Set the name of the Python function.)"_help, "doIt"};
 };
 
-struct Wrapper48 {
+struct Wrapper51 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetIsDeterministic(property.get());
         return true;
@@ -559,7 +596,7 @@ struct Wrapper48 {
                           true};
 };
 
-struct Wrapper49 {
+struct Wrapper52 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -568,7 +605,7 @@ struct Wrapper49 {
                           true};
 };
 
-struct Wrapper50 {
+struct Wrapper53 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -581,7 +618,7 @@ struct Wrapper50 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper51 {
+struct Wrapper54 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -594,7 +631,7 @@ struct Wrapper51 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper52 {
+struct Wrapper55 {
     bool set(ttkDimensionReduction& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -608,7 +645,7 @@ ratio with respect to the total cluster number.)"_help,
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper53 {
+struct Wrapper56 {
     bool set(ttkDimensionReduction& filter) {
         filter.Modified();
         return true;
@@ -633,15 +670,15 @@ struct VTKTraits<ttkDimensionReduction> {
     inline static std::array<InputData, 1> inports = {
         InputData{"Input", "vtkTable", 1, R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
-    inline static std::array<Group, 9> groups = {
+    inline static std::array<Group, 10> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute", "ModulePath", "ModuleName",
                "FunctionName", "IsDeterministic"}},
-        Group{"Input options", {"SelectFieldsWithRegexp", "ScalarFields", "Regexp"}},
+        Group{"Input options",
+              {"InputDistanceMatrix", "SelectFieldsWithRegexp", "ScalarFields", "Regexp"}},
         Group{"Output options",
-              {"Method", "NumberOfComponents", "NumberOfNeighbors", "KeepAllDataArrays",
-               "InputDistanceMatrix"}},
+              {"Method", "NumberOfComponents", "NumberOfNeighbors", "KeepAllDataArrays"}},
         Group{"Spectral Embedding", {"se_Affinity", "se_Gamma", "se_EigenSolver"}},
         Group{"Locally Linear Embedding",
               {"lle_Regularization", "lle_EigenSolver", "lle_Tolerance", "lle_MaxIteration",
@@ -657,7 +694,9 @@ struct VTKTraits<ttkDimensionReduction> {
               {"iso_EigenSolver", "iso_Tolerance", "iso_MaxIteration", "iso_PathMethod",
                "iso_NeighborsAlgorithm", "iso_Metric"}},
         Group{"Principal Component Analysis",
-              {"pca_Copy", "pca_Whiten", "pca_SVDSolver", "pca_Tolerance", "pca_MaxIteration"}}};
+              {"pca_Copy", "pca_Whiten", "pca_SVDSolver", "pca_Tolerance", "pca_MaxIteration"}},
+        Group{"TopoMap (IEEE VIS 2020)",
+              {"topomap_Strategy", "topomap_AngularSampleNb", "topomap_CheckMST"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
                Wrapper16, Wrapper17, Wrapper18, Wrapper19, Wrapper20, Wrapper21, Wrapper22,
@@ -665,10 +704,12 @@ struct VTKTraits<ttkDimensionReduction> {
                Wrapper30, Wrapper31, Wrapper32, Wrapper33, Wrapper34, Wrapper35, Wrapper36,
                Wrapper37, Wrapper38, Wrapper39, Wrapper40, Wrapper41, Wrapper42, Wrapper43,
                Wrapper44, Wrapper45, Wrapper46, Wrapper47, Wrapper48, Wrapper49, Wrapper50,
-               Wrapper51, Wrapper52, Wrapper53>
+               Wrapper51, Wrapper52, Wrapper53, Wrapper54, Wrapper55, Wrapper56>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK dimensionReduction plugin documentation.
+    static constexpr std::string_view doc =
+        R"ivw(TTK filter for generic dimension reduction methods.
+This filter supports various methods via the scikit-learn third party dependency (spectral embedding, local linear embedding, multi-dimensional scaling, t-SNE, isomap, PCA) as well as TopoMap (IEEE VIS 2020)
 
 Online examples:
 
@@ -682,9 +723,19 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
 - https://topology-tool-kit.github.io/examples/persistentGenerators_householdAnalysis/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/
+
+- https://topology-tool-kit.github.io/examples/topoMapTeaser/
+
+Related publication:
+
+"Topomap: A 0-dimensional homology preserving projection of high-dimensional data".
+H.Doraiswamy, J. Tierny, P. J. S. Silva, L. G. Nonato and C. Silva.
+IEEE Transactions on Visualization and Computer Graphics 27(2): 561-571, 2020.)ivw";
 };
 
 void registerttkDimensionReduction(InviwoModule* module) {

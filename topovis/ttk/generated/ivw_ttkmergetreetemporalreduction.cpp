@@ -162,7 +162,7 @@ struct VTKTraits<ttkMergeTreeTemporalReduction> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter allows to compute a temporal reduction of a sequence of merge trees.
+        R"ivw(This filter allows to compute a temporal reduction of a sequence of merge trees.
 
 It greedily removes trees in the sequence that can be accurately reconstructed with the geodesic computation. This iterated removal reveals key frames in the sequence (the trees that are not removed and used to reconstruct the removed trees).
 
@@ -177,7 +177,7 @@ Proc. of IEEE VIS 2021.
 IEEE Transactions on Visualization and Computer Graphics, 2021
 
 Online examples:
-- https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeTemporalReduction/)ivw";
 };
 
 void registerttkMergeTreeTemporalReduction(InviwoModule* module) {

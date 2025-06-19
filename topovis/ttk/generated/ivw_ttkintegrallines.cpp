@@ -246,7 +246,7 @@ struct VTKTraits<ttkIntegralLines> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(The filter takes on its input a scalar field attached as point data to an
+        R"ivw(The filter takes on its input a scalar field attached as point data to an
 input geometry (either 2D or 3D, either regular grids or triangulations)
 and computes the forward or backward integral lines along the edges of the
 input mesh, given a list of input sources.
@@ -254,7 +254,11 @@ input mesh, given a list of input sources.
 The sources are specified with a vtkPointSet on which is attached as point
 data a scalar field that represent the vertex identifiers of the sources in
 the input geometry (use the Identifiers plugin prior to the selection of the
-sources if necessary to create such an identifier field).)";
+sources if necessary to create such an identifier field).
+
+Online examples:
+
+- https://topology-tool-kit.github.io/examples/mpiExample/)ivw";
 };
 
 void registerttkIntegralLines(InviwoModule* module) {

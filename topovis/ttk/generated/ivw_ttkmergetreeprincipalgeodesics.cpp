@@ -97,6 +97,21 @@ struct Wrapper5 {
 
 struct Wrapper6 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
+        filter.SetDiagramPairTypes(property.get());
+        return true;
+    }
+    OptionPropertyInt property{
+        "DiagramPairTypes",
+        "Diagram Pair Types",
+        R"(The types of pairs to use when the input are persistence diagrams. This can be weigthed with the "Pair Type Mixture Coefficient" parameter (0 for only the second type of pairs and 1 for the first type of pairs).)"_help,
+        {{"Min-Saddle and Saddle-Max", "Min-Saddle and Saddle-Max", 0},
+         {"Min-Saddle and Saddle-Saddle", "Min-Saddle and Saddle-Saddle", 1},
+         {"Saddle-Saddle Saddle-Max", "Saddle-Saddle Saddle-Max", 2}},
+        0};
+};
+
+struct Wrapper7 {
+    bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.SetJoinSplitMixtureCoefficient(property.get());
         return true;
     }
@@ -104,13 +119,13 @@ struct Wrapper6 {
         "JoinSplitMixtureCoefficient",
         "Pair Type Mixture Coefficient",
         R"(If input are merge trees, this parameter allows to weight between the first input and the second input, typically join and split trees (0 for only the second input and 1 for only the first one).
-If input are persistence diagrams, this parameter allows to weight between min-sad and sad-max pairs (0 for only sad-max and 1 for only min-sad).)"_help,
+If input are persistence diagrams, this parameter allows to weight between different types of pairs, determined by the "Diagram Pair Types" parameter (default is min-sad and sad-max pairs), 0 for only the second type and 1 for only the first type.)"_help,
         0.5,
         std::pair{0.0, ConstraintBehavior::Ignore},
         std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper7 {
+struct Wrapper8 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.SetComputeReconstructionError(property.get());
         return true;
@@ -119,7 +134,7 @@ struct Wrapper7 {
                           false};
 };
 
-struct Wrapper8 {
+struct Wrapper9 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -128,7 +143,7 @@ struct Wrapper8 {
                           true};
 };
 
-struct Wrapper9 {
+struct Wrapper10 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -141,7 +156,7 @@ struct Wrapper9 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper10 {
+struct Wrapper11 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -154,7 +169,7 @@ struct Wrapper10 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper11 {
+struct Wrapper12 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -168,7 +183,7 @@ ratio with respect to the total cluster number.)"_help,
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper12 {
+struct Wrapper13 {
     bool set(ttkMergeTreePrincipalGeodesics& filter) {
         filter.Modified();
         return true;
@@ -203,17 +218,17 @@ If input are persistence diagrams, then this has no effect to use this input.)"}
         Group{"Input options",
               {"NormalizedWasserstein", "NumberOfGeodesics", "NumberOfProjectionIntervals",
                "NumberOfProjectionSteps", "BarycenterSizeLimitPercent", "Deterministic",
-               "JoinSplitMixtureCoefficient"}},
+               "DiagramPairTypes", "JoinSplitMixtureCoefficient"}},
         Group{"Output options", {"ComputeReconstructionError"}},
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter computes Principal Geodesic Analysis on the space of merge trees or persistence diagrams, that is, a set of orthogonal geodesic axes defining an optimized basis with the barycenter as origin.
+        R"ivw(This filter computes Principal Geodesic Analysis on the space of merge trees or persistence diagrams, that is, a set of orthogonal geodesic axes defining an optimized basis with the barycenter as origin.
 
 Related publication:
 
@@ -223,7 +238,9 @@ IEEE Transactions on Visualization and Computer Graphics, 2022
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/mergeTreePGA/)";
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
 void registerttkMergeTreePrincipalGeodesics(InviwoModule* module) {

@@ -83,12 +83,14 @@ struct VTKTraits<ttkPointSetToCurve> {
     std::tuple<Wrapper0, Wrapper1> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter generates lines between points in a Point Set
+        R"ivw(This filter generates lines between points in a Point Set
 according to the ordering of a given Point Data.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/mergeTreePGA/)";
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
 void registerttkPointSetToCurve(InviwoModule* module) {

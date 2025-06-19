@@ -54,7 +54,7 @@ struct VTKTraits<ttkOBJWriter> {
     std::tuple<Wrapper0> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Export a VTK Unstructured Grid into a Wavefront OBJ file.)";
+        R"ivw(Export a VTK Unstructured Grid into a Wavefront OBJ file.)ivw";
 };
 
 void registerttkOBJWriter(InviwoModule* module) {
