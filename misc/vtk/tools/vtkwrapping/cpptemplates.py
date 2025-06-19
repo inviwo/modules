@@ -82,7 +82,7 @@ struct VTKTraits<{className}> {{
     inline static std::array<Group, {nGroup}> groups = {{{groupList}}};
     std::tuple<{proplist}> properties;
     {customTraits}
-    static constexpr std::string_view doc = R"({doc})";
+    static constexpr std::string_view doc = R"ivw({doc})ivw";
 }};
 
 void register{className}(InviwoModule* module) {{

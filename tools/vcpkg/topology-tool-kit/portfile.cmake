@@ -46,6 +46,9 @@ vcpkg_configure_cmake(
         -DQhull_FOUND=OFF
         -DCGAL_FOUND=OFF
 
+        # this depends in VTK::PythonInterpeter which is not there.
+        -DVTK_MODULE_ENABLE_ttkCinemaDarkroom=NO
+
         # OpenMP mac workadound
         -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
 )
