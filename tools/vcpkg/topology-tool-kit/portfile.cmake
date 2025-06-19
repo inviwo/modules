@@ -1,11 +1,9 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO topology-tool-kit/ttk
-    REF cf44e5f40991582dbef04bb1cdcbc3758485c1eb
-    SHA512 c354c025ad05c470f955fd94f2c2012978d016daa8a5d031cda1e4a753e37d4c009e19760bbbacd33375bdb53ab5d96bf85a17a4ba4358dd24515c2edf48b496
+    REF 7bea8bdae18883edb7b25bb3a919b6aeac9a21a5
+    SHA512 52348677a3d76685cf7d65d8f6e0a52a526c043a3e0ce92c6e232adf38192ee9bac43509997b50a15d5551440d33bc12289474e46f3566fca2c25981e788d65e
     HEAD_REF master
-    PATCHES
-        openmp.patch
 )
 
 if(VCPKG_TARGET_IS_WINDOWS)
@@ -18,8 +16,21 @@ vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
     OPTIONS
-        -DParaView_FOUND=OFF # Don't try finding paraview.
+        -DCMAKE_DISABLE_FIND_PACKAGE_ParaView=ON # Don't try finding paraview.
+        -DCMAKE_DISABLE_FIND_PACKAGE_Torch=ON # Optional
+        -DCMAKE_DISABLE_FIND_PACKAGE_CGAL=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_EMBREE=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_SQLite3=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_ZFP=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_WEBSOCKETPP=ON
+        -DCMAKE_DISABLE_FIND_PACKAGE_Python3=ON
+
+        -DCMAKE_REQUIRE_FIND_PACKAGE_ZLIB=ON
+        -DCMAKE_REQUIRE_FIND_PACKAGE_Graphviz=ON
+        -DCMAKE_REQUIRE_FIND_PACKAGE_Eigen3=ON
+
         -DTTK_BUILD_VTK_WRAPPERS=ON
+
         -DTTK_BUILD_DOCUMENTATION=OFF
         -DTTK_BUILD_PARAVIEW_PLUGINS=OFF
         -DTTK_BUILD_STANDALONE_APPS=OFF
@@ -30,7 +41,12 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_GRAPHVIZ=ON
         -DTTK_ENABLE_OPENMP=${TTK_USE_OPENMP}
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
+        -DTTK_ENABLE_QHULL=OFF
+        # needed to workaround a bug in TTKBaseConfig.cmake.in
+        -DQhull_FOUND=OFF
+        -DCGAL_FOUND=OFF
 
+        # OpenMP mac workadound
         -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
 )
 vcpkg_install_cmake()
