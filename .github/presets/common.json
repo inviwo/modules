@@ -24,12 +24,15 @@
         "IVW_MODULE_GAUSSIAN":              { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_NANOVGUTILS":           { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TENSORVISBASE":         { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_TENSORVISIO":           { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TENSORVISPYTHON":       { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_INTEGRALLINEFILTERING": { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISBASE":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISGL":              { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISPYTHON":          { "type": "BOOL", "value": "ON"},
-        "IVW_MODULE_DATAFRAMECLUSTERING":   { "type": "BOOL", "value": "ON"}
+        "IVW_MODULE_DATAFRAMECLUSTERING":   { "type": "BOOL", "value": "ON"},
+
+        "IVW_MODULE_VTK":   { "type": "BOOL", "value": "ON"}
       }
     }
   ]

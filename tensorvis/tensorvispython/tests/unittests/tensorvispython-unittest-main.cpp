@@ -61,7 +61,12 @@ int main(int argc, char** argv) {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
         modules.emplace_back(createInviwoCore());
         modules.emplace_back(createBaseModule());
+        modules.emplace_back(createOpenGLModule());
+        modules.emplace_back(createBaseGLModule());
+        modules.emplace_back(createEigenUtilsModule());
         modules.emplace_back(createPython3Module());
+        modules.emplace_back(createVectorFieldVisualizationModule());
+        modules.emplace_back(createDataFrameModule());
         modules.emplace_back(createTensorVisBaseModule());
         modules.emplace_back(createTensorVisPythonModule());
         app.registerModules(std::move(modules));
