@@ -36,10 +36,18 @@
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <modules/python3/python3modulesharedlibrary.h>
 #include <modules/base/basemodulesharedlibrary.h>
-#include <inviwo/tensorvispython/tensorvispythonmodulesharedlibrary.h>
+#include <modules/brushingandlinking/brushingandlinkingmodulesharedlibrary.h>
+#include <modules/opengl/openglmodulesharedlibrary.h>
+#include <modules/basegl/baseglmodulesharedlibrary.h>
+#include <modules/fontrendering/fontrenderingmodulesharedlibrary.h>
+#include <modules/eigenutils/eigenutilsmodulesharedlibrary.h>
+#include <modules/python3/python3modulesharedlibrary.h>
+#include <modules/json/jsonmodulesharedlibrary.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmodulesharedlibrary.h>
+#include <inviwo/dataframe/dataframemodulesharedlibrary.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodulesharedlibrary.h>
+#include <inviwo/tensorvispython/tensorvispythonmodulesharedlibrary.h>
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
@@ -61,8 +69,11 @@ int main(int argc, char** argv) {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
         modules.emplace_back(createInviwoCore());
         modules.emplace_back(createBaseModule());
+        modules.emplace_back(createBrushingAndLinkingModule());
         modules.emplace_back(createOpenGLModule());
         modules.emplace_back(createBaseGLModule());
+        modules.emplace_back(createFontRenderingModule());
+        modules.emplace_back(createJSONModule());
         modules.emplace_back(createEigenUtilsModule());
         modules.emplace_back(createPython3Module());
         modules.emplace_back(createVectorFieldVisualizationModule());

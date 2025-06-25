@@ -1,4 +1,6 @@
-#--------------------------------------------------------------------
+# Create python bindings for tensorvis module
+find_package(pybind11 CONFIG REQUIRED)
+
 # Create python module
 set(HEADER_FILES
     include/ivwtensorvis/ivwtensorvis.h
@@ -12,11 +14,21 @@ set(SOURCE_FILES
 )
 ivw_group("Source Files" ${SOURCE_FILES})
 
-ivw_add_py_wrapper(ivwtensorvis ${SOURCE_FILES} ${HEADER_FILES})
-
-find_package(VTK CONFIG REQUIRED)
+ivw_add_py_wrapper(ivwtensorvis)
+target_sources(ivwtensorvis
+    PUBLIC
+    FILE_SET HEADERS
+    TYPE HEADERS
+    BASE_DIRS include
+    FILES
+        ${HEADER_FILES}
+    PRIVATE
+        ${SOURCE_FILES}
+)
 
 target_link_libraries(ivwtensorvis PUBLIC inviwo::module::tensorvisbase inviwo::module::python3)
-target_include_directories(ivwtensorvis PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ivw_default_install_targets(ivwtensorvis)
+ivw_install_helper(TARGET ivwtensorvis
+    NAMESPACE inviwo
+    DESTINATION inviwo
+)

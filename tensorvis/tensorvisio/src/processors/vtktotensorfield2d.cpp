@@ -66,11 +66,11 @@ const ProcessorInfo VTKToTensorField2D::processorInfo_{
 };
 const ProcessorInfo& VTKToTensorField2D::getProcessorInfo() const { return processorInfo_; }
 
+namespace {
+
 constexpr std::array<int, 5> supportedObjectTypes{VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID,
                                                   VTK_IMAGE_DATA, VTK_UNIFORM_GRID,
                                                   VTK_STRUCTURED_POINTS};
-
-namespace detail {
 
 std::shared_ptr<TensorField2D> vtkToTensorField(size3_t dimensions, vtkDataSet* vtkData,
                                                 int arrayIndex) {
@@ -165,7 +165,7 @@ std::shared_ptr<TensorField2D> vtkToTensorField(size3_t dimensions, vtkDataSet* 
     return tensorField;
 }
 
-}  // namespace detail
+}  // namespace
 
 VTKToTensorField2D::VTKToTensorField2D()
     : Processor{}
@@ -225,7 +225,7 @@ void VTKToTensorField2D::process() {
                             dims);
         }
 
-        tensorField_ = detail::vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
+        tensorField_ = vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
     }
 
     outport_.setData(tensorField_);

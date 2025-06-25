@@ -29,9 +29,7 @@
 
 #include <ivwtensorvis/ivwtensorvis.h>
 
-#include <modules/python3/python3module.h>
-#include <modules/python3/pybindutils.h>
-#include <modules/python3/pythoninterpreter.h>
+#include <modules/python3/pybindmodule.h>
 #include <modules/python3/opaquetypes.h>
 
 #include <ivwtensorvis/pytensorvis.h>
@@ -46,7 +44,7 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(ivwtensorvis, m) {
+INVIWO_PYBIND_MODULE(ivwtensorvis, m) {
     py::module::import("inviwopy");
 
 #ifdef INVIWO_ALL_DYN_LINK
