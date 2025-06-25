@@ -51,6 +51,8 @@
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
 
+#include <inviwo/py/pythonhelper.h>
+
 #include <warn/push>
 #include <warn/ignore/all>
 #include <gtest/gtest.h>
@@ -64,6 +66,8 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->setVerbosity(LogVerbosity::Error);
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "Inviwo-Unittests-TensorVisPython");
+
+    inviwo::initializePythonModules();
 
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
