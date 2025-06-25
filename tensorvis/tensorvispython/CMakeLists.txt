@@ -39,5 +39,13 @@ ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/python)
 
 if(TARGET inviwo-unittests-tensorvispython)
     add_dependencies(inviwo-unittests-tensorvispython inviwopy)
-    target_link_libraries(inviwo-unittests-tensorvispython PUBLIC inviwo::module::python3)
+    target_link_libraries(inviwo-unittests-tensorvispython 
+        PUBLIC
+            inviwo::module::base
+            inviwo::module::opengl
+            inviwo::module::basegl
+            inviwo::module::eigenutils
+            inviwo::module::python3
+            inviwo::module::vectorfieldvisualization
+    )
 endif()
