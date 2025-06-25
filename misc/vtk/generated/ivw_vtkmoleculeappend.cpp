@@ -42,8 +42,8 @@ struct VTKTraits<vtkMoleculeAppend> {
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(Appends one or more molecules into a single molecule. It also appends  the associated atom data and edge data.
-Note that input data arrays should match (same number of arrays with same names in each input))";
+        R"ivw(Appends one or more molecules into a single molecule. It also appends  the associated atom data and edge data.
+Note that input data arrays should match (same number of arrays with same names in each input))ivw";
 };
 
 void registervtkMoleculeAppend(InviwoModule* module) {

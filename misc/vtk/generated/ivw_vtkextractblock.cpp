@@ -68,8 +68,8 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(This filter extracts a range
-of groups from a multiblock dataset)";
+    static constexpr std::string_view doc = R"ivw(This filter extracts a range
+of groups from a multiblock dataset)ivw";
 };
 
 void registervtkExtractBlock(InviwoModule* module) {

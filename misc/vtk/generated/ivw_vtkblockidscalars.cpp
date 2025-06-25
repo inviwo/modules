@@ -44,9 +44,9 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Level
+    static constexpr std::string_view doc = R"ivw(The Level
 Scalars filter uses colors to show levels of a multiblock
-dataset.)";
+dataset.)ivw";
 };
 
 void registervtkBlockIdScalars(InviwoModule* module) {

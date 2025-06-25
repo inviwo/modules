@@ -44,14 +44,14 @@ filter.)"}};
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(RectilinearGridGeometryFilter is a filter that extracts
+        R"ivw(RectilinearGridGeometryFilter is a filter that extracts
 geometry from a rectilinear grid. By specifying
 appropriate i-j-k indices, it is possible to extract a
 point, a curve, a surface, or a "volume". The volume is
 actually a (n x m x o) region of points. The extent
 specification is zero-offset. That is, the first k-plane
 in a 50x50x50 rectilinear grid is given by (0,49, 0,49,
-0,0).)";
+0,0).)ivw";
 };
 
 void registervtkRectilinearGridGeometryFilter(InviwoModule* module) {

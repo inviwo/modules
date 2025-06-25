@@ -125,7 +125,7 @@ struct VTKTraits<vtkTemporalArrayOperatorFilter> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
     static constexpr std::string_view doc =
-        R"(Filter used to perform an operation on a data array at 2 different timesteps.)";
+        R"ivw(Filter used to perform an operation on a data array at 2 different timesteps.)ivw";
 };
 
 void registervtkTemporalArrayOperatorFilter(InviwoModule* module) {

@@ -42,14 +42,14 @@ struct VTKTraits<vtkAppendArcLength> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(vtkAppendArcLength is used for filter such as
+    static constexpr std::string_view doc = R"ivw(vtkAppendArcLength is used for filter such as
 plot-over-line. In such cases, we need to add an attribute
 array that is the arc_length over the length of the probed
 line. That's when vtkAppendArcLength can be used. It adds
 a new point-data array named "arc_length" with the
 computed arc length for each of the polylines in the
 input. For all other cell types, the arc length is set to
-0.)";
+0.)ivw";
 };
 
 void registervtkAppendArcLength(InviwoModule* module) {

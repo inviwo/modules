@@ -82,8 +82,8 @@ struct VTKTraits<vtkPointSetToMoleculeFilter> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Convert a point set into a molecule. Every point of the input becomes an atom
-of the output molecule. It needs a point array containing the atomic numbers.)";
+        R"ivw(Convert a point set into a molecule. Every point of the input becomes an atom
+of the output molecule. It needs a point array containing the atomic numbers.)ivw";
 };
 
 void registervtkPointSetToMoleculeFilter(InviwoModule* module) {

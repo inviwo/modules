@@ -70,7 +70,7 @@ struct VTKTraits<vtkForceTime> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Filter used to explicitly request a specific time from the pipeline.)";
+        R"ivw(Filter used to explicitly request a specific time from the pipeline.)ivw";
 };
 
 void registervtkForceTime(InviwoModule* module) {

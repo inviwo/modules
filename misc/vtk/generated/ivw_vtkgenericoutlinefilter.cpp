@@ -43,12 +43,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Generic Outline
+    static constexpr std::string_view doc = R"ivw(The Generic Outline
 filter generates an axis-aligned bounding box for the
 input data set. The Input menu specifies the data set for
 which to create a bounding box. This filter operates on
 generic data sets and produces polygonal
-output.)";
+output.)ivw";
 };
 
 void registervtkGenericOutlineFilter(InviwoModule* module) {

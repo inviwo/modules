@@ -87,7 +87,7 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
-    static constexpr std::string_view doc = R"(Given an input
+    static constexpr std::string_view doc = R"ivw(Given an input
 that changes over time, vtkTemporalStatistics looks at the
 data for each time step and computes some statistical
 information of how a point or cell variable changes over
@@ -101,7 +101,7 @@ timestep will be weighted the same regardless of how long
 of an interval it is to the next timestep. Thus, the
 average statistic may be quite different from an
 integration of the variable if the time spacing
-varies.)";
+varies.)ivw";
 };
 
 void registervtkTemporalStatistics(InviwoModule* module) {

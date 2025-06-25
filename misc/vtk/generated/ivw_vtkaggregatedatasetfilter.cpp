@@ -57,7 +57,7 @@ struct VTKTraits<vtkAggregateDataSetFilter> {
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter aggregates a dataset onto a subset of processes.)";
+        R"ivw(This filter aggregates a dataset onto a subset of processes.)ivw";
 };
 
 void registervtkAggregateDataSetFilter(InviwoModule* module) {

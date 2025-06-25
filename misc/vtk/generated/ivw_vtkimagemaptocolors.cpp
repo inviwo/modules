@@ -99,7 +99,7 @@ struct VTKTraits<vtkImageMapToColors> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter generate a color based image data based on a selected data scalar)";
+        R"ivw(This filter generate a color based image data based on a selected data scalar)ivw";
 };
 
 void registervtkImageMapToColors(InviwoModule* module) {

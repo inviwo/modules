@@ -100,7 +100,7 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(This is a filter that generates 2D texture coordinates by
+        R"ivw(This is a filter that generates 2D texture coordinates by
 mapping input dataset points onto a cylinder. The cylinder
 is generated automatically. The cylinder is generated
 automatically by computing the axis of the cylinder. Note
@@ -108,7 +108,7 @@ that the generated texture coordinates for the
 s-coordinate ranges from (0-1) (corresponding to angle of
 0->360 around axis), while the mapping of the
 t-coordinate is controlled by the projection of points
-along the axis.)";
+along the axis.)ivw";
 };
 
 void registervtkTextureMapToCylinder(InviwoModule* module) {

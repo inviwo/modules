@@ -129,11 +129,11 @@ dataset.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter takes two inputs - **Source Data Arrays**, and samples the
+        R"ivw(This filter takes two inputs - **Source Data Arrays**, and samples the
 point and cell values of this input onto the point locations of the
 **Destination Geometry** input. The output has the same structure as the
 **Destination Geometry** input, but its point data has the resampled values from
-the **Source Data Arrays**.")";
+the **Source Data Arrays**.")ivw";
 };
 
 void registervtkResampleWithDataSet(InviwoModule* module) {

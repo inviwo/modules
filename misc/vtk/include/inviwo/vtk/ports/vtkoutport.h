@@ -69,7 +69,7 @@ public:
 
 private:
     int typeId_;
-    vtkSmartPointer<vtkDataObject> data_ = nullptr;
+    vtkSmartPointer<vtkDataObject> data_;
 };
 
 }  // namespace vtk

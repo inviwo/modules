@@ -43,7 +43,7 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"()";
+    static constexpr std::string_view doc = R"ivw()ivw";
 };
 
 void registervtkComputeQuartiles(InviwoModule* module) {

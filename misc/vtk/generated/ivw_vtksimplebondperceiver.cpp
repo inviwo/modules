@@ -67,12 +67,12 @@ struct VTKTraits<vtkSimpleBondPerceiver> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(Compute the bonds of a molecule. If the
+    static constexpr std::string_view doc = R"ivw(Compute the bonds of a molecule. If the
 interatomic distance is less than the sum of the two atom's covalent radii
 (and a tolerance), a single bond is added.
 This algorithm does not consider valences, hybridization, aromaticity, or
 anything other than atomic separations. It will not produce anything other
-than single bonds.)";
+than single bonds.)ivw";
 };
 
 void registervtkSimpleBondPerceiver(InviwoModule* module) {

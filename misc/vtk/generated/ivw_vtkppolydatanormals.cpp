@@ -142,13 +142,13 @@ Generation filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
 
-    static constexpr std::string_view doc = R"(This filter
+    static constexpr std::string_view doc = R"ivw(This filter
 generates surface normals at the points of the input
 polygonal dataset to provide smooth shading of the
 dataset. The resulting dataset is also polygonal. The
 filter works by calculating a normal vector for each
 polygon in the dataset and then averaging the normals at
-the shared points.)";
+the shared points.)ivw";
 };
 
 void registervtkPPolyDataNormals(InviwoModule* module) {

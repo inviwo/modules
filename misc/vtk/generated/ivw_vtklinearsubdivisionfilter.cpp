@@ -58,14 +58,14 @@ filter.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(The Subdivide filter iteratively divides each triangle in
+        R"ivw(The Subdivide filter iteratively divides each triangle in
 the input dataset into 4 new triangles. Three new points
 are added per triangle -- one at the midpoint of each
 edge. This filter operates only on polygonal data
 containing triangles, so run your polygonal data through
 the Triangulate filter first if it is not composed of
 triangles. The output of this filter is also
-polygonal.)";
+polygonal.)ivw";
 };
 
 void registervtkLinearSubdivisionFilter(InviwoModule* module) {

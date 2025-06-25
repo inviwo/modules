@@ -116,7 +116,8 @@ Delaunay 2D filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
-    static constexpr std::string_view doc = R"(Delaunay2D is a filter that constructs a 2D Delaunay
+    static constexpr std::string_view doc =
+        R"ivw(Delaunay2D is a filter that constructs a 2D Delaunay
 triangulation from a list of input points. These points
 may be represented by any dataset of type vtkPointSet and
 subclasses. The output of the filter is a polygonal
@@ -162,7 +163,7 @@ by the algorithm. This is because the Delaunay
 triangulation requires unique input points. The output of
 the Delaunay triangulation is supposedly a convex hull. In
 certain cases this implementation may not generate the
-convex hull.)";
+convex hull.)ivw";
 };
 
 void registervtkDelaunay2D(InviwoModule* module) {

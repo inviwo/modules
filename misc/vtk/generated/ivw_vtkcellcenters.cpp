@@ -54,7 +54,7 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Cell Centers
+    static constexpr std::string_view doc = R"ivw(The Cell Centers
 filter places a point at the center of each cell in the
 input data set. The center computed is the parametric
 center of the cell, not necessarily the geometric or
@@ -66,7 +66,7 @@ are rendered, but points are not. The points themselves
 could be used for placing glyphs (using the Glyph filter).
 The Cell Centers filter takes any type of data set as
 input and produces a polygonal data set as
-output.)";
+output.)ivw";
 };
 
 void registervtkCellCenters(InviwoModule* module) {

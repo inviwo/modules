@@ -54,10 +54,10 @@ struct VTKTraits<vtkPassArrays> {
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(The Pass Arrays filter makes a shallow copy of the output
+        R"ivw(The Pass Arrays filter makes a shallow copy of the output
 data object from the input data object except for passing
 only the arrays specified to the output from the
-input.)";
+input.)ivw";
 };
 
 void registervtkPassArrays(InviwoModule* module) {

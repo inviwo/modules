@@ -140,14 +140,14 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
 
     static constexpr std::string_view doc =
-        R"(The Random Attributes filter creates random attributes
+        R"ivw(The Random Attributes filter creates random attributes
 including scalars and vectors. These attributes can be
 generated as point data or cell data. The generation of each
 component is normalized between a user-specified minimum and
 maximum value.
 
 This filter provides that capability to specify the data type
-of the attributes and the range for each of the components.)";
+of the attributes and the range for each of the components.)ivw";
 };
 
 void registervtkRandomAttributeGenerator(InviwoModule* module) {

@@ -43,8 +43,8 @@ information filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(Removes ghost
-cells and point data and cell data ghost arrays.)";
+    static constexpr std::string_view doc = R"ivw(Removes ghost
+cells and point data and cell data ghost arrays.)ivw";
 };
 
 void registervtkRemoveGhosts(InviwoModule* module) {

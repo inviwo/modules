@@ -55,10 +55,10 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Transform
+    static constexpr std::string_view doc = R"ivw(The Transform
 filter allows you to specify the position, size, and
 orientation of polygonal, unstructured grid, and
-curvilinear data sets.)";
+curvilinear data sets.)ivw";
 };
 
 void registervtkTransformFilter(InviwoModule* module) {

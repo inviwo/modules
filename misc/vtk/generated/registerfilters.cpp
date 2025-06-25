@@ -70,7 +70,6 @@
 #include "ivw_vtkintegrateattributes.h"
 #include "ivw_vtklinearsubdivisionfilter.h"
 #include "ivw_vtkloopsubdivisionfilter.h"
-#include "ivw_vtkmergearrays.h"
 #include "ivw_vtkmeshquality.h"
 #include "ivw_vtkmoleculeappend.h"
 #include "ivw_vtkmoleculetolinesfilter.h"
@@ -90,7 +89,6 @@
 #include "ivw_vtkparticlepathfilter.h"
 #include "ivw_vtkparticletracer.h"
 #include "ivw_vtkpassarrays.h"
-#include "ivw_vtkpassthrough.h"
 #include "ivw_vtkplanecutter.h"
 #include "ivw_vtkpointdatatocelldata.h"
 #include "ivw_vtkpointsettomoleculefilter.h"
@@ -235,7 +233,6 @@ void registerVTKFilters(InviwoModule* module) {
     registervtkIntegrateAttributes(module);
     registervtkLinearSubdivisionFilter(module);
     registervtkLoopSubdivisionFilter(module);
-    registervtkMergeArrays(module);
     registervtkMeshQuality(module);
     registervtkMoleculeAppend(module);
     registervtkMoleculeToLinesFilter(module);
@@ -255,7 +252,6 @@ void registerVTKFilters(InviwoModule* module) {
     registervtkParticlePathFilter(module);
     registervtkParticleTracer(module);
     registervtkPassArrays(module);
-    registervtkPassThrough(module);
     registervtkPlaneCutter(module);
     registervtkPointDataToCellData(module);
     registervtkPointSetToMoleculeFilter(module);

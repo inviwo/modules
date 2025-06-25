@@ -73,7 +73,7 @@ struct VTKTraits<vtkHyperTreeGridContour> {
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter extracts isocontours directly from HyperTreeGrid input datasets.)";
+        R"ivw(This filter extracts isocontours directly from HyperTreeGrid input datasets.)ivw";
 };
 
 void registervtkHyperTreeGridContour(InviwoModule* module) {

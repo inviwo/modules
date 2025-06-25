@@ -69,8 +69,8 @@ struct VTKTraits<vtkHyperTreeGridAxisCut> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Cut a hyper tree grid along an axis-aligned plane and output a new hyper
-tree grid. Only works for 3D grids.)";
+        R"ivw(Cut a hyper tree grid along an axis-aligned plane and output a new hyper
+tree grid. Only works for 3D grids.)ivw";
 };
 
 void registervtkHyperTreeGridAxisCut(InviwoModule* module) {

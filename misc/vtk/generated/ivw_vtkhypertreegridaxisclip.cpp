@@ -93,8 +93,8 @@ struct VTKTraits<vtkHyperTreeGridAxisClip> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(Clip an hyper tree grid along an axis aligned plane or box and output
-a hyper tree grid with same dimensionality.)";
+        R"ivw(Clip an hyper tree grid along an axis aligned plane or box and output
+a hyper tree grid with same dimensionality.)ivw";
 };
 
 void registervtkHyperTreeGridAxisClip(InviwoModule* module) {

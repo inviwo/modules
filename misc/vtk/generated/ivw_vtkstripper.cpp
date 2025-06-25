@@ -58,11 +58,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Triangle Strips filter converts triangles into triangle
 strips and lines into polylines. This filter operates on
 polygonal data sets and produces polygonal
-output.)";
+output.)ivw";
 };
 
 void registervtkStripper(InviwoModule* module) {

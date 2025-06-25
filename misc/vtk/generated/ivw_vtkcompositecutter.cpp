@@ -43,11 +43,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(This filter
+    static constexpr std::string_view doc = R"ivw(This filter
 extracts the portion of the input dataset that lies along
 the specified plane. The Slice filter takes any type of
 dataset as input. The output of this filter is polygonal
-data.)";
+data.)ivw";
 };
 
 void registervtkCompositeCutter(InviwoModule* module) {

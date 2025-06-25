@@ -76,7 +76,7 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(The Smooth filter operates on a polygonal data set by
+        R"ivw(The Smooth filter operates on a polygonal data set by
 iteratively adjusting the position of the points using
 Laplacian smoothing. (Because this filter only adjusts
 point positions, the output data set is also polygonal.)
@@ -86,7 +86,7 @@ maximum motion of any point. It is expressed as a fraction
 of the length of the diagonal of the bounding box of the
 data set. If the maximum point motion during a smoothing
 iteration is less than the Convergence value, the
-smoothing operation terminates.)";
+smoothing operation terminates.)ivw";
 };
 
 void registervtkSmoothPolyDataFilter(InviwoModule* module) {

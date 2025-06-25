@@ -56,14 +56,14 @@ Scalars filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Process Id Scalars filter assigns a unique scalar value to
 each piece of the input according to which processor it
 resides on. This filter operates on any type of data when
 ParaView is run in parallel. It is useful for determining
 whether your data is load-balanced across the processors
 being used. The output data set type is the same as that
-of the input.)";
+of the input.)ivw";
 };
 
 void registervtkProcessIdScalars(InviwoModule* module) {

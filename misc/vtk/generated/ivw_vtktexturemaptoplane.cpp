@@ -101,11 +101,11 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(TextureMapToPlane is a filter that generates 2D texture
+        R"ivw(TextureMapToPlane is a filter that generates 2D texture
 coordinates by mapping input dataset points onto a plane.
 The plane is generated automatically. A least squares
 method is used to generate the plane
-automatically.)";
+automatically.)ivw";
 };
 
 void registervtkTextureMapToPlane(InviwoModule* module) {

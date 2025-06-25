@@ -87,7 +87,7 @@ struct VTKTraits<vtkHyperTreeGridThreshold> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter thresholds directly from HyperTreeGrid input datasets.)";
+        R"ivw(This filter thresholds directly from HyperTreeGrid input datasets.)ivw";
 };
 
 void registervtkHyperTreeGridThreshold(InviwoModule* module) {

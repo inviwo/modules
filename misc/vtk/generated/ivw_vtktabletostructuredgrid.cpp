@@ -78,12 +78,12 @@ struct VTKTraits<vtkTableToStructuredGrid> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 TableToStructuredGrid filter converts a vtkTable to a
 vtkStructuredGrid. One must specifies the columns in the
 input table to use as the X, Y and Z coordinates for the
 points in the output, and the whole
-extent.)";
+extent.)ivw";
 };
 
 void registervtkTableToStructuredGrid(InviwoModule* module) {

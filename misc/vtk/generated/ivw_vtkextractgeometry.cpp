@@ -81,13 +81,13 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter extracts from its input dataset all cells that are either
+        R"ivw(This filter extracts from its input dataset all cells that are either
 completely inside or outside of a specified region (implicit function).
 On output, the filter generates an unstructured grid. To use this filter
 you must specify a region (implicit function). You must also specify
 whether to extract cells lying inside or outside of the region. An
 option exists to extract cells that are neither inside or outside (i.e.,
-boundary).)";
+boundary).)ivw";
 };
 
 void registervtkExtractGeometry(InviwoModule* module) {

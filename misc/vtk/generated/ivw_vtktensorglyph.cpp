@@ -211,11 +211,11 @@ struct VTKTraits<vtkTensorGlyph> {
         properties;
 
     static constexpr std::string_view doc =
-        R"(The Tensor Glyph filter generates an ellipsoid, cuboid, cylinder or superquadric glyph at every point in
+        R"ivw(The Tensor Glyph filter generates an ellipsoid, cuboid, cylinder or superquadric glyph at every point in
 the input data set. The glyphs are oriented and scaled according to eigenvalues and eigenvectors of tensor
 point data of the input data set. The Tensor Glyph filter operates on any type of data set. Its output is
 polygonal. This filter supports symmetric tensors. Symmetric tensor components are expected to have the
-following order: XX, YY, ZZ, XY, YZ, XZ")";
+following order: XX, YY, ZZ, XY, YZ, XZ")ivw";
 };
 
 void registervtkTensorGlyph(InviwoModule* module) {

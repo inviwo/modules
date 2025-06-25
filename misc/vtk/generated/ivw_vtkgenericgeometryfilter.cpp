@@ -52,8 +52,8 @@ Filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(Extract geometry from a higher-order
-dataset.)";
+    static constexpr std::string_view doc = R"ivw(Extract geometry from a higher-order
+dataset.)ivw";
 };
 
 void registervtkGenericGeometryFilter(InviwoModule* module) {

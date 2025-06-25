@@ -71,12 +71,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The Random
+    static constexpr std::string_view doc = R"ivw(The Random
 Vectors filter generates a point-centered array of random
 vectors. It uses a random number generator to determine
 the components of the vectors. This filter operates on any
 type of data set, and the output data set will be of the
-same type as the input.)";
+same type as the input.)ivw";
 };
 
 void registervtkBrownianPoints(InviwoModule* module) {

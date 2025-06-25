@@ -42,13 +42,13 @@ struct VTKTraits<vtkRectilinearGridToPointSet> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Rectilinear Grid to Point Set
+    static constexpr std::string_view doc = R"ivw(The Rectilinear Grid to Point Set
 filter takes an rectilinear grid object and outputs an
 equivalent Structured Grid (which is a type of point set). This
 brings the data to a broader category of data storage but only
 adds a small amount of overhead. This filter can be helpful in
 applying filters that expect or manipulate point
-coordinates.)";
+coordinates.)ivw";
 };
 
 void registervtkRectilinearGridToPointSet(InviwoModule* module) {

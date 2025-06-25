@@ -43,7 +43,7 @@ struct VTKTraits<vtkHyperTreeGridGeometry> {
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(Generate PolyData representing the external surface of a HTG.)";
+        R"ivw(Generate PolyData representing the external surface of a HTG.)ivw";
 };
 
 void registervtkHyperTreeGridGeometry(InviwoModule* module) {

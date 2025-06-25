@@ -159,7 +159,7 @@ with a given resolution.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
 
     static constexpr std::string_view doc =
-        R"(The Particle Trace filter generates pathlines in a vector
+        R"ivw(The Particle Trace filter generates pathlines in a vector
 field from a collection of seed points. The vector field
 used is selected from the Vectors menu, so the input data
 set is required to have point-centered vectors. The Seed
@@ -174,7 +174,7 @@ corresponding manual controls can be found in section 7.4.
 This filter operates on any type of data set, provided it
 has point-centered vectors. The output is polygonal data
 containing polylines. This filter is available on the
-Toolbar.)";
+Toolbar.)ivw";
 };
 
 void registervtkParticlePathFilter(InviwoModule* module) {

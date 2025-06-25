@@ -235,7 +235,7 @@ filter.)"}};
                Wrapper8, Wrapper9, Wrapper10, Wrapper11>
         properties;
 
-    static constexpr std::string_view doc = R"(vtkGaussianSplatter
+    static constexpr std::string_view doc = R"ivw(vtkGaussianSplatter
 is a filter that injects input points into a structured
 points (volume) dataset. As each point is injected, it
 "splats" or distributes values to nearby voxels. Data is
@@ -244,7 +244,7 @@ function. The distribution function is modified using
 scalar values (expands distribution) or normals (creates
 ellipsoidal distribution rather than spherical). Warning:
 results may be incorrect in parallel as points can't splat
-into other processor's cells.)";
+into other processor's cells.)ivw";
 };
 
 void registervtkGaussianSplatter(InviwoModule* module) {

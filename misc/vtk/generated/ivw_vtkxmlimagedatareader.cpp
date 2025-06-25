@@ -64,9 +64,9 @@ struct VTKTraits<vtkXMLImageDataReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The XML Image
+    static constexpr std::string_view doc = R"ivw(The XML Image
 Data reader reads the VTK XML image data file format. The
-standard extension is .vti.)";
+standard extension is .vti.)ivw";
 };
 
 void registervtkXMLImageDataReader(InviwoModule* module) {

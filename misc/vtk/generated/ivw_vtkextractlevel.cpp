@@ -43,8 +43,8 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(This filter extracts a range
-of levels from a hierarchical dataset)";
+    static constexpr std::string_view doc = R"ivw(This filter extracts a range
+of levels from a hierarchical dataset)ivw";
 };
 
 void registervtkExtractLevel(InviwoModule* module) {

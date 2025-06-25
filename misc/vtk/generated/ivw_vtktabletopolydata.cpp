@@ -102,11 +102,11 @@ struct VTKTraits<vtkTableToPolyData> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 TableToPolyData filter converts a vtkTable to a set of
 points in a vtkPolyData. One must specifies the columns in
 the input table to use as the X, Y and Z coordinates for
-the points in the output.)";
+the points in the output.)ivw";
 };
 
 void registervtkTableToPolyData(InviwoModule* module) {

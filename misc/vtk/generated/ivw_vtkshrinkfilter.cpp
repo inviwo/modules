@@ -59,13 +59,13 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Shrink filter
+    static constexpr std::string_view doc = R"ivw(The Shrink filter
 causes the individual cells of a dataset to break apart
 from each other by moving each cell's points toward the
 centroid of the cell. (The centroid of a cell is the
 average position of its points.) This filter operates on
 any type of dataset and produces unstructured grid
-output.)";
+output.)ivw";
 };
 
 void registervtkShrinkFilter(InviwoModule* module) {

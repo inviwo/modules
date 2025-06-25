@@ -58,11 +58,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Outline Corners filter generates the corners of a bounding
 box for the input dataset. This filter operates on any
 type of dataset and produces polygonal
-output.)";
+output.)ivw";
 };
 
 void registervtkPOutlineCornerFilter(InviwoModule* module) {

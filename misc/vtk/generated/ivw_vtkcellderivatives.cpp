@@ -138,13 +138,13 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(CellDerivatives is a filter that computes derivatives of
+        R"ivw(CellDerivatives is a filter that computes derivatives of
 scalars and vectors at the center of cells. You can choose
 to generate different output including the scalar gradient
 (a vector), computed tensor vorticity (a vector), gradient
 of input vectors (a tensor), and strain matrix of the
 input vectors (a tensor); or you may choose to pass data
-through to the output.)";
+through to the output.)ivw";
 };
 
 void registervtkCellDerivatives(InviwoModule* module) {

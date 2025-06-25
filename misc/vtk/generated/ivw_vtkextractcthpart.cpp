@@ -103,14 +103,14 @@ Parts filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
-    static constexpr std::string_view doc = R"(Extract
+    static constexpr std::string_view doc = R"ivw(Extract
 CTH Parts is a specialized filter for visualizing the data
 from a CTH simulation. It first converts the selected
 cell-centered arrays to point-centered ones. It then
 contours each array at a value of 0.5. The user has the
 option of clipping the resulting surface(s) with a plane.
 This filter only operates on unstructured data. It
-produces polygonal output.)";
+produces polygonal output.)ivw";
 };
 
 void registervtkExtractCTHPart(InviwoModule* module) {

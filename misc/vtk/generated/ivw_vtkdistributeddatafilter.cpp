@@ -91,12 +91,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
-    static constexpr std::string_view doc = R"(The D3 filter is
+    static constexpr std::string_view doc = R"ivw(The D3 filter is
 available when ParaView is run in parallel. It operates on
 any type of data set to evenly divide it across the
 processors into spatially contiguous regions. The output
 of this filter is of type unstructured
-grid.)";
+grid.)ivw";
 };
 
 void registervtkDistributedDataFilter(InviwoModule* module) {

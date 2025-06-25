@@ -43,8 +43,8 @@ Datasets filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(Groups multiple datasets to create a multiblock
-dataset)";
+    static constexpr std::string_view doc = R"ivw(Groups multiple datasets to create a multiblock
+dataset)ivw";
 };
 
 void registervtkMultiBlockDataGroupFilter(InviwoModule* module) {

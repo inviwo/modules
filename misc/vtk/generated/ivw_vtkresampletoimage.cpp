@@ -66,7 +66,7 @@ be probed)"}};
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Sample attributes using a 3D image as probing mesh.)";
+        R"ivw(Sample attributes using a 3D image as probing mesh.)ivw";
 };
 
 void registervtkResampleToImage(InviwoModule* module) {

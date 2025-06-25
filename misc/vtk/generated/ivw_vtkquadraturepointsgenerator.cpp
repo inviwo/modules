@@ -72,8 +72,8 @@ struct VTKTraits<vtkQuadraturePointsGenerator> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"("Create a point set with data at quadrature
-points.")";
+    static constexpr std::string_view doc = R"ivw("Create a point set with data at quadrature
+points.")ivw";
 };
 
 void registervtkQuadraturePointsGenerator(InviwoModule* module) {

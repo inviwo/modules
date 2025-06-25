@@ -42,7 +42,7 @@ struct VTKTraits<vtkGenericCutter> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Generic Cut filter extracts the portion of the input data
 set that lies along the specified plane or sphere. From
 the Cut Function menu, you can select whether cutting will
@@ -74,7 +74,7 @@ Clicking the Delete All button removes all the values in
 the list. The Generic Cut filter takes a generic dataset
 as input. Use the Input menu to choose a data set to cut.
 The output of this filter is polygonal
-data.)";
+data.)ivw";
 };
 
 void registervtkGenericCutter(InviwoModule* module) {

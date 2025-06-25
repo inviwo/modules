@@ -44,8 +44,8 @@ filter.)"}};
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(Generate quadrature scheme dictionaries in data sets that do not have
-them.)";
+        R"ivw(Generate quadrature scheme dictionaries in data sets that do not have
+them.)ivw";
 };
 
 void registervtkQuadratureSchemeDictionaryGenerator(InviwoModule* module) {

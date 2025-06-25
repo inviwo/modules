@@ -210,9 +210,9 @@ filter.)"}};
                Wrapper8>
         properties;
 
-    static constexpr std::string_view doc = R"(The Tube filter
+    static constexpr std::string_view doc = R"ivw(The Tube filter
 creates tubes around the lines in the input polygonal
-dataset. The output is also polygonal.)";
+dataset. The output is also polygonal.)ivw";
 };
 
 void registervtkTubeFilter(InviwoModule* module) {

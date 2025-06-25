@@ -82,11 +82,11 @@ Point Data filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter generates scalars using cell and point ids.
+        R"ivw(This filter generates scalars using cell and point ids.
 That is, the point attribute data scalars are generated
 from the point ids, and the cell attribute data scalars or
 field data are generated from the the cell
-ids.)";
+ids.)ivw";
 };
 
 void registervtkIdFilter(InviwoModule* module) {

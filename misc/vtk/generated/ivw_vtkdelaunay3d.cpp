@@ -148,7 +148,7 @@ Delaunay 3D filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
         properties;
 
-    static constexpr std::string_view doc = R"(Delaunay3D is a filter that constructs
+    static constexpr std::string_view doc = R"ivw(Delaunay3D is a filter that constructs
 a 3D Delaunay triangulation from a list of input points. These points may be
 represented by any dataset of type vtkPointSet and subclasses. The output of
 the filter is an unstructured grid dataset. Usually the output is a tetrahedral
@@ -195,7 +195,7 @@ point point is found, and then the connected tetrahedra are searched to find
 the containing one. (In 2D, a "walk" towards the enclosing triangle is
 performed.) If the triangulation is Delaunay, then an enclosing tetrahedron
 will be found. However, in degenerate cases an enclosing tetrahedron may not be
-found and the point will be rejected.)";
+found and the point will be rejected.)ivw";
 };
 
 void registervtkDelaunay3D(InviwoModule* module) {

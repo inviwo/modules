@@ -58,7 +58,7 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Temporal Cache
+    static constexpr std::string_view doc = R"ivw(The Temporal Cache
 can be used to save multiple copies of a data set at
 different time steps to prevent thrashing in the pipeline
 caused by downstream filters that adjust the requested
@@ -71,7 +71,7 @@ requests the same two time steps, they might force the
 upstream filters to re-evaluate the same two time steps.
 The Temporal Cache can keep copies of both of these time
 steps and provide the requested data without having to run
-upstream filters.)";
+upstream filters.)ivw";
 };
 
 void registervtkTemporalDataSetCache(InviwoModule* module) {
