@@ -27,7 +27,7 @@ ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${PYTHON_FILES})
 
 add_subdirectory(bindings)
 
-if(IVW_UNITTESTS)
+if(TARGET inviwo-unittests-tensorvispython)
     add_dependencies(inviwo-unittests-tensorvispython inviwopy ivwtensorvis)
     target_link_libraries(inviwo-unittests-tensorvispython PUBLIC inviwo::python-helper)
 endif()
