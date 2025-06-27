@@ -139,7 +139,7 @@ void VTKFileCache::process() {
         writeXML();
 
         // We need to clone the data here, since the filter above might change the data later.
-        vtkSmartPointer<vtkDataObject> clonedData = vtkSmartPointer<vtkDataObject>::New();
+        const auto clonedData = vtkSmartPointer<vtkDataObject>::New();
         clonedData->DeepCopy(data);
         ram_.add(key_, clonedData);
         castAndSetOutportData(data);

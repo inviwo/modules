@@ -316,7 +316,8 @@ protected:
     std::optional<std::string> getOutportDataType(int portNumber) const {
         if constexpr (requires {
                           traits_.outportDataTypeFunc;
-                          requires std::invocable<decltype(traits_.outportDataTypeFunc), vtkAlgorithm*, int>;
+                          requires std::invocable<decltype(traits_.outportDataTypeFunc),
+                                                  vtkAlgorithm*, int>;
                       }) {
             return traits_.outportDataTypeFunc(filter_, portNumber);
         } else {
@@ -352,7 +353,8 @@ struct ProcessorTraits<vtkwrapper::VTKGenericProcessor<VTKFilter>> {
 
 template <typename VTKFilter>
 inline const ProcessorInfo& vtkwrapper::VTKGenericProcessor<VTKFilter>::getProcessorInfo() const {
-    static const ProcessorInfo info = ProcessorTraits<VTKGenericProcessor<VTKFilter>>::getProcessorInfo();
+    static const ProcessorInfo info =
+        ProcessorTraits<VTKGenericProcessor<VTKFilter>>::getProcessorInfo();
     return info;
 }
 

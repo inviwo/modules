@@ -52,10 +52,9 @@ INVIWO_PYBIND_MODULE(ivwtensorvis, m) {
     py::implicitly_convertible<py::list, std::vector<std::string>>();
 #endif
 
-    using namespace inviwo;
     m.doc() = R"doc(
         TensorVIS Module API
         )doc";
 
-    exposeTensorVis(m);
+    inviwo::exposeTensorVis(m);
 }

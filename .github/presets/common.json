@@ -6,13 +6,14 @@
       "name": "common",
       "displayName": "Modules GHA",
       "cacheVariables": {
-        "VCPKG_MANIFEST_FEATURES" : "graphviz;openmesh;nanovg;vtk",
+        "VCPKG_MANIFEST_FEATURES" : "graphviz;openmesh;nanovg;vtk;ttk",
         "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
         
         "IVW_MODULE_EIGENUTILS":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_HDF5":                  { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_FFMPEG":                { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_WEBBROWSER":            { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_WEBQT":                 { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TETRAMESH":             { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_COMPUTESHADEREXAMPLES": { "type": "BOOL", "value": "ON"},
 
@@ -32,7 +33,8 @@
         "IVW_MODULE_MOLVISPYTHON":          { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_DATAFRAMECLUSTERING":   { "type": "BOOL", "value": "ON"},
 
-        "IVW_MODULE_VTK":   { "type": "BOOL", "value": "ON"}
+        "IVW_MODULE_VTK":   { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_TTK":   { "type": "BOOL", "value": "ON"}
       }
     }
   ]
