@@ -56,13 +56,13 @@ struct VTKTraits<vtkHyperTreeGridDepthLimiter> {
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(Extract all levels down to a specified depth from a hyper tree grid.
+        R"ivw(Extract all levels down to a specified depth from a hyper tree grid.
 If the required depth is greater or equal to the maximum level of the
 input grid, then the output is identical.
 Note that when a material mask is present, the geometry extent of the
 output grid is guaranteed to contain that of the input tree, but the
 former might be strictly larger than the latter. This is not a bug
-but an expected behavior of which the user should be aware.)";
+but an expected behavior of which the user should be aware.)ivw";
 };
 
 void registervtkHyperTreeGridDepthLimiter(InviwoModule* module) {

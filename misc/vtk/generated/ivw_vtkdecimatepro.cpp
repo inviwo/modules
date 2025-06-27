@@ -105,11 +105,11 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(The Decimate filter reduces the number of triangles in a
+        R"ivw(The Decimate filter reduces the number of triangles in a
 polygonal data set. Because this filter only operates on
 triangles, first run the Triangulate filter on a dataset
 that contains polygons other than
-triangles.)";
+triangles.)ivw";
 };
 
 void registervtkDecimatePro(InviwoModule* module) {

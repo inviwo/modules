@@ -118,7 +118,7 @@ struct VTKTraits<ttkTrackingFromOverlap> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter identifies and tracks labeled vtkPointSets across time (and optionally levels) based on spatial overlap, where two points overlap iff their corresponding coordinates are equal. This filter can be executed iteratively and can generate nested tracking graphs.
+        R"ivw(This filter identifies and tracks labeled vtkPointSets across time (and optionally levels) based on spatial overlap, where two points overlap iff their corresponding coordinates are equal. This filter can be executed iteratively and can generate nested tracking graphs.
 
 Related publication:
 
@@ -132,7 +132,7 @@ Type:
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkTrackingFromOverlap(InviwoModule* module) {

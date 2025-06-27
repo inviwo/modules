@@ -76,7 +76,7 @@ struct VTKTraits<ttkImportEmbeddingFromTable> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK fieldSelector plugin documentation.)";
+    static constexpr std::string_view doc = R"ivw(TTK fieldSelector plugin documentation.)ivw";
 };
 
 void registerttkImportEmbeddingFromTable(InviwoModule* module) {

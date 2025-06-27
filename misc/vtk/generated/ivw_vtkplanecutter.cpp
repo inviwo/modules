@@ -101,11 +101,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
-    static constexpr std::string_view doc = R"(This filter
+    static constexpr std::string_view doc = R"ivw(This filter
 extracts the portion of the input dataset that lies along
 the specified plane. The Slice filter takes any type of
 dataset as input. The output of this filter is a multiblock of multipiece
-polygonal data. This is a multithreaded implementation.)";
+polygonal data. This is a multithreaded implementation.)ivw";
 };
 
 void registervtkPlaneCutter(InviwoModule* module) {

@@ -137,7 +137,7 @@ struct VTKTraits<ttkDepthImageBasedGeometryApproximation> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter approximates the geometry that is depicted by a set of depth images.
+        R"ivw(This filter approximates the geometry that is depicted by a set of depth images.
 
 Related publication:
 
@@ -145,7 +145,7 @@ Related publication:
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/geometryApproximation/)";
+- https://topology-tool-kit.github.io/examples/geometryApproximation/)ivw";
 };
 
 void registerttkDepthImageBasedGeometryApproximation(InviwoModule* module) {

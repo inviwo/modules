@@ -204,8 +204,8 @@ struct VTKTraits<ttkTextureMapFromField> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin is useful to convert scalar fields to texture coordinates
-or to generate texture-based level lines out of a single scalar fields.)";
+        R"ivw(This plugin is useful to convert scalar fields to texture coordinates
+or to generate texture-based level lines out of a single scalar fields.)ivw";
 };
 
 void registerttkTextureMapFromField(InviwoModule* module) {

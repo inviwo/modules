@@ -43,7 +43,7 @@ struct VTKTraits<vtkHyperTreeGridToDualGrid> {
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter converts vtkHyperTreeGrid data to vtkUnstructuredGrid, using the dual grid. The converted output consumes much more memory but is compatible with most of the standard filters.)";
+        R"ivw(This filter converts vtkHyperTreeGrid data to vtkUnstructuredGrid, using the dual grid. The converted output consumes much more memory but is compatible with most of the standard filters.)ivw";
 };
 
 void registervtkHyperTreeGridToDualGrid(InviwoModule* module) {

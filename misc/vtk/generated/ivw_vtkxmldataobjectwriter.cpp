@@ -117,8 +117,8 @@ struct VTKTraits<vtkXMLDataObjectWriter> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
-    static constexpr std::string_view doc = R"(Internal writer for writing xml-based vtk
-files.)";
+    static constexpr std::string_view doc = R"ivw(Internal writer for writing xml-based vtk
+files.)ivw";
 };
 
 void registervtkXMLDataObjectWriter(InviwoModule* module) {

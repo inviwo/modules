@@ -212,7 +212,7 @@ struct VTKTraits<ttkSurfaceGeometrySmoother> {
                Wrapper8, Wrapper9, Wrapper10>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(GeometrySmoother with a twist!
+    static constexpr std::string_view doc = R"ivw(GeometrySmoother with a twist!
 
 This class smoothes and projects a 1D or a 2D mesh onto a 2D
 closed triangulated surface
@@ -223,7 +223,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/persistentGenerators_fertility/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_skull/)";
+- https://topology-tool-kit.github.io/examples/persistentGenerators_skull/)ivw";
 };
 
 void registerttkSurfaceGeometrySmoother(InviwoModule* module) {

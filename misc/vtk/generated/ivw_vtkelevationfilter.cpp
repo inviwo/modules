@@ -86,7 +86,7 @@ Elevation filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
     static constexpr std::string_view doc =
-        R"(The Elevation filter generates point scalar values for an
+        R"ivw(The Elevation filter generates point scalar values for an
 input dataset along a specified direction vector. The
 Input menu allows the user to select the data set to which
 this filter will be applied. Use the Scalar range entry
@@ -97,7 +97,7 @@ minimum scalar value is associated with the Low Point, and
 the maximum scalar value is associated with the High
 Point. The scalar value for each point in the data set is
 determined by the location along the line to which that
-point projects.)";
+point projects.)ivw";
 };
 
 void registervtkElevationFilter(InviwoModule* module) {

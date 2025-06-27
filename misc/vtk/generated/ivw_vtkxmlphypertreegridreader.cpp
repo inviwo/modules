@@ -63,11 +63,11 @@ struct VTKTraits<vtkXMLPHyperTreeGridReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The XML HyperTree Grid reader reads the
+    static constexpr std::string_view doc = R"ivw(The XML HyperTree Grid reader reads the
 partitioned VTK htg data file format. It
 reads the partitioned format's summary file and then the
 associated VTK XML htg data files. The
-expected file extension is .phtg.)";
+expected file extension is .phtg.)ivw";
 };
 
 void registervtkXMLPHyperTreeGridReader(InviwoModule* module) {

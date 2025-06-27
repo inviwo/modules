@@ -35,6 +35,7 @@
 #include <inviwo/vtk/processors/layertovtk.h>
 #include <inviwo/vtk/processors/volumetovtk.h>
 #include <inviwo/vtk/processors/vtkdowncastdata.h>
+#include <inviwo/vtk/processors/vtkfilecache.h>
 #include <inviwo/vtk/processors/vtksource.h>
 #include <inviwo/vtk/processors/vtktodataframe.h>
 #include <inviwo/vtk/processors/vtktoimage.h>
@@ -85,6 +86,7 @@ VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK"), setting
     // Processors
     registerProcessor<ImageToVTK>();
     registerProcessor<LayerToVTK>();
+    registerProcessor<VTKFileCache>();
     registerProcessor<VolumeToVTK>();
     registerProcessor<VTKToVolume>();
     registerProcessor<VTKDowncastData>();

@@ -516,7 +516,7 @@ struct VTKTraits<ttkReebSpace> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(The Reeb space is a useful topological abstraction of bivariate scalar
+        R"ivw(The Reeb space is a useful topological abstraction of bivariate scalar
 fields for data segmentation purposes. Intuitively, it allows the automatic
 separation of volumetric regions that project to the same areas in the
 range. This class also implements a simplification heuristic for progressive
@@ -534,7 +534,7 @@ Proc. of IEEE VIS 2016.
 IEEE Transactions on Visualization and Computer Graphics, 2016.
 
 See also ContinuousScatterplot, JacobiSet, Fiber, FiberSurface,
-ProjectionFromField, RangePolygon.)";
+ProjectionFromField, RangePolygon.)ivw";
 };
 
 void registerttkReebSpace(InviwoModule* module) {

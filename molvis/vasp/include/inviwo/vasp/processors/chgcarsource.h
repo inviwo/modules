@@ -36,6 +36,7 @@
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/fileproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <modules/base/properties/basisproperty.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/ports/meshport.h>
@@ -100,8 +101,10 @@ private:
     OptionProperty<vasp::PotentialType> potential_;
     StringProperty potcars_;
     OptionProperty<molvis::element::Colormap> colormap_;
+    TransferFunctionProperty tf_;
     DoubleProperty radiusScaling_;
     DoubleProperty borderMargin_;
+    BoolProperty clearPorts_;
 
     PickingMapper pm_;
 

@@ -44,26 +44,30 @@ namespace inviwo::vtk {
 
 VtkOutport::VtkOutport(std::string_view identifier, std::string_view vtkDataClassName,
                        Document help)
-    : Outport(identifier, std::move(help)), typeId_{[&]() {
+    : Outport(identifier, std::move(help))
+    , typeId_{[&]() {
         auto id = vtkDataObjectTypes::GetTypeIdFromClassName(SafeCStr{vtkDataClassName}.c_str());
         if (id < 0) {
             throw Exception(IVW_CONTEXT, "Invalid port Data Class Name {}", vtkDataClassName);
         }
         return id;
-    }()} {
+    }()}
+    , data_{} {
 
     isReady_.setUpdate(
         [this]() { return invalidationLevel_ == InvalidationLevel::Valid && data_ != nullptr; });
 }
 
 VtkOutport::VtkOutport(std::string_view identifier, int typeId, Document help)
-    : Outport(identifier, std::move(help)), typeId_{[&]() {
+    : Outport(identifier, std::move(help))
+    , typeId_{[&]() {
         if (typeId >= VTK_POLY_DATA && typeId <= VTK_IMAGE_STENCIL_DATA) {
             return typeId;
         } else {
             throw Exception(IVW_CONTEXT, "Invalid port Data TypeID {}", typeId);
         }
-    }()} {
+    }()}
+    , data_{} {
 
     isReady_.setUpdate(
         [this]() { return invalidationLevel_ == InvalidationLevel::Valid && data_ != nullptr; });

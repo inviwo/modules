@@ -213,7 +213,7 @@ the streamlines will be generated.)"}};
                Wrapper8, Wrapper9, Wrapper10>
         properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Generic Stream Tracer filter generates streamlines in a
 vector field from a collection of seed points. The vector
 field used is selected from the Vectors menu, so the input
@@ -255,7 +255,7 @@ Propagation is reached, or if a boundary of the input data
 set is crossed, integration terminates. This filter
 operates on any type of data set, provided it has
 point-centered vectors. The output is polygonal data
-containing polylines.)";
+containing polylines.)ivw";
 };
 
 void registervtkGenericStreamTracer(InviwoModule* module) {

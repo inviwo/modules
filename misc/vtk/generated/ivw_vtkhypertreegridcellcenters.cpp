@@ -55,10 +55,10 @@ struct VTKTraits<vtkHyperTreeGridCellCenters> {
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter generates output points at the center of the leaf
+        R"ivw(This filter generates output points at the center of the leaf
 cells in the hyper tree grid.
 These points can be used for placing glyphs or labeling.
-The cell attributes will be associated with the points in the output.)";
+The cell attributes will be associated with the points in the output.)ivw";
 };
 
 void registervtkHyperTreeGridCellCenters(InviwoModule* module) {

@@ -131,7 +131,7 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
     static constexpr std::string_view doc =
-        R"(The Threshold filter extracts the portions of the input
+        R"ivw(The Threshold filter extracts the portions of the input
 dataset whose scalars lie within the specified range. This
 filter operates on either point-centered or cell-centered
 data. This filter operates on any type of dataset and
@@ -149,7 +149,7 @@ of its points lie within the range indicated by the Lower
 Threshold and Upper Threshold sliders. If unchecked, then
 a cell will be added to the output if the specified scalar
 value for any of its points is within the chosen
-range.)";
+range.)ivw";
 };
 
 void registervtkThreshold(InviwoModule* module) {

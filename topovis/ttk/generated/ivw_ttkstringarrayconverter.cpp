@@ -71,10 +71,11 @@ struct VTKTraits<ttkStringArrayConverter> {
     inline static std::array<Group, 1> groups = {Group{"Input options", {"Input String Array"}}};
     std::tuple<Wrapper0> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(This filter converts an input vtkStringArray into an
+    static constexpr std::string_view doc =
+        R"ivw(This filter converts an input vtkStringArray into an
 vtkIntArray to make it easier to apply Threshold on the data
 set. The correspondence between a string value and an int is
-to be stored in the output Field Data.)";
+to be stored in the output Field Data.)ivw";
 };
 
 void registerttkStringArrayConverter(InviwoModule* module) {

@@ -58,7 +58,7 @@ filter.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(This is a filter that generates 2D texture coordinates by
+        R"ivw(This is a filter that generates 2D texture coordinates by
 mapping input dataset points onto a sphere. The sphere is
 generated automatically. The sphere is generated
 automatically by computing the center i.e. averaged
@@ -67,7 +67,7 @@ texture coordinates range between (0,1). The s-coordinate
 lies in the angular direction around the z-axis, measured
 counter-clockwise from the x-axis. The t-coordinate lies
 in the angular direction measured down from the north pole
-towards the south pole.)";
+towards the south pole.)ivw";
 };
 
 void registervtkTextureMapToSphere(InviwoModule* module) {

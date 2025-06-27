@@ -69,8 +69,8 @@ struct VTKTraits<vtkHyperTreeGridAxisReflection> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter reflect the cells of a hyper tree grid with respect to
-one of the planes parallel to the bounding box of the data set.)";
+        R"ivw(This filter reflect the cells of a hyper tree grid with respect to
+one of the planes parallel to the bounding box of the data set.)ivw";
 };
 
 void registervtkHyperTreeGridAxisReflection(InviwoModule* module) {

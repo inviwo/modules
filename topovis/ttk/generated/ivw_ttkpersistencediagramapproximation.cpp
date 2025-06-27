@@ -209,7 +209,7 @@ Input should be a regular grid (.vti).)"}};
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK plugin for the computation of apprroximations of persistence diagrams.
+        R"ivw(TTK plugin for the computation of apprroximations of persistence diagrams.
 
 This plugin computes an approximation of the persistence diagram of the extremum-saddle pairs
 of an input scalar field.
@@ -229,7 +229,7 @@ Related publication
 Jules Vidal, Julien Tierny
 IEEE Symposium on Large Data Visualization and Analysis (LDAV), 2021
 
-Online examples:)";
+Online examples:)ivw";
 };
 
 void registerttkPersistenceDiagramApproximation(InviwoModule* module) {

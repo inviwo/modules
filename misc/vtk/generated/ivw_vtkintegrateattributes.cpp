@@ -56,9 +56,9 @@ Attributes filter.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(The Integrate Attributes filter integrates point and cell
+        R"ivw(The Integrate Attributes filter integrates point and cell
 data over lines and surfaces. It also computes length of
-lines, area of surface, or volume.)";
+lines, area of surface, or volume.)ivw";
 };
 
 void registervtkIntegrateAttributes(InviwoModule* module) {

@@ -60,7 +60,7 @@ object.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter extracts the selection over time, i.e. cell
+        R"ivw(This filter extracts the selection over time, i.e. cell
 and/or point variables at a cells/point selected are
 extracted over time The output multiblock consists of 1D
 rectilinear grids where the x coordinate corresponds to
@@ -68,7 +68,7 @@ time (the same array is also copied to a point array named
 Time or TimeData (if Time exists in the input)). If
 selection input is a Location based selection then the
 point values are interpolated from the nearby cells, ie
-those of the cell the location lies in.)";
+those of the cell the location lies in.)ivw";
 };
 
 void registervtkPExtractSelectedArraysOverTime(InviwoModule* module) {

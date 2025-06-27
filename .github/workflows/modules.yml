@@ -308,7 +308,6 @@ jobs:
           --config build/pyconfig.ini \
           --build_type RelWithDebInfo \
           --output regression/modules/macos/${{ github.ref }} \
-          --modules inviwo/modules \
           --summary
 
     - name: Push report
@@ -384,7 +383,7 @@ jobs:
     permissions:
       pull-requests: write
     env:
-      LLVM_VERSION: 17
+      LLVM_VERSION: 18
     runs-on: ubuntu-24.04
     timeout-minutes: 320
     steps:
@@ -429,7 +428,7 @@ jobs:
         -DIVW_MODULE_WEBBROWSER=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
-        -DVCPKG_MANIFEST_FEATURES="sgct;graphviz;openmesh;nanovg"
+        -DVCPKG_MANIFEST_FEATURES="sgct;graphviz;openmesh;nanovg;vtk"
 
     - name: "Run clang-tidy"
       uses: cpp-linter/cpp-linter-action@v2.13.4

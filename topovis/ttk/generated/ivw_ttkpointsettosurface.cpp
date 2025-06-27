@@ -101,12 +101,14 @@ struct VTKTraits<ttkPointSetToSurface> {
     std::tuple<Wrapper0, Wrapper1> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter generates a surface between points in a Point Set
+        R"ivw(This filter generates a surface between points in a Point Set
 according to the ordering of two given Point Data arrays.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/mergeTreePGA/)";
+- https://topology-tool-kit.github.io/examples/mergeTreePGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
 void registerttkPointSetToSurface(InviwoModule* module) {

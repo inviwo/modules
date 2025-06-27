@@ -76,8 +76,8 @@ struct VTKTraits<vtkXMLMultiBlockDataReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
-    static constexpr std::string_view doc = R"(Internal proxy used by
-XMLMultiBlockDataWriter.)";
+    static constexpr std::string_view doc = R"ivw(Internal proxy used by
+XMLMultiBlockDataWriter.)ivw";
 };
 
 void registervtkXMLMultiBlockDataReader(InviwoModule* module) {

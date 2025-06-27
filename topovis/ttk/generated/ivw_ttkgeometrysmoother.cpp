@@ -175,7 +175,7 @@ struct VTKTraits<ttkGeometrySmoother> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter is a dummy example for the development of TTK packages. It
+        R"ivw(This filter is a dummy example for the development of TTK packages. It
 smooths an input mesh by average the vertex locations on the link of each
 vertex.
 
@@ -185,6 +185,8 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/2manifoldLearning/
 
+- https://topology-tool-kit.github.io/examples/cosmicWeb/
+
 - https://topology-tool-kit.github.io/examples/dragon/
 
 - https://topology-tool-kit.github.io/examples/harmonicSkeleton/
@@ -193,7 +195,15 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
-- https://topology-tool-kit.github.io/examples/morseMolecule/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
+- https://topology-tool-kit.github.io/examples/morseMolecule/
+
+- https://topology-tool-kit.github.io/examples/mpiExample/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
+https://topology-tool-kit.github.io/examples/topologicalOptimization_pegasus/)ivw";
 };
 
 void registerttkGeometrySmoother(InviwoModule* module) {

@@ -64,11 +64,11 @@ struct VTKTraits<vtkXMLPImageDataReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The XML Partitioned Image Data reader reads the
+    static constexpr std::string_view doc = R"ivw(The XML Partitioned Image Data reader reads the
 partitioned VTK image data file format. It reads the
 partitioned format's summary file and then the associated
 VTK XML image data files. The expected file extension is
-.pvti.)";
+.pvti.)ivw";
 };
 
 void registervtkXMLPImageDataReader(InviwoModule* module) {

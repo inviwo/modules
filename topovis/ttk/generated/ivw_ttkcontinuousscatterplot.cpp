@@ -218,7 +218,7 @@ struct VTKTraits<ttkContinuousScatterPlot> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin produces a 2D vtkUnstructuredGrid with a scalar
+        R"ivw(This plugin produces a 2D vtkUnstructuredGrid with a scalar
 field (named 'Density') representing the continuous scatter plot (attached
 to the 2D geometry as point data). A point mask is also attached to the 2D
 geometry as point data. The components of the input bivariate data must be
@@ -231,7 +231,7 @@ Computer Graphics, 2008.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/builtInExample2/)";
+- https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
 void registerttkContinuousScatterPlot(InviwoModule* module) {

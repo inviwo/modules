@@ -282,7 +282,7 @@ struct VTKTraits<ttkPlanarGraphLayout> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter computes a planar graph layout of a 'vtkUnstructuredGrid'. To improve the quality of the layout it is possible to pass additional field data to the algorithm:
+        R"ivw(This filter computes a planar graph layout of a 'vtkUnstructuredGrid'. To improve the quality of the layout it is possible to pass additional field data to the algorithm:
 
 1) Sequences: Points are positioned along the x-axis based on a sequence (e.g., time indices or scalar values).
 
@@ -312,7 +312,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/contourTreeAlignment/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkPlanarGraphLayout(InviwoModule* module) {

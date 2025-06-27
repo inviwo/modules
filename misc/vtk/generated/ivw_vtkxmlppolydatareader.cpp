@@ -63,12 +63,12 @@ struct VTKTraits<vtkXMLPPolyDataReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 XML Partitioned Polydata reader reads the partitioned VTK
 polydata file format. It reads the partitioned format's
 summary file and then the associated VTK XML polydata
 files. The expected file extension is
-.pvtp.)";
+.pvtp.)ivw";
 };
 
 void registervtkXMLPPolyDataReader(InviwoModule* module) {

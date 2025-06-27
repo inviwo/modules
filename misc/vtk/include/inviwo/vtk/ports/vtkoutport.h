@@ -37,6 +37,7 @@
 #include <string>
 
 #include <vtkType.h>
+#include <vtkSmartPointer.h>
 
 class vtkDataObject;
 
@@ -68,7 +69,7 @@ public:
 
 private:
     int typeId_;
-    vtkDataObject* data_ = nullptr;
+    vtkSmartPointer<vtkDataObject> data_;
 };
 
 }  // namespace vtk

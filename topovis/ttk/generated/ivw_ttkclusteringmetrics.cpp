@@ -167,7 +167,7 @@ struct VTKTraits<ttkClusteringMetrics> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filters takes two columns of a vtkTable, each representing a clustering of the points. It computes two metrics indicating how the two clustering are similar: the NMI and the ARI values.)";
+        R"ivw(This filters takes two columns of a vtkTable, each representing a clustering of the points. It computes two metrics indicating how the two clustering are similar: the NMI and the ARI values.)ivw";
 };
 
 void registerttkClusteringMetrics(InviwoModule* module) {

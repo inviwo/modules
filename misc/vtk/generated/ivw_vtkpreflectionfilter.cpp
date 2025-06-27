@@ -109,11 +109,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Reflect filter reflects the input dataset across the
 specified plane. This filter operates on any type of data
 set and produces an unstructured grid
-output.)";
+output.)ivw";
 };
 
 void registervtkPReflectionFilter(InviwoModule* module) {

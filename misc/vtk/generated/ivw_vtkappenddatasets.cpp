@@ -60,13 +60,13 @@ single dataset by the Append Datasets filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Append
+    static constexpr std::string_view doc = R"ivw(The Append
 Datasets filter operates on multiple data sets of any type
 (polygonal, structured, etc.). It merges their meshes
 into a single dataset. If all inputs are polydata, the output
 is a polydata, otherwise it is an unstructured grid.
 Only the point and cell attributes that all of the input
-datasets have in common will appear in the output.)";
+datasets have in common will appear in the output.)ivw";
 };
 
 void registervtkAppendDataSets(InviwoModule* module) {

@@ -44,7 +44,7 @@ const ProcessorInfo LogRendererProcessors::processorInfo_{
     "Debugging",                         // Category
     CodeState::Experimental,             // Code state
     Tags::None,                          // Tags
-};
+    "A Processor that listens to Log messages and prints them to a canvas."_help};
 const ProcessorInfo& LogRendererProcessors::getProcessorInfo() const { return processorInfo_; }
 
 LogRendererProcessors::LogRendererProcessors()

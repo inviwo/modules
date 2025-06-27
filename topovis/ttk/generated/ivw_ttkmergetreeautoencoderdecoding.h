@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace vtkwrapper {
-void registervtkMergeArrays(InviwoModule* module);
+void registerttkMergeTreeAutoencoderDecoding(InviwoModule* module);
 }  // namespace vtkwrapper
 }  // namespace inviwo

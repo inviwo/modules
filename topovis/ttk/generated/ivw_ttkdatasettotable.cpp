@@ -118,13 +118,19 @@ struct VTKTraits<ttkDataSetToTable> {
                "CompactTriangulationCacheSize", "Debug_Execute"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK fieldSelector plugin documentation.
+    static constexpr std::string_view doc = R"ivw(TTK fieldSelector plugin documentation.
 
 Online examples:
 
 - https://topology-tool-kit.github.io/examples/mergeTreePGA/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)";
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramWAE/
+
+- https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
 void registerttkDataSetToTable(InviwoModule* module) {

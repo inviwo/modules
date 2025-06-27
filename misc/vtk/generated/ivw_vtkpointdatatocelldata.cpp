@@ -80,12 +80,12 @@ Cell Data filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
-    static constexpr std::string_view doc = R"(The Point
+    static constexpr std::string_view doc = R"ivw(The Point
 Data to Cell Data filter averages the values of the point
 attributes of the points of a cell to compute cell
 attributes. This filter operates on any type of dataset,
 and the output dataset is the same type as the
-input.)";
+input.)ivw";
 };
 
 void registervtkPointDataToCellData(InviwoModule* module) {

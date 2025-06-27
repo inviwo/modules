@@ -43,7 +43,7 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Triangulate filter decomposes polygonal data into only
 triangles, points, and lines. It separates triangle strips
 and polylines into individual triangles and lines,
@@ -55,7 +55,7 @@ such situations. You should use this filter in these cases
 rather than the Tetrahedralize filter because they produce
 different output dataset types. The filters referenced
 require polygonal input, and the Tetrahedralize filter
-produces unstructured grid output.)";
+produces unstructured grid output.)ivw";
 };
 
 void registervtkTriangleFilter(InviwoModule* module) {

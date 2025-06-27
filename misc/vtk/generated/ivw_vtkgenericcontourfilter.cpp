@@ -101,7 +101,7 @@ filter.)"}};
                                                  Group{"Point Locator", {"Locator"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
-    static constexpr std::string_view doc = R"(The Generic
+    static constexpr std::string_view doc = R"ivw(The Generic
 Contour filter computes isolines or isosurfaces using a
 selected point-centered scalar array. The available scalar
 arrays are listed in the Scalars menu. The scalar range of
@@ -132,7 +132,7 @@ and a corresponding point-centered array will be added to
 the output. The Generic Contour filter operates on a
 generic data set, but the input is required to have at
 least one point-centered scalar (single-component) array.
-The output of this filter is polygonal.)";
+The output of this filter is polygonal.)ivw";
 };
 
 void registervtkGenericContourFilter(InviwoModule* module) {

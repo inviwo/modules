@@ -42,13 +42,13 @@ struct VTKTraits<vtkImageDataToPointSet> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Image
+    static constexpr std::string_view doc = R"ivw(The Image
 Data to Point Set filter takes an image data (uniform
 rectilinear grid) object and outputs an equivalent structured
 grid (which as a type of point set). This brings the data to a
 broader category of data storage but only adds a small amount of
 overhead. This filter can be helpful in applying filters that
-expect or manipulate point coordinates.)";
+expect or manipulate point coordinates.)ivw";
 };
 
 void registervtkImageDataToPointSet(InviwoModule* module) {

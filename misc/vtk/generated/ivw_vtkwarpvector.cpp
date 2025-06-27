@@ -89,14 +89,14 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(The Warp (vector) filter translates the points of the
+        R"ivw(The Warp (vector) filter translates the points of the
 input dataset using a specified vector array. The vector
 array chosen specifies a vector per point in the input.
 Each point is translated along its vector by a given scale
 factor. This filter operates on polygonal, curvilinear,
 and unstructured grid datasets. Because this filter only
 changes the positions of the points, the output dataset
-type is the same as that of the input.)";
+type is the same as that of the input.)ivw";
 };
 
 void registervtkWarpVector(InviwoModule* module) {

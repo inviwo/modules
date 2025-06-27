@@ -99,7 +99,7 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
     static constexpr std::string_view doc =
-        R"(The Generic Clip filter cuts away a portion of the input
+        R"ivw(The Generic Clip filter cuts away a portion of the input
 data set using a plane, a sphere, a box, or a scalar
 value. The menu in the Clip Function portion of the
 interface allows the user to select which implicit
@@ -119,7 +119,7 @@ the selection from the Clip Function menu, if the Inside
 Out option is checked, the opposite portions of the data
 set will be returned. This filter operates on all types of
 data sets, and it returns unstructured grid data on
-output.)";
+output.)ivw";
 };
 
 void registervtkGenericClip(InviwoModule* module) {

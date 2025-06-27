@@ -2,6 +2,6 @@
 namespace inviwo {
 class InviwoModule;
 namespace vtkwrapper {
-void registervtkPassThrough(InviwoModule* module);
+void registerttkDimensionReductionMetrics(InviwoModule* module);
 }  // namespace vtkwrapper
 }  // namespace inviwo

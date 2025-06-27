@@ -58,10 +58,10 @@ filter.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(This file modifies the time range or time steps of the
+        R"ivw(This file modifies the time range or time steps of the
 data without changing the data itself. The data is not
 resampled by this filter, only the information
-accompanying the data is modified.)";
+accompanying the data is modified.)ivw";
 };
 
 void registervtkTemporalSnapToTimeStep(InviwoModule* module) {

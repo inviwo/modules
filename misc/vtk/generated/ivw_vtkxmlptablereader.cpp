@@ -63,11 +63,11 @@ struct VTKTraits<vtkXMLPTableReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The XML Partitioned Table reader reads the
+    static constexpr std::string_view doc = R"ivw(The XML Partitioned Table reader reads the
 partitioned VTK table data file format. It
 reads the partitioned format's summary file and then the
 associated VTK XML table data files. The
-expected file extension is .pvtt.)";
+expected file extension is .pvtt.)ivw";
 };
 
 void registervtkXMLPTableReader(InviwoModule* module) {

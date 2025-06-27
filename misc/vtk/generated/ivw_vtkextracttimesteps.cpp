@@ -108,7 +108,7 @@ struct VTKTraits<vtkExtractTimeSteps> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(This filter extracts specified time steps from its input.)";
+        R"ivw(This filter extracts specified time steps from its input.)ivw";
 };
 
 void registervtkExtractTimeSteps(InviwoModule* module) {

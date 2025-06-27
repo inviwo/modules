@@ -5,7 +5,14 @@
   "description": "TTK - The Topology ToolKit",
   "homepage": "https://github.com/topology-tool-kit/ttk",
   "dependencies": [
-    "vtk",
+    {
+      "name": "vtk",
+      "default-features": false,
+      "features": [
+            "opengl",
+            "utf8"
+      ]
+    },
     "boost-heap",
     "boost-math",
     "boost-interprocess",

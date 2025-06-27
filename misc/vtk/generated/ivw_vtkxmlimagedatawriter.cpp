@@ -56,8 +56,8 @@ written to the file.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(Writer to write image data in a xml-based vtk data file. Cannot be used
-for parallel writing.)";
+        R"ivw(Writer to write image data in a xml-based vtk data file. Cannot be used
+for parallel writing.)ivw";
 };
 
 void registervtkXMLImageDataWriter(InviwoModule* module) {

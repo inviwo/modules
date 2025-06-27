@@ -43,11 +43,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Extract Edges
+    static constexpr std::string_view doc = R"ivw(The Extract Edges
 filter produces a wireframe version of the input dataset
 by extracting all the edges of the dataset's cells as
 lines. This filter operates on any type of data set and
-produces polygonal output.)";
+produces polygonal output.)ivw";
 };
 
 void registervtkExtractEdges(InviwoModule* module) {

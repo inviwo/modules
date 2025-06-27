@@ -40,11 +40,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.LogRendererProcessors, Log Renderer Processors}
- * ![](org.inviwo.LogRendererProcessors.png?classIdentifier=org.inviwo.LogRendererProcessors)
- * A Processor that listens to Log messages and prints them to a canvas.
- *
- */
 class IVW_MODULE_DEVTOOLS_API LogRendererProcessors : public Processor {
     class LoggerHandler : public Logger {
     public:

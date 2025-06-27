@@ -209,12 +209,12 @@ struct VTKTraits<vtkGradientFilter> {
         properties;
 
     static constexpr std::string_view doc =
-        R"(The Gradient (Unstructured) filter estimates the gradient
+        R"ivw(The Gradient (Unstructured) filter estimates the gradient
 vector at each point or cell. It operates on any type of
 vtkDataSet, and the output is the same type as the input.
 If the dataset is a vtkImageData, use the Gradient filter
 instead; it will be more efficient for this type of
-dataset.)";
+dataset.)ivw";
 };
 
 void registervtkGradientFilter(InviwoModule* module) {

@@ -43,11 +43,11 @@ struct VTKTraits<vtkStructuredGridOutlineFilter> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Outline filter
+    static constexpr std::string_view doc = R"ivw(The Outline filter
 generates an outline of the outside edges of the input
 dataset, rather than the dataset's bounding box. This
 filter operates on structured grid datasets and produces
-polygonal output.)";
+polygonal output.)ivw";
 };
 
 void registervtkStructuredGridOutlineFilter(InviwoModule* module) {

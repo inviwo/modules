@@ -39,7 +39,8 @@ const ProcessorInfo MolecularStructureSource::processorInfo_{
     "MolecularStructure Source",            // Display name
     "Data Input",                           // Category
     CodeState::Stable,                      // Code state
-    "MolVis, Source, PDB"                   // Tags
+    "MolVis, Source, PDB",                  // Tags
+    "Loads a molecular structure or atoms and creates a MolecularStructure object."_help,
 };
 const ProcessorInfo& MolecularStructureSource::getProcessorInfo() const { return processorInfo_; }
 

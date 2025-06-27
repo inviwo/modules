@@ -122,9 +122,9 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
 
     static constexpr std::string_view doc =
-        R"(The Feature Edges filter extracts various subsets of edges
+        R"ivw(The Feature Edges filter extracts various subsets of edges
 from the input data set. This filter operates on polygonal
-data and produces polygonal output.)";
+data and produces polygonal output.)ivw";
 };
 
 void registervtkFeatureEdges(InviwoModule* module) {

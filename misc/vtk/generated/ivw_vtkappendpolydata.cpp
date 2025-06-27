@@ -43,11 +43,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Append
+    static constexpr std::string_view doc = R"ivw(The Append
 Geometry filter operates on multiple polygonal data sets.
 It merges their geometry into a single data set. Only the
 point and cell attributes that all of the input data sets
-have in common will appear in the output.)";
+have in common will appear in the output.)ivw";
 };
 
 void registervtkAppendPolyData(InviwoModule* module) {

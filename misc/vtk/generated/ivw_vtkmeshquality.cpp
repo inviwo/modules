@@ -171,12 +171,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
-    static constexpr std::string_view doc = R"(This filter
+    static constexpr std::string_view doc = R"ivw(This filter
 creates a new cell array containing a geometric measure of
 each cell's fitness. Different quality measures can be
 chosen for different cell shapes. Supported shapes include linear
 triangles, quadrilaterals, tetrahedra, and hexahedra. For
-other shapes, a value of 0 is assigned.)";
+other shapes, a value of 0 is assigned.)ivw";
 };
 
 void registervtkMeshQuality(InviwoModule* module) {

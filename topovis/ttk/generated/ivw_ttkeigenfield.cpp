@@ -144,7 +144,7 @@ struct VTKTraits<ttkEigenField> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin computes the first eigenfunctions of a given
+        R"ivw(This plugin computes the first eigenfunctions of a given
 triangular surface mesh.
 Related publication
 "Spectral surface quadrangulation"
@@ -159,7 +159,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/persistentGenerators_fertility/
 
-- https://topology-tool-kit.github.io/examples/persistentGenerators_skull/)";
+- https://topology-tool-kit.github.io/examples/persistentGenerators_skull/)ivw";
 };
 
 void registerttkEigenField(InviwoModule* module) {

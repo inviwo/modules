@@ -220,12 +220,13 @@ struct VTKTraits<ttkProjectionFromField> {
                Wrapper8, Wrapper9, Wrapper10>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK plugin which projects a data-set to 2D given two
+    static constexpr std::string_view doc =
+        R"ivw(TTK plugin which projects a data-set to 2D given two
 point-data scalar fields to be used as 2D coordinates.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/builtInExample2/)";
+- https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
 void registerttkProjectionFromField(InviwoModule* module) {

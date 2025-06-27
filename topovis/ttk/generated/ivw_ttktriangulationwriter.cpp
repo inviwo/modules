@@ -65,7 +65,8 @@ struct VTKTraits<ttkTriangulationWriter> {
     inline static std::array<Group, 1> groups = {Group{"Output", {"FileName", "UseASCIIFormat"}}};
     std::tuple<Wrapper0, Wrapper1> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(Export a TTK (Explicit) Triangulation into a file.)";
+    static constexpr std::string_view doc =
+        R"ivw(Export a TTK (Explicit) Triangulation into a file.)ivw";
 };
 
 void registerttkTriangulationWriter(InviwoModule* module) {

@@ -54,7 +54,7 @@ struct VTKTraits<ttkOFFWriter> {
     std::tuple<Wrapper0> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Export a VTK Unstructured Grid into an Object Filed Format mesh.)";
+        R"ivw(Export a VTK Unstructured Grid into an Object Filed Format mesh.)ivw";
 };
 
 void registerttkOFFWriter(InviwoModule* module) {

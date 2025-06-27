@@ -63,11 +63,11 @@ const ProcessorInfo VTKToTensorField3D::processorInfo_{
 };
 const ProcessorInfo& VTKToTensorField3D::getProcessorInfo() const { return processorInfo_; }
 
+namespace {
+
 constexpr std::array<int, 5> supportedObjectTypes{VTK_RECTILINEAR_GRID, VTK_STRUCTURED_GRID,
                                                   VTK_IMAGE_DATA, VTK_UNIFORM_GRID,
                                                   VTK_STRUCTURED_POINTS};
-
-namespace detail {
 
 std::shared_ptr<TensorField3D> vtkToTensorField(size3_t dimensions, vtkDataSet* vtkData,
                                                 int arrayIndex) {
@@ -138,7 +138,7 @@ std::vector<double> vtkToScalars(vtkDataSet* vtkData, int arrayIndex) {
     return scalars;
 }
 
-}  // namespace detail
+}  // namespace
 
 VTKToTensorField3D::VTKToTensorField3D()
     : Processor{}
@@ -198,7 +198,7 @@ void VTKToTensorField3D::process() {
     if (inport_.isChanged() || sourceTensors_.isModified() || sourceScalars_.isModified()) {
         const ivec3 dims{*vtk::getDimensions(vtkData)};
 
-        tensorField_ = detail::vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
+        tensorField_ = vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
         tensorField_->setModelMatrix(*vtk::getModelMatrix(vtkData));
 
         if (normalizeExtents_) {
@@ -209,7 +209,7 @@ void VTKToTensorField3D::process() {
 
         if (sourceScalars_.getSelectedValue() >= 0) {
             tensorField_->addMetaData<tensor::HillYieldCriterion>(
-                detail::vtkToScalars(vtkData, sourceScalars_.getSelectedValue()),
+                vtkToScalars(vtkData, sourceScalars_.getSelectedValue()),
                 TensorFeature::HillYieldCriterion);
         }
 

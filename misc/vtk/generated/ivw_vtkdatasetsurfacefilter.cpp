@@ -78,11 +78,11 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The Extract
+    static constexpr std::string_view doc = R"ivw(The Extract
 Surface filter extracts the polygons forming the outer
 surface of the input dataset. This filter operates on any
 type of data and produces polygonal data as
-output.)";
+output.)ivw";
 };
 
 void registervtkDataSetSurfaceFilter(InviwoModule* module) {

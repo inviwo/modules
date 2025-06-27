@@ -42,7 +42,7 @@ struct VTKTraits<vtkMoleculeToLinesFilter> {
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(Convert a molecule into lines. Each atom of the input becomes a point of the output polydata, each bond a line.)";
+        R"ivw(Convert a molecule into lines. Each atom of the input becomes a point of the output polydata, each bond a line.)ivw";
 };
 
 void registervtkMoleculeToLinesFilter(InviwoModule* module) {

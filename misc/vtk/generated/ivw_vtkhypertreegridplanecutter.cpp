@@ -71,8 +71,8 @@ struct VTKTraits<vtkHyperTreeGridPlaneCutter> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Takes as input an hyper tree grid and a single plane and generates the
-polygonal data intersection surface.)";
+        R"ivw(Takes as input an hyper tree grid and a single plane and generates the
+polygonal data intersection surface.)ivw";
 };
 
 void registervtkHyperTreeGridPlaneCutter(InviwoModule* module) {

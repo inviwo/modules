@@ -19,25 +19,17 @@ ivw_group("Python Files" ${PYTHON_FILES})
 
 set(TEST_FILES
     tests/unittests/tensorvispython-unittest-main.cpp
+    tests/unittests/python-representations.cpp
 )
 ivw_add_unittest(${TEST_FILES})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${PYTHON_FILES})
 
-target_link_libraries(inviwo-module-tensorvispython
-    PUBLIC 
-        inviwo::module::python3
-)
-
 add_subdirectory(bindings)
 
-if(IVW_UNITTESTS)
-    add_dependencies(inviwo-unittests-tensorvispython ivwtensorvis)
+if(TARGET inviwo-unittests-tensorvispython)
+    add_dependencies(inviwo-unittests-tensorvispython inviwopy ivwtensorvis)
+    target_link_libraries(inviwo-unittests-tensorvispython PUBLIC inviwo::python-helper)
 endif()
 
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/python)
-
-if(TARGET inviwo-unittests-tensorvispython)
-    add_dependencies(inviwo-unittests-tensorvispython inviwopy)
-    target_link_libraries(inviwo-unittests-tensorvispython PUBLIC inviwo::module::python3)
-endif()

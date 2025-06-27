@@ -71,12 +71,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The Image Shrink
+    static constexpr std::string_view doc = R"ivw(The Image Shrink
 filter reduces the size of an image/volume dataset by
 subsampling it (i.e., extracting every nth pixel/voxel in
 integer multiples). The subsampling rate can be set
 separately for each dimension of the
-image/volume.)";
+image/volume.)ivw";
 };
 
 void registervtkImageShrink3D(InviwoModule* module) {

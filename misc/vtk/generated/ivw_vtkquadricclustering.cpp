@@ -122,13 +122,13 @@ Clustering filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
 
-    static constexpr std::string_view doc = R"(The Quadric
+    static constexpr std::string_view doc = R"ivw(The Quadric
 Clustering filter produces a reduced-resolution polygonal
 approximation of the input polygonal dataset. This filter
 is the one used by ParaView for computing LODs. It uses
 spatial binning to reduce the number of points in the data
 set; points that lie within the same spatial bin are
-collapsed into one representative point.)";
+collapsed into one representative point.)ivw";
 };
 
 void registervtkQuadricClustering(InviwoModule* module) {

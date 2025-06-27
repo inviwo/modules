@@ -90,13 +90,13 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(The Median filter operates on uniform rectilinear (image
+        R"ivw(The Median filter operates on uniform rectilinear (image
 or volume) data and produces uniform rectilinear output.
 It replaces the scalar value at each pixel / voxel with
 the median scalar value in the specified surrounding
 neighborhood. Since the median operation removes outliers,
 this filter is useful for removing high-intensity,
-low-probability noise (shot noise).)";
+low-probability noise (shot noise).)ivw";
 };
 
 void registervtkImageMedian3D(InviwoModule* module) {

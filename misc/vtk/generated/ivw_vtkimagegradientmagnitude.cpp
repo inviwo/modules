@@ -58,11 +58,11 @@ Magnitude filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Gradient
+    static constexpr std::string_view doc = R"ivw(The Gradient
 Magnitude filter computes the magnitude of the gradient
 vector at each point in an image or volume. This filter
 operates on uniform rectilinear (image) data and produces
-image data output.)";
+image data output.)ivw";
 };
 
 void registervtkImageGradientMagnitude(InviwoModule* module) {

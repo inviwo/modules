@@ -76,7 +76,7 @@ struct VTKTraits<vtkXMLPartitionedDataSetCollectionReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2> properties;
 
-    static constexpr std::string_view doc = R"(Internal proxy.)";
+    static constexpr std::string_view doc = R"ivw(Internal proxy.)ivw";
 };
 
 void registervtkXMLPartitionedDataSetCollectionReader(InviwoModule* module) {

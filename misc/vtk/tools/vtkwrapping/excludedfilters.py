@@ -93,5 +93,9 @@ vtk_paraview_filters = [
     "vtkSurfaceVectors",
     "vtkTimeStepProgressFilter",
     "vtkTimeToTextConvertor",
-    "vtkUnstructuredGridGhostCellsGenerator"
+    "vtkUnstructuredGridGhostCellsGenerator",
+
+    "vtkMergeArrays", # missing inport for AppendAttributes, unknown VTK dataType
+    "vtkPassThrough"  # missing inport for PipelineConnection, unknown VTK dataType
+
 ]

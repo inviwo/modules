@@ -110,12 +110,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
-    static constexpr std::string_view doc = R"(The Tessellate filter
+    static constexpr std::string_view doc = R"ivw(The Tessellate filter
 tessellates cells with nonlinear geometry and/or scalar
 fields into a simplicial complex with linearly
 interpolated field values that more closely approximate
 the original field. This is useful for datasets containing
-quadratic cells.)";
+quadratic cells.)ivw";
 };
 
 void registervtkTessellatorFilter(InviwoModule* module) {

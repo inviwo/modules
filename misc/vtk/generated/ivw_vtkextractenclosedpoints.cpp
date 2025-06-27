@@ -97,10 +97,10 @@ struct VTKTraits<vtkExtractEnclosedPoints> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(Evaluates all points in the input dataset to determine whether they are contained within
+        R"ivw(Evaluates all points in the input dataset to determine whether they are contained within
 an enclosing surface, defined by the **Surface**. The filter assumes that the surface
 is closed and manifold. To force a check to ensure these preconditions are met
-set the **CheckSurface** property.)";
+set the **CheckSurface** property.)ivw";
 };
 
 void registervtkExtractEnclosedPoints(InviwoModule* module) {

@@ -43,10 +43,10 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Outline filter
+    static constexpr std::string_view doc = R"ivw(The Outline filter
 generates an axis-aligned bounding box for the input
 dataset. This filter operates on any type of dataset and
-produces polygonal output.)";
+produces polygonal output.)ivw";
 };
 
 void registervtkPOutlineFilter(InviwoModule* module) {

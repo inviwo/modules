@@ -150,13 +150,13 @@ the contour filter.)"}};
                                                  Group{"Point Locator", {"Locator"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
 
-    static constexpr std::string_view doc = R"(The Contour
+    static constexpr std::string_view doc = R"ivw(The Contour
 filter computes isolines or isosurfaces using a selected
 point-centered scalar array. The Contour filter operates
 on any type of data set, but the input is required to have
 at least one point-centered scalar (single-component)
 array. The output of this filter is
-polygonal.)";
+polygonal.)ivw";
 };
 
 void registervtkContourFilter(InviwoModule* module) {

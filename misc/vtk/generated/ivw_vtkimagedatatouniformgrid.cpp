@@ -80,9 +80,9 @@ struct VTKTraits<vtkImageDataToUniformGrid> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Create a vtkUniformGrid from a vtkImageData by passing in arrays to be used
+        R"ivw(Create a vtkUniformGrid from a vtkImageData by passing in arrays to be used
 for point and/or cell blanking. By default, values of 0 in the specified
-array will result in a point or cell being blanked. Use Reverse to switch this.)";
+array will result in a point or cell being blanked. Use Reverse to switch this.)ivw";
 };
 
 void registervtkImageDataToUniformGrid(InviwoModule* module) {

@@ -179,12 +179,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
 
-    static constexpr std::string_view doc = R"(The Ribbon
+    static constexpr std::string_view doc = R"ivw(The Ribbon
 filter creates ribbons from the lines in the input data
 set. This filter is useful for visualizing streamlines.
 Both the input and output of this filter are polygonal
 data. The input data set must also have at least one
-point-centered vector array.)";
+point-centered vector array.)ivw";
 };
 
 void registervtkRibbonFilter(InviwoModule* module) {

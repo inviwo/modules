@@ -201,11 +201,11 @@ struct VTKTraits<ttkTopologicalCompression> {
                Wrapper8, Wrapper9, Wrapper10>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK topologicalCompression plugin documentation.
+    static constexpr std::string_view doc = R"ivw(TTK topologicalCompression plugin documentation.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/persistenceDrivenCompression/)";
+- https://topology-tool-kit.github.io/examples/persistenceDrivenCompression/)ivw";
 };
 
 void registerttkTopologicalCompression(InviwoModule* module) {

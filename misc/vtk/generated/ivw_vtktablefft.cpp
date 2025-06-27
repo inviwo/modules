@@ -44,8 +44,8 @@ filter.)"}};
     std::tuple<> properties;
 
     static constexpr std::string_view doc =
-        R"(Performs the Fast Fourier Transform on the columns of a
-table.)";
+        R"ivw(Performs the Fast Fourier Transform on the columns of a
+table.)ivw";
 };
 
 void registervtkTableFFT(InviwoModule* module) {

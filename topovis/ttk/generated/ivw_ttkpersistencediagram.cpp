@@ -342,7 +342,7 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(TTK plugin for the computation of persistence diagrams.
+        R"ivw(TTK plugin for the computation of persistence diagrams.
 
 This plugin computes the persistence diagram of the extremum-saddle pairs
 of an input scalar field. The X-coordinate of each pair corresponds to its
@@ -465,11 +465,21 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/persistenceDiagramDistance/
 
+- https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/
+
+- https://topology-tool-kit.github.io/examples/persistenceDiagramWAE/
+
 - https://topology-tool-kit.github.io/examples/tectonicPuzzle/
+
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_darkSky/
+
+https://topology-tool-kit.github.io/examples/topologicalOptimization_pegasus/
+
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_torus/
 
 - https://topology-tool-kit.github.io/examples/tribute/
 
-- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)";
+- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
 void registerttkPersistenceDiagram(InviwoModule* module) {

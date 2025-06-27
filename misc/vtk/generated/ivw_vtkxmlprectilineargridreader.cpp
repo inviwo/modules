@@ -65,11 +65,11 @@ struct VTKTraits<vtkXMLPRectilinearGridReader> {
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(The XML Partitioned Rectilinear Grid reader reads the
+        R"ivw(The XML Partitioned Rectilinear Grid reader reads the
 partitioned VTK rectilinear grid file format. It reads the
 partitioned format's summary file and then the associated
 VTK XML rectilinear grid files. The expected file
-extension is .pvtr.)";
+extension is .pvtr.)ivw";
 };
 
 void registervtkXMLPRectilinearGridReader(InviwoModule* module) {

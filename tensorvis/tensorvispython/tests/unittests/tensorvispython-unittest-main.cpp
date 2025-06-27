@@ -36,12 +36,22 @@
 #include <inviwo/core/util/consolelogger.h>
 #include <inviwo/core/common/coremodulesharedlibrary.h>
 #include <inviwo/core/common/inviwomodulefactoryobject.h>
-#include <modules/python3/python3modulesharedlibrary.h>
 #include <modules/base/basemodulesharedlibrary.h>
-#include <inviwo/tensorvispython/tensorvispythonmodulesharedlibrary.h>
+#include <modules/brushingandlinking/brushingandlinkingmodulesharedlibrary.h>
+#include <modules/opengl/openglmodulesharedlibrary.h>
+#include <modules/basegl/baseglmodulesharedlibrary.h>
+#include <modules/fontrendering/fontrenderingmodulesharedlibrary.h>
+#include <modules/eigenutils/eigenutilsmodulesharedlibrary.h>
+#include <modules/python3/python3modulesharedlibrary.h>
+#include <modules/json/jsonmodulesharedlibrary.h>
+#include <modules/vectorfieldvisualization/vectorfieldvisualizationmodulesharedlibrary.h>
+#include <inviwo/dataframe/dataframemodulesharedlibrary.h>
 #include <inviwo/tensorvisbase/tensorvisbasemodulesharedlibrary.h>
+#include <inviwo/tensorvispython/tensorvispythonmodulesharedlibrary.h>
 
 #include <inviwo/testutil/configurablegtesteventlistener.h>
+
+#include <inviwo/py/pythonhelper.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
@@ -57,11 +67,21 @@ int main(int argc, char** argv) {
     LogCentral::getPtr()->registerLogger(logger);
     InviwoApplication app(argc, argv, "Inviwo-Unittests-TensorVisPython");
 
+    inviwo::initializePythonModules();
+
     {
         std::vector<std::unique_ptr<InviwoModuleFactoryObject>> modules;
         modules.emplace_back(createInviwoCore());
         modules.emplace_back(createBaseModule());
+        modules.emplace_back(createBrushingAndLinkingModule());
+        modules.emplace_back(createOpenGLModule());
+        modules.emplace_back(createBaseGLModule());
+        modules.emplace_back(createFontRenderingModule());
+        modules.emplace_back(createJSONModule());
+        modules.emplace_back(createEigenUtilsModule());
         modules.emplace_back(createPython3Module());
+        modules.emplace_back(createVectorFieldVisualizationModule());
+        modules.emplace_back(createDataFrameModule());
         modules.emplace_back(createTensorVisBaseModule());
         modules.emplace_back(createTensorVisPythonModule());
         app.registerModules(std::move(modules));

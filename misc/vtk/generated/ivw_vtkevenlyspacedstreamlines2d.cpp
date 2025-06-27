@@ -237,7 +237,7 @@ struct VTKTraits<vtkEvenlySpacedStreamlines2D> {
         properties;
 
     static constexpr std::string_view doc =
-        R"(This filter generates evenly spaced streamlines in a 2D
+        R"ivw(This filter generates evenly spaced streamlines in a 2D
 vector field from a start position. Production of
 streamlines terminates if a streamline crosses the
 exterior boundary of the input dataset
@@ -252,7 +252,7 @@ lower than the Terminal Speed input value
 other streamlines (ReasonForTermination=8). This filter
 operates on a 2D dataset aligned with plane XY with
 point-centered vectors aligned with plane XY.
-The output is polygonal data containing polylines.)";
+The output is polygonal data containing polylines.)ivw";
 };
 
 void registervtkEvenlySpacedStreamlines2D(InviwoModule* module) {

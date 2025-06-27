@@ -109,7 +109,7 @@ struct VTKTraits<ttkEndFor> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter requests more data as long as the maximum number of elements is not reached. This filter works in conjunction with the ttkForEach filter.
+        R"ivw(This filter requests more data as long as the maximum number of elements is not reached. This filter works in conjunction with the ttkForEach filter.
 
 Online examples:
 
@@ -117,7 +117,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/contourTreeAlignment/
 
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkEndFor(InviwoModule* module) {

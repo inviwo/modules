@@ -45,24 +45,30 @@ namespace molvis {
  * find a residue in \p data matching both \p residueId and \p chainId.
  *
  * @param data   only considers the list of residues
+ * @param residueId
+ * @param chainId
  * @return matching residue if found, std::nullopt otherwise
  */
 IVW_MODULE_MOLVISBASE_API std::optional<Residue> findResidue(const MolecularData& data,
                                                              int residueId, int chainId);
 
 /**
- * find a chain in \p data matching the \p chainId.
+ * find a chain in @p data matching the @p chainId.
  *
  * @param data   only considers the list of chains
+ * @param chainId
  * @return matching residue if found, std::nullopt otherwise
  */
 IVW_MODULE_MOLVISBASE_API std::optional<Chain> findChain(const MolecularData& data, int chainId);
 
 /**
- * get the global index of an atom in \p atoms. Both \p fullAtomName, \p residueId, and \p chainId
+ * get the global index of an atom in @p atoms. Both @p fullAtomName, @p residueId, and @p chainId
  * must match.
  *
- * @param data   requires chainIds, residueIds, and fullNames
+ * @param atoms   requires chainIds, residueIds, and fullNames
+ * @param fullAtomName
+ * @param residueId
+ * @param chainId
  * @return global atom index if found, std::nullopt otherwise
  * @throws Exception if chainIds, residueIds, and fullNames in atoms have different sizes
  */
@@ -101,17 +107,17 @@ IVW_MODULE_MOLVISBASE_API PeptideType getPeptideType(std::string_view resName,
 IVW_MODULE_MOLVISBASE_API std::vector<Bond> computeCovalentBonds(const Atoms& atoms);
 
 /**
- * Determines the atomic numbers of each atom based on the respective \p fullNames.
+ * Determines the atomic numbers of each atom based on the respective @p fullNames.
  *
  * @return list of atomic numbers matching the full names of the input
  *
- * \see element::fromFullName()
+ * @see element::fromFullName()
  */
 IVW_MODULE_MOLVISBASE_API std::vector<Element> getAtomicNumbers(
     const std::vector<std::string>& fullNames);
 
 /**
- * \brief creates a mesh from molecular structure \p s
+ * @brief creates a mesh from molecular structure \p s
  *
  * Atoms are encoded as points with a radius attribute. Colors as well as van der Waals radii are
  * obtained for each atom using its atomic number. Bonds between atoms are represented as lines.
@@ -123,17 +129,17 @@ IVW_MODULE_MOLVISBASE_API std::vector<Element> getAtomicNumbers(
  *                   forget to resize the PickingMapper to the number of atoms
  * @return mesh containing the molecular structure
  *
- * \see MolecularStructure, element::color, element::vdwRadius
+ * @see MolecularStructure, element::color, element::vdwRadius
  */
 IVW_MODULE_MOLVISBASE_API std::shared_ptr<Mesh> createMesh(const MolecularStructure& s,
                                                            bool enablePicking = false,
                                                            uint32_t startId = 0);
 
 /**
- * \brief create a tool tip for the given \p atom of molecular structure \p s
+ * @brief create a tool tip for the given @p atom of molecular structure @p s
  *
- * @param s      molecular structure
- * @param atom   index of the atom
+ * @param s           molecular structure
+ * @param atomIndex   index of the atom
  * @return Document containing tool tip with information on atomic element, residue, chain, etc.
  */
 IVW_MODULE_MOLVISBASE_API Document createToolTip(const MolecularStructure& s, int atomIndex);

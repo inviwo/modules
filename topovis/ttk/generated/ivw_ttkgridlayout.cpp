@@ -174,13 +174,13 @@ struct VTKTraits<ttkGridLayout> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter computes a grid layout for the blocks of a vtkMultiBlockDataSet.
+        R"ivw(This filter computes a grid layout for the blocks of a vtkMultiBlockDataSet.
 
 Online examples:
 
 - https://topology-tool-kit.github.io/examples/cinemaIO/
 
-- https://topology-tool-kit.github.io/examples/contourTreeAlignment/)";
+- https://topology-tool-kit.github.io/examples/contourTreeAlignment/)ivw";
 };
 
 void registerttkGridLayout(InviwoModule* module) {

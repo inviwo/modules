@@ -100,12 +100,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
-    static constexpr std::string_view doc = R"(The Connectivity
+    static constexpr std::string_view doc = R"ivw(The Connectivity
 filter assigns a region id to connected components of the
 input data set. (The region id is assigned as a point
 scalar value.) This filter takes any data set type as
 input and produces unstructured grid
-output.)";
+output.)ivw";
 };
 
 void registervtkConnectivityFilter(InviwoModule* module) {

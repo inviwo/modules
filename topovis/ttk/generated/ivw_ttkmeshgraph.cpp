@@ -188,10 +188,10 @@ struct VTKTraits<ttkMeshGraph> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter generates for each one dimensional cell (edge) of a 'vtkUnstructuredGrid' a two dimensional cell by mapping a size value to the width of the input cell. The output is a 'vtkUnstructuredGrid' consisting of a set of either quadratic quads or linear polygons.
+        R"ivw(This filter generates for each one dimensional cell (edge) of a 'vtkUnstructuredGrid' a two dimensional cell by mapping a size value to the width of the input cell. The output is a 'vtkUnstructuredGrid' consisting of a set of either quadratic quads or linear polygons.
 
 Online examples:
-- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)";
+- https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
 void registerttkMeshGraph(InviwoModule* module) {

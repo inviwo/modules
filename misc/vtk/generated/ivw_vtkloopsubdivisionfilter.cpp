@@ -59,7 +59,7 @@ Subdivision filter.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(The Loop Subdivision filter increases the granularity of a
+        R"ivw(The Loop Subdivision filter increases the granularity of a
 polygonal mesh. It works by dividing each triangle in the
 input into four new triangles. It is named for Charles
 Loop, the person who devised this subdivision scheme. This
@@ -68,7 +68,7 @@ contains other types of polygons should be passed through
 the Triangulate filter before applying this filter to it.
 This filter only operates on polygonal data (specifically
 triangle meshes), and it produces polygonal
-output.)";
+output.)ivw";
 };
 
 void registervtkLoopSubdivisionFilter(InviwoModule* module) {

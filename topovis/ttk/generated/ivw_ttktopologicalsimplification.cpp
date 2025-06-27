@@ -56,6 +56,22 @@ struct Wrapper0 : FieldSelection {
 
 struct Wrapper1 {
     bool set(ttkTopologicalSimplification& filter) {
+        filter.SetMethod(property.get());
+        return true;
+    }
+    OptionPropertyInt property{
+        "Method",
+        "Backend",
+        R"(Choose the simplification algorithm.)"_help,
+        {{"LTS (IEEE VIS 2020)", "LTS (IEEE VIS 2020)", 0},
+         {"Legacy Approach (IEEE VIS 2012)", "Legacy Approach (IEEE VIS 2012)", 1},
+         {"Topological Optimization (IEEE VIS 2024)", "Topological Optimization (IEEE VIS 2024)",
+          2}},
+        0};
+};
+
+struct Wrapper2 {
+    bool set(ttkTopologicalSimplification& filter) {
         filter.SetForceInputOffsetScalarField(property.get());
         return true;
     }
@@ -65,7 +81,7 @@ as vertex offset (used to disambiguate flat plateaus).)"_help,
                           false};
 };
 
-struct Wrapper2 : FieldSelection {
+struct Wrapper3 : FieldSelection {
     bool set(ttkTopologicalSimplification& filter) {
         if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(2, 0, 0, fieldAssociation.get(), name.get().c_str());
@@ -94,7 +110,7 @@ struct Wrapper2 : FieldSelection {
     static constexpr std::string_view inport = "Domain";
 };
 
-struct Wrapper3 {
+struct Wrapper4 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetForceInputVertexScalarField(property.get());
         return true;
@@ -103,7 +119,7 @@ struct Wrapper3 {
                           R"()"_help, false};
 };
 
-struct Wrapper4 : FieldSelection {
+struct Wrapper5 : FieldSelection {
     bool set(ttkTopologicalSimplification& filter) {
         if (name.size() == 0) return false;
         filter.SetInputArrayToProcess(1, 0, 0, fieldAssociation.get(), name.get().c_str());
@@ -131,7 +147,7 @@ struct Wrapper4 : FieldSelection {
     static constexpr std::string_view inport = "Constraints";
 };
 
-struct Wrapper5 {
+struct Wrapper6 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetConsiderIdentifierAsBlackList(property.get());
         return true;
@@ -142,16 +158,237 @@ removing all non-selected extrema).)"_help,
                           false};
 };
 
-struct Wrapper6 {
+struct Wrapper7 {
     bool set(ttkTopologicalSimplification& filter) {
-        filter.SetUseLTS(property.get());
+        filter.SetMethodOptimization(property.get());
         return true;
     }
-    BoolProperty property{"UseLTS", "Use LTS",
-                          R"(Use the Localized Topological Simplification algorithm.)"_help, true};
+    OptionPropertyInt property{
+        "MethodOptimization",
+        "Gradient Descent Backend",
+        R"(Employed backend for gradient descent. Direct gradient descent provides superior time performance with regard to automatic differentiation with Adam.)"_help,
+        {{"Direct gradient descent", "Direct gradient descent", 0},
+         {"Adam (requires TORCH)", "Adam (requires TORCH)", 1}},
+        0};
 };
 
-struct Wrapper7 {
+struct Wrapper8 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetPDCMethod(property.get());
+        return true;
+    }
+    OptionPropertyInt property{"PDCMethod",
+                               "Wasserstein Distance Backend",
+                               R"(Backend for Wasserstein distance computation.
+The Auction algorithm is computationally more expensive than
+the progressive approach, but more accurate.)"_help,
+                               {{"Progressive Approach", "Progressive Approach", 0},
+                                {"Classical Auction", "Classical Auction", 1}},
+                               1};
+};
+
+struct Wrapper9 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetUseFastPersistenceUpdate(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "UseFastPersistenceUpdate", "Fast Persistence Update",
+        R"(Check this box to use fast persistence update (i.e. the persistence diagram will not be completely recomputed from scratch but only the required information will be updated).)"_help,
+        true};
+};
+
+struct Wrapper10 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetFastAssignmentUpdate(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "FastAssignmentUpdate", "Fast Assignment Update",
+        R"(Check this box to use the fast assignement update (i.e. persistence pairs which are still between consecutive iterations will maintain their assignments).)"_help,
+        true};
+};
+
+struct Wrapper11 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetCoefStopCondition(property.get());
+        return true;
+    }
+    DoubleProperty property{
+        "CoefStopCondition",
+        "Stopping Condition Coefficient",
+        R"(Coefficient used in the stopping condition of the algorithm: if the fraction between the current loss and the original loss (between the input and simplified diagrams) is smaller that this coefficient, the algorithm stops.)"_help,
+        0.01,
+        std::pair{0.0, ConstraintBehavior::Ignore},
+        std::pair{100.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper12 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetEpochNumber(property.get());
+        return true;
+    }
+    IntProperty property{
+        "EpochNumber",
+        "Maximum Iteration Number",
+        R"(Maximum Iteration Number (if the stopping condition has not been satisfied yet).)"_help,
+        1000,
+        std::pair{0, ConstraintBehavior::Ignore},
+        std::pair{100, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper13 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetFinePairManagement(property.get());
+        return true;
+    }
+    OptionPropertyInt property{
+        "FinePairManagement",
+        "Cancellation Primitive",
+        R"(Select the persistence pair cancellation primitive. For illustration, for pairs associated to topological handles of the sublevel sets, the primitive Fill-only will destroy a handle by filling a disc in its inside (only the death gradient is used). Cut-only will cut the handle (only the birth gradient is used). Fill and Cut will produce a compromise between the two (both birth and death gradients are used).)"_help,
+        {{"Fill and Cut", "Fill and Cut", 0},
+         {"Fill-only", "Fill-only", 1},
+         {"Cut-only", "Cut-only", 2}},
+        0};
+};
+
+struct Wrapper14 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetChooseLearningRate(property.get());
+        return true;
+    }
+    BoolProperty property{"ChooseLearningRate", "Choose Learning Rate",
+                          R"(Check this box to choose learning rate.)"_help, false};
+};
+
+struct Wrapper15 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetLearningRate(property.get());
+        return true;
+    }
+    DoubleProperty property{"LearningRate",
+                            "Learning Rate",
+                            R"(Learning Rate.)"_help,
+                            0.0001,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{100.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper16 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetAlpha(property.get());
+        return true;
+    }
+    DoubleProperty property{"Alpha",
+                            "Gradient Step Size",
+                            R"(Choose the gradient step size.)"_help,
+                            0.5,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{100.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper17 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetConstraintAveraging(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "ConstraintAveraging", "Constraint Averaging",
+        R"(If a given vertex is involved in both signal pairs (i.e. pairs to maintain) and non-signal pairs (i.e. pairs to remove), average the contributions of the constraints (otherwise, the vertex value will not change).)"_help,
+        true};
+};
+
+struct Wrapper18 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetOptimizationWithoutMatching(property.get());
+        return true;
+    }
+    BoolProperty property{
+        "OptimizationWithoutMatching", "Online Ad-hoc simplification",
+        R"(Enable on-line ad-hoc simplification (i.e., specify the non-signal pairs and the non-signal pairs will be re-evaluated at each iteration). Faster but less precise and more restrictive.)"_help,
+        false};
+};
+
+struct Wrapper19 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetThresholdMethod(property.get());
+        return true;
+    }
+    OptionPropertyInt property{"ThresholdMethod",
+                               "Threshold Method",
+                               R"(.)"_help,
+                               {{"Persistence", "Persistence", 0},
+                                {"PairType [Between]", "PairType [Between]", 1},
+                                {"PairType [Select]", "PairType [Select]", 2}},
+                               1};
+};
+
+struct Wrapper20 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetThreshold(property.get());
+        return true;
+    }
+    DoubleProperty property{"Threshold",
+                            "Threshold",
+                            R"(Threshold value.)"_help,
+                            0.01,
+                            std::pair{0.0, ConstraintBehavior::Ignore},
+                            std::pair{100.0, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper21 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetLowerThreshold(property.get());
+        return true;
+    }
+    IntProperty property{"LowerThreshold",
+                         "Lower Threshold",
+                         R"(Lower Threshold value.)"_help,
+                         -1,
+                         std::pair{0, ConstraintBehavior::Ignore},
+                         std::pair{100, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper22 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetUpperThreshold(property.get());
+        return true;
+    }
+    IntProperty property{"UpperThreshold",
+                         "Upper Threshold",
+                         R"(Upper Threshold value.)"_help,
+                         2,
+                         std::pair{0, ConstraintBehavior::Ignore},
+                         std::pair{100, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper23 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetPairTypeToDelete(property.get());
+        return true;
+    }
+    IntProperty property{"PairTypeToDelete",
+                         "Pair Type To Delete",
+                         R"(Pair type to delete value.)"_help,
+                         1,
+                         std::pair{0, ConstraintBehavior::Ignore},
+                         std::pair{100, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper24 {
+    bool set(ttkTopologicalSimplification& filter) {
+        filter.SetPrintFrequency(property.get());
+        return true;
+    }
+    IntProperty property{"PrintFrequency",
+                         "Print Frequency",
+                         R"(A print is made every PrintFrequency iterations.)"_help,
+                         10,
+                         std::pair{0, ConstraintBehavior::Ignore},
+                         std::pair{100, ConstraintBehavior::Ignore}};
+};
+
+struct Wrapper25 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetAddPerturbation(property.get());
         return true;
@@ -162,7 +399,7 @@ offset field for flat plateau disambiguation).)"_help,
                           false};
 };
 
-struct Wrapper8 {
+struct Wrapper26 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetUseAllCores(property.get());
         return true;
@@ -171,7 +408,7 @@ struct Wrapper8 {
                           true};
 };
 
-struct Wrapper9 {
+struct Wrapper27 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetThreadNumber(property.get());
         return true;
@@ -184,7 +421,7 @@ struct Wrapper9 {
                          std::pair{256, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper10 {
+struct Wrapper28 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetDebugLevel(property.get());
         return true;
@@ -197,7 +434,7 @@ struct Wrapper10 {
                          std::pair{5, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper11 {
+struct Wrapper29 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.SetCompactTriangulationCacheSize(property.get());
         return true;
@@ -211,7 +448,7 @@ ratio with respect to the total cluster number.)"_help,
                             std::pair{1.0, ConstraintBehavior::Ignore}};
 };
 
-struct Wrapper12 {
+struct Wrapper30 {
     bool set(ttkTopologicalSimplification& filter) {
         filter.Modified();
         return true;
@@ -239,21 +476,29 @@ struct VTKTraits<ttkTopologicalSimplification> {
             "Constraints", "vtkDataSet", 1,
             R"(vtkPointSet that represent the constraints of the topological simplification.)"}};
     inline static std::array<OutputData, 0> outports = {};
-    inline static std::array<Group, 3> groups = {
+    inline static std::array<Group, 4> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",
                "CompactTriangulationCacheSize", "Debug_Execute"}},
         Group{
             "Input options",
-            {"Scalar Field", "ForceInputVertexScalarField", "Vertex Identifier Field",
+            {"Scalar Field", "Method", "ForceInputVertexScalarField", "Vertex Identifier Field",
              "ForceInputOffsetScalarField", "Input Offset Field", "ConsiderIdentifierAsBlackList"}},
-        Group{"Output options", {"UseLTS", "AddPerturbation"}}};
+        Group{"Solver options",
+              {"MethodOptimization", "PDCMethod", "UseFastPersistenceUpdate",
+               "FastAssignmentUpdate", "CoefStopCondition", "EpochNumber", "FinePairManagement",
+               "ChooseLearningRate", "LearningRate", "Alpha", "ConstraintAveraging",
+               "OptimizationWithoutMatching", "PrintFrequency"}},
+        Group{"Output options", {"AddPerturbation"}}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,
-               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12>
+               Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13, Wrapper14, Wrapper15,
+               Wrapper16, Wrapper17, Wrapper18, Wrapper19, Wrapper20, Wrapper21, Wrapper22,
+               Wrapper23, Wrapper24, Wrapper25, Wrapper26, Wrapper27, Wrapper28, Wrapper29,
+               Wrapper30>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Given an input scalar field and a list of critical points to remove,
+        R"ivw(Given an input scalar field and a list of critical points to remove,
 this plugin minimally edits the scalar field such that the listed critical
 points disappear. This procedure is useful to speedup subsequent topological
 data analysis when outlier critical points can be easily identified. It is
@@ -274,13 +519,18 @@ Also, this plugin can be given a specific input vertex offset.
 Related publications:
 "Generalized Topological Simplification of Scalar Fields on Surfaces"
 Julien Tierny, Valerio Pascucci
+IEEE Transactions on Visualization and Computer Graphics.
 Proc. of IEEE VIS 2012.
-IEEE Transactions on Visualization and Computer Graphics, 2012.
 
 "Localized Topological Simplification of Scalar Data"
 Jonas Lukasczyk, Christoph Garth, Ross Maciejewski, Julien Tierny
+IEEE Transactions on Visualization and Computer Graphics.
 Proc. of IEEE VIS 2020.
-IEEE Transactions on Visualization and Computer Graphics
+
+"A Practical Solver for Scalar Data Topological Simplification"
+Mohamed Kissi, Mathieu Pont, Joshua A. Levine, Julien Tierny
+IEEE Transactions on Visualization and Computer Graphics.
+Proc. of IEEE VIS 2024.
 
 See also ScalarFieldCriticalPoints, IntegralLines, ContourForests,
 Identifiers.
@@ -325,9 +575,15 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/tectonicPuzzle/
 
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_darkSky/
+
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_pegasus/
+
+- https://topology-tool-kit.github.io/examples/topologicalOptimization_torus/
+
 - https://topology-tool-kit.github.io/examples/tribute/
 
-- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)";
+- https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
 void registerttkTopologicalSimplification(InviwoModule* module) {

@@ -273,7 +273,7 @@ the streamlines will be generated.)"}};
                Wrapper8, Wrapper9, Wrapper10, Wrapper11, Wrapper12, Wrapper13>
         properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 Stream Tracer filter generates streamlines in a vector
 field from a collection of seed points. Production of
 streamlines terminates if a streamline crosses the
@@ -287,7 +287,7 @@ input value (ReasonForTermination=5), and velocity was
 lower than the Terminal Speed input value
 (ReasonForTermination=6). This filter operates on any
 type of dataset, provided it has point-centered vectors.
-The output is polygonal data containing polylines.)";
+The output is polygonal data containing polylines.)ivw";
 };
 
 void registervtkStreamTracer(InviwoModule* module) {

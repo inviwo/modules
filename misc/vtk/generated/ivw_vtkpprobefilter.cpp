@@ -123,13 +123,13 @@ be used in determining positions to probe.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
 
     static constexpr std::string_view doc =
-        R"(Internal filter used by (filters, ProbeLine). The Plot
+        R"ivw(Internal filter used by (filters, ProbeLine). The Plot
 Over Line filter samples the data set attributes of the current data set
 at the points along a line. The values of the point-centered variables
 along that line will be displayed in an XY Plot. This filter uses
 interpolation to determine the values at the selected point, whether or
 not it lies at an input point. The Probe filter operates on any type of
-data and produces polygonal output (a line).)";
+data and produces polygonal output (a line).)ivw";
 };
 
 void registervtkPProbeFilter(InviwoModule* module) {

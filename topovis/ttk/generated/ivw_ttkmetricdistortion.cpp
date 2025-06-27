@@ -108,7 +108,7 @@ struct VTKTraits<ttkMetricDistortion> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter computes distance, area and curvature information about a surface and an optional distance matrix (giving the distance between the points of the surface in a metric space).)";
+        R"ivw(This filter computes distance, area and curvature information about a surface and an optional distance matrix (giving the distance between the points of the surface in a metric space).)ivw";
 };
 
 void registerttkMetricDistortion(InviwoModule* module) {

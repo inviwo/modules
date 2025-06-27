@@ -156,9 +156,11 @@ struct VTKTraits<ttkIcospheresFromPoints> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter creates for every vertex of an input vtkPointSet an IcoSphere with a specified number of subdivisions and radius.
+        R"ivw(This filter creates for every vertex of an input vtkPointSet an IcoSphere with a specified number of subdivisions and radius.
 
 Online examples:
+
+- https://topology-tool-kit.github.io/examples/cosmicWeb/
 
 - https://topology-tool-kit.github.io/examples/dragon/
 
@@ -166,9 +168,13 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/interactionSites/
 
+- https://topology-tool-kit.github.io/examples/mergeTreeWAE/
+
 - https://topology-tool-kit.github.io/examples/morseMolecule/
 
-- https://topology-tool-kit.github.io/examples/tectonicPuzzle/)";
+- https://topology-tool-kit.github.io/examples/persistenceDiagramWAE/
+
+- https://topology-tool-kit.github.io/examples/tectonicPuzzle/)ivw";
 };
 
 void registerttkIcospheresFromPoints(InviwoModule* module) {

@@ -237,11 +237,11 @@ struct VTKTraits<ttkCinemaImaging> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter takes images of a vtkDataObject (first input) from angles specified on a vtkPointSet (second input). Each image will be a block of a vtkMultiBlockDataSet where block order corresponds to point order. Each sample point can optionally have vtkDoubleArrays to override the default rendering parameters, i.e, the resolution, camera direction, clipping planes, and viewport height.
+        R"ivw(This filter takes images of a vtkDataObject (first input) from angles specified on a vtkPointSet (second input). Each image will be a block of a vtkMultiBlockDataSet where block order corresponds to point order. Each sample point can optionally have vtkDoubleArrays to override the default rendering parameters, i.e, the resolution, camera direction, clipping planes, and viewport height.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/geometryApproximation/)";
+- https://topology-tool-kit.github.io/examples/geometryApproximation/)ivw";
 };
 
 void registerttkCinemaImaging(InviwoModule* module) {

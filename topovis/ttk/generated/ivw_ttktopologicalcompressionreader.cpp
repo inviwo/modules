@@ -54,11 +54,11 @@ struct VTKTraits<ttkTopologicalCompressionReader> {
     std::tuple<Wrapper0> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin specifies the file name for the TTK reader.
+        R"ivw(This plugin specifies the file name for the TTK reader.
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/persistenceDrivenCompression/)";
+- https://topology-tool-kit.github.io/examples/persistenceDrivenCompression/)ivw";
 };
 
 void registerttkTopologicalCompressionReader(InviwoModule* module) {

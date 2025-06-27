@@ -78,7 +78,7 @@ filter.)"}};
     std::tuple<Wrapper0, Wrapper1> properties;
 
     static constexpr std::string_view doc =
-        R"(Decimate Polyline is a filter to reduce the number of lines in a
+        R"ivw(Decimate Polyline is a filter to reduce the number of lines in a
 polyline. The algorithm functions by evaluating an error metric for each
 vertex (i.e., the distance of the vertex to a line defined from the two
 vertices on either side of the vertex). Then, these vertices are placed
@@ -88,7 +88,7 @@ filter will not delete end points, it will decimate closed loops down to a
 single line, thereby changing topology.
 
 As this filter works on polylines, you may need to call Triangle Strips before calling
-this filter.)";
+this filter.)ivw";
 };
 
 void registervtkDecimatePolylineFilter(InviwoModule* module) {

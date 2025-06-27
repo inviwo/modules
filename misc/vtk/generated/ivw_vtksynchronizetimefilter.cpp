@@ -61,7 +61,7 @@ the time step values.)"}};
     std::tuple<Wrapper0> properties;
 
     static constexpr std::string_view doc =
-        R"(Synchronize time step values in the first input (Input) to time step
+        R"ivw(Synchronize time step values in the first input (Input) to time step
 values in the second input (Source) that are considered close enough.
 The outputted data set is from the first input and the number of
 output time steps is also equal to the number of time steps in
@@ -69,7 +69,7 @@ the first input. Time step values in the first input that are
 "close" to time step values in the second input are replaced
 with the value from the second input. Close is determined to
 be if the difference is less than RelativeTolerance multiplied
-by the time range of the first input.)";
+by the time range of the first input.)ivw";
 };
 
 void registervtkSynchronizeTimeFilter(InviwoModule* module) {

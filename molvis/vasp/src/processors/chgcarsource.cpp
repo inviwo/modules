@@ -137,8 +137,7 @@ constexpr size_t forEachPart(std::string_view str, Func&& func) {
         const auto second = str.find(' ', first);
         if constexpr (n != std::numeric_limits<size_t>::max()) {
             if (i >= n) {
-                throw Exception(SourceContext{},
-                                "Expected {} elements, in str '{}'", n, str);
+                throw Exception(SourceContext{}, "Expected {} elements, in str '{}'", n, str);
             }
         }
         std::invoke(func, str.substr(first, second - first), i);
@@ -148,8 +147,8 @@ constexpr size_t forEachPart(std::string_view str, Func&& func) {
     }
     if constexpr (n != std::numeric_limits<size_t>::max()) {
         if (i != n) {
-            throw Exception(SourceContext{},
-                            "Expected {} elements, found {}, in str '{}'", n, i, str);
+            throw Exception(SourceContext{}, "Expected {} elements, found {}, in str '{}'", n, i,
+                            str);
         }
     }
     return i;
@@ -168,7 +167,7 @@ struct File {
         , buffer{}
         , currentLine{0} {
         if (!stream) {
-            throw Exception(SourceContext{},"Error opening file at {}", file);
+            throw Exception(SourceContext{}, "Error opening file at {}", file);
         }
     }
 
@@ -177,7 +176,7 @@ struct File {
         if (std::getline(stream, buffer)) {
             return func(util::trim(buffer));
         } else {
-            throw Exception(SourceContext{},"Invalid format at line {}", currentLine);
+            throw Exception(SourceContext{}, "Invalid format at line {}", currentLine);
         }
     }
 
@@ -285,6 +284,20 @@ std::shared_ptr<Mesh> createMesh(const Chgcar& chg, size_t startPickId,
     return mesh;
 }
 
+void updateTF(TransferFunction& tf, const Chgcar& chg, molvis::element::Colormap colormap,
+              double borderMargin) {
+    std::vector<TFPrimitiveData> points;
+    forEachAtom(chg, borderMargin,
+                [&](molvis::Element elem, [[maybe_unused]] const glm::dvec3& pos,
+                    [[maybe_unused]] size_t atomIndex, size_t runningIndex) {
+                    const auto color = molvis::element::color(elem, colormap);
+                    points.emplace_back(static_cast<double>(runningIndex), color);
+                    points.emplace_back(static_cast<double>(runningIndex + 1) - 0.00001, color);
+                });
+    std::ranges::for_each(points, [&](auto& p) { p.pos *= 2.0 / points.size(); });
+    tf.set(points);
+}
+
 std::string supToUnicode(std::string_view str) {
     static const std::map<char, std::string> map{{
         {'.', "\u22C5"},
@@ -357,6 +370,10 @@ std::shared_ptr<DataFrame> createDataFrame(const Chgcar& chg, vasp::PotentialTyp
 
     auto ce = df->addColumn<double>("Valence Electrons", 0, units::unit_from_string("e"));
     auto cc = df->addCategoricalColumn("Valence Config");
+
+    cx->setMetaData<DoubleMat4MetaData>("basis", chg.model);
+    cy->setMetaData<DoubleMat4MetaData>("basis", chg.model);
+    cz->setMetaData<DoubleMat4MetaData>("basis", chg.model);
 
     forEachAtom(chg, 0.0, [&](molvis::Element elem, const glm::dvec3& pos, size_t, size_t) {
         const auto mp = chg.model * vec4(pos, 1.0f);
@@ -575,8 +592,10 @@ ChgcarSource::ChgcarSource()
                  {"cpknew", "Rasmol CPK new", molvis::element::Colormap::RasmolCPKnew},
                  {"jmol", "Jmol", molvis::element::Colormap::Jmol}},
                 0}
+    , tf_{"tf", "Atom index TF", TransferFunction{}, TFData{}, InvalidationLevel::Valid}
     , radiusScaling_{"radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01}
     , borderMargin_{"borderMargin", "Border Repetition Margin", 0.05, 0.0, 0.5}
+    , clearPorts_{"clearPorts", "Clear Ports While Loading", true}
     , pm_{this, 1, [this](PickingEvent* event) { picking(event); }}
     , data_{}
     , chg_{}
@@ -601,7 +620,12 @@ ChgcarSource::ChgcarSource()
     addPorts(chargeOutport_, magnetizationOutport_, atomsOutport_, atomInformationOutport_,
              moleculeOutport_, bnlInport_);
     addProperties(file_, reload_, readChg_, readMag_, chgInfo_, magInfo_, basis_, potential_,
-                  potcars_, colormap_, radiusScaling_, borderMargin_);
+                  potcars_, colormap_, tf_, radiusScaling_, borderMargin_, clearPorts_);
+
+    tf_.setReadOnly(true);
+    tf_.setSerializationMode(PropertySerializationMode::None);
+
+    bnlInport_.setInvalidationLevels({});
 }
 
 ChgcarSource::~ChgcarSource() = default;
@@ -639,6 +663,7 @@ void ChgcarSource::process() {
             createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
         auto df = createDataFrame(*data_, potential_.getSelectedValue(), potcars_.get());
         auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+        updateTF(tf_.get(), *data_, colormap_, borderMargin_);
 
         basis_.updateEntity(*mesh);
         basis_.updateEntity(*ms);
@@ -745,11 +770,13 @@ void ChgcarSource::process() {
         return {std::move(chg), std::move(charge), std::move(mag)};
     };
 
-    chargeOutport_.clear();
-    magnetizationOutport_.clear();
-    atomsOutport_.clear();
-    atomInformationOutport_.clear();
-    moleculeOutport_.clear();
+    if (clearPorts_) {
+        chargeOutport_.clear();
+        magnetizationOutport_.clear();
+        atomsOutport_.clear();
+        atomInformationOutport_.clear();
+        moleculeOutport_.clear();
+    }
 
     dispatchOne(calc, [this](Result result) {
         data_ = std::make_unique<Chgcar>(std::move(std::get<0>(result)));
@@ -757,6 +784,7 @@ void ChgcarSource::process() {
         std::tie(mag_, magDataRange_) = std::get<2>(result);
 
         if (!data_) {
+            basis_.updateForNewEntity(mat4{1.0}, size3_t{1}, deserialized_);
             chargeOutport_.clear();
             magnetizationOutport_.clear();
             atomsOutport_.clear();
@@ -766,12 +794,13 @@ void ChgcarSource::process() {
             return;
         }
 
+        basis_.updateForNewEntity(data_->model, data_->dims, deserialized_);
+
         if (chg_) {
             auto chg = createChg(chgDataRange_, data_->model, chg_);
             chgInfo_.updateForNewVolume(
                 *chg, deserialized_ ? util::OverwriteState::Yes : util::OverwriteState::No);
             chgInfo_.updateVolume(*chg);
-            basis_.updateForNewEntity(*chg, deserialized_);
             basis_.updateEntity(*chg);
             chargeOutport_.setData(chg);
         } else {
@@ -794,6 +823,7 @@ void ChgcarSource::process() {
             createMesh(*data_, pm_.getPickingId(0), colormap_, radiusScaling_, borderMargin_);
         auto df = createDataFrame(*data_, potential_.getSelectedValue(), potcars_.get());
         auto ms = createMolecularStructure(*data_, borderMargin_, file_.get().generic_string());
+        updateTF(tf_.get(), *data_, colormap_, borderMargin_);
         basis_.updateEntity(*mesh);
         basis_.updateEntity(*ms);
 

@@ -172,12 +172,12 @@ struct VTKTraits<ttkDistanceField> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This plugin takes a list of sources (a set of points with their global
+        R"ivw(This plugin takes a list of sources (a set of points with their global
 identifiers attached to them) and produces a distance field to the closest
 source.
 
 Related publication: "A note on two problems in connexion with graphs",
-Edsger W. Dijkstra, Numerische Mathematik, 1959.)";
+Edsger W. Dijkstra, Numerische Mathematik, 1959.)ivw";
 };
 
 void registerttkDistanceField(InviwoModule* module) {

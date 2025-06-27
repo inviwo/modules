@@ -151,7 +151,7 @@ struct VTKTraits<ttkTriangulationManager> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter converts a regular grid (vtkImageData) into a
+        R"ivw(This filter converts a regular grid (vtkImageData) into a
 periodic regular grid (vtkImageData), in all dimensions OR compacts an
 unstructured grid (vtkUnstructuredGrid, vtkPolyData) triangulation.
 
@@ -174,7 +174,7 @@ Online examples:
 
 - https://topology-tool-kit.github.io/examples/compactTriangulation/
 
-- https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)";
+- https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)ivw";
 };
 
 void registerttkTriangulationManager(InviwoModule* module) {

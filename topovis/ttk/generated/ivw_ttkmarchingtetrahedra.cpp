@@ -152,7 +152,7 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Given an input point data array and triangulation this class executes the marching tetrahedra/triangles algorithm. It has three options that either separate each label with a single separating geometry inbetween two labels, or a separating geometry enclosing each label (detailed and fast mode).
+        R"ivw(Given an input point data array and triangulation this class executes the marching tetrahedra/triangles algorithm. It has three options that either separate each label with a single separating geometry inbetween two labels, or a separating geometry enclosing each label (detailed and fast mode).
 
 Related publication:
 "Parallel Computation of Piecewise Linear Morse-Smale Segmentations"
@@ -161,7 +161,7 @@ IEEE Transactions on Visualization and Computer Graphics \n
 
 Online examples:
 
-- https://topology-tool-kit.github.io/examples/morseSmaleSegmentation_at/)";
+- https://topology-tool-kit.github.io/examples/morseSmaleSegmentation_at/)ivw";
 };
 
 void registerttkMarchingTetrahedra(InviwoModule* module) {

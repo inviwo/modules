@@ -131,7 +131,7 @@ module.)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5> properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(Given an input stable manifold (1D, 2D or 3D) computed by the
+        R"ivw(Given an input stable manifold (1D, 2D or 3D) computed by the
 Morse-Smale complex, this module attaches to it the persistence (and
 the type) of the persistence pair of the critical point it is based on
 (i.e. the critical point where the integral lines of the manifold
@@ -152,7 +152,7 @@ This filter can be used as any other ParaView filter.
 See the related ParaView example state files for usage examples within a
 VTK pipeline.
 
-See also MorseSmaleComplex, PersistenceDiagram.)";
+See also MorseSmaleComplex, PersistenceDiagram.)ivw";
 };
 
 void registerttkStableManifoldPersistence(InviwoModule* module) {

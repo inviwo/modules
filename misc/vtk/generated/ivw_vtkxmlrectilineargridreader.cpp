@@ -64,10 +64,10 @@ struct VTKTraits<vtkXMLRectilinearGridReader> {
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;
 
-    static constexpr std::string_view doc = R"(The
+    static constexpr std::string_view doc = R"ivw(The
 XML Rectilinear Grid reader reads the VTK XML rectilinear
 grid data file format. The standard extension is
-.vtr.)";
+.vtr.)ivw";
 };
 
 void registervtkXMLRectilinearGridReader(InviwoModule* module) {

@@ -186,7 +186,7 @@ struct VTKTraits<ttkLDistance> {
                Wrapper8>
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
-    static constexpr std::string_view doc = R"(TTK lDistance plugin documentation.)";
+    static constexpr std::string_view doc = R"ivw(TTK lDistance plugin documentation.)ivw";
 };
 
 void registerttkLDistance(InviwoModule* module) {

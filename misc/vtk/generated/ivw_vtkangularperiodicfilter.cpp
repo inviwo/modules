@@ -146,8 +146,8 @@ struct VTKTraits<vtkAngularPeriodicFilter> {
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7>
         properties;
 
-    static constexpr std::string_view doc = R"(This filter generate a periodic
-multiblock dataset)";
+    static constexpr std::string_view doc = R"ivw(This filter generate a periodic
+multiblock dataset)ivw";
 };
 
 void registervtkAngularPeriodicFilter(InviwoModule* module) {

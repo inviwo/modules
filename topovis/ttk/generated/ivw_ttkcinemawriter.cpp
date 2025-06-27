@@ -187,9 +187,9 @@ struct VTKTraits<ttkCinemaWriter> {
         properties;
     ttk::OutportDataTypeFunc outportDataTypeFunc = ttk::getOutportDataType;
     static constexpr std::string_view doc =
-        R"(This filter stores a data product in a Cinema database, and then returns the unmodified input as output.
+        R"ivw(This filter stores a data product in a Cinema database, and then returns the unmodified input as output.
 
-The field data arrays of the input are used to derive a unique key that identifies the data product in the Cinema database. If another product with the same key already exists then the filter will replace the existing data product, otherwise the data product is simply appended to the database. The data product itself is either stored in a VTK file format)";
+The field data arrays of the input are used to derive a unique key that identifies the data product in the Cinema database. If another product with the same key already exists then the filter will replace the existing data product, otherwise the data product is simply appended to the database. The data product itself is either stored in a VTK file format)ivw";
 };
 
 void registerttkCinemaWriter(InviwoModule* module) {

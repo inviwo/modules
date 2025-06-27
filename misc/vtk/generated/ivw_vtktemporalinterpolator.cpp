@@ -66,7 +66,7 @@ Interpolator.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 
-    static constexpr std::string_view doc = R"(The Temporal
+    static constexpr std::string_view doc = R"ivw(The Temporal
 Interpolator converts data that is defined at discrete
 time steps to one that is defined over a continuum of time
 by linearly interpolating the data's field data between
@@ -74,7 +74,7 @@ two adjacent time steps. The interpolated values are a
 simple approximation and should not be interpreted as
 anything more. The Temporal Interpolator assumes that the
 topology between adjacent time steps does not
-change.)";
+change.)ivw";
 };
 
 void registervtkTemporalInterpolator(InviwoModule* module) {

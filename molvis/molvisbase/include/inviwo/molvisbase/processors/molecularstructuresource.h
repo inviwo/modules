@@ -37,16 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.MolecularStructureSource, MolecularStructureSource}
- * ![](org.inviwo.MolecularStructureSource.png?classIdentifier=org.inviwo.MolecularStructureSource)
- * Loads a molecular structures/atoms and creates a MolecularStructure object.
- *
- * ### Outports
- *   * __outport__  molecular structure
- *
- * ### Properties
- *   * __File name__ File to load.
- */
 class IVW_MODULE_MOLVISBASE_API MolecularStructureSource
     : public DataSource<molvis::MolecularStructure, molvis::MolecularStructureOutport> {
 public:

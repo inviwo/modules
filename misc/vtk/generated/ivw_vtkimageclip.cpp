@@ -43,12 +43,12 @@ filter.)"}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;
 
-    static constexpr std::string_view doc = R"(The Crop filter
+    static constexpr std::string_view doc = R"ivw(The Crop filter
 extracts an area/volume of interest from a 2D image or a
 3D volume by allowing the user to specify the minimum and
 maximum extents of each dimension of the data. Both the
 input and output of this filter are uniform rectilinear
-data.)";
+data.)ivw";
 };
 
 void registervtkImageClip(InviwoModule* module) {

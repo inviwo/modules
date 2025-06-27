@@ -49,7 +49,7 @@
 
 namespace inviwo {
 
-TEST(Python3Representations, TensorField3D) {
+TEST(TensorVisPythonRepresentation, TensorField3D) {
     // create a 4 x 3 x 1 volume with 3x3 tensors
     // tensor values, stored in column-major, increase in x direction
     PythonScript s;

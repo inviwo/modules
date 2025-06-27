@@ -116,13 +116,13 @@ selection as the input)"}};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 
     static constexpr std::string_view doc =
-        R"(Particle Pathlines takes any dataset as input, it extracts the
+        R"ivw(Particle Pathlines takes any dataset as input, it extracts the
 point locations of all cells over time to build up a polyline
 trail.  The point number (index) is used as the 'key' if the points
 are randomly changing their respective order in the points list,
 then you should specify a scalar that represents the unique
 ID. This is intended to handle the output of a filter such as the
-TemporalStreamTracer.)";
+TemporalStreamTracer.)ivw";
 };
 
 void registervtkTemporalPathLineFilter(InviwoModule* module) {
