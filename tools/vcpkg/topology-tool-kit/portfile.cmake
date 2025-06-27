@@ -12,6 +12,12 @@ else()
     set(TTK_USE_OPENMP ON)
 endif()
 
+if (VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+     set(TTK_USE_GRAPHVIZ OFF)
+else()
+    set(TTK_USE_GRAPHVIZ ON)
+endif()
+
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     PREFER_NINJA
@@ -38,7 +44,7 @@ vcpkg_configure_cmake(
 
         -DTTK_ENABLE_EIGEN=ON
         -DTTK_ENABLE_ZLIB=ON
-        -DTTK_ENABLE_GRAPHVIZ=ON
+        -DTTK_ENABLE_GRAPHVIZ=${TTK_USE_GRAPHVIZ}
         -DTTK_ENABLE_OPENMP=${TTK_USE_OPENMP}
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
         -DTTK_ENABLE_QHULL=OFF

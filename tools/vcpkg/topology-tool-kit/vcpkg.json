@@ -26,6 +26,9 @@
 
     "eigen3",
     "zlib",
-    "graphviz"
+    {
+      "name": "graphviz",
+      "platform": "!static"
+    }
   ]
 }
