@@ -6,10 +6,10 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
-if(VCPKG_TARGET_IS_WINDOWS)
-    set(TTK_USE_OPENMP OFF)
-else()
+if(VCPKG_TARGET_IS_LINUX)
     set(TTK_USE_OPENMP ON)
+else()
+    set(TTK_USE_OPENMP OFF)
 endif()
 
 if (VCPKG_LIBRARY_LINKAGE STREQUAL "static")
