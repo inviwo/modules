@@ -19,7 +19,7 @@ permissions:
 env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  VCPKG_FEATURE_FLAGS: dependencygraph
+  # VCPKG_FEATURE_FLAGS: dependencygraph
   # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
 
 # Information about the github runners can be found here
