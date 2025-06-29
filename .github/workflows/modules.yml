@@ -411,7 +411,9 @@ jobs:
 
     - name: "Copy Preset"
       shell: bash
-      run: cp modules/.github/presets/linux.json inviwo/CMakeUserPresets.json
+      run: |
+        cp modules/.github/presets/linux.json inviwo/CMakeUserPresets.json
+        sudo apt install --fix-missing libomp-dev
 
     - name: "Configure CMake"
       shell: bash
