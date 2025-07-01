@@ -84,6 +84,10 @@ constexpr std::array<Mesh::MeshInfo, VTK_NUMBER_OF_CELL_TYPES> cellMap = []() {
     tmp[VTK_VERTEX].dt = DrawType::Points;
     tmp[VTK_POLY_VERTEX].dt = DrawType::Points;
     tmp[VTK_LINE].dt = DrawType::Lines;
+    tmp[VTK_POLY_LINE].dt = DrawType::Lines;
+    tmp[VTK_POLY_LINE].ct = ConnectivityType::Strip;
+    tmp[VTK_POLYGON].dt = DrawType::Lines;
+    tmp[VTK_POLYGON].ct = ConnectivityType::Loop;
     tmp[VTK_TRIANGLE].dt = DrawType::Triangles;
     tmp[VTK_TETRA].dt = DrawType::Triangles;
 
