@@ -104,7 +104,7 @@ class MolecularStructureSource(ivw.Processor):
         modelId: ivw.intVector = ivw.intVector()
         chainId: ivw.intVector = ivw.intVector()
         residueId: ivw.intVector = ivw.intVector()
-        atomFullName = []
+        atomFullName: ivw.StringVector = ivw.StringVector()
         elements = []
 
         modelDict = dict()
