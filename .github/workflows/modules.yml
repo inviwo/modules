@@ -120,7 +120,8 @@ jobs:
     timeout-minutes: 360
     
     steps:
-    - name: Free Disk Space (Ubuntu)
+    - name: Free Disk Space
+      if: matrix.system == 'linux'
       uses: jlumbroso/free-disk-space@main
       with:
         tool-cache: false
