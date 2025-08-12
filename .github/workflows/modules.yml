@@ -25,7 +25,6 @@ env:
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
 
-
 jobs:
   build:
     name: "Build"
@@ -121,6 +120,17 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
+    
     - name: "Clone Modules"
       uses: actions/checkout@v4
       with:
