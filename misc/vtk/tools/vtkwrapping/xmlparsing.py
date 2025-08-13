@@ -87,7 +87,14 @@ def cleanIdentifier(identifier: str, extra: str = "") -> str:
         valid identifier
 
     """
-    return "".join([c for c in identifier if isValidIdentifierCharacter(c, extra)])
+    cleaned = "".join([c for c in identifier if isValidIdentifierCharacter(c, extra)])
+    if len(cleaned) == 0:
+        return "_"
+
+    if cleaned[0].isdigit():
+        cleaned = "_" + cleaned
+
+    return cleaned
 
 
 def chain(val: Optional[T], *funcs: Callable[[T], R]):

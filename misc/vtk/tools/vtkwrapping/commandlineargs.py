@@ -59,6 +59,8 @@ def parse_arguments(cmdargs=None, namespace=None) -> configuration.Configuration
                         help='Clear any old file in the output directory')
     parser.add_argument('-p', '--printtable', action='store_true',
                         help='Print a table of all generated processors and  properties')
+    parser.add_argument('--clangformat', type=Path,
+                        help='Path to clang format', required=False, default=Path("clang-format"))
     parser.add_argument('-q', '--quiet', action='store_true',
                         help='Suppress detailed error logging')
 
@@ -81,6 +83,8 @@ def parse_arguments(cmdargs=None, namespace=None) -> configuration.Configuration
                                          mode=configuration.Mode[args.mode],
                                          destination=args.output,
                                          filters=args.filters,
-                                         ttkrepo=args.ttkrepo)
+                                         ttkrepo=args.ttkrepo,
+                                         clangformat=args.clangformat
+                                         )
 
     return config

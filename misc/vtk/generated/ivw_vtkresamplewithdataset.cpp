@@ -63,10 +63,11 @@ struct Wrapper3 {
         filter.SetPassFieldArrays(property.get());
         return true;
     }
-    BoolProperty property{"PassFieldArrays", "PassFieldArrays",
-                          R"(Set whether to pass the field-data arrays from the Input i.e. the input
+    BoolProperty property{
+        "PassFieldArrays", "PassFieldArrays",
+        R"(Set whether to pass the field-data arrays from the Input i.e. the input
 providing the geometry to the output. On by default.)"_help,
-                          true};
+        true};
 };
 
 struct Wrapper4 {

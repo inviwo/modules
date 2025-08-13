@@ -50,8 +50,8 @@ struct VTKTraits<vtkLinearSubdivisionFilter> {
     static constexpr std::string_view displayName = "Subdivide";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkPolyData", -1, R"(This parameter specifies the input to the Subdivide
+    inline static std::array<InputData, 1> inports = {InputData{
+        "Input", "vtkPolyData", -1, R"(This parameter specifies the input to the Subdivide
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

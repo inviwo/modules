@@ -46,10 +46,14 @@ namespace vtk {
 
 class IVW_MODULE_VTK_API VtkInport : public Inport {
 public:
-    VtkInport(std::string_view identifier, int typeId = VTK_DATA_OBJECT,
-              Document help = Document{});
+    enum class Repeatable { Yes, No };
+    enum class Optional { Yes, No };
+
+    VtkInport(std::string_view identifier, int typeId = VTK_DATA_OBJECT, Document help = Document{},
+              Optional optional = Optional::No, Repeatable repeatable = Repeatable::No);
     VtkInport(std::string_view identifier, std::string_view vtkDataClassName,
-              Document help = Document{});
+              Document help = Document{}, Optional optional = Optional::No,
+              Repeatable repeatable = Repeatable::No);
 
     using type = vtkDataObject;
 
@@ -59,13 +63,14 @@ public:
     virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
 
-    vtkDataObject* getData() const;
+    vtkDataObject* getData(size_t i = 0) const;
     bool hasData() const;
     int getTypeId() const;
     void setTypeId(int typeId);
 
 private:
     int typeId_;
+    Repeatable repeatable_;
 };
 
 }  // namespace vtk

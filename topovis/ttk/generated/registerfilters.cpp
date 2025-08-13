@@ -22,11 +22,9 @@
 #include "ivw_ttkdistancefield.h"
 #include "ivw_ttkdistancematrixdistortion.h"
 #include "ivw_ttkeigenfield.h"
-#include "ivw_ttkendfor.h"
 #include "ivw_ttkfiber.h"
 #include "ivw_ttkfibersurface.h"
 #include "ivw_ttkflattenmultiblock.h"
-#include "ivw_ttkforeach.h"
 #include "ivw_ttkgaussianpointcloud.h"
 #include "ivw_ttkgeometrysmoother.h"
 #include "ivw_ttkgridlayout.h"
@@ -134,11 +132,9 @@ void registerVTKFilters(InviwoModule* module) {
     registerttkDistanceField(module);
     registerttkDistanceMatrixDistortion(module);
     registerttkEigenField(module);
-    registerttkEndFor(module);
     registerttkFiber(module);
     registerttkFiberSurface(module);
     registerttkFlattenMultiBlock(module);
-    registerttkForEach(module);
     registerttkGaussianPointCloud(module);
     registerttkGeometrySmoother(module);
     registerttkGridLayout(module);

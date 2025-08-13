@@ -117,7 +117,7 @@ struct Wrapper4 : FieldSelection {
         3};
 
     CompositeProperty property{[&]() {
-        CompositeProperty tmp{"3DCoordinates", "3D Coordinates",
+        CompositeProperty tmp{"_3DCoordinates", "3D Coordinates",
                               R"(Select the 3D coordinates array.)"_help};
         tmp.addProperties(name, fieldAssociation);
         return tmp;

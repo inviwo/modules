@@ -55,7 +55,7 @@ struct Wrapper3 {
         filter.SetEmbedding2D(property.get());
         return true;
     }
-    BoolProperty property{"2DPoints", "2DPoints", R"()"_help, false};
+    BoolProperty property{"_2DPoints", "2DPoints", R"()"_help, false};
 };
 
 #include <warn/pop>
