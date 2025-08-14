@@ -46,13 +46,13 @@ target_sources(inviwo-module-ttk
 target_include_directories(inviwo-module-ttk PRIVATE generated)
 
 find_package(freetype CONFIG REQUIRED)
-
 find_package(utf8cpp CONFIG REQUIRED)
+find_package(VTK CONFIG REQUIRED)
 
 find_package(TTKBase CONFIG REQUIRED)
 find_package(TTKVTK CONFIG REQUIRED)
 
-find_package(VTK CONFIG REQUIRED)
+ivw_vcpkg_install(topology-tool-kit MODULE ttk)
 
 target_link_libraries(inviwo-module-ttk 
     PRIVATE 
