@@ -95,17 +95,13 @@ size_t VtkInport::getMaxNumberOfConnections() const {
 
 vtkDataObject* VtkInport::getData(size_t i) const {
     if (i < connectedOutports_.size()) {
+        // NOLINT_NEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         return static_cast<VtkOutport*>(connectedOutports_[i])->getData();
     }
     return nullptr;
 }
 
-bool VtkInport::hasData() const {
-    if (isConnected()) {
-        return static_cast<VtkOutport*>(connectedOutports_[0])->hasData();
-    }
-    return false;
-}
+bool VtkInport::hasData() const { return getData(0) != nullptr; }
 
 glm::uvec3 VtkInport::getColorCode() const {
     // Todo use a table here or something...

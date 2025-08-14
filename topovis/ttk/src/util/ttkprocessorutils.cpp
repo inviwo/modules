@@ -41,7 +41,7 @@ std::optional<std::string> getOutportDataType(vtkAlgorithm* filter, int portNumb
     std::optional<std::string> dataType;
     if (vtkInformation* info = filter->GetOutputPortInformation(portNumber)) {
         if (info->Has(ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT())) {
-            int inportNum = info->Get(ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT());
+            const int inportNum = info->Get(ttkAlgorithm::SAME_DATA_TYPE_AS_INPUT_PORT());
             if (vtkInformation* inportInfo = filter->GetInputPortInformation(inportNum)) {
                 if (inportInfo->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
                     dataType = inportInfo->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());

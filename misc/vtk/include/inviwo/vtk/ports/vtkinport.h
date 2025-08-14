@@ -46,14 +46,15 @@ namespace vtk {
 
 class IVW_MODULE_VTK_API VtkInport : public Inport {
 public:
-    enum class Repeatable { Yes, No };
-    enum class Optional { Yes, No };
+    enum class Repeatable : std::uint8_t { Yes, No };
+    enum class Optional : std::uint8_t { Yes, No };
 
-    VtkInport(std::string_view identifier, int typeId = VTK_DATA_OBJECT, Document help = Document{},
-              Optional optional = Optional::No, Repeatable repeatable = Repeatable::No);
-    VtkInport(std::string_view identifier, std::string_view vtkDataClassName,
-              Document help = Document{}, Optional optional = Optional::No,
-              Repeatable repeatable = Repeatable::No);
+    explicit VtkInport(std::string_view identifier, int typeId = VTK_DATA_OBJECT,
+                       Document help = Document{}, Optional optional = Optional::No,
+                       Repeatable repeatable = Repeatable::No);
+    explicit VtkInport(std::string_view identifier, std::string_view vtkDataClassName,
+                       Document help = Document{}, Optional optional = Optional::No,
+                       Repeatable repeatable = Repeatable::No);
 
     using type = vtkDataObject;
 
