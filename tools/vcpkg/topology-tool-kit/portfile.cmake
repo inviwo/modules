@@ -6,10 +6,13 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
+vcpkg_cmake_get_vars(cmake_vars_file)
+include("${cmake_vars_file}")
+
 set(TTK_OPENMP_OPTS )
 if(VCPKG_TARGET_IS_LINUX)
     set(TTK_USE_OPENMP ON)
-    if (VCPKG_DETECTED_CXX_COMPILER STREQUAL "clang")
+    if (VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         set(TTK_OPENMP_OPTS
             -DOpenMP_C_FLAGS=-fopenmp=libomp
             -DOpenMP_CXX_FLAGS=-fopenmp=libomp
