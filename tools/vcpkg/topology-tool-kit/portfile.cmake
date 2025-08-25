@@ -6,8 +6,24 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
+set(TTK_OPENMP_OPTS )
 if(VCPKG_TARGET_IS_LINUX)
     set(TTK_USE_OPENMP ON)
+    if (VCPKG_DETECTED_CXX_COMPILER STREQUAL "clang")
+        set(TTK_OPENMP_OPTS
+            -DOpenMP_C_FLAGS=-fopenmp=libomp
+            -DOpenMP_CXX_FLAGS=-fopenmp=libomp
+            -DOpenMP_C_LIB_NAMES=omp
+            -DOpenMP_CXX_LIB_NAMES=omp
+            -DOpenMP_omp_LIBRARY=omp
+        )
+    endif()
+elseif(VCPKG_TARGET_IS_MACOS)
+    set(TTK_USE_OPENMP ON)
+    set(TTK_OPENMP_OPTS
+        # OpenMP mac workadound
+        -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
+    )
 else()
     set(TTK_USE_OPENMP OFF)
 endif()
@@ -52,6 +68,7 @@ vcpkg_configure_cmake(
         -DTTK_ENABLE_ZLIB=ON
         -DTTK_ENABLE_GRAPHVIZ=${TTK_USE_GRAPHVIZ}
         -DTTK_ENABLE_OPENMP=${TTK_USE_OPENMP}
+        ${TTK_OPENMP_OPTS}
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
         -DTTK_ENABLE_QHULL=OFF
         # needed to workaround a bug in TTKBaseConfig.cmake.in
@@ -60,9 +77,6 @@ vcpkg_configure_cmake(
 
         # this depends in VTK::PythonInterpeter which is not there.
         -DVTK_MODULE_ENABLE_ttkCinemaDarkroom=NO
-
-        # OpenMP mac workadound
-        -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
 )
 vcpkg_install_cmake()
 vcpkg_copy_pdbs()
