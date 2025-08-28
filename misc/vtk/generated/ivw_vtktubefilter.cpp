@@ -202,7 +202,10 @@ struct VTKTraits<vtkTubeFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkPolyData", 1, R"(This property specifies the input to the Tube
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPolyData",
+                  .numComp = 1,
+                  .doc = R"(This property specifies the input to the Tube
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

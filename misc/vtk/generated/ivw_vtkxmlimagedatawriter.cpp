@@ -49,7 +49,10 @@ struct VTKTraits<vtkXMLImageDataWriter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", -1, R"(The input filter/source whose output dataset is to
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(The input filter/source whose output dataset is to
 written to the file.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

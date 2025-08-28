@@ -118,7 +118,10 @@ struct VTKTraits<ttkBlockAggregator> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "", -1, R"(vtkDataObjects that will be added as blocks.)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "",
+                  .numComp = -1,
+                  .doc = R"(vtkDataObjects that will be added as blocks.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

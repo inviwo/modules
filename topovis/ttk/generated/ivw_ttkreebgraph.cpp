@@ -190,8 +190,10 @@ struct VTKTraits<ttkReebGraph> {
     static constexpr std::string_view displayName = "TTK ReebGraph";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 3> outports = {OutputData{"port0", "Skeleton Nodes", 0},
                                                         OutputData{"port1", "Skeleton Arcs", 1},
                                                         OutputData{"port2", "Segmentation", 2}};

@@ -80,7 +80,10 @@ struct VTKTraits<vtkImageGradient> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkImageData", 1, R"(This property specifies the input to the Gradient
+        InputData{.identifier = "Input",
+                  .dataType = "vtkImageData",
+                  .numComp = 1,
+                  .doc = R"(This property specifies the input to the Gradient
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

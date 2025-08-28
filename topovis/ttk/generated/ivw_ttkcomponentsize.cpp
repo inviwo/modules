@@ -97,8 +97,10 @@ struct VTKTraits<ttkComponentSize> {
     static constexpr std::string_view displayName = "TTK ComponentSize";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkPointSet", -1, R"(Input data-set.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkPointSet",
+                                                                .numComp = -1,
+                                                                .doc = R"(Input data-set.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

@@ -219,10 +219,14 @@ struct VTKTraits<ttkCinemaImaging> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Dataset", "vtkMultiBlockDataSet", -1,
-                  R"(Triangulation that is going to be depicted.)"},
-        InputData{"SamplingGrid", "vtkPointSet", -1,
-                  R"(vtkPointSet that represents the camera sampling locations.)"}};
+        InputData{.identifier = "Dataset",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = -1,
+                  .doc = R"(Triangulation that is going to be depicted.)"},
+        InputData{.identifier = "SamplingGrid",
+                  .dataType = "vtkPointSet",
+                  .numComp = -1,
+                  .doc = R"(vtkPointSet that represents the camera sampling locations.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Render Options", {"Resolution", "Backend"}},

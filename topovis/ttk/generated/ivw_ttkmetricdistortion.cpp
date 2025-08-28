@@ -98,8 +98,11 @@ struct VTKTraits<ttkMetricDistortion> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Surface", "vtkPointSet", -1, R"()"},
-        InputData{"TableDistanceMatrix", "vtkTable", -1, R"()"}};
+        InputData{.identifier = "Surface", .dataType = "vtkPointSet", .numComp = -1, .doc = R"()"},
+        InputData{.identifier = "TableDistanceMatrix",
+                  .dataType = "vtkTable",
+                  .numComp = -1,
+                  .doc = R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

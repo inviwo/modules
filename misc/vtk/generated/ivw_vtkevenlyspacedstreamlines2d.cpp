@@ -225,7 +225,10 @@ struct VTKTraits<vtkEvenlySpacedStreamlines2D> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 3, R"(This property specifies the input to the filter.)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = 3,
+                  .doc = R"(This property specifies the input to the filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Streamline Parameters",

@@ -114,10 +114,15 @@ struct VTKTraits<vtkPProbeFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkDataSet", -1,
-                  R"(This property specifies the dataset from which to obtain
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset from which to obtain
 probe values.)"},
-        InputData{"Source", "", -1, R"(This property specifies the dataset whose geometry will
+        InputData{.identifier = "Source",
+                  .dataType = "",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset whose geometry will
 be used in determining positions to probe.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

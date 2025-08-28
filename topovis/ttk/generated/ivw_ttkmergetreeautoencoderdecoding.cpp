@@ -98,10 +98,18 @@ struct VTKTraits<ttkMergeTreeAutoencoderDecoding> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 3> inports = {
-        InputData{"Origins", "vtkMultiBlockDataSet", 1, R"(Origin of each basis of each layer.)"},
-        InputData{"Bases Vectors", "vtkTable", 1, R"(Vectors defining each basis.)"},
-        InputData{"Coefficients", "vtkTable", 1,
-                  R"(Coefficients of the input trees in each basis.)"}};
+        InputData{.identifier = "Origins",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = 1,
+                  .doc = R"(Origin of each basis of each layer.)"},
+        InputData{.identifier = "Bases Vectors",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(Vectors defining each basis.)"},
+        InputData{.identifier = "Coefficients",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(Coefficients of the input trees in each basis.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {}}, Group{"Output options", {}},

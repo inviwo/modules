@@ -69,9 +69,14 @@ struct VTKTraits<ttkImportEmbeddingFromTable> {
     static constexpr std::string_view displayName = "TTK ImportEmbeddingFromTable";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 2> inports = {
-        InputData{"DataSet", "vtkPointSet", -1, R"(Data-set to process.)"},
-        InputData{"Table", "vtkTable", -1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 2> inports = {InputData{.identifier = "DataSet",
+                                                                .dataType = "vtkPointSet",
+                                                                .numComp = -1,
+                                                                .doc = R"(Data-set to process.)"},
+                                                      InputData{.identifier = "Table",
+                                                                .dataType = "vtkTable",
+                                                                .numComp = -1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;

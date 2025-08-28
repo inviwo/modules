@@ -153,9 +153,14 @@ struct VTKTraits<ttkMergeTreeTemporalReductionDecoding> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Key Frames", "vtkMultiBlockDataSet", 1, R"(Merge trees to process.)"},
-        InputData{"ReductionCoefficients", "vtkTable", 1,
-                  R"(Encoding filter reduction coefficients output.)"}};
+        InputData{.identifier = "Key Frames",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = 1,
+                  .doc = R"(Merge trees to process.)"},
+        InputData{.identifier = "ReductionCoefficients",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(Encoding filter reduction coefficients output.)"}};
     inline static std::array<OutputData, 2> outports = {
         OutputData{"port0", "Reconstructed Sequence", 0}, OutputData{"port1", "Matching", 1}};
     inline static std::array<Group, 3> groups = {

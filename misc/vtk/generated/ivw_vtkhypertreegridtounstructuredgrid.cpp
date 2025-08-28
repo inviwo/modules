@@ -36,8 +36,11 @@ struct VTKTraits<vtkHyperTreeGridToUnstructuredGrid> {
     static constexpr std::string_view displayName = "HyperTreeGrid To UnstructuredGrid";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkHyperTreeGrid", -1, R"(This property specifies the input to the converter.)"}};
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input",
+                  .dataType = "vtkHyperTreeGrid",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the input to the converter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;

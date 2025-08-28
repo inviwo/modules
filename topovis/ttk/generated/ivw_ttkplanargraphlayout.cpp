@@ -266,8 +266,10 @@ struct VTKTraits<ttkPlanarGraphLayout> {
     static constexpr std::string_view displayName = "TTK PlanarGraphLayout";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkUnstructuredGrid", -1, R"(Graph.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkUnstructuredGrid",
+                                                                .numComp = -1,
+                                                                .doc = R"(Graph.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Input Options",

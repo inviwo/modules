@@ -36,8 +36,11 @@ struct VTKTraits<vtkTriangleFilter> {
     static constexpr std::string_view displayName = "Triangulate";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkPolyData", -1, R"(This property specifies the input to the Triangulate
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPolyData",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the input to the Triangulate
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

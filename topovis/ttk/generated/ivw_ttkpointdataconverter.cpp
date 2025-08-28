@@ -155,8 +155,10 @@ struct VTKTraits<ttkPointDataConverter> {
     static constexpr std::string_view displayName = "TTK PointDataConverter";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", -1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = -1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",

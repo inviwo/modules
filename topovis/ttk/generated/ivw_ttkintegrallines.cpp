@@ -228,10 +228,16 @@ struct VTKTraits<ttkIntegralLines> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Domain", "vtkDataSet", 1, R"(Data-set to process.)"},
+        InputData{.identifier = "Domain",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(Data-set to process.)"},
         InputData{
-            "Seeds", "vtkPointSet", 1,
-            R"(vtkPointSet that represent the constraints of the topological simplification.)"}};
+            .identifier = "Seeds",
+            .dataType = "vtkPointSet",
+            .numComp = 1,
+            .doc =
+                R"(vtkPointSet that represent the constraints of the topological simplification.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",

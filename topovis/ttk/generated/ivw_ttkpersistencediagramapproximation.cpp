@@ -189,8 +189,10 @@ struct VTKTraits<ttkPersistenceDiagramApproximation> {
     static constexpr std::string_view displayName = "TTK PersistenceDiagramApproximation";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkImageData", 1, R"(Data-set to process.
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkImageData",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.
 Input should be a regular grid (.vti).)"}};
     inline static std::array<OutputData, 3> outports = {
         OutputData{"port0", "Persistence Diagram", 0}, OutputData{"port1", "Approximate Field", 1},

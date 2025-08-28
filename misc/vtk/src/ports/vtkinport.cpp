@@ -95,7 +95,7 @@ size_t VtkInport::getMaxNumberOfConnections() const {
 
 vtkDataObject* VtkInport::getData(size_t i) const {
     if (i < connectedOutports_.size()) {
-        // NOLINT_NEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
         return static_cast<VtkOutport*>(connectedOutports_[i])->getData();
     }
     return nullptr;

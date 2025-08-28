@@ -174,8 +174,10 @@ struct VTKTraits<ttkDiscreteGradient> {
     static constexpr std::string_view displayName = "TTK DiscreteGradient";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.
 TTK assumes that the input dataset is made of only one connected component.
 If it's not the case, you can use the filter "Connectivity" (and select "Extract Largest Region").)"}};
     inline static std::array<OutputData, 2> outports = {OutputData{"port0", "Critical Points", 0},

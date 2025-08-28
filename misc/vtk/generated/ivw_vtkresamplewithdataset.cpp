@@ -118,11 +118,15 @@ struct VTKTraits<vtkResampleWithDataSet> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"SourceDataArrays", "vtkDataSet", -1,
-                  R"(This property specifies the dataset from which to obtain
+        InputData{.identifier = "SourceDataArrays",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset from which to obtain
 probe values. The data attributes come from this dataset.)"},
-        InputData{"DestinationMesh", "vtkDataSet", -1,
-                  R"(This property specifies the dataset whose geometry will
+        InputData{.identifier = "DestinationMesh",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset whose geometry will
 be used in determining positions to probe. The mesh comes from this
 dataset.)"}};
     inline static std::array<OutputData, 0> outports = {};

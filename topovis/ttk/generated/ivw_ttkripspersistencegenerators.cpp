@@ -154,9 +154,14 @@ struct VTKTraits<ttkRipsPersistenceGenerators> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkTable", -1, R"(Point cloud to process.)"},
-        InputData{"Input1", "vtkPointSet", -1,
-                  R"(Point cloud for geometric representation of persistent generators.)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkTable",
+                  .numComp = -1,
+                  .doc = R"(Point cloud to process.)"},
+        InputData{.identifier = "Input1",
+                  .dataType = "vtkPointSet",
+                  .numComp = -1,
+                  .doc = R"(Point cloud for geometric representation of persistent generators.)"}};
     inline static std::array<OutputData, 2> outports = {
         OutputData{"port0", "Generators", 0}, OutputData{"port1", "Persistence Diagram", 1}};
     inline static std::array<Group, 3> groups = {

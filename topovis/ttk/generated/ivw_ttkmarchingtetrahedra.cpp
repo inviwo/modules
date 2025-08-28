@@ -139,8 +139,10 @@ struct VTKTraits<ttkMarchingTetrahedra> {
     static constexpr std::string_view displayName = "TTK MarchingTetrahedra";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.
 TTK assumes that the input dataset is made of only one connected component.
 If it's not the case, you can use the filter "Connectivity" (and select "Extract Largest Region").)"}};
     inline static std::array<OutputData, 1> outports = {OutputData{"port0", "Sepators", 0}};

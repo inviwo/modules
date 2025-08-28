@@ -226,9 +226,14 @@ struct VTKTraits<ttkArrayEditor> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Target", "vtkDataObject", -1, R"(vtkDataObject to add/edit arrays.)"},
-        InputData{"Source", "vtkDataObject", -1,
-                  R"(vtkDataObject that is used as a data source.)"}};
+        InputData{.identifier = "Target",
+                  .dataType = "vtkDataObject",
+                  .numComp = -1,
+                  .doc = R"(vtkDataObject to add/edit arrays.)"},
+        InputData{.identifier = "Source",
+                  .dataType = "vtkDataObject",
+                  .numComp = -1,
+                  .doc = R"(vtkDataObject that is used as a data source.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Output Options",

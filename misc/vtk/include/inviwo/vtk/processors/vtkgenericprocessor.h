@@ -152,7 +152,7 @@ inline void updateFieldSelection(vtkDataObject::FieldAssociations assoc, vtkData
 };
 
 void setupFieldSelection(Inport* inport, auto& wrapper) {
-    if (auto vtkinport = dynamic_cast<vtk::VtkInport*>(inport)) {
+    if (auto* vtkinport = dynamic_cast<vtk::VtkInport*>(inport)) {
         vtkinport->onChange([port = vtkinport, w = &wrapper]() {
             if (port->isReady()) {
                 updateFieldSelection(w->fieldAssociation.get(), port->getData(), w->name);
@@ -179,9 +179,7 @@ public:
                 log::report(LogLevel::Error, static_cast<const char*>(data));
             } else if (eid == vtkCommand::WarningEvent) {
                 log::report(LogLevel::Warn, static_cast<const char*>(data));
-            } else if (eid == vtkCommand::MessageEvent) {
-                log::report(LogLevel::Info, static_cast<const char*>(data));
-            } else if (eid == vtkCommand::TextEvent) {
+            } else if (eid == vtkCommand::MessageEvent || eid == vtkCommand::TextEvent) {
                 log::report(LogLevel::Info, static_cast<const char*>(data));
             } else if (eid == vtkCommand::ProgressEvent) {
                 updateProgress(static_cast<float>(*static_cast<double*>(data)));

@@ -225,15 +225,26 @@ struct VTKTraits<ttkMergeTreePrincipalGeodesicsDecoding> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 5> inports = {
-        InputData{"Barycenter", "vtkMultiBlockDataSet", 1,
-                  R"(Barycenter of the input merge trees.)"},
-        InputData{"Coefficients", "vtkTable", 1,
-                  R"(Projection coefficients of the input trees in the new basis.)"},
-        InputData{"Geodesics Vectors", "vtkTable", 1,
-                  R"(Vectors defining the principal geodesics.)"},
-        InputData{"Correlation Matrix (optional)", "vtkTable", 1,
-                  R"(Correlation between branches and geodesics axis.)"},
-        InputData{"Input Trees (optional)", "vtkMultiBlockDataSet", 1, R"(Original input trees.)"}};
+        InputData{.identifier = "Barycenter",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = 1,
+                  .doc = R"(Barycenter of the input merge trees.)"},
+        InputData{.identifier = "Coefficients",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(Projection coefficients of the input trees in the new basis.)"},
+        InputData{.identifier = "Geodesics Vectors",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(Vectors defining the principal geodesics.)"},
+        InputData{.identifier = "Correlation Matrix (optional)",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(Correlation between branches and geodesics axis.)"},
+        InputData{.identifier = "Input Trees (optional)",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = 1,
+                  .doc = R"(Original input trees.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{

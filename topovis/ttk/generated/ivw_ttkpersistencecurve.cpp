@@ -97,9 +97,11 @@ struct VTKTraits<ttkPersistenceCurve> {
     static constexpr std::string_view displayName = "TTK PersistenceCurve";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkUnstructuredGrid", -1,
-                  R"(Input Persistence Diagram as computed by the TTKPersistenceDiagram filter.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{
+        .identifier = "Input",
+        .dataType = "vtkUnstructuredGrid",
+        .numComp = -1,
+        .doc = R"(Input Persistence Diagram as computed by the TTKPersistenceDiagram filter.)"}};
     inline static std::array<OutputData, 4> outports = {
         OutputData{"port0", "Minimum-saddle pairs", 0},
         OutputData{"port1", "Saddle-saddle pairs", 1},

@@ -182,8 +182,14 @@ struct VTKTraits<ttkDimensionReductionMetrics> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input0", "vtkTable", -1, R"(High-dimensional input point cloud.)"},
-        InputData{"Input1", "vtkTable", -1, R"(Low-dimensional representation.)"}};
+        InputData{.identifier = "Input0",
+                  .dataType = "vtkTable",
+                  .numComp = -1,
+                  .doc = R"(High-dimensional input point cloud.)"},
+        InputData{.identifier = "Input1",
+                  .dataType = "vtkTable",
+                  .numComp = -1,
+                  .doc = R"(Low-dimensional representation.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {}},

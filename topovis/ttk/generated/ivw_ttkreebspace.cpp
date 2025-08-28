@@ -486,8 +486,10 @@ struct VTKTraits<ttkReebSpace> {
     static constexpr std::string_view displayName = "TTK ReebSpace";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 4> outports = {
         OutputData{"port0", "0-sheets", 0}, OutputData{"port1", "1-sheets", 1},
         OutputData{"port2", "2-sheets", 2}, OutputData{"port3", "3-sheets", 3}};

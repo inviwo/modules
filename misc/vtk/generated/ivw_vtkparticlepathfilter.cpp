@@ -149,9 +149,15 @@ struct VTKTraits<vtkParticlePathFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkDataObject", 3, R"(Specify which is the Input of the StreamTracer
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataObject",
+                  .numComp = 3,
+                  .doc = R"(Specify which is the Input of the StreamTracer
 filter.)"},
-        InputData{"Source", "vtkDataSet", -1, R"(Specify the seed dataset. Typically from where the
+        InputData{.identifier = "Source",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(Specify the seed dataset. Typically from where the
 vector field integration should begin. Usually a point/radius or a line
 with a given resolution.)"}};
     inline static std::array<OutputData, 0> outports = {};

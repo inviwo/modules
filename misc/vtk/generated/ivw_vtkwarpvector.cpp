@@ -81,8 +81,11 @@ struct VTKTraits<vtkWarpVector> {
     static constexpr std::string_view displayName = "Warp By Vector";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkPointSet", 3, R"(This property specifies the input to the Warp (vector)
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPointSet",
+                  .numComp = 3,
+                  .doc = R"(This property specifies the input to the Warp (vector)
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

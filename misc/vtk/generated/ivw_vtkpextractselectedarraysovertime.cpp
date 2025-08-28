@@ -51,9 +51,15 @@ struct VTKTraits<vtkPExtractSelectedArraysOverTime> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkDataSet", -1, R"(The input from which the selection is
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(The input from which the selection is
 extracted.)"},
-        InputData{"Selection", "vtkSelection", -1, R"(The input that provides the selection
+        InputData{.identifier = "Selection",
+                  .dataType = "vtkSelection",
+                  .numComp = -1,
+                  .doc = R"(The input that provides the selection
 object.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

@@ -135,8 +135,11 @@ struct VTKTraits<ttkHelloWorld> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkDataSet", 1,
-        R"(A vtkDataSet that has at least one point data scalar array that can be used to compute averages.)"}};
+        .identifier = "Input",
+        .dataType = "vtkDataSet",
+        .numComp = 1,
+        .doc =
+            R"(A vtkDataSet that has at least one point data scalar array that can be used to compute averages.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {"InputArray"}}, Group{"Output options", {"OutputArrayName"}},

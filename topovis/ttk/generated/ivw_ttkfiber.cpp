@@ -179,8 +179,10 @@ struct VTKTraits<ttkFiber> {
     static constexpr std::string_view displayName = "TTK Fiber";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Dataset to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Dataset to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Input options", {"UComponent", "Uvalue", "VComponent", "Vvalue"}},

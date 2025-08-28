@@ -97,8 +97,11 @@ struct VTKTraits<ttkFlattenMultiBlock> {
     static constexpr std::string_view displayName = "TTK FlattenMultiBlock";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkMultiBlockDataSet", -1, R"(Hierarchy of vtkMultiBlockDataSet to process.)"}};
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = -1,
+                  .doc = R"(Hierarchy of vtkMultiBlockDataSet to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

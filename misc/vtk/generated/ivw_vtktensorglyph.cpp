@@ -199,11 +199,16 @@ struct VTKTraits<vtkTensorGlyph> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkDataSet", 6,
-                  R"(This property specifies the input to the Glyph filter.)"},
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = 6,
+                  .doc = R"(This property specifies the input to the Glyph filter.)"},
         InputData{
-            "Source", "vtkPolyData", -1,
-            R"(This property determines which type of glyph will be placed at the points in the input dataset.)"}};
+            .identifier = "Source",
+            .dataType = "vtkPolyData",
+            .numComp = -1,
+            .doc =
+                R"(This property determines which type of glyph will be placed at the points in the input dataset.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4, Wrapper5, Wrapper6, Wrapper7,

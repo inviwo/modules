@@ -277,8 +277,8 @@ def generate_source_files(data: vtkdata.FilterData, uriPrefix: str, *,
         proplist.append(structName)
 
     inputData = ", ".join(
-        f'InputData{{"{d.identifier}", "{valueOr(d.dataType, "")}", \
-        {valueOr(d.numComp,[-1])[0]}, R"({valueOr(d.doc, "")})"}}'
+        f'InputData{{.identifier = "{d.identifier}", .dataType = "{valueOr(d.dataType, "")}", \
+        .numComp = {valueOr(d.numComp,[-1])[0]}, .doc = R"({valueOr(d.doc, "")})"}}'
         for d in data.inports)
     outputData = ", ".join(f'OutputData{{"{d.identifier}", "{d.displayName}", {d.index}}}'
                            for d in data.outports)
