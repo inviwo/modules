@@ -23,7 +23,10 @@
 
         // The vcpkg graphvis package file in static mode
         "VCPKG_MANIFEST_FEATURES" : "openmesh;nanovg;vtk;ttk",
-        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"}
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
+
+        // Assimp and nanovg both implement stb_image in their static libs causing linker issues
+        "IVW_MODULE_NANOVGUTILS":           { "type": "BOOL", "value": "OFF"}
       }
     },
     {
