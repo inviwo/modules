@@ -13,13 +13,7 @@ set(TTK_OPENMP_OPTS )
 if(VCPKG_TARGET_IS_LINUX)
     set(TTK_USE_OPENMP ON)
     if (VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-        set(TTK_OPENMP_OPTS
-            -DOpenMP_C_FLAGS=-fopenmp=libomp
-            -DOpenMP_CXX_FLAGS=-fopenmp=libomp
-            -DOpenMP_C_LIB_NAMES=omp
-            -DOpenMP_CXX_LIB_NAMES=omp
-            -DOpenMP_omp_LIBRARY=omp
-        )
+        set(TTK_USE_OPENMP OFF)
     endif()
 elseif(VCPKG_TARGET_IS_MACOS)
     set(TTK_USE_OPENMP ON)
