@@ -184,8 +184,9 @@ arrays: CriticalType: int, Scalar: float.)"},
             .doc =
                 R"(Cells (like "Skeleton Arcs" from "TTKMergeandContourTreeFTM") with the following data
 arrays: downNodeId: int, upNodeId: int.)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"port0", "Contours", 0},
-                                                        OutputData{"port1", "Centroids", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "port0", .displayName = "Contours", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Centroids", .index = 1}};
     inline static std::array<Group, 2> groups = {
         Group{"Input Parameters",
               {"ScalarAttribute", "ui_extension", "ui_sizeFilter", "ui_spherical"}},

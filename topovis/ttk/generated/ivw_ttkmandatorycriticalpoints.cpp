@@ -267,12 +267,12 @@ struct VTKTraits<ttkMandatoryCriticalPoints> {
                                                                 .numComp = 1,
                                                                 .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 6> outports = {
-        OutputData{"port0", "MandatoryMinima", 0},
-        OutputData{"port1", "MandatoryJoinSaddles", 1},
-        OutputData{"port2", "MandatorySplitSaddles", 2},
-        OutputData{"port3", "MandatoryMaxima", 3},
-        OutputData{"port4", "MandatoryJoinTree", 4},
-        OutputData{"port5", "MandatorySplitTree", 5}};
+        OutputData{.identifier = "port0", .displayName = "MandatoryMinima", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "MandatoryJoinSaddles", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "MandatorySplitSaddles", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "MandatoryMaxima", .index = 3},
+        OutputData{.identifier = "port4", .displayName = "MandatoryJoinTree", .index = 4},
+        OutputData{.identifier = "port5", .displayName = "MandatorySplitTree", .index = 5}};
     inline static std::array<Group, 4> groups = {
         Group{"Simplification", {"SimplificationThreshold"}},
         Group{"Output options",

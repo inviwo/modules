@@ -115,8 +115,9 @@ struct VTKTraits<vtkTemporalPathLineFilter> {
 Id in the selection as the primary input will be chosen for
 pathlines Note that you must have the same IdChannelArray in the
 selection as the input)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"outport0", "Pathlines", 0},
-                                                        OutputData{"outport1", "Particles", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "outport0", .displayName = "Pathlines", .index = 0},
+        OutputData{.identifier = "outport1", .displayName = "Particles", .index = 1}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 

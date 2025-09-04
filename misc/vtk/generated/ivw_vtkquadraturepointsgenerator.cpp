@@ -71,7 +71,7 @@ struct VTKTraits<vtkQuadraturePointsGenerator> {
                   .numComp = -1,
                   .doc = R"(This property specifies the input of the filter.)"}};
     inline static std::array<OutputData, 1> outports = {
-        OutputData{"outport0", "Quadrature Points", 0}};
+        OutputData{.identifier = "outport0", .displayName = "Quadrature Points", .index = 0}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;
 

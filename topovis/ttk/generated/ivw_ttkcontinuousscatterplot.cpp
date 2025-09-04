@@ -207,7 +207,7 @@ struct VTKTraits<ttkContinuousScatterPlot> {
                                                                 .numComp = 1,
                                                                 .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 1> outports = {
-        OutputData{"port0", "ProjectedTriangles", 0}};
+        OutputData{.identifier = "port0", .displayName = "ProjectedTriangles", .index = 0}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {"ScalarField1New", "ScalarField2New"}},
         Group{"Output options",

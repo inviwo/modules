@@ -635,8 +635,10 @@ If input are persistence diagrams, then this has no effect to use this input.)"}
             .numComp = 1,
             .doc = R"(Additionnal information such as cluster assignment for cluster loss.)"}};
     inline static std::array<OutputData, 4> outports = {
-        OutputData{"port0", "Origins", 0}, OutputData{"port1", "Axes Vectors", 1},
-        OutputData{"port2", "Coefficients", 2}, OutputData{"port3", "Data", 3}};
+        OutputData{.identifier = "port0", .displayName = "Origins", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Axes Vectors", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "Coefficients", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "Data", .index = 3}};
     inline static std::array<Group, 5> groups = {
         Group{"Input options",
               {"NormalizedWasserstein", "Deterministic", "DiagramPairTypes",

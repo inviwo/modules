@@ -155,8 +155,9 @@ struct VTKTraits<ttkConnectedComponents> {
                                                                 .dataType = "vtkDataSet",
                                                                 .numComp = 1,
                                                                 .doc = R"(A vtkDataSet.)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"port0", "Segmentation", 0},
-                                                        OutputData{"port1", "Components", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "port0", .displayName = "Segmentation", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Components", .index = 1}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {"FeatureMask", "BackgroundThreshold"}},
         Group{"Output options", {"SegmentationSize"}},

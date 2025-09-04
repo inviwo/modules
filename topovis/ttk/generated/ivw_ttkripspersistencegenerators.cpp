@@ -163,7 +163,8 @@ struct VTKTraits<ttkRipsPersistenceGenerators> {
                   .numComp = -1,
                   .doc = R"(Point cloud for geometric representation of persistent generators.)"}};
     inline static std::array<OutputData, 2> outports = {
-        OutputData{"port0", "Generators", 0}, OutputData{"port1", "Persistence Diagram", 1}};
+        OutputData{.identifier = "port0", .displayName = "Generators", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Persistence Diagram", .index = 1}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options",
               {"InputIsDistanceMatrix", "SelectFieldsWithRegexp", "ScalarFields", "Regexp"}},

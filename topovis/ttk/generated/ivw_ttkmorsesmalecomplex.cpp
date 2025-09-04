@@ -300,8 +300,10 @@ struct VTKTraits<ttkMorseSmaleComplex> {
 TTK assumes that the input dataset is made of only one connected component.
 If it's not the case, you can use the filter "Connectivity" (and select "Extract Largest Region").)"}};
     inline static std::array<OutputData, 4> outports = {
-        OutputData{"port0", "Critical Points", 0}, OutputData{"port1", "1-Separatrices", 1},
-        OutputData{"port2", "2-Separatrices", 2}, OutputData{"port3", "Segmentation", 3}};
+        OutputData{.identifier = "port0", .displayName = "Critical Points", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "1-Separatrices", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "2-Separatrices", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "Segmentation", .index = 3}};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",

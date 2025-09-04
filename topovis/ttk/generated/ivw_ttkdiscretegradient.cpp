@@ -180,8 +180,9 @@ struct VTKTraits<ttkDiscreteGradient> {
                                                                 .doc = R"(Data-set to process.
 TTK assumes that the input dataset is made of only one connected component.
 If it's not the case, you can use the filter "Connectivity" (and select "Extract Largest Region").)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"port0", "Critical Points", 0},
-                                                        OutputData{"port1", "Gradient Glyphs", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "port0", .displayName = "Critical Points", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Gradient Glyphs", .index = 1}};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",

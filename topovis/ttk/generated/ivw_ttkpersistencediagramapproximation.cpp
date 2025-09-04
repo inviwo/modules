@@ -195,8 +195,9 @@ struct VTKTraits<ttkPersistenceDiagramApproximation> {
                                                                 .doc = R"(Data-set to process.
 Input should be a regular grid (.vti).)"}};
     inline static std::array<OutputData, 3> outports = {
-        OutputData{"port0", "Persistence Diagram", 0}, OutputData{"port1", "Approximate Field", 1},
-        OutputData{"port2", "Uncertainty Bounds", 2}};
+        OutputData{.identifier = "port0", .displayName = "Persistence Diagram", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Approximate Field", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "Uncertainty Bounds", .index = 2}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options",
               {"ScalarFieldNew", "ForceInputOffsetScalarField", "InputOffsetScalarFieldNameNew",

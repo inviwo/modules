@@ -491,8 +491,10 @@ struct VTKTraits<ttkReebSpace> {
                                                                 .numComp = 1,
                                                                 .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 4> outports = {
-        OutputData{"port0", "0-sheets", 0}, OutputData{"port1", "1-sheets", 1},
-        OutputData{"port2", "2-sheets", 2}, OutputData{"port3", "3-sheets", 3}};
+        OutputData{.identifier = "port0", .displayName = "0-sheets", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "1-sheets", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "2-sheets", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "3-sheets", .index = 3}};
     inline static std::array<Group, 6> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",

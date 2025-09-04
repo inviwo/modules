@@ -276,11 +276,14 @@ def generate_source_files(data: vtkdata.FilterData, uriPrefix: str, *,
         propClasses += propertySource
         proplist.append(structName)
 
-    inputData = ", ".join(
-        f'InputData{{.identifier = "{d.identifier}", .dataType = "{valueOr(d.dataType, "")}", \
-        .numComp = {valueOr(d.numComp,[-1])[0]}, .doc = R"({valueOr(d.doc, "")})"}}'
-        for d in data.inports)
-    outputData = ", ".join(f'OutputData{{"{d.identifier}", "{d.displayName}", {d.index}}}'
+    inputData = ", ".join(f'InputData{{.identifier = "{d.identifier}", \
+                                       .dataType = "{valueOr(d.dataType, "")}", \
+                                       .numComp = {valueOr(d.numComp,[-1])[0]}, \
+                                       .doc = R"({valueOr(d.doc, "")})"}}'
+                          for d in data.inports)
+    outputData = ", ".join(f'OutputData{{.identifier = "{d.identifier}", \
+                                         .displayName = "{d.displayName}", \
+                                         .index = {d.index}}}'
                            for d in data.outports)
 
     groups = []

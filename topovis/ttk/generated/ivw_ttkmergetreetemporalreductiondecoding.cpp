@@ -162,7 +162,8 @@ struct VTKTraits<ttkMergeTreeTemporalReductionDecoding> {
                   .numComp = 1,
                   .doc = R"(Encoding filter reduction coefficients output.)"}};
     inline static std::array<OutputData, 2> outports = {
-        OutputData{"port0", "Reconstructed Sequence", 0}, OutputData{"port1", "Matching", 1}};
+        OutputData{.identifier = "port0", .displayName = "Reconstructed Sequence", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Matching", .index = 1}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {"AssignmentSolver"}},
         Group{"Output options",

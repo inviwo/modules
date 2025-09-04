@@ -95,8 +95,9 @@ struct VTKTraits<vtkExtractEnclosedPoints> {
                   .dataType = "vtkPolyData",
                   .numComp = -1,
                   .doc = R"(This property specifies the closed and manifold surface.)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"outport0", "EnclosedPoints", 0},
-                                                        OutputData{"outport1", "Outliers", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "outport0", .displayName = "EnclosedPoints", .index = 0},
+        OutputData{.identifier = "outport1", .displayName = "Outliers", .index = 1}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 

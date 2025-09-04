@@ -218,8 +218,10 @@ struct VTKTraits<ttkMergeTreePrincipalGeodesics> {
                 R"(If input are merge trees, then this input can be used to process join and split trees together. Pass as input either join or split trees in the first input and the other type of trees in the second input.
 If input are persistence diagrams, then this has no effect to use this input.)"}};
     inline static std::array<OutputData, 4> outports = {
-        OutputData{"port0", "Barycenter", 0}, OutputData{"port1", "Coefficients", 1},
-        OutputData{"port2", "Geodesics Vectors", 2}, OutputData{"port3", "Correlation Matrix", 3}};
+        OutputData{.identifier = "port0", .displayName = "Barycenter", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Coefficients", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "Geodesics Vectors", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "Correlation Matrix", .index = 3}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options",
               {"NormalizedWasserstein", "NumberOfGeodesics", "NumberOfProjectionIntervals",
