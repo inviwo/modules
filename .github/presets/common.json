@@ -30,6 +30,8 @@
         "IVW_MODULE_TENSORVISIO":           { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TENSORVISPYTHON":       { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_INTEGRALLINEFILTERING": { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_FEATURELEVELSETSGL":    { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_COMPUTEUTILS":          { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISBASE":            { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISGL":              { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISPYTHON":          { "type": "BOOL", "value": "ON"},
