@@ -48,7 +48,7 @@ struct VTKTraits<vtkPassArrays> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataObject", -1, R"()"}};
+        InputData{.identifier = "Input", .dataType = "vtkDataObject", .numComp = -1, .doc = R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0> properties;

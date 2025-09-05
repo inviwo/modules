@@ -161,8 +161,10 @@ struct VTKTraits<ttkGridLayout> {
     static constexpr std::string_view displayName = "TTK GridLayout";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkMultiBlockDataSet", -1, R"(vtkMultiBlockDataSet.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkMultiBlockDataSet",
+                                                                .numComp = -1,
+                                                                .doc = R"(vtkMultiBlockDataSet.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Output Options", {"ColAxis", "ColGap", "RowAxis", "RowGap", "NumberOfRows"}},

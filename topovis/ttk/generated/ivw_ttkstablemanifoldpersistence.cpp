@@ -109,17 +109,23 @@ struct VTKTraits<ttkStableManifoldPersistence> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 3> inports = {
-        InputData{"Stable manifolds", "vtkDataSet", 1,
-                  R"(vtkDataSet that represents stable manifolds (separatrices and
+        InputData{.identifier = "Stable manifolds",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(vtkDataSet that represents stable manifolds (separatrices and
 segments) obtained from the Morse-Smale complex module. This is typically any
 of the three last outputs (`1-Separatrices`, or `2-Separatrices` or
 `Segmentation`) of the Morse-Smale complex module.)"},
-        InputData{"Critical points", "vtkDataSet", 1,
-                  R"(vtkPolyData that represents the critical cells of the data. This
+        InputData{.identifier = "Critical points",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(vtkPolyData that represents the critical cells of the data. This
 is typically the first output (`Critical Points`) of the Morse-Smale complex
 module.)"},
-        InputData{"Persistence diagram", "vtkDataSet", 1,
-                  R"(vtkUnstructuredGrid that represents the persistence diagram of the
+        InputData{.identifier = "Persistence diagram",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(vtkUnstructuredGrid that represents the persistence diagram of the
 considered data set. This is typically the output of the Persistence Diagram
 module.)"}};
     inline static std::array<OutputData, 0> outports = {};

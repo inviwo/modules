@@ -6,6 +6,18 @@
   "homepage": "https://github.com/topology-tool-kit/ttk",
   "dependencies": [
     {
+      "name": "vcpkg-cmake",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-config",
+      "host": true
+    },
+    {
+      "name": "vcpkg-cmake-get-vars",
+      "host": true
+    },
+    {
       "name": "vtk",
       "default-features": false,
       "features": [
@@ -26,6 +38,9 @@
 
     "eigen3",
     "zlib",
-    "graphviz"
+    {
+      "name": "graphviz",
+      "platform": "!static"
+    }
   ]
 }

@@ -107,8 +107,11 @@ struct VTKTraits<ttkTrackingFromOverlap> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "", -1,
-        R"(A vtkMultiBlockDataSet that represents a sequence of vtkPointSets. Optionally: a vtkMultiBlockDataSet that contains multiple sequences, where each sequence corresponds to a level.)"}};
+        .identifier = "Input",
+        .dataType = "",
+        .numComp = -1,
+        .doc =
+            R"(A vtkMultiBlockDataSet that represents a sequence of vtkPointSets. Optionally: a vtkMultiBlockDataSet that contains multiple sequences, where each sequence corresponds to a level.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",

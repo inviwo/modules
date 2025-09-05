@@ -36,8 +36,11 @@ struct VTKTraits<vtkMultiBlockDataGroupFilter> {
     static constexpr std::string_view displayName = "Group Datasets";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkDataObject", -1, R"(This property indicates the the inputs to the Group
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataObject",
+                  .numComp = -1,
+                  .doc = R"(This property indicates the the inputs to the Group
 Datasets filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

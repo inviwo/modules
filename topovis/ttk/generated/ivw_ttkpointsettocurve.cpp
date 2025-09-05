@@ -76,8 +76,10 @@ struct VTKTraits<ttkPointSetToCurve> {
     static constexpr std::string_view displayName = "TTK PointSetToCurve";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Domain", "vtkPointSet", -1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Domain",
+                                                                .dataType = "vtkPointSet",
+                                                                .numComp = -1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {Group{"Input options", {"InputOrderingArray"}}};
     std::tuple<Wrapper0, Wrapper1> properties;

@@ -151,10 +151,13 @@ struct VTKTraits<ttkConnectedComponents> {
     static constexpr std::string_view displayName = "TTK ConnectedComponents";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Segmentation", "vtkDataSet", 1, R"(A vtkDataSet.)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"port0", "Segmentation", 0},
-                                                        OutputData{"port1", "Components", 1}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Segmentation",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(A vtkDataSet.)"}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "port0", .displayName = "Segmentation", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Components", .index = 1}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {"FeatureMask", "BackgroundThreshold"}},
         Group{"Output options", {"SegmentationSize"}},

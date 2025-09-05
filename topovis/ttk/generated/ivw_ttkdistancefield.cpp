@@ -157,8 +157,14 @@ struct VTKTraits<ttkDistanceField> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Domain", "vtkDataSet", 1, R"(Data-set to process.)"},
-        InputData{"Sources", "vtkPointSet", 1, R"(Sources for the distance fields.)"}};
+        InputData{.identifier = "Domain",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(Data-set to process.)"},
+        InputData{.identifier = "Sources",
+                  .dataType = "vtkPointSet",
+                  .numComp = 1,
+                  .doc = R"(Sources for the distance fields.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",

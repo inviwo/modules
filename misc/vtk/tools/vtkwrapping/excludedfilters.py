@@ -48,7 +48,10 @@ ttk_filters = [
     "PersistentGenerators",        # Could not find import ttkPersistentGenerators.h
     "ProjectionFromTable",         # Could not find import ttkProjectionFromTable.h
     # Could not find SetBarycenterSizeLimitPercent (member/function)
-    "MergeTreeClustering"
+    "MergeTreeClustering",
+
+    "EndFor",
+    "ForEach"
 ]
 
 # exclude the following ParaView filters due to missing header files

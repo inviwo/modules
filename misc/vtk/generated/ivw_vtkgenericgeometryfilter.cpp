@@ -46,7 +46,10 @@ struct VTKTraits<vtkGenericGeometryFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkGenericDataSet", -1, R"(Set the input to the Generic Geometry
+        InputData{.identifier = "Input",
+                  .dataType = "vtkGenericDataSet",
+                  .numComp = -1,
+                  .doc = R"(Set the input to the Generic Geometry
 Filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

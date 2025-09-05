@@ -201,13 +201,16 @@ struct VTKTraits<ttkContourTree> {
     static constexpr std::string_view displayName = "TTK ContourTree";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.
 TTK assumes that the input dataset is made of only one connected component.
 If it's not the case, you can use the filter "Connectivity" (and select "Extract Largest Region").)"}};
-    inline static std::array<OutputData, 3> outports = {OutputData{"port0", "Skeleton Nodes", 0},
-                                                        OutputData{"port1", "Skeleton Arcs", 1},
-                                                        OutputData{"port2", "Segmentation", 2}};
+    inline static std::array<OutputData, 3> outports = {
+        OutputData{.identifier = "port0", .displayName = "Skeleton Nodes", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Skeleton Arcs", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "Segmentation", .index = 2}};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",

@@ -117,9 +117,11 @@ struct VTKTraits<vtkTemporalArrayOperatorFilter> {
     static constexpr std::string_view displayName = "Temporal Array Operator";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", -1,
-                  R"(This property specifies the input to the TemporalArrayOperator filter.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{
+        .identifier = "Input",
+        .dataType = "vtkDataSet",
+        .numComp = -1,
+        .doc = R"(This property specifies the input to the TemporalArrayOperator filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;

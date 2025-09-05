@@ -6,10 +6,33 @@ vcpkg_from_github(
     HEAD_REF master
 )
 
-if(VCPKG_TARGET_IS_WINDOWS)
-    set(TTK_USE_OPENMP OFF)
-else()
+vcpkg_cmake_get_vars(cmake_vars_file)
+include("${cmake_vars_file}")
+
+set(TTK_OPENMP_OPTS )
+if(VCPKG_TARGET_IS_LINUX)
     set(TTK_USE_OPENMP ON)
+    if (VCPKG_DETECTED_CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        set(TTK_USE_OPENMP OFF)
+    endif()
+elseif(VCPKG_TARGET_IS_MACOS)
+    set(TTK_USE_OPENMP ON)
+    set(TTK_OPENMP_OPTS
+        # OpenMP mac workadound
+        -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
+    )
+else()
+    set(TTK_USE_OPENMP OFF)
+endif()
+
+if (VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    set(TTK_USE_GRAPHVIZ OFF)
+    set(TTK_DISABLE_FIND_GRAPHVIZ ON)
+    set(TTK_REQUIRE_FIND_GRAPHVIZ OFF)
+else()
+    set(TTK_USE_GRAPHVIZ ON)
+    set(TTK_DISABLE_FIND_GRAPHVIZ OFF)
+    set(TTK_REQUIRE_FIND_GRAPHVIZ ON)
 endif()
 
 vcpkg_configure_cmake(
@@ -26,8 +49,10 @@ vcpkg_configure_cmake(
         -DCMAKE_DISABLE_FIND_PACKAGE_Python3=ON
 
         -DCMAKE_REQUIRE_FIND_PACKAGE_ZLIB=ON
-        -DCMAKE_REQUIRE_FIND_PACKAGE_Graphviz=ON
         -DCMAKE_REQUIRE_FIND_PACKAGE_Eigen3=ON
+
+        -DCMAKE_DISABLE_FIND_PACKAGE_Graphviz=${TTK_DISABLE_FIND_GRAPHVIZ}
+        -DCMAKE_REQUIRE_FIND_PACKAGE_Graphviz=${TTK_REQUIRE_FIND_GRAPHVIZ}
 
         -DTTK_BUILD_VTK_WRAPPERS=ON
 
@@ -38,8 +63,9 @@ vcpkg_configure_cmake(
 
         -DTTK_ENABLE_EIGEN=ON
         -DTTK_ENABLE_ZLIB=ON
-        -DTTK_ENABLE_GRAPHVIZ=ON
+        -DTTK_ENABLE_GRAPHVIZ=${TTK_USE_GRAPHVIZ}
         -DTTK_ENABLE_OPENMP=${TTK_USE_OPENMP}
+        ${TTK_OPENMP_OPTS}
         -DTTK_ENABLE_SCIKIT_LEARN=OFF
         -DTTK_ENABLE_QHULL=OFF
         # needed to workaround a bug in TTKBaseConfig.cmake.in
@@ -48,9 +74,6 @@ vcpkg_configure_cmake(
 
         # this depends in VTK::PythonInterpeter which is not there.
         -DVTK_MODULE_ENABLE_ttkCinemaDarkroom=NO
-
-        # OpenMP mac workadound
-        -DCMAKE_PREFIX_PATH=/opt/homebrew/opt/libomp
 )
 vcpkg_install_cmake()
 vcpkg_copy_pdbs()

@@ -108,8 +108,10 @@ struct VTKTraits<ttkTopologicalCompressionWriter> {
     static constexpr std::string_view displayName = "TTK TopologicalCompressionWriter";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkImageData", 1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkImageData",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 4> groups = {
         Group{"Input", {"Scalar Field"}}, Group{"Output", {"FileName"}},

@@ -169,8 +169,11 @@ struct VTKTraits<ttkCinemaWriter> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "", -1,
-        R"(Input data product of any type that is going to be stored in the Cinema database.)"}};
+        .identifier = "Input",
+        .dataType = "",
+        .numComp = -1,
+        .doc =
+            R"(Input data product of any type that is going to be stored in the Cinema database.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 4> groups = {
         Group{"Output Options",

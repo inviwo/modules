@@ -54,4 +54,4 @@ class Configuration:
     ttkrepo: Path = Path()
     filters: Path = Path()
 
-    clangformat: Path = "clang-format"
+    clangformat: Path = Path("clang-format")

@@ -133,7 +133,10 @@ struct VTKTraits<vtkTemporalShiftScale> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataObject", -1, R"(The input to the Temporal Shift Scale
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataObject",
+                  .numComp = -1,
+                  .doc = R"(The input to the Temporal Shift Scale
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

@@ -177,8 +177,14 @@ struct VTKTraits<ttkQuadrangulationSubdivision> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"mesh", "vtkDataSet", -1, R"(Input triangulated surface.)"},
-        InputData{"quadrangles", "vtkPolyData", -1, R"(Input coarse quadrangulation.)"}};
+        InputData{.identifier = "mesh",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(Input triangulated surface.)"},
+        InputData{.identifier = "quadrangles",
+                  .dataType = "vtkPolyData",
+                  .numComp = -1,
+                  .doc = R"(Input coarse quadrangulation.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",

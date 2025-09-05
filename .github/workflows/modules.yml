@@ -17,10 +17,11 @@ permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
 
 env:
-  VCPKG_BINARY_SOURCES: 'clear;http,https://jenkins.inviwo.org/cache/{sha},readwrite,Authorization: Bearer ${{ secrets.VCPKG_CACHE_TOKEN }}'
+  VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  VCPKG_FEATURE_FLAGS: dependencygraph
-  # QT_DEBUG_PLUGINS: 1                           # print qt plugin debug info
+  CCACHE_BASEDIR: ${{ github.workspace }}
+  CCACHE_NODIRECT: true
+  CCACHE_NODEPEND: true
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -120,6 +121,18 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: Free Disk Space
+      if: matrix.system == 'linux'
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+        haskell: true
+        large-packages: false
+        docker-images: true
+        swap-storage: true
+    
     - name: "Clone Modules"
       uses: actions/checkout@v4
       with:
@@ -148,6 +161,7 @@ jobs:
       with:
         triplet: ${{ matrix.triplet }}
         configuration: ${{ matrix.configuration }}
+        gh-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Copy Preset
       shell: bash
@@ -261,11 +275,7 @@ jobs:
         -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
-        -DIVW_MODULE_EIGENUTILS=ON
-        -DIVW_MODULE_HDF5=ON
         -DIVW_MODULE_TETRAMESH=OFF
-        -DIVW_MODULE_WEBBROWSER=OFF
-        -DIVW_MODULE_WEBQT=OFF
 
     - name: "Build"
       timeout-minutes: 360
@@ -383,7 +393,7 @@ jobs:
     permissions:
       pull-requests: write
     env:
-      LLVM_VERSION: 18
+      LLVM_VERSION: 19
     runs-on: ubuntu-24.04
     timeout-minutes: 320
     steps:
@@ -415,7 +425,9 @@ jobs:
 
     - name: "Copy Preset"
       shell: bash
-      run: cp modules/.github/presets/linux.json inviwo/CMakeUserPresets.json
+      run: |
+        cp modules/.github/presets/linux.json inviwo/CMakeUserPresets.json
+        sudo apt install --fix-missing libomp-dev
 
     - name: "Configure CMake"
       shell: bash
@@ -428,7 +440,7 @@ jobs:
         -DIVW_MODULE_WEBBROWSER=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
-        -DVCPKG_MANIFEST_FEATURES="sgct;graphviz;openmesh;nanovg;vtk"
+        -DVCPKG_MANIFEST_FEATURES="sgct;graphviz;openmesh;nanovg;vtk;ttk"
 
     - name: "Run clang-tidy"
       uses: cpp-linter/cpp-linter-action@v2.13.4

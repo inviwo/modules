@@ -47,23 +47,39 @@
 
 namespace inviwo::vtk {
 
-VtkInport::VtkInport(std::string_view identifier, std::string_view vtkDataClassName, Document help)
-    : Inport(identifier, std::move(help)), typeId_{[&]() {
+VtkInport::VtkInport(std::string_view identifier, std::string_view vtkDataClassName, Document help,
+                     Optional optional, Repeatable repeatable)
+    : Inport(identifier, std::move(help))
+    , typeId_{[&]() {
         auto id = vtkDataObjectTypes::GetTypeIdFromClassName(SafeCStr{vtkDataClassName}.c_str());
         if (id < 0) {
-            throw Exception(IVW_CONTEXT, "Invalid port Data Class Name {}", vtkDataClassName);
+            throw Exception(IVW_CONTEXT, "Invalid port Data Class Name '{}'", vtkDataClassName);
         }
         return id;
-    }()} {}
+    }()}
+    , repeatable_{repeatable} {
 
-VtkInport::VtkInport(std::string_view identifier, int typeId, Document help)
-    : Inport(identifier, std::move(help)), typeId_{[&]() {
+    if (optional == Optional::Yes) {
+        setOptional(true);
+    }
+}
+
+VtkInport::VtkInport(std::string_view identifier, int typeId, Document help, Optional optional,
+                     Repeatable repeatable)
+    : Inport(identifier, std::move(help))
+    , typeId_{[&]() {
         if (typeId >= VTK_POLY_DATA && typeId <= VTK_IMAGE_STENCIL_DATA) {
             return typeId;
         } else {
-            throw Exception(IVW_CONTEXT, "Invalid port Data TypeID {}", typeId);
+            throw Exception(IVW_CONTEXT, "Invalid port Data TypeID '{}'", typeId);
         }
-    }()} {}
+    }()}
+    , repeatable_{repeatable} {
+
+    if (optional == Optional::Yes) {
+        setOptional(true);
+    }
+}
 
 bool VtkInport::canConnectTo(const Port* port) const {
     if (!port || port->getProcessor() == getProcessor() || circularConnection(port)) return false;
@@ -73,21 +89,19 @@ bool VtkInport::canConnectTo(const Port* port) const {
     }
     return false;
 }
-size_t VtkInport::getMaxNumberOfConnections() const { return 1; }
+size_t VtkInport::getMaxNumberOfConnections() const {
+    return repeatable_ == Repeatable::Yes ? std::numeric_limits<size_t>::max() : 1;
+}
 
-vtkDataObject* VtkInport::getData() const {
-    if (isConnected()) {
-        return static_cast<VtkOutport*>(connectedOutports_[0])->getData();
+vtkDataObject* VtkInport::getData(size_t i) const {
+    if (i < connectedOutports_.size()) {
+        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
+        return static_cast<VtkOutport*>(connectedOutports_[i])->getData();
     }
     return nullptr;
 }
 
-bool VtkInport::hasData() const {
-    if (isConnected()) {
-        return static_cast<VtkOutport*>(connectedOutports_[0])->hasData();
-    }
-    return false;
-}
+bool VtkInport::hasData() const { return getData(0) != nullptr; }
 
 glm::uvec3 VtkInport::getColorCode() const {
     // Todo use a table here or something...

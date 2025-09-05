@@ -95,7 +95,10 @@ struct VTKTraits<vtkPlaneCutter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", -1, R"(This property specifies the input of the slice
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the input of the slice
 filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

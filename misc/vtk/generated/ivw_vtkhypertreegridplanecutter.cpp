@@ -45,12 +45,13 @@ struct Wrapper1 {
         filter.SetDual(property.get());
         return true;
     }
-    BoolProperty property{"UseDualGrid", "UseDualGrid",
-                          R"(If enabled, the output plane is computed using the dual grid, providing
+    BoolProperty property{
+        "UseDualGrid", "UseDualGrid",
+        R"(If enabled, the output plane is computed using the dual grid, providing
 perfect connectivity at the cost of speed. If disabled, the AMR mesh
 is used directly, and the output is obtained faster and is more useful
 for rendering.)"_help,
-                          false};
+        false};
 };
 
 #include <warn/pop>
@@ -64,8 +65,8 @@ struct VTKTraits<vtkHyperTreeGridPlaneCutter> {
     static constexpr std::string_view displayName = "Hyper Tree Grid - Slice With Plane";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkHyperTreeGrid", -1, R"()"}};
+    inline static std::array<InputData, 1> inports = {InputData{
+        .identifier = "Input", .dataType = "vtkHyperTreeGrid", .numComp = -1, .doc = R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;

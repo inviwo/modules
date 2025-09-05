@@ -70,10 +70,11 @@ struct Wrapper3 {
         filter.SetPassFieldArrays(property.get());
         return true;
     }
-    BoolProperty property{"PassFieldArrays", "PassFieldArrays",
-                          R"(Set whether to pass the field-data arrays from the Input i.e. the input
+    BoolProperty property{
+        "PassFieldArrays", "PassFieldArrays",
+        R"(Set whether to pass the field-data arrays from the Input i.e. the input
 providing the geometry to the output. On by default.)"_help,
-                          true};
+        true};
 };
 
 struct Wrapper4 {
@@ -113,10 +114,15 @@ struct VTKTraits<vtkPProbeFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkDataSet", -1,
-                  R"(This property specifies the dataset from which to obtain
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset from which to obtain
 probe values.)"},
-        InputData{"Source", "", -1, R"(This property specifies the dataset whose geometry will
+        InputData{.identifier = "Source",
+                  .dataType = "",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset whose geometry will
 be used in determining positions to probe.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

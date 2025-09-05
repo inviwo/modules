@@ -202,10 +202,12 @@ struct VTKTraits<ttkContinuousScatterPlot> {
     static constexpr std::string_view displayName = "TTK ContinuousScatterPlot";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.)"}};
     inline static std::array<OutputData, 1> outports = {
-        OutputData{"port0", "ProjectedTriangles", 0}};
+        OutputData{.identifier = "port0", .displayName = "ProjectedTriangles", .index = 0}};
     inline static std::array<Group, 3> groups = {
         Group{"Input options", {"ScalarField1New", "ScalarField2New"}},
         Group{"Output options",

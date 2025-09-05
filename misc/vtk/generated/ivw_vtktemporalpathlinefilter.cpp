@@ -104,14 +104,20 @@ struct VTKTraits<vtkTemporalPathLineFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkPointSet", -1, R"(The input cells to create pathlines for.)"},
-        InputData{"Selection", "vtkDataSet", -1,
-                  R"(Set a second input, which is a selection. Particles with the same
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPointSet",
+                  .numComp = -1,
+                  .doc = R"(The input cells to create pathlines for.)"},
+        InputData{.identifier = "Selection",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(Set a second input, which is a selection. Particles with the same
 Id in the selection as the primary input will be chosen for
 pathlines Note that you must have the same IdChannelArray in the
 selection as the input)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"outport0", "Pathlines", 0},
-                                                        OutputData{"outport1", "Particles", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "outport0", .displayName = "Pathlines", .index = 0},
+        OutputData{.identifier = "outport1", .displayName = "Particles", .index = 1}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 

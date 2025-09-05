@@ -98,7 +98,10 @@ struct VTKTraits<ttkPeriodicGhostsGeneration> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(A vtkImageData with at least one scalar field)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(A vtkImageData with at least one scalar field)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

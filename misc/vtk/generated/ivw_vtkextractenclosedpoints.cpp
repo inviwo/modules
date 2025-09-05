@@ -87,12 +87,17 @@ struct VTKTraits<vtkExtractEnclosedPoints> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkPointSet", -1,
-                  R"(This property specifies the input to extract points from.)"},
-        InputData{"Surface", "vtkPolyData", -1,
-                  R"(This property specifies the closed and manifold surface.)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"outport0", "EnclosedPoints", 0},
-                                                        OutputData{"outport1", "Outliers", 1}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPointSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the input to extract points from.)"},
+        InputData{.identifier = "Surface",
+                  .dataType = "vtkPolyData",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the closed and manifold surface.)"}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "outport0", .displayName = "EnclosedPoints", .index = 0},
+        OutputData{.identifier = "outport1", .displayName = "Outliers", .index = 1}};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3> properties;
 

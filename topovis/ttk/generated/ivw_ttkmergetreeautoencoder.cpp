@@ -618,17 +618,27 @@ struct VTKTraits<ttkMergeTreeAutoencoder> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 3> inports = {
-        InputData{"Input", "vtkMultiBlockDataSet", 1,
-                  R"(Merge trees or persistence diagrams to process.)"},
+        InputData{.identifier = "Input",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = 1,
+                  .doc = R"(Merge trees or persistence diagrams to process.)"},
         InputData{
-            "Optional Input", "vtkMultiBlockDataSet", 1,
-            R"(If input are merge trees, then this input can be used to process join and split trees together. Pass as input either join or split trees in the first input and the other type of trees in the second input.
+            .identifier = "Optional Input",
+            .dataType = "vtkMultiBlockDataSet",
+            .numComp = 1,
+            .doc =
+                R"(If input are merge trees, then this input can be used to process join and split trees together. Pass as input either join or split trees in the first input and the other type of trees in the second input.
 If input are persistence diagrams, then this has no effect to use this input.)"},
-        InputData{"Info", "vtkTable", 1,
-                  R"(Additionnal information such as cluster assignment for cluster loss.)"}};
+        InputData{
+            .identifier = "Info",
+            .dataType = "vtkTable",
+            .numComp = 1,
+            .doc = R"(Additionnal information such as cluster assignment for cluster loss.)"}};
     inline static std::array<OutputData, 4> outports = {
-        OutputData{"port0", "Origins", 0}, OutputData{"port1", "Axes Vectors", 1},
-        OutputData{"port2", "Coefficients", 2}, OutputData{"port3", "Data", 3}};
+        OutputData{.identifier = "port0", .displayName = "Origins", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Axes Vectors", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "Coefficients", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "Data", .index = 3}};
     inline static std::array<Group, 5> groups = {
         Group{"Input options",
               {"NormalizedWasserstein", "Deterministic", "DiagramPairTypes",

@@ -188,8 +188,10 @@ struct VTKTraits<ttkSphereFromPoint> {
     static constexpr std::string_view displayName = "TTK SphereFromPoint";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", -1, R"(Input point set.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = -1,
+                                                                .doc = R"(Input point set.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

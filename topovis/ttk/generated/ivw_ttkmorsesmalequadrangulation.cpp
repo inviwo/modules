@@ -116,11 +116,18 @@ struct VTKTraits<ttkMorseSmaleQuadrangulation> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 3> inports = {
-        InputData{"domain", "vtkDataSet", -1, R"(Input triangulated surface.)"},
-        InputData{"criticalPoints", "vtkPointSet", 1,
-                  R"(Critical points of the input Morse-Smale complex.)"},
-        InputData{"separatrices", "vtkPolyData", 1,
-                  R"(Separatrices of the input Morse-Smale complex.)"}};
+        InputData{.identifier = "domain",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(Input triangulated surface.)"},
+        InputData{.identifier = "criticalPoints",
+                  .dataType = "vtkPointSet",
+                  .numComp = 1,
+                  .doc = R"(Critical points of the input Morse-Smale complex.)"},
+        InputData{.identifier = "separatrices",
+                  .dataType = "vtkPolyData",
+                  .numComp = 1,
+                  .doc = R"(Separatrices of the input Morse-Smale complex.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Testing",

@@ -62,8 +62,8 @@ struct VTKTraits<vtkHyperTreeGridAxisCut> {
     static constexpr std::string_view displayName = "Hyper Tree Grid - Axis Cut";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkHyperTreeGrid", -1, R"()"}};
+    inline static std::array<InputData, 1> inports = {InputData{
+        .identifier = "Input", .dataType = "vtkHyperTreeGrid", .numComp = -1, .doc = R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1> properties;

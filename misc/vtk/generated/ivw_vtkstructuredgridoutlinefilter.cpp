@@ -36,8 +36,11 @@ struct VTKTraits<vtkStructuredGridOutlineFilter> {
     static constexpr std::string_view displayName = "Outline Curvilinear DataSet";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {InputData{
-        "Input", "vtkStructuredGrid", -1, R"(This property specifies the input to the outline
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input",
+                  .dataType = "vtkStructuredGrid",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the input to the outline
 (curvilinear) filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

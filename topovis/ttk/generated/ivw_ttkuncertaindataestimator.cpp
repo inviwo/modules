@@ -124,11 +124,14 @@ struct VTKTraits<ttkUncertainDataEstimator> {
     static constexpr std::string_view displayName = "TTK UncertainDataEstimator";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", 1, R"(Data-set to process.)"}};
-    inline static std::array<OutputData, 3> outports = {OutputData{"port0", "Bound Fields", 0},
-                                                        OutputData{"port1", "Probabilities", 1},
-                                                        OutputData{"port2", "MeanField", 2}};
+    inline static std::array<InputData, 1> inports = {InputData{.identifier = "Input",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Data-set to process.)"}};
+    inline static std::array<OutputData, 3> outports = {
+        OutputData{.identifier = "port0", .displayName = "Bound Fields", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Probabilities", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "MeanField", .index = 2}};
     inline static std::array<Group, 4> groups = {
         Group{"Bound Fields", {"Bound to Compute"}},
         Group{"Probability Density Functions", {"BinCount"}},

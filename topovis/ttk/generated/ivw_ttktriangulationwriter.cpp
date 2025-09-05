@@ -59,8 +59,8 @@ struct VTKTraits<ttkTriangulationWriter> {
     static constexpr std::string_view displayName = "TTK Triangulation File Writer";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkUnstructuredGrid", -1, R"()"}};
+    inline static std::array<InputData, 1> inports = {InputData{
+        .identifier = "Input", .dataType = "vtkUnstructuredGrid", .numComp = -1, .doc = R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {Group{"Output", {"FileName", "UseASCIIFormat"}}};
     std::tuple<Wrapper0, Wrapper1> properties;

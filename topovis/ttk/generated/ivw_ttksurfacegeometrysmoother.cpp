@@ -198,8 +198,14 @@ struct VTKTraits<ttkSurfaceGeometrySmoother> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Input", "vtkPointSet", 1, R"(Point-set to smooth.)"},
-        InputData{"Surface", "vtkPointSet", -1, R"(Input triangulated surface.)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPointSet",
+                  .numComp = 1,
+                  .doc = R"(Point-set to smooth.)"},
+        InputData{.identifier = "Surface",
+                  .dataType = "vtkPointSet",
+                  .numComp = -1,
+                  .doc = R"(Input triangulated surface.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Input options",

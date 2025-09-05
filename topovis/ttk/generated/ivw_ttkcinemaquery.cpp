@@ -129,7 +129,10 @@ struct VTKTraits<ttkCinemaQuery> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"InputTable", "vtkTable", -1, R"(Input vtkTables to run the SQL statement on.)"}};
+        InputData{.identifier = "InputTable",
+                  .dataType = "vtkTable",
+                  .numComp = -1,
+                  .doc = R"(Input vtkTables to run the SQL statement on.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Output Options", {"SQLStatement", "ExcludeColumnsWithRegexp", "Regexp"}},

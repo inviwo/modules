@@ -36,7 +36,8 @@ struct VTKTraits<vtkMoleculeToLinesFilter> {
     static constexpr std::string_view displayName = "Molecule To Lines";
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
-    inline static std::array<InputData, 1> inports = {InputData{"Input", "vtkMolecule", -1, R"()"}};
+    inline static std::array<InputData, 1> inports = {
+        InputData{.identifier = "Input", .dataType = "vtkMolecule", .numComp = -1, .doc = R"()"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<> properties;

@@ -154,10 +154,16 @@ struct VTKTraits<ttkClusteringMetrics> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"Clustering1", "vtkTable", 1,
-                  R"(A first clustering (for instance the ground truth))"},
-        InputData{"Clustering2", "vtkTable", 1,
-                  R"(A second clustering (for instance one computed by a clustering algorithm).)"}};
+        InputData{.identifier = "Clustering1",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(A first clustering (for instance the ground truth))"},
+        InputData{
+            .identifier = "Clustering2",
+            .dataType = "vtkTable",
+            .numComp = 1,
+            .doc =
+                R"(A second clustering (for instance one computed by a clustering algorithm).)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 2> groups = {
         Group{"Input options", {"SelectClustering1", "SelectClustering2"}},

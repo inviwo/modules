@@ -97,13 +97,16 @@ struct VTKTraits<ttkPersistenceCurve> {
     static constexpr std::string_view displayName = "TTK PersistenceCurve";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkUnstructuredGrid", -1,
-                  R"(Input Persistence Diagram as computed by the TTKPersistenceDiagram filter.)"}};
+    inline static std::array<InputData, 1> inports = {InputData{
+        .identifier = "Input",
+        .dataType = "vtkUnstructuredGrid",
+        .numComp = -1,
+        .doc = R"(Input Persistence Diagram as computed by the TTKPersistenceDiagram filter.)"}};
     inline static std::array<OutputData, 4> outports = {
-        OutputData{"port0", "Minimum-saddle pairs", 0},
-        OutputData{"port1", "Saddle-saddle pairs", 1},
-        OutputData{"port2", "Saddle-maximum pairs", 2}, OutputData{"port3", "All pairs", 3}};
+        OutputData{.identifier = "port0", .displayName = "Minimum-saddle pairs", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Saddle-saddle pairs", .index = 1},
+        OutputData{.identifier = "port2", .displayName = "Saddle-maximum pairs", .index = 2},
+        OutputData{.identifier = "port3", .displayName = "All pairs", .index = 3}};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",
               {"Debug_UseAllCores", "Debug_ThreadNumber", "Debug_DebugLevel",

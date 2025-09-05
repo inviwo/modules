@@ -147,9 +147,13 @@ struct VTKTraits<ttkMergeTreeTemporalReduction> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkMultiBlockDataSet", 1, R"(Merge trees to process.)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkMultiBlockDataSet",
+                  .numComp = 1,
+                  .doc = R"(Merge trees to process.)"}};
     inline static std::array<OutputData, 2> outports = {
-        OutputData{"port0", "Key Frames", 0}, OutputData{"port1", "Reduction Coefficients", 1}};
+        OutputData{.identifier = "port0", .displayName = "Key Frames", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Reduction Coefficients", .index = 1}};
     inline static std::array<Group, 2> groups = {
         Group{"Input options",
               {"AssignmentSolver", "RemovalPercentage", "UseCustomTimeVariable", "TimeVariableName",

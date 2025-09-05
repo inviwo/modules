@@ -50,11 +50,15 @@ struct VTKTraits<vtkSynchronizeTimeFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"DataToPass", "vtkDataSet", -1,
-                  R"(This property specifies the dataset whose geometry and
+        InputData{.identifier = "DataToPass",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset whose geometry and
 fields will be output.)"},
-        InputData{"TimeToSync", "vtkDataSet", -1,
-                  R"(This property specifies the dataset from which to obtain
+        InputData{.identifier = "TimeToSync",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the dataset from which to obtain
 the time step values.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};

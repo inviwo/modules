@@ -298,9 +298,14 @@ struct VTKTraits<ttkFiberSurface> {
     static constexpr std::string_view displayName = "TTK FiberSurface";
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
-    inline static std::array<InputData, 2> inports = {
-        InputData{"Input Domain", "vtkDataSet", 1, R"(Dataset to process.)"},
-        InputData{"Range Polygon", "vtkUnstructuredGrid", 1, R"(Range polygon.)"}};
+    inline static std::array<InputData, 2> inports = {InputData{.identifier = "Input Domain",
+                                                                .dataType = "vtkDataSet",
+                                                                .numComp = 1,
+                                                                .doc = R"(Dataset to process.)"},
+                                                      InputData{.identifier = "Range Polygon",
+                                                                .dataType = "vtkUnstructuredGrid",
+                                                                .numComp = 1,
+                                                                .doc = R"(Range polygon.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 4> groups = {
         Group{"Testing",

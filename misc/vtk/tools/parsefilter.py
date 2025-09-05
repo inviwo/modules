@@ -31,6 +31,7 @@ from pathlib import Path
 
 from rich.console import Console
 from rich import print
+import subprocess
 
 import vtkwrapping.generatefiles
 import vtkwrapping.xmlparsing
@@ -130,6 +131,17 @@ def custom_filters(filter_path: Path, category: str, tags: str,
 
 if __name__ == '__main__':
     config = vtkwrapping.commandlineargs.parse_arguments()
+
+    try:
+        subprocess.run([config.clangformat, "--version"])
+    except:
+        console.print(f"[bold red]Failed to run clang-format. (\"{config.clangformat}\")\n"
+            "It is probably not in the Path\n"
+            "You can pass --clangformat to provide the path to the executable\n"
+            "In visual studio you can find clangformat at:\n"
+            "\"C:/Program Files/Microsoft Visual Studio/2022/"
+            "Enterprise/VC/Tools/Llvm/x64/bin/clang-format.exe\"")
+        exit(1)
 
     # Set clang format binary in case clang-format is not in path
 

@@ -199,7 +199,9 @@ void VTKToTensorField3D::process() {
         const ivec3 dims{*vtk::getDimensions(vtkData)};
 
         tensorField_ = vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
-        tensorField_->setModelMatrix(*vtk::getModelMatrix(vtkData));
+        if (const auto mm = vtk::getModelMatrix(vtkData)) {
+            tensorField_->setModelMatrix(*mm);
+        }
 
         if (normalizeExtents_) {
             dvec3 extent{tensorField_->getExtent()};

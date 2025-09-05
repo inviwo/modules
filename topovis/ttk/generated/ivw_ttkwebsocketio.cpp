@@ -111,8 +111,10 @@ struct VTKTraits<ttkWebSocketIO> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkDataSet", -1,
-                  R"(The input vtkDataObject that will be send to all connected clients.)"}};
+        InputData{.identifier = "Input",
+                  .dataType = "vtkDataSet",
+                  .numComp = -1,
+                  .doc = R"(The input vtkDataObject that will be send to all connected clients.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 1> groups = {
         Group{"Testing",

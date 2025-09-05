@@ -27,7 +27,7 @@
         "VCPKG_HOST_TRIPLET": "x64-linux",
 
         // The vcpkg graphvis package file in static mode
-        "VCPKG_MANIFEST_FEATURES" : "openmesh;nanovg;vtk",
+        "VCPKG_MANIFEST_FEATURES" : "openmesh;nanovg;vtk;ttk",
         "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"} 
       }
     },

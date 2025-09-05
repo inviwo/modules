@@ -166,17 +166,27 @@ struct VTKTraits<ttkContourAroundPoint> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 3> inports = {
-        InputData{"Domain", "vtkDataSet", 1, R"(Domain in which the contours are computed.)"},
+        InputData{.identifier = "Domain",
+                  .dataType = "vtkDataSet",
+                  .numComp = 1,
+                  .doc = R"(Domain in which the contours are computed.)"},
         InputData{
-            "Nodes", "vtkUnstructuredGrid", 1,
-            R"(Points (like "Skeleton Nodes" from "TTKMergeandContourTreeFTM") with the following data
+            .identifier = "Nodes",
+            .dataType = "vtkUnstructuredGrid",
+            .numComp = 1,
+            .doc =
+                R"(Points (like "Skeleton Nodes" from "TTKMergeandContourTreeFTM") with the following data
 arrays: CriticalType: int, Scalar: float.)"},
         InputData{
-            "Arcs", "vtkUnstructuredGrid", 1,
-            R"(Cells (like "Skeleton Arcs" from "TTKMergeandContourTreeFTM") with the following data
+            .identifier = "Arcs",
+            .dataType = "vtkUnstructuredGrid",
+            .numComp = 1,
+            .doc =
+                R"(Cells (like "Skeleton Arcs" from "TTKMergeandContourTreeFTM") with the following data
 arrays: downNodeId: int, upNodeId: int.)"}};
-    inline static std::array<OutputData, 2> outports = {OutputData{"port0", "Contours", 0},
-                                                        OutputData{"port1", "Centroids", 1}};
+    inline static std::array<OutputData, 2> outports = {
+        OutputData{.identifier = "port0", .displayName = "Contours", .index = 0},
+        OutputData{.identifier = "port1", .displayName = "Centroids", .index = 1}};
     inline static std::array<Group, 2> groups = {
         Group{"Input Parameters",
               {"ScalarAttribute", "ui_extension", "ui_sizeFilter", "ui_spherical"}},

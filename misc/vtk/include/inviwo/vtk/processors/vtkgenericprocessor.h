@@ -94,7 +94,7 @@ struct IVW_MODULE_VTK_API Group {
 template <typename VTKFilter>
 struct VTKTraits;
 
-struct IVW_MODULE_VTK_API FieldSelection {};
+struct IVW_MODULE_VTK_API FieldSelection{};
 
 class IVW_MODULE_VTK_API Command : public vtkCommand {
 public:
@@ -119,10 +119,52 @@ protected:
 inline std::string toString(vtkInformation* info) {
     vtkIndent indent;
     std::stringstream ss;
+    if (!info) {
+        ss << "vtkInformation is nullptr";
+        return ss.str();
+    }
     info->PrintSelf(ss, indent);
     return std::move(ss).str();
 }
 
+inline void updateFieldSelection(vtkDataObject::FieldAssociations assoc, vtkDataObject* data,
+                                 OptionPropertyString& opts) {
+    std::vector<OptionPropertyStringOption> options;
+    if (assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS ||
+        assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS) {
+
+        vtkFieldData* fd = data->GetAttributesAsFieldData(vtkDataObject::POINT);
+        for (int i = 0; i < fd->GetNumberOfArrays(); ++i) {
+            options.emplace_back(fd->GetArrayName(i));
+        }
+    }
+
+    if (assoc == vtkDataObject::FIELD_ASSOCIATION_CELLS ||
+        assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS) {
+
+        vtkFieldData* fd = data->GetAttributesAsFieldData(vtkDataObject::CELL);
+        for (int i = 0; i < fd->GetNumberOfArrays(); ++i) {
+            options.emplace_back(fd->GetArrayName(i));
+        }
+    }
+
+    opts.replaceOptions(std::move(options));
+};
+
+void setupFieldSelection(Inport* inport, auto& wrapper) {
+    if (auto* vtkinport = dynamic_cast<vtk::VtkInport*>(inport)) {
+        vtkinport->onChange([port = vtkinport, w = &wrapper]() {
+            if (port->isReady()) {
+                updateFieldSelection(w->fieldAssociation.get(), port->getData(), w->name);
+            }
+        });
+        wrapper.fieldAssociation.onChange([port = vtkinport, w = &wrapper]() {
+            if (port->isReady()) {
+                updateFieldSelection(w->fieldAssociation.get(), port->getData(), w->name);
+            }
+        });
+    }
+}
 /**
  * @brief A Wrapper for all VTK filters
  */
@@ -134,13 +176,11 @@ public:
 
         observer_->callback = [this](vtkObject*, unsigned long eid, void* data) {
             if (eid == vtkCommand::ErrorEvent) {
-                LogError(static_cast<const char*>(data));
+                log::report(LogLevel::Error, static_cast<const char*>(data));
             } else if (eid == vtkCommand::WarningEvent) {
-                LogWarn(static_cast<const char*>(data));
-            } else if (eid == vtkCommand::MessageEvent) {
-                LogInfo(static_cast<const char*>(data));
-            } else if (eid == vtkCommand::TextEvent) {
-                LogInfo(static_cast<const char*>(data));
+                log::report(LogLevel::Warn, static_cast<const char*>(data));
+            } else if (eid == vtkCommand::MessageEvent || eid == vtkCommand::TextEvent) {
+                log::report(LogLevel::Info, static_cast<const char*>(data));
             } else if (eid == vtkCommand::ProgressEvent) {
                 updateProgress(static_cast<float>(*static_cast<double*>(data)));
                 getNetwork()->getApplication()->processEvents();
@@ -155,44 +195,9 @@ public:
         filter_->AddObserver(vtkCommand::ProgressEvent, observer_);
         filter_->DebugOn();
 
-        const auto nInputs = filter_->GetNumberOfInputPorts();
-        const auto nOutputs = filter_->GetNumberOfOutputPorts();
+        createInports();
 
-        for (int i = 0; i < nInputs; ++i) {
-            if (auto dataType = getInportDataType(i); dataType) {
-                auto id = i < static_cast<int>(VTKTraits<VTKFilter>::inports.size())
-                              ? util::stripIdentifier(VTKTraits<VTKFilter>::inports[i].identifier)
-                              : fmt::format("inport{}", i);
-
-                auto doc = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
-                               ? util::unindentMd2doc(VTKTraits<VTKFilter>::inports[i].doc)
-                               : Document{};
-                addPort(std::make_unique<vtk::VtkInport>(id, *dataType, std::move(doc)));
-            } else {
-                vtkInformation* info = filter_->GetInputPortInformation(i);
-                throw Exception(
-                    fmt::format("missing inport for {}, unknown VTK dataType. Port info: {}",
-                                VTKTraits<VTKFilter>::identifier, toString(info)));
-            }
-        }
-
-        for (int i = 0; i < nOutputs; ++i) {
-            if (auto dataType = getOutportDataType(i); dataType) {
-                auto id = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
-                              ? util::stripIdentifier(VTKTraits<VTKFilter>::outports[i].identifier)
-                              : fmt::format("output{}", i);
-
-                auto doc = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
-                               ? util::unindentMd2doc(VTKTraits<VTKFilter>::outports[i].displayName)
-                               : Document{};
-                addPort(std::make_unique<vtk::VtkOutport>(id, *dataType, std::move(doc)));
-            } else {
-                vtkInformation* info = filter_->GetOutputPortInformation(i);
-                throw Exception(
-                    fmt::format("missing outport for {}, dataType not known, port info: {}",
-                                VTKTraits<VTKFilter>::identifier, toString(info)));
-            }
-        }
+        createOutports();
 
         std::unordered_map<std::string_view, CompositeProperty*> groupMap;
         for (auto&& group : traits_.groups) {
@@ -214,52 +219,52 @@ public:
                 }
 
                 if constexpr (std::is_base_of_v<FieldSelection, std::decay_t<decltype(wrapper)>>) {
-                    if (auto inport = getInport(wrapper.inport)) {
-                        auto vtkinport = static_cast<vtk::VtkInport*>(inport);
-
-                        auto update = [](vtkDataObject::FieldAssociations assoc,
-                                         vtkDataObject* data, OptionPropertyString& opts) {
-                            std::vector<OptionPropertyStringOption> options;
-                            if (assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS ||
-                                assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS) {
-
-                                vtkFieldData* fd =
-                                    data->GetAttributesAsFieldData(vtkDataObject::POINT);
-                                for (int i = 0; i < fd->GetNumberOfArrays(); ++i) {
-                                    options.emplace_back(fd->GetArrayName(i));
-                                }
-                            }
-
-                            if (assoc == vtkDataObject::FIELD_ASSOCIATION_CELLS ||
-                                assoc == vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS) {
-
-                                vtkFieldData* fd =
-                                    data->GetAttributesAsFieldData(vtkDataObject::CELL);
-                                for (int i = 0; i < fd->GetNumberOfArrays(); ++i) {
-                                    options.emplace_back(fd->GetArrayName(i));
-                                }
-                            }
-
-                            opts.replaceOptions(std::move(options));
-                        };
-
-                        vtkinport->onChange([update, port = vtkinport, w = &wrapper]() {
-                            if (port->isReady()) {
-                                vtkDataObject* data = port->getData();
-                                update(w->fieldAssociation.get(), data, w->name);
-                            }
-                        });
-                        wrapper.fieldAssociation.onChange(
-                            [update, port = vtkinport, w = &wrapper]() {
-                                if (port->isReady()) {
-                                    vtkDataObject* data = port->getData();
-                                    update(w->fieldAssociation.get(), data, w->name);
-                                }
-                            });
-                    }
+                    setupFieldSelection(getInport(wrapper.inport), wrapper);
                 }
             },
             traits_.properties);
+    }
+    void createOutports() {
+        const auto nOutputs = filter_->GetNumberOfOutputPorts();
+        for (int i = 0; i < nOutputs; ++i) {
+            if (auto dataType = getOutportDataType(i); dataType) {
+                auto id = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
+                              ? util::stripIdentifier(VTKTraits<VTKFilter>::outports[i].identifier)
+                              : fmt::format("output{}", i);
+
+                auto doc = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
+                               ? util::unindentMd2doc(VTKTraits<VTKFilter>::outports[i].displayName)
+                               : Document{};
+                addPort(std::make_unique<vtk::VtkOutport>(id, *dataType, std::move(doc)));
+            } else {
+                vtkInformation* info = filter_->GetOutputPortInformation(i);
+                throw Exception(
+                    fmt::format("missing outport for '{}', dataType not known, port info: {}",
+                                VTKTraits<VTKFilter>::identifier, toString(info)));
+            }
+        }
+    }
+    void createInports() {
+        const auto nInputs = filter_->GetNumberOfInputPorts();
+        for (int i = 0; i < nInputs; ++i) {
+            if (auto dataType = getInportDataType(i); dataType) {
+                auto id = i < static_cast<int>(VTKTraits<VTKFilter>::inports.size())
+                              ? util::stripIdentifier(VTKTraits<VTKFilter>::inports[i].identifier)
+                              : fmt::format("inport{}", i);
+
+                auto doc = i < static_cast<int>(VTKTraits<VTKFilter>::outports.size())
+                               ? util::unindentMd2doc(VTKTraits<VTKFilter>::inports[i].doc)
+                               : Document{};
+                addPort(std::make_unique<vtk::VtkInport>(id, *dataType, std::move(doc),
+                                                         isPortOptional(i), isPortRepeatable(i)));
+
+            } else {
+                vtkInformation* info = filter_->GetInputPortInformation(i);
+                throw Exception(
+                    fmt::format("missing inport for '{}', unknown VTK dataType. Port info: {}",
+                                VTKTraits<VTKFilter>::identifier, toString(info)));
+            }
+        }
     }
     virtual ~VTKGenericProcessor() = default;
 
@@ -276,8 +281,15 @@ public:
         const auto nOutputs = filter_->GetNumberOfOutputPorts();
 
         for (int i = 0; i < nInputs; ++i) {
-            auto data = static_cast<vtk::VtkInport*>(getInports()[i])->getData();
-            filter_->SetInputDataObject(i, data);
+            auto* inport = static_cast<vtk::VtkInport*>(getInports()[i]);
+            if (inport->isOptional() && !inport->hasData()) {
+                filter_->SetInputDataObject(i, nullptr);
+            } else {
+                filter_->SetInputDataObject(i, inport->getData());
+                for (size_t p = 1; p < inport->getNumberOfConnections(); ++p) {
+                    filter_->AddInputDataObject(i, inport->getData());
+                }
+            }
         }
 
         if (filter_->GetExecutive()->Update() != 1) {
@@ -303,27 +315,53 @@ public:
     static const ProcessorInfo processorInfo_;
 
 protected:
+    vtk::VtkInport::Optional isPortOptional(int portNumber) const {
+        if (vtkInformation* info = filter_->GetInputPortInformation(portNumber)) {
+            if (info && info->Has(vtkAlgorithm::INPUT_IS_OPTIONAL())) {
+                return info->Get(vtkAlgorithm::INPUT_IS_OPTIONAL()) == 1
+                           ? vtk::VtkInport::Optional::Yes
+                           : vtk::VtkInport::Optional::No;
+            }
+        }
+        return vtk::VtkInport::Optional::No;
+    }
+
+    vtk::VtkInport::Repeatable isPortRepeatable(int portNumber) const {
+        if (vtkInformation* info = filter_->GetInputPortInformation(portNumber)) {
+            if (info && info->Has(vtkAlgorithm::INPUT_IS_REPEATABLE())) {
+                return info->Get(vtkAlgorithm::INPUT_IS_REPEATABLE()) == 1
+                           ? vtk::VtkInport::Repeatable::Yes
+                           : vtk::VtkInport::Repeatable::No;
+            }
+        }
+        return vtk::VtkInport::Repeatable::No;
+    }
+
     std::optional<std::string> getInportDataType(int portNumber) const {
-        vtkInformation* info = filter_->GetInputPortInformation(portNumber);
         std::optional<std::string> dataType;
-        if (info->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
-            dataType = info->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
-        } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
-            dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+        if (vtkInformation* info = filter_->GetInputPortInformation(portNumber)) {
+            if (info->Has(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE())) {
+
+                dataType = info->Get(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE());
+            } else if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+                dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+            }
         }
         return dataType;
     }
     std::optional<std::string> getOutportDataType(int portNumber) const {
         if constexpr (requires {
                           traits_.outportDataTypeFunc;
-                          requires std::invocable<decltype(traits_.outportDataTypeFunc), vtkAlgorithm*, int>;
+                          requires std::invocable<decltype(traits_.outportDataTypeFunc),
+                                                  vtkAlgorithm*, int>;
                       }) {
             return traits_.outportDataTypeFunc(filter_, portNumber);
         } else {
-            vtkInformation* info = filter_->GetOutputPortInformation(portNumber);
             std::optional<std::string> dataType;
-            if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
-                dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+            if (vtkInformation* info = filter_->GetOutputPortInformation(portNumber)) {
+                if (info->Has(vtkDataObject::DATA_TYPE_NAME())) {
+                    dataType = info->Get(vtkDataObject::DATA_TYPE_NAME());
+                }
             }
             return dataType;
         }
@@ -352,7 +390,8 @@ struct ProcessorTraits<vtkwrapper::VTKGenericProcessor<VTKFilter>> {
 
 template <typename VTKFilter>
 inline const ProcessorInfo& vtkwrapper::VTKGenericProcessor<VTKFilter>::getProcessorInfo() const {
-    static const ProcessorInfo info = ProcessorTraits<VTKGenericProcessor<VTKFilter>>::getProcessorInfo();
+    static const ProcessorInfo info =
+        ProcessorTraits<VTKGenericProcessor<VTKFilter>>::getProcessorInfo();
     return info;
 }
 

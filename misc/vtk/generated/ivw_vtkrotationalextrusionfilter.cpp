@@ -115,13 +115,17 @@ struct VTKTraits<vtkRotationalExtrusionFilter> {
     static constexpr std::string_view category = "vtk";
     static constexpr std::string_view tags = "VTK";
     inline static std::array<InputData, 1> inports = {
-        InputData{"Input", "vtkPolyData", -1, R"(This property specifies the input to the Rotational
+        InputData{.identifier = "Input",
+                  .dataType = "vtkPolyData",
+                  .numComp = -1,
+                  .doc = R"(This property specifies the input to the Rotational
 Extrusion filter.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 0> groups = {};
     std::tuple<Wrapper0, Wrapper1, Wrapper2, Wrapper3, Wrapper4> properties;
 
-    static constexpr std::string_view doc = R"ivw(The Rotational Extrusion filter forms a surface by
+    static constexpr std::string_view doc =
+        R"ivw(The Rotational Extrusion filter forms a surface by
 rotating the input about the Z axis. This filter is
 intended to operate on 2D polygonal data. It produces
 polygonal output.)ivw";

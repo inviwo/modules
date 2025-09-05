@@ -151,8 +151,14 @@ struct VTKTraits<ttkDistanceMatrixDistortion> {
     static constexpr std::string_view category = "topology";
     static constexpr std::string_view tags = "TTK";
     inline static std::array<InputData, 2> inports = {
-        InputData{"HighDistanceMatrix", "vtkTable", 1, R"(High dimension distance matrix.)"},
-        InputData{"LowDistanceMatrix", "vtkTable", -1, R"(Low dimension distance matrix.)"}};
+        InputData{.identifier = "HighDistanceMatrix",
+                  .dataType = "vtkTable",
+                  .numComp = 1,
+                  .doc = R"(High dimension distance matrix.)"},
+        InputData{.identifier = "LowDistanceMatrix",
+                  .dataType = "vtkTable",
+                  .numComp = -1,
+                  .doc = R"(Low dimension distance matrix.)"}};
     inline static std::array<OutputData, 0> outports = {};
     inline static std::array<Group, 3> groups = {
         Group{"Testing",
