@@ -268,7 +268,7 @@ jobs:
     - name: "Configure CMake"
       shell: bash
       run: >
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha-dynamic
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha-dynamic --fresh
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic

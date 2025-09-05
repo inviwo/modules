@@ -37,7 +37,7 @@ class VolumeExtractChannel(ivw.Processor):
         channels = volume.data.shape[3]
 
         volumeSlice = volume.data[:, :, :, np.clip(self.channel.value, 0, channels - 1)]
-        newVolume = ivw.data.Volume(volumeSlice)
+        newVolume = ivw.data.Volume(np.copy(volumeSlice))
         newVolume.dataMap = volume.dataMap
         newVolume.modelMatrix = volume.modelMatrix
         newVolume.worldMatrix = volume.worldMatrix
