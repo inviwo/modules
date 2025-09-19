@@ -34,6 +34,7 @@ import os
 import inviwopy as ivw
 
 import ivwmolvis
+import ivwbase
 
 from Bio.PDB.MMCIFParser import MMCIFParser
 from Bio.PDB.PDBParser import PDBParser
@@ -75,12 +76,15 @@ class MolecularStructureSource(ivw.Processor):
         pass
 
     def process(self):
-        if not self.filename.value or not os.path.isfile(self.filename.value):
+        if not self.filename.value:
             return
 
         self.dataset.value = self.filename.value.name
+        filename = ivwbase.io.downloadAndCacheIfUrl(self.filename.valueAsString())
 
-        self.outports.molecule.setData(self.parseFile(self.filename.value))
+        if not os.path.isfile(filename):
+            return
+        self.outports.molecule.setData(self.parseFile(filename))
 
     @staticmethod
     def parseFile(filename):
