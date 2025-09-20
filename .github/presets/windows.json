@@ -24,11 +24,11 @@
         "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
         "VCPKG_HOST_TRIPLET": "x64-windows-static-md",
 
-        // The vcpkg graphvis package file in static mode
+        "$comment1": "The vcpkg graphvis package file in static mode",
         "VCPKG_MANIFEST_FEATURES" : "sgct;openmesh;nanovg;vtk;ttk",
         "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
 
-        // Linker issues with STB being defined in both nanovgutils and sgct
+        "$comment": "Linker issues with STB being defined in both nanovgutils and sgct",
         "IVW_MODULE_NANOVGUTILS":   { "type": "BOOL", "value": "OFF"}
         
       }
