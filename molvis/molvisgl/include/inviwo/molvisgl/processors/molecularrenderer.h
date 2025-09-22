@@ -36,8 +36,9 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
-#include <inviwo/core/properties/selectioncolorproperty.h>
 #include <inviwo/core/properties/simplelightingproperty.h>
+#include <inviwo/core/properties/selectioncolorproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/imageport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 
@@ -66,12 +67,13 @@ public:
 
 private:
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };
-    enum class Coloring { Atoms, Residues, Chains, Fixed };
+    enum class Coloring { Atoms, Residues, Chains, BFactor, Fixed };
 
     struct ColorMapping {
         Coloring coloring;
         molvis::element::Colormap atoms;
         molvis::aminoacid::Colormap aminoacids;
+        const TransferFunction& bFactor;
         vec4 fixedColor;
     };
 
@@ -80,8 +82,8 @@ private:
 
     void configureVdWShader(Shader& shader);
     void configureLicoriceShader(Shader& shader);
-    std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s, ColorMapping colormap,
-                                     size_t pickingId);
+    std::shared_ptr<Mesh> createMesh(const molvis::MolecularStructure& s,
+                                     const ColorMapping& colormap, size_t pickingId);
     void handlePicking(PickingEvent* p);
 
     molvis::MolecularStructureFlatMultiInport inport_;
@@ -95,6 +97,7 @@ private:
     OptionProperty<molvis::element::Colormap> atomColormap_;
     OptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
     FloatVec4Property fixedColor_;
+    TransferFunctionProperty bFactorColormap_;
 
     SelectionColorProperty showHighlighted_;
     SelectionColorProperty showSelected_;

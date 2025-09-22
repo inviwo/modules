@@ -93,11 +93,13 @@ MolecularRasterizer::MolecularRasterizer()
                     + *Atoms*: applies a colormap (Rasmol CPK, Rasmol CPK new) based on atomic elements
                     + *Residues*: applies a colormap (Amino, Shapely, Ugene) based on amino acids
                     + *Chains*: chain IDs are mapped to colors
+                    + *B-Factor*: B-Factors, that is the Debye-Waller factor (DWF) or temperature factor, are mapped to colors
                 )"_unindentHelp,
                 {{"fixed", "Fixed", Coloring::Fixed},
                  {"atoms", "Atoms", Coloring::Atoms},
                  {"residues", "Residues", Coloring::Residues},
-                 {"chains", "Chains", Coloring::Chains}},
+                 {"chains", "Chains", Coloring::Chains},
+                 {"bFactor", "B-Factor", Coloring::BFactor}},
                 1}
     , atomColormap_{"atomColormap",
                     "Colormap",
@@ -115,6 +117,9 @@ MolecularRasterizer::MolecularRasterizer()
     , fixedColor_("fixedColor", "Color",
                   util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f)
                       .set("Fixed color for the entire structure"_help))
+    , bFactorColormap_{"bFactorColormap", "Colormap", "Colormap for coloring B-Factors"_help,
+                       TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                         {1.0, vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
     , showHighlighted_("showHighlighted", "Show Highlighted",
                        "Parameters for color overlay of highlighted data"_help, true,
                        vec3(0.35f, 0.75f, 0.93f))
@@ -181,11 +186,13 @@ MolecularRasterizer::MolecularRasterizer()
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Atoms; });
     aminoColormap_.visibilityDependsOn(
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Residues; });
+    bFactorColormap_.visibilityDependsOn(
+        coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::BFactor; });
 
     addProperties(representation_, coloring_, fixedColor_, atomColormap_, aminoColormap_,
-                  forceOpaque_, useUniformAlpha_, uniformAlpha_, radiusScaling_, forceRadius_,
-                  defaultRadius_, showHighlighted_, showSelected_, showFiltered_, enableTooltips_,
-                  camera_);
+                  bFactorColormap_, forceOpaque_, useUniformAlpha_, uniformAlpha_, radiusScaling_,
+                  forceRadius_, defaultRadius_, showHighlighted_, showSelected_, showFiltered_,
+                  enableTooltips_, camera_);
 
     camera_.setCollapsed(true);
     showHighlighted_.setCollapsed(true);
@@ -208,6 +215,8 @@ void MolecularRasterizer::process() {
                 return aminoColormap_.isModified();
             case Coloring::Fixed:
                 return fixedColor_.isModified();
+            case Coloring::BFactor:
+                return bFactorColormap_.isModified();
             case Coloring::Chains:
             default:
                 return false;
@@ -220,16 +229,17 @@ void MolecularRasterizer::process() {
         const size_t pickingId = atomPicking_.getPickingId(0);
         size_t offset = 0;
         for (const auto& structure : inport_) {
-            meshes_.push_back(createMesh(*structure,
-                                         {coloring_, atomColormap_, aminoColormap_, fixedColor_},
-                                         pickingId + offset));
+            meshes_.push_back(createMesh(
+                *structure,
+                {coloring_, atomColormap_, aminoColormap_, bFactorColormap_.get(), fixedColor_},
+                pickingId + offset));
             offset += structure->atoms().positions.size();
         }
         meshCreated = true;
     }
     if (brushing_.isChanged() || meshCreated) {
         size_t offset = 0;
-        for (auto& mesh : meshes_) {
+        for (const auto& mesh : meshes_) {
             if (mesh->getBuffers().empty()) continue;
             molvis::updateBrushing(brushing_.getManager(), *mesh, offset, showSelected_,
                                    showHighlighted_);
@@ -383,7 +393,8 @@ std::optional<mat4> MolecularRasterizer::boundingBox() const {
 }
 
 std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStructure& s,
-                                                      ColorMapping colormap, size_t pickingId) {
+                                                      const ColorMapping& colormap,
+                                                      size_t pickingId) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -429,6 +440,19 @@ std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStr
                     return colors;
                 } else {
                     return std::vector<vec4>(atomCount, chain::color(ChainId::Unknown));
+                }
+            case Coloring::BFactor:
+                if (!s.atoms().bFactors.empty()) {
+                    std::vector<vec4> colorVec;
+                    auto [min, max] = std::ranges::minmax_element(s.atoms().bFactors);
+                    const TransferFunction& tf = bFactorColormap_.get();
+                    for (auto elem : s.atoms().bFactors) {
+                        colorVec.emplace_back(tf.sample((elem - *min) / (*max - *min)));
+                    }
+                    return colorVec;
+                } else {
+                    return std::vector<vec4>(atomCount,
+                                             element::color(Element::Unknown, atomColormap_));
                 }
             case Coloring::Fixed:
             default:

@@ -63,7 +63,8 @@ MolecularStructureToMesh::MolecularStructureToMesh()
                  {"fixed", "Fixed", Coloring::Fixed},
                  {"atoms", "Atoms", Coloring::Atoms},
                  {"residues", "Residues", Coloring::Residues},
-                 {"chains", "Chains", Coloring::Chains}},
+                 {"chains", "Chains", Coloring::Chains},
+                 {"bFactor", "B-Factor", Coloring::BFactor}},
                 0}
     , atomColormap_{"atomColormap",
                     "Colormap",
@@ -77,6 +78,9 @@ MolecularStructureToMesh::MolecularStructureToMesh()
                       {"shapely", "Shapely", molvis::aminoacid::Colormap::Shapely},
                       {"ugene", "Ugene (multiple alignment)", molvis::aminoacid::Colormap::Ugene}}}
     , fixedColor_("fixedColor", "Color", util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f))
+    , bFactorColormap_{"bFactorColormap", "Colormap",
+                       TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                         {1.0, vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
     , enableTooltips_("enableTooltips", "Enable Tooltips", true)
     , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
@@ -89,8 +93,11 @@ MolecularStructureToMesh::MolecularStructureToMesh()
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Atoms; });
     aminoColormap_.visibilityDependsOn(
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Residues; });
+    bFactorColormap_.visibilityDependsOn(
+        coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::BFactor; });
 
-    addProperties(coloring_, fixedColor_, atomColormap_, aminoColormap_, enableTooltips_);
+    addProperties(coloring_, fixedColor_, atomColormap_, aminoColormap_, bFactorColormap_,
+                  enableTooltips_);
 }
 
 void MolecularStructureToMesh::process() {
@@ -100,8 +107,8 @@ void MolecularStructureToMesh::process() {
                                    static_cast<uint32_t>(atomPicking_.getPickingId(0)));
 
     if (coloring_ != Coloring::Default) {
-        if (auto buf = mesh->findBuffer(BufferType::ColorAttrib); buf.first) {
-            mesh->removeBuffer(buf.first);
+        if (auto [buffer, _] = mesh->findBuffer(BufferType::ColorAttrib); buffer) {
+            mesh->removeBuffer(buffer);
         }
         mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(colors()));
     }
@@ -163,6 +170,19 @@ std::vector<vec4> MolecularStructureToMesh::colors() const {
                 return colors;
             } else {
                 return std::vector<vec4>(atomCount, chain::color(ChainId::Unknown));
+            }
+        case Coloring::BFactor:
+            if (!s->atoms().bFactors.empty()) {
+                std::vector<vec4> colors;
+                auto [min, max] = std::ranges::minmax_element(s->atoms().bFactors);
+                const TransferFunction& tf = bFactorColormap_.get();
+                for (auto elem : s->atoms().bFactors) {
+                    colors.emplace_back(tf.sample((elem - *min) / (*max - *min)));
+                }
+                return colors;
+            } else {
+                return std::vector<vec4>(atomCount,
+                                         element::color(Element::Unknown, atomColormap_));
             }
         case Coloring::Fixed:
         case Coloring::Default:
