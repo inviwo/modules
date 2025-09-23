@@ -17,6 +17,7 @@ set(PYTHON_FILES
     processors/FishEyeHelper.py
     processors/ImageRecorder.py
     processors/VolumeExtractChannel.py
+    processors/PythonImageExample.py
 )
 ivw_group("Python Files" ${PYTHON_FILES})
 
