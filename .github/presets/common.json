@@ -6,7 +6,7 @@
       "name": "common",
       "displayName": "Modules GHA",
       "cacheVariables": {
-        "VCPKG_MANIFEST_FEATURES" : "graphviz;openmesh;nanovg;vtk;ttk",
+        "VCPKG_MANIFEST_FEATURES" : "python;qt;graphviz;openmesh;nanovg;vtk;ttk",
         "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
         
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
