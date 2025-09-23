@@ -34,7 +34,7 @@
 namespace inviwo {
 
 TensorVisPythonModule::TensorVisPythonModule(InviwoApplication* app) try
-    : InviwoModule(app, "TensorVis Python")
+    : InviwoModule(app, "TensorVisPython")
     , scripts_{getPath() / "python"}
     , pythonFolderObserver_{app, getPath() / "python/processors", *this} {
 
