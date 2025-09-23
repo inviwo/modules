@@ -128,8 +128,8 @@ def createMolecularStructure(pos: List[numpy.array],
     :return: ivwmolvis.MolecularStructure
     """
 
-    positions: ivw.dvec3Vector = ivw.dvec3Vector()
-    serialnumbers: ivw.intVector = ivw.intVector()
+    positions: ivw.glm.dvec3Vector = ivw.glm.dvec3Vector()
+    serialnumbers: ivw.glm.intVector = ivw.glm.intVector()
     atomicnumbers: list = []
     for i, p in enumerate(pos):
         element = elements[i]
