@@ -18,6 +18,7 @@ set(PYTHON_FILES
     processors/ImageRecorder.py
     processors/VolumeExtractChannel.py
     processors/MergeTreeMesh.py
+    processors/PythonImageExample.py
 )
 ivw_group("Python Files" ${PYTHON_FILES})
 
