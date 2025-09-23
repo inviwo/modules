@@ -37,3 +37,5 @@ if(IVW_UNITTESTS)
 endif()
 
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/python)
+
+set_property(GLOBAL APPEND PROPERTY IVW_PYTHON_ADDITIONAL_MODULES pandas pyarrow natsort biopython)
