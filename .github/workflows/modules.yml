@@ -97,10 +97,10 @@ jobs:
             linkage: dynamic
             configuration: Release
             targets: 'ALL_BUILD DOXY-Inviwo DOXY-Python package'
-          #- system: macos  # Disable mac packaging since it probably runs out of diskspace
-          #  linkage: dynamic
-          #  configuration: Release
-          #  targets: 'all package'
+          - system: macos
+            linkage: dynamic
+            configuration: Release
+            targets: 'ALL_BUILD package'
           - system: linux
             linkage: dynamic
             configuration: Release
@@ -271,9 +271,9 @@ jobs:
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT && cmake -S inviwo -B build --preset gha-dynamic --fresh
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
-        -DVCPKG_TARGET_TRIPLET=x64-osx-dynamic
-        -DVCPKG_HOST_TRIPLET=x64-osx-dynamic
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
+        -DVCPKG_MANIFEST_FEATURES="python;qt"
+        -DVCPKG_APPLOCAL_DEPS=OFF
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_TETRAMESH=OFF
 
@@ -529,18 +529,18 @@ jobs:
       shell: bash
       run: |
         # Find the name of the installer 
-        DMG=$(ls Inviwo-*.dmg)
+        DMG=$(ls inviwo-*.dmg)
         # Mount installer image
         hdiutil attach $DMG
         # Install by copying Inviwo.app to applications folder
-        cp -r /Volumes/${DMG%%.dmg}/Inviwo.app /Applications/
+        cp -r /Volumes/${DMG%%.dmg}/inviwo.app /Applications/
         hdiutil detach /Volumes/${DMG%%.dmg}/
 
     - name: "Run Inviwo"
       if: runner.os == 'macOS'
       shell: bash
       run: |
-        cd /Applications/Inviwo.app/Contents/MacOS/
+        cd /Applications/inviwo.app/Contents/MacOS/
         ./inviwo --logconsole --quit
 
     - name: "Setup tmate session (on failure and debug_enabled)"
