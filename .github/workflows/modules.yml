@@ -579,7 +579,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer, regression]
 
-    runs-on: linux-latest
+    runs-on: ubuntu-latest
     steps:
       - name: "Clone Inviwo"
         uses: actions/checkout@v5
@@ -593,17 +593,17 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: inviwo-python-api
-          path: modules/python-api
+          path: inviwo/modules/python-api
 
       - name: "Download cpp-api"
         uses: actions/download-artifact@v5
         with:
           name: inviwo-cpp-api
-          path: modules/cpp-api
+          path: inviwo/modules/cpp-api
 
       - name: "Publish python-api"
         run: |
-          cd modules
+          cd inviwo/modules
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add python-api
@@ -612,7 +612,7 @@ jobs:
 
       - name: "Publish cpp-api"
         run: |
-          cd modules
+          cd inviwo/modules
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add cpp-api
