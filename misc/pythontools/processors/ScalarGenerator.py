@@ -34,6 +34,6 @@ class ScalarGenerator(ivw.Processor):
         return ScalarGenerator.processorInfo()
 
     def process(self):
-        self.outport.setData(ivw.floatVector(self.amplitude.value * np.sin(
+        self.outport.setData(ivw.glm.floatVector(self.amplitude.value * np.sin(
             self.phase.value + math.pi * 2.0 * self.frequency.value * np.arange(
                 0, self.count.value, 1, dtype=float))))

@@ -24,6 +24,8 @@
         "VCPKG_TARGET_TRIPLET": "x64-windows-static-md",
         "VCPKG_HOST_TRIPLET": "x64-windows-static-md",
 
+        "IVW_TEST_UNIT_TESTS": { "type": "BOOL", "value": "OFF"},
+
         "$comment1": "The vcpkg graphvis package file in static mode",
         "VCPKG_MANIFEST_FEATURES" : "python;qt;sgct;openmesh;nanovg;vtk;ttk",
         "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},

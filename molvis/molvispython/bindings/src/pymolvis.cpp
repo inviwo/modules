@@ -359,9 +359,7 @@ void exposeMolVis(pybind11::module& m) {
     py::classh<Residue>(m, "Residue")
         .def(py::init())
         .def(py::init([](int id, AminoAcid aminoacid, const std::string& fullname,
-                         int chainid) -> Residue {
-                 return {id, aminoacid, fullname, chainid};
-             }),
+                         int chainid) -> Residue { return {id, aminoacid, fullname, chainid}; }),
              py::arg("id"), py::arg("aminoacid"), py::arg("fullname"), py::arg("chainid"))
         .def(py::init([](int id, const std::string& name, const std::string& fullname,
                          int chainid) -> Residue {
@@ -380,9 +378,8 @@ void exposeMolVis(pybind11::module& m) {
 
     py::classh<Chain>(m, "Chain")
         .def(py::init())
-        .def(py::init([](int id, const std::string& name) -> Chain {
-                 return {id, name};
-             }),
+        .def(py::init(
+                 [](int id, const std::string& name) -> Chain { return {.id = id, .name = name}; }),
              py::arg("id"), py::arg("name"))
         .def_readwrite("id", &Chain::id)
         .def_readwrite("name", &Chain::name)
@@ -391,13 +388,16 @@ void exposeMolVis(pybind11::module& m) {
     py::classh<MolecularData>(m, "MolecularData")
         .def(py::init())
         .def(py::init([](const std::string& source, Atoms atoms,
-                         const std::vector<Residue>& residues = {},
-                         const std::vector<Chain>& chains = {},
-                         const std::vector<Bond>& bonds = {}) -> MolecularData {
-                 return {source, std::move(atoms), residues, chains, bonds};
+                         const std::vector<Residue>& residues, const std::vector<Chain>& chains,
+                         const std::vector<Bond>& bonds) -> MolecularData {
+                 return {.source = source,
+                         .atoms = std::move(atoms),
+                         .residues = residues,
+                         .chains = chains,
+                         .bonds = bonds};
              }),
-             py::arg("source"), py::arg("atoms"), py::arg("residues"), py::arg("chains"),
-             py::arg("bonds"))
+             py::arg("source"), py::arg("atoms"), py::arg("residues") = std::vector<Residue>{},
+             py::arg("chains") = std::vector<Chain>{}, py::arg("bonds") = std::vector<Bond>{})
         .def_readwrite("source", &MolecularData::source)
         .def_readwrite("atoms", &MolecularData::atoms)
         .def_readwrite("residues", &MolecularData::residues)

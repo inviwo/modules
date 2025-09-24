@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/transferfunctionproperty.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 
@@ -59,7 +60,7 @@ private:
     void handlePicking(PickingEvent* p);
     std::vector<vec4> colors() const;
 
-    enum class Coloring { Default, Atoms, Residues, Chains, Fixed };
+    enum class Coloring : std::uint8_t { Default, Atoms, Residues, Chains, BFactor, Fixed };
 
     molvis::MolecularStructureInport inport_;
     MeshOutport outport_;
@@ -69,6 +70,7 @@ private:
     OptionProperty<molvis::element::Colormap> atomColormap_;
     OptionProperty<molvis::aminoacid::Colormap> aminoColormap_;
     FloatVec4Property fixedColor_;
+    TransferFunctionProperty bFactorColormap_;
 
     BoolProperty enableTooltips_;
 

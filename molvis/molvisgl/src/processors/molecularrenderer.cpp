@@ -44,6 +44,7 @@
 #include <inviwo/molvisgl/util/molvisglutils.h>
 
 #include <fmt/format.h>
+#include <ranges>
 
 namespace inviwo {
 
@@ -90,11 +91,13 @@ MolecularRenderer::MolecularRenderer()
                     + *Atoms*: applies a colormap (Rasmol CPK, Rasmol CPK new) based on atomic elements
                     + *Residues*: applies a colormap (Amino, Shapely, Ugene) based on amino acids
                     + *Chains*: chain IDs are mapped to colors
+                    + *B-Factor*: B-Factors, that is the Debye-Waller factor (DWF) or temperature factor, are mapped to colors
                 )"_unindentHelp,
                 {{"fixed", "Fixed", Coloring::Fixed},
                  {"atoms", "Atoms", Coloring::Atoms},
                  {"residues", "Residues", Coloring::Residues},
-                 {"chains", "Chains", Coloring::Chains}},
+                 {"chains", "Chains", Coloring::Chains},
+                 {"bFactor", "B-Factor", Coloring::BFactor}},
                 1}
     , atomColormap_{"atomColormap",
                     "Colormap",
@@ -112,6 +115,9 @@ MolecularRenderer::MolecularRenderer()
     , fixedColor_("fixedColor", "Color",
                   util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f)
                       .set("Fixed color for the entire structure"_help))
+    , bFactorColormap_{"bFactorColormap", "Colormap", "Colormap for coloring B-Factors"_help,
+                       TransferFunction{{{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
     , showHighlighted_("showHighlighted", "Show Highlighted",
                        "Parameters for color overlay of highlighted data"_help, true,
                        vec3(0.35f, 0.75f, 0.93f))
@@ -186,10 +192,12 @@ MolecularRenderer::MolecularRenderer()
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Atoms; });
     aminoColormap_.visibilityDependsOn(
         coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::Residues; });
+    bFactorColormap_.visibilityDependsOn(
+        coloring_, [](auto& prop) { return prop.getSelectedValue() == Coloring::BFactor; });
 
     addProperties(representation_, coloring_, fixedColor_, atomColormap_, aminoColormap_,
-                  radiusScaling_, forceRadius_, defaultRadius_, showHighlighted_, showSelected_,
-                  showFiltered_, enableTooltips_, camera_, lighting_, trackball_);
+                  bFactorColormap_, radiusScaling_, forceRadius_, defaultRadius_, showHighlighted_,
+                  showSelected_, showFiltered_, enableTooltips_, camera_, lighting_, trackball_);
 
     showHighlighted_.setCollapsed(true);
     showSelected_.setCollapsed(true);
@@ -254,6 +262,8 @@ void MolecularRenderer::process() {
                 return aminoColormap_.isModified();
             case Coloring::Fixed:
                 return fixedColor_.isModified();
+            case Coloring::BFactor:
+                return bFactorColormap_.isModified();
             case Coloring::Chains:
             default:
                 return false;
@@ -267,7 +277,11 @@ void MolecularRenderer::process() {
         size_t offset = 0;
         for (const auto& structure : inport_) {
             meshes_.push_back(createMesh(*structure,
-                                         {coloring_, atomColormap_, aminoColormap_, fixedColor_},
+                                         {.coloring = coloring_,
+                                          .atoms = atomColormap_,
+                                          .aminoacids = aminoColormap_,
+                                          .bFactor = bFactorColormap_.get(),
+                                          .fixedColor = fixedColor_},
                                          pickingId + offset));
             offset += structure->atoms().positions.size();
         }
@@ -275,7 +289,7 @@ void MolecularRenderer::process() {
     }
     if (brushing_.isChanged() || meshCreated) {
         size_t offset = 0;
-        for (auto& mesh : meshes_) {
+        for (const auto& mesh : meshes_) {
             if (mesh->getBuffers().empty()) continue;
             molvis::updateBrushing(brushing_.getManager(), *mesh, offset, showSelected_,
                                    showHighlighted_);
@@ -354,7 +368,8 @@ void MolecularRenderer::configureLicoriceShader(Shader& shader) {
 }
 
 std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStructure& s,
-                                                    ColorMapping colormap, size_t pickingId) {
+                                                    const ColorMapping& colormap,
+                                                    size_t pickingId) {
     if (s.atoms().positions.empty()) {
         return std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     }
@@ -369,37 +384,50 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
         switch (colormap.coloring) {
             case Coloring::Atoms:
                 if (!s.atoms().atomicNumbers.empty()) {
-                    std::vector<vec4> colors;
+                    std::vector<vec4> colorVec;
                     for (auto elem : s.atoms().atomicNumbers) {
-                        colors.emplace_back(element::color(elem, colormap.atoms));
+                        colorVec.emplace_back(element::color(elem, colormap.atoms));
                     }
-                    return colors;
+                    return colorVec;
                 } else {
                     return std::vector<vec4>(atomCount,
                                              element::color(Element::Unknown, colormap.atoms));
                 }
             case Coloring::Residues:
                 if (s.hasResidues()) {
-                    std::vector<vec4> colors;
+                    std::vector<vec4> colorVec;
                     const auto& residues = s.residues();
                     for (auto resIndex : s.getResidueIndices()) {
-                        colors.emplace_back(
+                        colorVec.emplace_back(
                             aminoacid::color(residues[resIndex].aminoacid, colormap.aminoacids));
                     }
-                    return colors;
+                    return colorVec;
                 } else {
                     return std::vector<vec4>(
                         atomCount, aminoacid::color(AminoAcid::Unknown, colormap.aminoacids));
                 }
             case Coloring::Chains:
                 if (s.hasChains()) {
-                    std::vector<vec4> colors;
+                    std::vector<vec4> colorVec;
                     for (auto chainId : s.atoms().chainIds) {
-                        colors.emplace_back(chain::color(chainId));
+                        colorVec.emplace_back(chain::color(chainId));
                     }
-                    return colors;
+                    return colorVec;
                 } else {
                     return std::vector<vec4>(atomCount, chain::color(ChainId::Unknown));
+                }
+            case Coloring::BFactor:
+                if (!s.atoms().bFactors.empty()) {
+                    std::vector<vec4> colorVec;
+                    auto [min, max] = std::ranges::minmax_element(s.atoms().bFactors);
+                    const TransferFunction& tf = bFactorColormap_.get();
+                    for (auto elem : s.atoms().bFactors) {
+                        colorVec.emplace_back(tf.sample((elem - *min) / (*max - *min)));
+                    }
+                    return colorVec;
+                } else {
+                    return std::vector<vec4>(atomCount,
+                                             element::color(Element::Unknown, atomColormap_));
                 }
             case Coloring::Fixed:
             default:

@@ -26,9 +26,11 @@
         "VCPKG_TARGET_TRIPLET": "x64-linux",
         "VCPKG_HOST_TRIPLET": "x64-linux",
 
+        "IVW_TEST_UNIT_TESTS": { "type": "BOOL", "value": "OFF"},
+
         "$comment": "The vcpkg graphvis package file in static mode",
         "VCPKG_MANIFEST_FEATURES" : "python;qt;openmesh;nanovg;vtk;ttk",
-        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"} 
+        "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"}
       }
     },
     {
