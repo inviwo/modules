@@ -45,7 +45,7 @@ namespace inviwo {
 const ProcessorInfo LayoutMergeTree::processorInfo_{
     "org.inviwo.LayoutMergeTree",  // Class identifier
     "Layout Merge Tree",           // Display name
-    "Undefined",                   // Category
+    "Topology",                    // Category
     CodeState::Experimental,       // Code state
     Tags::None,                    // Tags
     R"(<Explanation of how to use the processor.>)"_unindentHelp};
