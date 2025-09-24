@@ -17,6 +17,7 @@ set(PYTHON_FILES
     processors/FishEyeHelper.py
     processors/ImageRecorder.py
     processors/VolumeExtractChannel.py
+    processors/PythonImageExample.py
 )
 ivw_group("Python Files" ${PYTHON_FILES})
 
@@ -33,3 +34,5 @@ ivw_add_unittest(${TEST_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES} ${PYTHON_FILES})
 
 ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/processors)
+
+set_property(GLOBAL APPEND PROPERTY IVW_PYTHON_ADDITIONAL_MODULES pillow scipy imageio)

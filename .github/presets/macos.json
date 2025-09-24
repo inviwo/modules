@@ -22,7 +22,7 @@
         "VCPKG_HOST_TRIPLET":   "arm64-osx",
 
         "$comment1": "The vcpkg graphvis package file in static mode",
-        "VCPKG_MANIFEST_FEATURES" : "openmesh;nanovg;vtk;ttk",
+        "VCPKG_MANIFEST_FEATURES" : "python;qt;openmesh;nanovg;vtk;ttk",
         "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
 
         "$comment2": " Assimp and nanovg both implement stb_image in their static libs causing linker issues",
