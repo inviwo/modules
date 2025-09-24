@@ -60,7 +60,7 @@ private:
     void handlePicking(PickingEvent* p);
     std::vector<vec4> colors() const;
 
-    enum class Coloring { Default, Atoms, Residues, Chains, BFactor, Fixed };
+    enum class Coloring : std::uint8_t { Default, Atoms, Residues, Chains, BFactor, Fixed };
 
     molvis::MolecularStructureInport inport_;
     MeshOutport outport_;

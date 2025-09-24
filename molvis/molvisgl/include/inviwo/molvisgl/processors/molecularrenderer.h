@@ -67,7 +67,7 @@ public:
 
 private:
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };
-    enum class Coloring { Atoms, Residues, Chains, BFactor, Fixed };
+    enum class Coloring : std::uint8_t { Atoms, Residues, Chains, BFactor, Fixed };
 
     struct ColorMapping {
         Coloring coloring;

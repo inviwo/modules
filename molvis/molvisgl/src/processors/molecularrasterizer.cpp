@@ -118,8 +118,8 @@ MolecularRasterizer::MolecularRasterizer()
                   util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f)
                       .set("Fixed color for the entire structure"_help))
     , bFactorColormap_{"bFactorColormap", "Colormap", "Colormap for coloring B-Factors"_help,
-                       TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}},
-                                         {1.0, vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
+                       TransferFunction{{{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
     , showHighlighted_("showHighlighted", "Show Highlighted",
                        "Parameters for color overlay of highlighted data"_help, true,
                        vec3(0.35f, 0.75f, 0.93f))
@@ -229,10 +229,13 @@ void MolecularRasterizer::process() {
         const size_t pickingId = atomPicking_.getPickingId(0);
         size_t offset = 0;
         for (const auto& structure : inport_) {
-            meshes_.push_back(createMesh(
-                *structure,
-                {coloring_, atomColormap_, aminoColormap_, bFactorColormap_.get(), fixedColor_},
-                pickingId + offset));
+            meshes_.push_back(createMesh(*structure,
+                                         {.coloring = coloring_,
+                                          .atoms = atomColormap_,
+                                          .aminoacids = aminoColormap_,
+                                          .bFactor = bFactorColormap_.get(),
+                                          .fixedColor = fixedColor_},
+                                         pickingId + offset));
             offset += structure->atoms().positions.size();
         }
         meshCreated = true;
@@ -344,7 +347,7 @@ void MolecularRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMat
 
     utilgl::GlBoolState depthTest(GL_DEPTH_TEST, usesFragmentLists() == UseFragmentList::No);
 
-    for (auto& mesh : meshes_) {
+    for (const auto& mesh : meshes_) {
         if (mesh->getNumberOfBuffers() == 0) continue;
 
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),

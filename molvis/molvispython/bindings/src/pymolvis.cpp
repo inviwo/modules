@@ -378,7 +378,8 @@ void exposeMolVis(pybind11::module& m) {
 
     py::classh<Chain>(m, "Chain")
         .def(py::init())
-        .def(py::init([](int id, const std::string& name) -> Chain { return {id, name}; }),
+        .def(py::init(
+                 [](int id, const std::string& name) -> Chain { return {.id = id, .name = name}; }),
              py::arg("id"), py::arg("name"))
         .def_readwrite("id", &Chain::id)
         .def_readwrite("name", &Chain::name)
@@ -389,7 +390,11 @@ void exposeMolVis(pybind11::module& m) {
         .def(py::init([](const std::string& source, Atoms atoms,
                          const std::vector<Residue>& residues, const std::vector<Chain>& chains,
                          const std::vector<Bond>& bonds) -> MolecularData {
-                 return {source, std::move(atoms), residues, chains, bonds};
+                 return {.source = source,
+                         .atoms = std::move(atoms),
+                         .residues = residues,
+                         .chains = chains,
+                         .bonds = bonds};
              }),
              py::arg("source"), py::arg("atoms"), py::arg("residues") = std::vector<Residue>{},
              py::arg("chains") = std::vector<Chain>{}, py::arg("bonds") = std::vector<Bond>{})

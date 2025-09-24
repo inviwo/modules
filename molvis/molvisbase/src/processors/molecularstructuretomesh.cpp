@@ -79,8 +79,8 @@ MolecularStructureToMesh::MolecularStructureToMesh()
                       {"ugene", "Ugene (multiple alignment)", molvis::aminoacid::Colormap::Ugene}}}
     , fixedColor_("fixedColor", "Color", util::ordinalColor(0.8f, 0.8f, 0.8f, 1.0f))
     , bFactorColormap_{"bFactorColormap", "Colormap",
-                       TransferFunction{{{0.0, vec4{0.0f, 0.0f, 0.0f, 1.0f}},
-                                         {1.0, vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
+                       TransferFunction{{{.pos = 0.0, .color = vec4{0.0f, 0.0f, 0.0f, 1.0f}},
+                                         {.pos = 1.0, .color = vec4{1.0f, 1.0f, 1.0f, 1.0f}}}}}
     , enableTooltips_("enableTooltips", "Enable Tooltips", true)
     , atomPicking_(this, 1, [this](PickingEvent* e) { handlePicking(e); }) {
 
