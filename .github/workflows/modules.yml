@@ -272,8 +272,6 @@ jobs:
         --toolchain $VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake
         -DCMAKE_CXX_FLAGS='-stdlib=libc++'
         -DCMAKE_BUILD_TYPE=RelWithDebInfo
-        -DVCPKG_MANIFEST_FEATURES="python;qt"
-        -DVCPKG_APPLOCAL_DEPS=OFF
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         -DIVW_MODULE_TETRAMESH=OFF
 
@@ -440,7 +438,7 @@ jobs:
         -DIVW_MODULE_WEBBROWSER=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
-        -DVCPKG_MANIFEST_FEATURES="sgct;graphviz;openmesh;nanovg;vtk;ttk"
+        -DVCPKG_MANIFEST_FEATURES="python;qt;sgct;graphviz;openmesh;nanovg;vtk;ttk"
 
     - name: "Run clang-tidy"
       uses: cpp-linter/cpp-linter-action@v2.13.4
@@ -486,8 +484,8 @@ jobs:
         include:
           - os: 'windows-latest'
             installer: 'inviwo-installer-win'
-          #- os: 'macos-latest'
-          #  installer: 'inviwo-installer-macos'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
         
     runs-on: ${{ matrix.os }}
     steps:
@@ -575,3 +573,79 @@ jobs:
       with:
         name: changelog.md
         path: changelog.md
+
+  update-api-docs:
+    name: "Publish updated API Docs"
+    if: github.ref == 'refs/heads/master'
+    needs: [build, test-installer, regression]
+
+    runs-on: linux-latest
+    steps:
+      - name: "Clone Inviwo"
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: inviwo
+          submodules: false
+          repository: inviwo/inviwo
+
+      - name: "Download python-api"
+        uses: actions/download-artifact@v5
+        with:
+          name: inviwo-python-api
+          path: modules/python-api
+
+      - name: "Download cpp-api"
+        uses: actions/download-artifact@v5
+        with:
+          name: inviwo-cpp-api
+          path: modules/cpp-api
+
+      - name: "Publish python-api"
+        run: |
+          cd modules
+          git config --global user.email "team@inviwo.org"
+          git config --global user.name "Inviwo Team"
+          git add python-api
+          git commit -m "Update Python API Docs"
+          git push
+
+      - name: "Publish cpp-api"
+        run: |
+          cd modules
+          git config --global user.email "team@inviwo.org"
+          git config --global user.name "Inviwo Team"
+          git add cpp-api
+          git commit -m "Update C++ API Docs"
+          git push
+
+  update-latest-release:
+    name: "Update latest release"
+    if: github.ref == 'refs/heads/master'
+    needs: [build, test-installer, regression, create-changelog]
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
+        include:
+          - os: 'windows-latest'
+            installer: 'inviwo-installer-win'
+          - os: 'macos-latest'
+            installer: 'inviwo-installer-macos'
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: "Download installer"
+      uses: actions/download-artifact@v5
+      with:
+        name: ${{ matrix.installer }}
+
+    - name: "Upload binaries to release"
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: inviwo-*
+        file_glob: true
+        tag: latest
+        overwrite: true
+        body: "The latest inviwo build, updated for every merged pull request."
+
