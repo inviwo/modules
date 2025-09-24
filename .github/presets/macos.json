@@ -21,6 +21,8 @@
         "VCPKG_TARGET_TRIPLET": "arm64-osx",
         "VCPKG_HOST_TRIPLET":   "arm64-osx",
 
+        "IVW_TEST_UNIT_TESTS": { "type": "BOOL", "value": "OFF"},
+
         "$comment1": "The vcpkg graphvis package file in static mode",
         "VCPKG_MANIFEST_FEATURES" : "python;qt;openmesh;nanovg;vtk;ttk",
         "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
