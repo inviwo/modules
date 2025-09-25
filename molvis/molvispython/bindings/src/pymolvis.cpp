@@ -29,12 +29,10 @@
 
 #include <ivwmolvis/pymolvis.h>
 
-#include <warn/push>
-#include <warn/ignore/shadow>
+#include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
-#include <warn/pop>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 
@@ -44,6 +42,7 @@
 #include <inviwo/molvisbase/util/atomicelement.h>
 #include <inviwo/molvisbase/util/aminoacid.h>
 #include <inviwo/molvisbase/util/chain.h>
+
 #include <modules/python3/pyportutils.h>
 #include <modules/python3/opaquetypes.h>
 #include <modules/python3/polymorphictypehooks.h>
