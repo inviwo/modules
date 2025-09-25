@@ -585,38 +585,37 @@ jobs:
         uses: actions/checkout@v5
         with:
           ref: gh-pages
-          path: inviwo
+          path: modules
           submodules: false
-          repository: inviwo/inviwo
 
       - name: "Download python-api"
         uses: actions/download-artifact@v5
         with:
           name: inviwo-python-api
-          path: inviwo/modules/python-api
+          path: modules/python-api
 
       - name: "Download cpp-api"
         uses: actions/download-artifact@v5
         with:
           name: inviwo-cpp-api
-          path: inviwo/modules/cpp-api
+          path: modules/cpp-api
 
       - name: "Publish python-api"
         run: |
-          cd inviwo/modules
+          cd modules
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add python-api
-          git commit -m "Update Python API Docs"
+          git diff --cached --quiet || git commit -m "Update Python API Docs"
           git push
 
       - name: "Publish cpp-api"
         run: |
-          cd inviwo/modules
+          cd modules
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add cpp-api
-          git commit -m "Update C++ API Docs"
+          git diff --cached --quiet || git commit -m "Update C++ API Docs"
           git push
 
   update-latest-release:
@@ -630,9 +629,10 @@ jobs:
       uses: actions/download-artifact@v5
       with:
         pattern: inviwo-installer-*
+        merge-multiple: true
 
     - name: "Upload binaries to release"
-      uses: svenstaro/upload-release-action@v2.11.2
+      uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: inviwo-*
