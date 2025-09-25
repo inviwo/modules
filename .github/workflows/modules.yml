@@ -629,6 +629,7 @@ jobs:
       uses: actions/download-artifact@v5
       with:
         pattern: inviwo-installer-*
+        merge-multiple: true
 
     - name: "Upload binaries to release"
       uses: svenstaro/upload-release-action@v2
