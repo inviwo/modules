@@ -1,0 +1,14 @@
+inviwopy.data.formats
+=====================
+
+.. automodule:: inviwopy.data.formats
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      DataFormat
+      DataFormatId
+      NumericType
+   

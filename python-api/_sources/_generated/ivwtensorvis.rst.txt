@@ -1,0 +1,17 @@
+﻿ivwtensorvis
+============
+
+.. automodule:: ivwtensorvis
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      StringVector
+      TensorField3D
+      TensorField3DFlatMultiInport
+      TensorField3DInport
+      TensorField3DMultiInport
+      TensorField3DOutport
+   
