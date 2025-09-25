@@ -606,7 +606,7 @@ jobs:
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add python-api
-          git commit -m "Update Python API Docs"
+          git diff --cached --quiet || git commit -m "Update Python API Docs"
           git push
 
       - name: "Publish cpp-api"
@@ -615,7 +615,7 @@ jobs:
           git config --global user.email "team@inviwo.org"
           git config --global user.name "Inviwo Team"
           git add cpp-api
-          git commit -m "Update C++ API Docs"
+          git diff --cached --quiet || git commit -m "Update C++ API Docs"
           git push
 
   update-latest-release:
