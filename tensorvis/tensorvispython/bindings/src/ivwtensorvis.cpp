@@ -29,18 +29,16 @@
 
 #include <ivwtensorvis/ivwtensorvis.h>
 
-#include <modules/python3/pybindmodule.h>
-#include <modules/python3/opaquetypes.h>
-
-#include <ivwtensorvis/pytensorvis.h>
-
-#include <warn/push>
-#include <warn/ignore/shadow>
 #include <pybind11/pybind11.h>
 #include <pybind11/embed.h>
 #include <pybind11/stl.h>
 #include <pybind11/typing.h>
-#include <warn/pop>
+
+#include <ivwtensorvis/pytensorvis.h>
+
+#include <modules/python3/pybindmodule.h>
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 namespace py = pybind11;
 

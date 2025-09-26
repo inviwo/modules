@@ -27,10 +27,10 @@ AmiraTensorReader::AmiraTensorReader()
 
 void AmiraTensorReader::process() {
     // const char* FileName = "testscalar.am";
-    const char* FileName = inFile_.get().string().c_str();
+    auto FileName = inFile_.get().string();
     // const char* FileName = "testvector3c.am";
 
-    FILE* fp = fopen(FileName, "rb");
+    FILE* fp = fopen(FileName.c_str(), "rb");
     if (!fp) {
         LogError("Could not find " << FileName);
         return;

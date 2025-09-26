@@ -91,6 +91,8 @@ find_package(VTK CONFIG REQUIRED)
 ivw_vcpkg_install(freetype MODULE VTK)
 ivw_vcpkg_install(VTK MODULE VTK)
 
+target_compile_definitions(inviwo-module-vtk PRIVATE VTK_DEPRECATION_LEVEL=0)
+
 target_link_libraries(inviwo-module-vtk 
     PRIVATE
         VTK::CommonCore

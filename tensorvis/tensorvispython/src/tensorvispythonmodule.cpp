@@ -31,6 +31,9 @@
 
 #include <pybind11/pybind11.h>
 
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
+
 namespace inviwo {
 
 TensorVisPythonModule::TensorVisPythonModule(InviwoApplication* app) try

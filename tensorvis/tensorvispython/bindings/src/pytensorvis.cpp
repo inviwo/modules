@@ -29,21 +29,25 @@
 
 #include <ivwtensorvis/pytensorvis.h>
 
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+#include <pybind11/stl_bind.h>
+#include <pybind11/numpy.h>
+
 #include <inviwo/core/util/glmvec.h>
 #include <inviwo/core/util/glmmat.h>
 #include <inviwo/core/util/assertion.h>
 #include <inviwo/core/util/exception.h>
 #include <inviwo/core/util/formatdispatching.h>
 #include <inviwo/core/util/zip.h>
-#include <modules/python3/pyportutils.h>
-#include <modules/python3/pybindutils.h>
+
 #include <inviwo/tensorvisbase/datastructures/tensorfield3d.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-#include <pybind11/stl_bind.h>
-#include <pybind11/numpy.h>
+#include <modules/python3/pyportutils.h>
+#include <modules/python3/pybindutils.h>
+#include <modules/python3/opaquetypes.h>
+#include <modules/python3/polymorphictypehooks.h>
 
 #include <fmt/format.h>
 
