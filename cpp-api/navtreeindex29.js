@@ -1,7 +1,5 @@
 var NAVTREEINDEX29 =
 {
-"classinviwo_1_1plot_1_1PCPAxisSettings.html":[4,0,0,23,28],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[2,0,0,15,27,2],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[4,0,0,23,28,2],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[2,0,0,15,27,0],
 "classinviwo_1_1plot_1_1PCPAxisSettings.html#a41e9acc9d7883d089b96e4248c3bd66e":[4,0,0,23,28,0],
@@ -204,15 +202,15 @@ var NAVTREEINDEX29 =
 "classinviwo_1_1xml_1_1Kind.html":[2,0,0,25,2],
 "classinviwo_1_1xml_1_1Kind.html":[4,0,0,41,2],
 "classname.html":[1,3,19],
-"conceptinviwo_1_1DataType.html":[2,0,0,1505],
+"conceptinviwo_1_1DataType.html":[2,0,0,1506],
 "conceptinviwo_1_1DataType.html":[3,0,3],
-"conceptinviwo_1_1Gettable.html":[2,0,0,1508],
+"conceptinviwo_1_1Gettable.html":[2,0,0,1509],
 "conceptinviwo_1_1Gettable.html":[3,0,6],
-"conceptinviwo_1_1JSONConvertable.html":[2,0,0,1509],
+"conceptinviwo_1_1JSONConvertable.html":[2,0,0,1510],
 "conceptinviwo_1_1JSONConvertable.html":[3,0,7],
-"conceptinviwo_1_1RepresentationOf.html":[2,0,0,1506],
+"conceptinviwo_1_1RepresentationOf.html":[2,0,0,1507],
 "conceptinviwo_1_1RepresentationOf.html":[3,0,4],
-"conceptinviwo_1_1Settable.html":[2,0,0,1507],
+"conceptinviwo_1_1Settable.html":[2,0,0,1508],
 "conceptinviwo_1_1Settable.html":[3,0,5],
 "conceptinviwo_1_1animation_1_1detail_1_1Scalar.html":[3,0,0,0,0],
 "conceptinviwo_1_1detail_1_1is__transparent.html":[3,0,1,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX29 =
 "functions_func_r.html":[4,3,1,17],
 "functions_func_s.html":[4,3,1,18],
 "functions_func_t.html":[4,3,1,19],
-"functions_func_u.html":[4,3,1,20]
+"functions_func_u.html":[4,3,1,20],
+"functions_func_v.html":[4,3,1,21],
+"functions_func_w.html":[4,3,1,22]
 };

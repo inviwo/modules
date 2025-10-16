@@ -1,7 +1,5 @@
 var NAVTREEINDEX28 =
 {
-"classinviwo_1_1animation_1_1ValueKeyframe.html":[2,0,0,0,86],
-"classinviwo_1_1animation_1_1ValueKeyframe.html":[4,0,0,2,87],
 "classinviwo_1_1animation_1_1ValueKeyframeSequence.html":[2,0,0,0,87],
 "classinviwo_1_1animation_1_1ValueKeyframeSequence.html":[4,0,0,2,88],
 "classinviwo_1_1animation_1_1ValueKeyframeSequenceObserver.html":[2,0,0,0,88],
@@ -249,5 +247,7 @@ var NAVTREEINDEX28 =
 "classinviwo_1_1plot_1_1MinorTickProperty.html#a602dfee3edcedb1ed8453a571a58a855":[4,0,0,23,25,0],
 "classinviwo_1_1plot_1_1MinorTickSettings.html":[2,0,0,15,25],
 "classinviwo_1_1plot_1_1MinorTickSettings.html":[4,0,0,23,26],
-"classinviwo_1_1plot_1_1PCPAxisSettings.html":[2,0,0,15,27]
+"classinviwo_1_1plot_1_1PCPAxisSettings.html":[2,0,0,15,27],
+"classinviwo_1_1plot_1_1PCPAxisSettings.html":[4,0,0,23,28],
+"classinviwo_1_1plot_1_1PCPAxisSettings.html#a0cfaa60084e0b393c6c11e8ce006e78b":[2,0,0,15,27,2]
 };

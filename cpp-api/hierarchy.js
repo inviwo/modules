@@ -1335,6 +1335,7 @@ var hierarchy =
       ] ],
       [ "inviwo::util::is_dereferenceable< class, class >", "structinviwo_1_1util_1_1is__dereferenceable.html", null ]
     ] ],
+    [ "inviwo::VolumeGLProcessor::FBO", "structinviwo_1_1VolumeGLProcessor_1_1FBO.html", null ],
     [ "inviwo::vtkwrapper::FieldSelection", "structinviwo_1_1vtkwrapper_1_1FieldSelection.html", null ],
     [ "inviwo::FileAssociationCommand", "structinviwo_1_1FileAssociationCommand.html", null ],
     [ "inviwo::FileBase", "classinviwo_1_1FileBase.html", [
@@ -4009,6 +4010,7 @@ var hierarchy =
     [ "inviwo::VolumeNormalization", "classinviwo_1_1VolumeNormalization.html", null ],
     [ "inviwo::VolumeRAMSubSet", "classinviwo_1_1VolumeRAMSubSet.html", null ],
     [ "inviwo::VolumeReprConfig", "structinviwo_1_1VolumeReprConfig.html", null ],
+    [ "inviwo::VolumeReuseCache", "classinviwo_1_1VolumeReuseCache.html", null ],
     [ "inviwo::VolumeVTK", "classinviwo_1_1VolumeVTK.html", null ],
     [ "vtkCommand", null, [
       [ "inviwo::vtkwrapper::Command", "classinviwo_1_1vtkwrapper_1_1Command.html", null ]

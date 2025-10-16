@@ -1,7 +1,5 @@
 var NAVTREEINDEX33 =
 {
-"structinviwo_1_1Defaultvalues.html":[4,0,0,291],
-"structinviwo_1_1Easing.html":[2,0,0,308],
 "structinviwo_1_1Easing.html":[4,0,0,324],
 "structinviwo_1_1EnumTraits.html":[2,0,0,322],
 "structinviwo_1_1EnumTraits.html":[4,0,0,338],
@@ -126,6 +124,7 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[2,0,0,711,0],
 "structinviwo_1_1MeshShaderCache_1_1Requirement.html":[4,0,0,727,0],
 "structinviwo_1_1Mesh_1_1BufferInfo.html":[1,1,11,0],
+"structinviwo_1_1Mesh_1_1BufferInfo.html#a65732f89f41b151b2d1e55bc02da1124":[1,1,11,0,0],
 "structinviwo_1_1Mesh_1_1MeshInfo.html":[1,1,11,1],
 "structinviwo_1_1NetworkAutomation_1_1AutoIn.html":[2,0,0,761,0],
 "structinviwo_1_1NetworkAutomation_1_1AutoIn.html":[4,0,0,777,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX33 =
 "structinviwo_1_1ProcessorTraits_3_01CompositeSink_3_01InportType_00_01OutportType_01_4_01_4.html":[4,0,0,949],
 "structinviwo_1_1ProcessorTraits_3_01CompositeSource_3_01InportType_00_01OutportType_01_4_01_4.html":[2,0,0,934],
 "structinviwo_1_1ProcessorTraits_3_01CompositeSource_3_01InportType_00_01OutportType_01_4_01_4.html":[4,0,0,950],
-"structinviwo_1_1ProcessorTraits_3_01FileCache_3_01DataType_00_01InportType_00_01OutportType_01_4_01_4.html":[2,0,0,935]
+"structinviwo_1_1ProcessorTraits_3_01FileCache_3_01DataType_00_01InportType_00_01OutportType_01_4_01_4.html":[2,0,0,935],
+"structinviwo_1_1ProcessorTraits_3_01FileCache_3_01DataType_00_01InportType_00_01OutportType_01_4_01_4.html":[4,0,0,951]
 };
