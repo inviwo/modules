@@ -212,7 +212,7 @@ void VTKToMesh::process() {
                          util::makeIndexBuffer(std::move(triangles)));
     }
 
-    if (mesh->getNumberOfIndicies() > 0) {
+    if (mesh->getNumberOfIndices() > 0) {
         outport_.setData(mesh);
     } else {
         outport_.setData(nullptr);

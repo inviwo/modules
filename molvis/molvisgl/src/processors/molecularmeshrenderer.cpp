@@ -128,10 +128,10 @@ void MolecularMeshRenderer::process() {
 
     auto drawMesh = [](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
                        DrawType dt) {
-        if ((mesh->getNumberOfIndicies() == 0) && (mesh->getDefaultMeshInfo().dt == dt)) {
+        if ((mesh->getNumberOfIndices() == 0) && (mesh->getDefaultMeshInfo().dt == dt)) {
             drawer.draw();
         } else {
-            for (size_t i = 0; i < mesh->getNumberOfIndicies(); ++i) {
+            for (size_t i = 0; i < mesh->getNumberOfIndices(); ++i) {
                 if (mesh->getIndexMeshInfo(i).dt == dt) {
                     drawer.draw(i);
                 }
