@@ -46,7 +46,8 @@ const ProcessorInfo SpringSystemProcessor::processorInfo_{
     "Spring System",                            // Category
     CodeState::Stable,                          // Code state
     Tags::CPU,                                  // Tags
-};
+    "A example processor demonstrating the use of the spring system"_help};
+
 const ProcessorInfo& SpringSystemProcessor::getProcessorInfo() const { return processorInfo_; }
 
 SpringSystemProcessor::SpringSystemProcessor()
@@ -130,7 +131,7 @@ void sync(T& obj, const P& property, void (T::*setter)(Arg)) {
     }
 }
 template <typename P, typename T, typename V>
-void sync(T& obj, const P& property, V T::*member) {
+void sync(T& obj, const P& property, V T::* member) {
     if (property.isModified()) {
         obj.*member = property.get();
     }

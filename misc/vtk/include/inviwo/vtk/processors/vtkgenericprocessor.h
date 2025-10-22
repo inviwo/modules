@@ -33,7 +33,6 @@
 #include <inviwo/core/common/inviwoapplication.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/processors/progressbarowner.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/optionproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
@@ -169,7 +168,7 @@ void setupFieldSelection(Inport* inport, auto& wrapper) {
  * @brief A Wrapper for all VTK filters
  */
 template <typename VTKFilter>
-class VTKGenericProcessor : public Processor, public ProgressBarOwner {
+class VTKGenericProcessor : public Processor {
 public:
     VTKGenericProcessor() : Processor() {
         observer_ = vtkSmartPointer<Command>::Take(Command::New());
@@ -182,7 +181,7 @@ public:
             } else if (eid == vtkCommand::MessageEvent || eid == vtkCommand::TextEvent) {
                 log::report(LogLevel::Info, static_cast<const char*>(data));
             } else if (eid == vtkCommand::ProgressEvent) {
-                updateProgress(static_cast<float>(*static_cast<double*>(data)));
+                notifyObserversProgressChanged(this, *static_cast<double*>(data));
                 getNetwork()->getApplication()->processEvents();
                 rendercontext::activateDefault();
             }
@@ -275,7 +274,7 @@ public:
 
         if (!ready) return;
 
-        getProgressBar().setActive(true);
+        notifyObserversProgressChanged(this, 0.0);
 
         const auto nInputs = filter_->GetNumberOfInputPorts();
         const auto nOutputs = filter_->GetNumberOfOutputPorts();
@@ -307,7 +306,7 @@ public:
             }
         }
 
-        getProgressBar().setActive(false);
+        notifyObserversProgressChanged(this, std::nullopt);
     }
 
     virtual const ProcessorInfo& getProcessorInfo() const override;

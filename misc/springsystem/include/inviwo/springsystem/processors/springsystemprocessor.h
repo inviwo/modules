@@ -40,44 +40,13 @@
 #include <inviwo/core/properties/cameraproperty.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/util/timer.h>
-#include <inviwo/core/processors/activityindicator.h>
 
 namespace inviwo {
 
 class Mesh;
 class PickingEvent;
 
-/** \docpage{org.inviwo.SpringSystemExampleProcessor, Spring System Example}
- * ![](org.inviwo.SpringSystemExampleProcessor.png?classIdentifier=org.inviwo.SpringSystemExampleProcessor)
- *
- * A example processor demonstrating the use of the spring system
- *
- * ### Outports
- *   * __nodes__ A point mesh of all the nodes.
- *   * __springs__ A line mesh of all springs.
- *
- * ### Properties
- *   * __Spring Layout__
- *   * __Number of Nodes__
- *   * __Node Spacing__
- *   * __Damping Coefficient__
- *   * __Mass of Node [kg]__
- *   * __Spring Elasticity k [N/m]__
- *   * __Spring Length [m]__
- *   * __Delta T [s]__
- *   * __Iterations Per Step_
- *   * __Ext. Force F [N]__
- *   * __Scale Factor for Mesh coloring__
- *   * __Advance__
- *   * __Reset__
- *   * __Start Solver__
- *   * __Stop Solver__
- *   * __Log Status__
- *   * __Camera__
- *
- */
-class IVW_MODULE_SPRINGSYSTEM_API SpringSystemProcessor : public Processor,
-                                                          public ActivityIndicatorOwner {
+class IVW_MODULE_SPRINGSYSTEM_API SpringSystemProcessor : public Processor {
 public:
     SpringSystemProcessor();
     virtual ~SpringSystemProcessor() = default;

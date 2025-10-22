@@ -88,9 +88,9 @@ std::shared_ptr<TensorField2D> subsample2D(std::shared_ptr<const TensorField2D> 
     return std::make_shared<TensorField2D>(newDimensions, dataNew);
 }
 
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
-            const InterpolationMethod method) {
+std::shared_ptr<TensorField3D> subsample3D(std::shared_ptr<const TensorField3D> tensorField,
+                                           size3_t newDimensions,
+                                           const InterpolationMethod method) {
     std::vector<dmat3> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y * newDimensions.z);
 
@@ -119,9 +119,9 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
     return std::make_shared<TensorField3D>(newDimensions, dataNew, tensorField->getExtent());
 }
 
-std::shared_ptr<TensorField3D> IVW_MODULE_TENSORVISBASE_API
-subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensions,
-            const InterpolationMethod method, std::function<void(float)> fun) {
+std::shared_ptr<TensorField3D> subsample3D(std::shared_ptr<const TensorField3D> tensorField,
+                                           size3_t newDimensions, const InterpolationMethod method,
+                                           std::function<void(float)> fun) {
     std::vector<dmat3> dataNew;
     dataNew.resize(newDimensions.x * newDimensions.y * newDimensions.z);
 
@@ -131,14 +131,11 @@ subsample3D(std::shared_ptr<const TensorField3D> tensorField, size3_t newDimensi
     auto yFrac = 1. / static_cast<double>(newDimensions.y - 1);
     auto zFrac = 1. / static_cast<double>(newDimensions.z - 1);
 
-    const auto numElements =
-        static_cast<float>(newDimensions.x * newDimensions.y * newDimensions.z);
-    float i = 0.f;
-
     for (size_t x = 0; x < newDimensions.x; x++) {
+        fun(static_cast<float>(x) / static_cast<float>(newDimensions.x));
         for (size_t y = 0; y < newDimensions.y; y++) {
             for (size_t z = 0; z < newDimensions.z; z++) {
-                fun(std::min(0.99f, i++ / numElements));
+
                 // Find position in old tensor field
                 auto pos = dvec3(xFrac * static_cast<double>(x), yFrac * static_cast<double>(y),
                                  zFrac * static_cast<double>(z));
