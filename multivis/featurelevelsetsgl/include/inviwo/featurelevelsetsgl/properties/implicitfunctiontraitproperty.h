@@ -9,7 +9,9 @@
 namespace inviwo {
 class IVW_MODULE_FEATURELEVELSETSGL_API ImplicitFunctionTraitProperty : public TraitProperty {
 public:
-    static constexpr std::string_view stub{"// in:  <float> point[NUM_VOLUMES]\n//in:  <vec2> ranges[NUM_VOLUMES]\n// out: <float> result\nresult = point[0];"};
+    static constexpr std::string_view stub{
+        "// in:  <float> point[NUM_VOLUMES]\n//in:  <vec2> ranges[NUM_VOLUMES]\n// out: <float> "
+        "result\nresult = point[0];"};
 
     ImplicitFunctionTraitProperty() = delete;
     ImplicitFunctionTraitProperty(const ImplicitFunctionTraitProperty& p)
