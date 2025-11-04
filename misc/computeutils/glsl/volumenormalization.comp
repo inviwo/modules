@@ -36,8 +36,8 @@ writeonly uniform image3D outputTexture;
 layout (local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
 
 vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos) {
-    return (texelFetch(volume, samplePos, 0) + volumeParams.formatOffset)
-        * (1.0 - volumeParams.formatScaling);
+    return (texelFetch(volume, samplePos, 0) - volumeParams.texToNormalized.offset)
+        * volumeParams.texToNormalized.scaling;
 }
 
 float getNormalizedVoxelChannel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos, int channel) {
