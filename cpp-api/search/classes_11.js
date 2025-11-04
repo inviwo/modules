@@ -24,7 +24,7 @@ var searchData=
   ['rasterizehandle_21',['RasterizeHandle',['../classinviwo_1_1RasterizeHandle.html',1,'inviwo']]],
   ['rasterizer_22',['Rasterizer',['../classinviwo_1_1Rasterizer.html',1,'inviwo']]],
   ['ratelimiter_23',['RateLimiter',['../classinviwo_1_1RateLimiter.html',1,'inviwo']]],
-  ['ratelimiter_3c_20250_2c_20void_28_2a_29_28qgraphicsitem_20_2ap_29_3e_24',['RateLimiter&lt; 250, void(*)(QGraphicsItem *p)&gt;',['../classinviwo_1_1RateLimiter.html',1,'inviwo']]],
+  ['ratelimiter_3c_20200_2c_20void_28_2a_29_28qgraphicsitem_20_2ap_29_3e_24',['RateLimiter&lt; 200, void(*)(QGraphicsItem *p)&gt;',['../classinviwo_1_1RateLimiter.html',1,'inviwo']]],
   ['rawdatareaderdialogqt_25',['RawDataReaderDialogQt',['../classinviwo_1_1RawDataReaderDialogQt.html',1,'inviwo']]],
   ['rawvolumeramloader_26',['RawVolumeRAMLoader',['../classinviwo_1_1RawVolumeRAMLoader.html',1,'inviwo']]],
   ['rawvolumereader_27',['RawVolumeReader',['../classinviwo_1_1RawVolumeReader.html',1,'inviwo']]],
