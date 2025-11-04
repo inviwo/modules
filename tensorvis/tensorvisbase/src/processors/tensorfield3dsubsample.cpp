@@ -43,7 +43,7 @@ const ProcessorInfo TensorField3DSubsample::processorInfo_{
 const ProcessorInfo& TensorField3DSubsample::getProcessorInfo() const { return processorInfo_; }
 
 TensorField3DSubsample::TensorField3DSubsample()
-    : Processor()
+    : PoolProcessor()
     , inport_("inport")
     , outport_("outport")
     , resolutionMultiplier_("resolutionMultiplier", "Resolution multiplier", 1.0f, 0.1f, 10.0f,
@@ -52,58 +52,25 @@ TensorField3DSubsample::TensorField3DSubsample()
           "interpolationMethod", "Interpolation method",
           {{"linear", "Linear", tensorutil::InterpolationMethod::Linear},
            {"nearest", "Nearest neighbour", tensorutil::InterpolationMethod::Nearest}},
-          0, InvalidationLevel::Valid)
-    , tf_(nullptr) {
-    addPort(inport_);
-    addPort(outport_);
-
-    addProperty(resolutionMultiplier_);
-
-    addProperty(interpolationMethod_);
-
-    inport_.onChange([this]() { subsample(); });
-    resolutionMultiplier_.onChange([this]() { subsample(); });
-    interpolationMethod_.onChange([this]() { subsample(); });
+          0, InvalidationLevel::Valid) {
+    addPorts(inport_, outport_);
+    addProperties(resolutionMultiplier_, interpolationMethod_);
 }
-
-void TensorField3DSubsample::initializeResources() {}
 
 void TensorField3DSubsample::process() {
-    if (tf_) outport_.setData(tf_);
-}
+    const auto calc = [data = inport_.getData(), resolutionMultiplier = resolutionMultiplier_.get(),
+                       interpolationMethod = interpolationMethod_.get()](
+                          pool::Progress progress) -> std::shared_ptr<TensorField3D> {
+        return tensorutil::subsample3D(
+            data, size3_t(glm::round(vec3(data->getDimensions()) * resolutionMultiplier)),
+            interpolationMethod, progress);
+    };
 
-void TensorField3DSubsample::subsample() {
-    if (inport_.hasData()) {
-        if (!isRunning_) {
-            dispatchPool([this, &bar = progressBar_]() {
-                auto on_progress = [&bar](float progress) { bar.updateProgress(progress); };
-                isRunning_ = true;
-
-                const auto resolutionMultiplier = resolutionMultiplier_.get();
-                const auto interpolationMethod = interpolationMethod_.get();
-
-                do {
-                    bar.show();
-                    bar.updateProgress(0.f);
-
-                    tf_ = tensorutil::subsample3D(
-                        inport_.getData(),
-                        size3_t(glm::round(vec3(inport_.getData()->getDimensions()) *
-                                           resolutionMultiplier)),
-                        interpolationMethod, on_progress);
-
-                    on_progress(1.f);
-
-                    bar.hide();
-                } while (resolutionMultiplier != resolutionMultiplier_.get() ||
-                         interpolationMethod != interpolationMethod_.get());
-
-                dispatchFront([this]() { invalidate(InvalidationLevel::InvalidOutput); });
-
-                isRunning_ = false;
-            });
-        }
-    }
+    outport_.clear();
+    dispatchOne(calc, [this](std::shared_ptr<TensorField3D> result) {
+        outport_.setData(result);
+        newResults();
+    });
 }
 
 }  // namespace inviwo

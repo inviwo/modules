@@ -31,41 +31,18 @@
 #define IVW_TENSORFIELD3DSUBSAMPLE_H
 
 #include <inviwo/core/common/inviwo.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/tensorvisbase/ports/tensorfieldport.h>
 #include <inviwo/tensorvisbase/util/tensorfieldutil.h>
-#include <inviwo/core/processors/progressbarowner.h>
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DSubsample, <dname>}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField3DSubsample)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class <name>
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
-class IVW_MODULE_TENSORVISBASE_API TensorField3DSubsample : public Processor,
-                                                            public ProgressBarOwner {
+class IVW_MODULE_TENSORVISBASE_API TensorField3DSubsample : public PoolProcessor {
 public:
     TensorField3DSubsample();
     virtual ~TensorField3DSubsample() = default;
 
-    virtual void initializeResources() override;
     virtual void process() override;
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
@@ -78,12 +55,6 @@ private:
 
     FloatProperty resolutionMultiplier_;
     OptionProperty<tensorutil::InterpolationMethod> interpolationMethod_;
-
-    std::shared_ptr<TensorField3D> tf_;
-
-    void subsample();
-
-    bool isRunning_ = false;
 };
 
 }  // namespace inviwo
