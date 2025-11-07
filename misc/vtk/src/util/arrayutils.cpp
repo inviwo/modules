@@ -88,8 +88,9 @@ std::shared_ptr<Layer> vtkImageDataToLayer(vtkImageData* vtkImage, int arrayInde
     const dvec3 spacing = glm::make_vec3(vtkImage->GetSpacing());
     const dmat3 direction = glm::make_mat3x3(vtkImage->GetDirectionMatrix()->GetData());
     const dvec3 ddim{dim, 0};
-    const dmat3 basis{direction[0] * ddim[0] * spacing[0], direction[1] * ddim[1] * spacing[1],
-                      direction[2] * ddim[2] * spacing[2]};
+    dmat3 basis{direction[0] * ddim[0] * spacing[0], direction[1] * ddim[1] * spacing[1],
+                vec3{0.0f}};
+    basis[2] = glm::normalize(glm::cross(basis[0], basis[1]));
 
     layer->setSwizzleMask(swizzlemasks::defaultData(array->GetNumberOfComponents()));
 
