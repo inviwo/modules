@@ -877,7 +877,8 @@ var hierarchy =
             [ "inviwo::MultiChannelVolumeRaycaster", "classinviwo_1_1MultiChannelVolumeRaycaster.html", null ],
             [ "inviwo::SphericalVolumeRaycaster", "classinviwo_1_1SphericalVolumeRaycaster.html", null ],
             [ "inviwo::StandardVolumeRaycaster", "classinviwo_1_1StandardVolumeRaycaster.html", null ],
-            [ "inviwo::TexturedIsosurfaceRenderer", "classinviwo_1_1TexturedIsosurfaceRenderer.html", null ]
+            [ "inviwo::TexturedIsosurfaceRenderer", "classinviwo_1_1TexturedIsosurfaceRenderer.html", null ],
+            [ "inviwo::TexturedVolumeRaycaster", "classinviwo_1_1TexturedVolumeRaycaster.html", null ]
           ] ]
         ] ],
         [ "inviwo::SingleVoxel", "classinviwo_1_1SingleVoxel.html", null ],
@@ -935,7 +936,6 @@ var hierarchy =
         [ "inviwo::VTKToVolume", "classinviwo_1_1VTKToVolume.html", null ],
         [ "inviwo::VectorElementSelectorProcessor< T, OutportType >", "classinviwo_1_1VectorElementSelectorProcessor.html", null ],
         [ "inviwo::VectorFieldGenerator2D", "classinviwo_1_1VectorFieldGenerator2D.html", null ],
-        [ "inviwo::VectorFieldGenerator3D", "classinviwo_1_1VectorFieldGenerator3D.html", null ],
         [ "inviwo::VectorFieldGenerator4D", "classinviwo_1_1VectorFieldGenerator4D.html", null ],
         [ "inviwo::VectorFieldLIC", "classinviwo_1_1VectorFieldLIC.html", null ],
         [ "inviwo::VectorToBuffer< T >", "classinviwo_1_1VectorToBuffer.html", null ],
@@ -951,8 +951,10 @@ var hierarchy =
         [ "inviwo::VolumeDivergenceCPUProcessor", "classinviwo_1_1VolumeDivergenceCPUProcessor.html", null ],
         [ "inviwo::VolumeGLProcessor", "classinviwo_1_1VolumeGLProcessor.html", [
           [ "inviwo::LIC3D", "classinviwo_1_1LIC3D.html", null ],
+          [ "inviwo::TornadoGenerator", "classinviwo_1_1TornadoGenerator.html", null ],
           [ "inviwo::Vector3DCurl", "classinviwo_1_1Vector3DCurl.html", null ],
           [ "inviwo::Vector3DDivergence", "classinviwo_1_1Vector3DDivergence.html", null ],
+          [ "inviwo::VectorFieldGenerator3D", "classinviwo_1_1VectorFieldGenerator3D.html", null ],
           [ "inviwo::VectorMagnitudeProcessor", "classinviwo_1_1VectorMagnitudeProcessor.html", null ],
           [ "inviwo::Volume2DMapping", "classinviwo_1_1Volume2DMapping.html", null ],
           [ "inviwo::VolumeBinary", "classinviwo_1_1VolumeBinary.html", null ],
@@ -1319,6 +1321,7 @@ var hierarchy =
     [ "inviwo::util::for_each_type&lt; std::tuple&lt; T, Types... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type_3_01std_1_1tuple_3_01T_00_01Types_8_8_8_01_4_01_4.html", null ],
     [ "inviwo::util::for_each_type_pair&lt; ATypes, BTypes &gt;", "structinviwo_1_1util_1_1for__each__type__pair.html", null ],
     [ "inviwo::util::for_each_type_pair&lt; std::tuple&lt; ATypes... &gt;, std::tuple&lt; BTypes... &gt; &gt;", "structinviwo_1_1util_1_1for__each__type__pair_3_01std_1_1tuple_3_01ATypes_8_8_8_01_4_00_01std_1_980543efefbc8ab89773d2539d3c1f94.html", null ],
+    [ "inviwo::utilgl::FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
     [ "fmt::formatter", null, [
       [ "inviwo::FlagFormatter< T >", "structinviwo_1_1FlagFormatter.html", null ],
       [ "inviwo::FlagsFormatter< T >", "structinviwo_1_1FlagsFormatter.html", null ]
@@ -1399,7 +1402,7 @@ var hierarchy =
     [ "inviwo::HistogramCache", "classinviwo_1_1HistogramCache.html", null ],
     [ "inviwo::HyperStreamLineTracer", "classinviwo_1_1HyperStreamLineTracer.html", null ],
     [ "inviwo::util::identifier", "structinviwo_1_1util_1_1identifier.html", null ],
-    [ "inviwo::deserializer::IdentifierFunctions&lt; GetID, MakeNew, Filter, OnNew, OnRemove, OnMove &gt;", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
+    [ "inviwo::deserializer::IdentifierFunctions&lt; GetID, MakeNew, ShouldMakeNew, CanRecreate, OnNew, OnRemove, OnMove &gt;", "structinviwo_1_1deserializer_1_1IdentifierFunctions.html", null ],
     [ "inviwo::xml::IdentifierReplacement", "structinviwo_1_1xml_1_1IdentifierReplacement.html", null ],
     [ "inviwo::util::identity", "structinviwo_1_1util_1_1identity.html", null ],
     [ "inviwo::FragmentListRenderer::IllustrationSettings", "structinviwo_1_1FragmentListRenderer_1_1IllustrationSettings.html", null ],
@@ -1761,7 +1764,7 @@ var hierarchy =
       [ "inviwo::plot::PCPMajorTickSettings", "classinviwo_1_1plot_1_1PCPMajorTickSettings.html", null ]
     ] ],
     [ "inviwo::util::detail::fill_integer_sequence&lt; val, std::index_sequence&lt; Inds... &gt; &gt;::map&lt; N, T &gt;", "structinviwo_1_1util_1_1detail_1_1fill__integer__sequence_3_01val_00_01std_1_1index__sequence_3_01Inds_8_8_8_01_4_01_4_1_1map.html", null ],
-    [ "inviwo::deserializer::MapFunctions&lt; IdTransform, MakeNew, Filter, OnNew, OnRemove &gt;", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
+    [ "inviwo::deserializer::MapFunctions&lt; IdTransform, MakeNew, ShouldMakeNew, CanRecreate, OnNew, OnRemove &gt;", "structinviwo_1_1deserializer_1_1MapFunctions.html", null ],
     [ "inviwo::MarchingTetrahedron", "classinviwo_1_1MarchingTetrahedron.html", null ],
     [ "inviwo::amira::Material", "structinviwo_1_1amira_1_1Material.html", null ],
     [ "inviwo::util::MemoryFileHandle", "classinviwo_1_1util_1_1MemoryFileHandle.html", null ],
@@ -1917,6 +1920,9 @@ var hierarchy =
           [ "inviwo::OptionProperty< CoordinateSpace >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BrushBy >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Output >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< IntegrationDirection >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< Kernel >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< OutputDimensions >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Type >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< DataFormatId >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Upsampling >", "classinviwo_1_1OptionProperty.html", null ],
@@ -1948,6 +1954,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< Location >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Positioning >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< ColoringMethod >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< util::Grid3DPointGeneration::Mode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< RenderMode >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< Marker >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< CoordinateOffset >", "classinviwo_1_1OptionProperty.html", null ],
@@ -1967,6 +1974,7 @@ var hierarchy =
           [ "inviwo::OptionProperty< tensorutil::InterpolationMethod >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< CartesianCoordinateAxis >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< TensorFeature >", "classinviwo_1_1OptionProperty.html", null ],
+          [ "inviwo::OptionProperty< Operation >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< vtkLogger::Verbosity >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BufferUsage >", "classinviwo_1_1OptionProperty.html", null ],
           [ "inviwo::OptionProperty< BufferTarget >", "classinviwo_1_1OptionProperty.html", null ],
@@ -2065,8 +2073,7 @@ var hierarchy =
     [ "inviwo::NetworkVisitorEnter", "classinviwo_1_1NetworkVisitorEnter.html", null ],
     [ "inviwo::NetworkVisitorExit", "classinviwo_1_1NetworkVisitorExit.html", null ],
     [ "inviwo::NoData", "structinviwo_1_1NoData.html", null ],
-    [ "inviwo::NodeDebugger::Node", "structinviwo_1_1NodeDebugger_1_1Node.html", null ],
-    [ "inviwo::NodeDebugger", "structinviwo_1_1NodeDebugger.html", null ],
+    [ "inviwo::deserializer::Node", "structinviwo_1_1deserializer_1_1Node.html", null ],
     [ "inviwo::NodeSwitch", "classinviwo_1_1NodeSwitch.html", null ],
     [ "inviwo::ffmpeg::NoMoveCopy", "structinviwo_1_1ffmpeg_1_1NoMoveCopy.html", [
       [ "inviwo::ffmpeg::Codec", "classinviwo_1_1ffmpeg_1_1Codec.html", null ],
@@ -2077,6 +2084,7 @@ var hierarchy =
     ] ],
     [ "inviwo::util::nonesuch", "structinviwo_1_1util_1_1nonesuch.html", null ],
     [ "inviwo::command::Nop", "structinviwo_1_1command_1_1Nop.html", null ],
+    [ "inviwo::utilgl::NormalizationMap", "structinviwo_1_1utilgl_1_1NormalizationMap.html", null ],
     [ "inviwo::util::NotificationBlocker", "classinviwo_1_1util_1_1NotificationBlocker.html", null ],
     [ "inviwo::NumberWidgetConfig", "structinviwo_1_1NumberWidgetConfig.html", null ],
     [ "inviwo::ObservableInterface", "classinviwo_1_1ObservableInterface.html", [
@@ -3119,6 +3127,7 @@ var hierarchy =
     [ "inviwo::util::RandomCubicalPointGeneration", "structinviwo_1_1util_1_1RandomCubicalPointGeneration.html", null ],
     [ "inviwo::util::detail::RandomNumberRangeValues", "structinviwo_1_1util_1_1detail_1_1RandomNumberRangeValues.html", null ],
     [ "inviwo::util::RandomSphericalPointGeneration", "structinviwo_1_1util_1_1RandomSphericalPointGeneration.html", null ],
+    [ "inviwo::utilgl::RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
     [ "std::rank", null, [
       [ "inviwo::util::rank< const T >", "structinviwo_1_1util_1_1rank_3_01const_01T_01_4.html", null ],
       [ "inviwo::util::rank< T >", "structinviwo_1_1util_1_1rank.html", [
@@ -3225,6 +3234,9 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< CoordinateSpace >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BrushBy >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Output >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< IntegrationDirection >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< Kernel >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< OutputDimensions >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Type >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< DataFormatId >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Upsampling >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3256,6 +3268,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< Location >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Positioning >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< ColoringMethod >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< util::Grid3DPointGeneration::Mode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< RenderMode >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< Marker >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< CoordinateOffset >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3275,6 +3288,7 @@ var hierarchy =
       [ "inviwo::OptionPropertyOption< tensorutil::InterpolationMethod >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< CartesianCoordinateAxis >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< TensorFeature >", "classinviwo_1_1OptionPropertyOption.html", null ],
+      [ "inviwo::OptionPropertyOption< Operation >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< vtkLogger::Verbosity >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BufferUsage >", "classinviwo_1_1OptionPropertyOption.html", null ],
       [ "inviwo::OptionPropertyOption< BufferTarget >", "classinviwo_1_1OptionPropertyOption.html", null ],
@@ -3485,7 +3499,6 @@ var hierarchy =
       [ "inviwo::animation::Track", "classinviwo_1_1animation_1_1Track.html", null ],
       [ "inviwo::util::detail::PartialProcessorNetwork", "structinviwo_1_1util_1_1detail_1_1PartialProcessorNetwork.html", null ]
     ] ],
-    [ "inviwo::SerializationException::SerializationExceptionData", "structinviwo_1_1SerializationException_1_1SerializationExceptionData.html", null ],
     [ "inviwo::SerializeBase", "classinviwo_1_1SerializeBase.html", [
       [ "inviwo::Deserializer", "classinviwo_1_1Deserializer.html", null ],
       [ "inviwo::Serializer", "classinviwo_1_1Serializer.html", null ]
@@ -3510,6 +3523,7 @@ var hierarchy =
       [ "inviwo::SphericalComponent", "classinviwo_1_1SphericalComponent.html", null ],
       [ "inviwo::TFComponent", "classinviwo_1_1TFComponent.html", null ],
       [ "inviwo::TexturedIsoSurfaceComponent", "classinviwo_1_1TexturedIsoSurfaceComponent.html", null ],
+      [ "inviwo::TexturedVolumeComponent", "classinviwo_1_1TexturedVolumeComponent.html", null ],
       [ "inviwo::TimeComponent", "classinviwo_1_1TimeComponent.html", null ],
       [ "inviwo::VolumeComponent", "classinviwo_1_1VolumeComponent.html", null ]
     ] ],

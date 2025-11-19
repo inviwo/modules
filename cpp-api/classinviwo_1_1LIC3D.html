@@ -119,6 +119,7 @@ $(function(){initNavTree('classinviwo_1_1LIC3D.html','','classinviwo_1_1LIC3D-me
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:af828d5ac384c9a319faee9513bf54d01" id="r_af828d5ac384c9a319faee9513bf54d01"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af828d5ac384c9a319faee9513bf54d01">getProcessorInfo</a> () const override</td></tr>
+<tr class="memitem:aa0b398f2b14683d1497c6fb6a9fa6a73" id="r_aa0b398f2b14683d1497c6fb6a9fa6a73"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0b398f2b14683d1497c6fb6a9fa6a73">initializeShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader) override</td></tr>
 <tr class="memitem:a57485b81c65d2322cd0587e00dfea1e2" id="r_a57485b81c65d2322cd0587e00dfea1e2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57485b81c65d2322cd0587e00dfea1e2">preProcess</a> (<a class="el" href="classinviwo_1_1TextureUnitContainer.html">TextureUnitContainer</a> &amp;cont, <a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader, <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a> &amp;config) override</td></tr>
 <tr class="memdesc:a57485b81c65d2322cd0587e00dfea1e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">this function gets called right before the actual processing but after the shader has been activated. Overwrite this function in the derived class to perform things like custom shader setup and binding texture etc. The <a class="el" href="structinviwo_1_1VolumeConfig.html">VolumeConfig</a>, is based on the config from the volume inport, updated with the Config from the constructor. This config can be customized further and is used to create the output volume.  <br /></td></tr>
 <tr class="memitem:a839b156035bc20ea7d893a248c35a4b4" id="r_a839b156035bc20ea7d893a248c35a4b4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a839b156035bc20ea7d893a248c35a4b4">postProcess</a> (<a class="el" href="classinviwo_1_1Volume.html">Volume</a> &amp;volume) override</td></tr>
@@ -262,6 +263,9 @@ std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> *
 std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPropertiesRecursive</b> (std::vector&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> * &gt; &amp;destination) const</td></tr>
 <tr class="memitem:a590bbcc8d6bfa9bd230d1e3e83822834 inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a590bbcc8d6bfa9bd230d1e3e83822834"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPropertyByIdentifier</b> (std::string_view identifier, bool recursiveSearch=false) const</td></tr>
+<tr class="memitem:a72fee8f36d371790c7464b8f4057c475 inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a72fee8f36d371790c7464b8f4057c475"><td class="memTemplParams" colspan="2">
+template&lt;std::derived_from&lt; <a class="el" href="classinviwo_1_1Property.html">Property</a> &gt; T = Property&gt; </td></tr>
+<tr class="memitem:a72fee8f36d371790c7464b8f4057c475 inherit pub_methods_classinviwo_1_1PropertyOwner template"><td class="memItemLeft" align="right" valign="top">T *&#160;</td><td class="memItemRight" valign="bottom"><b>getProperty</b> (std::string_view identifier)</td></tr>
 <tr class="memitem:a7e03172f5e8c7884aafc4dfa94acedc7 inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_a7e03172f5e8c7884aafc4dfa94acedc7"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1Property.html">Property</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>getPropertyByPath</b> (std::string_view path) const</td></tr>
 <tr class="memitem:ac568f3e537e88a0c42e13ddff9029bd4 inherit pub_methods_classinviwo_1_1PropertyOwner" id="r_ac568f3e537e88a0c42e13ddff9029bd4"><td class="memTemplParams" colspan="2">
@@ -383,28 +387,42 @@ Static Public Attributes</h2></td></tr>
 <tr class="memitem:a87a6e2d946d369269687df6d31a371df" id="r_a87a6e2d946d369269687df6d31a371df"><td class="memItemLeft" align="right" valign="top"><a id="a87a6e2d946d369269687df6d31a371df" name="a87a6e2d946d369269687df6d31a371df"></a>
 static const <a class="el" href="structinviwo_1_1ProcessorInfo.html">ProcessorInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><b>processorInfo_</b></td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pro-types" class="groupheader"><a id="pro-types" name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:a69a74b4a488c94a08bedab8629d1d91c" id="r_a69a74b4a488c94a08bedab8629d1d91c"><td class="memItemLeft" align="right" valign="top"><a id="a69a74b4a488c94a08bedab8629d1d91c" name="a69a74b4a488c94a08bedab8629d1d91c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>IntegrationDirection</b> : int { <b>Bidirectional</b> = 0
+, <b>Forward</b> = 1
+, <b>Backward</b> = -1
+ }</td></tr>
+<tr class="memitem:ac7337197f14944990d570487f1feae85" id="r_ac7337197f14944990d570487f1feae85"><td class="memItemLeft" align="right" valign="top"><a id="ac7337197f14944990d570487f1feae85" name="ac7337197f14944990d570487f1feae85"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Kernel</b> : std::uint8_t { <b>Box</b>
+, <b>Gaussian</b>
+ }</td></tr>
+<tr class="memitem:a6a2ccdc95e3c7f444eb057e2b5a32597" id="r_a6a2ccdc95e3c7f444eb057e2b5a32597"><td class="memItemLeft" align="right" valign="top"><a id="a6a2ccdc95e3c7f444eb057e2b5a32597" name="a6a2ccdc95e3c7f444eb057e2b5a32597"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>OutputDimensions</b> : std::uint8_t { <b>NoiseVolume</b>
+, <b>VectorField</b>
+, <b>Custom</b>
+ }</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:ad2351de5c38b8aa326ffa71ef66b7a09" id="r_ad2351de5c38b8aa326ffa71ef66b7a09"><td class="memItemLeft" align="right" valign="top"><a id="ad2351de5c38b8aa326ffa71ef66b7a09" name="ad2351de5c38b8aa326ffa71ef66b7a09"></a>
 VolumeInport&#160;</td><td class="memItemRight" valign="bottom"><b>vectorField_</b></td></tr>
+<tr class="memitem:a780de57c155fe2cbbd79e7cd59174922" id="r_a780de57c155fe2cbbd79e7cd59174922"><td class="memItemLeft" align="right" valign="top"><a id="a780de57c155fe2cbbd79e7cd59174922" name="a780de57c155fe2cbbd79e7cd59174922"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; IntegrationDirection &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>direction_</b></td></tr>
+<tr class="memitem:add20824b1e38d859fb6873a5ea4c6cdd" id="r_add20824b1e38d859fb6873a5ea4c6cdd"><td class="memItemLeft" align="right" valign="top"><a id="add20824b1e38d859fb6873a5ea4c6cdd" name="add20824b1e38d859fb6873a5ea4c6cdd"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; Kernel &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>kernel_</b></td></tr>
 <tr class="memitem:a7585640541fb4992311114e7ff44ae26" id="r_a7585640541fb4992311114e7ff44ae26"><td class="memItemLeft" align="right" valign="top"><a id="a7585640541fb4992311114e7ff44ae26" name="a7585640541fb4992311114e7ff44ae26"></a>
 IntProperty&#160;</td><td class="memItemRight" valign="bottom"><b>samples_</b></td></tr>
 <tr class="memitem:a6ce48983e228532b21318071b7077986" id="r_a6ce48983e228532b21318071b7077986"><td class="memItemLeft" align="right" valign="top"><a id="a6ce48983e228532b21318071b7077986" name="a6ce48983e228532b21318071b7077986"></a>
 FloatProperty&#160;</td><td class="memItemRight" valign="bottom"><b>stepLength_</b></td></tr>
 <tr class="memitem:acd76b31e2f7a6d015307c69b6dda4596" id="r_acd76b31e2f7a6d015307c69b6dda4596"><td class="memItemLeft" align="right" valign="top"><a id="acd76b31e2f7a6d015307c69b6dda4596" name="acd76b31e2f7a6d015307c69b6dda4596"></a>
 <a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>normalizeVectors_</b></td></tr>
-<tr class="memitem:aefebfbf8099ce4cada21e6e5d49629ac" id="r_aefebfbf8099ce4cada21e6e5d49629ac"><td class="memItemLeft" align="right" valign="top"><a id="aefebfbf8099ce4cada21e6e5d49629ac" name="aefebfbf8099ce4cada21e6e5d49629ac"></a>
-<a class="el" href="classinviwo_1_1BoolProperty.html">BoolProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>intensityMapping_</b></td></tr>
 <tr class="memitem:abe6a355804ec18d22db6517aa6ae3d94" id="r_abe6a355804ec18d22db6517aa6ae3d94"><td class="memItemLeft" align="right" valign="top"><a id="abe6a355804ec18d22db6517aa6ae3d94" name="abe6a355804ec18d22db6517aa6ae3d94"></a>
 FloatProperty&#160;</td><td class="memItemRight" valign="bottom"><b>noiseRepeat_</b></td></tr>
-<tr class="memitem:ab9fb11538d4171e0af7e3b966e4b6bf5" id="r_ab9fb11538d4171e0af7e3b966e4b6bf5"><td class="memItemLeft" align="right" valign="top"><a id="ab9fb11538d4171e0af7e3b966e4b6bf5" name="ab9fb11538d4171e0af7e3b966e4b6bf5"></a>
-<a class="el" href="classinviwo_1_1TransferFunctionProperty.html">TransferFunctionProperty</a>&#160;</td><td class="memItemRight" valign="bottom"><b>tf_</b></td></tr>
-<tr class="memitem:aa09f5c6e8608e5e5704c9ffab05f55bd" id="r_aa09f5c6e8608e5e5704c9ffab05f55bd"><td class="memItemLeft" align="right" valign="top"><a id="aa09f5c6e8608e5e5704c9ffab05f55bd" name="aa09f5c6e8608e5e5704c9ffab05f55bd"></a>
-FloatProperty&#160;</td><td class="memItemRight" valign="bottom"><b>velocityScale_</b></td></tr>
 <tr class="memitem:af6d283a8d23ff8c25990ce4a2161e229" id="r_af6d283a8d23ff8c25990ce4a2161e229"><td class="memItemLeft" align="right" valign="top"><a id="af6d283a8d23ff8c25990ce4a2161e229" name="af6d283a8d23ff8c25990ce4a2161e229"></a>
 FloatProperty&#160;</td><td class="memItemRight" valign="bottom"><b>alphaScale_</b></td></tr>
-<tr class="memitem:a44267b6ec361e6f3fc1df3b8616437ae" id="r_a44267b6ec361e6f3fc1df3b8616437ae"><td class="memItemLeft" align="right" valign="top"><a id="a44267b6ec361e6f3fc1df3b8616437ae" name="a44267b6ec361e6f3fc1df3b8616437ae"></a>
-std::unique_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>noiseVolume_</b></td></tr>
+<tr class="memitem:aaaaf7620e6c43b5c779f9212cd5b497c" id="r_aaaaf7620e6c43b5c779f9212cd5b497c"><td class="memItemLeft" align="right" valign="top"><a id="aaaaf7620e6c43b5c779f9212cd5b497c" name="aaaaf7620e6c43b5c779f9212cd5b497c"></a>
+<a class="el" href="classinviwo_1_1OptionProperty.html">OptionProperty</a>&lt; OutputDimensions &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>outputDimensions_</b></td></tr>
+<tr class="memitem:aae108afb89f6489fb30f0d7c0693629e" id="r_aae108afb89f6489fb30f0d7c0693629e"><td class="memItemLeft" align="right" valign="top"><a id="aae108afb89f6489fb30f0d7c0693629e" name="aae108afb89f6489fb30f0d7c0693629e"></a>
+IntVec3Property&#160;</td><td class="memItemRight" valign="bottom"><b>dims_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1VolumeGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1VolumeGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html">inviwo::VolumeGLProcessor</a></td></tr>
 <tr class="memitem:afd45dd2d505148de2fa84b27b5035460 inherit pro_attribs_classinviwo_1_1VolumeGLProcessor" id="r_afd45dd2d505148de2fa84b27b5035460"><td class="memItemLeft" align="right" valign="top">
 std::optional&lt; VolumeInport &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>inport_</b></td></tr>
@@ -458,7 +476,6 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>iterator</b> = std::
 <tr class="memitem:a22da3c1ecbe5a89a651f4d3feef13c99 inherit pub_types_classinviwo_1_1PropertyOwner" id="r_a22da3c1ecbe5a89a651f4d3feef13c99"><td class="memItemLeft" align="right" valign="top">
 using&#160;</td><td class="memItemRight" valign="bottom"><b>const_iterator</b> = std::vector&lt;<a class="el" href="classinviwo_1_1Property.html">Property</a>*&gt;::const_iterator</td></tr>
 <tr class="inherit_header pro_methods_classinviwo_1_1VolumeGLProcessor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1VolumeGLProcessor')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html">inviwo::VolumeGLProcessor</a></td></tr>
-<tr class="memitem:a737eff265000feb14ab5b9bf81963ca0 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_a737eff265000feb14ab5b9bf81963ca0"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a737eff265000feb14ab5b9bf81963ca0">initializeShader</a> (<a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;shader)</td></tr>
 <tr class="memitem:a97273e620e6f4ea2cda65f7fcf22e31f inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_a97273e620e6f4ea2cda65f7fcf22e31f"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>setFragmentShaderResource</b> (std::shared_ptr&lt; const <a class="el" href="classinviwo_1_1ShaderResource.html">ShaderResource</a> &gt; fragShaderResource)</td></tr>
 <tr class="memitem:acbb72976f4669fe4773d527686d5e983 inherit pro_methods_classinviwo_1_1VolumeGLProcessor" id="r_acbb72976f4669fe4773d527686d5e983"><td class="memItemLeft" align="right" valign="top">
@@ -550,6 +567,34 @@ static std::function&lt; <a class="el" href="classinviwo_1_1ProcessorStatus.html
 </div><div class="memdoc">
 
 <p>Implements <a class="el" href="classinviwo_1_1Processor.html">inviwo::Processor</a>.</p>
+
+</div>
+</div>
+<a id="aa0b398f2b14683d1497c6fb6a9fa6a73" name="aa0b398f2b14683d1497c6fb6a9fa6a73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0b398f2b14683d1497c6fb6a9fa6a73">&#9670;&#160;</a></span>initializeShader()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void inviwo::LIC3D::initializeShader </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classinviwo_1_1Shader.html">Shader</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>shader</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel override">override</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Override this to add any shader defines etc. The shader will be built automatically. </p>
+
+<p>Reimplemented from <a class="el" href="classinviwo_1_1VolumeGLProcessor.html#a737eff265000feb14ab5b9bf81963ca0">inviwo::VolumeGLProcessor</a>.</p>
 
 </div>
 </div>
