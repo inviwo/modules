@@ -27,9 +27,6 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_WITOFILEREADER_H
-#define IVW_WITOFILEREADER_H
-
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -39,26 +36,7 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.WitoFileReader, Wito File Reader}
- * ![](org.inviwo.WitoFileReader.png?classIdentifier=org.inviwo.WitoFileReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
 
-/**
- * \class WitoFileReader
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISIO_API FlowGUIFileReader : public Processor {
 public:
     FlowGUIFileReader();
@@ -81,4 +59,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_WITOFILEREADER_H

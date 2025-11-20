@@ -36,25 +36,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.InvariantSpaceCombine, Invariant Space Combine}
- * ![](org.inviwo.InvariantSpaceCombine.png?classIdentifier=org.inviwo.InvariantSpaceCombine)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API InvariantSpaceCombine : public Processor {
 public:
     InvariantSpaceCombine();

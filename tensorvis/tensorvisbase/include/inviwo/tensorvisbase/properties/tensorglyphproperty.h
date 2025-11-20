@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHPROPERTY_H
-#define IVW_TENSORGLYPHPROPERTY_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
@@ -41,11 +40,6 @@
 
 namespace inviwo {
 
-/**
- * \class TensorGlyphProperty
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS
- */
 class IVW_MODULE_TENSORVISBASE_API TensorGlyphProperty : public CompositeProperty {
 public:
     virtual std::string_view getClassIdentifier() const override;
@@ -202,5 +196,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHPROPERTY_H

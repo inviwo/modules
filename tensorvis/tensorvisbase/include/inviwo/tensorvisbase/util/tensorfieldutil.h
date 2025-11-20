@@ -44,8 +44,7 @@
 #include <inviwo/core/util/volumeramutils.h>
 #include <inviwo/core/util/imageramutils.h>
 
-namespace inviwo {
-namespace tensorutil {
+namespace inviwo::tensorutil {
 
 IVW_MODULE_TENSORVISBASE_API void bindTensorFieldAsColorTexture(
     std::shared_ptr<Image>& texture, std::shared_ptr<const TensorField2D> tensorField,
@@ -114,5 +113,4 @@ void forEachFixelParallel(const TensorField2D& v, C callback, size_t jobs = 0) {
     util::forEachPixelParallel(v.getDimensions(), callback, jobs);
 }
 
-}  // namespace tensorutil
-}  // namespace inviwo
+}  // namespace inviwo::tensorutil

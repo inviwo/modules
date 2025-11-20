@@ -42,11 +42,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.EigenvalueFieldToImage, Eigenvalue Field To Image}
- * ![](org.inviwo.EigenvalueFieldToImage.png?classIdentifier=org.inviwo.EigenvalueFieldToImage)
- * Explanation of how to use the processor.
- */
-
 class IVW_MODULE_TENSORVISBASE_API EigenvalueFieldToImage : public Processor {
 public:
     EigenvalueFieldToImage();

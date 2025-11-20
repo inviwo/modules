@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_NRRDREADER_H
-#define IVW_NRRDREADER_H
+#pragma once
 
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,26 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.NRRDReader, NRRDReader}
- * ![](org.inviwo.NRRDReader.png?classIdentifier=org.inviwo.NRRDReader)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class NRRDReader
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISIO_API NRRDReader : public Processor {
 public:
     NRRDReader();
@@ -78,5 +57,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_NRRDREADER_H

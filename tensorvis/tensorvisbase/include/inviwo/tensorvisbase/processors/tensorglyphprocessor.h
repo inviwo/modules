@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORGLYPHPROCESSOR_H
-#define IVW_TENSORGLYPHPROCESSOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
@@ -43,26 +42,6 @@ namespace inviwo {
 
 class Mesh;
 
-/** \docpage{org.inviwo.TensorGlyphProcessor, Tensor Glyph Processor}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorGlyphProcessor)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorGlyphProcessor
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorGlyphProcessor : public Processor {
 public:
     TensorGlyphProcessor();
@@ -82,5 +61,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORGLYPHPROCESSOR_H

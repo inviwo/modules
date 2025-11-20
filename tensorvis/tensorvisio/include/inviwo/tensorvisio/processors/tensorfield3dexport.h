@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DEXPORT_H
-#define IVW_TENSORFIELD3DEXPORT_H
+#pragma once
 
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -41,26 +40,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DExport, Tensor Field Export}
- * ![](org.inviwo.TensorField3DExport.png?classIdentifier=org.inviwo.TensorField3DExport)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField3DExport
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISIO_API TensorField3DExport : public Processor {
 public:
     TensorField3DExport();
@@ -85,4 +64,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_TENSORFIELD3DEXPORT_H

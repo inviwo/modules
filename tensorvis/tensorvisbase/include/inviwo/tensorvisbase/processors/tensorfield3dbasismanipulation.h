@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DBASISMANIPULATION_H
-#define IVW_TENSORFIELD3DBASISMANIPULATION_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,26 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DBasisManipulation, Tensor Field3DBasis Manipulation}
- * ![](org.inviwo.TensorField3DBasisManipulation.png?classIdentifier=org.inviwo.TensorField3DBasisManipulation)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField3DBasisManipulation
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorField3DBasisManipulation : public Processor {
 public:
     TensorField3DBasisManipulation();
@@ -78,5 +57,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DBASISMANIPULATION_H

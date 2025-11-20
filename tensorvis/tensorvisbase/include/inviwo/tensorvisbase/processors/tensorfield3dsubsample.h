@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DSUBSAMPLE_H
-#define IVW_TENSORFIELD3DSUBSAMPLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/poolprocessor.h>
@@ -58,5 +57,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DSUBSAMPLE_H

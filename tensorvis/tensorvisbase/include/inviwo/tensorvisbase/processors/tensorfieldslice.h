@@ -43,10 +43,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSource, TensorFieldSource}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldSource)
- */
-
 class IVW_MODULE_TENSORVISBASE_API TensorFieldSlice : public Processor {
 public:
     TensorFieldSlice();

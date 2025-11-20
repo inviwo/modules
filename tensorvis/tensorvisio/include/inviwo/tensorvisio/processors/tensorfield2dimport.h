@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DIMPORT_H
-#define IVW_TENSORFIELD2DIMPORT_H
+#pragma once
 
 #include <inviwo/tensorvisio/tensorvisiomoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -39,26 +38,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DImport, Tensor Field2DImport}
- * ![](org.inviwo.TensorField2DImport.png?classIdentifier=org.inviwo.TensorField2DImport)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DImport
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISIO_API TensorField2DImport : public Processor {
 public:
     TensorField2DImport();
@@ -81,5 +60,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DIMPORT_H
