@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDGENERATOR_H
-#define IVW_TENSORFIELDGENERATOR_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/ports/imageport.h>
@@ -42,26 +41,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSource, TensorFieldSource}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldSource)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorFieldSource
- * \brief VERY_BRIEFLY_DESCRIBE_THE_CLASS
- * DESCRIBE_THE_CLASS_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorFieldGenerator : public Processor {
 public:
     TensorFieldGenerator();
@@ -137,5 +116,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDGENERATOR_H

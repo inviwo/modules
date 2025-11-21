@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DSUBSAMPLE_H
-#define IVW_TENSORFIELD2DSUBSAMPLE_H
+#pragma once
 
 #include <inviwo/core/common/inviwo.h>
 #include <inviwo/core/processors/processor.h>
@@ -38,26 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DSubsample, <dname>}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorField2DSubsample)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class <name>
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISBASE_API TensorField2DSubsample : public Processor {
 public:
     TensorField2DSubsample();
@@ -80,4 +59,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_TENSORFIELD2DSUBSAMPLE_H

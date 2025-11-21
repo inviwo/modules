@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD2DSUBSET_H
-#define IVW_TENSORFIELD2DSUBSET_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,26 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DSubset, Tensor Field 2D Subset}
- * ![](org.inviwo.TensorField2DSubset.png?classIdentifier=org.inviwo.TensorField2DSubset)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField2DSubset
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorField2DSubset : public Processor {
 public:
     TensorField2DSubset();
@@ -78,5 +57,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD2DSUBSET_H

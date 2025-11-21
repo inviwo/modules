@@ -41,24 +41,6 @@ class vtkStructuredGrid;
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField2DToVTK, Tensor Field2DTo VTK}
- * ![](org.inviwo.TensorField2DToVTK.png?classIdentifier=org.inviwo.TensorField2DToVTK)
- * Export a 2D tensor field to VTK structured grid. The z dimension of the grid will always be 1
- * since it's a 2D field.
- *
- * ### Inports
- *   * tensorFieldInport_ 2D tensor field input.
- *
- * ### Outports
- *   * __vtkDataSetOutport___ VTK structured grid output.
- *
- */
-
-/**
- * \brief Export a 2D tensor field to VTK structured grid.
- * This processor creates a VTK structured grid and memcpys the data from the input field to the VTK
- * data set.
- */
 class IVW_MODULE_TENSORVISIO_API TensorField2DToVTK : public Processor {
 public:
     TensorField2DToVTK();

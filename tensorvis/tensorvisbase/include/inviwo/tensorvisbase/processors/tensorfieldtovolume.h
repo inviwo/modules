@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELDTOVOLUME_H
-#define IVW_TENSORFIELDTOVOLUME_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -41,26 +40,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorFieldSubset, Tensor Field Subset}
- * ![](org.inviwo.TensorFieldSubset.png?classIdentifier=org.inviwo.TensorFieldSubset)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorFieldSubset
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API TensorFieldToVolume : public Processor {
 public:
     TensorFieldToVolume();
@@ -82,5 +61,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELDTOVOLUME_H

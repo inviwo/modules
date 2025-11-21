@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_TENSORFIELD3DBOUNDINGBOX_H
-#define IVW_TENSORFIELD3DBOUNDINGBOX_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -40,26 +39,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DBoundingBox, Tensor Field Bounding Box}
- * ![](org.inviwo.TensorField3DBoundingBox.png?classIdentifier=org.inviwo.TensorField3DBoundingBox)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class TensorField3DBoundingBox
- * \brief <brief description>
- * <Detailed description from a developer prespective>
- */
 class IVW_MODULE_TENSORVISBASE_API TensorField3DBoundingBox : public Processor {
 public:
     TensorField3DBoundingBox();
@@ -80,5 +59,3 @@ private:
 };
 
 }  // namespace inviwo
-
-#endif  // IVW_TENSORFIELD3DBOUNDINGBOX_H

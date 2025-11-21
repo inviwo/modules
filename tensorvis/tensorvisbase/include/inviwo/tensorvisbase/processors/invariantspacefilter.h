@@ -37,9 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.InvariantSpaceFilter, Invariant Space Filter}
- * ![](org.inviwo.InvariantSpaceFilter.png?classIdentifier=org.inviwo.InvariantSpaceFilter)
- */
 class IVW_MODULE_TENSORVISBASE_API InvariantSpaceFilter : public Processor {
 public:
     InvariantSpaceFilter();

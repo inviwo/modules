@@ -27,8 +27,7 @@
  *
  *********************************************************************************/
 
-#ifndef IVW_IMAGETOSPHEREFIELD_H
-#define IVW_IMAGETOSPHEREFIELD_H
+#pragma once
 
 #include <inviwo/tensorvisbase/tensorvisbasemoduledefine.h>
 #include <inviwo/core/common/inviwo.h>
@@ -38,26 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.ImageToSphereField, Image To Sphere Field}
- * ![](org.inviwo.ImageToSphereField.png?classIdentifier=org.inviwo.ImageToSphereField)
- * Explanation of how to use the processor.
- *
- * ### Inports
- *   * __<Inport1>__ <description>.
- *
- * ### Outports
- *   * __<Outport1>__ <description>.
- *
- * ### Properties
- *   * __<Prop1>__ <description>.
- *   * __<Prop2>__ <description>
- */
-
-/**
- * \class ImageToSphereField
- * \brief VERY_BRIEFLY_DESCRIBE_THE_PROCESSOR
- * DESCRIBE_THE_PROCESSOR_FROM_A_DEVELOPER_PERSPECTIVE
- */
 class IVW_MODULE_TENSORVISBASE_API ImageToSphereField : public Processor {
 public:
     ImageToSphereField();
@@ -76,4 +55,3 @@ private:
 
 }  // namespace inviwo
 
-#endif  // IVW_IMAGETOSPHEREFIELD_H

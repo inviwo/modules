@@ -41,11 +41,6 @@ namespace inviwo {
 
 class Event;
 
-/** \docpage{org.inviwo.TensorFieldLIC, TensorFieldLIC}
- * ![](org.inviwo.<name>.png?classIdentifier=org.inviwo.TensorFieldLIC)
- * Explanation of how to use the processor.
- */
-
 class IVW_MODULE_TENSORVISBASE_API TensorFieldToRGBA : public Processor {
 public:
     TensorFieldToRGBA();

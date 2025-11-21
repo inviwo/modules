@@ -57,10 +57,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorGlyphRenderer, Tensor Glyph Renderer}
- * ![](org.inviwo.TensorGlyphRenderer.png?classIdentifier=org.inviwo.TensorGlyphRenderer)
- */
-
 class IVW_MODULE_TENSORVISBASE_API TensorGlyphRenderer : public Processor {
 public:
     TensorGlyphRenderer();

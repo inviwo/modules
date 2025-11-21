@@ -37,11 +37,6 @@
 
 namespace inviwo {
 
-/** \docpage{org.inviwo.TensorField3DAngle, Tensor Field 3D Angle}
- * ![](org.inviwo.TensorField3DAngle.png?classIdentifier=org.inviwo.TensorField3DAngle)
- * Explanation of how to use the processor.
- */
-
 class IVW_MODULE_TENSORVISBASE_API TensorField3DAngle : public Processor {
 public:
     TensorField3DAngle();
