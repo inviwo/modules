@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1SpringSystem.html','','classinviwo_1_1S
 <p>this class is representing a spring mass system including a solver using either the Verlet integration scheme.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;springsystem.h&gt;</code></p>
+<p><code>#include &lt;inviwo/springsystem/datastructures/springsystem.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
@@ -108,41 +108,41 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b> = glm::ve
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad44cdb462504f2d44b467d2ded65b71a" id="r_ad44cdb462504f2d44b467d2ded65b71a"><td class="memItemLeft" align="right" valign="top"><a id="ad44cdb462504f2d44b467d2ded65b71a" name="ad44cdb462504f2d44b467d2ded65b71a"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpringSystem</b> (ComponentType timeStep, std::vector&lt; Vector &gt; positions, std::vector&lt; SpringIndices &gt; springs, Vector origin=Vector{1}, Vector extent=Vector{1})</td></tr>
-<tr class="memitem:a3040945d39e43c6839a045b76dfa2814" id="r_a3040945d39e43c6839a045b76dfa2814"><td class="memItemLeft" align="right" valign="top"><a id="a3040945d39e43c6839a045b76dfa2814" name="a3040945d39e43c6839a045b76dfa2814"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>getTimeStep</b> () const</td></tr>
-<tr class="memitem:a3b8d2fd4a0d541c20ec0b52ed7a4ea4c" id="r_a3b8d2fd4a0d541c20ec0b52ed7a4ea4c"><td class="memItemLeft" align="right" valign="top"><a id="a3b8d2fd4a0d541c20ec0b52ed7a4ea4c" name="a3b8d2fd4a0d541c20ec0b52ed7a4ea4c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeStep</b> (ComponentType timeStep)</td></tr>
-<tr class="memitem:aabbaf413d87593398d917c8f60a2d353" id="r_aabbaf413d87593398d917c8f60a2d353"><td class="memItemLeft" align="right" valign="top"><a id="aabbaf413d87593398d917c8f60a2d353" name="aabbaf413d87593398d917c8f60a2d353"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>integrate</b> (size_t steps=1)</td></tr>
+<tr class="memitem:a90f1046d67c117bd0f33f60176d22654" id="r_a90f1046d67c117bd0f33f60176d22654"><td class="memItemLeft" align="right" valign="top"><a id="a90f1046d67c117bd0f33f60176d22654" name="a90f1046d67c117bd0f33f60176d22654"></a>
+Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>force</b> (size_t i)</td></tr>
+<tr class="memitem:a20cae4a2b406adcf1dc0383f9a059561" id="r_a20cae4a2b406adcf1dc0383f9a059561"><td class="memItemLeft" align="right" valign="top"><a id="a20cae4a2b406adcf1dc0383f9a059561" name="a20cae4a2b406adcf1dc0383f9a059561"></a>
+const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>force</b> (size_t i) const</td></tr>
+<tr class="memitem:aba064aa3b4ffaaed22026ee1ceefe288" id="r_aba064aa3b4ffaaed22026ee1ceefe288"><td class="memItemLeft" align="right" valign="top"><a id="aba064aa3b4ffaaed22026ee1ceefe288" name="aba064aa3b4ffaaed22026ee1ceefe288"></a>
+const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getForces</b> () const</td></tr>
 <tr class="memitem:a88d6867bfcfb8d42d590856a6a605483" id="r_a88d6867bfcfb8d42d590856a6a605483"><td class="memItemLeft" align="right" valign="top"><a id="a88d6867bfcfb8d42d590856a6a605483" name="a88d6867bfcfb8d42d590856a6a605483"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumberOfNodes</b> () const</td></tr>
 <tr class="memitem:afeade2887b1205df3de690d5bff772c6" id="r_afeade2887b1205df3de690d5bff772c6"><td class="memItemLeft" align="right" valign="top"><a id="afeade2887b1205df3de690d5bff772c6" name="afeade2887b1205df3de690d5bff772c6"></a>
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumberOfSprings</b> () const</td></tr>
 <tr class="memitem:af9b229d5e0ca268436dbd21179f90735" id="r_af9b229d5e0ca268436dbd21179f90735"><td class="memItemLeft" align="right" valign="top"><a id="af9b229d5e0ca268436dbd21179f90735" name="af9b229d5e0ca268436dbd21179f90735"></a>
 const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPositions</b> () const</td></tr>
-<tr class="memitem:abf12b4f223b81ad0e36624d6d6807263" id="r_abf12b4f223b81ad0e36624d6d6807263"><td class="memItemLeft" align="right" valign="top"><a id="abf12b4f223b81ad0e36624d6d6807263" name="abf12b4f223b81ad0e36624d6d6807263"></a>
-const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVelocities</b> () const</td></tr>
-<tr class="memitem:aba064aa3b4ffaaed22026ee1ceefe288" id="r_aba064aa3b4ffaaed22026ee1ceefe288"><td class="memItemLeft" align="right" valign="top"><a id="aba064aa3b4ffaaed22026ee1ceefe288" name="aba064aa3b4ffaaed22026ee1ceefe288"></a>
-const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getForces</b> () const</td></tr>
-<tr class="memitem:ab7543fcebc559ff1042bd04b0639c1e8" id="r_ab7543fcebc559ff1042bd04b0639c1e8"><td class="memItemLeft" align="right" valign="top"><a id="ab7543fcebc559ff1042bd04b0639c1e8" name="ab7543fcebc559ff1042bd04b0639c1e8"></a>
-const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (size_t i) const</td></tr>
-<tr class="memitem:ae32e0a78e796570eca3d4b90f3fe6c99" id="r_ae32e0a78e796570eca3d4b90f3fe6c99"><td class="memItemLeft" align="right" valign="top"><a id="ae32e0a78e796570eca3d4b90f3fe6c99" name="ae32e0a78e796570eca3d4b90f3fe6c99"></a>
-const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity</b> (size_t i) const</td></tr>
-<tr class="memitem:a20cae4a2b406adcf1dc0383f9a059561" id="r_a20cae4a2b406adcf1dc0383f9a059561"><td class="memItemLeft" align="right" valign="top"><a id="a20cae4a2b406adcf1dc0383f9a059561" name="a20cae4a2b406adcf1dc0383f9a059561"></a>
-const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>force</b> (size_t i) const</td></tr>
-<tr class="memitem:a946de2189364fd3f5f666092aacc7d48" id="r_a946de2189364fd3f5f666092aacc7d48"><td class="memItemLeft" align="right" valign="top"><a id="a946de2189364fd3f5f666092aacc7d48" name="a946de2189364fd3f5f666092aacc7d48"></a>
-Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (size_t i)</td></tr>
-<tr class="memitem:ab7141d5bb81f7bb90514cc39ea06e489" id="r_ab7141d5bb81f7bb90514cc39ea06e489"><td class="memItemLeft" align="right" valign="top"><a id="ab7141d5bb81f7bb90514cc39ea06e489" name="ab7141d5bb81f7bb90514cc39ea06e489"></a>
-Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity</b> (size_t i)</td></tr>
-<tr class="memitem:a90f1046d67c117bd0f33f60176d22654" id="r_a90f1046d67c117bd0f33f60176d22654"><td class="memItemLeft" align="right" valign="top"><a id="a90f1046d67c117bd0f33f60176d22654" name="a90f1046d67c117bd0f33f60176d22654"></a>
-Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>force</b> (size_t i)</td></tr>
 <tr class="memitem:acc1778551d3558065958f5d61541a0a5" id="r_acc1778551d3558065958f5d61541a0a5"><td class="memItemLeft" align="right" valign="top"><a id="acc1778551d3558065958f5d61541a0a5" name="acc1778551d3558065958f5d61541a0a5"></a>
 const std::vector&lt; SpringIndices &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getSprings</b> () const</td></tr>
+<tr class="memitem:a3040945d39e43c6839a045b76dfa2814" id="r_a3040945d39e43c6839a045b76dfa2814"><td class="memItemLeft" align="right" valign="top"><a id="a3040945d39e43c6839a045b76dfa2814" name="a3040945d39e43c6839a045b76dfa2814"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>getTimeStep</b> () const</td></tr>
+<tr class="memitem:abf12b4f223b81ad0e36624d6d6807263" id="r_abf12b4f223b81ad0e36624d6d6807263"><td class="memItemLeft" align="right" valign="top"><a id="abf12b4f223b81ad0e36624d6d6807263" name="abf12b4f223b81ad0e36624d6d6807263"></a>
+const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVelocities</b> () const</td></tr>
+<tr class="memitem:aabbaf413d87593398d917c8f60a2d353" id="r_aabbaf413d87593398d917c8f60a2d353"><td class="memItemLeft" align="right" valign="top"><a id="aabbaf413d87593398d917c8f60a2d353" name="aabbaf413d87593398d917c8f60a2d353"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>integrate</b> (size_t steps=1)</td></tr>
+<tr class="memitem:a946de2189364fd3f5f666092aacc7d48" id="r_a946de2189364fd3f5f666092aacc7d48"><td class="memItemLeft" align="right" valign="top"><a id="a946de2189364fd3f5f666092aacc7d48" name="a946de2189364fd3f5f666092aacc7d48"></a>
+Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (size_t i)</td></tr>
+<tr class="memitem:ab7543fcebc559ff1042bd04b0639c1e8" id="r_ab7543fcebc559ff1042bd04b0639c1e8"><td class="memItemLeft" align="right" valign="top"><a id="ab7543fcebc559ff1042bd04b0639c1e8" name="ab7543fcebc559ff1042bd04b0639c1e8"></a>
+const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (size_t i) const</td></tr>
 <tr class="memitem:a50f3d120f6b953aa59c709c6bab5dd89" id="r_a50f3d120f6b953aa59c709c6bab5dd89"><td class="memTemplParams" colspan="2"><a id="a50f3d120f6b953aa59c709c6bab5dd89" name="a50f3d120f6b953aa59c709c6bab5dd89"></a>
 template&lt;class Elem, class Traits&gt; </td></tr>
 <tr class="memitem:a50f3d120f6b953aa59c709c6bab5dd89 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> (std::basic_ostream&lt; Elem, Traits &gt; &amp;ss) const</td></tr>
+<tr class="memitem:a3b8d2fd4a0d541c20ec0b52ed7a4ea4c" id="r_a3b8d2fd4a0d541c20ec0b52ed7a4ea4c"><td class="memItemLeft" align="right" valign="top"><a id="a3b8d2fd4a0d541c20ec0b52ed7a4ea4c" name="a3b8d2fd4a0d541c20ec0b52ed7a4ea4c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeStep</b> (ComponentType timeStep)</td></tr>
+<tr class="memitem:ad44cdb462504f2d44b467d2ded65b71a" id="r_ad44cdb462504f2d44b467d2ded65b71a"><td class="memItemLeft" align="right" valign="top"><a id="ad44cdb462504f2d44b467d2ded65b71a" name="ad44cdb462504f2d44b467d2ded65b71a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>SpringSystem</b> (ComponentType timeStep, std::vector&lt; Vector &gt; positions, std::vector&lt; SpringIndices &gt; springs, Vector origin=Vector{1}, Vector extent=Vector{1})</td></tr>
+<tr class="memitem:ab7141d5bb81f7bb90514cc39ea06e489" id="r_ab7141d5bb81f7bb90514cc39ea06e489"><td class="memItemLeft" align="right" valign="top"><a id="ab7141d5bb81f7bb90514cc39ea06e489" name="ab7141d5bb81f7bb90514cc39ea06e489"></a>
+Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity</b> (size_t i)</td></tr>
+<tr class="memitem:ae32e0a78e796570eca3d4b90f3fe6c99" id="r_ae32e0a78e796570eca3d4b90f3fe6c99"><td class="memItemLeft" align="right" valign="top"><a id="ae32e0a78e796570eca3d4b90f3fe6c99" name="ae32e0a78e796570eca3d4b90f3fe6c99"></a>
+const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity</b> (size_t i) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-methods" class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
@@ -155,33 +155,33 @@ Protected Member Functions</h2></td></tr>
 Derived &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>derived</b> ()</td></tr>
 <tr class="memitem:aecb91f368e8f9786e8aba9a53d8a7e40" id="r_aecb91f368e8f9786e8aba9a53d8a7e40"><td class="memItemLeft" align="right" valign="top"><a id="aecb91f368e8f9786e8aba9a53d8a7e40" name="aecb91f368e8f9786e8aba9a53d8a7e40"></a>
 const Derived &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>derived</b> () const</td></tr>
-<tr class="memitem:a29ff198ad99593e812830d22c2439767" id="r_a29ff198ad99593e812830d22c2439767"><td class="memItemLeft" align="right" valign="top"><a id="a29ff198ad99593e812830d22c2439767" name="a29ff198ad99593e812830d22c2439767"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>externalForces</b> (std::vector&lt; Vector &gt; &amp;forces)</td></tr>
 <tr class="memitem:a949755f05ce5529e27ffc868f621d744" id="r_a949755f05ce5529e27ffc868f621d744"><td class="memItemLeft" align="right" valign="top"><a id="a949755f05ce5529e27ffc868f621d744" name="a949755f05ce5529e27ffc868f621d744"></a>
 Vector&#160;</td><td class="memItemRight" valign="bottom"><b>externalForce</b> (size_t i)</td></tr>
+<tr class="memitem:a29ff198ad99593e812830d22c2439767" id="r_a29ff198ad99593e812830d22c2439767"><td class="memItemLeft" align="right" valign="top"><a id="a29ff198ad99593e812830d22c2439767" name="a29ff198ad99593e812830d22c2439767"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>externalForces</b> (std::vector&lt; Vector &gt; &amp;forces)</td></tr>
+<tr class="memitem:a4dbacf7fae966dc80b1cda12a9b15a49" id="r_a4dbacf7fae966dc80b1cda12a9b15a49"><td class="memItemLeft" align="right" valign="top"><a id="a4dbacf7fae966dc80b1cda12a9b15a49" name="a4dbacf7fae966dc80b1cda12a9b15a49"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>forceMagnitude</b> (size_t i, ComponentType displacement) const</td></tr>
 <tr class="memitem:a7ffcf55967a1575227a1c86177598d25" id="r_a7ffcf55967a1575227a1c86177598d25"><td class="memItemLeft" align="right" valign="top"><a id="a7ffcf55967a1575227a1c86177598d25" name="a7ffcf55967a1575227a1c86177598d25"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateForces</b> ()</td></tr>
 <tr class="memitem:ae601207fc42d5b788e93900bedbdc35a" id="r_ae601207fc42d5b788e93900bedbdc35a"><td class="memItemLeft" align="right" valign="top"><a id="ae601207fc42d5b788e93900bedbdc35a" name="ae601207fc42d5b788e93900bedbdc35a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>verletIntegration</b> ()</td></tr>
-<tr class="memitem:a4dbacf7fae966dc80b1cda12a9b15a49" id="r_a4dbacf7fae966dc80b1cda12a9b15a49"><td class="memItemLeft" align="right" valign="top"><a id="a4dbacf7fae966dc80b1cda12a9b15a49" name="a4dbacf7fae966dc80b1cda12a9b15a49"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>forceMagnitude</b> (size_t i, ComponentType displacement) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a29f3de8ef6fdd5a145a0f6ef90d1512c" id="r_a29f3de8ef6fdd5a145a0f6ef90d1512c"><td class="memItemLeft" align="right" valign="top"><a id="a29f3de8ef6fdd5a145a0f6ef90d1512c" name="a29f3de8ef6fdd5a145a0f6ef90d1512c"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>timeStep_</b></td></tr>
-<tr class="memitem:a7fb9b055382a3a83bd40ed5e179db957" id="r_a7fb9b055382a3a83bd40ed5e179db957"><td class="memItemLeft" align="right" valign="top"><a id="a7fb9b055382a3a83bd40ed5e179db957" name="a7fb9b055382a3a83bd40ed5e179db957"></a>
-std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>positions_</b></td></tr>
-<tr class="memitem:ae0a6bc44a9b41bb0e3f1269833b4eb0a" id="r_ae0a6bc44a9b41bb0e3f1269833b4eb0a"><td class="memItemLeft" align="right" valign="top"><a id="ae0a6bc44a9b41bb0e3f1269833b4eb0a" name="ae0a6bc44a9b41bb0e3f1269833b4eb0a"></a>
-std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>velocities_</b></td></tr>
-<tr class="memitem:a164d0193d128db8ef876a1efb27cfcdc" id="r_a164d0193d128db8ef876a1efb27cfcdc"><td class="memItemLeft" align="right" valign="top"><a id="a164d0193d128db8ef876a1efb27cfcdc" name="a164d0193d128db8ef876a1efb27cfcdc"></a>
-std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>forces_</b></td></tr>
-<tr class="memitem:ad3a44cfe008e899fdfcb1a63f7c66f6c" id="r_ad3a44cfe008e899fdfcb1a63f7c66f6c"><td class="memItemLeft" align="right" valign="top"><a id="ad3a44cfe008e899fdfcb1a63f7c66f6c" name="ad3a44cfe008e899fdfcb1a63f7c66f6c"></a>
-std::vector&lt; SpringIndices &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>springs_</b></td></tr>
-<tr class="memitem:ad244daa7cc63f2b88f7549cb01e4d148" id="r_ad244daa7cc63f2b88f7549cb01e4d148"><td class="memItemLeft" align="right" valign="top"><a id="ad244daa7cc63f2b88f7549cb01e4d148" name="ad244daa7cc63f2b88f7549cb01e4d148"></a>
-Vector&#160;</td><td class="memItemRight" valign="bottom"><b>origin_</b></td></tr>
 <tr class="memitem:ab546b6f152bdd052f6b62975cdb23ed6" id="r_ab546b6f152bdd052f6b62975cdb23ed6"><td class="memItemLeft" align="right" valign="top"><a id="ab546b6f152bdd052f6b62975cdb23ed6" name="ab546b6f152bdd052f6b62975cdb23ed6"></a>
 Vector&#160;</td><td class="memItemRight" valign="bottom"><b>extent_</b></td></tr>
+<tr class="memitem:a164d0193d128db8ef876a1efb27cfcdc" id="r_a164d0193d128db8ef876a1efb27cfcdc"><td class="memItemLeft" align="right" valign="top"><a id="a164d0193d128db8ef876a1efb27cfcdc" name="a164d0193d128db8ef876a1efb27cfcdc"></a>
+std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>forces_</b></td></tr>
+<tr class="memitem:ad244daa7cc63f2b88f7549cb01e4d148" id="r_ad244daa7cc63f2b88f7549cb01e4d148"><td class="memItemLeft" align="right" valign="top"><a id="ad244daa7cc63f2b88f7549cb01e4d148" name="ad244daa7cc63f2b88f7549cb01e4d148"></a>
+Vector&#160;</td><td class="memItemRight" valign="bottom"><b>origin_</b></td></tr>
+<tr class="memitem:a7fb9b055382a3a83bd40ed5e179db957" id="r_a7fb9b055382a3a83bd40ed5e179db957"><td class="memItemLeft" align="right" valign="top"><a id="a7fb9b055382a3a83bd40ed5e179db957" name="a7fb9b055382a3a83bd40ed5e179db957"></a>
+std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>positions_</b></td></tr>
+<tr class="memitem:ad3a44cfe008e899fdfcb1a63f7c66f6c" id="r_ad3a44cfe008e899fdfcb1a63f7c66f6c"><td class="memItemLeft" align="right" valign="top"><a id="ad3a44cfe008e899fdfcb1a63f7c66f6c" name="ad3a44cfe008e899fdfcb1a63f7c66f6c"></a>
+std::vector&lt; SpringIndices &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>springs_</b></td></tr>
+<tr class="memitem:a29f3de8ef6fdd5a145a0f6ef90d1512c" id="r_a29f3de8ef6fdd5a145a0f6ef90d1512c"><td class="memItemLeft" align="right" valign="top"><a id="a29f3de8ef6fdd5a145a0f6ef90d1512c" name="a29f3de8ef6fdd5a145a0f6ef90d1512c"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>timeStep_</b></td></tr>
+<tr class="memitem:ae0a6bc44a9b41bb0e3f1269833b4eb0a" id="r_ae0a6bc44a9b41bb0e3f1269833b4eb0a"><td class="memItemLeft" align="right" valign="top"><a id="ae0a6bc44a9b41bb0e3f1269833b4eb0a" name="ae0a6bc44a9b41bb0e3f1269833b4eb0a"></a>
+std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>velocities_</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;size_t Components, typename ComponentType, typename Derived, typename PBC = util::fill_integer_sequence&lt;Components, false&gt;&gt;<br />
@@ -190,7 +190,7 @@ class inviwo::SpringSystem&lt; Components, ComponentType, Derived, PBC &gt;</div
 <dd>
 ConstGravityConfig </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>springsystem.h</b></li>
+<li>D:/a/modules/modules/modules/misc/springsystem/include/inviwo/springsystem/datastructures/<b>springsystem.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

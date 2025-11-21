@@ -43,7 +43,7 @@ var searchData=
   ['animationsupplier_40',['AnimationSupplier',['../classinviwo_1_1animation_1_1AnimationSupplier.html',1,'inviwo::animation']]],
   ['animationtimestate_41',['AnimationTimeState',['../structinviwo_1_1animation_1_1AnimationTimeState.html',1,'inviwo::animation']]],
   ['animationviewqt_42',['AnimationViewQt',['../classinviwo_1_1animation_1_1AnimationViewQt.html',1,'inviwo::animation']]],
-  ['anisotropy_43',['Anisotropy',['../structAnisotropy.html',1,'Anisotropy'],['../structinviwo_1_1tensor_1_1Anisotropy.html',1,'inviwo::tensor::Anisotropy']]],
+  ['anisotropy_43',['Anisotropy',['../structinviwo_1_1tensor_1_1Anisotropy.html',1,'inviwo::tensor']]],
   ['anisotropyraycastingvisualizer_44',['AnisotropyRaycastingVisualizer',['../classinviwo_1_1AnisotropyRaycastingVisualizer.html',1,'inviwo']]],
   ['annotationswidget_45',['AnnotationsWidget',['../classinviwo_1_1AnnotationsWidget.html',1,'inviwo']]],
   ['arraybuffermapper_46',['ArrayBufferMapper',['../classinviwo_1_1utilvtk_1_1ArrayBufferMapper.html',1,'inviwo::utilvtk']]],

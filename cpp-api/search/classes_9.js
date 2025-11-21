@@ -1,8 +1,8 @@
 var searchData=
 [
-  ['j1_0',['J1',['../structinviwo_1_1tensor_1_1J1.html',1,'inviwo::tensor::J1'],['../structJ1.html',1,'J1']]],
-  ['j2_1',['J2',['../structinviwo_1_1tensor_1_1J2.html',1,'inviwo::tensor::J2'],['../structJ2.html',1,'J2']]],
-  ['j3_2',['J3',['../structinviwo_1_1tensor_1_1J3.html',1,'inviwo::tensor::J3'],['../structJ3.html',1,'J3']]],
+  ['j1_0',['J1',['../structinviwo_1_1tensor_1_1J1.html',1,'inviwo::tensor']]],
+  ['j2_1',['J2',['../structinviwo_1_1tensor_1_1J2.html',1,'inviwo::tensor']]],
+  ['j3_2',['J3',['../structinviwo_1_1tensor_1_1J3.html',1,'inviwo::tensor']]],
   ['jacobian2d_3',['Jacobian2D',['../classinviwo_1_1Jacobian2D.html',1,'inviwo']]],
   ['javascriptfilepropertywidgetqt_4',['JavascriptFilePropertyWidgetQt',['../classinviwo_1_1JavascriptFilePropertyWidgetQt.html',1,'inviwo']]],
   ['javascriptpropertywidgetqt_5',['JavascriptPropertyWidgetQt',['../classinviwo_1_1JavascriptPropertyWidgetQt.html',1,'inviwo']]],

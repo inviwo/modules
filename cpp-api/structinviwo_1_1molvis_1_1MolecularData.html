@@ -97,20 +97,20 @@ $(function(){initNavTree('structinviwo_1_1molvis_1_1MolecularData.html','','stru
 <p>represents molecular data consisting of atoms and optional residue and chain information as well as bonds  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;molecularstructure.h&gt;</code></p>
+<p><code>#include &lt;inviwo/molvisbase/datastructures/molecularstructure.h&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa49a9cbdc0c043d6cf97596ee046f8af" id="r_aa49a9cbdc0c043d6cf97596ee046f8af"><td class="memItemLeft" align="right" valign="top"><a id="aa49a9cbdc0c043d6cf97596ee046f8af" name="aa49a9cbdc0c043d6cf97596ee046f8af"></a>
-std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>source</b></td></tr>
 <tr class="memitem:ad89e5ab630685c344001ab5458c1aeef" id="r_ad89e5ab630685c344001ab5458c1aeef"><td class="memItemLeft" align="right" valign="top"><a id="ad89e5ab630685c344001ab5458c1aeef" name="ad89e5ab630685c344001ab5458c1aeef"></a>
 <a class="el" href="structinviwo_1_1molvis_1_1Atoms.html">Atoms</a>&#160;</td><td class="memItemRight" valign="bottom"><b>atoms</b></td></tr>
-<tr class="memitem:affd99204de84d583f10c0d06b62f75a7" id="r_affd99204de84d583f10c0d06b62f75a7"><td class="memItemLeft" align="right" valign="top"><a id="affd99204de84d583f10c0d06b62f75a7" name="affd99204de84d583f10c0d06b62f75a7"></a>
-std::vector&lt; <a class="el" href="structinviwo_1_1molvis_1_1Residue.html">Residue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>residues</b></td></tr>
-<tr class="memitem:a5701add1ab5bc453d4cca9309d3c89d3" id="r_a5701add1ab5bc453d4cca9309d3c89d3"><td class="memItemLeft" align="right" valign="top"><a id="a5701add1ab5bc453d4cca9309d3c89d3" name="a5701add1ab5bc453d4cca9309d3c89d3"></a>
-std::vector&lt; <a class="el" href="structinviwo_1_1molvis_1_1Chain.html">Chain</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>chains</b></td></tr>
 <tr class="memitem:ad0ed1ba641bb7fba029068e94665ac19" id="r_ad0ed1ba641bb7fba029068e94665ac19"><td class="memItemLeft" align="right" valign="top"><a id="ad0ed1ba641bb7fba029068e94665ac19" name="ad0ed1ba641bb7fba029068e94665ac19"></a>
 std::vector&lt; Bond &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>bonds</b></td></tr>
+<tr class="memitem:a5701add1ab5bc453d4cca9309d3c89d3" id="r_a5701add1ab5bc453d4cca9309d3c89d3"><td class="memItemLeft" align="right" valign="top"><a id="a5701add1ab5bc453d4cca9309d3c89d3" name="a5701add1ab5bc453d4cca9309d3c89d3"></a>
+std::vector&lt; <a class="el" href="structinviwo_1_1molvis_1_1Chain.html">Chain</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>chains</b></td></tr>
+<tr class="memitem:affd99204de84d583f10c0d06b62f75a7" id="r_affd99204de84d583f10c0d06b62f75a7"><td class="memItemLeft" align="right" valign="top"><a id="affd99204de84d583f10c0d06b62f75a7" name="affd99204de84d583f10c0d06b62f75a7"></a>
+std::vector&lt; <a class="el" href="structinviwo_1_1molvis_1_1Residue.html">Residue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>residues</b></td></tr>
+<tr class="memitem:aa49a9cbdc0c043d6cf97596ee046f8af" id="r_aa49a9cbdc0c043d6cf97596ee046f8af"><td class="memItemLeft" align="right" valign="top"><a id="aa49a9cbdc0c043d6cf97596ee046f8af" name="aa49a9cbdc0c043d6cf97596ee046f8af"></a>
+std::optional&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>source</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>represents molecular data consisting of atoms and optional residue and chain information as well as bonds </p>
@@ -118,7 +118,7 @@ std::vector&lt; Bond &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>
 <p>Molecular data can consists of multiple chains. Chains consist of one or several residues which in turn contain individual atoms. This data structure assumes that only atoms refer to residues and chains via IDs. The hierarchical information is extracted in and used by <a class="el" href="classinviwo_1_1molvis_1_1MolecularStructure.html" title="a data structure holding molecular data and its acceleration structures">MolecularStructure</a>.</p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1molvis_1_1MolecularStructure.html" title="a data structure holding molecular data and its acceleration structures">MolecularStructure</a> </dd></dl>
 </div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>molecularstructure.h</b></li>
+<li>D:/a/modules/modules/modules/molvis/molvisbase/include/inviwo/molvisbase/datastructures/<b>molecularstructure.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

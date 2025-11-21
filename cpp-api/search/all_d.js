@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['name_0',['name',['../classname.html',1,'name'],['../structinviwo_1_1amira_1_1DataSpec.html#a6b1917c6e0bccda31b7b8e1b6070f9c2',1,'inviwo::amira::DataSpec::name'],['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment::name']]],
+  ['name_0',['name',['../structinviwo_1_1amira_1_1DataSpec.html#a6b1917c6e0bccda31b7b8e1b6070f9c2',1,'inviwo::amira::DataSpec::name'],['../structinviwo_1_1ShaderSegment.html#ace9708c2df32e8e1d8e77581e425c654',1,'inviwo::ShaderSegment::name']]],
   ['nanorzero_1',['NanOrZero',['../classinviwo_1_1CSVReader.html#a64f39e3ad1f7c7af5e91e99a6a28a4f7ad6844b8b4bd544627fa650e3951efa9e',1,'inviwo::CSVReader']]],
   ['nanovgcontext_2',['NanoVGContext',['../classinviwo_1_1NanoVGContext.html',1,'inviwo']]],
   ['nanovgexampleprocessor_3',['NanoVGExampleProcessor',['../classinviwo_1_1NanoVGExampleProcessor.html',1,'inviwo']]],

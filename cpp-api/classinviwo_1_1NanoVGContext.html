@@ -96,17 +96,6 @@ $(function(){initNavTree('classinviwo_1_1NanoVGContext.html','','classinviwo_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:ac0bcb4652ce156a4c0a3c8aa7fa0751c" id="r_ac0bcb4652ce156a4c0a3c8aa7fa0751c"><td class="memItemLeft" align="right" valign="top"><a id="ac0bcb4652ce156a4c0a3c8aa7fa0751c" name="ac0bcb4652ce156a4c0a3c8aa7fa0751c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LineCapMode</b> { <b>Butt</b> = NVG_BUTT
-, <b>Round</b> = NVG_ROUND
-, <b>Square</b> = NVG_SQUARE
- }</td></tr>
-<tr class="memitem:afa7831f82d25b84edc54c4986f96fd02" id="r_afa7831f82d25b84edc54c4986f96fd02"><td class="memItemLeft" align="right" valign="top"><a id="afa7831f82d25b84edc54c4986f96fd02" name="afa7831f82d25b84edc54c4986f96fd02"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LineJoinMode</b> { <b>Miter</b> = NVG_MITER
-, <b>Round</b> = NVG_ROUND
-, <b>Bevel</b> = NVG_BEVEL
- }</td></tr>
-<tr class="memitem:ab28422fbf6e6cc93612363beeea2552d" id="r_ab28422fbf6e6cc93612363beeea2552d"><td class="memItemLeft" align="right" valign="top"><a id="ab28422fbf6e6cc93612363beeea2552d" name="ab28422fbf6e6cc93612363beeea2552d"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Winding</b> { <b>CCW</b> = NVG_CCW
-, <b>CW</b> = NVG_CW
- }</td></tr>
 <tr class="memitem:adeb43b6acd50c658df97dd70df030b52" id="r_adeb43b6acd50c658df97dd70df030b52"><td class="memItemLeft" align="right" valign="top"><a id="adeb43b6acd50c658df97dd70df030b52" name="adeb43b6acd50c658df97dd70df030b52"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Alignment</b> { <br />
 &#160;&#160;<b>Left_Top</b> = (1 &lt;&lt; 0 | 1 &lt;&lt; 3)
 , <b>Left_Middle</b> = (1 &lt;&lt; 0 | 1 &lt;&lt; 4)
@@ -124,9 +113,76 @@ Public Types</h2></td></tr>
 , <b>Right_Baseline</b> = (1 &lt;&lt; 2 | 1 &lt;&lt; 6)
 <br />
  }</td></tr>
+<tr class="memitem:ac0bcb4652ce156a4c0a3c8aa7fa0751c" id="r_ac0bcb4652ce156a4c0a3c8aa7fa0751c"><td class="memItemLeft" align="right" valign="top"><a id="ac0bcb4652ce156a4c0a3c8aa7fa0751c" name="ac0bcb4652ce156a4c0a3c8aa7fa0751c"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LineCapMode</b> { <b>Butt</b> = NVG_BUTT
+, <b>Round</b> = NVG_ROUND
+, <b>Square</b> = NVG_SQUARE
+ }</td></tr>
+<tr class="memitem:afa7831f82d25b84edc54c4986f96fd02" id="r_afa7831f82d25b84edc54c4986f96fd02"><td class="memItemLeft" align="right" valign="top"><a id="afa7831f82d25b84edc54c4986f96fd02" name="afa7831f82d25b84edc54c4986f96fd02"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>LineJoinMode</b> { <b>Miter</b> = NVG_MITER
+, <b>Round</b> = NVG_ROUND
+, <b>Bevel</b> = NVG_BEVEL
+ }</td></tr>
+<tr class="memitem:ab28422fbf6e6cc93612363beeea2552d" id="r_ab28422fbf6e6cc93612363beeea2552d"><td class="memItemLeft" align="right" valign="top"><a id="ab28422fbf6e6cc93612363beeea2552d" name="ab28422fbf6e6cc93612363beeea2552d"></a>enum class &#160;</td><td class="memItemRight" valign="bottom"><b>Winding</b> { <b>CCW</b> = NVG_CCW
+, <b>CW</b> = NVG_CW
+ }</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:ac2cea58c4c91c4a918b2a1ad4a9cf23f" id="r_ac2cea58c4c91c4a918b2a1ad4a9cf23f"><td class="memItemLeft" align="right" valign="top"><a id="ac2cea58c4c91c4a918b2a1ad4a9cf23f" name="ac2cea58c4c91c4a918b2a1ad4a9cf23f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>activate</b> (const size2_t &amp;dimensions, float pixelRatio=1.f)</td></tr>
+<tr class="memitem:ab38dfdf08bd10cb5b83dc7eaef1654ae" id="r_ab38dfdf08bd10cb5b83dc7eaef1654ae"><td class="memItemLeft" align="right" valign="top"><a id="ab38dfdf08bd10cb5b83dc7eaef1654ae" name="ab38dfdf08bd10cb5b83dc7eaef1654ae"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>activate</b> (int windowWidth, int windowHeight, float pixelRatio=1.f)</td></tr>
+<tr class="memitem:ab966faeebf40c0a5b71e98f4358e022e" id="r_ab966faeebf40c0a5b71e98f4358e022e"><td class="memItemLeft" align="right" valign="top"><a id="ab966faeebf40c0a5b71e98f4358e022e" name="ab966faeebf40c0a5b71e98f4358e022e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>arc</b> (const vec2 &amp;center, float radius, float angle1, float angle2, int direction)</td></tr>
+<tr class="memitem:a5938c0d5db7a3c17dbbd07945278b924" id="r_a5938c0d5db7a3c17dbbd07945278b924"><td class="memItemLeft" align="right" valign="top"><a id="a5938c0d5db7a3c17dbbd07945278b924" name="a5938c0d5db7a3c17dbbd07945278b924"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>arcTo</b> (const vec2 &amp;point1, const vec2 &amp;point2, float radius)</td></tr>
+<tr class="memitem:ad9ba225a5b463db858b57d792c53fef6" id="r_ad9ba225a5b463db858b57d792c53fef6"><td class="memItemLeft" align="right" valign="top"><a id="ad9ba225a5b463db858b57d792c53fef6" name="ad9ba225a5b463db858b57d792c53fef6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>beginPath</b> ()</td></tr>
+<tr class="memitem:a1a211b55c36ff9e2a7cefaf57a2d2465" id="r_a1a211b55c36ff9e2a7cefaf57a2d2465"><td class="memItemLeft" align="right" valign="top"><a id="a1a211b55c36ff9e2a7cefaf57a2d2465" name="a1a211b55c36ff9e2a7cefaf57a2d2465"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>bezierCurveTo</b> (const vec2 &amp;controlPoint1, const vec2 &amp;controlPoint2, const vec2 &amp;endPoint)</td></tr>
+<tr class="memitem:ae938946f1d8c6cfc8df701a1804c719c" id="r_ae938946f1d8c6cfc8df701a1804c719c"><td class="memItemLeft" align="right" valign="top"><a id="ae938946f1d8c6cfc8df701a1804c719c" name="ae938946f1d8c6cfc8df701a1804c719c"></a>
+NVGpaint&#160;</td><td class="memItemRight" valign="bottom"><b>boxGradient</b> (const vec2 &amp;origin, const vec2 &amp;dimensions, float r, float f, const vec4 &amp;startColor, const vec4 &amp;endColor)</td></tr>
+<tr class="memitem:a7bc0b913dea3f05bc98d0758501da0c1" id="r_a7bc0b913dea3f05bc98d0758501da0c1"><td class="memItemLeft" align="right" valign="top"><a id="a7bc0b913dea3f05bc98d0758501da0c1" name="a7bc0b913dea3f05bc98d0758501da0c1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>cancel</b> ()</td></tr>
+<tr class="memitem:a48d8bea62ed57ff51fd2c4f599ddef83" id="r_a48d8bea62ed57ff51fd2c4f599ddef83"><td class="memItemLeft" align="right" valign="top"><a id="a48d8bea62ed57ff51fd2c4f599ddef83" name="a48d8bea62ed57ff51fd2c4f599ddef83"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>circle</b> (const vec2 &amp;coordinates, float radius)</td></tr>
+<tr class="memitem:a9e1949a574210f784511999cac48d520" id="r_a9e1949a574210f784511999cac48d520"><td class="memItemLeft" align="right" valign="top"><a id="a9e1949a574210f784511999cac48d520" name="a9e1949a574210f784511999cac48d520"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>closePath</b> ()</td></tr>
+<tr class="memitem:a2b1e2ce923f033af875acd8988e4bb0c" id="r_a2b1e2ce923f033af875acd8988e4bb0c"><td class="memItemLeft" align="right" valign="top"><a id="a2b1e2ce923f033af875acd8988e4bb0c" name="a2b1e2ce923f033af875acd8988e4bb0c"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>createFont</b> (const std::string &amp;name, const std::filesystem::path &amp;filename)</td></tr>
+<tr class="memitem:a59121db919e65372b73a47a379d36a9f" id="r_a59121db919e65372b73a47a379d36a9f"><td class="memItemLeft" align="right" valign="top"><a id="a59121db919e65372b73a47a379d36a9f" name="a59121db919e65372b73a47a379d36a9f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>deactivate</b> ()</td></tr>
+<tr class="memitem:af4e7817425ee25bcba7ec10d2f4b2298" id="r_af4e7817425ee25bcba7ec10d2f4b2298"><td class="memItemLeft" align="right" valign="top"><a id="af4e7817425ee25bcba7ec10d2f4b2298" name="af4e7817425ee25bcba7ec10d2f4b2298"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>disableAntiAlias</b> ()</td></tr>
+<tr class="memitem:ae5de343307bd11cb0ad3b9bda047f1b9" id="r_ae5de343307bd11cb0ad3b9bda047f1b9"><td class="memItemLeft" align="right" valign="top"><a id="ae5de343307bd11cb0ad3b9bda047f1b9" name="ae5de343307bd11cb0ad3b9bda047f1b9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ellipse</b> (const vec2 &amp;coordinates, float radius1, float radius2)</td></tr>
+<tr class="memitem:a0bce2e12884a16ff06644a0369e65bd2" id="r_a0bce2e12884a16ff06644a0369e65bd2"><td class="memItemLeft" align="right" valign="top"><a id="a0bce2e12884a16ff06644a0369e65bd2" name="a0bce2e12884a16ff06644a0369e65bd2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>enableAntiAlias</b> ()</td></tr>
+<tr class="memitem:a026aab9ca08c754c6730a688c80ae95b" id="r_a026aab9ca08c754c6730a688c80ae95b"><td class="memItemLeft" align="right" valign="top"><a id="a026aab9ca08c754c6730a688c80ae95b" name="a026aab9ca08c754c6730a688c80ae95b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fill</b> ()</td></tr>
+<tr class="memitem:af23dd43c6a52266a0956fa6706001305" id="r_af23dd43c6a52266a0956fa6706001305"><td class="memItemLeft" align="right" valign="top"><a id="af23dd43c6a52266a0956fa6706001305" name="af23dd43c6a52266a0956fa6706001305"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fillColor</b> (const vec4 &amp;<a class="el" href="namespaceinviwo_1_1color.html">color</a>)</td></tr>
+<tr class="memitem:a01f811c348056fa26d5c3717179631e1" id="r_a01f811c348056fa26d5c3717179631e1"><td class="memItemLeft" align="right" valign="top"><a id="a01f811c348056fa26d5c3717179631e1" name="a01f811c348056fa26d5c3717179631e1"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fillPaint</b> (const NVGpaint &amp;paint)</td></tr>
+<tr class="memitem:a9a176f4bcaf0df4b324ed5495ddf21da" id="r_a9a176f4bcaf0df4b324ed5495ddf21da"><td class="memItemLeft" align="right" valign="top"><a id="a9a176f4bcaf0df4b324ed5495ddf21da" name="a9a176f4bcaf0df4b324ed5495ddf21da"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>findFont</b> (const std::string &amp;name)</td></tr>
+<tr class="memitem:ae1295365837e268582589002d1da7090" id="r_ae1295365837e268582589002d1da7090"><td class="memItemLeft" align="right" valign="top"><a id="ae1295365837e268582589002d1da7090" name="ae1295365837e268582589002d1da7090"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fontBlur</b> (float blur)</td></tr>
+<tr class="memitem:a1444f609715054c839588b10161df47c" id="r_a1444f609715054c839588b10161df47c"><td class="memItemLeft" align="right" valign="top"><a id="a1444f609715054c839588b10161df47c" name="a1444f609715054c839588b10161df47c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fontFace</b> (const std::string &amp;name)</td></tr>
+<tr class="memitem:a487115d15d6bcd7c161217a4b40ec862" id="r_a487115d15d6bcd7c161217a4b40ec862"><td class="memItemLeft" align="right" valign="top"><a id="a487115d15d6bcd7c161217a4b40ec862" name="a487115d15d6bcd7c161217a4b40ec862"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>fontSize</b> (float size)</td></tr>
+<tr class="memitem:a4aff733bc9acee1fa5f50bdd1acdf535" id="r_a4aff733bc9acee1fa5f50bdd1acdf535"><td class="memItemLeft" align="right" valign="top"><a id="a4aff733bc9acee1fa5f50bdd1acdf535" name="a4aff733bc9acee1fa5f50bdd1acdf535"></a>
+const NVGcontext *&#160;</td><td class="memItemRight" valign="bottom"><b>getContext</b> () const</td></tr>
+<tr class="memitem:a8b22372e8bf3d2dc3037b663640b92bb" id="r_a8b22372e8bf3d2dc3037b663640b92bb"><td class="memItemLeft" align="right" valign="top"><a id="a8b22372e8bf3d2dc3037b663640b92bb" name="a8b22372e8bf3d2dc3037b663640b92bb"></a>
+NVGpaint&#160;</td><td class="memItemRight" valign="bottom"><b>linearGradient</b> (const vec2 &amp;start, const vec2 &amp;end, const vec4 &amp;startColor, const vec4 &amp;endColor)</td></tr>
+<tr class="memitem:a24b9e271c70fbf08678c067d0372fd68" id="r_a24b9e271c70fbf08678c067d0372fd68"><td class="memItemLeft" align="right" valign="top"><a id="a24b9e271c70fbf08678c067d0372fd68" name="a24b9e271c70fbf08678c067d0372fd68"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lineCap</b> (LineCapMode mode=LineCapMode::Butt)</td></tr>
+<tr class="memitem:a327ce970d33280e5eae423381d22487d" id="r_a327ce970d33280e5eae423381d22487d"><td class="memItemLeft" align="right" valign="top"><a id="a327ce970d33280e5eae423381d22487d" name="a327ce970d33280e5eae423381d22487d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lineJoin</b> (LineJoinMode mode=LineJoinMode::Miter)</td></tr>
+<tr class="memitem:a051581a9b79e0af2a0942a0cc79f5079" id="r_a051581a9b79e0af2a0942a0cc79f5079"><td class="memItemLeft" align="right" valign="top"><a id="a051581a9b79e0af2a0942a0cc79f5079" name="a051581a9b79e0af2a0942a0cc79f5079"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>lineTo</b> (const vec2 &amp;coordinates)</td></tr>
+<tr class="memitem:ae9fab829809709836b7b31a09ba4cee9" id="r_ae9fab829809709836b7b31a09ba4cee9"><td class="memItemLeft" align="right" valign="top"><a id="ae9fab829809709836b7b31a09ba4cee9" name="ae9fab829809709836b7b31a09ba4cee9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>moveTo</b> (const vec2 &amp;coordinates)</td></tr>
 <tr class="memitem:ac8f395ae2a1b9f828517f081ef6b4a59" id="r_ac8f395ae2a1b9f828517f081ef6b4a59"><td class="memItemLeft" align="right" valign="top"><a id="ac8f395ae2a1b9f828517f081ef6b4a59" name="ac8f395ae2a1b9f828517f081ef6b4a59"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>NanoVGContext</b> (const NanoVGContext &amp;)=delete</td></tr>
 <tr class="memitem:ad2a74afc67e18c2ad12bd9638e436079" id="r_ad2a74afc67e18c2ad12bd9638e436079"><td class="memItemLeft" align="right" valign="top"><a id="ad2a74afc67e18c2ad12bd9638e436079" name="ad2a74afc67e18c2ad12bd9638e436079"></a>
@@ -135,90 +191,50 @@ Public Member Functions</h2></td></tr>
 NanoVGContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const NanoVGContext &amp;)=delete</td></tr>
 <tr class="memitem:ac697b6313ce8602534d4e375d9268cd8" id="r_ac697b6313ce8602534d4e375d9268cd8"><td class="memItemLeft" align="right" valign="top"><a id="ac697b6313ce8602534d4e375d9268cd8" name="ac697b6313ce8602534d4e375d9268cd8"></a>
 NanoVGContext &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (NanoVGContext &amp;&amp;)=delete</td></tr>
-<tr class="memitem:ab38dfdf08bd10cb5b83dc7eaef1654ae" id="r_ab38dfdf08bd10cb5b83dc7eaef1654ae"><td class="memItemLeft" align="right" valign="top"><a id="ab38dfdf08bd10cb5b83dc7eaef1654ae" name="ab38dfdf08bd10cb5b83dc7eaef1654ae"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>activate</b> (int windowWidth, int windowHeight, float pixelRatio=1.f)</td></tr>
-<tr class="memitem:ac2cea58c4c91c4a918b2a1ad4a9cf23f" id="r_ac2cea58c4c91c4a918b2a1ad4a9cf23f"><td class="memItemLeft" align="right" valign="top"><a id="ac2cea58c4c91c4a918b2a1ad4a9cf23f" name="ac2cea58c4c91c4a918b2a1ad4a9cf23f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>activate</b> (const size2_t &amp;dimensions, float pixelRatio=1.f)</td></tr>
-<tr class="memitem:a59121db919e65372b73a47a379d36a9f" id="r_a59121db919e65372b73a47a379d36a9f"><td class="memItemLeft" align="right" valign="top"><a id="a59121db919e65372b73a47a379d36a9f" name="a59121db919e65372b73a47a379d36a9f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>deactivate</b> ()</td></tr>
-<tr class="memitem:a7bc0b913dea3f05bc98d0758501da0c1" id="r_a7bc0b913dea3f05bc98d0758501da0c1"><td class="memItemLeft" align="right" valign="top"><a id="a7bc0b913dea3f05bc98d0758501da0c1" name="a7bc0b913dea3f05bc98d0758501da0c1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>cancel</b> ()</td></tr>
-<tr class="memitem:a4aff733bc9acee1fa5f50bdd1acdf535" id="r_a4aff733bc9acee1fa5f50bdd1acdf535"><td class="memItemLeft" align="right" valign="top"><a id="a4aff733bc9acee1fa5f50bdd1acdf535" name="a4aff733bc9acee1fa5f50bdd1acdf535"></a>
-const NVGcontext *&#160;</td><td class="memItemRight" valign="bottom"><b>getContext</b> () const</td></tr>
-<tr class="memitem:a181df1034c1d00741d24aaf33c68cb34" id="r_a181df1034c1d00741d24aaf33c68cb34"><td class="memItemLeft" align="right" valign="top"><a id="a181df1034c1d00741d24aaf33c68cb34" name="a181df1034c1d00741d24aaf33c68cb34"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>save</b> ()</td></tr>
-<tr class="memitem:ababa3817092d4649ba3ff40e80c2020f" id="r_ababa3817092d4649ba3ff40e80c2020f"><td class="memItemLeft" align="right" valign="top"><a id="ababa3817092d4649ba3ff40e80c2020f" name="ababa3817092d4649ba3ff40e80c2020f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>restore</b> ()</td></tr>
-<tr class="memitem:a7ac17663b209f7e0ef16f71820f1f840" id="r_a7ac17663b209f7e0ef16f71820f1f840"><td class="memItemLeft" align="right" valign="top"><a id="a7ac17663b209f7e0ef16f71820f1f840" name="a7ac17663b209f7e0ef16f71820f1f840"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
-<tr class="memitem:a0b82a3b053245d7f1f8dcf12b1852e25" id="r_a0b82a3b053245d7f1f8dcf12b1852e25"><td class="memItemLeft" align="right" valign="top"><a id="a0b82a3b053245d7f1f8dcf12b1852e25" name="a0b82a3b053245d7f1f8dcf12b1852e25"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>shapeAntiAlias</b> (bool enabled)</td></tr>
-<tr class="memitem:a0bce2e12884a16ff06644a0369e65bd2" id="r_a0bce2e12884a16ff06644a0369e65bd2"><td class="memItemLeft" align="right" valign="top"><a id="a0bce2e12884a16ff06644a0369e65bd2" name="a0bce2e12884a16ff06644a0369e65bd2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>enableAntiAlias</b> ()</td></tr>
-<tr class="memitem:af4e7817425ee25bcba7ec10d2f4b2298" id="r_af4e7817425ee25bcba7ec10d2f4b2298"><td class="memItemLeft" align="right" valign="top"><a id="af4e7817425ee25bcba7ec10d2f4b2298" name="af4e7817425ee25bcba7ec10d2f4b2298"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>disableAntiAlias</b> ()</td></tr>
-<tr class="memitem:ad9ba225a5b463db858b57d792c53fef6" id="r_ad9ba225a5b463db858b57d792c53fef6"><td class="memItemLeft" align="right" valign="top"><a id="ad9ba225a5b463db858b57d792c53fef6" name="ad9ba225a5b463db858b57d792c53fef6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>beginPath</b> ()</td></tr>
-<tr class="memitem:a9e1949a574210f784511999cac48d520" id="r_a9e1949a574210f784511999cac48d520"><td class="memItemLeft" align="right" valign="top"><a id="a9e1949a574210f784511999cac48d520" name="a9e1949a574210f784511999cac48d520"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>closePath</b> ()</td></tr>
 <tr class="memitem:a37bf2a3246769a0d032174cc1187ebc4" id="r_a37bf2a3246769a0d032174cc1187ebc4"><td class="memItemLeft" align="right" valign="top"><a id="a37bf2a3246769a0d032174cc1187ebc4" name="a37bf2a3246769a0d032174cc1187ebc4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>pathWinding</b> (Winding direction)</td></tr>
-<tr class="memitem:a24b9e271c70fbf08678c067d0372fd68" id="r_a24b9e271c70fbf08678c067d0372fd68"><td class="memItemLeft" align="right" valign="top"><a id="a24b9e271c70fbf08678c067d0372fd68" name="a24b9e271c70fbf08678c067d0372fd68"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lineCap</b> (LineCapMode mode=LineCapMode::Butt)</td></tr>
-<tr class="memitem:a327ce970d33280e5eae423381d22487d" id="r_a327ce970d33280e5eae423381d22487d"><td class="memItemLeft" align="right" valign="top"><a id="a327ce970d33280e5eae423381d22487d" name="a327ce970d33280e5eae423381d22487d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lineJoin</b> (LineJoinMode mode=LineJoinMode::Miter)</td></tr>
-<tr class="memitem:ae9fab829809709836b7b31a09ba4cee9" id="r_ae9fab829809709836b7b31a09ba4cee9"><td class="memItemLeft" align="right" valign="top"><a id="ae9fab829809709836b7b31a09ba4cee9" name="ae9fab829809709836b7b31a09ba4cee9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>moveTo</b> (const vec2 &amp;coordinates)</td></tr>
-<tr class="memitem:a051581a9b79e0af2a0942a0cc79f5079" id="r_a051581a9b79e0af2a0942a0cc79f5079"><td class="memItemLeft" align="right" valign="top"><a id="a051581a9b79e0af2a0942a0cc79f5079" name="a051581a9b79e0af2a0942a0cc79f5079"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>lineTo</b> (const vec2 &amp;coordinates)</td></tr>
-<tr class="memitem:a48d8bea62ed57ff51fd2c4f599ddef83" id="r_a48d8bea62ed57ff51fd2c4f599ddef83"><td class="memItemLeft" align="right" valign="top"><a id="a48d8bea62ed57ff51fd2c4f599ddef83" name="a48d8bea62ed57ff51fd2c4f599ddef83"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>circle</b> (const vec2 &amp;coordinates, float radius)</td></tr>
-<tr class="memitem:ae5de343307bd11cb0ad3b9bda047f1b9" id="r_ae5de343307bd11cb0ad3b9bda047f1b9"><td class="memItemLeft" align="right" valign="top"><a id="ae5de343307bd11cb0ad3b9bda047f1b9" name="ae5de343307bd11cb0ad3b9bda047f1b9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>ellipse</b> (const vec2 &amp;coordinates, float radius1, float radius2)</td></tr>
-<tr class="memitem:aec89a922625bded6b2c9e86000c0d7a6" id="r_aec89a922625bded6b2c9e86000c0d7a6"><td class="memItemLeft" align="right" valign="top"><a id="aec89a922625bded6b2c9e86000c0d7a6" name="aec89a922625bded6b2c9e86000c0d7a6"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>rect</b> (const vec2 &amp;coordinates, const vec2 &amp;dim)</td></tr>
-<tr class="memitem:a691a9e67210c2b24e2621aa15f1729df" id="r_a691a9e67210c2b24e2621aa15f1729df"><td class="memItemLeft" align="right" valign="top"><a id="a691a9e67210c2b24e2621aa15f1729df" name="a691a9e67210c2b24e2621aa15f1729df"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>roundedRect</b> (const vec2 &amp;coordinates, const vec2 &amp;dim, float radius)</td></tr>
-<tr class="memitem:ab966faeebf40c0a5b71e98f4358e022e" id="r_ab966faeebf40c0a5b71e98f4358e022e"><td class="memItemLeft" align="right" valign="top"><a id="ab966faeebf40c0a5b71e98f4358e022e" name="ab966faeebf40c0a5b71e98f4358e022e"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>arc</b> (const vec2 &amp;center, float radius, float angle1, float angle2, int direction)</td></tr>
-<tr class="memitem:a5938c0d5db7a3c17dbbd07945278b924" id="r_a5938c0d5db7a3c17dbbd07945278b924"><td class="memItemLeft" align="right" valign="top"><a id="a5938c0d5db7a3c17dbbd07945278b924" name="a5938c0d5db7a3c17dbbd07945278b924"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>arcTo</b> (const vec2 &amp;point1, const vec2 &amp;point2, float radius)</td></tr>
-<tr class="memitem:a1a211b55c36ff9e2a7cefaf57a2d2465" id="r_a1a211b55c36ff9e2a7cefaf57a2d2465"><td class="memItemLeft" align="right" valign="top"><a id="a1a211b55c36ff9e2a7cefaf57a2d2465" name="a1a211b55c36ff9e2a7cefaf57a2d2465"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>bezierCurveTo</b> (const vec2 &amp;controlPoint1, const vec2 &amp;controlPoint2, const vec2 &amp;endPoint)</td></tr>
 <tr class="memitem:a30dfdd9510cfac12e514993167bf076d" id="r_a30dfdd9510cfac12e514993167bf076d"><td class="memItemLeft" align="right" valign="top"><a id="a30dfdd9510cfac12e514993167bf076d" name="a30dfdd9510cfac12e514993167bf076d"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>quadraticCurveTo</b> (const vec2 &amp;controlPoint, const vec2 &amp;endPoint)</td></tr>
-<tr class="memitem:af23dd43c6a52266a0956fa6706001305" id="r_af23dd43c6a52266a0956fa6706001305"><td class="memItemLeft" align="right" valign="top"><a id="af23dd43c6a52266a0956fa6706001305" name="af23dd43c6a52266a0956fa6706001305"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fillColor</b> (const vec4 &amp;<a class="el" href="namespaceinviwo_1_1color.html">color</a>)</td></tr>
-<tr class="memitem:a026aab9ca08c754c6730a688c80ae95b" id="r_a026aab9ca08c754c6730a688c80ae95b"><td class="memItemLeft" align="right" valign="top"><a id="a026aab9ca08c754c6730a688c80ae95b" name="a026aab9ca08c754c6730a688c80ae95b"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fill</b> ()</td></tr>
-<tr class="memitem:ad3625e38f6cdf5b58e769d95ad0ae8d9" id="r_ad3625e38f6cdf5b58e769d95ad0ae8d9"><td class="memItemLeft" align="right" valign="top"><a id="ad3625e38f6cdf5b58e769d95ad0ae8d9" name="ad3625e38f6cdf5b58e769d95ad0ae8d9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>strokeColor</b> (const vec4 &amp;<a class="el" href="namespaceinviwo_1_1color.html">color</a>)</td></tr>
-<tr class="memitem:a15cc2b68b60e5a8954de410d8b9c6760" id="r_a15cc2b68b60e5a8954de410d8b9c6760"><td class="memItemLeft" align="right" valign="top"><a id="a15cc2b68b60e5a8954de410d8b9c6760" name="a15cc2b68b60e5a8954de410d8b9c6760"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>strokeWidth</b> (float width)</td></tr>
+<tr class="memitem:ae19ee252139f32029a37f4d61843af1d" id="r_ae19ee252139f32029a37f4d61843af1d"><td class="memItemLeft" align="right" valign="top"><a id="ae19ee252139f32029a37f4d61843af1d" name="ae19ee252139f32029a37f4d61843af1d"></a>
+NVGpaint&#160;</td><td class="memItemRight" valign="bottom"><b>radialGradient</b> (const vec2 &amp;center, float innerRadius, float outerRadius, const vec4 &amp;startColor, const vec4 &amp;endColor)</td></tr>
+<tr class="memitem:aec89a922625bded6b2c9e86000c0d7a6" id="r_aec89a922625bded6b2c9e86000c0d7a6"><td class="memItemLeft" align="right" valign="top"><a id="aec89a922625bded6b2c9e86000c0d7a6" name="aec89a922625bded6b2c9e86000c0d7a6"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>rect</b> (const vec2 &amp;coordinates, const vec2 &amp;dim)</td></tr>
+<tr class="memitem:a7ac17663b209f7e0ef16f71820f1f840" id="r_a7ac17663b209f7e0ef16f71820f1f840"><td class="memItemLeft" align="right" valign="top"><a id="a7ac17663b209f7e0ef16f71820f1f840" name="a7ac17663b209f7e0ef16f71820f1f840"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>reset</b> ()</td></tr>
+<tr class="memitem:ababa3817092d4649ba3ff40e80c2020f" id="r_ababa3817092d4649ba3ff40e80c2020f"><td class="memItemLeft" align="right" valign="top"><a id="ababa3817092d4649ba3ff40e80c2020f" name="ababa3817092d4649ba3ff40e80c2020f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>restore</b> ()</td></tr>
+<tr class="memitem:a2be011bffb2fb7929657907ae801d4d7" id="r_a2be011bffb2fb7929657907ae801d4d7"><td class="memItemLeft" align="right" valign="top"><a id="a2be011bffb2fb7929657907ae801d4d7" name="a2be011bffb2fb7929657907ae801d4d7"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>rotate</b> (float angle)</td></tr>
+<tr class="memitem:a691a9e67210c2b24e2621aa15f1729df" id="r_a691a9e67210c2b24e2621aa15f1729df"><td class="memItemLeft" align="right" valign="top"><a id="a691a9e67210c2b24e2621aa15f1729df" name="a691a9e67210c2b24e2621aa15f1729df"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>roundedRect</b> (const vec2 &amp;coordinates, const vec2 &amp;dim, float radius)</td></tr>
+<tr class="memitem:a181df1034c1d00741d24aaf33c68cb34" id="r_a181df1034c1d00741d24aaf33c68cb34"><td class="memItemLeft" align="right" valign="top"><a id="a181df1034c1d00741d24aaf33c68cb34" name="a181df1034c1d00741d24aaf33c68cb34"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>save</b> ()</td></tr>
+<tr class="memitem:affcfbd306bbd6e447cfd0aca6d60054c" id="r_affcfbd306bbd6e447cfd0aca6d60054c"><td class="memItemLeft" align="right" valign="top"><a id="affcfbd306bbd6e447cfd0aca6d60054c" name="affcfbd306bbd6e447cfd0aca6d60054c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>scale</b> (float sx, float sy)</td></tr>
+<tr class="memitem:a0b82a3b053245d7f1f8dcf12b1852e25" id="r_a0b82a3b053245d7f1f8dcf12b1852e25"><td class="memItemLeft" align="right" valign="top"><a id="a0b82a3b053245d7f1f8dcf12b1852e25" name="a0b82a3b053245d7f1f8dcf12b1852e25"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>shapeAntiAlias</b> (bool enabled)</td></tr>
+<tr class="memitem:aa128af0626dbb165434a262b1f5fd35c" id="r_aa128af0626dbb165434a262b1f5fd35c"><td class="memItemLeft" align="right" valign="top"><a id="aa128af0626dbb165434a262b1f5fd35c" name="aa128af0626dbb165434a262b1f5fd35c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>skewX</b> (float kx)</td></tr>
+<tr class="memitem:aa39ab9d9a7ee1b083653dce26b8d7c6f" id="r_aa39ab9d9a7ee1b083653dce26b8d7c6f"><td class="memItemLeft" align="right" valign="top"><a id="aa39ab9d9a7ee1b083653dce26b8d7c6f" name="aa39ab9d9a7ee1b083653dce26b8d7c6f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>skewY</b> (float ky)</td></tr>
 <tr class="memitem:a13328f852b775ff541702f564d6894e4" id="r_a13328f852b775ff541702f564d6894e4"><td class="memItemLeft" align="right" valign="top"><a id="a13328f852b775ff541702f564d6894e4" name="a13328f852b775ff541702f564d6894e4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>stroke</b> ()</td></tr>
+<tr class="memitem:ad3625e38f6cdf5b58e769d95ad0ae8d9" id="r_ad3625e38f6cdf5b58e769d95ad0ae8d9"><td class="memItemLeft" align="right" valign="top"><a id="ad3625e38f6cdf5b58e769d95ad0ae8d9" name="ad3625e38f6cdf5b58e769d95ad0ae8d9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>strokeColor</b> (const vec4 &amp;<a class="el" href="namespaceinviwo_1_1color.html">color</a>)</td></tr>
 <tr class="memitem:a089708aee877de50d8328807d0f13cd4" id="r_a089708aee877de50d8328807d0f13cd4"><td class="memItemLeft" align="right" valign="top"><a id="a089708aee877de50d8328807d0f13cd4" name="a089708aee877de50d8328807d0f13cd4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>strokePaint</b> (const NVGpaint &amp;paint)</td></tr>
-<tr class="memitem:a01f811c348056fa26d5c3717179631e1" id="r_a01f811c348056fa26d5c3717179631e1"><td class="memItemLeft" align="right" valign="top"><a id="a01f811c348056fa26d5c3717179631e1" name="a01f811c348056fa26d5c3717179631e1"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fillPaint</b> (const NVGpaint &amp;paint)</td></tr>
-<tr class="memitem:a487115d15d6bcd7c161217a4b40ec862" id="r_a487115d15d6bcd7c161217a4b40ec862"><td class="memItemLeft" align="right" valign="top"><a id="a487115d15d6bcd7c161217a4b40ec862" name="a487115d15d6bcd7c161217a4b40ec862"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fontSize</b> (float size)</td></tr>
-<tr class="memitem:a1444f609715054c839588b10161df47c" id="r_a1444f609715054c839588b10161df47c"><td class="memItemLeft" align="right" valign="top"><a id="a1444f609715054c839588b10161df47c" name="a1444f609715054c839588b10161df47c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fontFace</b> (const std::string &amp;<a class="el" href="classname.html">name</a>)</td></tr>
-<tr class="memitem:a2a3aef21516e8d081a35e5e1186af45d" id="r_a2a3aef21516e8d081a35e5e1186af45d"><td class="memItemLeft" align="right" valign="top"><a id="a2a3aef21516e8d081a35e5e1186af45d" name="a2a3aef21516e8d081a35e5e1186af45d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>textAlign</b> (int flags)</td></tr>
-<tr class="memitem:a488f80d1f2225069d30911a5a04c322f" id="r_a488f80d1f2225069d30911a5a04c322f"><td class="memItemLeft" align="right" valign="top"><a id="a488f80d1f2225069d30911a5a04c322f" name="a488f80d1f2225069d30911a5a04c322f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>textAlign</b> (Alignment flags)</td></tr>
-<tr class="memitem:ae1295365837e268582589002d1da7090" id="r_ae1295365837e268582589002d1da7090"><td class="memItemLeft" align="right" valign="top"><a id="ae1295365837e268582589002d1da7090" name="ae1295365837e268582589002d1da7090"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>fontBlur</b> (float blur)</td></tr>
+<tr class="memitem:a15cc2b68b60e5a8954de410d8b9c6760" id="r_a15cc2b68b60e5a8954de410d8b9c6760"><td class="memItemLeft" align="right" valign="top"><a id="a15cc2b68b60e5a8954de410d8b9c6760" name="a15cc2b68b60e5a8954de410d8b9c6760"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>strokeWidth</b> (float width)</td></tr>
 <tr class="memitem:a8947e635688bcabb51260639a1bb9fec" id="r_a8947e635688bcabb51260639a1bb9fec"><td class="memItemLeft" align="right" valign="top"><a id="a8947e635688bcabb51260639a1bb9fec" name="a8947e635688bcabb51260639a1bb9fec"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>text</b> (const ivec2 &amp;coordinates, const std::string &amp;text, size_t text_cutoff=0)</td></tr>
-<tr class="memitem:a5a8fac2112e0400f9d106ab99325c4f9" id="r_a5a8fac2112e0400f9d106ab99325c4f9"><td class="memItemLeft" align="right" valign="top"><a id="a5a8fac2112e0400f9d106ab99325c4f9" name="a5a8fac2112e0400f9d106ab99325c4f9"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>textBox</b> (const ivec2 &amp;coordinates, float textBoxWidth, const std::string &amp;text, size_t text_cutoff=0)</td></tr>
-<tr class="memitem:a2b1e2ce923f033af875acd8988e4bb0c" id="r_a2b1e2ce923f033af875acd8988e4bb0c"><td class="memItemLeft" align="right" valign="top"><a id="a2b1e2ce923f033af875acd8988e4bb0c" name="a2b1e2ce923f033af875acd8988e4bb0c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>createFont</b> (const std::string &amp;<a class="el" href="classname.html">name</a>, const std::filesystem::path &amp;filename)</td></tr>
+<tr class="memitem:a488f80d1f2225069d30911a5a04c322f" id="r_a488f80d1f2225069d30911a5a04c322f"><td class="memItemLeft" align="right" valign="top"><a id="a488f80d1f2225069d30911a5a04c322f" name="a488f80d1f2225069d30911a5a04c322f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>textAlign</b> (Alignment flags)</td></tr>
+<tr class="memitem:a2a3aef21516e8d081a35e5e1186af45d" id="r_a2a3aef21516e8d081a35e5e1186af45d"><td class="memItemLeft" align="right" valign="top"><a id="a2a3aef21516e8d081a35e5e1186af45d" name="a2a3aef21516e8d081a35e5e1186af45d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>textAlign</b> (int flags)</td></tr>
 <tr class="memitem:ae60a0168c9b7d3089137ae2ee24c02ea" id="r_ae60a0168c9b7d3089137ae2ee24c02ea"><td class="memItemLeft" align="right" valign="top">vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae60a0168c9b7d3089137ae2ee24c02ea">textBounds</a> (const ivec2 &amp;position, const std::string &amp;string)</td></tr>
 <tr class="memitem:aae927bff3264c4ec9134cb50cb677bd8" id="r_aae927bff3264c4ec9134cb50cb677bd8"><td class="memItemLeft" align="right" valign="top">vec4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae927bff3264c4ec9134cb50cb677bd8">textBounds</a> (const vec2 &amp;position, const std::string &amp;string)</td></tr>
+<tr class="memitem:a5a8fac2112e0400f9d106ab99325c4f9" id="r_a5a8fac2112e0400f9d106ab99325c4f9"><td class="memItemLeft" align="right" valign="top"><a id="a5a8fac2112e0400f9d106ab99325c4f9" name="a5a8fac2112e0400f9d106ab99325c4f9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>textBox</b> (const ivec2 &amp;coordinates, float textBoxWidth, const std::string &amp;text, size_t text_cutoff=0)</td></tr>
 <tr class="memitem:a448463cb18143a2c87782d3bec969b54" id="r_a448463cb18143a2c87782d3bec969b54"><td class="memItemLeft" align="right" valign="top"><a id="a448463cb18143a2c87782d3bec969b54" name="a448463cb18143a2c87782d3bec969b54"></a>
 vec4&#160;</td><td class="memItemRight" valign="bottom"><b>textBoxBounds</b> (const ivec2 &amp;position, float textBoxWidth, const std::string &amp;text)</td></tr>
 <tr class="memitem:aaef9dce28739c0ae728ba03188ea5ebb" id="r_aaef9dce28739c0ae728ba03188ea5ebb"><td class="memItemLeft" align="right" valign="top"><a id="aaef9dce28739c0ae728ba03188ea5ebb" name="aaef9dce28739c0ae728ba03188ea5ebb"></a>
@@ -229,26 +245,10 @@ float&#160;</td><td class="memItemRight" valign="bottom"><b>textMetricsAscender<
 float&#160;</td><td class="memItemRight" valign="bottom"><b>textMetricsDescender</b> ()</td></tr>
 <tr class="memitem:af261ad2257cbb4e62f99715ba3fac57e" id="r_af261ad2257cbb4e62f99715ba3fac57e"><td class="memItemLeft" align="right" valign="top"><a id="af261ad2257cbb4e62f99715ba3fac57e" name="af261ad2257cbb4e62f99715ba3fac57e"></a>
 float&#160;</td><td class="memItemRight" valign="bottom"><b>textMetricsLineHeight</b> ()</td></tr>
-<tr class="memitem:a9a176f4bcaf0df4b324ed5495ddf21da" id="r_a9a176f4bcaf0df4b324ed5495ddf21da"><td class="memItemLeft" align="right" valign="top"><a id="a9a176f4bcaf0df4b324ed5495ddf21da" name="a9a176f4bcaf0df4b324ed5495ddf21da"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>findFont</b> (const std::string &amp;<a class="el" href="classname.html">name</a>)</td></tr>
-<tr class="memitem:a8b22372e8bf3d2dc3037b663640b92bb" id="r_a8b22372e8bf3d2dc3037b663640b92bb"><td class="memItemLeft" align="right" valign="top"><a id="a8b22372e8bf3d2dc3037b663640b92bb" name="a8b22372e8bf3d2dc3037b663640b92bb"></a>
-NVGpaint&#160;</td><td class="memItemRight" valign="bottom"><b>linearGradient</b> (const vec2 &amp;start, const vec2 &amp;end, const vec4 &amp;startColor, const vec4 &amp;endColor)</td></tr>
-<tr class="memitem:ae938946f1d8c6cfc8df701a1804c719c" id="r_ae938946f1d8c6cfc8df701a1804c719c"><td class="memItemLeft" align="right" valign="top"><a id="ae938946f1d8c6cfc8df701a1804c719c" name="ae938946f1d8c6cfc8df701a1804c719c"></a>
-NVGpaint&#160;</td><td class="memItemRight" valign="bottom"><b>boxGradient</b> (const vec2 &amp;origin, const vec2 &amp;dimensions, float r, float f, const vec4 &amp;startColor, const vec4 &amp;endColor)</td></tr>
-<tr class="memitem:ae19ee252139f32029a37f4d61843af1d" id="r_ae19ee252139f32029a37f4d61843af1d"><td class="memItemLeft" align="right" valign="top"><a id="ae19ee252139f32029a37f4d61843af1d" name="ae19ee252139f32029a37f4d61843af1d"></a>
-NVGpaint&#160;</td><td class="memItemRight" valign="bottom"><b>radialGradient</b> (const vec2 &amp;center, float innerRadius, float outerRadius, const vec4 &amp;startColor, const vec4 &amp;endColor)</td></tr>
 <tr class="memitem:ad8deea9bf3b5bf2b79e9007699e9c8ca" id="r_ad8deea9bf3b5bf2b79e9007699e9c8ca"><td class="memItemLeft" align="right" valign="top"><a id="ad8deea9bf3b5bf2b79e9007699e9c8ca" name="ad8deea9bf3b5bf2b79e9007699e9c8ca"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>transform</b> (float a, float b, float c, float d, float e, float f)</td></tr>
 <tr class="memitem:abd3c7ea646dabcdadca07184f2e1a73b" id="r_abd3c7ea646dabcdadca07184f2e1a73b"><td class="memItemLeft" align="right" valign="top"><a id="abd3c7ea646dabcdadca07184f2e1a73b" name="abd3c7ea646dabcdadca07184f2e1a73b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>translate</b> (float tx, float ty)</td></tr>
-<tr class="memitem:a2be011bffb2fb7929657907ae801d4d7" id="r_a2be011bffb2fb7929657907ae801d4d7"><td class="memItemLeft" align="right" valign="top"><a id="a2be011bffb2fb7929657907ae801d4d7" name="a2be011bffb2fb7929657907ae801d4d7"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>rotate</b> (float angle)</td></tr>
-<tr class="memitem:affcfbd306bbd6e447cfd0aca6d60054c" id="r_affcfbd306bbd6e447cfd0aca6d60054c"><td class="memItemLeft" align="right" valign="top"><a id="affcfbd306bbd6e447cfd0aca6d60054c" name="affcfbd306bbd6e447cfd0aca6d60054c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>scale</b> (float sx, float sy)</td></tr>
-<tr class="memitem:aa128af0626dbb165434a262b1f5fd35c" id="r_aa128af0626dbb165434a262b1f5fd35c"><td class="memItemLeft" align="right" valign="top"><a id="aa128af0626dbb165434a262b1f5fd35c" name="aa128af0626dbb165434a262b1f5fd35c"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>skewX</b> (float kx)</td></tr>
-<tr class="memitem:aa39ab9d9a7ee1b083653dce26b8d7c6f" id="r_aa39ab9d9a7ee1b083653dce26b8d7c6f"><td class="memItemLeft" align="right" valign="top"><a id="aa39ab9d9a7ee1b083653dce26b8d7c6f" name="aa39ab9d9a7ee1b083653dce26b8d7c6f"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>skewY</b> (float ky)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-friends" class="groupheader"><a id="friends" name="friends"></a>
 Friends</h2></td></tr>
@@ -301,7 +301,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NanoVGUtilsModule</b
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>nanovgcontext.h</b></li>
+<li>D:/a/modules/modules/modules/misc/nanovgutils/include/inviwo/nanovgutils/<b>nanovgcontext.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

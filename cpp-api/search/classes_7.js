@@ -36,7 +36,7 @@ var searchData=
   ['helpwidget_33',['HelpWidget',['../classinviwo_1_1HelpWidget.html',1,'inviwo']]],
   ['hiddencanvasqt_34',['HiddenCanvasQt',['../classinviwo_1_1HiddenCanvasQt.html',1,'inviwo']]],
   ['hideer_35',['Hideer',['../structinviwo_1_1util_1_1detail_1_1Hideer.html',1,'inviwo::util::detail']]],
-  ['hillyieldcriterion_36',['HillYieldCriterion',['../structHillYieldCriterion.html',1,'HillYieldCriterion'],['../structinviwo_1_1tensor_1_1HillYieldCriterion.html',1,'inviwo::tensor::HillYieldCriterion']]],
+  ['hillyieldcriterion_36',['HillYieldCriterion',['../structinviwo_1_1tensor_1_1HillYieldCriterion.html',1,'inviwo::tensor']]],
   ['histogram1d_37',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
   ['histogram2d_38',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
   ['histogramcache_39',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],

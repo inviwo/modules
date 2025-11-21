@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1TensorField3D.html','','classinviwo_1_1
 <p><a class="el" href="classinviwo_1_1Data.html" title="The base class for all data objects.">Data</a> structure for 3D tensorfields.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;tensorfield3d.h&gt;</code></p>
+<p><code>#include &lt;inviwo/tensorvisbase/datastructures/tensorfield3d.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::TensorField3D:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -112,178 +112,178 @@ $(function(){initNavTree('classinviwo_1_1TensorField3D.html','','classinviwo_1_1
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6e717d79a8169a2de85c39545129c054" id="r_a6e717d79a8169a2de85c39545129c054"><td class="memItemLeft" align="right" valign="top"><a id="a6e717d79a8169a2de85c39545129c054" name="a6e717d79a8169a2de85c39545129c054"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, std::vector&lt; dmat3 &gt; data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:a0ef7f00d6b20dfbc4fd06a3768355240" id="r_a0ef7f00d6b20dfbc4fd06a3768355240"><td class="memItemLeft" align="right" valign="top"><a id="a0ef7f00d6b20dfbc4fd06a3768355240" name="a0ef7f00d6b20dfbc4fd06a3768355240"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, std::vector&lt; dmat3 &gt; data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:a8b52827a40915d203261528f37e738e0" id="r_a8b52827a40915d203261528f37e738e0"><td class="memItemLeft" align="right" valign="top"><a id="a8b52827a40915d203261528f37e738e0" name="a8b52827a40915d203261528f37e738e0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, std::vector&lt; dmat3 &gt; data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:ae29f0099c907a944b0368b8f7a296560" id="r_ae29f0099c907a944b0368b8f7a296560"><td class="memItemLeft" align="right" valign="top"><a id="ae29f0099c907a944b0368b8f7a296560" name="ae29f0099c907a944b0368b8f7a296560"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, std::vector&lt; dmat3 &gt; data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:ad67b9be01ccb301c939a4e4dca4079a6" id="r_ad67b9be01ccb301c939a4e4dca4079a6"><td class="memItemLeft" align="right" valign="top"><a id="ad67b9be01ccb301c939a4e4dca4079a6" name="ad67b9be01ccb301c939a4e4dca4079a6"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const std::vector&lt; double &gt; &amp;data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:a4dfb9203a881471dc8b6d367e1f53fa0" id="r_a4dfb9203a881471dc8b6d367e1f53fa0"><td class="memItemLeft" align="right" valign="top"><a id="a4dfb9203a881471dc8b6d367e1f53fa0" name="a4dfb9203a881471dc8b6d367e1f53fa0"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, const std::vector&lt; double &gt; &amp;data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:a81c8c7be25fe4a7fa21e5fd8f3905529" id="r_a81c8c7be25fe4a7fa21e5fd8f3905529"><td class="memItemLeft" align="right" valign="top"><a id="a81c8c7be25fe4a7fa21e5fd8f3905529" name="a81c8c7be25fe4a7fa21e5fd8f3905529"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const double *data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:aa2dd1caa1532d1086df82fc9059a803b" id="r_aa2dd1caa1532d1086df82fc9059a803b"><td class="memItemLeft" align="right" valign="top"><a id="aa2dd1caa1532d1086df82fc9059a803b" name="aa2dd1caa1532d1086df82fc9059a803b"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const float *data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:af7aa278a7cfae177494b4f52a4bd082d" id="r_af7aa278a7cfae177494b4f52a4bd082d"><td class="memItemLeft" align="right" valign="top"><a id="af7aa278a7cfae177494b4f52a4bd082d" name="af7aa278a7cfae177494b4f52a4bd082d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const std::vector&lt; double &gt; &amp;data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:adad41f1ab87fc2c496db01488b7e9397" id="r_adad41f1ab87fc2c496db01488b7e9397"><td class="memItemLeft" align="right" valign="top"><a id="adad41f1ab87fc2c496db01488b7e9397" name="adad41f1ab87fc2c496db01488b7e9397"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, const std::vector&lt; double &gt; &amp;data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:a330f3bc10b0c865d8f83b41a57844f60" id="r_a330f3bc10b0c865d8f83b41a57844f60"><td class="memItemLeft" align="right" valign="top"><a id="a330f3bc10b0c865d8f83b41a57844f60" name="a330f3bc10b0c865d8f83b41a57844f60"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, std::vector&lt; dmat3 &gt; data, const std::unordered_map&lt; uint64_t, std::unique_ptr&lt; <a class="el" href="structinviwo_1_1tensor_1_1MetaDataBase.html">tensor::MetaDataBase</a> &gt; &gt; &amp;metaData, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
-<tr class="memitem:a7ada0d18f1f40e7e75ce226432616133" id="r_a7ada0d18f1f40e7e75ce226432616133"><td class="memItemLeft" align="right" valign="top"><a id="a7ada0d18f1f40e7e75ce226432616133" name="a7ada0d18f1f40e7e75ce226432616133"></a>
-TensorField3D &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const TensorField3D &amp;)=delete</td></tr>
-<tr class="memitem:a8c968f1425f33a22258765fe375cc5fe" id="r_a8c968f1425f33a22258765fe375cc5fe"><td class="memItemLeft" align="right" valign="top"><a id="a8c968f1425f33a22258765fe375cc5fe" name="a8c968f1425f33a22258765fe375cc5fe"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (const TensorField3D &amp;tf)</td></tr>
-<tr class="memitem:a52c4ebd7f6060fefa764b7c09ca7f4b7" id="r_a52c4ebd7f6060fefa764b7c09ca7f4b7"><td class="memItemLeft" align="right" valign="top">virtual TensorField3D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52c4ebd7f6060fefa764b7c09ca7f4b7">clone</a> () const final</td></tr>
-<tr class="memitem:af2ac91c2caa7ffe77e5c98400e233af7" id="r_af2ac91c2caa7ffe77e5c98400e233af7"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1Axis.html">Axis</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2ac91c2caa7ffe77e5c98400e233af7">getAxis</a> (size_t) const override</td></tr>
-<tr class="memitem:a053010a59531cfc85016ddac849ca6d7" id="r_a053010a59531cfc85016ddac849ca6d7"><td class="memItemLeft" align="right" valign="top"><a id="a053010a59531cfc85016ddac849ca6d7" name="a053010a59531cfc85016ddac849ca6d7"></a>
-<a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getDataInfo</b> () const</td></tr>
-<tr class="memitem:adb943f29486cfa7e76bacf1218cafeee" id="r_adb943f29486cfa7e76bacf1218cafeee"><td class="memItemLeft" align="right" valign="top"><a id="adb943f29486cfa7e76bacf1218cafeee" name="adb943f29486cfa7e76bacf1218cafeee"></a>
-std::pair&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;, std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getVolumeRepresentation</b> () const</td></tr>
-<tr class="memitem:a16835b38d1c74c6633319a035c0c5a9b" id="r_a16835b38d1c74c6633319a035c0c5a9b"><td class="memItemLeft" align="right" valign="top"><a id="a16835b38d1c74c6633319a035c0c5a9b" name="a16835b38d1c74c6633319a035c0c5a9b"></a>
-std::pair&lt; glm::uint8, dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size3_t position)</td></tr>
-<tr class="memitem:a62ce97e9dd515c51a3628c83f9696d9b" id="r_a62ce97e9dd515c51a3628c83f9696d9b"><td class="memItemLeft" align="right" valign="top"><a id="a62ce97e9dd515c51a3628c83f9696d9b" name="a62ce97e9dd515c51a3628c83f9696d9b"></a>
-std::pair&lt; glm::uint8, dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t x, const size_t y, const size_t z)</td></tr>
-<tr class="memitem:a51d82f25f5eb649c59548614e7a7fe59" id="r_a51d82f25f5eb649c59548614e7a7fe59"><td class="memItemLeft" align="right" valign="top"><a id="a51d82f25f5eb649c59548614e7a7fe59" name="a51d82f25f5eb649c59548614e7a7fe59"></a>
-std::pair&lt; glm::uint8, dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t index)</td></tr>
-<tr class="memitem:a66f850f2972bd8c9f411d6432ef96239" id="r_a66f850f2972bd8c9f411d6432ef96239"><td class="memItemLeft" align="right" valign="top"><a id="a66f850f2972bd8c9f411d6432ef96239" name="a66f850f2972bd8c9f411d6432ef96239"></a>
-std::pair&lt; glm::uint8, const dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size3_t position) const</td></tr>
-<tr class="memitem:af9507f8cc9c2e3e66ed4540cf52a368c" id="r_af9507f8cc9c2e3e66ed4540cf52a368c"><td class="memItemLeft" align="right" valign="top"><a id="af9507f8cc9c2e3e66ed4540cf52a368c" name="af9507f8cc9c2e3e66ed4540cf52a368c"></a>
-std::pair&lt; glm::uint8, const dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t x, size_t y, size_t z) const</td></tr>
-<tr class="memitem:a4d5587a34e13066704726fe3a5b249df" id="r_a4d5587a34e13066704726fe3a5b249df"><td class="memItemLeft" align="right" valign="top"><a id="a4d5587a34e13066704726fe3a5b249df" name="a4d5587a34e13066704726fe3a5b249df"></a>
-std::pair&lt; glm::uint8, const dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t index) const</td></tr>
-<tr class="memitem:a18189b5a3ae266e68d6ea5a931c7400d" id="r_a18189b5a3ae266e68d6ea5a931c7400d"><td class="memItemLeft" align="right" valign="top">size3_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18189b5a3ae266e68d6ea5a931c7400d">getDimensions</a> () const final</td></tr>
-<tr class="memitem:aa5b4ac93a9c9d94818be8f98ed3ea227" id="r_aa5b4ac93a9c9d94818be8f98ed3ea227"><td class="memTemplParams" colspan="2"><a id="aa5b4ac93a9c9d94818be8f98ed3ea227" name="aa5b4ac93a9c9d94818be8f98ed3ea227"></a>
-template&lt;typename T = double&gt; </td></tr>
-<tr class="memitem:aa5b4ac93a9c9d94818be8f98ed3ea227 template"><td class="memItemLeft" align="right" valign="top">glm::tvec3&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getExtent</b> () const</td></tr>
-<tr class="memitem:ad1bae03df072de631b8ad08e8126cc80" id="r_ad1bae03df072de631b8ad08e8126cc80"><td class="memItemLeft" align="right" valign="top"><a id="ad1bae03df072de631b8ad08e8126cc80" name="ad1bae03df072de631b8ad08e8126cc80"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setExtent</b> (const vec3 &amp;extent)</td></tr>
-<tr class="memitem:adb3e945419830b98b18c6228a64ff06b" id="r_adb3e945419830b98b18c6228a64ff06b"><td class="memTemplParams" colspan="2"><a id="adb3e945419830b98b18c6228a64ff06b" name="adb3e945419830b98b18c6228a64ff06b"></a>
-template&lt;typename T = size_t&gt; </td></tr>
-<tr class="memitem:adb3e945419830b98b18c6228a64ff06b template"><td class="memItemLeft" align="right" valign="top">glm::tvec3&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBounds</b> () const</td></tr>
-<tr class="memitem:a59dbd73f726f16705bb2bc4b584d1c0f" id="r_a59dbd73f726f16705bb2bc4b584d1c0f"><td class="memTemplParams" colspan="2"><a id="a59dbd73f726f16705bb2bc4b584d1c0f" name="a59dbd73f726f16705bb2bc4b584d1c0f"></a>
-template&lt;typename T = double&gt; </td></tr>
-<tr class="memitem:a59dbd73f726f16705bb2bc4b584d1c0f template"><td class="memItemLeft" align="right" valign="top">glm::tvec3&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSpacing</b> () const</td></tr>
-<tr class="memitem:a6961e28d7edf842ca4c2d7adf7775838" id="r_a6961e28d7edf842ca4c2d7adf7775838"><td class="memItemLeft" align="right" valign="top"><a id="a6961e28d7edf842ca4c2d7adf7775838" name="a6961e28d7edf842ca4c2d7adf7775838"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
-<tr class="memitem:a4bbb95621e10eb3ad5ba214e478176ea" id="r_a4bbb95621e10eb3ad5ba214e478176ea"><td class="memItemLeft" align="right" valign="top"><a id="a4bbb95621e10eb3ad5ba214e478176ea" name="a4bbb95621e10eb3ad5ba214e478176ea"></a>
-glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>rank</b> () const</td></tr>
-<tr class="memitem:aceeb0af2b6977c5de8fe88bfdac709fc" id="r_aceeb0af2b6977c5de8fe88bfdac709fc"><td class="memItemLeft" align="right" valign="top"><a id="aceeb0af2b6977c5de8fe88bfdac709fc" name="aceeb0af2b6977c5de8fe88bfdac709fc"></a>
-glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>dimensionality</b> () const</td></tr>
-<tr class="memitem:aab2587bf05e7d97a47d11739870559e0" id="r_aab2587bf05e7d97a47d11739870559e0"><td class="memItemLeft" align="right" valign="top"><a id="aab2587bf05e7d97a47d11739870559e0" name="aab2587bf05e7d97a47d11739870559e0"></a>
-vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getNormalizedVolumePosition</b> (size_t index) const</td></tr>
-<tr class="memitem:a0ca47f4b8128b89b28c98b49fb2a97e0" id="r_a0ca47f4b8128b89b28c98b49fb2a97e0"><td class="memTemplParams" colspan="2"><a id="a0ca47f4b8128b89b28c98b49fb2a97e0" name="a0ca47f4b8128b89b28c98b49fb2a97e0"></a>
-template&lt;typename T = double&gt; </td></tr>
-<tr class="memitem:a0ca47f4b8128b89b28c98b49fb2a97e0 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><b>getMajorEigenValue</b> (const size_t index) const</td></tr>
-<tr class="memitem:ae82fe07c1b010083ba7e9dce8aaba537" id="r_ae82fe07c1b010083ba7e9dce8aaba537"><td class="memTemplParams" colspan="2"><a id="ae82fe07c1b010083ba7e9dce8aaba537" name="ae82fe07c1b010083ba7e9dce8aaba537"></a>
-template&lt;typename T = double&gt; </td></tr>
-<tr class="memitem:ae82fe07c1b010083ba7e9dce8aaba537 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><b>getMiddleEigenValue</b> (const size_t index) const</td></tr>
-<tr class="memitem:ab0443a39edc52747d25372c7e23e3d32" id="r_ab0443a39edc52747d25372c7e23e3d32"><td class="memTemplParams" colspan="2"><a id="ab0443a39edc52747d25372c7e23e3d32" name="ab0443a39edc52747d25372c7e23e3d32"></a>
-template&lt;typename T = double&gt; </td></tr>
-<tr class="memitem:ab0443a39edc52747d25372c7e23e3d32 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><b>getMinorEigenValue</b> (const size_t index) const</td></tr>
-<tr class="memitem:a85f44a238886af3966a2092e466a1129" id="r_a85f44a238886af3966a2092e466a1129"><td class="memItemLeft" align="right" valign="top"><a id="a85f44a238886af3966a2092e466a1129" name="a85f44a238886af3966a2092e466a1129"></a>
-mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getBasisAndOffset</b> () const</td></tr>
-<tr class="memitem:aebd8942e47c273e82ca66cf62ed8fae0" id="r_aebd8942e47c273e82ca66cf62ed8fae0"><td class="memItemLeft" align="right" valign="top"><a id="aebd8942e47c273e82ca66cf62ed8fae0" name="aebd8942e47c273e82ca66cf62ed8fae0"></a>
-std::array&lt; std::pair&lt; double, dvec3 &gt;, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesAndEigenVectorsForTensor</b> (size_t index) const</td></tr>
-<tr class="memitem:ad6d059eaa60da721d8c08574cda8a478" id="r_ad6d059eaa60da721d8c08574cda8a478"><td class="memItemLeft" align="right" valign="top"><a id="ad6d059eaa60da721d8c08574cda8a478" name="ad6d059eaa60da721d8c08574cda8a478"></a>
-std::array&lt; std::pair&lt; double, dvec3 &gt;, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesAndEigenVectorsForTensor</b> (size3_t pos) const</td></tr>
-<tr class="memitem:abb255e226162bd2ca4424e8a57df010f" id="r_abb255e226162bd2ca4424e8a57df010f"><td class="memItemLeft" align="right" valign="top"><a id="abb255e226162bd2ca4424e8a57df010f" name="abb255e226162bd2ca4424e8a57df010f"></a>
-std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesForTensor</b> (size_t index) const</td></tr>
-<tr class="memitem:abd13f3c6f6530b55b94afdb2f21409ab" id="r_abd13f3c6f6530b55b94afdb2f21409ab"><td class="memItemLeft" align="right" valign="top"><a id="abd13f3c6f6530b55b94afdb2f21409ab" name="abd13f3c6f6530b55b94afdb2f21409ab"></a>
-std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesForTensor</b> (const size3_t &amp;pos) const</td></tr>
-<tr class="memitem:a23e08f2bd670078e05cfc67c7d1bd6b4" id="r_a23e08f2bd670078e05cfc67c7d1bd6b4"><td class="memItemLeft" align="right" valign="top"><a id="a23e08f2bd670078e05cfc67c7d1bd6b4" name="a23e08f2bd670078e05cfc67c7d1bd6b4"></a>
-std::array&lt; dvec3, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenVectorsForTensor</b> (size_t index) const</td></tr>
-<tr class="memitem:a24d3d4824ba5afa2ea359d54ce74779d" id="r_a24d3d4824ba5afa2ea359d54ce74779d"><td class="memItemLeft" align="right" valign="top"><a id="a24d3d4824ba5afa2ea359d54ce74779d" name="a24d3d4824ba5afa2ea359d54ce74779d"></a>
-std::array&lt; dvec3, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenVectorsForTensor</b> (const size3_t &amp;pos) const</td></tr>
-<tr class="memitem:a14867db3210adacc718ab33aca7da5f7" id="r_a14867db3210adacc718ab33aca7da5f7"><td class="memItemLeft" align="right" valign="top"><a id="a14867db3210adacc718ab33aca7da5f7" name="a14867db3210adacc718ab33aca7da5f7"></a>
-const std::vector&lt; dvec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>majorEigenVectors</b> () const</td></tr>
-<tr class="memitem:a7aac1a8aa4ada581eee77c3c89323af2" id="r_a7aac1a8aa4ada581eee77c3c89323af2"><td class="memItemLeft" align="right" valign="top"><a id="a7aac1a8aa4ada581eee77c3c89323af2" name="a7aac1a8aa4ada581eee77c3c89323af2"></a>
-const std::vector&lt; dvec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>middleEigenVectors</b> () const</td></tr>
-<tr class="memitem:ac22ab74b83739f6b8414b4465eafeb39" id="r_ac22ab74b83739f6b8414b4465eafeb39"><td class="memItemLeft" align="right" valign="top"><a id="ac22ab74b83739f6b8414b4465eafeb39" name="ac22ab74b83739f6b8414b4465eafeb39"></a>
-const std::vector&lt; dvec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>minorEigenVectors</b> () const</td></tr>
-<tr class="memitem:a2c17a971d0ae3ec1ef082f92561e66ac" id="r_a2c17a971d0ae3ec1ef082f92561e66ac"><td class="memItemLeft" align="right" valign="top"><a id="a2c17a971d0ae3ec1ef082f92561e66ac" name="a2c17a971d0ae3ec1ef082f92561e66ac"></a>
-const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>majorEigenValues</b> () const</td></tr>
-<tr class="memitem:a8b9d02f30e2355cf0c951e6f0512de2d" id="r_a8b9d02f30e2355cf0c951e6f0512de2d"><td class="memItemLeft" align="right" valign="top"><a id="a8b9d02f30e2355cf0c951e6f0512de2d" name="a8b9d02f30e2355cf0c951e6f0512de2d"></a>
-const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>middleEigenValues</b> () const</td></tr>
-<tr class="memitem:a1c0a45a45541de6cd2cfe1791212c77d" id="r_a1c0a45a45541de6cd2cfe1791212c77d"><td class="memItemLeft" align="right" valign="top"><a id="a1c0a45a45541de6cd2cfe1791212c77d" name="a1c0a45a45541de6cd2cfe1791212c77d"></a>
-const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>minorEigenValues</b> () const</td></tr>
-<tr class="memitem:a593aeab59fa9d33d1eebafa481137d64" id="r_a593aeab59fa9d33d1eebafa481137d64"><td class="memItemLeft" align="right" valign="top"><a id="a593aeab59fa9d33d1eebafa481137d64" name="a593aeab59fa9d33d1eebafa481137d64"></a>
-const std::vector&lt; dmat3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>tensors</b> () const</td></tr>
-<tr class="memitem:aeb4f107c3c9b353a877ee16e5b62be6a" id="r_aeb4f107c3c9b353a877ee16e5b62be6a"><td class="memItemLeft" align="right" valign="top"><a id="aeb4f107c3c9b353a877ee16e5b62be6a" name="aeb4f107c3c9b353a877ee16e5b62be6a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setMask</b> (const std::vector&lt; glm::uint8 &gt; &amp;mask)</td></tr>
-<tr class="memitem:a006cff226a83bd3ef321ac5ff934943c" id="r_a006cff226a83bd3ef321ac5ff934943c"><td class="memItemLeft" align="right" valign="top"><a id="a006cff226a83bd3ef321ac5ff934943c" name="a006cff226a83bd3ef321ac5ff934943c"></a>
-const std::vector&lt; glm::uint8 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMask</b> () const</td></tr>
-<tr class="memitem:a227da4122985953dfeb84c5563922f7b" id="r_a227da4122985953dfeb84c5563922f7b"><td class="memItemLeft" align="right" valign="top"><a id="a227da4122985953dfeb84c5563922f7b" name="a227da4122985953dfeb84c5563922f7b"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>getNumDefinedEntries</b> () const</td></tr>
-<tr class="memitem:ab67c0cea8d89a887c1ac9bd61fd02635" id="r_ab67c0cea8d89a887c1ac9bd61fd02635"><td class="memItemLeft" align="right" valign="top"><a id="ab67c0cea8d89a887c1ac9bd61fd02635" name="ab67c0cea8d89a887c1ac9bd61fd02635"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMask</b> () const</td></tr>
-<tr class="memitem:a33b68af7107dce6855a3ebfbf1ed6c54" id="r_a33b68af7107dce6855a3ebfbf1ed6c54"><td class="memItemLeft" align="right" valign="top"><a id="a33b68af7107dce6855a3ebfbf1ed6c54" name="a33b68af7107dce6855a3ebfbf1ed6c54"></a>
-const util::IndexMapper3D &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>indexMapper</b> () const</td></tr>
-<tr class="memitem:a7906e1c2db5c6c4621565aa3c6f00275" id="r_a7906e1c2db5c6c4621565aa3c6f00275"><td class="memTemplParams" colspan="2"><a id="a7906e1c2db5c6c4621565aa3c6f00275" name="a7906e1c2db5c6c4621565aa3c6f00275"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a7906e1c2db5c6c4621565aa3c6f00275 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> () const</td></tr>
-<tr class="memitem:acc015ca6937da1e52a8a05375c85b804" id="r_acc015ca6937da1e52a8a05375c85b804"><td class="memItemLeft" align="right" valign="top"><a id="acc015ca6937da1e52a8a05375c85b804" name="acc015ca6937da1e52a8a05375c85b804"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> (TensorFeature feature) const</td></tr>
-<tr class="memitem:ac50e343e38b0e11a8826a660258c8ec0" id="r_ac50e343e38b0e11a8826a660258c8ec0"><td class="memItemLeft" align="right" valign="top"><a id="ac50e343e38b0e11a8826a660258c8ec0" name="ac50e343e38b0e11a8826a660258c8ec0"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> (const uint64_t id) const</td></tr>
-<tr class="memitem:a61ec4d18094eec61235f5bbc2ac4c8a4" id="r_a61ec4d18094eec61235f5bbc2ac4c8a4"><td class="memTemplParams" colspan="2"><a id="a61ec4d18094eec61235f5bbc2ac4c8a4" name="a61ec4d18094eec61235f5bbc2ac4c8a4"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a61ec4d18094eec61235f5bbc2ac4c8a4 template"><td class="memItemLeft" align="right" valign="top">const T::DataType &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaData</b> () const</td></tr>
-<tr class="memitem:a682f948e3a9003ace7048b1a21dc19c7" id="r_a682f948e3a9003ace7048b1a21dc19c7"><td class="memTemplParams" colspan="2"><a id="a682f948e3a9003ace7048b1a21dc19c7" name="a682f948e3a9003ace7048b1a21dc19c7"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a682f948e3a9003ace7048b1a21dc19c7 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataContainer</b> () const</td></tr>
-<tr class="memitem:a87ce260a966d60e4e7656cb242c746f1" id="r_a87ce260a966d60e4e7656cb242c746f1"><td class="memTemplParams" colspan="2"><a id="a87ce260a966d60e4e7656cb242c746f1" name="a87ce260a966d60e4e7656cb242c746f1"></a>
-template&lt;typename T&gt; </td></tr>
-<tr class="memitem:a87ce260a966d60e4e7656cb242c746f1 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataPtr</b> () const</td></tr>
-<tr class="memitem:aed55ba7d94033c1ea4ace5b05aed8281" id="r_aed55ba7d94033c1ea4ace5b05aed8281"><td class="memItemLeft" align="right" valign="top"><a id="aed55ba7d94033c1ea4ace5b05aed8281" name="aed55ba7d94033c1ea4ace5b05aed8281"></a>
-auto&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataContainer</b> (const uint64_t id) const</td></tr>
 <tr class="memitem:a6823b057bf16cebea4f4f32c950b734b" id="r_a6823b057bf16cebea4f4f32c950b734b"><td class="memTemplParams" colspan="2"><a id="a6823b057bf16cebea4f4f32c950b734b" name="a6823b057bf16cebea4f4f32c950b734b"></a>
 template&lt;typename T, typename S&gt; </td></tr>
 <tr class="memitem:a6823b057bf16cebea4f4f32c950b734b template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>addMetaData</b> (const S &amp;data, TensorFeature type)</td></tr>
 <tr class="memitem:a83447015f8aa60f8f83fd7fa47832b50" id="r_a83447015f8aa60f8f83fd7fa47832b50"><td class="memTemplParams" colspan="2"><a id="a83447015f8aa60f8f83fd7fa47832b50" name="a83447015f8aa60f8f83fd7fa47832b50"></a>
 template&lt;typename T, typename S&gt; </td></tr>
 <tr class="memitem:a83447015f8aa60f8f83fd7fa47832b50 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>addMetaData</b> (const uint64_t id, const S &amp;data, TensorFeature type)</td></tr>
+<tr class="memitem:a16835b38d1c74c6633319a035c0c5a9b" id="r_a16835b38d1c74c6633319a035c0c5a9b"><td class="memItemLeft" align="right" valign="top"><a id="a16835b38d1c74c6633319a035c0c5a9b" name="a16835b38d1c74c6633319a035c0c5a9b"></a>
+std::pair&lt; glm::uint8, dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size3_t position)</td></tr>
+<tr class="memitem:a66f850f2972bd8c9f411d6432ef96239" id="r_a66f850f2972bd8c9f411d6432ef96239"><td class="memItemLeft" align="right" valign="top"><a id="a66f850f2972bd8c9f411d6432ef96239" name="a66f850f2972bd8c9f411d6432ef96239"></a>
+std::pair&lt; glm::uint8, const dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size3_t position) const</td></tr>
+<tr class="memitem:a51d82f25f5eb649c59548614e7a7fe59" id="r_a51d82f25f5eb649c59548614e7a7fe59"><td class="memItemLeft" align="right" valign="top"><a id="a51d82f25f5eb649c59548614e7a7fe59" name="a51d82f25f5eb649c59548614e7a7fe59"></a>
+std::pair&lt; glm::uint8, dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t index)</td></tr>
+<tr class="memitem:a4d5587a34e13066704726fe3a5b249df" id="r_a4d5587a34e13066704726fe3a5b249df"><td class="memItemLeft" align="right" valign="top"><a id="a4d5587a34e13066704726fe3a5b249df" name="a4d5587a34e13066704726fe3a5b249df"></a>
+std::pair&lt; glm::uint8, const dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t index) const</td></tr>
+<tr class="memitem:a62ce97e9dd515c51a3628c83f9696d9b" id="r_a62ce97e9dd515c51a3628c83f9696d9b"><td class="memItemLeft" align="right" valign="top"><a id="a62ce97e9dd515c51a3628c83f9696d9b" name="a62ce97e9dd515c51a3628c83f9696d9b"></a>
+std::pair&lt; glm::uint8, dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t x, const size_t y, const size_t z)</td></tr>
+<tr class="memitem:af9507f8cc9c2e3e66ed4540cf52a368c" id="r_af9507f8cc9c2e3e66ed4540cf52a368c"><td class="memItemLeft" align="right" valign="top"><a id="af9507f8cc9c2e3e66ed4540cf52a368c" name="af9507f8cc9c2e3e66ed4540cf52a368c"></a>
+std::pair&lt; glm::uint8, const dmat3 &amp; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>at</b> (size_t x, size_t y, size_t z) const</td></tr>
+<tr class="memitem:a52c4ebd7f6060fefa764b7c09ca7f4b7" id="r_a52c4ebd7f6060fefa764b7c09ca7f4b7"><td class="memItemLeft" align="right" valign="top">virtual TensorField3D *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52c4ebd7f6060fefa764b7c09ca7f4b7">clone</a> () const final</td></tr>
+<tr class="memitem:aceeb0af2b6977c5de8fe88bfdac709fc" id="r_aceeb0af2b6977c5de8fe88bfdac709fc"><td class="memItemLeft" align="right" valign="top"><a id="aceeb0af2b6977c5de8fe88bfdac709fc" name="aceeb0af2b6977c5de8fe88bfdac709fc"></a>
+glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>dimensionality</b> () const</td></tr>
+<tr class="memitem:af2ac91c2caa7ffe77e5c98400e233af7" id="r_af2ac91c2caa7ffe77e5c98400e233af7"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structinviwo_1_1Axis.html">Axis</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2ac91c2caa7ffe77e5c98400e233af7">getAxis</a> (size_t) const override</td></tr>
+<tr class="memitem:a85f44a238886af3966a2092e466a1129" id="r_a85f44a238886af3966a2092e466a1129"><td class="memItemLeft" align="right" valign="top"><a id="a85f44a238886af3966a2092e466a1129" name="a85f44a238886af3966a2092e466a1129"></a>
+mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getBasisAndOffset</b> () const</td></tr>
+<tr class="memitem:adb3e945419830b98b18c6228a64ff06b" id="r_adb3e945419830b98b18c6228a64ff06b"><td class="memTemplParams" colspan="2"><a id="adb3e945419830b98b18c6228a64ff06b" name="adb3e945419830b98b18c6228a64ff06b"></a>
+template&lt;typename T = size_t&gt; </td></tr>
+<tr class="memitem:adb3e945419830b98b18c6228a64ff06b template"><td class="memItemLeft" align="right" valign="top">glm::tvec3&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getBounds</b> () const</td></tr>
+<tr class="memitem:a053010a59531cfc85016ddac849ca6d7" id="r_a053010a59531cfc85016ddac849ca6d7"><td class="memItemLeft" align="right" valign="top"><a id="a053010a59531cfc85016ddac849ca6d7" name="a053010a59531cfc85016ddac849ca6d7"></a>
+<a class="el" href="classinviwo_1_1Document.html">Document</a>&#160;</td><td class="memItemRight" valign="bottom"><b>getDataInfo</b> () const</td></tr>
+<tr class="memitem:a18189b5a3ae266e68d6ea5a931c7400d" id="r_a18189b5a3ae266e68d6ea5a931c7400d"><td class="memItemLeft" align="right" valign="top">size3_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a18189b5a3ae266e68d6ea5a931c7400d">getDimensions</a> () const final</td></tr>
+<tr class="memitem:aa5b4ac93a9c9d94818be8f98ed3ea227" id="r_aa5b4ac93a9c9d94818be8f98ed3ea227"><td class="memTemplParams" colspan="2"><a id="aa5b4ac93a9c9d94818be8f98ed3ea227" name="aa5b4ac93a9c9d94818be8f98ed3ea227"></a>
+template&lt;typename T = double&gt; </td></tr>
+<tr class="memitem:aa5b4ac93a9c9d94818be8f98ed3ea227 template"><td class="memItemLeft" align="right" valign="top">glm::tvec3&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getExtent</b> () const</td></tr>
+<tr class="memitem:a0ca47f4b8128b89b28c98b49fb2a97e0" id="r_a0ca47f4b8128b89b28c98b49fb2a97e0"><td class="memTemplParams" colspan="2"><a id="a0ca47f4b8128b89b28c98b49fb2a97e0" name="a0ca47f4b8128b89b28c98b49fb2a97e0"></a>
+template&lt;typename T = double&gt; </td></tr>
+<tr class="memitem:a0ca47f4b8128b89b28c98b49fb2a97e0 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><b>getMajorEigenValue</b> (const size_t index) const</td></tr>
+<tr class="memitem:a006cff226a83bd3ef321ac5ff934943c" id="r_a006cff226a83bd3ef321ac5ff934943c"><td class="memItemLeft" align="right" valign="top"><a id="a006cff226a83bd3ef321ac5ff934943c" name="a006cff226a83bd3ef321ac5ff934943c"></a>
+const std::vector&lt; glm::uint8 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMask</b> () const</td></tr>
+<tr class="memitem:a61ec4d18094eec61235f5bbc2ac4c8a4" id="r_a61ec4d18094eec61235f5bbc2ac4c8a4"><td class="memTemplParams" colspan="2"><a id="a61ec4d18094eec61235f5bbc2ac4c8a4" name="a61ec4d18094eec61235f5bbc2ac4c8a4"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a61ec4d18094eec61235f5bbc2ac4c8a4 template"><td class="memItemLeft" align="right" valign="top">const T::DataType &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaData</b> () const</td></tr>
+<tr class="memitem:a682f948e3a9003ace7048b1a21dc19c7" id="r_a682f948e3a9003ace7048b1a21dc19c7"><td class="memTemplParams" colspan="2"><a id="a682f948e3a9003ace7048b1a21dc19c7" name="a682f948e3a9003ace7048b1a21dc19c7"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a682f948e3a9003ace7048b1a21dc19c7 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataContainer</b> () const</td></tr>
+<tr class="memitem:aed55ba7d94033c1ea4ace5b05aed8281" id="r_aed55ba7d94033c1ea4ace5b05aed8281"><td class="memItemLeft" align="right" valign="top"><a id="aed55ba7d94033c1ea4ace5b05aed8281" name="aed55ba7d94033c1ea4ace5b05aed8281"></a>
+auto&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataContainer</b> (const uint64_t id) const</td></tr>
+<tr class="memitem:a87ce260a966d60e4e7656cb242c746f1" id="r_a87ce260a966d60e4e7656cb242c746f1"><td class="memTemplParams" colspan="2"><a id="a87ce260a966d60e4e7656cb242c746f1" name="a87ce260a966d60e4e7656cb242c746f1"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a87ce260a966d60e4e7656cb242c746f1 template"><td class="memItemLeft" align="right" valign="top">auto&#160;</td><td class="memItemRight" valign="bottom"><b>getMetaDataPtr</b> () const</td></tr>
+<tr class="memitem:ae82fe07c1b010083ba7e9dce8aaba537" id="r_ae82fe07c1b010083ba7e9dce8aaba537"><td class="memTemplParams" colspan="2"><a id="ae82fe07c1b010083ba7e9dce8aaba537" name="ae82fe07c1b010083ba7e9dce8aaba537"></a>
+template&lt;typename T = double&gt; </td></tr>
+<tr class="memitem:ae82fe07c1b010083ba7e9dce8aaba537 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><b>getMiddleEigenValue</b> (const size_t index) const</td></tr>
+<tr class="memitem:ab0443a39edc52747d25372c7e23e3d32" id="r_ab0443a39edc52747d25372c7e23e3d32"><td class="memTemplParams" colspan="2"><a id="ab0443a39edc52747d25372c7e23e3d32" name="ab0443a39edc52747d25372c7e23e3d32"></a>
+template&lt;typename T = double&gt; </td></tr>
+<tr class="memitem:ab0443a39edc52747d25372c7e23e3d32 template"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><b>getMinorEigenValue</b> (const size_t index) const</td></tr>
+<tr class="memitem:aab2587bf05e7d97a47d11739870559e0" id="r_aab2587bf05e7d97a47d11739870559e0"><td class="memItemLeft" align="right" valign="top"><a id="aab2587bf05e7d97a47d11739870559e0" name="aab2587bf05e7d97a47d11739870559e0"></a>
+vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getNormalizedVolumePosition</b> (size_t index) const</td></tr>
+<tr class="memitem:a227da4122985953dfeb84c5563922f7b" id="r_a227da4122985953dfeb84c5563922f7b"><td class="memItemLeft" align="right" valign="top"><a id="a227da4122985953dfeb84c5563922f7b" name="a227da4122985953dfeb84c5563922f7b"></a>
+int&#160;</td><td class="memItemRight" valign="bottom"><b>getNumDefinedEntries</b> () const</td></tr>
+<tr class="memitem:a6961e28d7edf842ca4c2d7adf7775838" id="r_a6961e28d7edf842ca4c2d7adf7775838"><td class="memItemLeft" align="right" valign="top"><a id="a6961e28d7edf842ca4c2d7adf7775838" name="a6961e28d7edf842ca4c2d7adf7775838"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getSize</b> () const</td></tr>
+<tr class="memitem:ad6d059eaa60da721d8c08574cda8a478" id="r_ad6d059eaa60da721d8c08574cda8a478"><td class="memItemLeft" align="right" valign="top"><a id="ad6d059eaa60da721d8c08574cda8a478" name="ad6d059eaa60da721d8c08574cda8a478"></a>
+std::array&lt; std::pair&lt; double, dvec3 &gt;, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesAndEigenVectorsForTensor</b> (size3_t pos) const</td></tr>
+<tr class="memitem:aebd8942e47c273e82ca66cf62ed8fae0" id="r_aebd8942e47c273e82ca66cf62ed8fae0"><td class="memItemLeft" align="right" valign="top"><a id="aebd8942e47c273e82ca66cf62ed8fae0" name="aebd8942e47c273e82ca66cf62ed8fae0"></a>
+std::array&lt; std::pair&lt; double, dvec3 &gt;, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesAndEigenVectorsForTensor</b> (size_t index) const</td></tr>
+<tr class="memitem:abd13f3c6f6530b55b94afdb2f21409ab" id="r_abd13f3c6f6530b55b94afdb2f21409ab"><td class="memItemLeft" align="right" valign="top"><a id="abd13f3c6f6530b55b94afdb2f21409ab" name="abd13f3c6f6530b55b94afdb2f21409ab"></a>
+std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesForTensor</b> (const size3_t &amp;pos) const</td></tr>
+<tr class="memitem:abb255e226162bd2ca4424e8a57df010f" id="r_abb255e226162bd2ca4424e8a57df010f"><td class="memItemLeft" align="right" valign="top"><a id="abb255e226162bd2ca4424e8a57df010f" name="abb255e226162bd2ca4424e8a57df010f"></a>
+std::array&lt; double, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenValuesForTensor</b> (size_t index) const</td></tr>
+<tr class="memitem:a24d3d4824ba5afa2ea359d54ce74779d" id="r_a24d3d4824ba5afa2ea359d54ce74779d"><td class="memItemLeft" align="right" valign="top"><a id="a24d3d4824ba5afa2ea359d54ce74779d" name="a24d3d4824ba5afa2ea359d54ce74779d"></a>
+std::array&lt; dvec3, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenVectorsForTensor</b> (const size3_t &amp;pos) const</td></tr>
+<tr class="memitem:a23e08f2bd670078e05cfc67c7d1bd6b4" id="r_a23e08f2bd670078e05cfc67c7d1bd6b4"><td class="memItemLeft" align="right" valign="top"><a id="a23e08f2bd670078e05cfc67c7d1bd6b4" name="a23e08f2bd670078e05cfc67c7d1bd6b4"></a>
+std::array&lt; dvec3, 3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSortedEigenVectorsForTensor</b> (size_t index) const</td></tr>
+<tr class="memitem:a59dbd73f726f16705bb2bc4b584d1c0f" id="r_a59dbd73f726f16705bb2bc4b584d1c0f"><td class="memTemplParams" colspan="2"><a id="a59dbd73f726f16705bb2bc4b584d1c0f" name="a59dbd73f726f16705bb2bc4b584d1c0f"></a>
+template&lt;typename T = double&gt; </td></tr>
+<tr class="memitem:a59dbd73f726f16705bb2bc4b584d1c0f template"><td class="memItemLeft" align="right" valign="top">glm::tvec3&lt; T &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getSpacing</b> () const</td></tr>
+<tr class="memitem:adb943f29486cfa7e76bacf1218cafeee" id="r_adb943f29486cfa7e76bacf1218cafeee"><td class="memItemLeft" align="right" valign="top"><a id="adb943f29486cfa7e76bacf1218cafeee" name="adb943f29486cfa7e76bacf1218cafeee"></a>
+std::pair&lt; std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt;, std::shared_ptr&lt; <a class="el" href="classinviwo_1_1Volume.html">Volume</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getVolumeRepresentation</b> () const</td></tr>
+<tr class="memitem:ab67c0cea8d89a887c1ac9bd61fd02635" id="r_ab67c0cea8d89a887c1ac9bd61fd02635"><td class="memItemLeft" align="right" valign="top"><a id="ab67c0cea8d89a887c1ac9bd61fd02635" name="ab67c0cea8d89a887c1ac9bd61fd02635"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMask</b> () const</td></tr>
+<tr class="memitem:a7906e1c2db5c6c4621565aa3c6f00275" id="r_a7906e1c2db5c6c4621565aa3c6f00275"><td class="memTemplParams" colspan="2"><a id="a7906e1c2db5c6c4621565aa3c6f00275" name="a7906e1c2db5c6c4621565aa3c6f00275"></a>
+template&lt;typename T&gt; </td></tr>
+<tr class="memitem:a7906e1c2db5c6c4621565aa3c6f00275 template"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> () const</td></tr>
+<tr class="memitem:ac50e343e38b0e11a8826a660258c8ec0" id="r_ac50e343e38b0e11a8826a660258c8ec0"><td class="memItemLeft" align="right" valign="top"><a id="ac50e343e38b0e11a8826a660258c8ec0" name="ac50e343e38b0e11a8826a660258c8ec0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> (const uint64_t id) const</td></tr>
+<tr class="memitem:acc015ca6937da1e52a8a05375c85b804" id="r_acc015ca6937da1e52a8a05375c85b804"><td class="memItemLeft" align="right" valign="top"><a id="acc015ca6937da1e52a8a05375c85b804" name="acc015ca6937da1e52a8a05375c85b804"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasMetaData</b> (TensorFeature feature) const</td></tr>
+<tr class="memitem:a33b68af7107dce6855a3ebfbf1ed6c54" id="r_a33b68af7107dce6855a3ebfbf1ed6c54"><td class="memItemLeft" align="right" valign="top"><a id="a33b68af7107dce6855a3ebfbf1ed6c54" name="a33b68af7107dce6855a3ebfbf1ed6c54"></a>
+const util::IndexMapper3D &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>indexMapper</b> () const</td></tr>
+<tr class="memitem:a2c17a971d0ae3ec1ef082f92561e66ac" id="r_a2c17a971d0ae3ec1ef082f92561e66ac"><td class="memItemLeft" align="right" valign="top"><a id="a2c17a971d0ae3ec1ef082f92561e66ac" name="a2c17a971d0ae3ec1ef082f92561e66ac"></a>
+const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>majorEigenValues</b> () const</td></tr>
+<tr class="memitem:a14867db3210adacc718ab33aca7da5f7" id="r_a14867db3210adacc718ab33aca7da5f7"><td class="memItemLeft" align="right" valign="top"><a id="a14867db3210adacc718ab33aca7da5f7" name="a14867db3210adacc718ab33aca7da5f7"></a>
+const std::vector&lt; dvec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>majorEigenVectors</b> () const</td></tr>
+<tr class="memitem:a9304ee0c2a29dd2b2ddba9ae5907ca55" id="r_a9304ee0c2a29dd2b2ddba9ae5907ca55"><td class="memItemLeft" align="right" valign="top"><a id="a9304ee0c2a29dd2b2ddba9ae5907ca55" name="a9304ee0c2a29dd2b2ddba9ae5907ca55"></a>
+const std::unordered_map&lt; uint64_t, std::unique_ptr&lt; <a class="el" href="structinviwo_1_1tensor_1_1MetaDataBase.html">tensor::MetaDataBase</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>metaData</b> () const</td></tr>
+<tr class="memitem:a8b9d02f30e2355cf0c951e6f0512de2d" id="r_a8b9d02f30e2355cf0c951e6f0512de2d"><td class="memItemLeft" align="right" valign="top"><a id="a8b9d02f30e2355cf0c951e6f0512de2d" name="a8b9d02f30e2355cf0c951e6f0512de2d"></a>
+const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>middleEigenValues</b> () const</td></tr>
+<tr class="memitem:a7aac1a8aa4ada581eee77c3c89323af2" id="r_a7aac1a8aa4ada581eee77c3c89323af2"><td class="memItemLeft" align="right" valign="top"><a id="a7aac1a8aa4ada581eee77c3c89323af2" name="a7aac1a8aa4ada581eee77c3c89323af2"></a>
+const std::vector&lt; dvec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>middleEigenVectors</b> () const</td></tr>
+<tr class="memitem:a1c0a45a45541de6cd2cfe1791212c77d" id="r_a1c0a45a45541de6cd2cfe1791212c77d"><td class="memItemLeft" align="right" valign="top"><a id="a1c0a45a45541de6cd2cfe1791212c77d" name="a1c0a45a45541de6cd2cfe1791212c77d"></a>
+const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>minorEigenValues</b> () const</td></tr>
+<tr class="memitem:ac22ab74b83739f6b8414b4465eafeb39" id="r_ac22ab74b83739f6b8414b4465eafeb39"><td class="memItemLeft" align="right" valign="top"><a id="ac22ab74b83739f6b8414b4465eafeb39" name="ac22ab74b83739f6b8414b4465eafeb39"></a>
+const std::vector&lt; dvec3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>minorEigenVectors</b> () const</td></tr>
+<tr class="memitem:a7ada0d18f1f40e7e75ce226432616133" id="r_a7ada0d18f1f40e7e75ce226432616133"><td class="memItemLeft" align="right" valign="top"><a id="a7ada0d18f1f40e7e75ce226432616133" name="a7ada0d18f1f40e7e75ce226432616133"></a>
+TensorField3D &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const TensorField3D &amp;)=delete</td></tr>
+<tr class="memitem:a4bbb95621e10eb3ad5ba214e478176ea" id="r_a4bbb95621e10eb3ad5ba214e478176ea"><td class="memItemLeft" align="right" valign="top"><a id="a4bbb95621e10eb3ad5ba214e478176ea" name="a4bbb95621e10eb3ad5ba214e478176ea"></a>
+glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>rank</b> () const</td></tr>
 <tr class="memitem:a94f5e13645d1b9548e1cf9a227879bb8" id="r_a94f5e13645d1b9548e1cf9a227879bb8"><td class="memTemplParams" colspan="2"><a id="a94f5e13645d1b9548e1cf9a227879bb8" name="a94f5e13645d1b9548e1cf9a227879bb8"></a>
 template&lt;typename T&gt; </td></tr>
 <tr class="memitem:a94f5e13645d1b9548e1cf9a227879bb8 template"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><b>removeMetaData</b> ()</td></tr>
-<tr class="memitem:a9304ee0c2a29dd2b2ddba9ae5907ca55" id="r_a9304ee0c2a29dd2b2ddba9ae5907ca55"><td class="memItemLeft" align="right" valign="top"><a id="a9304ee0c2a29dd2b2ddba9ae5907ca55" name="a9304ee0c2a29dd2b2ddba9ae5907ca55"></a>
-const std::unordered_map&lt; uint64_t, std::unique_ptr&lt; <a class="el" href="structinviwo_1_1tensor_1_1MetaDataBase.html">tensor::MetaDataBase</a> &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>metaData</b> () const</td></tr>
+<tr class="memitem:ad1bae03df072de631b8ad08e8126cc80" id="r_ad1bae03df072de631b8ad08e8126cc80"><td class="memItemLeft" align="right" valign="top"><a id="ad1bae03df072de631b8ad08e8126cc80" name="ad1bae03df072de631b8ad08e8126cc80"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setExtent</b> (const vec3 &amp;extent)</td></tr>
+<tr class="memitem:aeb4f107c3c9b353a877ee16e5b62be6a" id="r_aeb4f107c3c9b353a877ee16e5b62be6a"><td class="memItemLeft" align="right" valign="top"><a id="aeb4f107c3c9b353a877ee16e5b62be6a" name="aeb4f107c3c9b353a877ee16e5b62be6a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setMask</b> (const std::vector&lt; glm::uint8 &gt; &amp;mask)</td></tr>
+<tr class="memitem:a8c968f1425f33a22258765fe375cc5fe" id="r_a8c968f1425f33a22258765fe375cc5fe"><td class="memItemLeft" align="right" valign="top"><a id="a8c968f1425f33a22258765fe375cc5fe" name="a8c968f1425f33a22258765fe375cc5fe"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (const TensorField3D &amp;tf)</td></tr>
+<tr class="memitem:a81c8c7be25fe4a7fa21e5fd8f3905529" id="r_a81c8c7be25fe4a7fa21e5fd8f3905529"><td class="memItemLeft" align="right" valign="top"><a id="a81c8c7be25fe4a7fa21e5fd8f3905529" name="a81c8c7be25fe4a7fa21e5fd8f3905529"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const double *data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:aa2dd1caa1532d1086df82fc9059a803b" id="r_aa2dd1caa1532d1086df82fc9059a803b"><td class="memItemLeft" align="right" valign="top"><a id="aa2dd1caa1532d1086df82fc9059a803b" name="aa2dd1caa1532d1086df82fc9059a803b"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const float *data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:af7aa278a7cfae177494b4f52a4bd082d" id="r_af7aa278a7cfae177494b4f52a4bd082d"><td class="memItemLeft" align="right" valign="top"><a id="af7aa278a7cfae177494b4f52a4bd082d" name="af7aa278a7cfae177494b4f52a4bd082d"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const std::vector&lt; double &gt; &amp;data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:ad67b9be01ccb301c939a4e4dca4079a6" id="r_ad67b9be01ccb301c939a4e4dca4079a6"><td class="memItemLeft" align="right" valign="top"><a id="ad67b9be01ccb301c939a4e4dca4079a6" name="ad67b9be01ccb301c939a4e4dca4079a6"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, const std::vector&lt; double &gt; &amp;data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:a330f3bc10b0c865d8f83b41a57844f60" id="r_a330f3bc10b0c865d8f83b41a57844f60"><td class="memItemLeft" align="right" valign="top"><a id="a330f3bc10b0c865d8f83b41a57844f60" name="a330f3bc10b0c865d8f83b41a57844f60"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, std::vector&lt; dmat3 &gt; data, const std::unordered_map&lt; uint64_t, std::unique_ptr&lt; <a class="el" href="structinviwo_1_1tensor_1_1MetaDataBase.html">tensor::MetaDataBase</a> &gt; &gt; &amp;metaData, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:a8b52827a40915d203261528f37e738e0" id="r_a8b52827a40915d203261528f37e738e0"><td class="memItemLeft" align="right" valign="top"><a id="a8b52827a40915d203261528f37e738e0" name="a8b52827a40915d203261528f37e738e0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, std::vector&lt; dmat3 &gt; data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:a6e717d79a8169a2de85c39545129c054" id="r_a6e717d79a8169a2de85c39545129c054"><td class="memItemLeft" align="right" valign="top"><a id="a6e717d79a8169a2de85c39545129c054" name="a6e717d79a8169a2de85c39545129c054"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size3_t dimensions, std::vector&lt; dmat3 &gt; data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:adad41f1ab87fc2c496db01488b7e9397" id="r_adad41f1ab87fc2c496db01488b7e9397"><td class="memItemLeft" align="right" valign="top"><a id="adad41f1ab87fc2c496db01488b7e9397" name="adad41f1ab87fc2c496db01488b7e9397"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, const std::vector&lt; double &gt; &amp;data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:a4dfb9203a881471dc8b6d367e1f53fa0" id="r_a4dfb9203a881471dc8b6d367e1f53fa0"><td class="memItemLeft" align="right" valign="top"><a id="a4dfb9203a881471dc8b6d367e1f53fa0" name="a4dfb9203a881471dc8b6d367e1f53fa0"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, const std::vector&lt; double &gt; &amp;data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:ae29f0099c907a944b0368b8f7a296560" id="r_ae29f0099c907a944b0368b8f7a296560"><td class="memItemLeft" align="right" valign="top"><a id="ae29f0099c907a944b0368b8f7a296560" name="ae29f0099c907a944b0368b8f7a296560"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, std::vector&lt; dmat3 &gt; data, const std::vector&lt; double &gt; &amp;majorEigenvalues, const std::vector&lt; double &gt; &amp;middleEigenvalues, const std::vector&lt; double &gt; &amp;minorEigenvalues, const std::vector&lt; dvec3 &gt; &amp;majorEigenvectors, const std::vector&lt; dvec3 &gt; &amp;middleEigenvectors, const std::vector&lt; dvec3 &gt; &amp;minorEigenvectors, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:a0ef7f00d6b20dfbc4fd06a3768355240" id="r_a0ef7f00d6b20dfbc4fd06a3768355240"><td class="memItemLeft" align="right" valign="top"><a id="a0ef7f00d6b20dfbc4fd06a3768355240" name="a0ef7f00d6b20dfbc4fd06a3768355240"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>TensorField3D</b> (size_t x, size_t y, size_t z, std::vector&lt; dmat3 &gt; data, const vec3 &amp;extent=vec3(1.0f), float sliceCoord=0.0f)</td></tr>
+<tr class="memitem:a593aeab59fa9d33d1eebafa481137d64" id="r_a593aeab59fa9d33d1eebafa481137d64"><td class="memItemLeft" align="right" valign="top"><a id="a593aeab59fa9d33d1eebafa481137d64" name="a593aeab59fa9d33d1eebafa481137d64"></a>
+const std::vector&lt; dmat3 &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>tensors</b> () const</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1StructuredGridEntity"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1StructuredGridEntity')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1StructuredGridEntity.html">inviwo::StructuredGridEntity&lt; 3 &gt;</a></td></tr>
+<tr class="memitem:af2c9391b6eccb9bd068f309d141a6723 inherit pub_methods_classinviwo_1_1StructuredGridEntity" id="r_af2c9391b6eccb9bd068f309d141a6723"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classinviwo_1_1StructuredCoordinateTransformer.html">StructuredCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1StructuredGridEntity.html#af2c9391b6eccb9bd068f309d141a6723">getCoordinateTransformer</a> () const override</td></tr>
+<tr class="memitem:a05198014b03f6dcbc4f6f38d12017a55 inherit pub_methods_classinviwo_1_1StructuredGridEntity" id="r_a05198014b03f6dcbc4f6f38d12017a55"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1StructuredGridEntity.html#a05198014b03f6dcbc4f6f38d12017a55">getIndexMatrix</a> () const</td></tr>
 <tr class="memitem:a4754712b46a0c11cfe6f3d53266361ac inherit pub_methods_classinviwo_1_1StructuredGridEntity" id="r_a4754712b46a0c11cfe6f3d53266361ac"><td class="memItemLeft" align="right" valign="top">
 StructuredGridEntity&lt; N &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const StructuredGridEntity&lt; N &gt; &amp;that)=default</td></tr>
-<tr class="memitem:a05198014b03f6dcbc4f6f38d12017a55 inherit pub_methods_classinviwo_1_1StructuredGridEntity" id="r_a05198014b03f6dcbc4f6f38d12017a55"><td class="memItemLeft" align="right" valign="top">glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1StructuredGridEntity.html#a05198014b03f6dcbc4f6f38d12017a55">getIndexMatrix</a> () const</td></tr>
-<tr class="memitem:af2c9391b6eccb9bd068f309d141a6723 inherit pub_methods_classinviwo_1_1StructuredGridEntity" id="r_af2c9391b6eccb9bd068f309d141a6723"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classinviwo_1_1StructuredCoordinateTransformer.html">StructuredCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classinviwo_1_1StructuredGridEntity.html#af2c9391b6eccb9bd068f309d141a6723">getCoordinateTransformer</a> () const override</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SpatialEntity"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1SpatialEntity')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1SpatialEntity.html">inviwo::SpatialEntity</a></td></tr>
+<tr class="memitem:ae4be1fbb3c58973dd23c122a76c53e13 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_ae4be1fbb3c58973dd23c122a76c53e13"><td class="memItemLeft" align="right" valign="top">
+glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><b>getBasis</b> () const</td></tr>
+<tr class="memitem:a9732ef16b67fa8777174fd4f83620876 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a9732ef16b67fa8777174fd4f83620876"><td class="memItemLeft" align="right" valign="top">
+virtual const <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html">SpatialCameraCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateTransformer</b> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera) const</td></tr>
+<tr class="memitem:afcef15ae36187e871ef714bd99318e80 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_afcef15ae36187e871ef714bd99318e80"><td class="memItemLeft" align="right" valign="top">
+glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getModelMatrix</b> () const</td></tr>
+<tr class="memitem:a2de2055b620a440d811f46a72de82e1b inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a2de2055b620a440d811f46a72de82e1b"><td class="memItemLeft" align="right" valign="top">
+glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getOffset</b> () const</td></tr>
+<tr class="memitem:a4331611ec57726dd0e0cb4d2a2e10239 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a4331611ec57726dd0e0cb4d2a2e10239"><td class="memItemLeft" align="right" valign="top">
+glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getWorldMatrix</b> () const</td></tr>
+<tr class="memitem:a6840cc922163d840f37ce34881a92205 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a6840cc922163d840f37ce34881a92205"><td class="memItemLeft" align="right" valign="top">
+SpatialEntity &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const SpatialEntity &amp;that)</td></tr>
+<tr class="memitem:aed71501f0203d4ef766a0cefe70e2b83 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_aed71501f0203d4ef766a0cefe70e2b83"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setBasis</b> (const glm::mat3 &amp;basis)</td></tr>
+<tr class="memitem:acf1540dfc76de7cb25afc54a817a08c9 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_acf1540dfc76de7cb25afc54a817a08c9"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setModelMatrix</b> (const glm::mat4 &amp;modelMatrix)</td></tr>
+<tr class="memitem:a8a0bb4da24145259f1b53c54ed3576d0 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a8a0bb4da24145259f1b53c54ed3576d0"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setOffset</b> (const glm::vec3 &amp;offset)</td></tr>
+<tr class="memitem:a6cac3b8e8185904b3b945a0d6452ef26 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a6cac3b8e8185904b3b945a0d6452ef26"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setWorldMatrix</b> (const glm::mat4 &amp;worldMatrix)</td></tr>
 <tr class="memitem:a8b0448ddcb7bf8f4b49d52ece599b73d inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a8b0448ddcb7bf8f4b49d52ece599b73d"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>SpatialEntity</b> (const glm::mat4 &amp;modelMatrix)</td></tr>
 <tr class="memitem:ad322efbc6ea7129d9af95c0f00be4453 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_ad322efbc6ea7129d9af95c0f00be4453"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>SpatialEntity</b> (const glm::mat4 &amp;modelMatrix, const glm::mat4 &amp;worldMatrix)</td></tr>
 <tr class="memitem:a8daeb099cf876b1b761ce81637c7ae32 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a8daeb099cf876b1b761ce81637c7ae32"><td class="memItemLeft" align="right" valign="top">
 &#160;</td><td class="memItemRight" valign="bottom"><b>SpatialEntity</b> (const SpatialEntity &amp;rhs)</td></tr>
-<tr class="memitem:a6840cc922163d840f37ce34881a92205 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a6840cc922163d840f37ce34881a92205"><td class="memItemLeft" align="right" valign="top">
-SpatialEntity &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const SpatialEntity &amp;that)</td></tr>
-<tr class="memitem:a2de2055b620a440d811f46a72de82e1b inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a2de2055b620a440d811f46a72de82e1b"><td class="memItemLeft" align="right" valign="top">
-glm::vec3&#160;</td><td class="memItemRight" valign="bottom"><b>getOffset</b> () const</td></tr>
-<tr class="memitem:a8a0bb4da24145259f1b53c54ed3576d0 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a8a0bb4da24145259f1b53c54ed3576d0"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setOffset</b> (const glm::vec3 &amp;offset)</td></tr>
-<tr class="memitem:ae4be1fbb3c58973dd23c122a76c53e13 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_ae4be1fbb3c58973dd23c122a76c53e13"><td class="memItemLeft" align="right" valign="top">
-glm::mat3&#160;</td><td class="memItemRight" valign="bottom"><b>getBasis</b> () const</td></tr>
-<tr class="memitem:aed71501f0203d4ef766a0cefe70e2b83 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_aed71501f0203d4ef766a0cefe70e2b83"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setBasis</b> (const glm::mat3 &amp;basis)</td></tr>
-<tr class="memitem:afcef15ae36187e871ef714bd99318e80 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_afcef15ae36187e871ef714bd99318e80"><td class="memItemLeft" align="right" valign="top">
-glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getModelMatrix</b> () const</td></tr>
-<tr class="memitem:acf1540dfc76de7cb25afc54a817a08c9 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_acf1540dfc76de7cb25afc54a817a08c9"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setModelMatrix</b> (const glm::mat4 &amp;modelMatrix)</td></tr>
-<tr class="memitem:a4331611ec57726dd0e0cb4d2a2e10239 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a4331611ec57726dd0e0cb4d2a2e10239"><td class="memItemLeft" align="right" valign="top">
-glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>getWorldMatrix</b> () const</td></tr>
-<tr class="memitem:a6cac3b8e8185904b3b945a0d6452ef26 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a6cac3b8e8185904b3b945a0d6452ef26"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setWorldMatrix</b> (const glm::mat4 &amp;worldMatrix)</td></tr>
-<tr class="memitem:a9732ef16b67fa8777174fd4f83620876 inherit pub_methods_classinviwo_1_1SpatialEntity" id="r_a9732ef16b67fa8777174fd4f83620876"><td class="memItemLeft" align="right" valign="top">
-virtual const <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html">SpatialCameraCoordinateTransformer</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getCoordinateTransformer</b> (const <a class="el" href="classinviwo_1_1Camera.html">Camera</a> &amp;camera) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -294,40 +294,40 @@ std::array&lt; <a class="el" href="classinviwo_1_1DataMapper.html">DataMapper</a
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-methods" class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
+<tr class="memitem:a45a67baa4638ad56058a4c1e1cde4591" id="r_a45a67baa4638ad56058a4c1e1cde4591"><td class="memItemLeft" align="right" valign="top"><a id="a45a67baa4638ad56058a4c1e1cde4591" name="a45a67baa4638ad56058a4c1e1cde4591"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>computeDataMaps</b> ()</td></tr>
 <tr class="memitem:a26e5b6ef7a2ebcadf6ca882d3cd6e0a4" id="r_a26e5b6ef7a2ebcadf6ca882d3cd6e0a4"><td class="memItemLeft" align="right" valign="top"><a id="a26e5b6ef7a2ebcadf6ca882d3cd6e0a4" name="a26e5b6ef7a2ebcadf6ca882d3cd6e0a4"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>computeEigenValuesAndEigenVectors</b> ()</td></tr>
 <tr class="memitem:a68841bba394c41624269ecf62ac34dbf" id="r_a68841bba394c41624269ecf62ac34dbf"><td class="memItemLeft" align="right" valign="top"><a id="a68841bba394c41624269ecf62ac34dbf" name="a68841bba394c41624269ecf62ac34dbf"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>computeNormalizedScreenCoordinates</b> (double sliceCoord)</td></tr>
-<tr class="memitem:a45a67baa4638ad56058a4c1e1cde4591" id="r_a45a67baa4638ad56058a4c1e1cde4591"><td class="memItemLeft" align="right" valign="top"><a id="a45a67baa4638ad56058a4c1e1cde4591" name="a45a67baa4638ad56058a4c1e1cde4591"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>computeDataMaps</b> ()</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-attribs" class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
+<tr class="memitem:a287b49a4dd0f2f26f7129ac471496ac1" id="r_a287b49a4dd0f2f26f7129ac471496ac1"><td class="memItemLeft" align="right" valign="top"><a id="a287b49a4dd0f2f26f7129ac471496ac1" name="a287b49a4dd0f2f26f7129ac471496ac1"></a>
+std::vector&lt; glm::uint8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>binaryMask_</b></td></tr>
+<tr class="memitem:a410d69102760d22199420c7d1264c266" id="r_a410d69102760d22199420c7d1264c266"><td class="memItemLeft" align="right" valign="top"><a id="a410d69102760d22199420c7d1264c266" name="a410d69102760d22199420c7d1264c266"></a>
+glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>dimensionality_</b></td></tr>
 <tr class="memitem:a843fce25557374ef45dbbc20f400c98e" id="r_a843fce25557374ef45dbbc20f400c98e"><td class="memItemLeft" align="right" valign="top"><a id="a843fce25557374ef45dbbc20f400c98e" name="a843fce25557374ef45dbbc20f400c98e"></a>
 size3_t&#160;</td><td class="memItemRight" valign="bottom"><b>dimensions_</b></td></tr>
 <tr class="memitem:a091920bdf55aaa092594ec2a1909e02b" id="r_a091920bdf55aaa092594ec2a1909e02b"><td class="memItemLeft" align="right" valign="top"><a id="a091920bdf55aaa092594ec2a1909e02b" name="a091920bdf55aaa092594ec2a1909e02b"></a>
 util::IndexMapper3D&#160;</td><td class="memItemRight" valign="bottom"><b>indexMapper_</b></td></tr>
-<tr class="memitem:a8354f03a64dcbee969b42881a1c4c758" id="r_a8354f03a64dcbee969b42881a1c4c758"><td class="memItemLeft" align="right" valign="top"><a id="a8354f03a64dcbee969b42881a1c4c758" name="a8354f03a64dcbee969b42881a1c4c758"></a>
-std::vector&lt; dmat3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tensors_</b></td></tr>
-<tr class="memitem:ac86abf9a8844ef54f16bbe8438d82eb9" id="r_ac86abf9a8844ef54f16bbe8438d82eb9"><td class="memItemLeft" align="right" valign="top"><a id="ac86abf9a8844ef54f16bbe8438d82eb9" name="ac86abf9a8844ef54f16bbe8438d82eb9"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
-<tr class="memitem:ab1e129b4567e1b615110d83ccc002914" id="r_ab1e129b4567e1b615110d83ccc002914"><td class="memItemLeft" align="right" valign="top"><a id="ab1e129b4567e1b615110d83ccc002914" name="ab1e129b4567e1b615110d83ccc002914"></a>
-glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>rank_</b></td></tr>
-<tr class="memitem:a410d69102760d22199420c7d1264c266" id="r_a410d69102760d22199420c7d1264c266"><td class="memItemLeft" align="right" valign="top"><a id="a410d69102760d22199420c7d1264c266" name="a410d69102760d22199420c7d1264c266"></a>
-glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>dimensionality_</b></td></tr>
-<tr class="memitem:a0887b66826f0f731c9bf23adc43f997b" id="r_a0887b66826f0f731c9bf23adc43f997b"><td class="memItemLeft" align="right" valign="top"><a id="a0887b66826f0f731c9bf23adc43f997b" name="a0887b66826f0f731c9bf23adc43f997b"></a>
-std::vector&lt; vec3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>normalizedVolumePositions_</b></td></tr>
 <tr class="memitem:a1fbf3b469f78c10a8837172efd49a916" id="r_a1fbf3b469f78c10a8837172efd49a916"><td class="memItemLeft" align="right" valign="top"><a id="a1fbf3b469f78c10a8837172efd49a916" name="a1fbf3b469f78c10a8837172efd49a916"></a>
 std::unordered_map&lt; uint64_t, std::unique_ptr&lt; <a class="el" href="structinviwo_1_1tensor_1_1MetaDataBase.html">tensor::MetaDataBase</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>metaData_</b></td></tr>
-<tr class="memitem:a287b49a4dd0f2f26f7129ac471496ac1" id="r_a287b49a4dd0f2f26f7129ac471496ac1"><td class="memItemLeft" align="right" valign="top"><a id="a287b49a4dd0f2f26f7129ac471496ac1" name="a287b49a4dd0f2f26f7129ac471496ac1"></a>
-std::vector&lt; glm::uint8 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>binaryMask_</b></td></tr>
+<tr class="memitem:a0887b66826f0f731c9bf23adc43f997b" id="r_a0887b66826f0f731c9bf23adc43f997b"><td class="memItemLeft" align="right" valign="top"><a id="a0887b66826f0f731c9bf23adc43f997b" name="a0887b66826f0f731c9bf23adc43f997b"></a>
+std::vector&lt; vec3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>normalizedVolumePositions_</b></td></tr>
+<tr class="memitem:ab1e129b4567e1b615110d83ccc002914" id="r_ab1e129b4567e1b615110d83ccc002914"><td class="memItemLeft" align="right" valign="top"><a id="ab1e129b4567e1b615110d83ccc002914" name="ab1e129b4567e1b615110d83ccc002914"></a>
+glm::u8&#160;</td><td class="memItemRight" valign="bottom"><b>rank_</b></td></tr>
+<tr class="memitem:ac86abf9a8844ef54f16bbe8438d82eb9" id="r_ac86abf9a8844ef54f16bbe8438d82eb9"><td class="memItemLeft" align="right" valign="top"><a id="ac86abf9a8844ef54f16bbe8438d82eb9" name="ac86abf9a8844ef54f16bbe8438d82eb9"></a>
+size_t&#160;</td><td class="memItemRight" valign="bottom"><b>size_</b></td></tr>
+<tr class="memitem:a8354f03a64dcbee969b42881a1c4c758" id="r_a8354f03a64dcbee969b42881a1c4c758"><td class="memItemLeft" align="right" valign="top"><a id="a8354f03a64dcbee969b42881a1c4c758" name="a8354f03a64dcbee969b42881a1c4c758"></a>
+std::vector&lt; dmat3 &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>tensors_</b></td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1SpatialEntity"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1SpatialEntity')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1SpatialEntity.html">inviwo::SpatialEntity</a></td></tr>
-<tr class="memitem:a9def1784134f444b97e7e4badb99b0a0 inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_a9def1784134f444b97e7e4badb99b0a0"><td class="memItemLeft" align="right" valign="top">
-std::unique_ptr&lt; <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>transformer_</b></td></tr>
 <tr class="memitem:aac78d4cbaad8f4e5e7e5c51963fcda44 inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_aac78d4cbaad8f4e5e7e5c51963fcda44"><td class="memItemLeft" align="right" valign="top">
 std::unique_ptr&lt; <a class="el" href="classinviwo_1_1SpatialCameraCoordinateTransformer.html">SpatialCameraCoordinateTransformer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>cameraTransformer_</b></td></tr>
 <tr class="memitem:abc30b3b087566c3de2418f33a76f2c42 inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_abc30b3b087566c3de2418f33a76f2c42"><td class="memItemLeft" align="right" valign="top">
 glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>modelMatrix_</b></td></tr>
+<tr class="memitem:a9def1784134f444b97e7e4badb99b0a0 inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_a9def1784134f444b97e7e4badb99b0a0"><td class="memItemLeft" align="right" valign="top">
+std::unique_ptr&lt; <a class="el" href="classinviwo_1_1SpatialCoordinateTransformer.html">SpatialCoordinateTransformer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>transformer_</b></td></tr>
 <tr class="memitem:a622248b9930471cd146885deb194f95a inherit pro_attribs_classinviwo_1_1SpatialEntity" id="r_a622248b9930471cd146885deb194f95a"><td class="memItemLeft" align="right" valign="top">
 glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>worldMatrix_</b></td></tr>
 </table>
@@ -417,7 +417,7 @@ glm::mat4&#160;</td><td class="memItemRight" valign="bottom"><b>worldMatrix_</b>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>tensorfield3d.h</b></li>
+<li>D:/a/modules/modules/modules/tensorvis/tensorvisbase/include/inviwo/tensorvisbase/datastructures/<b>tensorfield3d.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

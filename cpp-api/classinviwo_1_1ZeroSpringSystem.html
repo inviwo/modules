@@ -97,7 +97,7 @@ $(function(){initNavTree('classinviwo_1_1ZeroSpringSystem.html','','classinviwo_
 <p>this is a template mix-in class, which is responsible for initializing the forces prior to each integration step of the Spring Mass System. This instance will set all initial forces to zero.  
  <a href="#details">More...</a></p>
 
-<p><code>#include &lt;zerospringsystem.h&gt;</code></p>
+<p><code>#include &lt;inviwo/springsystem/datastructures/zerospringsystem.h&gt;</code></p>
 <div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Inheritance diagram for inviwo::ZeroSpringSystem&lt; N, ComponentType &gt;:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -125,66 +125,66 @@ using&#160;</td><td class="memItemRight" valign="bottom"><b>Vector</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:aa7677c65ae2f60324d3835efb463dcd4" id="r_aa7677c65ae2f60324d3835efb463dcd4"><td class="memItemLeft" align="right" valign="top"><a id="aa7677c65ae2f60324d3835efb463dcd4" name="aa7677c65ae2f60324d3835efb463dcd4"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>ZeroSpringSystem</b> (ComponentType timeStep, std::vector&lt; Vector &gt; positions, std::vector&lt; SpringIndices &gt; springs, std::vector&lt; bool &gt; aLockedNodes, ComponentType nodeMass, ComponentType springConstant, ComponentType springLength, ComponentType springDampning)</td></tr>
-<tr class="memitem:a670204d8d0a668795430a4e9113f4337" id="r_a670204d8d0a668795430a4e9113f4337"><td class="memItemLeft" align="right" valign="top"><a id="a670204d8d0a668795430a4e9113f4337" name="a670204d8d0a668795430a4e9113f4337"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLocked</b> (size_t i) const</td></tr>
-<tr class="memitem:ab587cdbc26dcc44a582b827f02dd318e" id="r_ab587cdbc26dcc44a582b827f02dd318e"><td class="memItemLeft" align="right" valign="top"><a id="ab587cdbc26dcc44a582b827f02dd318e" name="ab587cdbc26dcc44a582b827f02dd318e"></a>
-Vector&#160;</td><td class="memItemRight" valign="bottom"><b>externalForce</b> (size_t i)</td></tr>
-<tr class="memitem:ae7a5d40f94342db59c05684dde9c009f" id="r_ae7a5d40f94342db59c05684dde9c009f"><td class="memItemLeft" align="right" valign="top"><a id="ae7a5d40f94342db59c05684dde9c009f" name="ae7a5d40f94342db59c05684dde9c009f"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>nodeMass</b> (size_t i)</td></tr>
-<tr class="memitem:ac210bbb970b93164745fc4f05ccf4fe7" id="r_ac210bbb970b93164745fc4f05ccf4fe7"><td class="memItemLeft" align="right" valign="top"><a id="ac210bbb970b93164745fc4f05ccf4fe7" name="ac210bbb970b93164745fc4f05ccf4fe7"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>springConstant</b> (size_t i) const</td></tr>
-<tr class="memitem:abb9e8475ed4e8e4e6e245f722dcc3a1e" id="r_abb9e8475ed4e8e4e6e245f722dcc3a1e"><td class="memItemLeft" align="right" valign="top"><a id="abb9e8475ed4e8e4e6e245f722dcc3a1e" name="abb9e8475ed4e8e4e6e245f722dcc3a1e"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>springLength</b> (size_t i) const</td></tr>
-<tr class="memitem:a9eafa446a17ca70c970516904dd04660" id="r_a9eafa446a17ca70c970516904dd04660"><td class="memItemLeft" align="right" valign="top"><a id="a9eafa446a17ca70c970516904dd04660" name="a9eafa446a17ca70c970516904dd04660"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>springDampning</b> (size_t i) const</td></tr>
 <tr class="memitem:afd68a7279ac72767f167f59bb91d772e" id="r_afd68a7279ac72767f167f59bb91d772e"><td class="memItemLeft" align="right" valign="top"><a id="afd68a7279ac72767f167f59bb91d772e" name="afd68a7279ac72767f167f59bb91d772e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>constrainPosition</b> (size_t, Vector &amp;) const</td></tr>
 <tr class="memitem:a1ba062fad7b5391376ad4dfe6962f167" id="r_a1ba062fad7b5391376ad4dfe6962f167"><td class="memItemLeft" align="right" valign="top"><a id="a1ba062fad7b5391376ad4dfe6962f167" name="a1ba062fad7b5391376ad4dfe6962f167"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>constrainVelocity</b> (size_t, Vector &amp;) const</td></tr>
+<tr class="memitem:ab587cdbc26dcc44a582b827f02dd318e" id="r_ab587cdbc26dcc44a582b827f02dd318e"><td class="memItemLeft" align="right" valign="top"><a id="ab587cdbc26dcc44a582b827f02dd318e" name="ab587cdbc26dcc44a582b827f02dd318e"></a>
+Vector&#160;</td><td class="memItemRight" valign="bottom"><b>externalForce</b> (size_t i)</td></tr>
+<tr class="memitem:a670204d8d0a668795430a4e9113f4337" id="r_a670204d8d0a668795430a4e9113f4337"><td class="memItemLeft" align="right" valign="top"><a id="a670204d8d0a668795430a4e9113f4337" name="a670204d8d0a668795430a4e9113f4337"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>isLocked</b> (size_t i) const</td></tr>
+<tr class="memitem:ae7a5d40f94342db59c05684dde9c009f" id="r_ae7a5d40f94342db59c05684dde9c009f"><td class="memItemLeft" align="right" valign="top"><a id="ae7a5d40f94342db59c05684dde9c009f" name="ae7a5d40f94342db59c05684dde9c009f"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>nodeMass</b> (size_t i)</td></tr>
+<tr class="memitem:ac210bbb970b93164745fc4f05ccf4fe7" id="r_ac210bbb970b93164745fc4f05ccf4fe7"><td class="memItemLeft" align="right" valign="top"><a id="ac210bbb970b93164745fc4f05ccf4fe7" name="ac210bbb970b93164745fc4f05ccf4fe7"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>springConstant</b> (size_t i) const</td></tr>
+<tr class="memitem:a9eafa446a17ca70c970516904dd04660" id="r_a9eafa446a17ca70c970516904dd04660"><td class="memItemLeft" align="right" valign="top"><a id="a9eafa446a17ca70c970516904dd04660" name="a9eafa446a17ca70c970516904dd04660"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>springDampning</b> (size_t i) const</td></tr>
+<tr class="memitem:abb9e8475ed4e8e4e6e245f722dcc3a1e" id="r_abb9e8475ed4e8e4e6e245f722dcc3a1e"><td class="memItemLeft" align="right" valign="top"><a id="abb9e8475ed4e8e4e6e245f722dcc3a1e" name="abb9e8475ed4e8e4e6e245f722dcc3a1e"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>springLength</b> (size_t i) const</td></tr>
+<tr class="memitem:aa7677c65ae2f60324d3835efb463dcd4" id="r_aa7677c65ae2f60324d3835efb463dcd4"><td class="memItemLeft" align="right" valign="top"><a id="aa7677c65ae2f60324d3835efb463dcd4" name="aa7677c65ae2f60324d3835efb463dcd4"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>ZeroSpringSystem</b> (ComponentType timeStep, std::vector&lt; Vector &gt; positions, std::vector&lt; SpringIndices &gt; springs, std::vector&lt; bool &gt; aLockedNodes, ComponentType nodeMass, ComponentType springConstant, ComponentType springLength, ComponentType springDampning)</td></tr>
 <tr class="inherit_header pub_methods_classinviwo_1_1SpringSystem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classinviwo_1_1SpringSystem')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Public Member Functions inherited from <a class="el" href="classinviwo_1_1SpringSystem.html">inviwo::SpringSystem&lt; N, double, ZeroSpringSystem&lt; N, double &gt; &gt;</a></td></tr>
-<tr class="memitem:ad44cdb462504f2d44b467d2ded65b71a inherit pub_methods_classinviwo_1_1SpringSystem" id="r_ad44cdb462504f2d44b467d2ded65b71a"><td class="memItemLeft" align="right" valign="top">
-&#160;</td><td class="memItemRight" valign="bottom"><b>SpringSystem</b> (double timeStep, std::vector&lt; Vector &gt; positions, std::vector&lt; SpringIndices &gt; springs, Vector origin=Vector{1}, Vector extent=Vector{1})</td></tr>
-<tr class="memitem:a3040945d39e43c6839a045b76dfa2814 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a3040945d39e43c6839a045b76dfa2814"><td class="memItemLeft" align="right" valign="top">
-double&#160;</td><td class="memItemRight" valign="bottom"><b>getTimeStep</b> () const</td></tr>
-<tr class="memitem:a3b8d2fd4a0d541c20ec0b52ed7a4ea4c inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a3b8d2fd4a0d541c20ec0b52ed7a4ea4c"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeStep</b> (double timeStep)</td></tr>
-<tr class="memitem:aabbaf413d87593398d917c8f60a2d353 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_aabbaf413d87593398d917c8f60a2d353"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>integrate</b> (size_t steps=1)</td></tr>
+<tr class="memitem:a20cae4a2b406adcf1dc0383f9a059561 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a20cae4a2b406adcf1dc0383f9a059561"><td class="memItemLeft" align="right" valign="top">
+const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>force</b> (size_t i) const</td></tr>
+<tr class="memitem:aba064aa3b4ffaaed22026ee1ceefe288 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_aba064aa3b4ffaaed22026ee1ceefe288"><td class="memItemLeft" align="right" valign="top">
+const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getForces</b> () const</td></tr>
 <tr class="memitem:a88d6867bfcfb8d42d590856a6a605483 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a88d6867bfcfb8d42d590856a6a605483"><td class="memItemLeft" align="right" valign="top">
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumberOfNodes</b> () const</td></tr>
 <tr class="memitem:afeade2887b1205df3de690d5bff772c6 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_afeade2887b1205df3de690d5bff772c6"><td class="memItemLeft" align="right" valign="top">
 size_t&#160;</td><td class="memItemRight" valign="bottom"><b>getNumberOfSprings</b> () const</td></tr>
 <tr class="memitem:af9b229d5e0ca268436dbd21179f90735 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_af9b229d5e0ca268436dbd21179f90735"><td class="memItemLeft" align="right" valign="top">
 const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getPositions</b> () const</td></tr>
-<tr class="memitem:abf12b4f223b81ad0e36624d6d6807263 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_abf12b4f223b81ad0e36624d6d6807263"><td class="memItemLeft" align="right" valign="top">
-const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVelocities</b> () const</td></tr>
-<tr class="memitem:aba064aa3b4ffaaed22026ee1ceefe288 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_aba064aa3b4ffaaed22026ee1ceefe288"><td class="memItemLeft" align="right" valign="top">
-const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getForces</b> () const</td></tr>
-<tr class="memitem:ab7543fcebc559ff1042bd04b0639c1e8 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_ab7543fcebc559ff1042bd04b0639c1e8"><td class="memItemLeft" align="right" valign="top">
-const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (size_t i) const</td></tr>
-<tr class="memitem:ae32e0a78e796570eca3d4b90f3fe6c99 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_ae32e0a78e796570eca3d4b90f3fe6c99"><td class="memItemLeft" align="right" valign="top">
-const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity</b> (size_t i) const</td></tr>
-<tr class="memitem:a20cae4a2b406adcf1dc0383f9a059561 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a20cae4a2b406adcf1dc0383f9a059561"><td class="memItemLeft" align="right" valign="top">
-const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>force</b> (size_t i) const</td></tr>
 <tr class="memitem:acc1778551d3558065958f5d61541a0a5 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_acc1778551d3558065958f5d61541a0a5"><td class="memItemLeft" align="right" valign="top">
 const std::vector&lt; SpringIndices &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getSprings</b> () const</td></tr>
+<tr class="memitem:a3040945d39e43c6839a045b76dfa2814 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a3040945d39e43c6839a045b76dfa2814"><td class="memItemLeft" align="right" valign="top">
+double&#160;</td><td class="memItemRight" valign="bottom"><b>getTimeStep</b> () const</td></tr>
+<tr class="memitem:abf12b4f223b81ad0e36624d6d6807263 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_abf12b4f223b81ad0e36624d6d6807263"><td class="memItemLeft" align="right" valign="top">
+const std::vector&lt; Vector &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getVelocities</b> () const</td></tr>
+<tr class="memitem:aabbaf413d87593398d917c8f60a2d353 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_aabbaf413d87593398d917c8f60a2d353"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>integrate</b> (size_t steps=1)</td></tr>
+<tr class="memitem:ab7543fcebc559ff1042bd04b0639c1e8 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_ab7543fcebc559ff1042bd04b0639c1e8"><td class="memItemLeft" align="right" valign="top">
+const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>position</b> (size_t i) const</td></tr>
 <tr class="memitem:a50f3d120f6b953aa59c709c6bab5dd89 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a50f3d120f6b953aa59c709c6bab5dd89"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>print</b> (std::basic_ostream&lt; Elem, Traits &gt; &amp;ss) const</td></tr>
+<tr class="memitem:a3b8d2fd4a0d541c20ec0b52ed7a4ea4c inherit pub_methods_classinviwo_1_1SpringSystem" id="r_a3b8d2fd4a0d541c20ec0b52ed7a4ea4c"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>setTimeStep</b> (double timeStep)</td></tr>
+<tr class="memitem:ad44cdb462504f2d44b467d2ded65b71a inherit pub_methods_classinviwo_1_1SpringSystem" id="r_ad44cdb462504f2d44b467d2ded65b71a"><td class="memItemLeft" align="right" valign="top">
+&#160;</td><td class="memItemRight" valign="bottom"><b>SpringSystem</b> (double timeStep, std::vector&lt; Vector &gt; positions, std::vector&lt; SpringIndices &gt; springs, Vector origin=Vector{1}, Vector extent=Vector{1})</td></tr>
+<tr class="memitem:ae32e0a78e796570eca3d4b90f3fe6c99 inherit pub_methods_classinviwo_1_1SpringSystem" id="r_ae32e0a78e796570eca3d4b90f3fe6c99"><td class="memItemLeft" align="right" valign="top">
+const Vector &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>velocity</b> (size_t i) const</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a95f462988daba5d45b7e3699e0ef9bb8" id="r_a95f462988daba5d45b7e3699e0ef9bb8"><td class="memItemLeft" align="right" valign="top"><a id="a95f462988daba5d45b7e3699e0ef9bb8" name="a95f462988daba5d45b7e3699e0ef9bb8"></a>
-std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lockedNodes</b></td></tr>
 <tr class="memitem:a0156a76013429cb8f56b1b08da3a48f9" id="r_a0156a76013429cb8f56b1b08da3a48f9"><td class="memItemLeft" align="right" valign="top"><a id="a0156a76013429cb8f56b1b08da3a48f9" name="a0156a76013429cb8f56b1b08da3a48f9"></a>
 ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>globalNodeMass</b> {1}</td></tr>
 <tr class="memitem:a08d346016cb94860b0b7d45cb390709c" id="r_a08d346016cb94860b0b7d45cb390709c"><td class="memItemLeft" align="right" valign="top"><a id="a08d346016cb94860b0b7d45cb390709c" name="a08d346016cb94860b0b7d45cb390709c"></a>
 ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>globalSpringConstant</b> {1}</td></tr>
-<tr class="memitem:a0bf246b73e554ec749fdc0656e89f050" id="r_a0bf246b73e554ec749fdc0656e89f050"><td class="memItemLeft" align="right" valign="top"><a id="a0bf246b73e554ec749fdc0656e89f050" name="a0bf246b73e554ec749fdc0656e89f050"></a>
-ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>globalSpringLength</b> {1}</td></tr>
 <tr class="memitem:a8e56ef8107cc6dd3d9ab366a7dbbec38" id="r_a8e56ef8107cc6dd3d9ab366a7dbbec38"><td class="memItemLeft" align="right" valign="top"><a id="a8e56ef8107cc6dd3d9ab366a7dbbec38" name="a8e56ef8107cc6dd3d9ab366a7dbbec38"></a>
 ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>globalSpringDampning</b> {1}</td></tr>
+<tr class="memitem:a0bf246b73e554ec749fdc0656e89f050" id="r_a0bf246b73e554ec749fdc0656e89f050"><td class="memItemLeft" align="right" valign="top"><a id="a0bf246b73e554ec749fdc0656e89f050" name="a0bf246b73e554ec749fdc0656e89f050"></a>
+ComponentType&#160;</td><td class="memItemRight" valign="bottom"><b>globalSpringLength</b> {1}</td></tr>
+<tr class="memitem:a95f462988daba5d45b7e3699e0ef9bb8" id="r_a95f462988daba5d45b7e3699e0ef9bb8"><td class="memItemLeft" align="right" valign="top"><a id="a95f462988daba5d45b7e3699e0ef9bb8" name="a95f462988daba5d45b7e3699e0ef9bb8"></a>
+std::vector&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>lockedNodes</b></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-static-attribs" class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -199,38 +199,38 @@ static constexpr bool&#160;</td><td class="memItemRight" valign="bottom"><b>hasP
 <tr class="inherit_header pro_methods_classinviwo_1_1SpringSystem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_classinviwo_1_1SpringSystem')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Member Functions inherited from <a class="el" href="classinviwo_1_1SpringSystem.html">inviwo::SpringSystem&lt; N, double, ZeroSpringSystem&lt; N, double &gt; &gt;</a></td></tr>
 <tr class="memitem:a1da17d2b4e55907b76a5e1b29c97f40b inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a1da17d2b4e55907b76a5e1b29c97f40b"><td class="memItemLeft" align="right" valign="top">
 <a class="el" href="classinviwo_1_1ZeroSpringSystem.html">ZeroSpringSystem</a>&lt; N, double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>derived</b> ()</td></tr>
-<tr class="memitem:a29ff198ad99593e812830d22c2439767 inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a29ff198ad99593e812830d22c2439767"><td class="memItemLeft" align="right" valign="top">
-void&#160;</td><td class="memItemRight" valign="bottom"><b>externalForces</b> (std::vector&lt; Vector &gt; &amp;forces)</td></tr>
 <tr class="memitem:a949755f05ce5529e27ffc868f621d744 inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a949755f05ce5529e27ffc868f621d744"><td class="memItemLeft" align="right" valign="top">
 Vector&#160;</td><td class="memItemRight" valign="bottom"><b>externalForce</b> (size_t i)</td></tr>
+<tr class="memitem:a29ff198ad99593e812830d22c2439767 inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a29ff198ad99593e812830d22c2439767"><td class="memItemLeft" align="right" valign="top">
+void&#160;</td><td class="memItemRight" valign="bottom"><b>externalForces</b> (std::vector&lt; Vector &gt; &amp;forces)</td></tr>
+<tr class="memitem:a4dbacf7fae966dc80b1cda12a9b15a49 inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a4dbacf7fae966dc80b1cda12a9b15a49"><td class="memItemLeft" align="right" valign="top">
+double&#160;</td><td class="memItemRight" valign="bottom"><b>forceMagnitude</b> (size_t i, double displacement) const</td></tr>
 <tr class="memitem:a7ffcf55967a1575227a1c86177598d25 inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a7ffcf55967a1575227a1c86177598d25"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>updateForces</b> ()</td></tr>
 <tr class="memitem:ae601207fc42d5b788e93900bedbdc35a inherit pro_methods_classinviwo_1_1SpringSystem" id="r_ae601207fc42d5b788e93900bedbdc35a"><td class="memItemLeft" align="right" valign="top">
 void&#160;</td><td class="memItemRight" valign="bottom"><b>verletIntegration</b> ()</td></tr>
-<tr class="memitem:a4dbacf7fae966dc80b1cda12a9b15a49 inherit pro_methods_classinviwo_1_1SpringSystem" id="r_a4dbacf7fae966dc80b1cda12a9b15a49"><td class="memItemLeft" align="right" valign="top">
-double&#160;</td><td class="memItemRight" valign="bottom"><b>forceMagnitude</b> (size_t i, double displacement) const</td></tr>
 <tr class="inherit_header pro_attribs_classinviwo_1_1SpringSystem"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classinviwo_1_1SpringSystem')"><span class="dynarrow"><span class="arrowhead closed"></span></span>Protected Attributes inherited from <a class="el" href="classinviwo_1_1SpringSystem.html">inviwo::SpringSystem&lt; N, double, ZeroSpringSystem&lt; N, double &gt; &gt;</a></td></tr>
-<tr class="memitem:a29f3de8ef6fdd5a145a0f6ef90d1512c inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_a29f3de8ef6fdd5a145a0f6ef90d1512c"><td class="memItemLeft" align="right" valign="top">
-double&#160;</td><td class="memItemRight" valign="bottom"><b>timeStep_</b></td></tr>
-<tr class="memitem:a7fb9b055382a3a83bd40ed5e179db957 inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_a7fb9b055382a3a83bd40ed5e179db957"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>positions_</b></td></tr>
-<tr class="memitem:ae0a6bc44a9b41bb0e3f1269833b4eb0a inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ae0a6bc44a9b41bb0e3f1269833b4eb0a"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>velocities_</b></td></tr>
-<tr class="memitem:a164d0193d128db8ef876a1efb27cfcdc inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_a164d0193d128db8ef876a1efb27cfcdc"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>forces_</b></td></tr>
-<tr class="memitem:ad3a44cfe008e899fdfcb1a63f7c66f6c inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ad3a44cfe008e899fdfcb1a63f7c66f6c"><td class="memItemLeft" align="right" valign="top">
-std::vector&lt; SpringIndices &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>springs_</b></td></tr>
-<tr class="memitem:ad244daa7cc63f2b88f7549cb01e4d148 inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ad244daa7cc63f2b88f7549cb01e4d148"><td class="memItemLeft" align="right" valign="top">
-Vector&#160;</td><td class="memItemRight" valign="bottom"><b>origin_</b></td></tr>
 <tr class="memitem:ab546b6f152bdd052f6b62975cdb23ed6 inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ab546b6f152bdd052f6b62975cdb23ed6"><td class="memItemLeft" align="right" valign="top">
 Vector&#160;</td><td class="memItemRight" valign="bottom"><b>extent_</b></td></tr>
+<tr class="memitem:a164d0193d128db8ef876a1efb27cfcdc inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_a164d0193d128db8ef876a1efb27cfcdc"><td class="memItemLeft" align="right" valign="top">
+std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>forces_</b></td></tr>
+<tr class="memitem:ad244daa7cc63f2b88f7549cb01e4d148 inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ad244daa7cc63f2b88f7549cb01e4d148"><td class="memItemLeft" align="right" valign="top">
+Vector&#160;</td><td class="memItemRight" valign="bottom"><b>origin_</b></td></tr>
+<tr class="memitem:a7fb9b055382a3a83bd40ed5e179db957 inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_a7fb9b055382a3a83bd40ed5e179db957"><td class="memItemLeft" align="right" valign="top">
+std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>positions_</b></td></tr>
+<tr class="memitem:ad3a44cfe008e899fdfcb1a63f7c66f6c inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ad3a44cfe008e899fdfcb1a63f7c66f6c"><td class="memItemLeft" align="right" valign="top">
+std::vector&lt; SpringIndices &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>springs_</b></td></tr>
+<tr class="memitem:a29f3de8ef6fdd5a145a0f6ef90d1512c inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_a29f3de8ef6fdd5a145a0f6ef90d1512c"><td class="memItemLeft" align="right" valign="top">
+double&#160;</td><td class="memItemRight" valign="bottom"><b>timeStep_</b></td></tr>
+<tr class="memitem:ae0a6bc44a9b41bb0e3f1269833b4eb0a inherit pro_attribs_classinviwo_1_1SpringSystem" id="r_ae0a6bc44a9b41bb0e3f1269833b4eb0a"><td class="memItemLeft" align="right" valign="top">
+std::vector&lt; Vector &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>velocities_</b></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;size_t N, typename ComponentType = double&gt;<br />
 class inviwo::ZeroSpringSystem&lt; N, ComponentType &gt;</div><p>this is a template mix-in class, which is responsible for initializing the forces prior to each integration step of the Spring Mass System. This instance will set all initial forces to zero. </p>
 <dl class="section see"><dt>See also</dt><dd><a class="el" href="classinviwo_1_1SpringSystem.html" title="this class is representing a spring mass system including a solver using either the Verlet integratio...">SpringSystem</a> </dd></dl>
 </div><hr/>The documentation for this class was generated from the following file:<ul>
-<li><b>zerospringsystem.h</b></li>
+<li>D:/a/modules/modules/modules/misc/springsystem/include/inviwo/springsystem/datastructures/<b>zerospringsystem.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->

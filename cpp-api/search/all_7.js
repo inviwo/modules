@@ -59,7 +59,7 @@ var searchData=
   ['hidewidget_56',['hideWidget',['../classinviwo_1_1OrdinalLikePropertySettingsWidgetQt.html#ac3b807a9c7d955c98394fffcf586e75a',1,'inviwo::OrdinalLikePropertySettingsWidgetQt::hideWidget()'],['../classinviwo_1_1MinMaxPropertySettingsWidgetQt.html#a792a4b0ee350abd1a3c94b0d34427698',1,'inviwo::MinMaxPropertySettingsWidgetQt::hideWidget()']]],
   ['highlight_57',['Highlight',['../namespaceinviwo.html#a0780518930e4f82763044068321c57f4a0b90582f4589d84be89f5b847d4d1ed1',1,'inviwo']]],
   ['highlight_58',['highlight',['../classinviwo_1_1BrushingAndLinkingManager.html#a60466f7008bd34b45e2c4d4ac8b79f39',1,'inviwo::BrushingAndLinkingManager']]],
-  ['hillyieldcriterion_59',['HillYieldCriterion',['../structHillYieldCriterion.html',1,'HillYieldCriterion'],['../structinviwo_1_1tensor_1_1HillYieldCriterion.html',1,'inviwo::tensor::HillYieldCriterion']]],
+  ['hillyieldcriterion_59',['HillYieldCriterion',['../structinviwo_1_1tensor_1_1HillYieldCriterion.html',1,'inviwo::tensor']]],
   ['histogram1d_60',['Histogram1D',['../structinviwo_1_1Histogram1D.html',1,'inviwo']]],
   ['histogram2d_61',['Histogram2D',['../structinviwo_1_1Histogram2D.html',1,'inviwo']]],
   ['histogramcache_62',['HistogramCache',['../classinviwo_1_1HistogramCache.html',1,'inviwo']]],

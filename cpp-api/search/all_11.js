@@ -69,7 +69,7 @@ var searchData=
   ['registerinterpolation_66',['registerInterpolation',['../classinviwo_1_1animation_1_1AnimationSupplier.html#a2bfc1a33c13448c08f4eadff51160a4c',1,'inviwo::animation::AnimationSupplier']]],
   ['registerlogger_67',['registerLogger',['../classinviwo_1_1LogCentral.html#a5eeb127460684e9410b4d01db3c73530',1,'inviwo::LogCentral']]],
   ['registermodules_68',['registerModules',['../classinviwo_1_1InviwoApplication.html#a73f51ffdff26acee711635a2ee5cc4d6',1,'inviwo::InviwoApplication::registerModules(std::vector&lt; std::unique_ptr&lt; InviwoModuleFactoryObject &gt; &gt; modules)'],['../classinviwo_1_1InviwoApplication.html#a093316c6b5f1880f059aea9339281c20',1,'inviwo::InviwoApplication::registerModules(RuntimeModuleLoading)'],['../classinviwo_1_1ModuleManager.html#a82d9e48a2df8a22281ea9b06736ec5c8',1,'inviwo::ModuleManager::registerModules(std::vector&lt; std::unique_ptr&lt; InviwoModuleFactoryObject &gt; &gt; moduleFactories)'],['../classinviwo_1_1ModuleManager.html#ac634bcffbe1f5a276cf18740abffc80f',1,'inviwo::ModuleManager::registerModules(RuntimeModuleLoading, std::function&lt; bool(std::string_view)&gt; filter=ModuleManager::getEnabledFilter())']]],
-  ['registerobject_69',['registerObject',['../classinviwo_1_1DataVisualizerManager.html#a7a14578f0afc268cd7b6eb3264100b58',1,'inviwo::DataVisualizerManager::registerObject()'],['../namespaceinviwo.html#aeb6dd3fe68128aee4b60a50803ca4ade',1,'inviwo::registerObject()']]],
+  ['registerobject_69',['registerObject',['../classinviwo_1_1ProcessorFactory.html#a63339cab9eec845cfe2012ac26ee1efc',1,'inviwo::ProcessorFactory::registerObject()'],['../classinviwo_1_1DataVisualizerManager.html#a7a14578f0afc268cd7b6eb3264100b58',1,'inviwo::DataVisualizerManager::registerObject()'],['../classinviwo_1_1DialogFactory.html#a76d7710640aacd1126dfbdf31e68cc4f',1,'inviwo::DialogFactory::registerObject()'],['../classinviwo_1_1FactoryRegister.html#a0b244528108edd1f87507df782b7bf4e',1,'inviwo::FactoryRegister::registerObject()']]],
   ['registerport_70',['registerPort',['../classinviwo_1_1InviwoModule.html#ad08053fc1d110a251aeb18311846a569',1,'inviwo::InviwoModule']]],
   ['registerpropertytrackconnection_71',['registerPropertyTrackConnection',['../classinviwo_1_1animation_1_1AnimationManager.html#a5b13ec3f1a0ac9d3a4354cef33a928f8',1,'inviwo::animation::AnimationManager::registerPropertyTrackConnection()'],['../classinviwo_1_1animation_1_1AnimationSupplier.html#a9fa6375eb8ecced6f69a4e3b410b9d83',1,'inviwo::animation::AnimationSupplier::registerPropertyTrackConnection()'],['../classinviwo_1_1animation_1_1TrackFactory.html#a150611ade84a02ab0628d46fb45ba67e',1,'inviwo::animation::TrackFactory::registerPropertyTrackConnection()']]],
   ['registerrepresentationconverter_72',['registerRepresentationConverter',['../classinviwo_1_1InviwoModule.html#a02c43f9fa03d3aae04554b3672997e02',1,'inviwo::InviwoModule::registerRepresentationConverter()'],['../classinviwo_1_1RepresentationFactoryManager.html#afb1d3c8cffa34a6c653bc5472ba05c07',1,'inviwo::RepresentationFactoryManager::registerRepresentationConverter()']]],
@@ -188,12 +188,13 @@ var searchData=
   ['rgb2ycbcr_185',['rgb2ycbcr',['../namespaceinviwo_1_1color.html#a4a95bd0a41aa8685a0b7bc5c6bb8e575',1,'inviwo::color']]],
   ['rgba2hex_186',['rgba2hex',['../namespaceinviwo_1_1color.html#a021d8d0b389cccf6b5b8569a8c71a949',1,'inviwo::color']]],
   ['rotateproperty_187',['RotateProperty',['../classinviwo_1_1transform_1_1RotateProperty.html',1,'inviwo::transform']]],
-  ['rotation_188',['Rotation',['../structinviwo_1_1tensor_1_1Rotation.html',1,'inviwo::tensor::Rotation'],['../structRotation.html',1,'Rotation']]],
+  ['rotation_188',['Rotation',['../structinviwo_1_1tensor_1_1Rotation.html',1,'inviwo::tensor']]],
   ['rotation_5f_189',['rotation_',['../classinviwo_1_1plot_1_1PlotTextProperty.html#a8372f8feaf6ac9e2d7c39fa259402be6',1,'inviwo::plot::PlotTextProperty']]],
   ['rowbegin_190',['rowBegin',['../namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89',1,'inviwo::csvfilters']]],
   ['rowfilter_191',['RowFilter',['../structinviwo_1_1csvfilters_1_1RowFilter.html',1,'inviwo::csvfilters']]],
   ['rowlayout_192',['RowLayout',['../classinviwo_1_1RowLayout.html',1,'inviwo']]],
   ['rtrim_193',['rtrim',['../namespaceinviwo_1_1util.html#ababf20580e98b848eaffd93c087fedb2',1,'inviwo::util']]],
   ['run_194',['run',['../classinviwo_1_1PythonScript.html#a21445a616ad64e5885921688fee72665',1,'inviwo::PythonScript']]],
-  ['runtimemoduleloading_195',['RuntimeModuleLoading',['../structinviwo_1_1RuntimeModuleLoading.html',1,'inviwo']]]
+  ['runtime_20log_20level_195',['Runtime Log Level',['../namespaceinviwo_1_1log.html#autotoc_md23',1,'']]],
+  ['runtimemoduleloading_196',['RuntimeModuleLoading',['../structinviwo_1_1RuntimeModuleLoading.html',1,'inviwo']]]
 ];

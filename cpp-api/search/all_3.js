@@ -334,7 +334,7 @@ var searchData=
   ['dialogfactoryobjecttemplate_331',['DialogFactoryObjectTemplate',['../classinviwo_1_1DialogFactoryObjectTemplate.html',1,'inviwo']]],
   ['diffuselight_332',['DiffuseLight',['../classinviwo_1_1DiffuseLight.html',1,'inviwo']]],
   ['diffuselightsourceprocessor_333',['DiffuseLightSourceProcessor',['../classinviwo_1_1DiffuseLightSourceProcessor.html',1,'inviwo']]],
-  ['diffusivity_334',['Diffusivity',['../structDiffusivity.html',1,'Diffusivity'],['../structinviwo_1_1tensor_1_1Diffusivity.html',1,'inviwo::tensor::Diffusivity']]],
+  ['diffusivity_334',['Diffusivity',['../structinviwo_1_1tensor_1_1Diffusivity.html',1,'inviwo::tensor']]],
   ['directionallight_335',['DirectionalLight',['../classinviwo_1_1DirectionalLight.html',1,'inviwo']]],
   ['directionallightsourceprocessor_336',['DirectionalLightSourceProcessor',['../classinviwo_1_1DirectionalLightSourceProcessor.html',1,'inviwo']]],
   ['directoryexists_337',['directoryExists',['../namespaceinviwo_1_1filesystem.html#ae831dc07476b7826e2b528a90aee3bf1',1,'inviwo::filesystem']]],

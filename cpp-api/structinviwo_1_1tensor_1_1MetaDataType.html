@@ -106,26 +106,26 @@ $(function(){initNavTree('structinviwo_1_1tensor_1_1MetaDataType.html','','struc
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-types" class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a1b192a791bc6f9076eeb59678b6a5102" id="r_a1b192a791bc6f9076eeb59678b6a5102"><td class="memItemLeft" align="right" valign="top"><a id="a1b192a791bc6f9076eeb59678b6a5102" name="a1b192a791bc6f9076eeb59678b6a5102"></a>
-using&#160;</td><td class="memItemRight" valign="bottom"><b>TType</b> = T</td></tr>
 <tr class="memitem:a544c2a93c4feb150d2db66d91c7ca6ba" id="r_a544c2a93c4feb150d2db66d91c7ca6ba"><td class="memItemLeft" align="right" valign="top"><a id="a544c2a93c4feb150d2db66d91c7ca6ba" name="a544c2a93c4feb150d2db66d91c7ca6ba"></a>
 using&#160;</td><td class="memItemRight" valign="bottom"><b>DataType</b> = std::vector&lt;T&gt;</td></tr>
+<tr class="memitem:a1b192a791bc6f9076eeb59678b6a5102" id="r_a1b192a791bc6f9076eeb59678b6a5102"><td class="memItemLeft" align="right" valign="top"><a id="a1b192a791bc6f9076eeb59678b6a5102" name="a1b192a791bc6f9076eeb59678b6a5102"></a>
+using&#160;</td><td class="memItemRight" valign="bottom"><b>TType</b> = T</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8fb4bcbce7ca75beddde4d67191dee32" id="r_a8fb4bcbce7ca75beddde4d67191dee32"><td class="memItemLeft" align="right" valign="top"><a id="a8fb4bcbce7ca75beddde4d67191dee32" name="a8fb4bcbce7ca75beddde4d67191dee32"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataType</b> (std::vector&lt; T &gt; data, TensorFeature type)</td></tr>
 <tr class="memitem:af5c7f6f095dbf2bb2717bbec55074992" id="r_af5c7f6f095dbf2bb2717bbec55074992"><td class="memItemLeft" align="right" valign="top">virtual MetaDataType&lt; T &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5c7f6f095dbf2bb2717bbec55074992">clone</a> () const override=0</td></tr>
-<tr class="memitem:a0cd70824493d739a7ca7c34e2e9aabdc" id="r_a0cd70824493d739a7ca7c34e2e9aabdc"><td class="memItemLeft" align="right" valign="top"><a id="a0cd70824493d739a7ca7c34e2e9aabdc" name="a0cd70824493d739a7ca7c34e2e9aabdc"></a>
-std::pair&lt; TType, TType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getMinMax</b> () const</td></tr>
-<tr class="memitem:a8143ee5173198a7cf4f68c0c0d7371b0" id="r_a8143ee5173198a7cf4f68c0c0d7371b0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8143ee5173198a7cf4f68c0c0d7371b0">getDisplayName</a> () const override</td></tr>
-<tr class="memitem:ac583f26c5879f6d80b09fbb831e170e9" id="r_ac583f26c5879f6d80b09fbb831e170e9"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac583f26c5879f6d80b09fbb831e170e9">getNumberOfComponents</a> () const override</td></tr>
-<tr class="memitem:a4f9fca34fca2e0f28013f395b0ca8c65" id="r_a4f9fca34fca2e0f28013f395b0ca8c65"><td class="memItemLeft" align="right" valign="top"><a id="a4f9fca34fca2e0f28013f395b0ca8c65" name="a4f9fca34fca2e0f28013f395b0ca8c65"></a>
+<tr class="memitem:ade8f29fa73d0cdd3b0e570a756b2ffae" id="r_ade8f29fa73d0cdd3b0e570a756b2ffae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade8f29fa73d0cdd3b0e570a756b2ffae">deserialize</a> (std::ifstream &amp;inFile, size_t numElements) override</td></tr>
+<tr class="memitem:ac66da334a094cb24cc4bcfaae3618b32" id="r_ac66da334a094cb24cc4bcfaae3618b32"><td class="memItemLeft" align="right" valign="top"><a id="ac66da334a094cb24cc4bcfaae3618b32" name="ac66da334a094cb24cc4bcfaae3618b32"></a>
 const std::vector&lt; T &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>getData</b> () const</td></tr>
+<tr class="memitem:a1f57318d3279cb3cede01e2573a93258" id="r_a1f57318d3279cb3cede01e2573a93258"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f57318d3279cb3cede01e2573a93258">getDataPtr</a> () const override</td></tr>
+<tr class="memitem:a8143ee5173198a7cf4f68c0c0d7371b0" id="r_a8143ee5173198a7cf4f68c0c0d7371b0"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8143ee5173198a7cf4f68c0c0d7371b0">getDisplayName</a> () const override</td></tr>
 <tr class="memitem:a31bff499c3d47da4333ea2ef01ca35e4" id="r_a31bff499c3d47da4333ea2ef01ca35e4"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31bff499c3d47da4333ea2ef01ca35e4">getId</a> () const override=0</td></tr>
-<tr class="memitem:a92b3f944d68c7fc38032eb85c81281cb" id="r_a92b3f944d68c7fc38032eb85c81281cb"><td class="memItemLeft" align="right" valign="top">const void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92b3f944d68c7fc38032eb85c81281cb">getDataPtr</a> () const override</td></tr>
-<tr class="memitem:a2615b4e462e13f1fa94e30c263690e2a" id="r_a2615b4e462e13f1fa94e30c263690e2a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2615b4e462e13f1fa94e30c263690e2a">serialize</a> (std::ofstream &amp;outFile) const override</td></tr>
-<tr class="memitem:a99dbcc88b14af43aa26d8d63797e9446" id="r_a99dbcc88b14af43aa26d8d63797e9446"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a99dbcc88b14af43aa26d8d63797e9446">deserialize</a> (std::ifstream &amp;inFile, size_t numElements) override</td></tr>
+<tr class="memitem:a1fabb81bc104037047e725ee06f3bac5" id="r_a1fabb81bc104037047e725ee06f3bac5"><td class="memItemLeft" align="right" valign="top"><a id="a1fabb81bc104037047e725ee06f3bac5" name="a1fabb81bc104037047e725ee06f3bac5"></a>
+std::pair&lt; TType, TType &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>getMinMax</b> () const</td></tr>
+<tr class="memitem:a5bddd8b04164a87f2b682628c66890cb" id="r_a5bddd8b04164a87f2b682628c66890cb"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5bddd8b04164a87f2b682628c66890cb">getNumberOfComponents</a> () const override</td></tr>
+<tr class="memitem:aefff3b312939a2e31da33a6a9ad2ddfb" id="r_aefff3b312939a2e31da33a6a9ad2ddfb"><td class="memItemLeft" align="right" valign="top"><a id="aefff3b312939a2e31da33a6a9ad2ddfb" name="aefff3b312939a2e31da33a6a9ad2ddfb"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MetaDataType</b> (std::vector&lt; T &gt; data, TensorFeature type)</td></tr>
+<tr class="memitem:a660807b874c20deaa6068c2dae31f4ba" id="r_a660807b874c20deaa6068c2dae31f4ba"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a660807b874c20deaa6068c2dae31f4ba">serialize</a> (std::ofstream &amp;outFile) const override</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -164,8 +164,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a99dbcc88b14af43aa26d8d63797e9446" name="a99dbcc88b14af43aa26d8d63797e9446"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a99dbcc88b14af43aa26d8d63797e9446">&#9670;&#160;</a></span>deserialize()</h2>
+<a id="ade8f29fa73d0cdd3b0e570a756b2ffae" name="ade8f29fa73d0cdd3b0e570a756b2ffae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade8f29fa73d0cdd3b0e570a756b2ffae">&#9670;&#160;</a></span>deserialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -176,7 +176,7 @@ template&lt;typename T&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MetaDataType::deserialize </td>
+          <td class="memname">void <a class="el" href="structinviwo_1_1tensor_1_1MetaDataType.html">inviwo::tensor::MetaDataType</a>&lt; T &gt;::deserialize </td>
           <td>(</td>
           <td class="paramtype">std::ifstream &amp;</td>          <td class="paramname"><span class="paramname"><em>inFile</em></span>, </td>
         </tr>
@@ -197,8 +197,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a92b3f944d68c7fc38032eb85c81281cb" name="a92b3f944d68c7fc38032eb85c81281cb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92b3f944d68c7fc38032eb85c81281cb">&#9670;&#160;</a></span>getDataPtr()</h2>
+<a id="a1f57318d3279cb3cede01e2573a93258" name="a1f57318d3279cb3cede01e2573a93258"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f57318d3279cb3cede01e2573a93258">&#9670;&#160;</a></span>getDataPtr()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -209,7 +209,7 @@ template&lt;typename T&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const void * MetaDataType::getDataPtr </td>
+          <td class="memname">const void * <a class="el" href="structinviwo_1_1tensor_1_1MetaDataType.html">inviwo::tensor::MetaDataType</a>&lt; T &gt;::getDataPtr </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -284,8 +284,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="ac583f26c5879f6d80b09fbb831e170e9" name="ac583f26c5879f6d80b09fbb831e170e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac583f26c5879f6d80b09fbb831e170e9">&#9670;&#160;</a></span>getNumberOfComponents()</h2>
+<a id="a5bddd8b04164a87f2b682628c66890cb" name="a5bddd8b04164a87f2b682628c66890cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bddd8b04164a87f2b682628c66890cb">&#9670;&#160;</a></span>getNumberOfComponents()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -296,7 +296,7 @@ template&lt;typename T&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">size_t MetaDataType::getNumberOfComponents </td>
+          <td class="memname">size_t <a class="el" href="structinviwo_1_1tensor_1_1MetaDataType.html">inviwo::tensor::MetaDataType</a>&lt; T &gt;::getNumberOfComponents </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td> const</td>
@@ -313,8 +313,8 @@ template&lt;typename T&gt; </div>
 
 </div>
 </div>
-<a id="a2615b4e462e13f1fa94e30c263690e2a" name="a2615b4e462e13f1fa94e30c263690e2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2615b4e462e13f1fa94e30c263690e2a">&#9670;&#160;</a></span>serialize()</h2>
+<a id="a660807b874c20deaa6068c2dae31f4ba" name="a660807b874c20deaa6068c2dae31f4ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a660807b874c20deaa6068c2dae31f4ba">&#9670;&#160;</a></span>serialize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -325,7 +325,7 @@ template&lt;typename T&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void MetaDataType::serialize </td>
+          <td class="memname">void <a class="el" href="structinviwo_1_1tensor_1_1MetaDataType.html">inviwo::tensor::MetaDataType</a>&lt; T &gt;::serialize </td>
           <td>(</td>
           <td class="paramtype">std::ofstream &amp;</td>          <td class="paramname"><span class="paramname"><em>outFile</em></span></td><td>)</td>
           <td> const</td>
@@ -343,7 +343,7 @@ template&lt;typename T&gt; </div>
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>tensorfieldmetadata.h</b></li>
+<li>D:/a/modules/modules/modules/tensorvis/tensorvisbase/include/inviwo/tensorvisbase/datastructures/<b>tensorfieldmetadata.h</b></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
