@@ -1,0 +1,109 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2021-2025 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#if !defined(IMPLICIT_FUNCTION_1)
+#define IMPLICIT_FUNCTION_1
+#endif
+#if !defined(IMPLICIT_FUNCTION_2)
+#define IMPLICIT_FUNCTION_2
+#endif
+#if !defined(IMPLICIT_FUNCTION_3)
+#define IMPLICIT_FUNCTION_3
+#endif
+
+#include "utils/structs.glsl"
+#include "pointtrait.glsl"
+#include "rangetrait.glsl"
+
+uniform VolumeParameters volumeParameters[NUM_VOLUMES];
+
+uniform sampler3D volume[NUM_VOLUMES];
+
+writeonly uniform image3D dest;
+
+uniform vec4 pointTraits[TRAIT_ALLOCATION];
+uniform mat4 rangeTraits[TRAIT_ALLOCATION];
+
+uniform vec2 volumeRanges[NUM_VOLUMES];
+
+uniform int numPointTraits;
+uniform int numRangeTraits;
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+void implicitFunction1(in float point[NUM_VOLUMES], in vec2[NUM_VOLUMES] ranges, out float result) {
+    IMPLICIT_FUNCTION_1
+}
+
+void implicitFunction2(in float point[NUM_VOLUMES], in vec2[NUM_VOLUMES] ranges, out float result) {
+    IMPLICIT_FUNCTION_2
+}
+
+void implicitFunction3(in float point[NUM_VOLUMES], in vec2[NUM_VOLUMES] ranges, out float result) {
+    IMPLICIT_FUNCTION_3
+}
+
+void main() {
+    ivec3 storePos = ivec3(gl_GlobalInvocationID);
+
+    ivec3 dims = textureSize(volume[0], 0);
+
+    float point[NUM_VOLUMES];
+
+    for (int i = 0; i < NUM_VOLUMES; i++) {
+        vec4 dimensionValue = texelFetch(volume[i], storePos, 0);
+
+        point[i] = dimensionValue.r;
+    }
+
+    float pointDist = minDistanceToSetOfPointTraits(point, pointTraits, numPointTraits);
+    float rangeDist = minDistanceToSetOfRangeTraits(point, rangeTraits, numRangeTraits);
+
+    float result = min(pointDist, rangeDist);
+
+#ifdef ENABLE_IMPLICIT_FUNCTION_1
+    float res = 1.0 / 0.0;
+    implicitFunction1(point, volumeRanges, res);
+    result = min(result, res);
+#endif
+
+#ifdef ENABLE_IMPLICIT_FUNCTION_2
+    float res = 1.0 / 0.0;
+    implicitFunction2(point, volumeRanges, res);
+    result = min(result, res);
+#endif
+
+#ifdef ENABLE_IMPLICIT_FUNCTION_3
+    float res = 1.0 / 0.0;
+    implicitFunction3(point, volumeRanges, res);
+    result = min(result, res);
+#endif
+
+    imageStore(dest, storePos, vec4(result));
+}
