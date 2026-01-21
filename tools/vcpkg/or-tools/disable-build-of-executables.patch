@@ -1,0 +1,56 @@
+diff --git forkSrcPrefix/ortools/linear_solver/CMakeLists.txt forkDstPrefix/ortools/linear_solver/CMakeLists.txt
+index 7f997d2ac2d26dd1f71d2d6388d5e5e9cde8ea3b..aceeb373d6d8d0c9ab9b9a4de32103545c10e563 100644
+--- forkSrcPrefix/ortools/linear_solver/CMakeLists.txt
++++ forkDstPrefix/ortools/linear_solver/CMakeLists.txt
+@@ -100,6 +100,7 @@ target_link_libraries(${NAME} PRIVATE
+   $<$<BOOL:${USE_SCIP}>:SCIP::libscip>
+   ${PROJECT_NAMESPACE}::ortools_proto)
+ 
++#[[
+ # solve
+ add_executable(solve)
+ target_sources(solve PRIVATE "solve.cc")
+@@ -125,7 +126,7 @@ endif()
+ install(TARGETS solve
+   EXPORT ${PROJECT_NAME}Targets
+   RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+-
++]]
+ if(BUILD_TESTING)
+   if (APPLE)
+     set(CMAKE_INSTALL_RPATH
+diff --git forkSrcPrefix/ortools/packing/CMakeLists.txt forkDstPrefix/ortools/packing/CMakeLists.txt
+index 026f2b2d29de78437b1c49e44493c320a97e6f7d..2a55552847a3874c00644cf39525c91fc797a676 100644
+--- forkSrcPrefix/ortools/packing/CMakeLists.txt
++++ forkDstPrefix/ortools/packing/CMakeLists.txt
+@@ -31,6 +31,7 @@ target_link_libraries(${NAME} PRIVATE
+   ${PROJECT_NAMESPACE}::ortools_proto)
+ #add_library(${PROJECT_NAMESPACE}::packing ALIAS ${NAME})
+ 
++#[[
+ # Vector Bin Packing
+ add_executable(vector_bin_packing)
+ target_sources(vector_bin_packing PRIVATE "vector_bin_packing_main.cc")
+@@ -57,3 +58,4 @@ if(BUILD_TESTING)
+ endif()
+ 
+ install(TARGETS vector_bin_packing)
++]]
+diff --git forkSrcPrefix/ortools/sat/CMakeLists.txt forkDstPrefix/ortools/sat/CMakeLists.txt
+index 8204a67a8a7598741eb7665fb8b8cbcc7f16a749..ff46024a3b1d15f719fe5396f754c9f3aa8365f6 100644
+--- forkSrcPrefix/ortools/sat/CMakeLists.txt
++++ forkDstPrefix/ortools/sat/CMakeLists.txt
+@@ -71,7 +71,7 @@ if(BUILD_TESTING)
+     cxx_sat_integer_expr_test
+     PROPERTIES DISABLED TRUE)
+ endif()
+-
++#[[
+ # Sat Runner
+ add_executable(sat_runner)
+ target_sources(sat_runner PRIVATE "sat_runner.cc")
+@@ -92,3 +92,4 @@ elseif(UNIX)
+ endif()
+ 
+ install(TARGETS sat_runner)
++]]
