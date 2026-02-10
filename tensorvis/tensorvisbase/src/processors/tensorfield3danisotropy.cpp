@@ -56,12 +56,12 @@ TensorField3DAnisotropy::TensorField3DAnisotropy()
     , tensorFieldInport_("tensorFieldInport")
     , volumeOutport_("volumeOutport")
     , anisotropy_("anisotropy", "Anisotropy",
-                  {{"1", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda2_str + "|",
+                  {{"1", fmt::format("|{} - {}|", tensorutil::lamda1_str, tensorutil::lamda2_str),
                     tensorutil::Anisotropy::abs_lamda1_minus_lamda2},
-                   {"2", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda3_str + "|",
+                   {"2", fmt::format("|{} - {}|", tensorutil::lamda1_str, tensorutil::lamda3_str),
                     tensorutil::Anisotropy::abs_lamda1_minus_lamda3},
                    {"3", "Barycentric", tensorutil::Anisotropy::barycentric},
-                   {"4", "|" + tensorutil::lamda1_str + "| - |" + tensorutil::lamda2_str + "|",
+                   {"4", fmt::format("|{}| - |{}|", tensorutil::lamda1_str, tensorutil::lamda2_str),
                     tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2}},
                   0)
     , interpolationScheme_("interpolationScheme", "Interpolation scheme",
@@ -147,7 +147,7 @@ void TensorField3DAnisotropy::process() {
                 return ram;
             }
             default:
-                throw Exception(IVW_CONTEXT, "Unsupported tensorutil::Anisotropy");
+                throw Exception(SourceContext{}, "Unsupported tensorutil::Anisotropy");
         }
         return nullptr;
     }();

@@ -89,7 +89,7 @@ void TensorField3DImport::initializeResources() {
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
-        throw Exception(IVW_CONTEXT, "Could not open file {}", inFile_.get());
+        throw Exception(SourceContext{}, "Could not open file {}", inFile_.get());
     }
 
     size_t version;
@@ -111,13 +111,13 @@ void TensorField3DImport::initializeResources() {
     inFile.read(&versionStr[0], size);
 
     if (versionStr != "TFBVersion:") {
-        throw Exception(IVW_CONTEXT, "Not a valid tfb file: {}", inFile_.get());
+        throw Exception(SourceContext{}, "Not a valid tfb file: {}", inFile_.get());
     }
 
     inFile.read(reinterpret_cast<char*>(&version), sizeof(size_t));
 
     if (version < TFB_CURRENT_VERSION) {
-        throw Exception(IVW_CONTEXT, "Version mismatch. Expected version {}, found version {}.",
+        throw Exception(SourceContext{}, "Version mismatch. Expected version {}, found version {}.",
                         TFB_CURRENT_VERSION, version);
     }
 
@@ -126,7 +126,7 @@ void TensorField3DImport::initializeResources() {
     inFile.read(reinterpret_cast<char*>(&hasMetaData), sizeof(glm::uint8));
 
     if (dimensionality != 3) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "The file does not contain a 3D Tensor Field (detected {} dimensions).",
                         dimensionality);
     }
@@ -270,14 +270,14 @@ void TensorField3DImport::initializeResources() {
                     break;
                 default:
                     // clang-format off
-                    LogError(
+                    log::error(
                         "Default case reached. Revise tensor field import for missing meta data "
                         "entry."
-                    )
-                    LogError(
+                    );
+                    log::error(
                         "The imported tensor field now does not have all the meta data with which "
                         "it was stored."
-                    )
+                    );
 
                     continue;
                     // clang-format on
@@ -295,13 +295,13 @@ void TensorField3DImport::initializeResources() {
     inFile.read(&str[0], size);
 
     if (str != "EOFreached") {
-        throw Exception(IVW_CONTEXT, "EOF not reached");
+        throw Exception(SourceContext{}, "EOF not reached");
     }
 
     inFile.close();
 
     if (data.size() != numValues) {
-        throw Exception(IVW_CONTEXT,
+        throw Exception(SourceContext{},
                         "Dimensions do not match data size. Expected {} values, found {}.",
                         numValues, data.size());
     }

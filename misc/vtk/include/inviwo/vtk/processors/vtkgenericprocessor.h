@@ -93,7 +93,7 @@ struct IVW_MODULE_VTK_API Group {
 template <typename VTKFilter>
 struct VTKTraits;
 
-struct IVW_MODULE_VTK_API FieldSelection{};
+struct IVW_MODULE_VTK_API FieldSelection {};
 
 class IVW_MODULE_VTK_API Command : public vtkCommand {
 public:
@@ -295,7 +295,7 @@ public:
             for (int i = 0; i < nOutputs; ++i) {
                 static_cast<vtk::VtkOutport*>(getOutports()[i])->setData(nullptr);
             }
-            throw Exception(IVW_CONTEXT, "Error running vtk filter");
+            throw Exception(SourceContext{}, "Error running vtk filter");
         }
 
         for (int i = 0; i < nOutputs; ++i) {

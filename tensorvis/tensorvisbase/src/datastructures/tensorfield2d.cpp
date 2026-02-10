@@ -430,7 +430,7 @@ void TensorField2D::computeNormalizedScreenCoordinates() {
     auto yFrac = 1.0 / static_cast<double>(dimensions_.y - 1);
 
     if (dimensions_.x == 0 || dimensions_.y == 0) {
-        LogError("Tensor field 2D has at least one zero-sized dimension!");
+        log::error("Tensor field 2D has at least one zero-sized dimension!");
         return;
     }
 

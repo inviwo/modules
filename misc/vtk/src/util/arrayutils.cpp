@@ -77,7 +77,7 @@ std::shared_ptr<Layer> vtkImageDataToLayer(vtkImageData* vtkImage, int arrayInde
     }();
 
     if (ram->getDataFormatId() == DataFormatId::NotSpecialized) {
-        throw Exception(IVW_CONTEXT_CUSTOM("vtk::vtkImageDataToLayer"),
+        throw Exception(SourceContext{},
                         "No valid inviwo DataFormat found for '{}' with '{}' components",
                         array->GetDataTypeAsString(), array->GetNumberOfComponents());
     }
@@ -161,7 +161,7 @@ std::shared_ptr<Volume> vtkImageDataToVolume(vtkImageData* vtkImage, int arrayIn
     }();
 
     if (ram->getDataFormatId() == DataFormatId::NotSpecialized) {
-        throw Exception(IVW_CONTEXT_CUSTOM("vtk::vtkImageDataToVolume"),
+        throw Exception(SourceContext{},
                         "No valid inviwo DataFormat found for '{}' with '{}' components",
                         array->GetDataTypeAsString(), array->GetNumberOfComponents());
     }

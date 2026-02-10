@@ -234,7 +234,7 @@ void TensorFieldGenerator::generate2DField() {
             rawData.push_back(T42D_);
             break;
         default:
-            LogError(
+            log::error(
                 "In function generateSelectedSingularity the default case in switch statement was "
                 "reached. This should not happen!");
             break;

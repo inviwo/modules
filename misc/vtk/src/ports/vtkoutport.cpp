@@ -48,7 +48,7 @@ VtkOutport::VtkOutport(std::string_view identifier, std::string_view vtkDataClas
     , typeId_{[&]() {
         auto id = vtkDataObjectTypes::GetTypeIdFromClassName(SafeCStr{vtkDataClassName}.c_str());
         if (id < 0) {
-            throw Exception(IVW_CONTEXT, "Invalid port Data Class Name {}", vtkDataClassName);
+            throw Exception(SourceContext{}, "Invalid port Data Class Name {}", vtkDataClassName);
         }
         return id;
     }()}
@@ -64,7 +64,7 @@ VtkOutport::VtkOutport(std::string_view identifier, int typeId, Document help)
         if (typeId >= VTK_POLY_DATA && typeId <= VTK_IMAGE_STENCIL_DATA) {
             return typeId;
         } else {
-            throw Exception(IVW_CONTEXT, "Invalid port Data TypeID {}", typeId);
+            throw Exception(SourceContext{}, "Invalid port Data TypeID {}", typeId);
         }
     }()}
     , data_{} {
@@ -97,7 +97,7 @@ void VtkOutport::setData(vtkDataObject* data) {
         data_ = data;
         isReady_.update();
     } else {
-        throw Exception(IVW_CONTEXT, "Invalid VTK data type for port {} expected {} got {}",
+        throw Exception(SourceContext{}, "Invalid VTK data type for port {} expected {} got {}",
                         getPath(), vtkDataObjectTypes::GetClassNameFromTypeId(typeId_),
                         data->GetClassName());
     }

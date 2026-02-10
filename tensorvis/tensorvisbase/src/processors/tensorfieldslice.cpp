@@ -135,7 +135,7 @@ void TensorFieldSlice::process() {
             offsetDimensions.x = dimensions.y;
             offsetDimensions.y = dimensions.z;
             if (sliceNr_.get() >= dimensions.x) {
-                LogError("Slice number out of bounds");
+                log::error("Slice number out of bounds");
                 return;
             }
             break;
@@ -144,7 +144,7 @@ void TensorFieldSlice::process() {
             offsetDimensions.x = dimensions.x;
             offsetDimensions.y = dimensions.z;
             if (sliceNr_.get() >= dimensions.y) {
-                LogError("Slice number out of bounds");
+                log::error("Slice number out of bounds");
                 return;
             }
             break;
@@ -153,7 +153,7 @@ void TensorFieldSlice::process() {
             offsetDimensions.x = dimensions.x;
             offsetDimensions.y = dimensions.y;
             if (sliceNr_.get() >= dimensions.z) {
-                LogError("Slice number out of bounds");
+                log::error("Slice number out of bounds");
                 return;
             }
             break;

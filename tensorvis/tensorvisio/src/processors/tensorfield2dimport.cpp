@@ -67,8 +67,7 @@ void TensorField2DImport::process() {
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
-        LogError("Couldn't open file");
-        return;
+        throw Exception{SourceContext{}, "Couldn't open file"};
     }
 
     size_t version{0};
@@ -85,14 +84,13 @@ void TensorField2DImport::process() {
     inFile.read(&versionStr[0], size);
 
     if (versionStr != "TFBVersion:") {
-        LogError("No valid tfb file!");
-        return;
+        throw Exception{SourceContext{}, "No valid tfb file!"};
     }
 
     inFile.read(reinterpret_cast<char*>(&version), sizeof(size_t));
 
     if (version < 2) {
-        LogWarn("Please update the tfb file.")
+        throw Exception{SourceContext{}, "Please update the tfb file."};
     }
 
     inFile.read(reinterpret_cast<char*>(&dimensionality), sizeof(size_t));
@@ -105,7 +103,7 @@ void TensorField2DImport::process() {
     }
 
     if (dimensionality == 3) {
-        LogError("The loaded file is a 3D tensor field. Aborting.");
+        throw Exception{SourceContext{}, "The loaded file is a 3D tensor field. Aborting."};
         return;
     }
 
@@ -159,15 +157,14 @@ void TensorField2DImport::process() {
         inFile.read(&str[0], size);
 
         if (str != "EOFreached") {
-            LogError("EOF not reached");
+            throw Exception{SourceContext{}, "EOF not reached"};
         }
     }
 
     inFile.close();
 
     if (data.size() != numValues) {
-        LogWarn("Dimensions do not match data size");
-        return;
+        throw Exception{SourceContext{}, "Dimensions do not match data size"};
     }
     if (hasEigenInfo) {
         auto tensorField =

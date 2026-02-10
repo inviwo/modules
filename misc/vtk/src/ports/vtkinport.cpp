@@ -53,7 +53,7 @@ VtkInport::VtkInport(std::string_view identifier, std::string_view vtkDataClassN
     , typeId_{[&]() {
         auto id = vtkDataObjectTypes::GetTypeIdFromClassName(SafeCStr{vtkDataClassName}.c_str());
         if (id < 0) {
-            throw Exception(IVW_CONTEXT, "Invalid port Data Class Name '{}'", vtkDataClassName);
+            throw Exception(SourceContext{}, "Invalid port Data Class Name '{}'", vtkDataClassName);
         }
         return id;
     }()}
@@ -71,7 +71,7 @@ VtkInport::VtkInport(std::string_view identifier, int typeId, Document help, Opt
         if (typeId >= VTK_POLY_DATA && typeId <= VTK_IMAGE_STENCIL_DATA) {
             return typeId;
         } else {
-            throw Exception(IVW_CONTEXT, "Invalid port Data TypeID '{}'", typeId);
+            throw Exception(SourceContext{}, "Invalid port Data TypeID '{}'", typeId);
         }
     }()}
     , repeatable_{repeatable} {

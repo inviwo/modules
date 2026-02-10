@@ -81,7 +81,7 @@ void VTKDowncastData::process() {
     if (auto vtkDataObject = inport_.getData()) {
         if (!vtkDataObject->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()))) {
             outport_.setData(nullptr);
-            throw Exception(IVW_CONTEXT, "Data is not of type '{}' got '{}'",
+            throw Exception(SourceContext{}, "Data is not of type '{}' got '{}'",
                             vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()),
                             vtkDataObject->GetClassName());
         }

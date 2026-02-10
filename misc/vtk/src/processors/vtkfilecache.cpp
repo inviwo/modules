@@ -101,7 +101,7 @@ void VTKFileCache::castAndSetOutportData(vtkDataObject* data) {
     if (data) {
         if (!data->IsA(vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()))) {
             outport_.setData(nullptr);
-            throw Exception(IVW_CONTEXT, "Data is not of type '{}' got '{}'",
+            throw Exception(SourceContext{}, "Data is not of type '{}' got '{}'",
                             vtkDataObjectTypes::GetClassNameFromTypeId(outport_.getTypeId()),
                             data->GetClassName());
         }

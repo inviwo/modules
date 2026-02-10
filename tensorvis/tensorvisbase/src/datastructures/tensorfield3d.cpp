@@ -18,7 +18,7 @@ TensorField3D::TensorField3D(const size3_t dimensions, std::vector<dmat3> data, 
     , rank_(2)
     , dimensionality_(3) {
     if (size_ != tensors_.size()) {
-        throw Exception("Data/dimensions mismatch in TensorField3D constructor.", IVW_CONTEXT);
+        throw Exception(SourceContext{}, "Data/dimensions mismatch in TensorField3D constructor.");
     }
 
     computeEigenValuesAndEigenVectors();
@@ -737,7 +737,7 @@ void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
     auto stepSize = getSpacing();
 
     if (dimensions_.x == 0 || dimensions_.y == 0 || dimensions_.z == 0) {
-        LogError("Tensor field 3D has at least one zero-sized dimension!");
+        log::error("Tensor field 3D has at least one zero-sized dimension!");
         return;
     }
 

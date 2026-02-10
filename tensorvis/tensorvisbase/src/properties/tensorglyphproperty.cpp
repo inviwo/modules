@@ -664,7 +664,7 @@ const std::shared_ptr<BasicMesh> TensorGlyphProperty::generateGlyph(const dmat3&
         case GlyphType::Cylinder:
             return generateCylinder(tensor, pos, size, color);
         default:
-            LogError("Not implemented.");
+            log::error("Not implemented.");
     }
 
     return std::make_shared<BasicMesh>();

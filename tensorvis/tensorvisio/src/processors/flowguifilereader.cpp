@@ -31,7 +31,7 @@ void FlowGUIFileReader::process() {
     std::ifstream inFile(inFile_.get(), std::ios::in | std::ios::binary);
 
     if (!inFile) {
-        LogError("Couldn't open file");
+        log::error("Couldn't open file");
         return;
     }
 
@@ -44,7 +44,7 @@ void FlowGUIFileReader::process() {
 
     inFile.read(&name[0], length * sizeof(char));
 
-    LogInfo(name);
+    log::info("name: {}", name);
 
     // Bounds
     vec4 minBounds;
@@ -56,9 +56,9 @@ void FlowGUIFileReader::process() {
     ivec4 dimensions;
     inFile.read(reinterpret_cast<char*>(&dimensions), sizeof(int) * 4);
 
-    LogInfo(minBounds);
-    LogInfo(maxBounds);
-    LogInfo(dimensions);
+    log::info("minBounds: {}", minBounds);
+    log::info("maxBounds: {}", maxBounds);
+    log::info("dimensions: {}", dimensions);
 
     const auto numElements = dimensions.x * dimensions.y * dimensions.z;
 

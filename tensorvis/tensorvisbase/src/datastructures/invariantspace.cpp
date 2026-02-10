@@ -6,7 +6,7 @@ InvariantSpace::InvariantSpace(size_t numberOfDimensions,
                                const std::vector<std::string>& identifiers,
                                const std::vector<TensorFeature>& metaDataTypes) {
     if (numberOfDimensions != identifiers.size()) {
-        LogError(
+        log::error(
             "Number of dimensions does not correlate with number of identifiers. Empty invariant "
             "space created.");
         return;

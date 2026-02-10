@@ -73,7 +73,7 @@ std::shared_ptr<TensorField3D> vtkToTensorField(size3_t dimensions, vtkDataSet* 
                                                 int arrayIndex) {
     auto array = vtkData->GetPointData()->GetArray(arrayIndex);
     if (array->GetNumberOfComponents() != 9) {
-        throw Exception(IVW_CONTEXT_CUSTOM("VTKToTensorField3D::vtkToTensorField"),
+        throw Exception(SourceContext{},
                         "unsupported number of components for tensor data ({}), expected 9",
                         array->GetNumberOfComponents());
     }
@@ -116,7 +116,7 @@ std::vector<double> vtkToScalars(vtkDataSet* vtkData, int arrayIndex) {
     auto array = vtkData->GetPointData()->GetArray(arrayIndex);
 
     if (array->GetNumberOfComponents() != 1) {
-        throw Exception(IVW_CONTEXT_CUSTOM("VTKToTensorField3D::vtkToScalars"),
+        throw Exception(SourceContext{},
                         "unsupported number of components for scalar data ({}), expected 1",
                         array->GetNumberOfComponents());
     }
@@ -191,7 +191,7 @@ void VTKToTensorField3D::process() {
     }
 
     if (int dot = vtkData->GetDataObjectType(); !util::contains(supportedObjectTypes, dot)) {
-        throw Exception(IVW_CONTEXT, "unsupported vtkDataSet {} ({})",
+        throw Exception(SourceContext{}, "unsupported vtkDataSet {} ({})",
                         vtkDataObjectTypes::GetClassNameFromTypeId(dot), dot);
     }
 

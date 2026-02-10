@@ -154,7 +154,7 @@ std::shared_ptr<TensorField2D> vtkToTensorField(size3_t dimensions, vtkDataSet* 
             tensors3D.begin(), tensors3D.end(), std::back_inserter(data),
             [&](const dmat3& tensor) { return tensorutil::getProjectedTensor(tensor, axis); });
     } else {
-        throw Exception(IVW_CONTEXT_CUSTOM("VTKDataSetToTensorField2D::vtkToTensorField"),
+        throw Exception(SourceContext{},
                         "unsupported number of components for tensor data ({}), expected 4 or 9",
                         numComponents);
     }
@@ -213,7 +213,7 @@ void VTKToTensorField2D::process() {
     }
 
     if (int dot = vtkData->GetDataObjectType(); !util::contains(supportedObjectTypes, dot)) {
-        throw Exception(IVW_CONTEXT, "unsupported vtkDataSet {} ({})",
+        throw Exception(SourceContext{}, "unsupported vtkDataSet {} ({})",
                         vtkDataObjectTypes::GetClassNameFromTypeId(dot), dot);
     }
 
@@ -221,8 +221,8 @@ void VTKToTensorField2D::process() {
         const ivec3 dims{*vtk::getDimensions(vtkData)};
 
         if (glm::compMin(dims) > 1) {
-            throw Exception(IVW_CONTEXT, "VTK dataset is three dimensional {}, expected 2D input",
-                            dims);
+            throw Exception(SourceContext{},
+                            "VTK dataset is three dimensional {}, expected 2D input", dims);
         }
 
         tensorField_ = vtkToTensorField(dims, vtkData, sourceTensors_.getSelectedValue());
