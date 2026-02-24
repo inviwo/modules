@@ -269,18 +269,14 @@ void TensorField3DImport::initializeResources() {
                     ptr = std::make_unique<tensor::HillYieldCriterion>();
                     break;
                 default:
-                    // clang-format off
                     log::error(
                         "Default case reached. Revise tensor field import for missing meta data "
-                        "entry."
-                    );
+                        "entry.");
                     log::error(
                         "The imported tensor field now does not have all the meta data with which "
-                        "it was stored."
-                    );
+                        "it was stored.");
 
                     continue;
-                    // clang-format on
             }
 
             ptr->deserialize(inFile, numElements);
