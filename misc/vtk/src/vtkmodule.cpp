@@ -47,10 +47,13 @@
 #include <registerfilters.h>
 
 #include <vtkLogger.h>
+#include <vtkOutputWindow.h>
+#include <vtkObjectFactory.h>
 #include <fmt/core.h>
 
 namespace inviwo {
 
+namespace {
 void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
 
     auto level = [&]() {
@@ -66,6 +69,29 @@ void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
     LogCentral::getPtr()->log("VTK", level, LogAudience::Developer, message.filename, "",
                               message.line, fmt::format("{}{}", message.prefix, message.message));
 }
+}  // namespace
+
+class InviwoOutputWindow : public vtkOutputWindow {
+public:
+    static InviwoOutputWindow* New();
+    vtkTypeMacro(InviwoOutputWindow, vtkOutputWindow);
+
+    void DisplayText(const char* text) override { forward(LogLevel::Info, text); }
+    void DisplayErrorText(const char* text) override { forward(LogLevel::Error, text); }
+    void DisplayWarningText(const char* text) override { forward(LogLevel::Warn, text); }
+    void DisplayDebugText(const char* text) override { forward(LogLevel::Info, text); }
+
+protected:
+    InviwoOutputWindow() = default;
+    ~InviwoOutputWindow() override = default;
+
+private:
+    void forward(LogLevel level, const char* text) {
+        LogCentral::getPtr()->log("VTK", level, LogAudience::Developer, "", "", 0, text);
+    }
+};
+
+vtkStandardNewMacro(InviwoOutputWindow);
 
 VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK"), settings{} {
 
@@ -73,6 +99,8 @@ VTKModule::VTKModule(InviwoApplication* app) : InviwoModule(app, "VTK"), setting
     vtkLogger::AddCallback("inviwolog", &logCallback, nullptr,
                            settings.verbosity.getSelectedValue());
     vtkObject::SetGlobalWarningDisplay(settings.globalWarningDisplay);
+
+    vtkOutputWindow::SetInstance(InviwoOutputWindow::New());
 
     settings.globalWarningDisplay.onChange(
         [this]() { vtkObject::SetGlobalWarningDisplay(settings.globalWarningDisplay); });
