@@ -55,7 +55,7 @@ OpenMeshWriter::OpenMeshWriter() : DataWriterType<Mesh>() {
         for (auto ext : exts) {
             if (ext == "") continue;
             replaceInString(ext, "*.", "");
-            addExtension(FileExtension(ext, name));
+            addExtension({.extension = LCString{ext}, .description = name});
         }
     }
 }

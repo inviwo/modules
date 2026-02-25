@@ -43,7 +43,7 @@ namespace inviwo {
 
 class IVW_MODULE_VTK_API VTKFileCache : public CacheBase {
 public:
-    explicit VTKFileCache(InviwoApplication* app);
+    explicit VTKFileCache();
 
     virtual void process() override;
 

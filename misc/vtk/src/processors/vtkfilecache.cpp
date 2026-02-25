@@ -53,8 +53,8 @@ const ProcessorInfo VTKFileCache::processorInfo_{
 
 const ProcessorInfo& VTKFileCache::getProcessorInfo() const { return processorInfo_; }
 
-VTKFileCache::VTKFileCache(InviwoApplication* app)
-    : CacheBase{app}
+VTKFileCache::VTKFileCache()
+    : CacheBase{}
     , outportType_{"outportType", "Derived Type",
                    []() {
                        OptionPropertyState<int> state;
