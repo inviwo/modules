@@ -1,5 +1,8 @@
 var annotated_dup =
 [
+    [ "fmt", null, [
+      [ "formatter&lt; std::filesystem::file_time_type, char &gt;", "structfmt_1_1formatter_3_01std_1_1filesystem_1_1file__time__type_00_01char_01_4.html", null ]
+    ] ],
     [ "inviwo", "namespaceinviwo.html", [
       [ "algorithm", null, [
         [ "EntryExitPointsHelper", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper.html", "classinviwo_1_1algorithm_1_1EntryExitPointsHelper" ],
@@ -295,7 +298,8 @@ var annotated_dup =
         [ "HelpInport", "structinviwo_1_1help_1_1HelpInport.html", null ],
         [ "HelpOutport", "structinviwo_1_1help_1_1HelpOutport.html", null ],
         [ "HelpProcessor", "structinviwo_1_1help_1_1HelpProcessor.html", null ],
-        [ "HelpProperty", "structinviwo_1_1help_1_1HelpProperty.html", null ]
+        [ "HelpProperty", "structinviwo_1_1help_1_1HelpProperty.html", null ],
+        [ "ProcessorDocs", "classinviwo_1_1help_1_1ProcessorDocs.html", null ]
       ] ],
       [ "kind", "namespaceinviwo_1_1kind.html", [
         [ "Base", "structinviwo_1_1kind_1_1Base.html", null ],
@@ -313,6 +317,7 @@ var annotated_dup =
         [ "error", "structinviwo_1_1log_1_1error.html", null ],
         [ "info", "structinviwo_1_1log_1_1info.html", null ],
         [ "message", "structinviwo_1_1log_1_1message.html", null ],
+        [ "SuppressLoggingLocal", "structinviwo_1_1log_1_1SuppressLoggingLocal.html", null ],
         [ "warn", "structinviwo_1_1log_1_1warn.html", null ]
       ] ],
       [ "marching", null, [
@@ -468,6 +473,7 @@ var annotated_dup =
           [ "growImpl&lt; unsigned short, false &gt;", "structinviwo_1_1util_1_1detail_1_1growImpl_3_01unsigned_01short_00_01false_01_4.html", null ],
           [ "Hideer", "structinviwo_1_1util_1_1detail_1_1Hideer.html", null ],
           [ "is_string", "structinviwo_1_1util_1_1detail_1_1is__string.html", null ],
+          [ "is_string&lt; LCString, void &gt;", "structinviwo_1_1util_1_1detail_1_1is__string_3_01LCString_00_01void_01_4.html", null ],
           [ "is_string&lt; T, std::void_t&lt; typename T::value_type, typename T::traits_type, typename T::allocator_type &gt; &gt;", "structinviwo_1_1util_1_1detail_1_1is__string_3_01T_00_01std_1_1void__t_3_01typename_01T_1_1value7755dbb39d4055ac2098ae9658d61cc2.html", null ],
           [ "min", "structinviwo_1_1util_1_1detail_1_1min.html", null ],
           [ "PartialProcessorNetwork", "structinviwo_1_1util_1_1detail_1_1PartialProcessorNetwork.html", null ],
@@ -857,6 +863,7 @@ var annotated_dup =
       [ "DataTraits&lt; Rasterization &gt;", "structinviwo_1_1DataTraits_3_01Rasterization_01_4.html", null ],
       [ "DataTraits&lt; Spatial4DSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01Spatial4DSampler_3_01ReturnType_01_4_01_4.html", null ],
       [ "DataTraits&lt; SpatialSampler&lt; ReturnType &gt; &gt;", "structinviwo_1_1DataTraits_3_01SpatialSampler_3_01ReturnType_01_4_01_4.html", null ],
+      [ "DataTraits&lt; std::filesystem::path &gt;", "structinviwo_1_1DataTraits_3_01std_1_1filesystem_1_1path_01_4.html", null ],
       [ "DataTraits&lt; std::string &gt;", "structinviwo_1_1DataTraits_3_01std_1_1string_01_4.html", null ],
       [ "DataTraits&lt; std::vector&lt; const T *, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_01_5_00_01A_01_4_01_4.html", null ],
       [ "DataTraits&lt; std::vector&lt; const T, A &gt; &gt;", "structinviwo_1_1DataTraits_3_01std_1_1vector_3_01const_01T_00_01A_01_4_01_4.html", null ],
@@ -961,7 +968,7 @@ var annotated_dup =
       [ "FileCache", "classinviwo_1_1FileCache.html", "classinviwo_1_1FileCache" ],
       [ "FileDialog", "classinviwo_1_1FileDialog.html", "classinviwo_1_1FileDialog" ],
       [ "FileException", "classinviwo_1_1FileException.html", null ],
-      [ "FileExtension", "classinviwo_1_1FileExtension.html", "classinviwo_1_1FileExtension" ],
+      [ "FileExtension", "structinviwo_1_1FileExtension.html", "structinviwo_1_1FileExtension" ],
       [ "FileList", "classinviwo_1_1FileList.html", "classinviwo_1_1FileList" ],
       [ "FileLogger", "classinviwo_1_1FileLogger.html", null ],
       [ "FileObserver", "classinviwo_1_1FileObserver.html", "classinviwo_1_1FileObserver" ],
@@ -1243,6 +1250,7 @@ var annotated_dup =
       [ "LayerVisualizer", "classinviwo_1_1LayerVisualizer.html", "classinviwo_1_1LayerVisualizer" ],
       [ "Layout", "classinviwo_1_1Layout.html", "classinviwo_1_1Layout" ],
       [ "LayoutMergeTree", "classinviwo_1_1LayoutMergeTree.html", "classinviwo_1_1LayoutMergeTree" ],
+      [ "LCString", "classinviwo_1_1LCString.html", null ],
       [ "LIC2D", "classinviwo_1_1LIC2D.html", null ],
       [ "LIC3D", "classinviwo_1_1LIC3D.html", "classinviwo_1_1LIC3D" ],
       [ "LicenseInfo", "classinviwo_1_1LicenseInfo.html", null ],
@@ -1330,6 +1338,7 @@ var annotated_dup =
       [ "MetaDataType", "classinviwo_1_1MetaDataType.html", null ],
       [ "MinMaxProperty", "classinviwo_1_1MinMaxProperty.html", "classinviwo_1_1MinMaxProperty" ],
       [ "MinMaxPropertySettingsWidgetQt", "classinviwo_1_1MinMaxPropertySettingsWidgetQt.html", "classinviwo_1_1MinMaxPropertySettingsWidgetQt" ],
+      [ "MinMaxPropertyState", "structinviwo_1_1MinMaxPropertyState.html", null ],
       [ "MinMaxPropertyWidgetCEF", "classinviwo_1_1MinMaxPropertyWidgetCEF.html", "classinviwo_1_1MinMaxPropertyWidgetCEF" ],
       [ "MissingRepresentation", "classinviwo_1_1MissingRepresentation.html", null ],
       [ "ModuleCallback", "classinviwo_1_1ModuleCallback.html", null ],
