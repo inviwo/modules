@@ -203,12 +203,23 @@ GraphvizSettings::GraphvizSettings(InviwoApplication* app)
     , separation{"separation", "Separation", dvec2{0.35, 0.35}}
     , layout{"layout", "Layout Network"}
     , print{"print", "Print"}
+
+    , layoutShortcut{"layoutShortcut", "Layout Shortcut", [this](Event*) { doLayoutNetwork(); },
+                     IvwKey::L, KeyState::Press}
+    , toggleAutoLayoutShortcut{"toggleAutoLayoutShortcut",
+                               "Toggle Auto Layout Shortcut",
+                               [this](Event*) { autoLayout.set(!autoLayout.get()); },
+                               IvwKey::L,
+                               KeyState::Press,
+                               KeyModifier::Shift}
+
     , app_{app}
     , isApplyingLayout_{false} {
 
     app_->getProcessorNetwork()->addObserver(this);
 
-    addProperties(autoLayout, alignSources, alignSinks, separation, layout, print);
+    addProperties(autoLayout, alignSources, alignSinks, separation, layout, print, layoutShortcut,
+                  toggleAutoLayoutShortcut);
 
     layout.onChange([this]() { doLayoutNetwork(); });
     separation.onChange([this]() { autoLayoutNetwork(); });
@@ -226,8 +237,8 @@ GraphvizSettings::GraphvizSettings(InviwoApplication* app)
                     p->getMetaData<ProcessorMetaData>(ProcessorMetaData::classIdentifier)) {
                 cpos = meta->getPosition();
             }
-            log::info("{:30} New: {:20} Snapped: {:20} Current: {:20}", p->getIdentifier(),
-                            pos, snap(pos), cpos);
+            log::info("{:30} New: {:20} Snapped: {:20} Current: {:20}", p->getIdentifier(), pos,
+                      snap(pos), cpos);
         });
     });
 

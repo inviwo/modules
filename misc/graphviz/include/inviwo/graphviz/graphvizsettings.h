@@ -35,6 +35,7 @@
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/properties/buttonproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/eventproperty.h>
 
 #include <inviwo/core/network/processornetworkobserver.h>
 #include <inviwo/core/metadata/processormetadata.h>
@@ -57,6 +58,9 @@ public:
 
     ButtonProperty layout;
     ButtonProperty print;
+
+    EventProperty layoutShortcut;
+    EventProperty toggleAutoLayoutShortcut;
 
 private:
     void doLayoutNetwork();
