@@ -37,7 +37,6 @@
 
 #include <algorithm>
 #include <utility>
-#include <sstream>
 #include <fstream>
 
 namespace inviwo {
@@ -77,93 +76,69 @@ struct EnumTraits<TensorFeature> {
     static constexpr std::string_view name() { return "TensorFeature"; }
 };
 
+constexpr std::string_view format_as(TensorFeature feature) {
+    switch (feature) {
+        case TensorFeature::I1:
+            return tensorutil::i1_str;
+        case TensorFeature::I2:
+            return tensorutil::i2_str;
+        case TensorFeature::I3:
+            return tensorutil::i3_str;
+        case TensorFeature::J1:
+            return tensorutil::j1_str;
+        case TensorFeature::J2:
+            return tensorutil::j2_str;
+        case TensorFeature::J3:
+            return tensorutil::j3_str;
+        case TensorFeature::Sigma1:
+            return tensorutil::sigma1safe_str;
+        case TensorFeature::Sigma2:
+            return tensorutil::sigma2safe_str;
+        case TensorFeature::Sigma3:
+            return tensorutil::sigma3safe_str;
+        case TensorFeature::MajorEigenVector:
+            return "Major eigenvector";
+        case TensorFeature::IntermediateEigenVector:
+            return "Intermediate eigenvector";
+        case TensorFeature::MinorEigenVector:
+            return "Minor eigenvector";
+        case TensorFeature::LodeAngle:
+            return "Lode angle";
+        case TensorFeature::Anisotropy:
+            return "Anisotropy";
+        case TensorFeature::LinearAnisotropy:
+            return "Linear Anisotropy";
+        case TensorFeature::PlanarAnisotropy:
+            return "Planar Anisotropy";
+        case TensorFeature::SphericalAnisotropy:
+            return "Spherical Anisotropy";
+        case TensorFeature::Diffusivity:
+            return "Diffusivity";
+        case TensorFeature::ShearStress:
+            return "Shear Stress";
+        case TensorFeature::PureShear:
+            return "Pure Shear";
+        case TensorFeature::ShapeFactor:
+            return "Shape Factor";
+        case TensorFeature::IsotropicScaling:
+            return "IsotropicScaling";
+        case TensorFeature::Rotation:
+            return "Rotation";
+        case TensorFeature::FrobeniusNorm:
+            return "Frobenius Norm";
+        case TensorFeature::HillYieldCriterion:
+            return "Hill Yield Criterion";
+        case TensorFeature::Unspecified:
+            return "Unspecified";
+        default:
+            return "Undefined";
+    }
+}
+
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              TensorFeature feature) {
-    switch (feature) {
-        case TensorFeature::I1:
-            os << tensorutil::i1_str;
-            break;
-        case TensorFeature::I2:
-            os << tensorutil::i2_str;
-            break;
-        case TensorFeature::I3:
-            os << tensorutil::i3_str;
-            break;
-        case TensorFeature::J1:
-            os << tensorutil::j1_str;
-            break;
-        case TensorFeature::J2:
-            os << tensorutil::j2_str;
-            break;
-        case TensorFeature::J3:
-            os << tensorutil::j3_str;
-            break;
-        case TensorFeature::Sigma1:
-            os << tensorutil::sigma1safe_str;
-            break;
-        case TensorFeature::Sigma2:
-            os << tensorutil::sigma2safe_str;
-            break;
-        case TensorFeature::Sigma3:
-            os << tensorutil::sigma3safe_str;
-            break;
-        case TensorFeature::MajorEigenVector:
-            os << "Major eigenvector";
-            break;
-        case TensorFeature::IntermediateEigenVector:
-            os << "Intermediate eigenvector";
-            break;
-        case TensorFeature::MinorEigenVector:
-            os << "Minor eigenvector";
-            break;
-        case TensorFeature::LodeAngle:
-            os << "Lode angle";
-            break;
-        case TensorFeature::Anisotropy:
-            os << "Anisotropy";
-            break;
-        case TensorFeature::LinearAnisotropy:
-            os << "Linear Anisotropy";
-            break;
-        case TensorFeature::PlanarAnisotropy:
-            os << "Planar Anisotropy";
-            break;
-        case TensorFeature::SphericalAnisotropy:
-            os << "Spherical Anisotropy";
-            break;
-        case TensorFeature::Diffusivity:
-            os << "Diffusivity";
-            break;
-        case TensorFeature::ShearStress:
-            os << "Shear Stress";
-            break;
-        case TensorFeature::PureShear:
-            os << "Pure Shear";
-            break;
-        case TensorFeature::ShapeFactor:
-            os << "Shape Factor";
-            break;
-        case TensorFeature::IsotropicScaling:
-            os << "IsotropicScaling";
-            break;
-        case TensorFeature::Rotation:
-            os << "Rotation";
-            break;
-        case TensorFeature::FrobeniusNorm:
-            os << "Frobenius Norm";
-            break;
-        case TensorFeature::HillYieldCriterion:
-            os << "Hill Yield Criterion";
-            break;
-        case TensorFeature::Unspecified:
-            os << "Unspecified";
-            break;
-        default:
-            os << "Undefined";
-            break;
-    }
-
+    os << format_as(feature);
     return os;
 }
 
@@ -207,11 +182,7 @@ struct MetaDataType : MetaDataBase {
     // Getters
     std::pair<TType, TType> getMinMax() const;
 
-    std::string getDisplayName() const override {
-        std::stringstream ss;
-        ss << type_;
-        return ss.str();
-    };
+    std::string getDisplayName() const override { return std::string{format_as(type_)}; };
 
     size_t getNumberOfComponents() const override;
 
@@ -283,7 +254,7 @@ size_t MetaDataType<T>::getNumberOfComponents() const {
 struct I1 : public MetaDataType<glm::f64> {
     I1() = default;
 
-    explicit I1(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type) {};
+    explicit I1(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
     I1* clone() const final { return new I1(data_, type_); }
 
@@ -295,7 +266,7 @@ struct I1 : public MetaDataType<glm::f64> {
 struct I2 : MetaDataType<glm::f64> {
     I2() = default;
 
-    explicit I2(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type) {};
+    explicit I2(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
     I2* clone() const final { return new I2(data_, type_); }
 
@@ -307,7 +278,7 @@ struct I2 : MetaDataType<glm::f64> {
 struct I3 : MetaDataType<glm::f64> {
     I3() = default;
 
-    explicit I3(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type) {};
+    explicit I3(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
     I3* clone() const final { return new I3(data_, type_); }
 
@@ -319,7 +290,7 @@ struct I3 : MetaDataType<glm::f64> {
 struct J1 : MetaDataType<glm::f64> {
     J1() = default;
 
-    explicit J1(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type) {};
+    explicit J1(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
     J1* clone() const final { return new J1(data_, type_); }
 
@@ -331,7 +302,7 @@ struct J1 : MetaDataType<glm::f64> {
 struct J2 : MetaDataType<glm::f64> {
     J2() = default;
 
-    explicit J2(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type) {};
+    explicit J2(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
     J2* clone() const final { return new J2(data_, type_); }
 
@@ -343,7 +314,7 @@ struct J2 : MetaDataType<glm::f64> {
 struct J3 : MetaDataType<glm::f64> {
     J3() = default;
 
-    explicit J3(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type) {};
+    explicit J3(const std::vector<double>& data, TensorFeature type) : MetaDataType(data, type){};
 
     J3* clone() const final { return new J3(data_, type_); }
 
@@ -356,7 +327,7 @@ struct MajorEigenVectors : MetaDataType<dvec3> {
     MajorEigenVectors() = default;
 
     explicit MajorEigenVectors(const std::vector<dvec3>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     MajorEigenVectors* clone() const final { return new MajorEigenVectors(data_, type_); }
 
@@ -369,7 +340,7 @@ struct IntermediateEigenVectors : MetaDataType<dvec3> {
     IntermediateEigenVectors() = default;
 
     explicit IntermediateEigenVectors(const std::vector<dvec3>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     IntermediateEigenVectors* clone() const final {
         return new IntermediateEigenVectors(data_, type_);
@@ -384,7 +355,7 @@ struct MinorEigenVectors : MetaDataType<dvec3> {
     MinorEigenVectors() = default;
 
     explicit MinorEigenVectors(const std::vector<dvec3>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     MinorEigenVectors* clone() const final { return new MinorEigenVectors(data_, type_); }
 
@@ -397,7 +368,7 @@ struct MajorEigenValues : MetaDataType<glm::f64> {
     MajorEigenValues() = default;
 
     explicit MajorEigenValues(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     MajorEigenValues* clone() const final { return new MajorEigenValues(data_, type_); }
 
@@ -410,7 +381,7 @@ struct IntermediateEigenValues : MetaDataType<glm::f64> {
     IntermediateEigenValues() = default;
 
     explicit IntermediateEigenValues(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     IntermediateEigenValues* clone() const final {
         return new IntermediateEigenValues(data_, type_);
@@ -425,7 +396,7 @@ struct MinorEigenValues : MetaDataType<glm::f64> {
     MinorEigenValues() = default;
 
     explicit MinorEigenValues(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     MinorEigenValues* clone() const final { return new MinorEigenValues(data_, type_); }
 
@@ -438,7 +409,7 @@ struct LodeAngle : MetaDataType<glm::f64> {
     LodeAngle() = default;
 
     explicit LodeAngle(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     LodeAngle* clone() const final { return new LodeAngle(data_, type_); }
 
@@ -451,7 +422,7 @@ struct Anisotropy : MetaDataType<glm::f64> {
     Anisotropy() = default;
 
     explicit Anisotropy(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     Anisotropy* clone() const final { return new Anisotropy(data_, type_); }
 
@@ -464,7 +435,7 @@ struct LinearAnisotropy : MetaDataType<glm::f64> {
     LinearAnisotropy() = default;
 
     explicit LinearAnisotropy(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     LinearAnisotropy* clone() const final { return new LinearAnisotropy(data_, type_); }
 
@@ -477,7 +448,7 @@ struct PlanarAnisotropy : MetaDataType<glm::f64> {
     PlanarAnisotropy() = default;
 
     explicit PlanarAnisotropy(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     PlanarAnisotropy* clone() const final { return new PlanarAnisotropy(data_, type_); }
 
@@ -490,7 +461,7 @@ struct SphericalAnisotropy : MetaDataType<glm::f64> {
     SphericalAnisotropy() = default;
 
     explicit SphericalAnisotropy(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     SphericalAnisotropy* clone() const final { return new SphericalAnisotropy(data_, type_); }
 
@@ -503,7 +474,7 @@ struct Diffusivity : MetaDataType<glm::f64> {
     Diffusivity() = default;
 
     explicit Diffusivity(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     Diffusivity* clone() const final { return new Diffusivity(data_, type_); }
 
@@ -516,7 +487,7 @@ struct ShearStress : MetaDataType<glm::f64> {
     ShearStress() = default;
 
     explicit ShearStress(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     ShearStress* clone() const final { return new ShearStress(data_, type_); }
 
@@ -529,7 +500,7 @@ struct PureShear : MetaDataType<glm::f64> {
     PureShear() = default;
 
     explicit PureShear(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     PureShear* clone() const final { return new PureShear(data_, type_); }
 
@@ -542,7 +513,7 @@ struct ShapeFactor : MetaDataType<glm::f64> {
     ShapeFactor() = default;
 
     explicit ShapeFactor(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     ShapeFactor* clone() const final { return new ShapeFactor(data_, type_); }
 
@@ -555,7 +526,7 @@ struct IsotropicScaling : MetaDataType<glm::f64> {
     IsotropicScaling() = default;
 
     explicit IsotropicScaling(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     IsotropicScaling* clone() const final { return new IsotropicScaling(data_, type_); }
 
@@ -568,7 +539,7 @@ struct Rotation : MetaDataType<glm::f64> {
     Rotation() = default;
 
     explicit Rotation(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     Rotation* clone() const final { return new Rotation(data_, type_); }
 
@@ -581,7 +552,7 @@ struct FrobeniusNorm : MetaDataType<glm::f64> {
     FrobeniusNorm() = default;
 
     explicit FrobeniusNorm(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     FrobeniusNorm* clone() const final { return new FrobeniusNorm(data_, type_); }
 
@@ -594,7 +565,7 @@ struct HillYieldCriterion : MetaDataType<glm::f64> {
     HillYieldCriterion() = default;
 
     explicit HillYieldCriterion(const std::vector<double>& data, TensorFeature type)
-        : MetaDataType(data, type) {};
+        : MetaDataType(data, type){};
 
     HillYieldCriterion* clone() const final { return new HillYieldCriterion(data_, type_); }
 

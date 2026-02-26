@@ -113,7 +113,7 @@ SpringSystemProcessor::SpringSystemProcessor()
 
     advanceButton_.onChange([&]() { advance_ = true; });
     resetButton_.onChange([&]() { springSystem_ = getSystem(); });
-    logStatusButton_.onChange([&]() { LogInfo(springSystem_); });
+    logStatusButton_.onChange([&]() { log::report(LogLevel::Info, springSystem_.print()); });
 
     startButton_.onChange([&]() { updateTimer_.start(); });
     stopButton_.onChange([&]() { updateTimer_.stop(); });
@@ -131,7 +131,7 @@ void sync(T& obj, const P& property, void (T::*setter)(Arg)) {
     }
 }
 template <typename P, typename T, typename V>
-void sync(T& obj, const P& property, V T::* member) {
+void sync(T& obj, const P& property, V T::*member) {
     if (property.isModified()) {
         obj.*member = property.get();
     }
@@ -277,8 +277,8 @@ void SpringSystemProcessor::handlePicking(PickingEvent* p) {
     }
 
     if (p->getHoverState() != PickingHoverState::Exit) {
-        p->setToolTip(toString(p->getPickedId()) + " : " +
-                      toString(springSystem_.position(p->getPickedId())));
+        p->setToolTip(
+            fmt::format("{} : {}", p->getPickedId(), springSystem_.position(p->getPickedId())));
     } else {
         p->setToolTip("");
     }

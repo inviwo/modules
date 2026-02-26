@@ -1,4 +1,4 @@
-﻿/*********************************************************************************
+/*********************************************************************************
  *
  * Inviwo - Interactive Visualization Workshop
  *
@@ -69,39 +69,33 @@ enum class YieldCriterion {
     Tsai_Wu
 };
 
+constexpr std::string_view format_as(YieldCriterion yieldCriterion) {
+    switch (yieldCriterion) {
+        case YieldCriterion::William_Warnke:
+            return "William-Warnke";
+        case YieldCriterion::Von_Mises:
+            return "von Mises";
+        case YieldCriterion::Mohr_Coulomb:
+            return "Mohr-Coulomb";
+        case YieldCriterion::Tresca:
+            return "Tresca";
+        case YieldCriterion::Drucker_Prager:
+            return "Drucker-Prager";
+        case YieldCriterion::Matrix_Constituent_Failure_Criterion:
+            return "Matrix constituent";
+        case YieldCriterion::MohrCoulomb_InvariantBased:
+            return "Mohr-Coulomb invariant based";
+        case YieldCriterion::Tsai_Hill:
+            return "Tsai-Hill";
+        case YieldCriterion::Tsai_Wu:
+            return "Tsai-Wu";
+    }
+}
+
 template <class Elem, class Traits>
 std::basic_ostream<Elem, Traits>& operator<<(std::basic_ostream<Elem, Traits>& os,
                                              YieldCriterion yieldCriterion) {
-    switch (yieldCriterion) {
-        case YieldCriterion::William_Warnke:
-            os << "William-Warnke";
-            break;
-        case YieldCriterion::Von_Mises:
-            os << "von Mises";
-            break;
-        case YieldCriterion::Mohr_Coulomb:
-            os << "Mohr-Coulomb";
-            break;
-        case YieldCriterion::Tresca:
-            os << "Tresca";
-            break;
-        case YieldCriterion::Drucker_Prager:
-            os << "Drucker-Prager";
-            break;
-        case YieldCriterion::Matrix_Constituent_Failure_Criterion:
-            os << "Matrix constituent";
-            break;
-        case YieldCriterion::MohrCoulomb_InvariantBased:
-            os << "Mohr-Coulomb invariant based";
-            break;
-        case YieldCriterion::Tsai_Hill:
-            os << "Tsai-Hill";
-            break;
-        case YieldCriterion::Tsai_Wu:
-            os << "Tsai-Wu";
-            break;
-    }
-
+    os << format_as(yieldCriterion);
     return os;
 }
 
@@ -178,41 +172,30 @@ std::array<double, 3> IVW_MODULE_TENSORVISBASE_API calculateEigenValues(const dm
 
 dmat3 IVW_MODULE_TENSORVISBASE_API calculateEigenSystem(const dmat3& tensor);
 
-static const std::string lamda_str{"λ"};
+constexpr std::string_view lamda_str{"λ"};
+constexpr std::string_view lamda1_str{"λ₁"};
+constexpr std::string_view lamda2_str{"λ₂"};
+constexpr std::string_view lamda3_str{"λ₃"};
 
-static const std::string lamda1_str{"λ₁"};
+constexpr std::string_view theta_str{"θ"};
+constexpr std::string_view phi_str{"φ"};
 
-static const std::string lamda2_str{"λ₂"};
+constexpr std::string_view sigma_str{"σ"};
+constexpr std::string_view sigma1_str{"σ₁"};
+constexpr std::string_view sigma1safe_str{"σ1"};
 
-static const std::string lamda3_str{"λ₃"};
+constexpr std::string_view sigma2_str{"σ₂"};
+constexpr std::string_view sigma2safe_str{"σ2"};
 
-static const std::string theta_str{"θ"};
+constexpr std::string_view sigma3_str{"σ₃"};
+constexpr std::string_view sigma3safe_str{"σ3"};
 
-static const std::string phi_str{"φ"};
-
-static const std::string sigma_str{"σ"};
-
-static const std::string sigma1_str{"σ₁"};
-static const std::string sigma1safe_str{"σ1"};
-
-static const std::string sigma2_str{"σ₂"};
-static const std::string sigma2safe_str{"σ2"};
-
-static const std::string sigma3_str{"σ₃"};
-static const std::string sigma3safe_str{"σ3"};
-
-static const std::string i1_str{"I₁"};
-
-static const std::string i2_str{"I₂"};
-
-static const std::string i3_str{"I₃"};
-
-static const std::string j1_str{"J₁"};
-
-static const std::string j2_str{"J₂"};
-
-static const std::string j3_str{"J₃"};
-
-static const std::string tau_str{"τ"};
+constexpr std::string_view i1_str{"I₁"};
+constexpr std::string_view i2_str{"I₂"};
+constexpr std::string_view i3_str{"I₃"};
+constexpr std::string_view j1_str{"J₁"};
+constexpr std::string_view j2_str{"J₂"};
+constexpr std::string_view j3_str{"J₃"};
+constexpr std::string_view tau_str{"τ"};
 
 }  // namespace inviwo::tensorutil

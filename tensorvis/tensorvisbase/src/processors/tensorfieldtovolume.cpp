@@ -79,12 +79,11 @@ void TensorFieldToVolume::process() {
     auto tensorField = inport_.getData();
 
     if (!tensorField->hasMetaData(feature_.getSelectedValue())) {
-        LogError("Tensorfield has no metadata for \'" << feature_.getSelectedDisplayName() << "\'");
+        log::error("Tensorfield has no metadata for '{}'", feature_.getSelectedDisplayName());
         return;
     }
     if (!tensorField->hasMetaData(uint64_t(feature_.getSelectedValue()))) {
-        LogError("Tensorfield has no metadata (id) for \'" << feature_.getSelectedDisplayName()
-                                                           << "\'");
+        log::error("Tensorfield has no metadata (id) for '{}'", feature_.getSelectedDisplayName());
         return;
     }
 

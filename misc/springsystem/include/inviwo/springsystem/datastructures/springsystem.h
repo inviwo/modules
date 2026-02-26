@@ -35,8 +35,6 @@
 #include <glm/gtc/epsilon.hpp>
 
 #include <vector>
-#include <sstream>
-#include <iomanip>
 #include <utility>
 #include <algorithm>
 
@@ -149,8 +147,7 @@ public:
 
     const std::vector<SpringIndices>& getSprings() const;
 
-    template <class Elem, class Traits>
-    void print(std::basic_ostream<Elem, Traits>& ss) const;
+    std::string print() const;
 
     static constexpr bool hasPBC(size_t dim) noexcept { return util::get<PBC>(dim); }
 
@@ -373,16 +370,15 @@ auto SpringSystem<Components, ComponentType, Derived, PBC>::getSprings() const
 }
 
 template <size_t Components, typename ComponentType, typename Derived, typename PBC>
-template <class Elem, class Traits>
-void SpringSystem<Components, ComponentType, Derived, PBC>::print(
-    std::basic_ostream<Elem, Traits>& ss) const {
-    ss << "Nodes:";
+std::string SpringSystem<Components, ComponentType, Derived, PBC>::print() const {
+    std::string buff;
+
+    fmt::format_to(std::back_inserter(buff), "Nodes:");
     for (std::size_t i = 0; i < positions_.size(); ++i) {
-        ss << "\n"
-           << std::setw(6) << (i + 1) << ":  p = " << positions_[i] << ", v = " << velocities_[i]
-           << ", F = " << forces_[i] << ", fixed = " << std::boolalpha << derived().isLocked(i);
+        fmt::format_to(std::back_inserter(buff), "\n{:6}: p = {}, v = {}, F = {}, fixed = {}",
+                       i + 1, positions_[i], velocities_[i], forces_[i], derived().isLocked(i));
     }
-    ss << "\nSprings:";
+    fmt::format_to(std::back_inserter(buff), "\nSprings:");
     for (std::size_t i = 0; i < springs_.size(); ++i) {
         const auto& spring = springs_[i];
         auto dir(positions_[spring.second] - positions_[spring.first]);
@@ -390,20 +386,12 @@ void SpringSystem<Components, ComponentType, Derived, PBC>::print(
         dir /= dist;
         auto displacement = dir * (dist - derived().springLength(i));
 
-        ss << "\n"
-           << std::setw(6) << (i + 1) << ":  l0 = " << derived().springLength(i) << ", l = " << dist
-           << ", s = " << displacement;
+        fmt::format_to(std::back_inserter(buff), "\n{:6}: l0 = {}, l = {}, s = {}", i + 1,
+                       derived().springLength(i), dist, displacement);
     }
-    ss << "\n-----------------------------";
-}
+    fmt::format_to(std::back_inserter(buff), "\n-----------------------------");
 
-template <class Elem, class Traits, size_t Components, typename ComponentType, typename Derived,
-          typename PBC>
-std::basic_ostream<Elem, Traits>& operator<<(
-    std::basic_ostream<Elem, Traits>& ss,
-    const SpringSystem<Components, ComponentType, Derived, PBC>& sms) {
-    sms.print(ss);
-    return ss;
+    return buff;
 }
 
 }  // namespace inviwo

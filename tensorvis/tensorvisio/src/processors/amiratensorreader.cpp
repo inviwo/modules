@@ -26,17 +26,16 @@ AmiraTensorReader::AmiraTensorReader()
 }
 
 void AmiraTensorReader::process() {
-    // const char* FileName = "testscalar.am";
-    auto FileName = inFile_.get().string();
-    // const char* FileName = "testvector3c.am";
+    // const char* filename = "testscalar.am";
+    auto filename = inFile_.get().string();
+    // const char* filename = "testvector3c.am";
 
-    FILE* fp = fopen(FileName.c_str(), "rb");
+    FILE* fp = fopen(filename.c_str(), "rb");
     if (!fp) {
-        LogError("Could not find " << FileName);
-        return;
+        throw Exception(SourceContext{}, "Could not find {}", filename);
     }
 
-    LogInfo("Reading " << FileName);
+    log::info("Reading {}", filename);
 
     // We read the first 2k bytes into memory to parse the header.
     // The fixed buffer size looks a bit like a hack, and it is one, but it gets the job done.
@@ -45,9 +44,8 @@ void AmiraTensorReader::process() {
     buffer[2047] = '\0';  // The following string routines prefer null-terminated strings
 
     if (!strstr(buffer, "# AmiraMesh BINARY-LITTLE-ENDIAN 2.1")) {
-        LogError("Not a proper AmiraMesh file.\n");
         fclose(fp);
-        return;
+        throw Exception(SourceContext{}, "Not a proper AmiraMesh file: {}.\n", filename);
     }
 
     // Find the Lattice definition, i.e., the dimensions of the uniform grid
@@ -60,9 +58,9 @@ void AmiraTensorReader::process() {
     float xmax(-1.0f), ymax(-1.0f), zmax(-1.0f);
     sscanf(FindAndJump(buffer, "BoundingBox"), "%g %g %g %g %g %g", &xmin, &xmax, &ymin, &ymax,
            &zmin, &zmax);
-    LogInfo("BoundingBox in x-Direction: [" << xmin << " ... " << xmax << "]\n");
-    LogInfo("BoundingBox in y-Direction: [" << ymin << " ... " << ymax << "]\n");
-    LogInfo("BoundingBox in z-Direction: [" << zmin << " ... " << zmax << "]\n");
+    log::info("BoundingBox in x-Direction: [{} ... {}]\n", xmin, xmax);
+    log::info("BoundingBox in y-Direction: [{} ... {}]\n", ymin, ymax);
+    log::info("BoundingBox in z-Direction: [{} ... {}]\n", zmin, zmax);
 
     auto extents = dvec3(xmax - xmin, ymax - ymin, zmax - zmin);
 
@@ -75,7 +73,7 @@ void AmiraTensorReader::process() {
         // A field with more than one component, i.e., a vector field
         sscanf(FindAndJump(buffer, "Lattice { float["), "%d", &NumComponents);
     }
-    LogInfo("Number of Components: " << NumComponents);
+    log::info("Number of Components: {}", NumComponents);
 
     // Find the beginning of the data section
     const long idxStartData = long(strstr(buffer, "# Data section follows") - buffer);
@@ -97,17 +95,18 @@ void AmiraTensorReader::process() {
             const size_t ActRead = fread((void*)pData, sizeof(float), NumToRead, fp);
             // - ok?
             if (NumToRead != ActRead) {
-                LogError(
-                    "Something went wrong while reading the binary data section.\nPremature end of "
-                    "file?\n");
                 delete[] pData;
                 fclose(fp);
-                return;
+
+                throw Exception(
+                    SourceContext{},
+                    "Something went wrong while reading the binary data section.\nPremature end of "
+                    "file?\n");
             }
 
             // Test: Print all data values
             // Note: Data runs x-fastest, i.e., the loop over the x-axis is the innermost
-            printf("\nPrinting all values in the same order in which they are in memory:\n");
+            // printf("\nPrinting all values in the same order in which they are in memory:\n");
             int Idx(0);
 
             std::vector<dmat3> data;

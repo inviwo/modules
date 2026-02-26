@@ -168,7 +168,7 @@ void LayerToVTK::process() {
                 return VTK_DOUBLE;
             }
             default: {
-                throw Exception("Cannot map type to VTK.", IVW_CONTEXT_CUSTOM("LayerToVtk"));
+                throw Exception(SourceContext{}, "Cannot map type to VTK.");
             }
         }
     }();

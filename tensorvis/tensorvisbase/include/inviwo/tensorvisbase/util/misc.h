@@ -189,7 +189,7 @@ std::string to_string(const T& list) {
     }
 
     for (const auto& val : list) {
-        ss << std::to_string(val) << ", ";
+        ss << val << ", ";
     }
 
     auto str = ss.str();
@@ -206,7 +206,7 @@ std::string to_string(const std::array<T, N>& arr) {
     ss << "[ ";
 
     for (size_t i{0}; i < N; ++i) {
-        ss << std::to_string(arr[i]) << ", ";
+        ss << arr[i] << ", ";
     }
 
     auto str = ss.str();

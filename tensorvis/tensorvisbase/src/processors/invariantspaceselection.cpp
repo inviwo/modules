@@ -142,168 +142,195 @@ void InvariantSpaceSelection::process() {
     auto tensorField = tensorFieldInport_.getData();
 
     if (sigma1_.get()) {
-        if (tensorField->hasMetaData<tensor::MajorEigenValues>())
+        if (tensorField->hasMetaData<tensor::MajorEigenValues>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::MajorEigenValues>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data MajorEigenValues not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (sigma2_.get()) {
-        if (tensorField->hasMetaData<tensor::IntermediateEigenValues>())
+        if (tensorField->hasMetaData<tensor::IntermediateEigenValues>()) {
             invariantSpace->addAxis(
                 tensorField->getMetaDataContainer<tensor::IntermediateEigenValues>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data IntermediateEigenValues not available. Consider adding a meta "
-                "data processor.")
+                "data processor.");
+        }
     }
     if (sigma3_.get()) {
-        if (tensorField->hasMetaData<tensor::MinorEigenValues>())
+        if (tensorField->hasMetaData<tensor::MinorEigenValues>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::MinorEigenValues>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data MinorEigenValues not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (i1_.get()) {
-        if (tensorField->hasMetaData<tensor::I1>())
+        if (tensorField->hasMetaData<tensor::I1>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::I1>());
-        else
-            LogWarn("Requested meta data I1 not available. Consider adding a meta data processor.")
+        } else {
+            log::warn(
+                "Requested meta data I1 not available. Consider adding a meta data processor.");
+        }
     }
     if (i2_.get()) {
-        if (tensorField->hasMetaData<tensor::I2>())
+        if (tensorField->hasMetaData<tensor::I2>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::I2>());
-        else
-            LogWarn("Requested meta data I2 not available. Consider adding a meta data processor.")
+        } else {
+            log::warn(
+                "Requested meta data I2 not available. Consider adding a meta data processor.");
+        }
     }
     if (i3_.get()) {
-        if (tensorField->hasMetaData<tensor::I3>())
+        if (tensorField->hasMetaData<tensor::I3>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::I3>());
-        else
-            LogWarn("Requested meta data I3 not available. Consider adding a meta data processor.")
+        } else {
+            log::warn(
+                "Requested meta data I3 not available. Consider adding a meta data processor.");
+        }
     }
     if (j1_.get()) {
-        if (tensorField->hasMetaData<tensor::J1>())
+        if (tensorField->hasMetaData<tensor::J1>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::J1>());
-        else
-            LogWarn("Requested meta data J1 not available. Consider adding a meta data processor.")
+        } else {
+            log::warn(
+                "Requested meta data J1 not available. Consider adding a meta data processor.");
+        }
     }
     if (j2_.get()) {
-        if (tensorField->hasMetaData<tensor::J2>())
+        if (tensorField->hasMetaData<tensor::J2>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::J2>());
-        else
-            LogWarn("Requested meta data J2 not available. Consider adding a meta data processor.")
+        } else {
+            log::warn(
+                "Requested meta data J2 not available. Consider adding a meta data processor.");
+        }
     }
     if (j3_.get()) {
-        if (tensorField->hasMetaData<tensor::J3>())
+        if (tensorField->hasMetaData<tensor::J3>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::J3>());
-        else
-            LogWarn("Requested meta data J3 not available. Consider adding a meta data processor.")
+        } else {
+            log::warn(
+                "Requested meta data J3 not available. Consider adding a meta data processor.");
+        }
     }
     if (lodeAngle_.get()) {
-        if (tensorField->hasMetaData<tensor::LodeAngle>())
+        if (tensorField->hasMetaData<tensor::LodeAngle>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::LodeAngle>(),
                                     lodeAngle_.getDisplayName());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data LodeAngle not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (anisotropy_.get()) {
-        if (tensorField->hasMetaData<tensor::Anisotropy>())
+        if (tensorField->hasMetaData<tensor::Anisotropy>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::Anisotropy>(),
                                     anisotropy_.getDisplayName());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data Anisotropy not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (linearAnisotropy_.get()) {
-        if (tensorField->hasMetaData<tensor::LinearAnisotropy>())
+        if (tensorField->hasMetaData<tensor::LinearAnisotropy>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::LinearAnisotropy>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data LinearAnisotropy not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (planarAnisotropy_.get()) {
-        if (tensorField->hasMetaData<tensor::PlanarAnisotropy>())
+        if (tensorField->hasMetaData<tensor::PlanarAnisotropy>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::PlanarAnisotropy>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data PlanarAnisotropy not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (sphericalAnisotropy_.get()) {
-        if (tensorField->hasMetaData<tensor::SphericalAnisotropy>())
+        if (tensorField->hasMetaData<tensor::SphericalAnisotropy>()) {
             invariantSpace->addAxis(
                 tensorField->getMetaDataContainer<tensor::SphericalAnisotropy>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data SphericalAnisotropy not available. Consider adding a meta "
-                "data processor.")
+                "data processor.");
+        }
     }
     if (diffusivity_.get()) {
-        if (tensorField->hasMetaData<tensor::Diffusivity>())
+        if (tensorField->hasMetaData<tensor::Diffusivity>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::Diffusivity>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data Diffusivity not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (shearStress_.get()) {
-        if (tensorField->hasMetaData<tensor::ShearStress>())
+        if (tensorField->hasMetaData<tensor::ShearStress>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::ShearStress>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data ShearStress not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (pureShear_.get()) {
-        if (tensorField->hasMetaData<tensor::PureShear>())
+        if (tensorField->hasMetaData<tensor::PureShear>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::PureShear>());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data PureShear not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (shapeFactor_.get()) {
-        if (tensorField->hasMetaData<tensor::ShapeFactor>())
+        if (tensorField->hasMetaData<tensor::ShapeFactor>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::ShapeFactor>(),
                                     shapeFactor_.getDisplayName());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data ShapeFactor not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (isotropicScaling_.get()) {
-        if (tensorField->hasMetaData<tensor::IsotropicScaling>())
+        if (tensorField->hasMetaData<tensor::IsotropicScaling>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::IsotropicScaling>(),
                                     isotropicScaling_.getDisplayName());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data IsotropicScaling not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (rotation_.get()) {
-        if (tensorField->hasMetaData<tensor::Rotation>())
+        if (tensorField->hasMetaData<tensor::Rotation>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::Rotation>(),
                                     rotation_.getDisplayName());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data Rotation not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
     if (hill_.get()) {
-        if (tensorField->hasMetaData<tensor::HillYieldCriterion>())
+        if (tensorField->hasMetaData<tensor::HillYieldCriterion>()) {
             invariantSpace->addAxis(tensorField->getMetaDataContainer<tensor::HillYieldCriterion>(),
                                     hill_.getDisplayName());
-        else
-            LogWarn(
+        } else {
+            log::warn(
                 "Requested meta data HillYieldCriterion not available. Consider adding a meta data "
-                "processor.")
+                "processor.");
+        }
     }
 
     outport_.setData(invariantSpace);

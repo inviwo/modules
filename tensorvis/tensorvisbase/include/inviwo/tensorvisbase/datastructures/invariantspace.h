@@ -95,9 +95,8 @@ struct IVW_MODULE_TENSORVISBASE_API InvariantSpace {
 
     void addPoint(const std::vector<double>& v) {
         if (v.size() != data_.size()) {
-            LogError("Tried to add feature of wrong dimensionality ("
-                     << std::to_string(v.size()) << " instead of " << std::to_string(data_.size())
-                     << ")");
+            log::error("Tried to add feature of wrong dimensionality ({} instead of {})", v.size(),
+                       data_.size());
             return;
         }
         size_t i = 0;
@@ -144,7 +143,7 @@ struct IVW_MODULE_TENSORVISBASE_API InvariantSpace {
 
     void setNumberOfDimensions(size_t n) {
         if (data_.size() > n) {
-            LogError("Reduction of dimensionality would mean loss of data. Aborting");
+            log::error("Reduction of dimensionality would mean loss of data. Aborting");
         }
 
         data_.resize(n);

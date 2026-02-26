@@ -61,7 +61,7 @@ void getNodes(vtkUnstructuredGrid* vtkData, const std::shared_ptr<BufferBase>& s
     // store scalar values in the 4th component of the nodes
     if (scalarBuffer) {
         if (scalarBuffer->getSize() != nodes.size()) {
-            throw Exception(IVW_CONTEXT_CUSTOM("VTKTetraMesh"),
+            throw Exception(SourceContext{},
                             "Size of scalar buffer ({}) doese not match the number of nodes ({}).",
                             scalarBuffer->getSize(), nodes.size());
         }
@@ -95,7 +95,7 @@ void getNodeIds(vtkUnstructuredGrid* vtkData, std::vector<ivec4>& nodeIds) {
         nodeIds.emplace_back(ids[0], ids[1], ids[2], ids[3]);
     }
     if (skippedCells > 0) {
-        util::logWarn(IVW_CONTEXT_CUSTOM("VTKTetraMesh"),
+        util::logWarn(SourceContext{},
                       "Only tetrahedral cells are supported. Skipped {} of {} cells", skippedCells,
                       numCells);
     }

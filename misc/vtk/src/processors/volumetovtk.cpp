@@ -71,7 +71,7 @@ void VolumeToVTK::process() {
 
     for (auto&& [index, v] : util::enumerate(optionalVolumes_.getVectorData())) {
         if (volume->getDimensions() != v->getDimensions()) {
-            throw Exception(IVW_CONTEXT,
+            throw Exception(SourceContext{},
                             "Volume dimensions must match, expected {} and got {} from input {}",
                             volume->getDimensions(), v->getDimensions(), index);
         }
@@ -194,7 +194,7 @@ void VolumeToVTK::process() {
                 return VTK_DOUBLE;
             }
             default: {
-                throw Exception("Cannot map type to VTK.", IVW_CONTEXT_CUSTOM("VolumeToVtk"));
+                throw Exception(SourceContext{}, "Cannot map type to VTK.");
             }
         }
     };

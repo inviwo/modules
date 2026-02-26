@@ -32,6 +32,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/util/filesystem.h>
 
+#include <fmt/std.h>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -58,14 +60,12 @@ void NRRDReader::process() {
     std::ifstream inFile(inFile_.get());
 
     if (!inFile) {
-        LogError("Couldn't open file");
-        return;
+        throw Exception(SourceContext{}, "Couldn't open file {}", inFile_.get());
     }
 
     auto extension = inFile_.get().extension();
     if (extension != ".nhdr") {
-        LogError("Not a NHDR file");
-        return;
+        throw Exception(SourceContext{}, "Not a NHDR file: {}", inFile_.get());
     }
 
     std::map<std::string, std::string> values;
@@ -126,13 +126,13 @@ void NRRDReader::process() {
     }
 
     if (!std::filesystem::is_regular_file(rawFileName)) {
-        LogError("Raw file does not exist");
+        throw Exception(SourceContext{}, "Raw file does not exist: {}", rawFileName);
         return;
     }
     std::ifstream rawFile(rawFileName, std::ios::in | std::ios::binary);
 
     if (!rawFile) {
-        LogError("Couldn't open raw file");
+        throw Exception(SourceContext{}, "Couldn't open raw file: {}", rawFileName);
         return;
     }
 

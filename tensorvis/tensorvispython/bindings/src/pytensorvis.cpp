@@ -68,13 +68,13 @@ void exposeTensorVis(pybind11::module& m) {
                 ivwAssert(ndim == 4 || ndim == 5, "ndims must be either 4 or 5");
 
                 if (ndim == 4 && arr.shape(3) != 9) {
-                    throw Exception(IVW_CONTEXT_CUSTOM("pytensorvis.TensorField3D"),
+                    throw Exception(SourceContext{},
                                     "Invalid shape: expected 9 components in last dimension of "
                                     "numpy array ([{}, {}, {}, {}])",
                                     arr.shape(0), arr.shape(1), arr.shape(2), arr.shape(3));
                 } else if (ndim == 5 && (arr.shape(3) != 3 || arr.shape(4) != 3)) {
                     throw Exception(
-                        IVW_CONTEXT_CUSTOM("pytensorvis.TensorField3D"),
+                        SourceContext{},
                         "Invalid shape: expected 3 components in last two dimensions of "
                         "numpy array ([{}, {}, {}, {}, {}])",
                         arr.shape(0), arr.shape(1), arr.shape(2), arr.shape(3), arr.shape(4));
@@ -102,9 +102,9 @@ void exposeTensorVis(pybind11::module& m) {
                         });
                 } else {
                     throw Exception(
+                        SourceContext{},
                         "Unable to create a Buffer from array: The array is not in contiguous C "
-                        "order. Use numpy.ascontiguousarray() or similar to ensure this.",
-                        IVW_CONTEXT_CUSTOM("pybindutils"));
+                        "order. Use numpy.ascontiguousarray() or similar to ensure this.");
                 }
             }),
             py::arg("arr"), py::arg("extent") = vec3{1.0f}, py::arg("sliceCoord") = 0.0f)

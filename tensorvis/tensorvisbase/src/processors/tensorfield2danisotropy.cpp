@@ -56,9 +56,9 @@ TensorField2DAnisotropy::TensorField2DAnisotropy()
     , tensorFieldInport_("inport")
     , outport_("outport")
     , anisotropy_("anisotropy", "Anisotropy",
-                  {{"1", "|" + tensorutil::lamda1_str + " - " + tensorutil::lamda2_str + "|",
+                  {{"1", fmt::format("|{} - {}|", tensorutil::lamda1_str, tensorutil::lamda2_str),
                     tensorutil::Anisotropy::abs_lamda1_minus_lamda2},
-                   {"4", "|" + tensorutil::lamda1_str + "| - |" + tensorutil::lamda2_str + "|",
+                   {"4", fmt::format("|{}| - |{}|", tensorutil::lamda1_str, tensorutil::lamda2_str),
                     tensorutil::Anisotropy::abs_lamda1_minus_abs_lamda2}},
                   0) {
 
@@ -102,7 +102,7 @@ void TensorField2DAnisotropy::process() {
                 return ram;
             }
             default:
-                throw Exception(IVW_CONTEXT, "Unsupported tensorutil::Anisotropy");
+                throw Exception(SourceContext{}, "Unsupported tensorutil::Anisotropy");
         }
     }();
 

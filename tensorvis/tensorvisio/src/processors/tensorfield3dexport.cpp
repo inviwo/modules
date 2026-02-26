@@ -71,11 +71,11 @@ void TensorField3DExport::process() {}
 
 void TensorField3DExport::exportBinary() const {
     if (!inport_.hasData() || !inport_.getData().get()) {
-        LogWarn("Inport has no data");
+        throw Exception{SourceContext{}, "Inport has no data"};
         return;
     }
 
-    LogInfo("Exporting...");
+    log::info("Exporting...");
 
     auto tensorField = inport_.getData();
 
@@ -197,6 +197,6 @@ void TensorField3DExport::exportBinary() const {
 
     outFile.close();
 
-    LogInfo("Exporting done.");
+    log::info("Exporting done.");
 }
 }  // namespace inviwo

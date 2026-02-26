@@ -214,7 +214,7 @@ void ImageToVTK::process() {
                 return VTK_DOUBLE;
             }
             default: {
-                throw Exception("Cannot map type to VTK.", IVW_CONTEXT_CUSTOM("VolumeToVtk"));
+                throw Exception(SourceContext{}, "Cannot map type to VTK.");
             }
         }
     }();
