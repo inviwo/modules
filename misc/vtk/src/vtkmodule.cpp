@@ -81,13 +81,14 @@ public:
     void DisplayWarningText(const char* text) override { forward(LogLevel::Warn, text); }
     void DisplayDebugText(const char* text) override { forward(LogLevel::Info, text); }
 
+    virtual ~InviwoOutputWindow() override = default;
+
 protected:
     InviwoOutputWindow() = default;
-    ~InviwoOutputWindow() override = default;
 
 private:
-    void forward(LogLevel level, const char* text) {
-        LogCentral::getPtr()->log("VTK", level, LogAudience::Developer, "", "", 0, text);
+    static void forward(LogLevel level, const char* text) {
+        log::report(level, SourceContext{"VTK"_sl, "", ""}, text);
     }
 };
 
