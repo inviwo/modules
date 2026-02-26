@@ -74,7 +74,7 @@ void logCallback(void* /*user_data*/, const vtkLogger::Message& message) {
 class InviwoOutputWindow : public vtkOutputWindow {
 public:
     static InviwoOutputWindow* New();
-    vtkTypeMacro(InviwoOutputWindow, vtkOutputWindow);
+    vtkTypeMacro(InviwoOutputWindow, vtkOutputWindow)
 
     void DisplayText(const char* text) override { forward(LogLevel::Info, text); }
     void DisplayErrorText(const char* text) override { forward(LogLevel::Error, text); }
