@@ -95,9 +95,8 @@ void getNodeIds(vtkUnstructuredGrid* vtkData, std::vector<ivec4>& nodeIds) {
         nodeIds.emplace_back(ids[0], ids[1], ids[2], ids[3]);
     }
     if (skippedCells > 0) {
-        util::logWarn(SourceContext{},
-                      "Only tetrahedral cells are supported. Skipped {} of {} cells", skippedCells,
-                      numCells);
+        log::warn("Only tetrahedral cells are supported. Skipped {} of {} cells", skippedCells,
+                  numCells);
     }
 }
 
