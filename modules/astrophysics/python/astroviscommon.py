@@ -10,12 +10,25 @@ from astropy.io import fits
 
 class LatLong(Enum):
     AbsoluteDeg = 0
-    RelativeDeg = 1
+    FractionalArcsec = 1  # discard degree and arcmin
     RelativeArcsec = 2
+
+
+def getBasisUnit(lat_long: LatLong) -> str:
+    match lat_long:
+        case LatLong.AbsoluteDeg:
+            return "°"
+        case LatLong.FractionalArcsec:
+            return "\""
+        case LatLong.RelativeArcsec:
+            return "\""
+        case _:
+            raise ValueError(f'Invalid LatLong value {lat_long}')
 
 
 @dataclass
 class FitsParams:
+    objectName: str
     naxis: tuple[int, ...]
     ctype: tuple[str, str, str]
     cunit: tuple[str, str, str]
@@ -27,12 +40,30 @@ class FitsParams:
     rest_frequency: float  # [Hz]
 
 
+@dataclass
+class FitsData:
+    params: FitsParams
+    data: np.ndarray
+
+
+@lru_cache(maxsize=1)
+def readFITSData(filepath: Path,
+                 dataset_index: int | None = None,
+                 **kwargs) -> FitsData:
+    if not dataset_index:
+        dataset_index = 0
+    with fits.open(filepath, **kwargs) as hdul:
+        fits_parameters: FitsParams = extractFITSParams(hdul[dataset_index].header)
+        data: np.ndarray = hdul[dataset_index].data  # TODO: copy data?
+        return FitsData(params=fits_parameters, data=data)
+
+
 def extractFITSParams(header: fits.header.Header) -> FitsParams:
     rest_frequency: float = header['restfrq']  # equals 345_339_760_000
-    # mean difference 0.0080740896
     # rest_frequency = 345_339_769_300  # [hz]
 
     return FitsParams(
+        objectName=str(header['object']),
         naxis=tuple(header[f'naxis{i}'] for i in range(1, header['naxis'] + 1)),
         ctype=tuple(header[f'ctype{i}'].lower() for i in range(1, 4)),
         cunit=tuple(header[f'cunit{i}'] for i in range(1, 4)),
@@ -44,16 +75,22 @@ def extractFITSParams(header: fits.header.Header) -> FitsParams:
         rest_frequency=rest_frequency)
 
 
-@lru_cache(maxsize=2)
-def readFITSData(filepath: Path,
-                 dataset_index: int | None = None,
-                 **kwargs) -> tuple[FitsParams, np.ndarray]:
-    if not dataset_index:
-        dataset_index = 0
-    with fits.open(filepath, **kwargs) as hdul:
-        fits_parameters: FitsParams = extractFITSParams(hdul[dataset_index].header)
-        data: np.ndarray = hdul[dataset_index].data  # TODO: copy data?
-        return (fits_parameters, data)
+def frequencyFunc(params: FitsParams) -> Callable[[float], int]:
+    def func(channel: int) -> float:
+        freq: float = (channel + 1 - params.crpix[2]) * params.cdelt[2] + params.crval[2]
+        return freq
+
+    return func
+
+
+def frequencyToVelocityFunc(params: FitsParams) -> Callable[[float], int]:
+    def func(channel: int) -> float:
+        freq: float = (params.rest_frequency
+                       - ((channel + 1 - params.crpix[2]) * params.cdelt[2] + params.crval[2]))
+        return vc * freq / params.rest_frequency / 1000
+
+    vc = 299_792_458  # speed of light
+    return func
 
 
 def pixelCoordinatesFunc(params: FitsParams) -> Callable[[np.ndarray], [int, int]]:
@@ -144,7 +181,7 @@ def estimateDepth(params: FitsParams,
 
 def getLatLongBasis(params: FitsParams,
                     lat_long: LatLong = LatLong.RelativeArcsec
-                    ) -> tuple[np.ndarray, np.ndarray]:
+                    ) -> tuple[np.ndarray, np.ndarray, str]:
     """
     Calculate the lat/long extent and offset given a fits header for pixel centers
 
@@ -158,8 +195,8 @@ def getLatLongBasis(params: FitsParams,
 
     Returns
     -------
-    tuple[np.ndarray, np.ndarray]
-        lat/long extent and offset
+    tuple[np.ndarray, np.ndarray, str]
+        lat/long extent and offset, and unit
 
     """
     coords: Callable[[np.ndarray], [int, int]] = pixelCoordinatesFunc(params)
@@ -173,14 +210,18 @@ def getLatLongBasis(params: FitsParams,
             extent[i] = -extent[i]
             delta[i] = -delta[i]
 
-    if lat_long == LatLong.RelativeArcsec:
+    if lat_long in [LatLong.RelativeArcsec, LatLong.FractionalArcsec]:
         extent *= 3600  # convert from degree to arcseconds
+        origin *= 3600
+        delta *= 3600
 
     if lat_long == LatLong.AbsoluteDeg:
         offset = origin - delta * 0.5
-    elif lat_long in [LatLong.RelativeDeg, LatLong.RelativeArcsec]:
-        offset = extent * 0.5
+    elif lat_long == LatLong.FractionalArcsec:
+        offset = np.fmod(origin - delta * 0.5, 60)
+    elif lat_long == LatLong.RelativeArcsec:
+        offset = -extent * 0.5
     else:
         raise ValueError(f'Invalid Lat/Long value {lat_long}')
 
-    return (extent, offset)
+    return (extent, offset, getBasisUnit(lat_long))
