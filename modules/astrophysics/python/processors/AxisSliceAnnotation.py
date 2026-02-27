@@ -72,7 +72,7 @@ class AxisSliceAnnotation(ivw.Processor):
 
         axis = self.sliceAxis.value
         value: float = (volume.basis[axis] * (self.slice.value - 1)
-                        / volume.dimensions[axis] + volume.offset)[axis]
+                        / (volume.dimensions[axis] - 1) + volume.offset)[axis]
 
         formatString = self.labelType.selectedValue \
             if self.labelType.selectedValue != "custom" else self.customLabel.value
