@@ -3,332 +3,22 @@
 import inviwopy as ivw
 from inviwopy import glm
 import ivwbase
+import astroviscommon
+from astroviscommon import LatLong
+import ivwastrovis
 
 import numpy as np
 from pathlib import Path
 from collections.abc import Callable
 from enum import Enum
-from dataclasses import dataclass
-from contextlib import suppress
-from astropy.io import fits
+
+import time
 
 
-class LatLong(Enum):
-    AbsoluteDeg = 0
-    RelativeDeg = 1
-    RelativeArcsec = 2
-
-
-@dataclass
-class FitsParams:
-    naxis: tuple[int, ...]
-    ctype: tuple[str, str, str]
-    cunit: tuple[str, str, str]
-    crpix: tuple[float, float, float]
-    crval: tuple[float, float, float]
-    cdelt: tuple[float, float, float]
-    btype: str
-    bunit: str
-    rest_frequency: float  # [Hz]
-
-
-def extractFitsParams(header: fits.header.Header) -> FitsParams:
-    rest_frequency: float = header['restfrq']  # equals 345_339_760_000
-    # mean difference 0.0080740896
-    # rest_frequency = 345_339_769_300  # [hz]
-
-    return FitsParams(
-        naxis=tuple(header[f'naxis{i}'] for i in range(1, header['naxis'] + 1)),
-        ctype=tuple(header[f'ctype{i}'].lower() for i in range(1, 4)),
-        cunit=tuple(header[f'cunit{i}'] for i in range(1, 4)),
-        crpix=tuple(header[f'crpix{i}'] for i in range(1, 4)),
-        crval=tuple(header[f'crval{i}'] for i in range(1, 4)),
-        cdelt=tuple(header[f'cdelt{i}'] for i in range(1, 4)),
-        btype=header['btype'],
-        bunit=header['bunit'],
-        rest_frequency=rest_frequency)
-
-
-def pixelCoordinatesFunc(params: FitsParams) -> Callable[[np.ndarray], [int, int]]:
-    def func(i: int, j: int) -> np.ndarray:
-        # FIXME: use i or (i+1) ?
-        alpha = params.crval[0] + params.cdelt[0] * (i - params.crpix[0])
-        beta = params.crval[1] + params.cdelt[1] * (j - params.crpix[1])
-        return np.array([alpha, beta])
-
-    if not params.ctype[0] == 'ra---sin':
-        raise ValueError(
-            f'Expected unit type "ctype1" to be "RA---SIN". Found "{params.ctype[0]}".')
-    if not params.ctype[1] == 'dec--sin':
-        raise ValueError(
-            f'Expected unit type "ctype2" to be "DEC--SIN". Found "{params.ctype[1]}".')
-    return func
-
-
-"""
-Conversion of velocity axis to 3rd coordinate:
-- In this case via the assumption of a radial velocity law of the form:
- |V - V*| = Vinf * (1-((Rw-r)/Rw)^2.5) for r<Rw and
- |V - V*| = Vinf for r>Rw
-Vinf = 14.5 km/s
-V* = -26.5 km/s
-Rw = 54 au
-(assumed distance 123 pc, so 1" = 123 au)
-
-Since in this particular case, we're at scales larger than Rw we're in the
-simplest case where the velocity is constant V=Vinf=14.5 km/s.
-
-So the line of sight velocity Vlos = V - V* = Vinf * (z/r) where r=sqrt(x^2+y^2+z^2)
-
-taking rho = sqrt(x^2+y^2) and mu = Vlos/Vinf we have
-Z = +- rho * mu/sqrt(1-mu^2)
-
-The positive and negative sign are for the blue-shifted (in front) and red-shifted
-(behind the plane of the sky) parts of the envelope.
-We should in this case disregard all velocity channels with |V-V*|=|Vlos|>Vinf.
-And remember for the coordinate transformation from (relative to the center of
-the emission) arcseconds to au is using 1"=123 au).
-"""
-
-
-def estimateDepth(params: FitsParams,
-                  velocity: float,
-                  assumed_distance: float = 123.0,
-                  velocity_inf: float = 14.5,
-                  velocity_star: float = -26.5) -> np.ndarray:
-    """
-
-    Parameters
-    ----------
-    params : FitsParams
-        Parameters extracted from a fits.header.Header
-    velocity : float
-        in km/s.
-    assumed_distance : float, optional
-        in parsecs. The default is 123.0.
-    velocity_inf: float, optional
-        in km/s. The default is 14.5.
-    velocity_star: float, optional
-        in km/s. The default is -26.5.
-
-
-    Returns
-    -------
-    2D array of depth values for the given velocity
-
-    """
-    v_los: float = velocity - velocity_star
-    if np.abs(v_los) > velocity_inf:
-        raise ValueError(f'v_los={v_los} exceeds v_inf={velocity_inf}')
-
-    mu: float = v_los / velocity_inf
-
-    coords: Callable[[np.ndarray], [int, int]] = pixelCoordinatesFunc(params)
-    # coordinates are given in degree, convert to arcseconds then parsecs (au)
-    delta: np.ndarray = (coords(1, 1) - coords(0, 0)) * \
-        3600.0 * assumed_distance
-    dims = np.array(params.naxis[:2])
-    center = (dims - 1) / 2.0
-
-    depths = np.empty(dims, dtype=float)
-    with np.nditer(depths, flags=['multi_index'], op_flags=['writeonly']) as it:
-        for value in it:
-            d = (it.multi_index - center) * delta
-            rho: float = np.sqrt(d[0]**2 + d[1]**2)
-            value[...] = rho * mu / np.sqrt(1.0 - mu**2)
-    return depths
-
-
-def getLatLongBasis(params: FitsParams,
-                    lat_long: LatLong = LatLong.RelativeArcsec
-                    ) -> tuple[np.ndarray, np.ndarray]:
-    """
-    Calculate the lat/long extent and offset given a fits header for pixel centers
-
-    Parameters
-    ----------
-    params : FitsParams
-        Parameters extracted from a fits.header.Header
-    lat_long : LatLong, optional
-        Determines the coordinate system (absolute/relative, degree/arcsec, ...).
-        The default is LatLong.RelativeArcsec.
-
-    Returns
-    -------
-    tuple[np.ndarray, np.ndarray]
-        lat/long extent and offset
-
-    """
-    coords: Callable[[np.ndarray], [int, int]] = pixelCoordinatesFunc(params)
-    origin: np.ndarray = coords(0, 0)
-    delta: np.ndarray = coords(1, 1) - origin
-    extent: np.ndarray = coords(params.naxis[0], params.naxis[1]) - origin
-
-    for i in range(2):
-        if extent[i] < 0.0:
-            origin[i] += extent[i]
-            extent[i] = -extent[i]
-            delta[i] = -delta[i]
-
-    if lat_long == LatLong.RelativeArcsec:
-        extent *= 3600  # convert from degree to arcseconds
-
-    if lat_long == LatLong.AbsoluteDeg:
-        offset = origin - delta * 0.5
-    elif lat_long in [LatLong.RelativeDeg, LatLong.RelativeArcsec]:
-        offset = extent * 0.5
-    else:
-        raise ValueError(f'Invalid Lat/Long value {lat_long}')
-
-    return (extent, offset)
-
-
-def createDepthMesh(params: FitsParams,
-                    velocity_func: Callable[[float], int],
-                    tf: ivw.data.TransferFunction,
-                    lat_long: LatLong,
-                    assumed_distance: float = 123.0,
-                    velocity_inf: float = 14.5,
-                    velocity_star: float = -26.5
-                    ) -> (ivw.data.Mesh, np.ndarray):
-    dims = np.array(params.naxis)
-
-    positions: list[np.ndarray] = []
-
-    mesh_count: int = 0
-    mesh = ivw.data.Mesh(dt=ivw.data.DrawType.Triangles, ct=ivw.data.ConnectivityType.Unconnected)
-    for i in range(0, dims[2]):
-        with suppress(ValueError):
-            with np.nditer(estimateDepth(params, velocity_func(i)), flags=['multi_index']) as it:
-                for value in it:
-                    p = np.array([it.multi_index[0], it.multi_index[1], value])
-                    positions.append(p)
-
-            offset: int = mesh_count * dims[0] * dims[1]
-            for y in range(dims[1] - 1):
-                indices: list[int] = []
-                for x in range(dims[0]):
-                    indices.append(y * dims[0] + x + offset)
-                    indices.append((y + 1) * dims[0] + x + offset)
-                mesh.addIndices(ivw.data.MeshInfo(dt=ivw.data.DrawType.Triangles,
-                                                  ct=ivw.data.ConnectivityType.Strip),
-                                ivw.data.IndexBufferUINT32(np.array(indices, dtype=np.uint32)))
-            mesh_count += 1
-
-    if len(positions) == 0:
-        return (mesh, np.array([0, 0]))
-
-    positions_np = np.array(positions)
-    min_max = [np.min(positions_np[:, 2]), np.max(positions_np[:, 2])]
-    ivw.logInfo(f'min/max: {min_max}')
-    depth_scaling = np.max(np.abs(min_max))
-    # scaling = np.array([1.0 / dims[0], 1.0 / dims[1], 1.0 / depth_scaling])
-
-    colors = [tf.sample(value / depth_scaling * 0.5 + 0.5) for value in positions_np[:, 2]]
-
-    extent, offset = getLatLongBasis(params, lat_long)
-    ivw.logInfo(f'{extent=}\n{offset=}')
-    positions_np = (positions_np * np.array([extent[0] / (dims[0] - 1),
-                                             extent[1] / (dims[1] - 1), 1.0])
-                    - np.array([offset[0], offset[1], 0.0]))
-
-    mesh.addBuffer(ivw.data.BufferType.PositionAttrib,
-                   ivw.data.Buffer(np.array(positions_np, dtype=np.float32)))
-    mesh.addBuffer(ivw.data.BufferType.ColorAttrib,
-                   ivw.data.Buffer(np.array(colors, dtype=np.float32)))
-
-    # m = ivw.glm.mat4([[1.0 / dims[0], 0.0, 0.0, 0.0],
-    #                   [0.0, 1.0 / dims[1], 0.0, 0.0],
-    #                   [0.0, 0.0, 1.0 / depth_scaling, 0.0],
-    #                   [-0.5, -0.5, 0.0, 1.0]])
-
-    m = ivw.glm.mat4(1.0)
-
-    w = ivw.glm.mat4(1.0)
-    w[2][2] = 1.0 / depth_scaling * 20.0
-    # w[3] = [-0.5, -0.5, 0.0, 1.0]
-
-    mesh.modelMatrix = m
-    mesh.worldMatrix = w
-
-    return (mesh, np.array(min_max))
-
-
-def createFitsCompositeProperty(identifier: str,
-                                displayName: str) -> ivw.properties.CompositeProperty:
-    cb = ivw.properties.ConstraintBehavior
-    inv = ivw.properties.InvalidationLevel
-    semantics = ivw.properties.PropertySemantics
-
-    assumedDistance = ivw.properties.FloatProperty("assumedDistance", "Assumed Distance [pc]",
-                                                   ivw.md2doc("Assumed distance of the star in parsec [pc]."),  # noqa e501
-                                                   123.0, increment=0.001,
-                                                   min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                                   semantics=semantics.Text)
-    velocityInf = ivw.properties.FloatProperty("velocityInf", "v_infinity [km/s]",
-                                               ivw.md2doc(
-                                                   "The hyperbolic excess speed v_inf [km/s]."),
-                                               14.5, increment=0.001,
-                                               min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                               semantics=semantics.Text)
-    velocityStar = ivw.properties.FloatProperty("velocityStar", "v_star [km/s]",
-                                                ivw.md2doc("v_star [km/s]"),
-                                                -26.5, increment=0.001,
-                                                min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                                semantics=semantics.Text)
-    crpix3 = ivw.properties.FloatProperty("crpix3", "crpix3",
-                                          ivw.md2doc("Reference pixel in axis3"),
-                                          0.0, increment=0.001,
-                                          min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                          semantics=semantics.Text,
-                                          invalidationLevel=inv.Valid)
-    crval3 = ivw.properties.FloatProperty("crval3", "crval3",
-                                          ivw.md2doc("Physical value of the reference pixel"),
-                                          0.0, increment=0.001,
-                                          min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                          semantics=semantics.Text,
-                                          invalidationLevel=inv.Valid)
-    cdelt3 = ivw.properties.FloatProperty("cdelt3", "cdelt3",
-                                          ivw.md2doc(""),
-                                          0.0, increment=0.001,
-                                          min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                          semantics=semantics.Text,
-                                          invalidationLevel=inv.Valid)
-    restFrequency = ivw.properties.FloatProperty("restFrequency", "Rest Frequency [Hz",
-                                                 ivw.md2doc("restfreq [Hz]"),
-                                                 0.0, increment=0.001,
-                                                 min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
-                                                 semantics=semantics.Text,
-                                                 invalidationLevel=inv.Valid)
-    extent = ivw.properties.FloatVec3Property("dataExtent", "Extent [au]",
-                                              ivw.md2doc("Extent of the dataset in au."),
-                                              glm.vec3(0.0), increment=glm.vec3(0.001),
-                                              min=(glm.vec3(-100.0), cb.Ignore),
-                                              max=(glm.vec3(100.0), cb.Ignore),
-                                              semantics=semantics.Text,
-                                              invalidationLevel=inv.Valid)
-    offset = ivw.properties.FloatVec3Property("dataOffset", "Offset [au]",
-                                              ivw.md2doc("Coordinate of the lower left corner of the dataset in au."),  # noqa e501
-                                              glm.vec3(0.0), increment=glm.vec3(0.001),
-                                              min=(glm.vec3(-100.0), cb.Ignore),
-                                              max=(glm.vec3(100.0), cb.Ignore),
-                                              semantics=semantics.Text,
-                                              invalidationLevel=inv.Valid)
-    dataRange = ivw.properties.DoubleMinMaxProperty("dataRange",
-                                                    "Data Range",
-                                                    0.0, 1.0, -1.70e308, 1.79e308,
-                                                    increment=0.0001,
-                                                    semantics=semantics.Text,
-                                                    invalidationLevel=inv.Valid)
-
-    for p in [crpix3, crval3, cdelt3, restFrequency, extent, offset, dataRange]:
-        p.readOnly = True
-
-    prop = ivw.properties.CompositeProperty(identifier, displayName)
-    prop.addProperties([assumedDistance, velocityInf, velocityStar,
-                        crpix3, crval3, cdelt3, restFrequency,
-                        extent, offset, dataRange])
-    return prop
+class AxisType(Enum):
+    SliceIndex = 0
+    Dataset = 1
+    Velocity = 2
 
 
 class FitsVolumeSource(ivw.Processor):
@@ -340,37 +30,71 @@ class FitsVolumeSource(ivw.Processor):
         ivw.Processor.__init__(self, id, name)
         self.deserializing = False
 
-        self.outport = ivw.data.VolumeOutport("Intensity")
-        self.addOutport(self.outport)
+        global astroviscommon
+        global LatLong
+        from importlib import reload
+        astroviscommon = reload(astroviscommon)
+        from astroviscommon import LatLong
 
-        self.depth = ivw.data.MeshOutport("depth")
-        self.addOutport(self.depth)
+        self.addOutport(ivw.data.VolumeOutport("intensity"))
+        self.addOutport(ivw.PythonOutport("fitsdata"))
 
         self.filename = ivw.properties.FileProperty(
             "filename", "Filename", "", "fits")
         self.filename.addNameFilter(ivw.properties.FileExtension("fits", "FITS file format"))
 
-        options = [ivw.properties.IntOption("absolute", "Absolute (degree)", LatLong.AbsoluteDeg.value),  # noqa e501
-                   ivw.properties.IntOption("relativeDeg", "Relative (degree)", LatLong.RelativeDeg.value),  # noqa e501
-                   ivw.properties.IntOption("relativeArcsec", "Relative (arcsec)", LatLong.RelativeArcsec.value)]  # noqa e501
+        cb = ivw.properties.ConstraintBehavior
+        IntOption = ivw.properties.IntOption
+        inv = ivw.properties.InvalidationLevel
+        semantics = ivw.properties.PropertySemantics
+
+        options = [IntOption("absolute", "Absolute (degree)", LatLong.AbsoluteDeg.value),
+                   IntOption("fractionalArcsec", "Fractional (arcsec)",
+                             LatLong.FractionalArcsec.value),
+                   IntOption("relativeArcsec", "Relative (arcsec)", LatLong.RelativeArcsec.value)]
         self.latLonCoords = ivw.properties.OptionPropertyInt(
             "latLonCoords", "Lat/Long Coordinates",
             help=ivw.unindentMd2doc(r'''Defines how Latitude and Longitude coordinates are shown.
 
 * _Absolute_ full coordinate in decimal degrees
-* _Relative (degree)_ coordinates in arcseconds relative to the star/center
+* _Relative (arcsec)_ coordinates in arcseconds relative to the star/center
 * _Relative (arcsec)_ coordinates in arcseconds relative to the star/center'''),
             options=options, selectedIndex=2)
 
-        self.fitsParameters = createFitsCompositeProperty("fitsParameters", "Fits Parameters")
+        options = [IntOption("slice", "Slice Indices", AxisType.SliceIndex.value),
+                   IntOption("dataset", "From DataSet", AxisType.Dataset.value),
+                   IntOption("velocity", "Velocity [km/s]", AxisType.Velocity.value)]
+        self.axisType = ivw.properties.OptionPropertyInt(
+            "axisType", "Z Axis",
+            help=ivw.unindentMd2doc(r'''Type of the z axis, that is depth.
+
+* _Slice Indices_ zero-based indices of the 2D slice images
+* _From Dataset__ use the `ctype3` and `cunit3` fields of the FITS dataset, e.g. frequency [Hz]
+* _Velocity_  velocity derived from the frequency channels [km/s]'''),
+            options=options, selectedIndex=1)
+        self.axisScaling = ivw.properties.FloatProperty(
+            "axisScaling", "Z Scaling",
+            ivw.md2doc("Scaling factor applied to the z axis"),
+            1.0, increment=0.001, min=(1.0e-8, cb.Immutable), max=(10.0, cb.Ignore))
+
+        self.zaxisRange = ivw.properties.DoubleVec2Property(
+            "zaxisRange", "Z Axis Range",
+            ivw.md2doc("Extent of the dataset along the z axis."),
+            glm.dvec2(0.0, 1.0), increment=glm.dvec2(0.001),
+            min=(glm.dvec2(-1.70e308), cb.Ignore),
+            max=(glm.dvec2(1.79e308), cb.Ignore),
+            semantics=semantics.Text, invalidationLevel=inv.Valid)
+        self.zaxisRange.readOnly = True
+
+        self.fitsParameters = ivwastrovis.createFitsCompositeProperty(
+            "fitsParameters", "Fits Parameters")
 
         self.basis = ivwbase.properties.BasisProperty("basis", "Basis and offset")
         self.information = ivwbase.properties.VolumeInformationProperty(
             "information", "Data information")
 
-        self.tf = ivw.properties.TransferFunctionProperty("colormap", "Mesh Colormap",
-                                                          ivw.doc.Document("Colormap used for coloring the frequency slices according to depth"))  # noqa e501
-        self.addProperties([self.filename, self.fitsParameters, self.latLonCoords, self.tf,
+        self.addProperties([self.filename, self.fitsParameters,
+                            self.latLonCoords, self.axisType, self.zaxisRange, self.axisScaling,
                             self.basis, self.information])
 
     @staticmethod
@@ -380,7 +104,7 @@ class FitsVolumeSource(ivw.Processor):
             displayName="FitsVolumeSource",
             category="Python",
             codeState=ivw.CodeState.Stable,
-            tags=ivw.Tags.PY,
+            tags=ivw.Tags("PY, FITS, Astrophysics"),
             help=ivw.unindentMd2doc(FitsVolumeSource.__doc__)
         )
 
@@ -391,31 +115,20 @@ class FitsVolumeSource(ivw.Processor):
         pass
 
     @staticmethod
-    def createVolume(data: np.array) -> ivw.data.Volume:
+    def createVolume(fits_data: astroviscommon.FitsData, flip_z: bool = False) -> ivw.data.Volume:
         # data = np.nan_to_num(data)
-        volumerep = ivw.data.VolumePy(np.copy(data.astype(dtype=np.float32), order='C'))
+        data_float = fits_data.data.astype(dtype=np.float32)
+        if flip_z:
+            data_float = np.flip(data_float, axis=0)
+        volumerep = ivw.data.VolumePy(np.copy(data_float, order='C'))
 
         volume = ivw.data.Volume(volumerep)
         volume.swizzlemask = ivw.data.SwizzleMask.defaultData(1)
 
-        # TODO: extract extent from hdul[0].header
-        volume.basis = ivw.glm.mat3(1)
-        volume.offset = ivw.glm.vec3(-0.5, -0.5, -0.5)
-
-        datarange = ivw.glm.dvec2(np.nanmin(data), np.nanmax(data))
+        datarange = ivw.glm.dvec2(np.nanmin(fits_data.data), np.nanmax(fits_data.data))
         volume.dataMap.dataRange = datarange
         volume.dataMap.valueRange = datarange
         return volume
-
-    @staticmethod
-    def frequencyToVelocityFunc(params: FitsParams) -> Callable[[float], int]:
-        def func(channel: int) -> float:
-            freq: int = (params.rest_frequency
-                         - ((channel + 1 - params.crpix[2]) * params.cdelt[2] + params.crval[2]))
-            return vc * freq / params.rest_frequency / 1000
-
-        vc = 299_792_458  # speed of light
-        return func
 
     def process(self):
         if not self.filename.value:
@@ -425,71 +138,114 @@ class FitsVolumeSource(ivw.Processor):
         if not filename.exists():
             return
 
-        with fits.open(filename) as hdul:
-            dim = hdul[0].data.shape
+        astroviscommon.readFITSData.cache_clear()
 
-            fits_parameters: FitsParams = extractFitsParams(hdul[0].header)
+        t = time.perf_counter_ns()
+        fits_data: astroviscommon.FitsData = astroviscommon.readFITSData(filename)
+        dim = fits_data.data.shape
+        elapsed = time.perf_counter_ns() - t
+        print(f'{elapsed/1000.0} us')
 
-            func: Callable[[float], int] = FitsVolumeSource.frequencyToVelocityFunc(fits_parameters)
-            velocity: list = [func(channel) for channel in range(dim[0])]
-            print(f'Velocity matching frequency: {velocity}')
+        print(astroviscommon.readFITSData.cache_info())
 
-            depth_mesh, min_max = \
-                createDepthMesh(fits_parameters, func, self.tf.value,
-                                LatLong(self.latLonCoords.value),
-                                assumed_distance=self.fitsParameters.assumedDistance.value,
-                                velocity_inf=self.fitsParameters.velocityInf.value,
-                                velocity_star=self.fitsParameters.velocityStar.value)
+        vel_func: Callable[[float], int] = astroviscommon.frequencyToVelocityFunc(fits_data.params)
+        velocity: list = [vel_func(channel) for channel in range(dim[0])]
+        print(f'Velocity matching frequency: {velocity}')
 
-            volume_intensity = FitsVolumeSource.createVolume(hdul[0].data)
-            volume_intensity.dataMap.valueAxis.name = 'Intensity'
-            # hdul[0].header['bunit'] is 'Jy/beam ', which is not a valid unit in Inviwo
-            volume_intensity.dataMap.valueAxis.unit = ivw.data.Unit(
-                fits_parameters.bunit.replace('/beam', ''))
+        extent_xy, offset_xy, unit = astroviscommon.getLatLongBasis(
+            fits_data.params, LatLong(self.latLonCoords.value))
 
-            extent, offset = getLatLongBasis(fits_parameters, LatLong(self.latLonCoords.value))
+        axes = [("x", unit), ("y", unit), ("z", "")]
 
-            m = ivw.glm.mat4(1.0)
-            m[0][0] = extent[0]
-            m[1][1] = extent[1]
-            m[2][2] = np.abs(velocity[-1] - velocity[0])
-            m[3] = ivw.glm.vec4(offset[0], offset[1], velocity[0], 1.0)
+        extent_z: float = 0.0
+        offset_z: float = 0.0
+        # TODO: cannot swap basis function here as this will affect the slice order!
+        match AxisType(self.axisType.value):
+            case AxisType.SliceIndex:
+                extent_z = float(dim[0] - 1)
+                offset_z = 0
+                axes[2] = ("Channel", "")
+            case AxisType.Dataset:
+                freq_func = astroviscommon.frequencyFunc(fits_data.params)
+                freq_range = (freq_func(0), freq_func(dim[0] - 1))
+                extent_z = freq_range[1] - freq_range[0]
+                offset_z = freq_range[0]
+                axes[2] = (fits_data.params.ctype[2], fits_data.params.cunit[2])
+            case AxisType.Velocity:
+                vel_range = (vel_func(0), vel_func(dim[0] - 1))
+                extent_z = vel_range[1] - vel_range[0]
+                offset_z = vel_range[0]
+                axes[2] = ("Velocity", "km/s")
+            case _:
+                raise ValueError(f"Unexpected axis type {self.axisType.value}")
 
-            axes = [("x", "\""), ("y", "\""), ("Velocity", "km/s")]
-            for i, (label, unit) in enumerate(axes):
-                volume_intensity.axes[i].name = label
-                volume_intensity.axes[i].unit = ivw.data.Unit(unit)
+        # ensure positive axis extent in z direction
+        flip_z: bool = False
+        if extent_z < 0.0:
+            offset_z += extent_z
+            extent_z = -extent_z
+            flip_z = True
 
-            w = ivw.glm.mat4(1.0)
-            w[2][2] = 2.0 / m[2][2]
-            # w[3] = [-0.5, -0.5, 0.0, 1.0]
-            volume_intensity.modelMatrix = m
-            volume_intensity.worldMatrix = w
+        volume_intensity = FitsVolumeSource.createVolume(fits_data, flip_z)
+        volume_intensity.dataMap.valueAxis.name = fits_data.params.btype
+        # hdul[0].header['bunit'] is 'Jy/beam ', which is not a valid unit in Inviwo
+        volume_intensity.dataMap.valueAxis.unit = ivw.data.Unit(
+            fits_data.params.bunit.replace('/beam', ''))
 
-            self.fitsParameters.crpix3.value = fits_parameters.crpix[2]
-            self.fitsParameters.crval3.value = fits_parameters.crval[2]
-            self.fitsParameters.cdelt3.value = fits_parameters.cdelt[2]
-            self.fitsParameters.restFrequency.value = fits_parameters.rest_frequency
-            self.fitsParameters.dataRange.value = volume_intensity.dataMap.dataRange
+        for i, (label, unit) in enumerate(axes):
+            volume_intensity.axes[i].name = label
+            volume_intensity.axes[i].unit = ivw.data.Unit(unit)
 
-            extent, offset = getLatLongBasis(fits_parameters, LatLong.RelativeArcsec)
-            extent *= self.fitsParameters.assumedDistance.value
-            offset *= self.fitsParameters.assumedDistance.value
-            self.fitsParameters.dataExtent.value = glm.vec3(extent[0], extent[1],
-                                                            min_max[1] - min_max[0])
-            self.fitsParameters.dataOffset.value = glm.vec3(offset[0], offset[1], min_max[0])
+        m = ivw.glm.dmat4(1.0)
+        m[0][0] = extent_xy[0]
+        m[1][1] = extent_xy[1]
+        m[2][2] = extent_z
+        m[3] = ivw.glm.dvec4(offset_xy[0], offset_xy[1], offset_z, 1.0)
 
-            from inviwopy.properties import OverwriteState as ows
+        # re-normalize model transformations using the world matrix
+        w = ivw.glm.dmat4(1.0)
+        w[0][0] = 1.0 / extent_xy[0]
+        w[1][1] = 1.0 / extent_xy[1]
+        w[2][2] = self.axisScaling.value / extent_z
+        w[3] = [-0.5 - m[3][0] * w[0][0], -0.5 - m[3][1] * w[1][1], -0.5 - m[3][2] * w[2][2], 1.0]
+        volume_intensity.modelMatrix = ivw.glm.mat4(m)
+        volume_intensity.worldMatrix = ivw.glm.mat4(w)
 
-            self.basis.updateForNewEntity(volume_intensity, self.deserializing)
-            self.information.updateForNewVolume(
-                volume_intensity, ows.Yes if self.deserializing else ows.No)
-            self.basis.updateEntity(volume_intensity)
-            self.information.updateVolume(volume_intensity)
-            self.deserializing = False
+        # print(w * m, extent_z * (self.axisScaling.value / extent_z))
 
-            self.outport.setData(volume_intensity)
-            self.depth.setData(depth_mesh)
+        self.zaxisRange.value = glm.dvec2(offset_z, offset_z + extent_z)
+
+        self.fitsParameters.objectName.value = fits_data.params.objectName
+        self.fitsParameters.crpix3.value = fits_data.params.crpix[2]
+        self.fitsParameters.crval3.value = fits_data.params.crval[2]
+        self.fitsParameters.cdelt3.value = fits_data.params.cdelt[2]
+        self.fitsParameters.restFrequency.value = fits_data.params.rest_frequency
+        self.fitsParameters.valueName.value = volume_intensity.dataMap.valueAxis.name
+        self.fitsParameters.valueUnit.value = str(volume_intensity.dataMap.valueAxis.unit)
+        self.fitsParameters.dataRange.dataRange = volume_intensity.dataMap.dataRange
+        # update data range of volume in case of a custom range
+        volume_intensity.dataMap.dataRange = self.fitsParameters.dataRange.dataRange
+        volume_intensity.dataMap.valueRange = self.fitsParameters.dataRange.dataRange
+
+        # determine lat/long extent in au
+        extent_xy, offset_xy, _ = astroviscommon.getLatLongBasis(
+            fits_data.params, LatLong.RelativeArcsec)
+        extent_xy *= self.fitsParameters.assumedDistance.value
+        offset_xy *= self.fitsParameters.assumedDistance.value
+        self.fitsParameters.dataExtent.value = glm.vec3(extent_xy[0], extent_xy[1], 0.0)
+        self.fitsParameters.dataOffset.value = glm.vec3(offset_xy[0], offset_xy[1], 0.0)
+
+        from inviwopy.properties import OverwriteState as ows
+
+        self.basis.updateForNewEntity(volume_intensity, self.deserializing)
+        self.information.updateForNewVolume(
+            volume_intensity, ows.Yes if self.deserializing else ows.No)
+        self.basis.updateEntity(volume_intensity)
+        self.information.updateVolume(volume_intensity)
+        self.deserializing = False
+
+        self.outports.intensity.setData(volume_intensity)
+        self.outports.fitsdata.setData(fits_data)
 
     def deserialize(self, deserializer: ivw.Deserializer):
         ivw.Processor.deserialize(self, deserializer)
