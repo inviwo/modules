@@ -35,6 +35,7 @@
 #include <inviwo/core/util/docutils.h>
 #include <inviwo/core/network/processornetwork.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/datastructures/datatraits.h>
 
 #include <inviwo/vtk/ports/vtkoutport.h>
 
@@ -105,7 +106,7 @@ bool VtkInport::hasData() const { return getData(0) != nullptr; }
 
 glm::uvec3 VtkInport::getColorCode() const {
     // Todo use a table here or something...
-    return glm::uvec3{102, 102, 153 + 5 * typeId_};
+    return glm::uvec3{102, 102, 153 + 2 * typeId_};
 }
 
 Document VtkInport::getInfo() const {
@@ -139,6 +140,13 @@ Document VtkInport::getInfo() const {
         b.append("p", "Port has no data");
     }
     return doc;
+}
+
+DataInfo VtkInport::getDataInfo() const {
+    return {.cid = fmt::format("org.inviwo.vtk.{}",
+                               vtkDataObjectTypes::GetClassNameFromTypeId(typeId_)),
+            .name = std::string{vtkDataObjectTypes::GetClassNameFromTypeId(typeId_)},
+            .color = glm::uvec3{102, 102, 153 + 2 * typeId_}};
 }
 
 int VtkInport::getTypeId() const { return typeId_; }

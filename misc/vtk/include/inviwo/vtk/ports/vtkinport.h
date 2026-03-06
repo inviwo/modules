@@ -63,6 +63,7 @@ public:
     virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
+    virtual DataInfo getDataInfo() const override;
 
     vtkDataObject* getData(size_t i = 0) const;
     bool hasData() const;

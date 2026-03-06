@@ -15,6 +15,7 @@
 
         "IVW_MODULE_FFMPEG": "OFF",
         "IVW_MODULE_WEBBROWSER": "OFF",
+        "IVW_MODULE_WEBQT": "OFF",
         "IVW_TEST_BENCHMARKS": "OFF"
       }
     },
