@@ -1,0 +1,82 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2014-2025 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include "utils/structs.glsl"
+
+uniform sampler3D inputTexture;
+uniform VolumeParameters inputTextureParameters;
+writeonly uniform image3D outputTexture;
+uniform float offset;
+
+layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+
+vec4 getNormalizedVoxel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos) {
+    return (texelFetch(volume, samplePos, 0) - volumeParams.texToNormalized.offset) *
+           volumeParams.texToNormalized.scaling;
+}
+
+float getNormalizedVoxelChannel(sampler3D volume, VolumeParameters volumeParams, ivec3 samplePos,
+                                int channel) {
+    vec4 v = getNormalizedVoxel(volume, volumeParams, samplePos);
+    return v[channel];
+}
+
+void main() {
+    ivec3 samplePos = ivec3(gl_GlobalInvocationID);
+
+    vec4 original = texelFetch(inputTexture, samplePos, 0);
+
+    float l, m, n, o;
+
+#ifdef SHRINK_CHANNEL_0
+    l = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 0) + offset;
+#else
+    l = original[0];
+#endif
+
+#ifdef SHRINK_CHANNEL_1
+    m = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 1) + offset;
+#else
+    m = original[1];
+#endif
+
+#ifdef SHRINK_CHANNEL_2
+    n = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 2) + offset;
+#else
+    n = original[2];
+#endif
+
+#ifdef SHRINK_CHANNEL_3
+    o = getNormalizedVoxelChannel(inputTexture, inputTextureParameters, samplePos, 3) + offset;
+#else
+    o = original[3];
+#endif
+
+    imageStore(outputTexture, samplePos, vec4(l, m, n, o));
+}
