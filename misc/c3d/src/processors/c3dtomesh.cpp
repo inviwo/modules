@@ -44,10 +44,10 @@ const ProcessorInfo C3DToMesh::processorInfo_{
     "C3D",                     // Category
     CodeState::Experimental,   // Code state
     Tags::CPU | Tag{"C3D"} | Tag{"Mesh"},
-    R"(Creates a point cloud mesh from C3D marker positions at a given frame.
+    R"(Creates a point cloud mesh from C3D marker positions over a range of frames.
 
-    Each 3D marker is represented as a point vertex. Invalid or empty markers
-    can optionally be skipped.
+    Each 3D marker is represented as a point vertex. Multiple frames can be
+    extracted simultaneously. Invalid or empty markers can optionally be skipped.
     )"_unindentHelp,
 };
 const ProcessorInfo& C3DToMesh::getProcessorInfo() const { return processorInfo_; }
@@ -56,8 +56,8 @@ C3DToMesh::C3DToMesh()
     : Processor{}
     , inport_{"inport", ""_help}
     , outport_{"outport", ""_help}
-    , frame_{"frame", "Frame", "Frame index to visualize"_help, 0,
-             {0, ConstraintBehavior::Immutable}, {0, ConstraintBehavior::Mutable}}
+    , frame_{"frame", "Frame Range", "Range of frame indices to include in the mesh"_help, 0, 0, 0,
+             0}
     , markerRadius_{"markerRadius", "Marker Radius",
                     "Radius used for sphere glyphs when rendering"_help, 5.0f,
                     {0.1f, ConstraintBehavior::Immutable}, {100.0f, ConstraintBehavior::Mutable}}
@@ -71,7 +71,9 @@ C3DToMesh::C3DToMesh()
         if (inport_.hasData()) {
             const auto& header = inport_.getData()->data().header();
             const size_t nbFrames = header.nbFrames();
-            frame_.setMaxValue(nbFrames > 0 ? nbFrames - 1 : 0);
+            const size_t maxFrame = nbFrames > 0 ? nbFrames - 1 : 0;
+            frame_.setRangeMax(maxFrame);
+            frame_.setEnd(maxFrame);
         }
     });
 }
@@ -89,35 +91,40 @@ void C3DToMesh::process() {
         return;
     }
 
-    const size_t frameIdx = std::min(frame_.get(), nbFrames - 1);
-    const auto& framePoints = c3d.data().frame(frameIdx).points();
+    const size_t startFrame = std::min(frame_.getStart(), nbFrames - 1);
+    const size_t endFrame = std::min(frame_.getEnd(), nbFrames - 1);
 
     std::vector<vec3> positions;
     std::vector<vec4> colors;
     std::vector<float> radii;
 
-    positions.reserve(nbPoints);
-    colors.reserve(nbPoints);
-    radii.reserve(nbPoints);
+    const size_t totalFrames = endFrame - startFrame + 1;
+    positions.reserve(nbPoints * totalFrames);
+    colors.reserve(nbPoints * totalFrames);
+    radii.reserve(nbPoints * totalFrames);
 
-    for (size_t p = 0; p < nbPoints; ++p) {
-        const auto& point = framePoints.point(p);
+    for (size_t frameIdx = startFrame; frameIdx <= endFrame; ++frameIdx) {
+        const auto& framePoints = c3d.data().frame(frameIdx).points();
 
-        if (skipEmpty_ && point.residual() < 0.0) {
-            continue;
+        for (size_t p = 0; p < nbPoints; ++p) {
+            const auto& point = framePoints.point(p);
+
+            if (skipEmpty_ && point.residual() < 0.0) {
+                continue;
+            }
+
+            positions.emplace_back(static_cast<float>(point.x()), static_cast<float>(point.y()),
+                                   static_cast<float>(point.z()));
+
+            // Assign a distinct color per marker using cosine-based hue distribution
+            const float hue = static_cast<float>(p) / static_cast<float>(nbPoints);
+            constexpr float tau = 6.28318f;
+            colors.emplace_back(0.5f + 0.5f * std::cos(tau * (hue + 0.0f)),
+                                0.5f + 0.5f * std::cos(tau * (hue + 0.333f)),
+                                0.5f + 0.5f * std::cos(tau * (hue + 0.667f)), 1.0f);
+
+            radii.emplace_back(markerRadius_.get());
         }
-
-        positions.emplace_back(static_cast<float>(point.x()), static_cast<float>(point.y()),
-                               static_cast<float>(point.z()));
-
-        // Assign a distinct color per marker using cosine-based hue distribution
-        const float hue = static_cast<float>(p) / static_cast<float>(nbPoints);
-        constexpr float tau = 6.28318f;
-        colors.emplace_back(0.5f + 0.5f * std::cos(tau * (hue + 0.0f)),
-                            0.5f + 0.5f * std::cos(tau * (hue + 0.333f)),
-                            0.5f + 0.5f * std::cos(tau * (hue + 0.667f)), 1.0f);
-
-        radii.emplace_back(markerRadius_.get());
     }
 
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);

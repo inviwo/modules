@@ -30,6 +30,7 @@
 
 #include <inviwo/c3d/c3dmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/meshport.h>
@@ -39,11 +40,12 @@
 namespace inviwo {
 
 /**
- * \brief Creates a point cloud mesh from C3D marker positions at a specific frame.
+ * \brief Creates a point cloud mesh from C3D marker positions over a range of frames.
  *
  * Reads 3D point data from a C3D file and creates a mesh with point rendering
  * suitable for visualizing marker positions. Each marker is represented as a
- * vertex in the mesh.
+ * vertex in the mesh. Multiple frames can be extracted simultaneously using
+ * the frame range property.
  */
 class IVW_MODULE_C3D_API C3DToMesh : public Processor {
 public:
@@ -59,7 +61,7 @@ private:
     c3d::C3DDataInport inport_;
     MeshOutport outport_;
 
-    IntSizeTProperty frame_;
+    IntSizeTMinMaxProperty frame_;
     FloatProperty markerRadius_;
     BoolProperty skipEmpty_;
 };
