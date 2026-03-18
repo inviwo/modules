@@ -29,6 +29,8 @@
 
 #include <inviwo/c3d/datastructures/c3ddata.h>
 
+#include <ezc3d/ezc3d.h>
+
 namespace inviwo {
 
 namespace c3d {

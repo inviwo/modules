@@ -41,19 +41,7 @@ struct DataTraits<c3d::C3DData> {
     static constexpr std::string_view classIdentifier() { return "org.inviwo.c3d.C3DData"; }
     static constexpr std::string_view dataName() { return "C3DData"; }
     static constexpr uvec3 colorCode() { return {200, 120, 60}; }
-    static Document info(const c3d::C3DData& data) {
-        using H = utildoc::TableBuilder::Header;
-        using P = Document::PathComponent;
-        Document doc;
-        doc.append("b", "C3D Data", {{"style", "color:white;"}});
-        utildoc::TableBuilder tb(doc.handle(), P::end());
-        tb(H("Source"), data.source().empty() ? "(unknown)" : data.source());
-        tb(H("Points"), data.data().header().nb3dPoints());
-        tb(H("Frames"), data.data().header().nbFrames());
-        tb(H("Analogs"), data.data().header().nbAnalogs());
-        tb(H("Frame Rate"), data.data().header().frameRate());
-        return doc;
-    }
+    static IVW_MODULE_C3D_API Document info(const c3d::C3DData& data);
 };
 
 }  // namespace inviwo

@@ -30,10 +30,12 @@
 
 #include <inviwo/c3d/c3dmoduledefine.h>
 
-#include <ezc3d/ezc3d.h>
-
 #include <memory>
 #include <string>
+
+namespace ezc3d {
+class c3d;
+}  // namespace ezc3d
 
 namespace inviwo {
 
