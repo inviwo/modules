@@ -36,6 +36,8 @@
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 
+#include <modules/brushingandlinking/ports/brushingandlinkingports.h>
+
 #include <inviwo/c3d/ports/c3dport.h>
 
 #include <string>
@@ -68,22 +70,16 @@ private:
     void handlePicking(PickingEvent* e);
 
     c3d::C3DDataInport inport_;
+    BrushingAndLinkingInport bnl_;
     MeshOutport outport_;
 
     IntSizeTMinMaxProperty frame_;
     FloatProperty markerRadius_;
     BoolProperty skipEmpty_;
     BoolProperty enableTooltips_;
-
     PickingMapper picking_;
 
-    struct VertexInfo {
-        std::string name;
-        size_t frame;
-        float time;
-        vec3 position;
-    };
-    std::vector<VertexInfo> vertexInfo_;
+    std::shared_ptr<const c3d::C3DData> data_;
 };
 
 }  // namespace inviwo

@@ -34,6 +34,8 @@
 
 #include <inviwo/c3d/datastructures/c3ddata.h>
 
+#include <ezc3d/Header.h>
+
 namespace inviwo {
 
 template <>

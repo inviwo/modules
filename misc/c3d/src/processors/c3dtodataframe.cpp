@@ -32,6 +32,8 @@
 #include <inviwo/dataframe/datastructures/column.h>
 
 #include <ezc3d/ezc3d.h>
+#include <ezc3d/Header.h>
+#include <ezc3d/Data.h>
 
 #include <fmt/format.h>
 
