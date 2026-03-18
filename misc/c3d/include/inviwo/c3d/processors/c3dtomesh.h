@@ -34,10 +34,16 @@
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 #include <inviwo/c3d/ports/c3dport.h>
 
+#include <string>
+#include <vector>
+
 namespace inviwo {
+
+class PickingEvent;
 
 /**
  * \brief Creates a point cloud mesh from C3D marker positions over a range of frames.
@@ -45,7 +51,8 @@ namespace inviwo {
  * Reads 3D point data from a C3D file and creates a mesh with point rendering
  * suitable for visualizing marker positions. Each marker is represented as a
  * vertex in the mesh. Multiple frames can be extracted simultaneously using
- * the frame range property.
+ * the frame range property. Supports picking for tooltips showing point name,
+ * frame index, time, and position.
  */
 class IVW_MODULE_C3D_API C3DToMesh : public Processor {
 public:
@@ -58,12 +65,25 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
+    void handlePicking(PickingEvent* e);
+
     c3d::C3DDataInport inport_;
     MeshOutport outport_;
 
     IntSizeTMinMaxProperty frame_;
     FloatProperty markerRadius_;
     BoolProperty skipEmpty_;
+    BoolProperty enableTooltips_;
+
+    PickingMapper picking_;
+
+    struct VertexInfo {
+        std::string name;
+        size_t frame;
+        float time;
+        vec3 position;
+    };
+    std::vector<VertexInfo> vertexInfo_;
 };
 
 }  // namespace inviwo

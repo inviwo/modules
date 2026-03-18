@@ -31,10 +31,14 @@
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
 #include <inviwo/core/datastructures/geometry/meshram.h>
+#include <inviwo/core/interaction/events/pickingevent.h>
 
 #include <ezc3d/ezc3d.h>
 
 #include <cmath>
+#include <numeric>
+
+#include <fmt/format.h>
 
 namespace inviwo {
 
@@ -48,6 +52,7 @@ const ProcessorInfo C3DToMesh::processorInfo_{
 
     Each 3D marker is represented as a point vertex. Multiple frames can be
     extracted simultaneously. Invalid or empty markers can optionally be skipped.
+    Picking support provides tooltips with point name, frame, time, and position.
     )"_unindentHelp,
 };
 const ProcessorInfo& C3DToMesh::getProcessorInfo() const { return processorInfo_; }
@@ -62,10 +67,13 @@ C3DToMesh::C3DToMesh()
                     "Radius used for sphere glyphs when rendering"_help, 5.0f,
                     {0.1f, ConstraintBehavior::Immutable}, {100.0f, ConstraintBehavior::Mutable}}
     , skipEmpty_{"skipEmpty", "Skip Empty Points",
-                 "Skip markers with negative residuals (indicating invalid data)"_help, true} {
+                 "Skip markers with negative residuals (indicating invalid data)"_help, true}
+    , enableTooltips_{"enableTooltips", "Enable Tooltips",
+                      "Show point name, frame, time, and position on hover"_help, true}
+    , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
 
     addPorts(inport_, outport_);
-    addProperties(frame_, markerRadius_, skipEmpty_);
+    addProperties(frame_, markerRadius_, skipEmpty_, enableTooltips_);
 
     inport_.onChange([this]() {
         if (inport_.hasData()) {
@@ -93,15 +101,19 @@ void C3DToMesh::process() {
 
     const size_t startFrame = std::min(frame_.getStart(), nbFrames - 1);
     const size_t endFrame = std::min(frame_.getEnd(), nbFrames - 1);
+    const float frameRate = header.frameRate();
+    const auto pointNames = c3d.pointNames();
 
     std::vector<vec3> positions;
     std::vector<vec4> colors;
     std::vector<float> radii;
+    std::vector<VertexInfo> info;
 
     const size_t totalFrames = endFrame - startFrame + 1;
     positions.reserve(nbPoints * totalFrames);
     colors.reserve(nbPoints * totalFrames);
     radii.reserve(nbPoints * totalFrames);
+    info.reserve(nbPoints * totalFrames);
 
     for (size_t frameIdx = startFrame; frameIdx <= endFrame; ++frameIdx) {
         const auto& framePoints = c3d.data().frame(frameIdx).points();
@@ -113,8 +125,10 @@ void C3DToMesh::process() {
                 continue;
             }
 
-            positions.emplace_back(static_cast<float>(point.x()), static_cast<float>(point.y()),
-                                   static_cast<float>(point.z()));
+            const vec3 pos{static_cast<float>(point.x()), static_cast<float>(point.y()),
+                           static_cast<float>(point.z())};
+
+            positions.emplace_back(pos);
 
             // Assign a distinct color per marker using cosine-based hue distribution
             const float hue = static_cast<float>(p) / static_cast<float>(nbPoints);
@@ -124,15 +138,53 @@ void C3DToMesh::process() {
                                 0.5f + 0.5f * std::cos(tau * (hue + 0.667f)), 1.0f);
 
             radii.emplace_back(markerRadius_.get());
+
+            const std::string& name =
+                (p < pointNames.size()) ? pointNames[p] : fmt::format("Point_{}", p);
+            const float time =
+                (frameRate > 0.0f) ? static_cast<float>(frameIdx) / frameRate : 0.0f;
+            info.push_back({name, frameIdx, time, pos});
         }
     }
+
+    const size_t vertexCount = positions.size();
+    picking_.resize(std::max<size_t>(vertexCount, 1));
+    vertexInfo_ = std::move(info);
 
     auto mesh = std::make_shared<Mesh>(DrawType::Points, ConnectivityType::None);
     mesh->addBuffer(BufferType::PositionAttrib, util::makeBuffer(std::move(positions)));
     mesh->addBuffer(BufferType::ColorAttrib, util::makeBuffer(std::move(colors)));
     mesh->addBuffer(BufferType::RadiiAttrib, util::makeBuffer(std::move(radii)));
 
+    if (enableTooltips_ && vertexCount > 0) {
+        std::vector<uint32_t> pickIds(vertexCount);
+        std::iota(pickIds.begin(), pickIds.end(),
+                  static_cast<uint32_t>(picking_.getPickingId(0)));
+        mesh->addBuffer(BufferType::PickingAttrib, util::makeBuffer(std::move(pickIds)));
+    }
+
     outport_.setData(mesh);
+}
+
+void C3DToMesh::handlePicking(PickingEvent* e) {
+    if (!enableTooltips_) return;
+
+    if (e->getPressState() == PickingPressState::None) {
+        if (e->getHoverState() == PickingHoverState::Move ||
+            e->getHoverState() == PickingHoverState::Enter) {
+
+            const auto id = e->getPickedId();
+            if (id < vertexInfo_.size()) {
+                const auto& vi = vertexInfo_[id];
+                e->setToolTip(fmt::format("Point: {}\nFrame: {}\nTime: {:.4f} s\nPosition: "
+                                          "({:.2f}, {:.2f}, {:.2f})",
+                                          vi.name, vi.frame, vi.time, vi.position.x,
+                                          vi.position.y, vi.position.z));
+            }
+        } else if (e->getHoverState() == PickingHoverState::Exit) {
+            e->setToolTip("");
+        }
+    }
 }
 
 }  // namespace inviwo
