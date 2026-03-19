@@ -79,9 +79,9 @@ void LogRendererProcessors::process() {
     vec2 dim(outport_.getDimensions());
     auto invDim = 2.0f / dim;
 
-    textRenderer_.setFont(font_.getFontFace());
-    textRenderer_.setFontSize(font_.getFontSize());
-    textRenderer_.setLineSpacing(font_.getLineSpacing());
+    textRenderer_.setFont(font_.fontFace_);
+    textRenderer_.setFontSize(font_.fontSize_);
+    textRenderer_.setLineSpacing(font_.lineSpacing_);
 
     auto maxRows = outport_.getDimensions().y / textRenderer_.getLineHeight();
 
