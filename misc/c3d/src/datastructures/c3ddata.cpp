@@ -30,6 +30,9 @@
 #include <inviwo/c3d/datastructures/c3ddata.h>
 
 #include <ezc3d/ezc3d.h>
+#include <ezc3d/Header.h>
+#include <ezc3d/Parameters.h>
+#include <ezc3d/Data.h>
 
 namespace inviwo {
 
@@ -43,10 +46,96 @@ const ezc3d::c3d& C3DData::data() const { return *data_; }
 const std::string& C3DData::source() const { return source_; }
 
 C3DData C3DData::deepCopy() const {
-    if (data_) {
-        return C3DData{std::make_shared<ezc3d::c3d>(*data_), source_};
+    if (!data_) {
+        return C3DData{};
     }
-    return C3DData{};
+
+    const auto& src = *data_;
+    auto dst = std::make_shared<ezc3d::c3d>();
+
+    // Register point names. This initializes the POINT configuration
+    // (POINT:LABELS, POINT:USED, header, etc.) in the new c3d object.
+    for (const auto& name : src.pointNames()) {
+        dst->point(name);
+    }
+
+    // Register analog channel names. This initializes the ANALOG configuration.
+    for (const auto& name : src.channelNames()) {
+        dst->analog(name);
+    }
+
+    // Deep copy all data frames. Each frame is rebuilt from scratch so that
+    // the new c3d object owns its own Points, Analogs, and Rotations data
+    // rather than sharing via shared_ptr with the source.
+    for (size_t f = 0; f < src.data().nbFrames(); ++f) {
+        const auto& srcFrame = src.data().frame(f);
+        ezc3d::DataNS::Frame newFrame;
+
+        // Deep copy points
+        {
+            ezc3d::DataNS::Points3dNS::Points pts;
+            for (size_t i = 0; i < srcFrame.points().nbPoints(); ++i) {
+                const auto& sp = srcFrame.points().point(i);
+                ezc3d::DataNS::Points3dNS::Point pt;
+                pt.set(sp.x(), sp.y(), sp.z(), sp.residual());
+                pt.cameraMask(sp.cameraMask());
+                pts.point(pt);
+            }
+            newFrame.add(pts);
+        }
+
+        // Deep copy analogs
+        {
+            ezc3d::DataNS::AnalogsNS::Analogs analogs;
+            for (size_t s = 0; s < srcFrame.analogs().nbSubframes(); ++s) {
+                const auto& srcSf = srcFrame.analogs().subframe(s);
+                ezc3d::DataNS::AnalogsNS::SubFrame sub;
+                for (size_t c = 0; c < srcSf.nbChannels(); ++c) {
+                    ezc3d::DataNS::AnalogsNS::Channel ch;
+                    ch.data(srcSf.channel(c).data());
+                    sub.channel(ch);
+                }
+                analogs.subframe(sub);
+            }
+            newFrame.add(analogs);
+        }
+
+        // Deep copy rotations (if present)
+        if (!srcFrame.rotations().isEmpty()) {
+            ezc3d::DataNS::RotationNS::Rotations rots;
+            for (size_t s = 0; s < srcFrame.rotations().nbSubframes(); ++s) {
+                const auto& srcSf = srcFrame.rotations().subframe(s);
+                ezc3d::DataNS::RotationNS::SubFrame sub;
+                for (size_t r = 0; r < srcSf.nbRotations(); ++r) {
+                    const auto& sr = srcSf.rotation(r);
+                    ezc3d::DataNS::RotationNS::Rotation rot;
+                    rot.set(sr(0, 0), sr(0, 1), sr(0, 2), sr(0, 3), sr(1, 0), sr(1, 1), sr(1, 2),
+                            sr(1, 3), sr(2, 0), sr(2, 1), sr(2, 2), sr(2, 3), sr(3, 0), sr(3, 1),
+                            sr(3, 2), sr(3, 3), sr.reliability());
+                    sub.rotation(rot);
+                }
+                rots.subframe(sub);
+            }
+            newFrame.add(rots);
+        }
+
+        dst->frame(newFrame);
+    }
+
+    // Copy parameter groups that are not auto-managed by point()/analog()/frame().
+    // POINT and ANALOG groups are already set up correctly by the calls above.
+    const auto& srcParams = src.parameters();
+    for (size_t g = 0; g < srcParams.nbGroups(); ++g) {
+        const auto& group = srcParams.group(g);
+        if (group.name() == "POINT" || group.name() == "ANALOG") {
+            continue;
+        }
+        for (size_t p = 0; p < group.nbParameters(); ++p) {
+            dst->parameter(group.name(), group.parameter(p));
+        }
+    }
+
+    return C3DData{std::move(dst), source_};
 }
 
 }  // namespace c3d
