@@ -42,6 +42,13 @@ const ezc3d::c3d& C3DData::data() const { return *data_; }
 
 const std::string& C3DData::source() const { return source_; }
 
+C3DData C3DData::deepCopy() const {
+    if (data_) {
+        return C3DData{std::make_shared<ezc3d::c3d>(*data_), source_};
+    }
+    return C3DData{};
+}
+
 }  // namespace c3d
 
 }  // namespace inviwo

@@ -192,7 +192,7 @@ void C3DToMesh::handlePicking(PickingEvent* e) {
 
             e->setToolTip(fmt::format(
                 "Point: {} ({})\nFrame: {}\nTime: {:.4f} s\nPosition: "
-                "({:.2f}, {:.2f}, {:.2f})\n Residual {:.2f}",
+                "({:.2f}, {:.2f}, {:.2f})\nResidual: {:.2f}",
                 name, pointIdx, frameIdx, time, point.x(), point.y(), point.z(), point.residual()));
 
             bnl_.highlight({frameIdx}, BrushingTarget::Row);

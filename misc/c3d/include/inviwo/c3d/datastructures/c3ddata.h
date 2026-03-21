@@ -55,6 +55,15 @@ public:
     const ezc3d::c3d& data() const;
     const std::string& source() const;
 
+    /**
+     * \brief Create an independent deep copy of this C3DData.
+     *
+     * The default copy shares the underlying ezc3d::c3d object via shared_ptr.
+     * This function creates a new copy of the ezc3d::c3d data so the result
+     * can be modified without affecting the original.
+     */
+    C3DData deepCopy() const;
+
 private:
     std::shared_ptr<ezc3d::c3d> data_;
     std::string source_;
