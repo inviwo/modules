@@ -32,6 +32,7 @@
 #include <inviwo/c3d/io/c3dreader.h>
 #include <inviwo/c3d/ports/c3dport.h>
 #include <inviwo/c3d/processors/c3daveragedpositions.h>
+#include <inviwo/c3d/processors/c3dpointalignment.h>
 #include <inviwo/c3d/processors/c3dsource.h>
 #include <inviwo/c3d/processors/c3dtodataframe.h>
 #include <inviwo/c3d/processors/c3dtomesh.h>
@@ -41,6 +42,7 @@ namespace inviwo {
 
 C3DModule::C3DModule(InviwoApplication* app) : InviwoModule(app, "C3D") {
     registerProcessor<C3DAveragedPositions>();
+    registerProcessor<C3DPointAlignment>();
     registerProcessor<C3DSource>();
     registerProcessor<C3DToDataFrame>();
     registerProcessor<C3DToMesh>();

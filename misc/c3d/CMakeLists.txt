@@ -10,6 +10,7 @@ set(HEADER_FILES
     include/inviwo/c3d/io/c3dreader.h
     include/inviwo/c3d/ports/c3dport.h
     include/inviwo/c3d/processors/c3daveragedpositions.h
+    include/inviwo/c3d/processors/c3dpointalignment.h
     include/inviwo/c3d/processors/c3dsource.h
     include/inviwo/c3d/processors/c3dtodataframe.h
     include/inviwo/c3d/processors/c3dtomesh.h
@@ -25,6 +26,7 @@ set(SOURCE_FILES
     src/io/c3dreader.cpp
     src/ports/c3dport.cpp
     src/processors/c3daveragedpositions.cpp
+    src/processors/c3dpointalignment.cpp
     src/processors/c3dsource.cpp
     src/processors/c3dtodataframe.cpp
     src/processors/c3dtomesh.cpp

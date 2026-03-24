@@ -50,8 +50,10 @@ const ProcessorInfo& C3DAveragedPositions::getProcessorInfo() const { return pro
 
 C3DAveragedPositions::C3DAveragedPositions()
     : Processor{}
-    , inport_{"inport", ""_help}
-    , outport_{"outport", ""_help}
+    , inport_{"inport"}
+    , meshOutport_{"outport"}
+    , positionsOutport_{"positionsOutport"}
+    , namesOutport_{"namesOutport"}
     , frame_{"frame", "Frame Range", "Range of frame indices to include in the mesh"_help, 0, 0, 0,
              0}
     , markerRadius_{"markerRadius",
@@ -67,7 +69,7 @@ C3DAveragedPositions::C3DAveragedPositions()
     , triangles_("triangles", "Triangles", "", InvalidationLevel::InvalidOutput,
                  PropertySemantics::Multiline) {
 
-    addPorts(inport_, outport_);
+    addPorts(inport_, meshOutport_, positionsOutport_, namesOutport_);
     addProperties(frame_, markerRadius_, skipEmpty_, lines_, triangles_);
 
     inport_.onChange([this]() {
@@ -87,7 +89,9 @@ void C3DAveragedPositions::process() {
     const size_t nbPoints = header.nb3dPoints();
 
     if (nbFrames == 0 || nbPoints == 0) {
-        outport_.setData(std::make_shared<Mesh>());
+        meshOutport_.clear();
+        positionsOutport_.clear();
+        namesOutport_.clear();
         return;
     }
 
@@ -195,7 +199,9 @@ void C3DAveragedPositions::process() {
                 std::ranges::to<std::vector>()));
     }
 
-    outport_.setData(mesh);
+    meshOutport_.setData(mesh);
+    positionsOutport_.setData(std::make_shared<std::vector<vec3>>(positions_));
+    namesOutport_.setData(std::make_shared<std::vector<std::string>>(names_));
 }
 
 void C3DAveragedPositions::handlePicking(PickingEvent* e) {

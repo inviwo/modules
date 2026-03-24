@@ -31,20 +31,16 @@
 
 #include <inviwo/c3d/c3dmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
-#include <inviwo/core/properties/boolproperty.h>
-#include <inviwo/core/properties/stringproperty.h>
-#include <inviwo/core/ports/meshport.h>
-#include <inviwo/core/interaction/pickingmapper.h>
-
+#include <inviwo/core/ports/datainport.h>
+#include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/c3d/ports/c3dport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_C3D_API C3DAveragedPositions : public Processor {
+class IVW_MODULE_C3D_API C3DPointAlignment : public Processor {
 public:
-    C3DAveragedPositions();
+    C3DPointAlignment();
 
     virtual void process() override;
 
@@ -52,24 +48,16 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    void handlePicking(PickingEvent* e);
-
     C3DDataInport inport_;
-    MeshOutport meshOutport_;
 
-    DataOutport<std::vector<vec3>> positionsOutport_;
-    DataOutport<std::vector<std::string>> namesOutport_;
+    DataInport<std::vector<vec3>> positionsInport_;
+    DataInport<std::vector<std::string>> namesInport_;
 
-    IntSizeTMinMaxProperty frame_;
-    FloatProperty markerRadius_;
-    BoolProperty skipEmpty_;
-    PickingMapper picking_;
+    DataOutport<mat4> transform_;
 
-    StringProperty lines_;
-    StringProperty triangles_;
+    OrdinalProperty<size_t> frameIdx_;
 
-    std::vector<vec3> positions_;
-    std::vector<std::string> names_;
+
 };
 
 }  // namespace inviwo
