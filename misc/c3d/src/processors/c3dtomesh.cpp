@@ -119,7 +119,7 @@ void C3DToMesh::process() {
     radii.reserve(nbPoints * totalFrames);
     index.reserve(nbPoints * totalFrames);
     pickIds.reserve(nbPoints * totalFrames);
-    picking_.resize(std::max<size_t>(nbPoints * totalFrames, 1));
+    picking_.resize(std::max<size_t>(nbPoints * nbFrames, 1));
 
     for (size_t frameIdx = startFrame; frameIdx <= endFrame; ++frameIdx) {
         const auto& framePoints = c3d.data().frame(frameIdx).points();
