@@ -42,7 +42,7 @@ namespace inviwo {
 const ProcessorInfo C3DToDataFrame::processorInfo_{
     "org.inviwo.C3DToDataFrame",  // Class identifier
     "C3D To DataFrame",           // Display name
-    "C3D",                        // Category
+    "Data Input",                 // Category
     CodeState::Experimental,      // Code state
     Tags::CPU | Tag{"C3D"} | Tag{"DataFrame"},
     R"(Converts C3D point and analog data into Inviwo DataFrames.
@@ -168,8 +168,7 @@ void C3DToDataFrame::process() {
                     const auto& analogs = c3d.data().frame(f).analogs();
                     for (size_t sf = 0; sf < nbSubframes; ++sf) {
                         const size_t idx = f * nbSubframes + sf;
-                        values[idx] =
-                            static_cast<float>(analogs.subframe(sf).channel(ch).data());
+                        values[idx] = static_cast<float>(analogs.subframe(sf).channel(ch).data());
                     }
                 }
 

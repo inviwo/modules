@@ -44,9 +44,9 @@ namespace inviwo {
 const ProcessorInfo C3DTransformPoints::processorInfo_{
     "org.inviwo.C3DTransformPoints",  // Class identifier
     "C3DTransform Points",            // Display name
-    "Undefined",                      // Category
+    "Data Operation",                 // Category
     CodeState::Experimental,          // Code state
-    Tags::CPU,                        // Tags
+    Tags::CPU | Tag{"C3D"},           // Tags
     R"(Apply a transformation to the points in a c3d dataset)"_unindentHelp,
 };
 

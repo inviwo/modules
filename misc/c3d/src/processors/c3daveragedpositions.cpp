@@ -39,10 +39,10 @@ namespace inviwo {
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo C3DAveragedPositions::processorInfo_{
     "org.inviwo.C3DAveragedPositions",  // Class identifier
-    "C3DAveraged Positions",            // Display name
-    "Undefined",                        // Category
+    "C3D Averaged Positions",           // Display name
+    "Motion Tracking",                  // Category
     CodeState::Experimental,            // Code state
-    Tags::None,                         // Tags
+    Tags::CPU | Tag{"C3D"},             // Tags
     R"(<Explanation of how to use the processor.>)"_unindentHelp,
 };
 

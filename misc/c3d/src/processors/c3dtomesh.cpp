@@ -47,7 +47,7 @@ namespace inviwo {
 const ProcessorInfo C3DToMesh::processorInfo_{
     "org.inviwo.C3DToMesh",   // Class identifier
     "C3D To Mesh",            // Display name
-    "C3D",                    // Category
+    "Data Input",             // Category
     CodeState::Experimental,  // Code state
     Tags::CPU | Tag{"C3D"} | Tag{"Mesh"},
     R"(Creates a point cloud mesh from C3D marker positions over a range of frames.

@@ -34,11 +34,11 @@
 namespace inviwo {
 
 const ProcessorInfo C3DSource::processorInfo_{
-    "org.inviwo.C3DSource",                       // Class identifier
-    "C3D Source",                                 // Display name
-    "Data Input",                                 // Category
-    CodeState::Experimental,                      // Code state
-    "C3D, Source, Biomechanics, Motion Capture",  // Tags
+    "org.inviwo.C3DSource",   // Class identifier
+    "C3D Source",             // Display name
+    "Data Input",             // Category
+    CodeState::Experimental,  // Code state
+    Tags::CPU | Tag{"C3D"},   // Tags
     "Loads a C3D file containing 3D marker positions and analog data."_help,
 };
 const ProcessorInfo& C3DSource::getProcessorInfo() const { return processorInfo_; }

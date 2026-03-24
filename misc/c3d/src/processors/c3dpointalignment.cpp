@@ -38,13 +38,36 @@
 
 namespace inviwo {
 
+namespace {
+
+glm::dmat4 toGLM(const Eigen::Matrix3d& R, const Eigen::Vector3d& t) {
+    // GLM is column-major, so glm::dmat4[col][row]
+    glm::dmat4 M(1.0);  // identity
+
+    // Rotation (upper-left 3x3)
+    for (int col = 0; col < 3; col++) {
+        for (int row = 0; row < 3; row++) {
+            M[col][row] = R(row, col);
+        }
+    }
+
+    // Translation (4th column)
+    M[3][0] = t(0);
+    M[3][1] = t(1);
+    M[3][2] = t(2);
+
+    return M;
+}
+
+}  // namespace
+
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
 const ProcessorInfo C3DPointAlignment::processorInfo_{
     "org.inviwo.C3DPointAlignment",  // Class identifier
-    "C3DPoint Alignment",            // Display name
-    "Undefined",                     // Category
+    "C3D Point Alignment",           // Display name
+    "Motion Tracking",               // Category
     CodeState::Experimental,         // Code state
-    Tags::None,                      // Tags
+    Tags::CPU | Tag{"C3D"},          // Tags
     R"(<Explanation of how to use the processor.>)"_unindentHelp,
 };
 
@@ -75,7 +98,7 @@ void C3DPointAlignment::process() {
     }
 
     Eigen::Matrix<double, Eigen::Dynamic, 3> ref{static_cast<Eigen::Index>(refPoints->size()), 3};
-    for (auto&& [i, p] : std::views::enumerate(*refPoints)) {
+    for (auto&& [i, p] : std::views::zip(std::views::iota(0uz), *refPoints)) {
         ref(i, 0) = p.x;
         ref(i, 1) = p.y;
         ref(i, 2) = p.z;
@@ -95,7 +118,7 @@ void C3DPointAlignment::process() {
     const auto& srcFrame = src.data().frame(frameIdx_.get());
 
     Eigen::Matrix<double, Eigen::Dynamic, 3> obs{static_cast<Eigen::Index>(refPoints->size()), 3};
-    for (auto&& [i, pi] : std::views::enumerate(refIndices)) {
+    for (auto&& [i, pi] : std::views::zip(std::views::iota(0uz), refIndices)) {
         const auto& p = srcFrame.points().point(pi);
         obs(i, 0) = p.x();
         obs(i, 1) = p.y();
@@ -115,8 +138,8 @@ void C3DPointAlignment::process() {
 
     // 4. SVD
     Eigen::JacobiSVD<Eigen::MatrixXd> svd(H, Eigen::ComputeFullU | Eigen::ComputeFullV);
-    const auto U = svd.matrixU();
-    auto V = svd.matrixV();
+    const Eigen::Matrix3d U = svd.matrixU();
+    Eigen::Matrix3d V = svd.matrixV();
 
     // 5. Optimal rotation
     Eigen::Matrix<double, 3, 3> R = U * V.transpose();
@@ -130,10 +153,24 @@ void C3DPointAlignment::process() {
     // 6. Optimal translation
     const auto t = centroid_obs - R * centroid_ref;
 
-    log::info("{}, {}, {}", t[0], t[1], t[2]);
+    const auto trafo = toGLM(R, t);
 
-    const dmat4 trafo{dvec4{R(0, 0), R(0, 1), R(0, 2), 0.0}, dvec4{R(1, 0), R(1, 1), R(1, 2), 0.0},
-                      dvec4{R(2, 0), R(2, 1), R(2, 2), 0.0}, dvec4{t[0], t[1], t[2], 1.0}};
+    /*
+    const auto cref = glm::dvec3{centroid_ref(0), centroid_ref(1), centroid_ref(2)};
+    const auto cobs = glm::dvec3{centroid_obs(0), centroid_obs(1), centroid_obs(2)};
+    const auto ctransformed = dvec3{trafo * glm::dvec4{cref, 1.0}};
+    glm::dvec3 cerror = cobs - ctransformed;
+    log::info("Center: error = ({:.3f}, {:.3f}, {:.3f})", cerror.x, cerror.y, cerror.z);
+
+    for (auto&& [i, r, pi] : std::views::zip(std::views::iota(0uz), *refPoints, refIndices)) {
+        const auto& p = srcFrame.points().point(pi);
+        const auto dest = glm::dvec3{p.x(), p.y(), p.z()};
+        const auto transformed = dvec3{trafo * glm::dvec4{r, 1.0}};
+        glm::dvec3 error = dest - transformed;
+        log::info("Point {}: error = ({:.3f}, {:.3f}, {:.3f})", names->at(i), error.x, error.y,
+                  error.z);
+    }
+    */
 
     transform_.setData(std::make_shared<mat4>(trafo));
 }
