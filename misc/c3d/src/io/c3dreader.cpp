@@ -42,11 +42,11 @@ C3DReader::C3DReader() { addExtension(FileExtension("c3d", "C3D motion capture f
 
 C3DReader* C3DReader::clone() const { return new C3DReader(*this); }
 
-std::shared_ptr<c3d::C3DData> C3DReader::readData(const std::filesystem::path& filePath) {
-    checkExists(filePath);
+std::shared_ptr<ezc3d::c3d> C3DReader::readData(const std::filesystem::path& filePath) {
+    const auto localPath = downloadAndCacheIfUrl(filePath);
+    checkExists(localPath);
 
-    auto data = std::make_shared<ezc3d::c3d>(filePath.string());
-    return std::make_shared<c3d::C3DData>(std::move(data), filePath.filename().string());
+    return std::make_shared<ezc3d::c3d>(localPath.generic_string());
 }
 
 }  // namespace inviwo

@@ -36,21 +36,73 @@
 
 namespace inviwo {
 
-namespace c3d {
-
-C3DData::C3DData(std::shared_ptr<ezc3d::c3d> data, std::string source)
-    : data_{std::move(data)}, source_{std::move(source)} {}
-
-const ezc3d::c3d& C3DData::data() const { return *data_; }
-
-const std::string& C3DData::source() const { return source_; }
-
-C3DData C3DData::deepCopy() const {
-    if (!data_) {
-        return C3DData{};
+ezc3d::DataNS::Points3dNS::Points copyPoints(const ezc3d::DataNS::Frame& srcFrame) {
+    ezc3d::DataNS::Points3dNS::Points pts;
+    for (size_t i = 0; i < srcFrame.points().nbPoints(); ++i) {
+        const auto& sp = srcFrame.points().point(i);
+        ezc3d::DataNS::Points3dNS::Point pt;
+        pt.set(sp.x(), sp.y(), sp.z(), sp.residual());
+        pt.cameraMask(sp.cameraMask());
+        pts.point(pt);
     }
+    return pts;
+}
 
-    const auto& src = *data_;
+ezc3d::DataNS::AnalogsNS::Analogs copyAnalogs(const ezc3d::DataNS::Frame& srcFrame) {
+    ezc3d::DataNS::AnalogsNS::Analogs analogs;
+    for (size_t s = 0; s < srcFrame.analogs().nbSubframes(); ++s) {
+        const auto& srcSf = srcFrame.analogs().subframe(s);
+        ezc3d::DataNS::AnalogsNS::SubFrame sub;
+        for (size_t c = 0; c < srcSf.nbChannels(); ++c) {
+            ezc3d::DataNS::AnalogsNS::Channel ch;
+            ch.data(srcSf.channel(c).data());
+            sub.channel(ch);
+        }
+        analogs.subframe(sub);
+    }
+    return analogs;
+}
+
+ezc3d::DataNS::RotationNS::Rotations copyRotations(const ezc3d::DataNS::Frame& srcFrame) {
+    ezc3d::DataNS::RotationNS::Rotations rots;
+    for (size_t s = 0; s < srcFrame.rotations().nbSubframes(); ++s) {
+        const auto& srcSf = srcFrame.rotations().subframe(s);
+        ezc3d::DataNS::RotationNS::SubFrame sub;
+        for (size_t r = 0; r < srcSf.nbRotations(); ++r) {
+            const auto& sr = srcSf.rotation(r);
+            ezc3d::DataNS::RotationNS::Rotation rot;
+            rot.set(sr(0, 0), sr(0, 1), sr(0, 2), sr(0, 3), sr(1, 0), sr(1, 1), sr(1, 2), sr(1, 3),
+                    sr(2, 0), sr(2, 1), sr(2, 2), sr(2, 3), sr(3, 0), sr(3, 1), sr(3, 2), sr(3, 3),
+                    sr.reliability());
+            sub.rotation(rot);
+        }
+        rots.subframe(sub);
+    }
+    return rots;
+}
+
+void copyAnalogs(const ezc3d::DataNS::Frame& srcFrame, ezc3d::DataNS::Frame& dstFrame) {
+    if (!srcFrame.analogs().isEmpty()) {
+        ezc3d::DataNS::AnalogsNS::Analogs analogs = copyAnalogs(srcFrame);
+        dstFrame.add(analogs);
+    }
+}
+
+void copyRotations(const ezc3d::DataNS::Frame& srcFrame, ezc3d::DataNS::Frame& dstFrame) {
+    if (!srcFrame.rotations().isEmpty()) {
+        ezc3d::DataNS::RotationNS::Rotations rots = copyRotations(srcFrame);
+        dstFrame.add(rots);
+    }
+}
+
+void copyPoints(const ezc3d::DataNS::Frame& srcFrame, ezc3d::DataNS::Frame& dstFrame) {
+    if (!srcFrame.points().isEmpty()) {
+        ezc3d::DataNS::Points3dNS::Points pts = copyPoints(srcFrame);
+        dstFrame.add(pts);
+    }
+}
+
+std::shared_ptr<ezc3d::c3d> copy(const ezc3d::c3d& src) {
     auto dst = std::make_shared<ezc3d::c3d>();
 
     // Register point names. This initializes the POINT configuration
@@ -69,57 +121,18 @@ C3DData C3DData::deepCopy() const {
     // rather than sharing via shared_ptr with the source.
     for (size_t f = 0; f < src.data().nbFrames(); ++f) {
         const auto& srcFrame = src.data().frame(f);
-        ezc3d::DataNS::Frame newFrame;
+        ezc3d::DataNS::Frame dstFrame;
 
         // Deep copy points
-        {
-            ezc3d::DataNS::Points3dNS::Points pts;
-            for (size_t i = 0; i < srcFrame.points().nbPoints(); ++i) {
-                const auto& sp = srcFrame.points().point(i);
-                ezc3d::DataNS::Points3dNS::Point pt;
-                pt.set(sp.x(), sp.y(), sp.z(), sp.residual());
-                pt.cameraMask(sp.cameraMask());
-                pts.point(pt);
-            }
-            newFrame.add(pts);
-        }
+        copyPoints(srcFrame, dstFrame);
 
         // Deep copy analogs
-        {
-            ezc3d::DataNS::AnalogsNS::Analogs analogs;
-            for (size_t s = 0; s < srcFrame.analogs().nbSubframes(); ++s) {
-                const auto& srcSf = srcFrame.analogs().subframe(s);
-                ezc3d::DataNS::AnalogsNS::SubFrame sub;
-                for (size_t c = 0; c < srcSf.nbChannels(); ++c) {
-                    ezc3d::DataNS::AnalogsNS::Channel ch;
-                    ch.data(srcSf.channel(c).data());
-                    sub.channel(ch);
-                }
-                analogs.subframe(sub);
-            }
-            newFrame.add(analogs);
-        }
+        copyAnalogs(srcFrame, dstFrame);
 
         // Deep copy rotations (if present)
-        if (!srcFrame.rotations().isEmpty()) {
-            ezc3d::DataNS::RotationNS::Rotations rots;
-            for (size_t s = 0; s < srcFrame.rotations().nbSubframes(); ++s) {
-                const auto& srcSf = srcFrame.rotations().subframe(s);
-                ezc3d::DataNS::RotationNS::SubFrame sub;
-                for (size_t r = 0; r < srcSf.nbRotations(); ++r) {
-                    const auto& sr = srcSf.rotation(r);
-                    ezc3d::DataNS::RotationNS::Rotation rot;
-                    rot.set(sr(0, 0), sr(0, 1), sr(0, 2), sr(0, 3), sr(1, 0), sr(1, 1), sr(1, 2),
-                            sr(1, 3), sr(2, 0), sr(2, 1), sr(2, 2), sr(2, 3), sr(3, 0), sr(3, 1),
-                            sr(3, 2), sr(3, 3), sr.reliability());
-                    sub.rotation(rot);
-                }
-                rots.subframe(sub);
-            }
-            newFrame.add(rots);
-        }
+        copyRotations(srcFrame, dstFrame);
 
-        dst->frame(newFrame);
+        dst->frame(dstFrame);
     }
 
     // Copy parameter groups that are not auto-managed by point()/analog()/frame().
@@ -135,9 +148,7 @@ C3DData C3DData::deepCopy() const {
         }
     }
 
-    return C3DData{std::move(dst), source_};
+    return dst;
 }
-
-}  // namespace c3d
 
 }  // namespace inviwo

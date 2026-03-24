@@ -4,4 +4,5 @@ set(dependencies
     InviwoBaseModule
     InviwoDataFrameModule
     InviwoBrushingAndLinkingModule
+    InviwoEigenUtilsModule
 )

@@ -26,30 +26,25 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/c3d/c3dmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/minmaxproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/ports/meshport.h>
+#include <inviwo/core/interaction/pickingmapper.h>
 
 #include <inviwo/c3d/ports/c3dport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
 
 namespace inviwo {
 
-/**
- * @brief Converts C3D data into Inviwo DataFrames.
- *
- * Creates two DataFrames:
- * - **Points DataFrame**: One row per frame with columns for time and each marker's
- *   X, Y, Z coordinates and residual values.
- * - **Analog DataFrame**: One row per analog sample with columns for time and each
- *   analog channel's values.
- */
-class IVW_MODULE_C3D_API C3DToDataFrame : public Processor {
+class IVW_MODULE_C3D_API C3DAveragedPositions : public Processor {
 public:
-    C3DToDataFrame();
-    virtual ~C3DToDataFrame() = default;
+    C3DAveragedPositions();
 
     virtual void process() override;
 
@@ -57,11 +52,21 @@ public:
     static const ProcessorInfo processorInfo_;
 
 private:
-    C3DDataInport inport_;
-    DataFrameOutport pointsOutport_;
-    DataFrameOutport analogOutport_;
+    void handlePicking(PickingEvent* e);
 
-    BoolProperty includeResiduals_;
+    C3DDataInport inport_;
+    MeshOutport outport_;
+
+    IntSizeTMinMaxProperty frame_;
+    FloatProperty markerRadius_;
+    BoolProperty skipEmpty_;
+    PickingMapper picking_;
+
+    StringProperty lines_;
+    StringProperty triangles_;
+
+    std::vector<vec3> positions_;
+    std::vector<std::string> names_;
 };
 
 }  // namespace inviwo

@@ -31,18 +31,22 @@
 
 #include <inviwo/c3d/io/c3dreader.h>
 #include <inviwo/c3d/ports/c3dport.h>
+#include <inviwo/c3d/processors/c3daveragedpositions.h>
 #include <inviwo/c3d/processors/c3dsource.h>
 #include <inviwo/c3d/processors/c3dtodataframe.h>
 #include <inviwo/c3d/processors/c3dtomesh.h>
+#include <inviwo/c3d/processors/c3dtransformpoints.h>
 
 namespace inviwo {
 
 C3DModule::C3DModule(InviwoApplication* app) : InviwoModule(app, "C3D") {
+    registerProcessor<C3DAveragedPositions>();
     registerProcessor<C3DSource>();
     registerProcessor<C3DToDataFrame>();
     registerProcessor<C3DToMesh>();
+    registerProcessor<C3DTransformPoints>();
 
-    registerDefaultsForDataType<c3d::C3DData>();
+    registerDefaultsForDataType<ezc3d::c3d>();
 
     registerDataReader(std::make_unique<C3DReader>());
 }

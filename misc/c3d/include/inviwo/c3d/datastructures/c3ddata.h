@@ -33,42 +33,32 @@
 #include <memory>
 #include <string>
 
-namespace ezc3d {
-class c3d;
-}  // namespace ezc3d
+#include <ezc3d/ezc3d.h>
 
 namespace inviwo {
 
-namespace c3d {
-
 /**
- * \brief Wrapper around ezc3d::c3d data for use with the Inviwo data handling system.
+ * \brief Create an independent deep copy of this ezc3d::c3d.
  *
- * Provides access to the underlying C3D data (3D points, analog channels, etc.)
- * as read by the ezc3d library.
+ * The default copy shares the underlying ezc3d::c3d object via shared_ptr.
+ * This function creates a new copy of the ezc3d::c3d data so the result
+ * can be modified without affecting the original.
  */
-class IVW_MODULE_C3D_API C3DData {
-public:
-    C3DData() = default;
-    explicit C3DData(std::shared_ptr<ezc3d::c3d> data, std::string source = {});
+IVW_MODULE_C3D_API std::shared_ptr<ezc3d::c3d> copy(const ezc3d::c3d&);
 
-    const ezc3d::c3d& data() const;
-    const std::string& source() const;
+IVW_MODULE_C3D_API ezc3d::DataNS::Points3dNS::Points copyPoints(
+    const ezc3d::DataNS::Frame& srcFrame);
+IVW_MODULE_C3D_API void copyPoints(const ezc3d::DataNS::Frame& srcFrame,
+                                   ezc3d::DataNS::Frame& dstFrame);
 
-    /**
-     * \brief Create an independent deep copy of this C3DData.
-     *
-     * The default copy shares the underlying ezc3d::c3d object via shared_ptr.
-     * This function creates a new copy of the ezc3d::c3d data so the result
-     * can be modified without affecting the original.
-     */
-    C3DData deepCopy() const;
+IVW_MODULE_C3D_API ezc3d::DataNS::AnalogsNS::Analogs copyAnalogs(
+    const ezc3d::DataNS::Frame& srcFrame);
+IVW_MODULE_C3D_API void copyAnalogs(const ezc3d::DataNS::Frame& srcFrame,
+                                    ezc3d::DataNS::Frame& dstFrame);
 
-private:
-    std::shared_ptr<ezc3d::c3d> data_;
-    std::string source_;
-};
-
-}  // namespace c3d
+IVW_MODULE_C3D_API ezc3d::DataNS::RotationNS::Rotations copyRotations(
+    const ezc3d::DataNS::Frame& srcFrame);
+IVW_MODULE_C3D_API void copyRotations(const ezc3d::DataNS::Frame& srcFrame,
+                                      ezc3d::DataNS::Frame& dstFrame);
 
 }  // namespace inviwo

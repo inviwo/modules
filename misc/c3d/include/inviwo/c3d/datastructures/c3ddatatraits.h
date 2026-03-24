@@ -39,11 +39,11 @@
 namespace inviwo {
 
 template <>
-struct DataTraits<c3d::C3DData> {
-    static constexpr std::string_view classIdentifier() { return "org.inviwo.c3d.C3DData"; }
-    static constexpr std::string_view dataName() { return "C3DData"; }
+struct DataTraits<ezc3d::c3d> {
+    static constexpr std::string_view classIdentifier() { return "org.inviwo.ezc3d::c3d"; }
+    static constexpr std::string_view dataName() { return "c3d"; }
     static constexpr uvec3 colorCode() { return {200, 120, 60}; }
-    static IVW_MODULE_C3D_API Document info(const c3d::C3DData& data);
+    static IVW_MODULE_C3D_API Document info(const ezc3d::c3d& data);
 };
 
 }  // namespace inviwo

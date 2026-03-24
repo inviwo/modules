@@ -48,7 +48,7 @@ namespace inviwo {
 class PickingEvent;
 
 /**
- * \brief Creates a point cloud mesh from C3D marker positions over a range of frames.
+ * @brief Creates a point cloud mesh from C3D marker positions over a range of frames.
  *
  * Reads 3D point data from a C3D file and creates a mesh with point rendering
  * suitable for visualizing marker positions. Each marker is represented as a
@@ -69,7 +69,7 @@ public:
 private:
     void handlePicking(PickingEvent* e);
 
-    c3d::C3DDataInport inport_;
+    C3DDataInport inport_;
     BrushingAndLinkingInport bnl_;
     MeshOutport outport_;
 
@@ -79,7 +79,7 @@ private:
     BoolProperty enableTooltips_;
     PickingMapper picking_;
 
-    std::shared_ptr<const c3d::C3DData> data_;
+    std::shared_ptr<const ezc3d::c3d> data_;
 };
 
 }  // namespace inviwo

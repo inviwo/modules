@@ -34,17 +34,16 @@
 namespace inviwo {
 
 const ProcessorInfo C3DSource::processorInfo_{
-    "org.inviwo.C3DSource",  // Class identifier
-    "C3D Source",            // Display name
-    "Data Input",            // Category
-    CodeState::Experimental, // Code state
+    "org.inviwo.C3DSource",                       // Class identifier
+    "C3D Source",                                 // Display name
+    "Data Input",                                 // Category
+    CodeState::Experimental,                      // Code state
     "C3D, Source, Biomechanics, Motion Capture",  // Tags
     "Loads a C3D file containing 3D marker positions and analog data."_help,
 };
 const ProcessorInfo& C3DSource::getProcessorInfo() const { return processorInfo_; }
 
 C3DSource::C3DSource(InviwoApplication* app, const std::filesystem::path& file)
-    : DataSource<c3d::C3DData, c3d::C3DDataOutport>(util::getDataReaderFactory(app), file,
-                                                     "c3ddata") {}
+    : DataSource<ezc3d::c3d, C3DDataOutport>(util::getDataReaderFactory(app), file, "c3ddata") {}
 
 }  // namespace inviwo

@@ -83,7 +83,7 @@ C3DToMesh::C3DToMesh()
 
     inport_.onChange([this]() {
         if (inport_.hasData()) {
-            const auto& header = inport_.getData()->data().header();
+            const auto& header = inport_.getData()->header();
             const size_t nbFrames = header.nbFrames();
             const size_t maxFrame = nbFrames > 0 ? nbFrames - 1 : 0;
             frame_.setRangeMax(maxFrame);
@@ -93,15 +93,14 @@ C3DToMesh::C3DToMesh()
 
 void C3DToMesh::process() {
     data_ = inport_.getData();
-    const auto& c3dData = *data_;
-    const auto& c3d = c3dData.data();
+    const auto& c3d = *data_;
     const auto& header = c3d.header();
 
     const size_t nbFrames = header.nbFrames();
     const size_t nbPoints = header.nb3dPoints();
 
     if (nbFrames == 0 || nbPoints == 0) {
-        outport_.setData(std::make_shared<Mesh>());
+        outport_.setData(nullptr);
         return;
     }
 
@@ -172,7 +171,7 @@ void C3DToMesh::handlePicking(PickingEvent* e) {
 
             const auto id = e->getPickedId();
 
-            const auto& c3d = data_->data();
+            const auto& c3d = *data_;
             const auto& header = c3d.header();
 
             const size_t nbFrames = header.nbFrames();

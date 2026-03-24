@@ -26,30 +26,30 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  *********************************************************************************/
+
 #pragma once
 
 #include <inviwo/c3d/c3dmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
-#include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
+#include <inviwo/core/properties/boolcompositeproperty.h>
+#include <inviwo/core/properties/ordinalproperty.h>
+
+#include <modules/base/properties/transformlistproperty.h>
 
 #include <inviwo/c3d/ports/c3dport.h>
-#include <inviwo/dataframe/datastructures/dataframe.h>
+
+#include <ezc3d/ezc3d.h>
+#include <ezc3d/Header.h>
+#include <ezc3d/Data.h>
+
+#include <array>
 
 namespace inviwo {
 
-/**
- * @brief Converts C3D data into Inviwo DataFrames.
- *
- * Creates two DataFrames:
- * - **Points DataFrame**: One row per frame with columns for time and each marker's
- *   X, Y, Z coordinates and residual values.
- * - **Analog DataFrame**: One row per analog sample with columns for time and each
- *   analog channel's values.
- */
-class IVW_MODULE_C3D_API C3DToDataFrame : public Processor {
+class IVW_MODULE_C3D_API C3DTransformPoints : public Processor {
 public:
-    C3DToDataFrame();
-    virtual ~C3DToDataFrame() = default;
+    C3DTransformPoints();
 
     virtual void process() override;
 
@@ -58,10 +58,15 @@ public:
 
 private:
     C3DDataInport inport_;
-    DataFrameOutport pointsOutport_;
-    DataFrameOutport analogOutport_;
+    C3DDataOutport outport_;
 
-    BoolProperty includeResiduals_;
+    static constexpr size_t refPoints = 4;
+    std::array<StringProperty, refPoints> refs_;
+
+    BoolCompositeProperty refGroup_;
+
+
+    TransformListProperty transforms_;
 };
 
 }  // namespace inviwo

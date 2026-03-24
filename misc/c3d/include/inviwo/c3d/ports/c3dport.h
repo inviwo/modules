@@ -38,11 +38,7 @@
 
 namespace inviwo {
 
-namespace c3d {
-
-using C3DDataOutport = DataOutport<C3DData>;
-using C3DDataInport = DataInport<C3DData>;
-
-}  // namespace c3d
+using C3DDataOutport = DataOutport<ezc3d::c3d>;
+using C3DDataInport = DataInport<ezc3d::c3d>;
 
 }  // namespace inviwo

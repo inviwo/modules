@@ -35,15 +35,15 @@
 namespace inviwo {
 
 /**
- * \ingroup dataio
- * \brief Reader for C3D (Coordinate 3D) files using the ezc3d library.
+ * @ingroup dataio
+ * @brief Reader for C3D (Coordinate 3D) files using the ezc3d library.
  *
  * Reads biomechanics C3D files containing 3D marker positions and analog data.
  *
- * \see https://www.c3d.org
- * \see https://github.com/pyomeca/ezc3d
+ * @see https://www.c3d.org
+ * @see https://github.com/pyomeca/ezc3d
  */
-class IVW_MODULE_C3D_API C3DReader : public DataReaderType<c3d::C3DData> {
+class IVW_MODULE_C3D_API C3DReader : public DataReaderType<ezc3d::c3d> {
 public:
     C3DReader();
     C3DReader(const C3DReader&) = default;
@@ -52,10 +52,9 @@ public:
     C3DReader& operator=(C3DReader&&) noexcept = default;
     virtual C3DReader* clone() const override;
     virtual ~C3DReader() = default;
-    using DataReaderType<c3d::C3DData>::readData;
+    using DataReaderType<ezc3d::c3d>::readData;
 
-    virtual std::shared_ptr<c3d::C3DData> readData(
-        const std::filesystem::path& filePath) override;
+    virtual std::shared_ptr<ezc3d::c3d> readData(const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo

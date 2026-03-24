@@ -70,8 +70,7 @@ C3DToDataFrame::C3DToDataFrame()
 }
 
 void C3DToDataFrame::process() {
-    const auto& c3dData = *inport_.getData();
-    const auto& c3d = c3dData.data();
+    const auto& c3d = *inport_.getData();
     const auto& header = c3d.header();
 
     const auto pointNames = c3d.pointNames();
