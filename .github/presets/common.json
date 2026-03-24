@@ -6,7 +6,7 @@
       "name": "common",
       "displayName": "Modules GHA",
       "cacheVariables": {
-        "VCPKG_MANIFEST_FEATURES" : "python;qt;graphviz;openmesh;nanovg;vtk;ttk",
+        "VCPKG_MANIFEST_FEATURES" : "python;qt;graphviz;openmesh;nanovg;vtk;ttk;ezc3d",
         "VCPKG_INSTALL_OPTIONS": "--clean-after-build;--x-abi-tools-use-exact-versions",
         
         "CMAKE_CXX_SCAN_FOR_MODULES": "OFF",
@@ -36,9 +36,12 @@
         "IVW_MODULE_MOLVISGL":              { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_MOLVISPYTHON":          { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_DATAFRAMECLUSTERING":   { "type": "BOOL", "value": "ON"},
+        "IVW_MODULE_C3D":                   { "type": "BOOL", "value": "ON"},
 
         "IVW_MODULE_VTK":   { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TTK":   { "type": "BOOL", "value": "ON"}
+
+
       }
     }
   ]
