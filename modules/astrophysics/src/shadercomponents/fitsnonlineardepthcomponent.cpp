@@ -44,6 +44,9 @@ FitsNonlinearDepthComponent::FitsNonlinearDepthComponent(std::string_view name, 
     , volumePort_{name, std::move(help)}
     , fitsParameters_{"fitsParameters", "FitsParameters",
                       "Various parameters required for coordinate transformations and other calculations."_help}
+    , objectName_{"objectName", "Object",
+                  "Contents of the 'objects' field in the FITS Header."_help, "",
+                  InvalidationLevel::Valid}
     , assumedDistance_{"assumedDistance", "Assumed Distance [pc]",
                        util::ordinalSymmetricVector(0.0f)
                            .setInc(0.001f)
@@ -88,10 +91,31 @@ FitsNonlinearDepthComponent::FitsNonlinearDepthComponent(std::string_view name, 
                   util::ordinalSymmetricVector(vec3{0.0f})
                       .setInc(vec3{0.001f})
                       .set(PropertySemantics::Text)
-                      .set("Coordinate of the lower left corner of the dataset in au"_help)} {
+                      .set("Coordinate of the lower left corner of the dataset in au"_help)}
+    , validChannelRange_{"validChannelRange", "Valid Channel Range",
+                         OrdinalPropertyState<ivec2>{
+                             .value = ivec2{0},
+                             .min = ivec2{0},
+                             .minConstraint = ConstraintBehavior::Ignore,
+                             .max = ivec2{100},
+                             .maxConstraint = ConstraintBehavior::Ignore,
+                             .semantics = PropertySemantics::Text,
+                             .help =
+                                 "Range of valid channels based on the line-of-sight velocity"_help,
+                         }}
 
-    fitsParameters_.addProperties(assumedDistance_, velocityInf_, velocityStar_, crpix3_, crval3_,
-                                  cdelt3_, restFrequency_, dataExtent_, dataOffset_);
+    , invalidColor_{"invalidColor", "Invalid Value Color",
+                    util::ordinalColor(vec3{0.2f, 0.2f, 0.2f})}
+    , invalidAlpha_{"invalidAlpha",
+                    "Invalid Value Alpha",
+                    0.005f,
+                    {0.0f, ConstraintBehavior::Immutable},
+                    {1.0f, ConstraintBehavior::Immutable},
+                    0.001f} {
+
+    fitsParameters_.addProperties(objectName_, assumedDistance_, velocityInf_, velocityStar_,
+                                  crpix3_, crval3_, cdelt3_, restFrequency_, dataExtent_,
+                                  dataOffset_, validChannelRange_);
     fitsParameters_.setCollapsed(true);
 }
 
@@ -104,8 +128,8 @@ void FitsNonlinearDepthComponent::process(Shader& shader, TextureUnitContainer& 
 
     const auto data = volumePort_.getData();
     const vec3 delta = dataExtent_.get() / vec3{data->getDimensions()};
-    mat4 m = glm::scale(delta * vec3{data->getDimensions() + size3_t{1u}});
-    m[3] = vec4{dataOffset_.get() - delta * 0.5f, 1.0f};
+    mat4 m = glm::scale(dataExtent_.get());
+    m[3] = vec4{dataOffset_.get(), 1.0f};
 
     StrBuffer buf{"{}FitsParameters", getName()};
     std::string prefix{buf};
@@ -117,6 +141,8 @@ void FitsNonlinearDepthComponent::process(Shader& shader, TextureUnitContainer& 
     shader.setUniform(buf.replace("{}.crval3", prefix), crval3_);
     shader.setUniform(buf.replace("{}.cdelt3", prefix), cdelt3_);
     shader.setUniform(buf.replace("{}.restFrequency", prefix), restFrequency_);
+    shader.setUniform(buf.replace("{}.validChannelRange", prefix), validChannelRange_);
+    shader.setUniform("invalidColor", vec4{invalidColor_.get(), invalidAlpha_.get()});
 }
 
 std::vector<std::tuple<Inport*, std::string>> FitsNonlinearDepthComponent::getInports() {
@@ -127,7 +153,9 @@ void FitsNonlinearDepthComponent::initializeResources(Shader&) {
     // shader definitions...
 }
 
-std::vector<Property*> FitsNonlinearDepthComponent::getProperties() { return {&fitsParameters_}; }
+std::vector<Property*> FitsNonlinearDepthComponent::getProperties() {
+    return {&fitsParameters_, &invalidColor_, &invalidAlpha_};
+}
 
 namespace {
 
@@ -143,6 +171,8 @@ struct FitsParameters {
     float crval3;
     float cdelt3;
     float restFrequency;  // [Hz]
+
+    ivec2 validChannelRange;  // range of valid channels based on line-of-sight velocity
 };
 
 const float invalidValue = -1.e20;
@@ -153,6 +183,7 @@ uniform VolumeParameters {0}Parameters;
 uniform sampler3D {0};
 
 uniform FitsParameters {0}FitsParameters;
+uniform vec4 invalidColor = vec4(0.2, 0.2, 0.2, 0.005);
 )");
 
 constexpr std::string_view utilityFuncs = util::trim(R"(
@@ -163,6 +194,14 @@ float velocityToChannel(in FitsParameters params, in float velocity) {{
               (1.0 - velocity * 1000 / vc) - params.crval3) / params.cdelt3 + params.crpix3 - 1));
 }}
 
+// convert a frequency channel index to velocity [km/s]
+float channelToVelocity(in FitsParameters params, in int channel) {{
+    float vc = 299792458;  // speed of light [m/s]
+    float freq = (params.restFrequency -
+                  ((channel + 1 - params.crpix3) * params.cdelt3 + params.crval3));
+    return vc * freq / params.restFrequency / 1000.0;
+}}
+
 // Convert a relative spatial coordinate [au] to velocity [km/s]
 float spatialCoordinateToVelocity(in FitsParameters params, in vec3 coord) {{
     // convert xy coord from arcseconds to au
@@ -170,25 +209,26 @@ float spatialCoordinateToVelocity(in FitsParameters params, in vec3 coord) {{
     return params.velocityInf * coord.z / length(coord) + params.velocityStar;
 }}
 
-// TODO: function from normalized texture coords to normalized, non-linear frequency domain
-//       using velocityToChannel(spatialCoordinateToVelocity(...))
-//       requires extent in au
-
 // Sample the volume texture by transforming normalized texture coordinates @p texCoord into 
 // the non-linear frequency domain using velocityToChannel(spatialCoordinateToVelocity(...)).
 //
 // @param texCoord   normalized texture coordinate [0, 1]
 // @return volume sample at re-normalized texture coordinate, if v_los > v_star. 
 //         Otherwise vec4(invalidValue);
-vec4 getNormalizedVoxel(in FitsParameters params, in vec3 texCoord) {{
+vec4 getNormalizedVoxel(in FitsParameters params, in vec3 texCoord, in vec2 minMaxVelocity) {{
     vec3 coord = (params.textureToModel * vec4(texCoord, 1.0)).xyz;
     float velocity = spatialCoordinateToVelocity(params, coord);
 
+    float u = velocityToChannel(params, velocity) / textureSize(volume, 0).z;
+    float v_normalized = (velocity - minMaxVelocity.x) / (minMaxVelocity.y - minMaxVelocity.x);
+
     float v_los = velocity - params.velocityStar;
-    if (abs(v_los) > params.velocityInf) {{
+    if (abs(v_los) > params.velocityInf || u < 0.0 || u > 1.0
+        || v_normalized < 0.0 || v_normalized > 1.0) {{
         return vec4(invalidValue);
     }}
-    texCoord = vec3(texCoord.xy, velocityToChannel(params, velocity) / textureSize(volume, 0).z);
+
+    texCoord = vec3(texCoord.st, u);
     return getNormalizedVoxel({0}, {0}Parameters, texCoord);
 }}
 )");
@@ -197,61 +237,29 @@ vec4 getNormalizedVoxel(in FitsParameters params, in vec3 texCoord) {{
 // mainly for the isosurface rendering. Setting it to the same voxel value prevents isosurfaces
 // being rendered at the volume boundaries.
 constexpr std::string_view voxelFirst = util::trim(R"(
-vec4 {0}Voxel = getNormalizedVoxel({0}FitsParameters, samplePosition);
+vec2 minMaxVelocity = vec2(channelToVelocity({0}FitsParameters, {0}FitsParameters.validChannelRange.x), 
+                           channelToVelocity({0}FitsParameters, {0}FitsParameters.validChannelRange.y));
+if (minMaxVelocity.x > minMaxVelocity.y) {{
+    minMaxVelocity.xy = minMaxVelocity.yx;
+}}
+
+vec4 {0}Voxel = getNormalizedVoxel({0}FitsParameters, samplePosition, minMaxVelocity);
 vec4 {0}VoxelPrev = {0}Voxel;
 )");
 
 constexpr std::string_view voxel = util::trim(R"(
 {0}VoxelPrev = {0}Voxel;
-{0}Voxel = getNormalizedVoxel({0}FitsParameters, samplePosition);
+{0}Voxel = getNormalizedVoxel({0}FitsParameters, samplePosition, minMaxVelocity);
 )");
 
-constexpr std::string_view gradientFirst = util::trim(R"(
-vec3 {0}GradientPrev = vec3(0);
-vec3 {0}Gradient = vec3(0);
-#if defined(GRADIENTS_ENABLED)
-{0}Gradient = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz :
-    normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
-                                           samplePosition, channel));
-if (!useSurfaceNormals) {{
-    {0}Gradient *= sign({0}Voxel[channel] / {0}Parameters.texToNormalized.scale + {0}Parameters.texToNormalized.offset);
+constexpr std::string_view unsetColor = util::trim(R"(
+color = vec4(0.0);
+)");
+
+constexpr std::string_view invalidValue = util::trim(R"(
+if (volumeVoxel[channel] <= invalidValue) {{
+    color = invalidColor;
 }}
-#endif
-)");
-
-constexpr std::string_view gradient = util::trim(R"(
-#if defined(GRADIENTS_ENABLED)
-{0}GradientPrev = {0}Gradient;
-{0}Gradient = normalize(COMPUTE_GRADIENT_FOR_CHANNEL({0}Voxel, {0}, {0}Parameters,
-                                                     samplePosition, channel));
-{0}Gradient *= sign({0}Voxel[channel] / {0}Parameters.texToNormalized.scale + {0}Parameters.texToNormalized.offset);
-#endif
-)");
-
-constexpr std::string_view allGradientsFirst = util::trim(R"(
-mat4x3 {0}AllGradientsPrev = mat4x3(0);
-mat4x3 {0}AllGradients = mat4x3(0);
-#if defined(GRADIENTS_ENABLED)
-vec3 surfaceNormal = useSurfaceNormals ? -texture(surfaceNormal, texCoords).xyz : vec3(0);
-{0}AllGradients = useSurfaceNormals ?
-    mat4x3(surfaceNormal, surfaceNormal, surfaceNormal, surfaceNormal) :
-    COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
-{0}AllGradients[0] = normalize({0}AllGradients[0]);
-{0}AllGradients[1] = normalize({0}AllGradients[1]);
-{0}AllGradients[2] = normalize({0}AllGradients[2]);
-{0}AllGradients[3] = normalize({0}AllGradients[3]);
-#endif
-)");
-
-constexpr std::string_view allGradients = util::trim(R"(
-#if defined(GRADIENTS_ENABLED)
-{0}AllGradientsPrev = {0}AllGradients;
-{0}AllGradients = COMPUTE_ALL_GRADIENTS({0}Voxel, {0}, {0}Parameters, samplePosition);
-{0}AllGradients[0] = normalize({0}AllGradients[0]);
-{0}AllGradients[1] = normalize({0}AllGradients[1]);
-{0}AllGradients[2] = normalize({0}AllGradients[2]);
-{0}AllGradients[3] = normalize({0}AllGradients[3]);
-#endif
 )");
 
 }  // namespace
@@ -270,25 +278,16 @@ auto FitsNonlinearDepthComponent::getSegments() -> std::vector<Segment> {
         {.snippet = fmt::format(voxelFirst, getName()),
          .placeholder = placeholder::first,
          .priority = 400},
+        {.snippet = fmt::format(unsetColor, getName()),
+         .placeholder = placeholder::first,
+         .priority = 701},
         {.snippet = fmt::format(voxel, getName()),
          .placeholder = placeholder::loop,
          .priority = 400},
+        {.snippet = fmt::format(invalidValue, getName()),
+         .placeholder = placeholder::loop,
+         .priority = 701},
     };
-
-    // if (gradients != Gradients::None) {
-    //     segments.emplace_back(std::string{R"(#include "utils/gradients.glsl")"},
-    //                           placeholder::include, 400);
-    // }
-    // if (gradients == Gradients::Single) {
-    //     segments.emplace_back(fmt::format(gradientFirst, getName()), placeholder::first, 410);
-    //     segments.emplace_back(fmt::format(gradient, getName()), placeholder::loop, 410);
-    // }
-
-    // if (gradients == Gradients::All) {
-    //     segments.emplace_back(fmt::format(allGradientsFirst, getName()), placeholder::first,
-    //     410); segments.emplace_back(fmt::format(allGradients, getName()), placeholder::loop,
-    //     410);
-    // }
 
     return segments;
 }

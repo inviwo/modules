@@ -16,7 +16,29 @@ def createDepthMesh(params: FitsParams,
                     assumed_distance: float = 123.0,
                     velocity_inf: float = 14.5,
                     velocity_star: float = -26.5
-                    ) -> (ivw.data.Mesh, np.ndarray):
+                    ) -> (ivw.data.Mesh, np.ndarray, (int, int)):
+    """
+    Create a Mesh containing the individual channels with the distorted z axis based on a
+    depth estimation of the channel velocity
+
+    Parameters
+    ----------
+    params : FitsParams
+        Parameters extracted from a fits.header.Header
+    tf : ivw.data.TransferFunction
+        Transferfunction to color the mesh according to depth
+    assumed_distance : float, optional
+        in parsecs. The default is 123.0.
+    velocity_inf: float, optional
+        in km/s. The default is 14.5.
+    velocity_star: float, optional
+        in km/s. The default is -26.5.
+
+    Returns
+    -------
+    A tuple containing the Mesh, min/max depth values (np.ndarray), and
+    first and last valid channel index (int, int) where |velocity - velocity_star| <= velocity_inf
+    """
 
     velocity_func: Callable[[float], int] = astroviscommon.frequencyToVelocityFunc(params)
 
@@ -24,9 +46,15 @@ def createDepthMesh(params: FitsParams,
 
     positions: list[np.ndarray] = []
 
+    v = np.array([velocity_func(i) for i in range(0, dims[2])])
+    valid_channels = np.argwhere(np.abs(v - velocity_star) <= velocity_inf).squeeze()
+    if len(valid_channels) == 0:
+        raise ValueError(
+            'No valid velocity channels found based on |velocity - velocity_star| <= velocity_inf')
+
     mesh_count: int = 0
     mesh = ivw.data.Mesh(dt=ivw.data.DrawType.Triangles, ct=ivw.data.ConnectivityType.Unconnected)
-    for i in range(0, dims[2]):
+    for i in valid_channels:
         with suppress(ValueError):
             with np.nditer(astroviscommon.estimateDepth(params, velocity_func(i)),
                            flags=['multi_index']) as it:
@@ -46,17 +74,16 @@ def createDepthMesh(params: FitsParams,
             mesh_count += 1
 
     if len(positions) == 0:
-        return (mesh, np.array([0, 0]))
+        return (mesh, np.array([0, 0]), (valid_channels[0], valid_channels[-1]))
 
     positions_np = np.array(positions)
     min_max = [np.min(positions_np[:, 2]), np.max(positions_np[:, 2])]
-    ivw.logInfo(f'min/max: {min_max}')
+    # ivw.logInfo(f'min/max: {min_max}')
     depth_scaling = np.max(np.abs(min_max))
-    # scaling = np.array([1.0 / dims[0], 1.0 / dims[1], 1.0 / depth_scaling])
 
     colors = [tf.sample(value / depth_scaling * 0.5 + 0.5) for value in positions_np[:, 2]]
 
-    extent, offset = astroviscommon.getLatLongBasis(params, lat_long)
+    extent, offset, _ = astroviscommon.getLatLongBasis(params, lat_long)
     ivw.logInfo(f'{extent=}\n{offset=}')
     positions_np = (positions_np * np.array([extent[0] / (dims[0] - 1),
                                              extent[1] / (dims[1] - 1), 1.0])
@@ -75,13 +102,15 @@ def createDepthMesh(params: FitsParams,
     m = ivw.glm.mat4(1.0)
 
     w = ivw.glm.mat4(1.0)
-    w[2][2] = 1.0 / depth_scaling * 20.0
-    # w[3] = [-0.5, -0.5, 0.0, 1.0]
+    # w[0][0] = 1.0 / extent[0]
+    # w[1][1] = 1.0 / extent[1]
+    # w[2][2] = 2.0 / (min_max[1] - min_max[0])
+    # w[3] = [-0.5, -0.5, -0.5, 1.0]
 
     mesh.modelMatrix = m
     mesh.worldMatrix = w
 
-    return (mesh, np.array(min_max))
+    return (mesh, np.array(min_max), (valid_channels[0], valid_channels[-1]))
 
 
 def createFitsCompositeProperty(identifier: str,
@@ -129,7 +158,7 @@ def createFitsCompositeProperty(identifier: str,
                                           min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
                                           semantics=semantics.Text,
                                           invalidationLevel=inv.Valid)
-    restFrequency = ivw.properties.FloatProperty("restFrequency", "Rest Frequency [Hz",
+    restFrequency = ivw.properties.FloatProperty("restFrequency", "Rest Frequency [Hz]",
                                                  ivw.md2doc("restfreq [Hz]"),
                                                  0.0, increment=0.001,
                                                  min=(-100.0, cb.Ignore), max=(100.0, cb.Ignore),
