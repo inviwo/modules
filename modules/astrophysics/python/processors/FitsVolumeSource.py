@@ -30,12 +30,6 @@ class FitsVolumeSource(ivw.Processor):
         ivw.Processor.__init__(self, id, name)
         self.deserializing = False
 
-        global astroviscommon
-        global LatLong
-        from importlib import reload
-        astroviscommon = reload(astroviscommon)
-        from astroviscommon import LatLong
-
         self.addOutport(ivw.data.VolumeOutport("intensity"))
         self.addOutport(ivw.PythonOutport("fitsdata"))
 
