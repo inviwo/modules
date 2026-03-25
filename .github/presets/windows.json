@@ -12,7 +12,7 @@
         "IVW_CFG_USE_CCACHE_MSVC": "ON",
         "IVW_MODULE_SGCT": "ON",
         "IVW_APP_INVIWO_DOME": "ON",
-        "VCPKG_MANIFEST_FEATURES": "python;qt;sgct;graphviz;openmesh;nanovg;vtk;ttk"
+        "VCPKG_MANIFEST_FEATURES": "python;qt;sgct;graphviz;openmesh;nanovg;vtk;ttk;ezc3d"
       }
     },
     {
@@ -27,7 +27,7 @@
         "IVW_TEST_UNIT_TESTS": { "type": "BOOL", "value": "OFF"},
 
         "$comment1": "The vcpkg graphvis package file in static mode",
-        "VCPKG_MANIFEST_FEATURES" : "python;qt;sgct;openmesh;nanovg;vtk;ttk",
+        "VCPKG_MANIFEST_FEATURES" : "python;qt;sgct;openmesh;nanovg;vtk;ttk;ezc3d",
         "IVW_MODULE_GRAPHVIZ":      { "type": "BOOL", "value": "OFF"},
 
         "$comment": "Linker issues with STB being defined in both nanovgutils and sgct",
