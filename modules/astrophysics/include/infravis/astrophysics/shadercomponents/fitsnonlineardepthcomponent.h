@@ -31,7 +31,7 @@
 #include <infravis/astrophysics/astrophysicsmoduledefine.h>
 
 #include <inviwo/core/ports/volumeport.h>
-#include <inviwo/core/properties/optionproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/compositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <modules/basegl/shadercomponents/shadercomponent.h>
@@ -61,6 +61,7 @@ public:
 
 private:
     CompositeProperty fitsParameters_;
+    StringProperty objectName_;
     FloatProperty assumedDistance_;
     FloatProperty velocityInf_;
     FloatProperty velocityStar_;
@@ -70,6 +71,9 @@ private:
     FloatProperty restFrequency_;
     FloatVec3Property dataExtent_;
     FloatVec3Property dataOffset_;
+    IntVec2Property validChannelRange_;
+    FloatVec3Property invalidColor_;
+    FloatProperty invalidAlpha_;
 };
 
 }  // namespace inviwo
