@@ -451,7 +451,7 @@ jobs:
         -DIVW_MODULE_WEBBROWSER=ON
         -DIVW_MODULE_SGCT=ON
         -DIVW_APP_INVIWO_DOME=ON
-        -DVCPKG_MANIFEST_FEATURES="python;qt;sgct;graphviz;openmesh;nanovg;vtk;ttk"
+        -DVCPKG_MANIFEST_FEATURES="python;qt;sgct;graphviz;openmesh;nanovg;vtk;ttk;ezc3d"
 
     - name: "Run clang-tidy"
       uses: cpp-linter/cpp-linter-action@v2.16.7
