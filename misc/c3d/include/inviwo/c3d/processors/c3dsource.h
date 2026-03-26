@@ -38,8 +38,7 @@ namespace inviwo {
 
 class IVW_MODULE_C3D_API C3DSource : public DataSource<ezc3d::c3d, C3DDataOutport> {
 public:
-    C3DSource(InviwoApplication* app, const std::filesystem::path& file = {});
-    virtual ~C3DSource() = default;
+    explicit C3DSource(InviwoApplication* app, const std::filesystem::path& file = {});
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;

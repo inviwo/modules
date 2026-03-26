@@ -65,7 +65,6 @@ private:
 
     BoolCompositeProperty refGroup_;
 
-
     TransformListProperty transforms_;
 };
 

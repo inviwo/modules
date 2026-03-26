@@ -49,7 +49,6 @@ namespace inviwo {
 class IVW_MODULE_C3D_API C3DToDataFrame : public Processor {
 public:
     C3DToDataFrame();
-    virtual ~C3DToDataFrame() = default;
 
     virtual void process() override;
 

@@ -68,6 +68,7 @@ C3DTransformPoints::C3DTransformPoints()
     addProperties(refGroup_, transforms_);
 }
 
+namespace {
 /*
  * Estimate the basis of the coordinate system defined by the 4 markers.
  * X axis is defined by the vector from marker A to marker B
@@ -83,11 +84,12 @@ dmat4 basisEstimation(dvec3 a, dvec3 b, dvec3 c, dvec3 d) {
 }
 
 dvec3 toGLM(const ezc3d::DataNS::Points3dNS::Point& p) { return dvec3{p.x(), p.y(), p.z()}; }
+}  // namespace
 
 void C3DTransformPoints::process() {
     const auto& src = *inport_.getData();
 
-    std::array<size_t, refPoints> refIndices;
+    std::array<size_t, refPoints> refIndices{};
     if (refGroup_.isChecked()) {
         for (auto&& [ref, ind] : std::views::zip(refs_, refIndices)) {
             ind = src.pointIdx(ref.get());

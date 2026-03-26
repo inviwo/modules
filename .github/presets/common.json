@@ -40,8 +40,6 @@
 
         "IVW_MODULE_VTK":   { "type": "BOOL", "value": "ON"},
         "IVW_MODULE_TTK":   { "type": "BOOL", "value": "ON"}
-
-
       }
     }
   ]

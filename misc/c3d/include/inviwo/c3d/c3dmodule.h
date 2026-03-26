@@ -35,7 +35,7 @@ namespace inviwo {
 
 class IVW_MODULE_C3D_API C3DModule : public InviwoModule {
 public:
-    C3DModule(InviwoApplication* app);
+    explicit C3DModule(InviwoApplication* app);
     virtual ~C3DModule() = default;
 };
 

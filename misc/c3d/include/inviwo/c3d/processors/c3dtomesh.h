@@ -59,7 +59,6 @@ class PickingEvent;
 class IVW_MODULE_C3D_API C3DToMesh : public Processor {
 public:
     C3DToMesh();
-    virtual ~C3DToMesh() = default;
 
     virtual void process() override;
 

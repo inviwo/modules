@@ -83,21 +83,21 @@ ezc3d::DataNS::RotationNS::Rotations copyRotations(const ezc3d::DataNS::Frame& s
 
 void copyAnalogs(const ezc3d::DataNS::Frame& srcFrame, ezc3d::DataNS::Frame& dstFrame) {
     if (!srcFrame.analogs().isEmpty()) {
-        ezc3d::DataNS::AnalogsNS::Analogs analogs = copyAnalogs(srcFrame);
+        const ezc3d::DataNS::AnalogsNS::Analogs analogs = copyAnalogs(srcFrame);
         dstFrame.add(analogs);
     }
 }
 
 void copyRotations(const ezc3d::DataNS::Frame& srcFrame, ezc3d::DataNS::Frame& dstFrame) {
     if (!srcFrame.rotations().isEmpty()) {
-        ezc3d::DataNS::RotationNS::Rotations rots = copyRotations(srcFrame);
+        const ezc3d::DataNS::RotationNS::Rotations rots = copyRotations(srcFrame);
         dstFrame.add(rots);
     }
 }
 
 void copyPoints(const ezc3d::DataNS::Frame& srcFrame, ezc3d::DataNS::Frame& dstFrame) {
     if (!srcFrame.points().isEmpty()) {
-        ezc3d::DataNS::Points3dNS::Points pts = copyPoints(srcFrame);
+        const ezc3d::DataNS::Points3dNS::Points pts = copyPoints(srcFrame);
         dstFrame.add(pts);
     }
 }

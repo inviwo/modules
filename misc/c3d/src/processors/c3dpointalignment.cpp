@@ -59,6 +59,10 @@ glm::dmat4 toGLM(const Eigen::Matrix3d& R, const Eigen::Vector3d& t) {
     return M;
 }
 
+glm::dvec3 toGLM(const Eigen::Vector3d& v) { return glm::dvec3(v(0), v(1), v(2)); }
+
+dvec3 toGLM(const ezc3d::DataNS::Points3dNS::Point& p) { return dvec3{p.x(), p.y(), p.z()}; }
+
 }  // namespace
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -68,22 +72,51 @@ const ProcessorInfo C3DPointAlignment::processorInfo_{
     "Motion Tracking",               // Category
     CodeState::Experimental,         // Code state
     Tags::CPU | Tag{"C3D"},          // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    R"(
+    This processor computes a rigid-body transform that best aligns a set of reference
+    3D points to the corresponding marker positions sampled from a C3D motion-capture
+    file for a single frame.
+    
+    Algorithm / Notes
+    - The processor uses a closed-form least-squares rigid alignment (SVD / Kabsch
+    algorithm) to compute the optimal rotation and translation.
+    - A reflection correction is applied when the computed rotation has negative
+    determinant (ensures a proper rotation without reflection).
+    - The processor throws an exception when the number of provided names does not
+    match the number of reference positions or when the selected frame index is
+    out of range.
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& C3DPointAlignment::getProcessorInfo() const { return processorInfo_; }
 
 C3DPointAlignment::C3DPointAlignment()
     : Processor{}
-    , inport_{"inport"}
-    , positionsInport_{"positionsInport"}
-    , namesInport_{"namesInport"}
-    , transform_{"transform"}
-    , frameIdx_{"frameIdx", "Frame Index", util::ordinalCount(0uz)} {
+    , inport_{"inport",
+              "The input C3D motion capture data (marker positions, headers, frames)."_help}
+    , positionsInport_{"positionsInport",
+                       "A list/vector of reference 3D positions"
+                       " (model/local coordinates) that should be "
+                       "aligned to the observed marker positions."_help}
+    , namesInport_{"namesInport",
+                   "A list of marker names (strings) that map each reference"
+                   " position to a marker in the C3D file. The number of names "
+                   "must match the number of reference positions and the order is significant."_help}
+    , transform_{"transform",
+                 "A 4x4 homogeneous transform (mat4) that maps the reference points"
+                 " into the C3D coordinate system for the chosen frame."_help}
+    , frameIdx_{"frameIdx", "Frame Index",
+                util::ordinalCount(0uz).set(
+                    "Index of the frame in the C3D file used to sample the observed marker"
+                    "positions. Must be within the range of available frames."_help)}
+    , logError_{"logError", "Log Error",
+                "Error between transformed reference points and observed marker "
+                "positions for the chosen frame."_help,
+                false} {
 
     addPorts(inport_, positionsInport_, namesInport_, transform_);
 
-    addProperties(frameIdx_);
+    addProperties(frameIdx_, logError_);
 }
 
 void C3DPointAlignment::process() {
@@ -98,7 +131,7 @@ void C3DPointAlignment::process() {
     }
 
     Eigen::Matrix<double, Eigen::Dynamic, 3> ref{static_cast<Eigen::Index>(refPoints->size()), 3};
-    for (auto&& [i, p] : std::views::zip(std::views::iota(0uz), *refPoints)) {
+    for (auto&& [i, p] : std::views::zip(std::views::iota(0), *refPoints)) {
         ref(i, 0) = p.x;
         ref(i, 1) = p.y;
         ref(i, 2) = p.z;
@@ -118,7 +151,7 @@ void C3DPointAlignment::process() {
     const auto& srcFrame = src.data().frame(frameIdx_.get());
 
     Eigen::Matrix<double, Eigen::Dynamic, 3> obs{static_cast<Eigen::Index>(refPoints->size()), 3};
-    for (auto&& [i, pi] : std::views::zip(std::views::iota(0uz), refIndices)) {
+    for (auto&& [i, pi] : std::views::zip(std::views::iota(0), refIndices)) {
         const auto& p = srcFrame.points().point(pi);
         obs(i, 0) = p.x();
         obs(i, 1) = p.y();
@@ -137,7 +170,7 @@ void C3DPointAlignment::process() {
     const auto H = Yc.transpose() * Xc;
 
     // 4. SVD
-    Eigen::JacobiSVD<Eigen::MatrixXd> svd(H, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    const Eigen::JacobiSVD<Eigen::MatrixXd> svd(H, Eigen::ComputeFullU | Eigen::ComputeFullV);
     const Eigen::Matrix3d U = svd.matrixU();
     Eigen::Matrix3d V = svd.matrixV();
 
@@ -155,22 +188,21 @@ void C3DPointAlignment::process() {
 
     const auto trafo = toGLM(R, t);
 
-    /*
-    const auto cref = glm::dvec3{centroid_ref(0), centroid_ref(1), centroid_ref(2)};
-    const auto cobs = glm::dvec3{centroid_obs(0), centroid_obs(1), centroid_obs(2)};
-    const auto ctransformed = dvec3{trafo * glm::dvec4{cref, 1.0}};
-    glm::dvec3 cerror = cobs - ctransformed;
-    log::info("Center: error = ({:.3f}, {:.3f}, {:.3f})", cerror.x, cerror.y, cerror.z);
+    if (logError_) {
+        const auto cref = toGLM(centroid_ref);
+        const auto cobs = toGLM(centroid_obs);
+        const auto ctransformed = dvec3{trafo * glm::dvec4{cref, 1.0}};
+        const glm::dvec3 cerror = cobs - ctransformed;
+        log::info("Center: error = ({:.3f}, {:.3f}, {:.3f})", cerror.x, cerror.y, cerror.z);
 
-    for (auto&& [i, r, pi] : std::views::zip(std::views::iota(0uz), *refPoints, refIndices)) {
-        const auto& p = srcFrame.points().point(pi);
-        const auto dest = glm::dvec3{p.x(), p.y(), p.z()};
-        const auto transformed = dvec3{trafo * glm::dvec4{r, 1.0}};
-        glm::dvec3 error = dest - transformed;
-        log::info("Point {}: error = ({:.3f}, {:.3f}, {:.3f})", names->at(i), error.x, error.y,
-                  error.z);
+        for (auto&& [i, r, pi] : std::views::zip(std::views::iota(0uz), *refPoints, refIndices)) {
+            const auto& p = srcFrame.points().point(pi);
+            const auto transformed = dvec3{trafo * glm::dvec4{r, 1.0}};
+            glm::dvec3 error = toGLM(p) - transformed;
+            log::info("Point {}: error = ({:.3f}, {:.3f}, {:.3f})", names->at(i), error.x, error.y,
+                      error.z);
+        }
     }
-    */
 
     transform_.setData(std::make_shared<mat4>(trafo));
 }

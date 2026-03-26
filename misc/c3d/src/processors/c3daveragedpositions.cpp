@@ -43,18 +43,53 @@ const ProcessorInfo C3DAveragedPositions::processorInfo_{
     "Motion Tracking",                  // Category
     CodeState::Experimental,            // Code state
     Tags::CPU | Tag{"C3D"},             // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    R"(
+    This processor computes per-marker averaged 3D positions from a C3D motion-capture
+    file over a specified frame range and exposes the results as a point mesh and
+    lists of positions and marker names.
+    
+    Algorithm / Notes
+    - For each marker index, the processor accumulates valid positions across the
+    selected frames and divides by the sample count to obtain the average. If a
+    marker has zero valid samples, its position is left at the initialization
+    value (0,0,0).
+    - Colors are assigned deterministically per-marker using a hue distribution so
+    that markers are visually distinct.
+    - The processor populates mesh buffers for position, color, radius, index and
+    picking attributes and creates optional index lists for lines and triangles
+    when the corresponding text properties are non-empty.
+    - Picking is supported: the mesh includes picking IDs and the processor provides
+    a tooltip showing marker name and averaged position on hover.
+    
+    Usage
+    - Typical use: feed a C3D file into this processor and set the Frame Range to
+    the desired interval (single frame or multiple frames) to visualize or
+    export marker averages.
+    )"_unindentHelp,
 };
 
 const ProcessorInfo& C3DAveragedPositions::getProcessorInfo() const { return processorInfo_; }
 
 C3DAveragedPositions::C3DAveragedPositions()
     : Processor{}
-    , inport_{"inport"}
-    , meshOutport_{"outport"}
-    , positionsOutport_{"positionsOutport"}
-    , namesOutport_{"namesOutport"}
-    , frame_{"frame", "Frame Range", "Range of frame indices to include in the mesh"_help, 0, 0, 0,
+    , inport_{"inport",
+              "The input C3D motion capture data (header, frames, 3D marker positions)."_help}
+    , meshOutport_{"outport",
+                   "A point mesh containing one vertex per marker with position, "
+                   "color, radius and picking attributes."_help}
+    , positionsOutport_{"positionsOutport",
+                        "A std::vector<vec3> containing the averaged "
+                        "position for each marker."_help}
+    , namesOutport_{"namesOutport",
+                    "A std::vector<std::string> containing the marker names "
+                    "in the same order as the positions"_help}
+    , frame_{"frame",
+             "Frame Range",
+             "A std::vector<std::string> containing the marker "
+             "names in the same order as the positions"_help,
+             0,
+             0,
+             0,
              0}
     , markerRadius_{"markerRadius",
                     "Marker Radius",
@@ -65,9 +100,19 @@ C3DAveragedPositions::C3DAveragedPositions()
     , skipEmpty_{"skipEmpty", "Skip Empty Points",
                  "Skip markers with negative residuals (indicating invalid data)"_help, true}
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }}
-    , lines_{"lines", "Lines", "", InvalidationLevel::InvalidOutput, PropertySemantics::Multiline}
-    , triangles_("triangles", "Triangles", "", InvalidationLevel::InvalidOutput,
-                 PropertySemantics::Multiline) {
+    , lines_{"lines",
+             "Lines",
+             "Optional text properties where each line contains "
+             "names of markers to connect (two names per line for lines) "
+             "Names must match those in the C3D file."_help,
+             "",
+             InvalidationLevel::InvalidOutput,
+             PropertySemantics::Multiline}
+    , triangles_("triangles", "Triangles",
+                 "Optional text properties where each line contains "
+                 "names of markers to connect (three names per line for triangles). "
+                 "Names must match those in the C3D file."_help,
+                 "", InvalidationLevel::InvalidOutput, PropertySemantics::Multiline) {
 
     addPorts(inport_, meshOutport_, positionsOutport_, namesOutport_);
     addProperties(frame_, markerRadius_, skipEmpty_, lines_, triangles_);
@@ -114,7 +159,7 @@ void C3DAveragedPositions::process() {
     picking_.resize(std::max<size_t>(nbPoints, 1));
 
     for (size_t pointIdx = 0; pointIdx < nbPoints; ++pointIdx) {
-        positions.emplace_back(vec3(0.0f));
+        positions.emplace_back(0.0f);
         counts.emplace_back(0);
 
         // Assign a distinct color per marker using cosine-based hue distribution

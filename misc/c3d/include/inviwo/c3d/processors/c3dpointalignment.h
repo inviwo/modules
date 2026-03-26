@@ -32,6 +32,7 @@
 #include <inviwo/c3d/c3dmoduledefine.h>
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
+#include <inviwo/core/properties/boolproperty.h>
 #include <inviwo/core/ports/datainport.h>
 #include <inviwo/core/ports/dataoutport.h>
 #include <inviwo/c3d/ports/c3dport.h>
@@ -56,8 +57,7 @@ private:
     DataOutport<mat4> transform_;
 
     OrdinalProperty<size_t> frameIdx_;
-
-
+    BoolProperty logError_;
 };
 
 }  // namespace inviwo
