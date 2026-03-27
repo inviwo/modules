@@ -1,5 +1,8 @@
 var NAVTREEINDEX28 =
 {
+"classinviwo_1_1animation_1_1InterpolationTyped.html":[2,0,0,0,44],
+"classinviwo_1_1animation_1_1InterpolationTyped.html":[4,0,1,2,45],
+"classinviwo_1_1animation_1_1InvalidationKeyframe.html":[2,0,0,0,45],
 "classinviwo_1_1animation_1_1InvalidationKeyframe.html":[4,0,1,2,46],
 "classinviwo_1_1animation_1_1InvalidationKeyframeSequence.html":[2,0,0,0,46],
 "classinviwo_1_1animation_1_1InvalidationKeyframeSequence.html":[4,0,1,2,47],
@@ -246,8 +249,5 @@ var NAVTREEINDEX28 =
 "classinviwo_1_1hdf5_1_1HDF5ToVolume.html":[4,0,1,17,2],
 "classinviwo_1_1hdf5_1_1HDF5ToVolume.html#a06ce8b70c0c5a18543682ec7ca0df2cc":[4,0,1,17,2,0],
 "classinviwo_1_1hdf5_1_1Handle.html":[4,0,1,17,1],
-"classinviwo_1_1hdf5_1_1Path.html":[4,0,1,17,4],
-"classinviwo_1_1hdf5_1_1PathSelection.html":[4,0,1,17,5],
-"classinviwo_1_1hdf5_1_1PathSelection.html#a41ee56101fa40c82162fd369a61484d6":[4,0,1,17,5,0],
-"classinviwo_1_1hdf5_1_1Source.html":[4,0,1,17,6]
+"classinviwo_1_1hdf5_1_1Path.html":[4,0,1,17,4]
 };

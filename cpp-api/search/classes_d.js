@@ -24,7 +24,7 @@ var searchData=
   ['niftireader_21',['NiftiReader',['../classinviwo_1_1NiftiReader.html',1,'inviwo']]],
   ['nocolumns_22',['NoColumns',['../classinviwo_1_1NoColumns.html',1,'inviwo']]],
   ['nodata_23',['NoData',['../structinviwo_1_1NoData.html',1,'inviwo']]],
-  ['node_24',['Node',['../structinviwo_1_1deserializer_1_1Node.html',1,'inviwo::deserializer']]],
+  ['node_24',['Node',['../structinviwo_1_1deserializer_1_1Node.html',1,'inviwo::deserializer::Node'],['../structinviwo_1_1ProcessorListModel_1_1Node.html',1,'inviwo::ProcessorListModel::Node']]],
   ['nodeswitch_25',['NodeSwitch',['../classinviwo_1_1NodeSwitch.html',1,'inviwo']]],
   ['nodeversionconverter_26',['NodeVersionConverter',['../classinviwo_1_1NodeVersionConverter.html',1,'inviwo']]],
   ['noisegenerator2d_27',['NoiseGenerator2D',['../classinviwo_1_1NoiseGenerator2D.html',1,'inviwo']]],

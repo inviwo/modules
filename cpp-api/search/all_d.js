@@ -32,7 +32,7 @@ var searchData=
   ['niftireader_29',['NiftiReader',['../classinviwo_1_1NiftiReader.html',1,'inviwo']]],
   ['nocolumns_30',['NoColumns',['../classinviwo_1_1NoColumns.html',1,'inviwo']]],
   ['nodata_31',['NoData',['../structinviwo_1_1NoData.html',1,'inviwo']]],
-  ['node_32',['Node',['../structinviwo_1_1deserializer_1_1Node.html',1,'inviwo::deserializer']]],
+  ['node_32',['Node',['../structinviwo_1_1deserializer_1_1Node.html',1,'inviwo::deserializer::Node'],['../structinviwo_1_1ProcessorListModel_1_1Node.html',1,'inviwo::ProcessorListModel::Node']]],
   ['nodeidsbuffer_33',['nodeIdsBuffer',['../structinviwo_1_1TetraMeshBuffers.html#a253aa678ba558bb3365bf90a1312daaf',1,'inviwo::TetraMeshBuffers']]],
   ['nodesbuffer_34',['nodesBuffer',['../structinviwo_1_1TetraMeshBuffers.html#ad523c12ec0b0ad4b057e2913b23ee1e5',1,'inviwo::TetraMeshBuffers']]],
   ['nodeswitch_35',['NodeSwitch',['../classinviwo_1_1NodeSwitch.html',1,'inviwo::NodeSwitch'],['../classinviwo_1_1NodeSwitch.html#aaee0028806a4647612e584df1d62809c',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, TiXmlElement *node, bool retrieveChild=true)'],['../classinviwo_1_1NodeSwitch.html#a925813c618132dd01d46cdab8f99db10',1,'inviwo::NodeSwitch::NodeSwitch(SerializeBase &amp;serializer, std::string_view key, bool retrieveChild=true)']]],

@@ -7,6 +7,7 @@ var group__dataio =
       [ "setOption", "classinviwo_1_1AssimpReader.html#aed86b7a704398c48d49eeb32c1f9744f", null ]
     ] ],
     [ "inviwo::BasicPDBReader", "classinviwo_1_1BasicPDBReader.html", null ],
+    [ "inviwo::C3DReader", "classinviwo_1_1C3DReader.html", null ],
     [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
     [ "inviwo::CImgLayerWriter", "classinviwo_1_1CImgLayerWriter.html", [
       [ "writeData", "classinviwo_1_1CImgLayerWriter.html#a77fc3d9d467dfceaa9cfa9567590a318", null ]
