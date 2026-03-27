@@ -455,9 +455,9 @@ std::pair<glm::uint8, const dmat3&> TensorField3D::at(const size_t index) const 
 
 void TensorField3D::setExtent(const vec3& extent) {
     auto basis = getBasis();
-    basis[0] = glm::normalize(basis[0]) * extent[0];
-    basis[1] = glm::normalize(basis[1]) * extent[1];
-    basis[2] = glm::normalize(basis[2]) * extent[2];
+    basis[0] = glm::normalize(basis[0]) * static_cast<double>(extent[0]);
+    basis[1] = glm::normalize(basis[1]) * static_cast<double>(extent[1]);
+    basis[2] = glm::normalize(basis[2]) * static_cast<double>(extent[2]);
     setBasis(basis);
 }
 
