@@ -102,7 +102,7 @@ void TensorField3DSubset::process() {
 
     auto outField =
         std::make_shared<TensorField3D>(dimensions, rawData, spacing * vec3(dimensions));
-    outField->setOffset(tensorField->getOffset() + vec3(origin_.get()) * spacing);
+    outField->setOffset(tensorField->getOffset() + dvec3(origin_.get()) * dvec3{spacing});
 
     outport_.setData(outField);
 }
