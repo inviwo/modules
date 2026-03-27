@@ -70,9 +70,9 @@ public:
     static const ProcessorInfo processorInfo_;
 
     virtual Document getInfo() const override;
-    virtual std::optional<mat4> boundingBox() const override;
+    virtual std::optional<dmat4> boundingBox() const override;
     virtual UseFragmentList usesFragmentLists() const override;
-    virtual void rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) override;
+    virtual void rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) override;
 
 private:
     enum class Representation { VDW, Licorice, BallAndStick, Ribbon, Cartoon };

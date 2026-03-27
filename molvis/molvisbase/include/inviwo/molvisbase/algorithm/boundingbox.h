@@ -49,14 +49,14 @@ class MolecularStructure;
  * radii. The bounding box is represented using a mat4, where all positions are between
  * `bbox * (x,y,z,1)` where x, y, and z are between 0 and 1.
  */
-IVW_MODULE_MOLVISBASE_API mat4 boundingBox(const MolecularStructure& structure);
+IVW_MODULE_MOLVISBASE_API dmat4 boundingBox(const MolecularStructure& structure);
 
 /**
  * Calculate a bounding box of all molecular \p structures using the atom positions and van der
  * Waals radii. The bounding box is represented using a mat4, where all positions are between
  * `bbox * (x,y,z,1)` where x, y, and z are between 0 and 1.
  */
-IVW_MODULE_MOLVISBASE_API mat4
+IVW_MODULE_MOLVISBASE_API dmat4
 boundingBox(const std::vector<std::shared_ptr<const MolecularStructure>>& structures);
 
 /**
@@ -65,13 +65,13 @@ boundingBox(const std::vector<std::shared_ptr<const MolecularStructure>>& struct
  * Note that the port has to outlive the functor.
  */
 /**@{*/
-IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<dmat4>()> boundingBox(
     const MolecularStructureInport& structure);
-IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<dmat4>()> boundingBox(
     const MolecularStructureMultiInport& structures);
-IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<dmat4>()> boundingBox(
     const MolecularStructureFlatMultiInport& structures);
-IVW_MODULE_MOLVISBASE_API std::function<std::optional<mat4>()> boundingBox(
+IVW_MODULE_MOLVISBASE_API std::function<std::optional<dmat4>()> boundingBox(
     const MolecularStructureOutport& structure);
 /**@*/
 
