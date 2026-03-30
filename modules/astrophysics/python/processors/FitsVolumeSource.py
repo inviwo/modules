@@ -112,8 +112,8 @@ class FitsVolumeSource(ivw.Processor):
     def createVolume(fits_data: astroviscommon.FitsData, flip_z: bool = False) -> ivw.data.Volume:
         # data = np.nan_to_num(data)
         data_float = fits_data.data.astype(dtype=np.float32)
-        if flip_z:
-            data_float = np.flip(data_float, axis=0)
+        # if flip_z:
+        #     data_float = np.flip(data_float, axis=0)
         volumerep = ivw.data.VolumePy(np.copy(data_float, order='C'))
 
         volume = ivw.data.Volume(volumerep)
@@ -173,14 +173,7 @@ class FitsVolumeSource(ivw.Processor):
             case _:
                 raise ValueError(f"Unexpected axis type {self.axisType.value}")
 
-        # ensure positive axis extent in z direction
-        flip_z: bool = False
-        if extent_z < 0.0:
-            offset_z += extent_z
-            extent_z = -extent_z
-            flip_z = True
-
-        volume_intensity = FitsVolumeSource.createVolume(fits_data, flip_z)
+        volume_intensity = FitsVolumeSource.createVolume(fits_data)
         volume_intensity.dataMap.valueAxis.name = fits_data.params.btype
         # hdul[0].header['bunit'] is 'Jy/beam ', which is not a valid unit in Inviwo
         volume_intensity.dataMap.valueAxis.unit = ivw.data.Unit(
