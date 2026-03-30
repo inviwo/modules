@@ -87,7 +87,7 @@ def createDepthMesh(params: FitsParams,
     ivw.logInfo(f'{extent=}\n{offset=}')
     positions_np = (positions_np * np.array([extent[0] / (dims[0] - 1),
                                              extent[1] / (dims[1] - 1), 1.0])
-                    - np.array([offset[0], offset[1], 0.0]))
+                    + np.array([offset[0], offset[1], 0.0]))
 
     mesh.addBuffer(ivw.data.BufferType.PositionAttrib,
                    ivw.data.Buffer(np.array(positions_np, dtype=np.float32)))
