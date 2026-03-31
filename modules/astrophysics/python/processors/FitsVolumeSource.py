@@ -71,14 +71,20 @@ class FitsVolumeSource(ivw.Processor):
             ivw.md2doc("Scaling factor applied to the z axis"),
             1.0, increment=0.001, min=(1.0e-8, cb.Immutable), max=(10.0, cb.Ignore))
 
-        self.zaxisRange = ivw.properties.DoubleVec2Property(
-            "zaxisRange", "Z Axis Range",
-            ivw.md2doc("Extent of the dataset along the z axis."),
-            glm.dvec2(0.0, 1.0), increment=glm.dvec2(0.001),
-            min=(glm.dvec2(-1.70e308), cb.Ignore),
-            max=(glm.dvec2(1.79e308), cb.Ignore),
-            semantics=semantics.Text, invalidationLevel=inv.Valid)
-        self.zaxisRange.readOnly = True
+        def axisRangeProperty(axis_name: str) -> ivw.properties.DoubleVec2Property:
+            prop = ivw.properties.DoubleVec2Property(
+                f"{axis_name.lower()}axisRange", f"{axis_name.upper()} Axis Range",
+                ivw.md2doc(f"Extent of the dataset along the {axis_name.lower()} axis."),
+                glm.dvec2(0.0, 1.0), increment=glm.dvec2(0.001),
+                min=(glm.dvec2(-1.79e308), cb.Ignore),
+                max=(glm.dvec2(1.79e308), cb.Ignore),
+                semantics=semantics.Text, invalidationLevel=inv.Valid)
+            prop.readOnly = True
+            return prop
+
+        self.xaxisRange = axisRangeProperty("x")
+        self.yaxisRange = axisRangeProperty("y")
+        self.zaxisRange = axisRangeProperty("z")
 
         self.fitsParameters = ivwastrovis.createFitsCompositeProperty(
             "fitsParameters", "Fits Parameters")
@@ -88,8 +94,9 @@ class FitsVolumeSource(ivw.Processor):
             "information", "Data information")
 
         self.addProperties([self.filename, self.fitsParameters,
-                            self.latLonCoords, self.axisType, self.zaxisRange, self.axisScaling,
-                            self.basis, self.information])
+                            self.latLonCoords, self.axisType,
+                            self.xaxisRange, self.yaxisRange, self.zaxisRange,
+                            self.axisScaling, self.basis, self.information])
 
     @staticmethod
     def processorInfo():
@@ -132,15 +139,15 @@ class FitsVolumeSource(ivw.Processor):
         if not filename.exists():
             return
 
-        astroviscommon.readFITSData.cache_clear()
+        # astroviscommon.readFITSData.cache_clear()
 
         t = time.perf_counter_ns()
         fits_data: astroviscommon.FitsData = astroviscommon.readFITSData(filename)
         dim = fits_data.data.shape
         elapsed = time.perf_counter_ns() - t
-        print(f'{elapsed/1000.0} us')
+        print(f'loading FITS data: {elapsed/1_000_000.0} ms')
 
-        print(astroviscommon.readFITSData.cache_info())
+        # print(astroviscommon.readFITSData.cache_info())
 
         vel_func: Callable[[float], int] = astroviscommon.frequencyToVelocityFunc(fits_data.params)
         velocity: list = [vel_func(channel) for channel in range(dim[0])]
@@ -199,7 +206,8 @@ class FitsVolumeSource(ivw.Processor):
         volume_intensity.worldMatrix = ivw.glm.mat4(w)
 
         # print(w * m, extent_z * (self.axisScaling.value / extent_z))
-
+        self.xaxisRange.value = glm.dvec2(offset_xy[0], offset_xy[0] + extent_xy[0])
+        self.yaxisRange.value = glm.dvec2(offset_xy[1], offset_xy[1] + extent_xy[1])
         self.zaxisRange.value = glm.dvec2(offset_z, offset_z + extent_z)
 
         self.fitsParameters.objectName.value = fits_data.params.objectName
