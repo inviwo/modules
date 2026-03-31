@@ -127,7 +127,6 @@ void FitsNonlinearDepthComponent::process(Shader& shader, TextureUnitContainer& 
     utilgl::bindAndSetUniforms(shader, cont, volumePort_);
 
     const auto data = volumePort_.getData();
-    const vec3 delta = dataExtent_.get() / vec3{data->getDimensions()};
     mat4 m = glm::scale(dataExtent_.get());
     m[3] = vec4{dataOffset_.get(), 1.0f};
 
