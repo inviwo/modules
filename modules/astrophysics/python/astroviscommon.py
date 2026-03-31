@@ -46,7 +46,7 @@ class FitsData:
     data: np.ndarray
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=5)
 def readFITSData(filepath: Path,
                  dataset_index: int | None = None,
                  **kwargs) -> FitsData:
