@@ -13,10 +13,32 @@
         "CMAKE_C_COMPILER_LAUNCHER": "ccache",
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
 
-        "IVW_MODULE_FFMPEG": "OFF",
-        "IVW_MODULE_WEBBROWSER": "OFF",
-        "IVW_MODULE_WEBQT": "OFF",
-        "IVW_TEST_BENCHMARKS": "OFF"
+        "IVW_EXTERNAL_MODULES" : "${sourceParentDir}/modules/misc;${sourceParentDir}/modules/medvis;${sourceParentDir}/modules/molvis;${sourceParentDir}/modules/tensorvis;${sourceParentDir}/modules/topovis;${sourceParentDir}/modules/vectorvis;${sourceParentDir}/modules/infravis",
+
+        "IVW_TEST_BENCHMARKS": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_ASTROPHYSICS": { "type": "BOOL", "value": "ON" },
+        "IVW_MODULE_FFMPEG": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_WEBBROWSER": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_WEBQT": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_VTK": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_COMPUTESHADEREXAMPLES": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_DEVTOOLS": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_GRAPHVIZ": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_OPENMESH": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_SPRINGSYSTEM": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_VASP": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_GAUSSIAN": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_NANOVGUTILS": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_TENSORVISBASE": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_TENSORVISIO": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_TENSORVISPYTHON": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_INTEGRALLINEFILTERING": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_MOLVISBASE": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_MOLVISGL": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_MOLVISPYTHON": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_DATAFRAMECLUSTERING": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_C3D": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_TTK": { "type": "BOOL", "value": "OFF" }
       }
     },
     {
