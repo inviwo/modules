@@ -53,12 +53,30 @@ class FitsDepthCorrection(ivw.Processor):
             "axisScaling", "Z Scaling",
             ivw.md2doc("Scaling factor applied to the z axis"),
             1.0, increment=0.001, min=(1.0e-8, cb.Immutable), max=(10.0, cb.Ignore))
+
+        def axisRangeProperty(axis_name: str) -> ivw.properties.DoubleVec2Property:
+            inv = ivw.properties.InvalidationLevel
+            prop = ivw.properties.DoubleVec2Property(
+                f"{axis_name.lower()}axisRange", f"{axis_name.upper()} Axis Range",
+                ivw.md2doc(f"Extent of the dataset along the {axis_name.lower()} axis."),
+                glm.dvec2(0.0, 1.0), increment=glm.dvec2(0.001),
+                min=(glm.dvec2(-1.79e308), cb.Ignore),
+                max=(glm.dvec2(1.79e308), cb.Ignore),
+                semantics=semantics.Text, invalidationLevel=inv.Valid)
+            prop.readOnly = True
+            return prop
+
+        self.xaxisRange = axisRangeProperty("x")
+        self.yaxisRange = axisRangeProperty("y")
+        self.zaxisRange = axisRangeProperty("z")
+
         self.tf = ivw.properties.TransferFunctionProperty(
             "colormap", "Mesh Colormap",
             ivw.doc.Document("Colormap used for coloring the frequency slices according to depth"))
 
-        self.addProperties([self.fitsParameters, self.validChannelRange,
-                            self.latLonCoords, self.axisScaling, self.tf])
+        self.addProperties([self.fitsParameters, self.validChannelRange, self.latLonCoords,
+                            self.xaxisRange, self.yaxisRange, self.zaxisRange,
+                            self.axisScaling, self.tf])
 
     @staticmethod
     def processorInfo():
@@ -92,7 +110,7 @@ class FitsDepthCorrection(ivw.Processor):
             velocity_inf=self.fitsParameters.velocityInf.value,
             velocity_star=self.fitsParameters.velocityStar.value)
         elapsed = time.perf_counter_ns() - t
-        print(f'{elapsed/1000_000.0} ms')
+        print(f'estimating depth: {elapsed/1_000_000.0} ms')
 
         # extent and offset in same coord system as the depth mesh
         mesh_extent, mesh_offset, _ = astroviscommon.getLatLongBasis(fits_data.params, latlong_calc)
@@ -113,6 +131,9 @@ class FitsDepthCorrection(ivw.Processor):
             depth_mesh.axes[i].unit = ivw.data.Unit(unit)
 
         ivw.logInfo(f'd: {extent=}\n{offset=}')
+        self.xaxisRange.value = glm.dvec2(offset[0], offset[0] + extent[0])
+        self.yaxisRange.value = glm.dvec2(offset[1], offset[1] + extent[1])
+        self.zaxisRange.value = glm.dvec2(min_max[0], min_max[1])
 
         m = ivw.glm.mat4(1.0)
         m[0][0] = extent[0] / mesh_extent[0]
