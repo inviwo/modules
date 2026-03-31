@@ -57,11 +57,9 @@ FitsVolumeRaycaster::FitsVolumeRaycaster(std::string_view identifier, std::strin
     , isoTF_{fits_.volumePort_}
     , raycasting_{fits_.getName(), isoTF_.isotfs[0]}
     , camera_{"camera", util::boundingBox(fits_.volumePort_)}
-    , light_{&camera_.camera}
-{
+    , light_{&camera_.camera} {
 
-    registerComponents(fits_, entryExit_, background_, raycasting_, isoTF_, camera_,
-                       light_);
+    registerComponents(fits_, entryExit_, background_, raycasting_, isoTF_, camera_, light_);
 }
 
 void FitsVolumeRaycaster::process() {

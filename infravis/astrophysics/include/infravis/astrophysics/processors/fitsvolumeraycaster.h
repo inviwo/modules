@@ -46,7 +46,8 @@ namespace inviwo {
 
 class IVW_MODULE_ASTROPHYSICS_API FitsVolumeRaycaster : public VolumeRaycasterBase {
 public:
-    explicit FitsVolumeRaycaster(std::string_view identifier = {}, std::string_view displayName = {});
+    explicit FitsVolumeRaycaster(std::string_view identifier = {},
+                                 std::string_view displayName = {});
 
     virtual void process() override;
 
@@ -55,7 +56,6 @@ public:
 
 private:
     FitsNonlinearDepthComponent fits_;
-    //VolumeComponent volume_;
     EntryExitComponent entryExit_;
     BackgroundComponent background_;
     IsoTFComponent<1> isoTF_;
