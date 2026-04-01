@@ -130,6 +130,24 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: Free Disk Space
       if: matrix.system == 'linux'
       uses: jlumbroso/free-disk-space@main
@@ -147,18 +165,6 @@ jobs:
       with:
         path: modules
         submodules: false
-
-    - name: "Read inviwo ref override"
-      id: inviwo_ref
-      shell: bash
-      env:
-        PR_BODY: ${{ github.event.pull_request.body }}
-      run: |
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
-        if [ -z "$REF" ]; then
-          REF="${{ inputs.inviwo_ref || 'master' }}"
-        fi
-        echo "ref=${REF}" >> $GITHUB_OUTPUT
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
@@ -271,8 +277,14 @@ jobs:
       id: inviwo_ref
       shell: bash
       env:
-        PR_BODY: ${{ github.event.pull_request.body }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
         REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
@@ -447,8 +459,14 @@ jobs:
       id: inviwo_ref
       shell: bash
       env:
-        PR_BODY: ${{ github.event.pull_request.body }}
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
       run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
         REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
