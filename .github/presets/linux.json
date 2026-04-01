@@ -38,7 +38,9 @@
         "IVW_MODULE_MOLVISPYTHON": { "type": "BOOL", "value": "OFF" },
         "IVW_MODULE_DATAFRAMECLUSTERING": { "type": "BOOL", "value": "OFF" },
         "IVW_MODULE_C3D": { "type": "BOOL", "value": "OFF" },
-        "IVW_MODULE_TTK": { "type": "BOOL", "value": "OFF" }
+        "IVW_MODULE_TTK": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_OPACTOPT": { "type": "BOOL", "value": "OFF" },
+        "IVW_MODULE_PYTHONTOOLS": { "type": "BOOL", "value": "OFF" }
       }
     },
     {
