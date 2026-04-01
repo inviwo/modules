@@ -154,7 +154,7 @@ jobs:
       env:
         PR_BODY: ${{ github.event.pull_request.body }}
       run: |
-        REF=$(echo "$PR_BODY" | grep -oP '(?<=/inviwo-ref )\S+')
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
@@ -273,7 +273,7 @@ jobs:
       env:
         PR_BODY: ${{ github.event.pull_request.body }}
       run: |
-        REF=$(echo "$PR_BODY" | grep -oP '(?<=/inviwo-ref )\S+')
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
@@ -449,7 +449,7 @@ jobs:
       env:
         PR_BODY: ${{ github.event.pull_request.body }}
       run: |
-        REF=$(echo "$PR_BODY" | grep -oP '(?<=/inviwo-ref )\S+')
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
