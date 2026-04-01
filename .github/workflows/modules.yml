@@ -12,6 +12,11 @@ on:
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
         required: false
         default: false
+      inviwo_ref:
+        type: string
+        description: 'Branch/tag/SHA to use for the inviwo/inviwo checkout (overrides any /inviwo-ref in PR body)'
+        required: false
+        default: 'master'
 
 permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
@@ -143,11 +148,23 @@ jobs:
         path: modules
         submodules: false
 
+    - name: "Read inviwo ref override"
+      id: inviwo_ref
+      shell: bash
+      env:
+        PR_BODY: ${{ github.event.pull_request.body }}
+      run: |
+        REF=$(echo "$PR_BODY" | grep -oP '(?<=/inviwo-ref )\S+')
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: ${{ steps.inviwo_ref.outputs.ref }}
         path: inviwo
         submodules: false
 
@@ -250,11 +267,23 @@ jobs:
       with:
         path: modules
 
+    - name: "Read inviwo ref override"
+      id: inviwo_ref
+      shell: bash
+      env:
+        PR_BODY: ${{ github.event.pull_request.body }}
+      run: |
+        REF=$(echo "$PR_BODY" | grep -oP '(?<=/inviwo-ref )\S+')
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: ${{ steps.inviwo_ref.outputs.ref }}
         path: inviwo
 
     - name: "Get Vcpkg SHA"
@@ -414,11 +443,23 @@ jobs:
       with:
         path: modules
 
+    - name: "Read inviwo ref override"
+      id: inviwo_ref
+      shell: bash
+      env:
+        PR_BODY: ${{ github.event.pull_request.body }}
+      run: |
+        REF=$(echo "$PR_BODY" | grep -oP '(?<=/inviwo-ref )\S+')
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: ${{ steps.inviwo_ref.outputs.ref }}
         path: inviwo
         
     - name: "Install dependencies"
