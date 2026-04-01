@@ -14,7 +14,7 @@ on:
         default: false
       inviwo_ref:
         type: string
-        description: 'Branch/tag/SHA to use for the inviwo/inviwo checkout (overrides any /inviwo-ref in PR body)'
+        description: 'Branch/tag/SHA to use for the inviwo/inviwo checkout (default: master). Can also be set in the PR body using /inviwo-ref <ref>'
         required: false
         default: 'master'
 
@@ -268,12 +268,7 @@ jobs:
     timeout-minutes: 320
     steps:
 
-    - name: "Clone Modules"
-      uses: actions/checkout@v6
-      with:
-        path: modules
-
-    - name: "Read inviwo ref override"
+    - name: "Read Inviwo Branch"
       id: inviwo_ref
       shell: bash
       env:
@@ -290,6 +285,11 @@ jobs:
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
         echo "ref=${REF}" >> $GITHUB_OUTPUT
+
+    - name: "Clone Modules"
+      uses: actions/checkout@v6
+      with:
+        path: modules
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
@@ -450,12 +450,7 @@ jobs:
     timeout-minutes: 320
     steps:
 
-    - name: "Clone Modules"
-      uses: actions/checkout@v6
-      with:
-        path: modules
-
-    - name: "Read inviwo ref override"
+    - name: "Read Inviwo Branch"
       id: inviwo_ref
       shell: bash
       env:
@@ -472,6 +467,11 @@ jobs:
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
         echo "ref=${REF}" >> $GITHUB_OUTPUT
+
+    - name: "Clone Modules"
+      uses: actions/checkout@v6
+      with:
+        path: modules
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
