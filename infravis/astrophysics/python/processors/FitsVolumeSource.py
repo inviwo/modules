@@ -137,7 +137,7 @@ class FitsVolumeSource(ivw.Processor):
 
         filename: Path = ivwbase.io.downloadAndCacheIfUrl(self.filename.valueAsString())
         if not filename.exists():
-            return
+            raise FileNotFoundError(f"Could not locate {self.filename.valueAsString():s}")
 
         # astroviscommon.readFITSData.cache_clear()
 

@@ -38,7 +38,6 @@ namespace inviwo {
 class IVW_MODULE_ASTROPHYSICS_API AstroPhysicsModule : public InviwoModule {
 public:
     explicit AstroPhysicsModule(InviwoApplication* app);
-    virtual ~AstroPhysicsModule() = default;
 
     pyutil::ModulePath scripts_;
     PythonProcessorFolderObserver pythonFolderObserver_;

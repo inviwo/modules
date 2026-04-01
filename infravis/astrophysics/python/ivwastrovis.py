@@ -78,13 +78,11 @@ def createDepthMesh(params: FitsParams,
 
     positions_np = np.array(positions)
     min_max = [np.min(positions_np[:, 2]), np.max(positions_np[:, 2])]
-    # ivw.logInfo(f'min/max: {min_max}')
     depth_scaling = np.max(np.abs(min_max))
 
     colors = [tf.sample(value / depth_scaling * 0.5 + 0.5) for value in positions_np[:, 2]]
 
     extent, offset, _ = astroviscommon.getLatLongBasis(params, lat_long)
-    ivw.logInfo(f'{extent=}\n{offset=}')
     positions_np = (positions_np * np.array([extent[0] / (dims[0] - 1),
                                              extent[1] / (dims[1] - 1), 1.0])
                     + np.array([offset[0], offset[1], 0.0]))
