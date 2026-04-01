@@ -47,7 +47,7 @@ class AngleToVector2D(ivw.Processor):
         magnitude = volume_magnitude.data
 
         if use_degree:
-            angle *= np.pi / 180.0
+            angle = angle * np.pi / 180.0
         data = np.stack([np.cos(angle + np.pi / 2.0) * magnitude,
                          np.sin(angle + np.pi / 2.0) * magnitude], axis=3)
         volumerep = ivw.data.VolumePy(np.copy(data.astype(dtype=np.float32), order='C'))
