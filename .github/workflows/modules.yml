@@ -147,7 +147,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: individual/martin/astro
         path: inviwo
         submodules: false
 
@@ -254,7 +254,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: individual/martin/astro
         path: inviwo
 
     - name: "Get Vcpkg SHA"
@@ -418,7 +418,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: individual/martin/astro
         path: inviwo
         
     - name: "Install dependencies"
