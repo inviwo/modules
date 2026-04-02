@@ -1,5 +1,13 @@
 var NAVTREEINDEX5 =
 {
+"classinviwo_1_1DepthDarkening.html":[4,0,1,310],
+"classinviwo_1_1DepthDarkening.html#a9a6caa0d5d52fedfb31164df5d798ae2":[2,0,0,293,0],
+"classinviwo_1_1DepthDarkening.html#a9a6caa0d5d52fedfb31164df5d798ae2":[4,0,1,310,0],
+"classinviwo_1_1DepthOfField.html":[2,0,0,294],
+"classinviwo_1_1DepthOfField.html":[4,0,1,311],
+"classinviwo_1_1DepthOfField.html#a57ae3fc678e359fcdd684cbbb984a919":[2,0,0,294,0],
+"classinviwo_1_1DepthOfField.html#a57ae3fc678e359fcdd684cbbb984a919":[4,0,1,311,0],
+"classinviwo_1_1DeserializationErrorHandle.html":[2,0,0,295],
 "classinviwo_1_1DeserializationErrorHandle.html":[4,0,1,312],
 "classinviwo_1_1Deserializer.html":[2,0,0,296],
 "classinviwo_1_1Deserializer.html":[4,0,1,313],
@@ -241,13 +249,5 @@ var NAVTREEINDEX5 =
 "classinviwo_1_1FileAssociations.html":[2,0,0,363],
 "classinviwo_1_1FileAssociations.html":[4,0,1,380],
 "classinviwo_1_1FileAssociations.html#ae9f421d545820a6629105bf1e92a4779":[2,0,0,363,0],
-"classinviwo_1_1FileAssociations.html#ae9f421d545820a6629105bf1e92a4779":[4,0,1,380,0],
-"classinviwo_1_1FileBase.html":[2,0,0,364],
-"classinviwo_1_1FileBase.html":[4,0,1,381],
-"classinviwo_1_1FileCache.html":[2,0,0,365],
-"classinviwo_1_1FileCache.html":[4,0,1,382],
-"classinviwo_1_1FileCache.html#a96e8bf27e96aa8918a0b0c49dff5418e":[2,0,0,365,0],
-"classinviwo_1_1FileCache.html#a96e8bf27e96aa8918a0b0c49dff5418e":[4,0,1,382,0],
-"classinviwo_1_1FileDialog.html":[2,0,0,366],
-"classinviwo_1_1FileDialog.html":[4,0,1,383]
+"classinviwo_1_1FileAssociations.html#ae9f421d545820a6629105bf1e92a4779":[4,0,1,380,0]
 };

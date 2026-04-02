@@ -1,5 +1,13 @@
 var NAVTREEINDEX21 =
 {
+"classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304":[2,0,0,1224,1],
+"classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304":[4,0,1,1241,1],
+"classinviwo_1_1StringsProperty.html#afd091ca80e33e13b4a4b9d9c3e5fe9a2":[2,0,0,1224,0],
+"classinviwo_1_1StringsProperty.html#afd091ca80e33e13b4a4b9d9c3e5fe9a2":[4,0,1,1241,0],
+"classinviwo_1_1StringsPropertyWidgetQt.html":[2,0,0,1225],
+"classinviwo_1_1StringsPropertyWidgetQt.html":[4,0,1,1242],
+"classinviwo_1_1StringsPropertyWidgetQt.html#afc3bcef95894b0345088f4890ab5ebb5":[2,0,0,1225,0],
+"classinviwo_1_1StringsPropertyWidgetQt.html#afc3bcef95894b0345088f4890ab5ebb5":[4,0,1,1242,0],
 "classinviwo_1_1StructuredCameraCoordinateTransformer.html":[2,0,0,1228],
 "classinviwo_1_1StructuredCameraCoordinateTransformer.html":[4,0,1,1245],
 "classinviwo_1_1StructuredCameraCoordinateTransformer.html#a19702051cf2ec4f055660cc8d39a6f15":[2,0,0,1228,20],
@@ -241,13 +249,5 @@ var NAVTREEINDEX21 =
 "classinviwo_1_1TFEditorIsovalue.html":[2,0,0,1318],
 "classinviwo_1_1TFEditorIsovalue.html":[4,0,1,1335],
 "classinviwo_1_1TFEditorMask.html":[2,0,0,1319],
-"classinviwo_1_1TFEditorMask.html":[4,0,1,1336],
-"classinviwo_1_1TFEditorMaskMax.html":[2,0,0,1320],
-"classinviwo_1_1TFEditorMaskMax.html":[4,0,1,1337],
-"classinviwo_1_1TFEditorMaskMin.html":[2,0,0,1321],
-"classinviwo_1_1TFEditorMaskMin.html":[4,0,1,1338],
-"classinviwo_1_1TFEditorPrimitive.html":[2,0,0,1322],
-"classinviwo_1_1TFEditorPrimitive.html":[4,0,1,1339],
-"classinviwo_1_1TFEditorPrimitive.html#a2b050bcde256279bb2602242c21dacab":[2,0,0,1322,1],
-"classinviwo_1_1TFEditorPrimitive.html#a2b050bcde256279bb2602242c21dacab":[4,0,1,1339,1]
+"classinviwo_1_1TFEditorMask.html":[4,0,1,1336]
 };

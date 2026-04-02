@@ -1,5 +1,13 @@
 var NAVTREEINDEX20 =
 {
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a277971d52e4088a16f9529c0c59c2cb3":[4,0,1,1194,3],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a5f2e4cbda36285cbd0a6ec95e07e1d07":[2,0,0,1177,13],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a5f2e4cbda36285cbd0a6ec95e07e1d07":[4,0,1,1194,13],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a60ff57faef7cc8cb733633bdab51922f":[2,0,0,1177,10],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a60ff57faef7cc8cb733633bdab51922f":[4,0,1,1194,10],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a61a7477c65a25dad60ba36dec173dc9a":[2,0,0,1177,15],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a61a7477c65a25dad60ba36dec173dc9a":[4,0,1,1194,15],
+"classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a6881076d193f2d24672949d12f8a9e17":[2,0,0,1177,2],
 "classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a6881076d193f2d24672949d12f8a9e17":[4,0,1,1194,2],
 "classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a6b418af579ee81fd4d1d95aff8058b92":[2,0,0,1177,8],
 "classinviwo_1_1SpatialCameraCoordinateTransformerImpl.html#a6b418af579ee81fd4d1d95aff8058b92":[4,0,1,1194,8],
@@ -241,13 +249,5 @@ var NAVTREEINDEX20 =
 "classinviwo_1_1StringsProperty.html":[2,0,0,1224],
 "classinviwo_1_1StringsProperty.html":[4,0,1,1241],
 "classinviwo_1_1StringsProperty.html#a5fe2c6636540e9ee45432d9538402bbc":[2,0,0,1224,2],
-"classinviwo_1_1StringsProperty.html#a5fe2c6636540e9ee45432d9538402bbc":[4,0,1,1241,2],
-"classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304":[2,0,0,1224,1],
-"classinviwo_1_1StringsProperty.html#ab43a285f24adf482fcba6fac10637304":[4,0,1,1241,1],
-"classinviwo_1_1StringsProperty.html#afd091ca80e33e13b4a4b9d9c3e5fe9a2":[2,0,0,1224,0],
-"classinviwo_1_1StringsProperty.html#afd091ca80e33e13b4a4b9d9c3e5fe9a2":[4,0,1,1241,0],
-"classinviwo_1_1StringsPropertyWidgetQt.html":[2,0,0,1225],
-"classinviwo_1_1StringsPropertyWidgetQt.html":[4,0,1,1242],
-"classinviwo_1_1StringsPropertyWidgetQt.html#afc3bcef95894b0345088f4890ab5ebb5":[2,0,0,1225,0],
-"classinviwo_1_1StringsPropertyWidgetQt.html#afc3bcef95894b0345088f4890ab5ebb5":[4,0,1,1242,0]
+"classinviwo_1_1StringsProperty.html#a5fe2c6636540e9ee45432d9538402bbc":[4,0,1,1241,2]
 };

@@ -1,5 +1,13 @@
 var NAVTREEINDEX26 =
 {
+"classinviwo_1_1VolumeMasker.html":[4,0,1,1471],
+"classinviwo_1_1VolumeMerger.html":[2,0,0,1455],
+"classinviwo_1_1VolumeMerger.html":[4,0,1,1472],
+"classinviwo_1_1VolumeMerger.html#a064e18fb65118dddef5c246acd00e7a7":[2,0,0,1455,0],
+"classinviwo_1_1VolumeMerger.html#a064e18fb65118dddef5c246acd00e7a7":[4,0,1,1472,0],
+"classinviwo_1_1VolumeModule.html":[2,0,0,1456],
+"classinviwo_1_1VolumeModule.html":[4,0,1,1473],
+"classinviwo_1_1VolumeNormalization.html":[2,0,0,1457],
 "classinviwo_1_1VolumeNormalization.html":[4,0,1,1474],
 "classinviwo_1_1VolumeNormalization.html#a263e4ca18bf8ccb404ea57f888cce847":[2,0,0,1457,2],
 "classinviwo_1_1VolumeNormalization.html#a263e4ca18bf8ccb404ea57f888cce847":[4,0,1,1474,2],
@@ -241,13 +249,5 @@ var NAVTREEINDEX26 =
 "classinviwo_1_1WorkspaceGridView.html":[2,0,0,1526],
 "classinviwo_1_1WorkspaceGridView.html":[4,0,1,1543],
 "classinviwo_1_1WorkspaceInfoLoader.html":[2,0,0,1528],
-"classinviwo_1_1WorkspaceInfoLoader.html":[4,0,1,1545],
-"classinviwo_1_1WorkspaceManager.html":[2,0,0,1529],
-"classinviwo_1_1WorkspaceManager.html":[4,0,1,1546],
-"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[2,0,0,1529,7],
-"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[4,0,1,1546,7],
-"classinviwo_1_1WorkspaceManager.html#a2adb05d088c1fd3f407b8bb7a4b5c6c4":[2,0,0,1529,3],
-"classinviwo_1_1WorkspaceManager.html#a2adb05d088c1fd3f407b8bb7a4b5c6c4":[4,0,1,1546,3],
-"classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98":[2,0,0,1529,11],
-"classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98":[4,0,1,1546,11]
+"classinviwo_1_1WorkspaceInfoLoader.html":[4,0,1,1545]
 };

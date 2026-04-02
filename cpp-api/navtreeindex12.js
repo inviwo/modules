@@ -1,5 +1,13 @@
 var NAVTREEINDEX12 =
 {
+"classinviwo_1_1MPVMVolumeReader.html":[2,0,0,761],
+"classinviwo_1_1MPVMVolumeReader.html":[4,0,1,778],
+"classinviwo_1_1MarchingTetrahedron.html":[2,0,0,694],
+"classinviwo_1_1MarchingTetrahedron.html":[4,0,1,711],
+"classinviwo_1_1MarginProperty.html":[1,4,23],
+"classinviwo_1_1MarginProperty.html#a3c3bebc58a242ef17f668864048ebb30":[1,4,23,2],
+"classinviwo_1_1MarginProperty.html#a500f96ad052ba3b74073c36ecdb7801a":[1,4,23,1],
+"classinviwo_1_1MarginProperty.html#a9c3f3b635d74ad47b1edd8170477cc13":[1,4,23,0],
 "classinviwo_1_1MenuItem.html":[2,0,0,696],
 "classinviwo_1_1MenuItem.html":[4,0,1,713],
 "classinviwo_1_1Mesh.html":[1,1,27],
@@ -241,13 +249,5 @@ var NAVTREEINDEX12 =
 "classinviwo_1_1ModuleManager.html#a9883a12fa7e33a47d78ceabe5cd0261a":[4,0,1,760,3],
 "classinviwo_1_1ModuleManager.html#af20f4a577db38023cd3a7545e6f4a251":[2,0,0,743,1],
 "classinviwo_1_1ModuleManager.html#af20f4a577db38023cd3a7545e6f4a251":[4,0,1,760,1],
-"classinviwo_1_1MolVisBaseModule.html":[2,0,0,753],
-"classinviwo_1_1MolVisBaseModule.html":[4,0,1,770],
-"classinviwo_1_1MolVisGLModule.html":[2,0,0,754],
-"classinviwo_1_1MolVisGLModule.html":[4,0,1,771],
-"classinviwo_1_1MolVisPythonModule.html":[2,0,0,755],
-"classinviwo_1_1MolVisPythonModule.html":[4,0,1,772],
-"classinviwo_1_1MolecularMeshRenderVisualizer.html":[2,0,0,745],
-"classinviwo_1_1MolecularMeshRenderVisualizer.html":[4,0,1,762],
-"classinviwo_1_1MolecularMeshRenderVisualizer.html#a0c4ca7a4f78122c4167f9d0db1ced5f0":[2,0,0,745,2]
+"classinviwo_1_1MolVisBaseModule.html":[2,0,0,753]
 };

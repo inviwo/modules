@@ -1,5 +1,13 @@
 var NAVTREEINDEX17 =
 {
+"classinviwo_1_1ProcessorObserver.html#aadb8a550a93f59a0703228faa22bd5cd":[2,0,0,945,0],
+"classinviwo_1_1ProcessorObserver.html#aadb8a550a93f59a0703228faa22bd5cd":[4,0,1,962,0],
+"classinviwo_1_1ProcessorObserver.html#ac4eaecedf4c8532bffa3cad996bfe45b":[2,0,0,945,4],
+"classinviwo_1_1ProcessorObserver.html#ac4eaecedf4c8532bffa3cad996bfe45b":[4,0,1,962,4],
+"classinviwo_1_1ProcessorObserver.html#ae8e2501e7138ce16906a1b1ffa8ac8ba":[2,0,0,945,6],
+"classinviwo_1_1ProcessorObserver.html#ae8e2501e7138ce16906a1b1ffa8ac8ba":[4,0,1,962,6],
+"classinviwo_1_1ProcessorObserver.html#aeb04b5c36916412fe14f0f2c57ccc20e":[2,0,0,945,1],
+"classinviwo_1_1ProcessorObserver.html#aeb04b5c36916412fe14f0f2c57ccc20e":[4,0,1,962,1],
 "classinviwo_1_1ProcessorOutportGraphicsItem.html":[2,0,0,946],
 "classinviwo_1_1ProcessorOutportGraphicsItem.html":[4,0,1,963],
 "classinviwo_1_1ProcessorPair.html":[2,0,0,947],
@@ -241,13 +249,5 @@ var NAVTREEINDEX17 =
 "classinviwo_1_1PythonScript.html#ad15e78b76dca29ab28aaabecba032aa0":[4,0,1,1069,0],
 "classinviwo_1_1PythonSyntaxHighlight.html":[2,0,0,1053],
 "classinviwo_1_1PythonSyntaxHighlight.html":[4,0,1,1070],
-"classinviwo_1_1PythonToolsModule.html":[2,0,0,1054],
-"classinviwo_1_1PythonToolsModule.html":[4,0,1,1071],
-"classinviwo_1_1PythonWorkspaceScriptMenu.html":[2,0,0,1055],
-"classinviwo_1_1PythonWorkspaceScriptMenu.html":[4,0,1,1072],
-"classinviwo_1_1PythonWorkspaceScripts.html":[2,0,0,1056],
-"classinviwo_1_1PythonWorkspaceScripts.html":[4,0,1,1073],
-"classinviwo_1_1PythonWorkspaceScriptsObserver.html":[2,0,0,1057],
-"classinviwo_1_1PythonWorkspaceScriptsObserver.html":[4,0,1,1074],
-"classinviwo_1_1QPtr.html":[2,0,0,1058]
+"classinviwo_1_1PythonToolsModule.html":[2,0,0,1054]
 };

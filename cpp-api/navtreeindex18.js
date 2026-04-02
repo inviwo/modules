@@ -1,5 +1,13 @@
 var NAVTREEINDEX18 =
 {
+"classinviwo_1_1PythonToolsModule.html":[4,0,1,1071],
+"classinviwo_1_1PythonWorkspaceScriptMenu.html":[2,0,0,1055],
+"classinviwo_1_1PythonWorkspaceScriptMenu.html":[4,0,1,1072],
+"classinviwo_1_1PythonWorkspaceScripts.html":[2,0,0,1056],
+"classinviwo_1_1PythonWorkspaceScripts.html":[4,0,1,1073],
+"classinviwo_1_1PythonWorkspaceScriptsObserver.html":[2,0,0,1057],
+"classinviwo_1_1PythonWorkspaceScriptsObserver.html":[4,0,1,1074],
+"classinviwo_1_1QPtr.html":[2,0,0,1058],
 "classinviwo_1_1QPtr.html":[4,0,1,1075],
 "classinviwo_1_1QStringHelper.html":[2,0,0,1059],
 "classinviwo_1_1QStringHelper.html":[4,0,1,1076],
@@ -241,13 +249,5 @@ var NAVTREEINDEX18 =
 "classinviwo_1_1SeedsFromMaskSequence.html":[2,0,0,1126],
 "classinviwo_1_1SeedsFromMaskSequence.html":[4,0,1,1143],
 "classinviwo_1_1SeedsFromMaskSequence.html#a936a451f8c13b45277dc64124eb0bcad":[2,0,0,1126,0],
-"classinviwo_1_1SeedsFromMaskSequence.html#a936a451f8c13b45277dc64124eb0bcad":[4,0,1,1143,0],
-"classinviwo_1_1SelectionColorProperty.html":[1,4,33],
-"classinviwo_1_1SelectionColorProperty.html#a092344b063b26fdf81be656674e25bcc":[1,4,33,0],
-"classinviwo_1_1SelectionColorProperty.html#a0e285f9c3561bb4d2487b67fc4119026":[1,4,33,1],
-"classinviwo_1_1SequenceCompositeSink.html":[2,0,0,1129],
-"classinviwo_1_1SequenceCompositeSink.html":[4,0,1,1146],
-"classinviwo_1_1SequenceCompositeSink.html#a49a5e5f9c2d29d538a169c8e0b0738b5":[2,0,0,1129,0],
-"classinviwo_1_1SequenceCompositeSink.html#a49a5e5f9c2d29d538a169c8e0b0738b5":[4,0,1,1146,0],
-"classinviwo_1_1SequenceCompositeSink.html#aa55351c4b1d54fdfea0ba80bc9473008":[2,0,0,1129,1]
+"classinviwo_1_1SeedsFromMaskSequence.html#a936a451f8c13b45277dc64124eb0bcad":[4,0,1,1143,0]
 };

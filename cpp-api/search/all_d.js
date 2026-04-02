@@ -57,5 +57,6 @@ var searchData=
   ['numberofpatches_54',['numberOfPatches',['../classinviwo_1_1UniformSpherePartitioning.html#aa51ec529adf56a5b706ff65926d7ad01',1,'inviwo::UniformSpherePartitioning']]],
   ['numberwidget_55',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
   ['numberwidgetconfig_56',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]],
-  ['numericvaluefromstring_57',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
+  ['numerictype_57',['numericType',['../classinviwo_1_1DataFormat.html#a55ba223de5afd6e44eb26dfb70923c78',1,'inviwo::DataFormat']]],
+  ['numericvaluefromstring_58',['numericValueFromString',['../namespaceinviwo_1_1utilqt.html#a4e4f204db5ef145c73f1b6ca2a404e96',1,'inviwo::utilqt']]]
 ];

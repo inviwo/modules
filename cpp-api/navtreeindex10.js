@@ -1,5 +1,13 @@
 var NAVTREEINDEX10 =
 {
+"classinviwo_1_1IsoTFToIsovalueConverter.html":[2,0,0,566],
+"classinviwo_1_1IsoTFToIsovalueConverter.html":[4,0,1,583],
+"classinviwo_1_1IsoTFToTransferfunctionConverter.html":[2,0,0,567],
+"classinviwo_1_1IsoTFToTransferfunctionConverter.html":[4,0,1,584],
+"classinviwo_1_1IsoValueCollection.html":[1,1,19],
+"classinviwo_1_1IsoValueCollectionIIVReader.html":[2,0,0,569],
+"classinviwo_1_1IsoValueCollectionIIVReader.html":[4,0,1,586],
+"classinviwo_1_1IsoValueCollectionIIVWriter.html":[2,0,0,570],
 "classinviwo_1_1IsoValueCollectionIIVWriter.html":[4,0,1,587],
 "classinviwo_1_1IsoValueCollectionIIVWriter.html#a2152ccc6bc5182949b28dd808391a75b":[2,0,0,570,0],
 "classinviwo_1_1IsoValueCollectionIIVWriter.html#a2152ccc6bc5182949b28dd808391a75b":[4,0,1,587,0],
@@ -241,13 +249,5 @@ var NAVTREEINDEX10 =
 "classinviwo_1_1LayerRepresentation.html#a1e93725f168be34eb1c593e3847ceafb":[1,1,26,2],
 "classinviwo_1_1LayerRepresentation.html#a66e785798aba116e2ea50a0ea6affb7c":[1,1,26,4],
 "classinviwo_1_1LayerRepresentation.html#a96d5afa38680787916a41f72002499d3":[1,1,26,3],
-"classinviwo_1_1LayerRepresentation.html#afe2eb7583e5a6eb84b5140225f785d47":[1,1,26,0],
-"classinviwo_1_1LayerResampling.html":[2,0,0,638],
-"classinviwo_1_1LayerResampling.html":[4,0,1,655],
-"classinviwo_1_1LayerResampling.html#a08f7559a3c333ac9676517a7988ad853":[2,0,0,638,0],
-"classinviwo_1_1LayerResampling.html#a08f7559a3c333ac9676517a7988ad853":[4,0,1,655,0],
-"classinviwo_1_1LayerSeriesSource.html":[2,0,0,639],
-"classinviwo_1_1LayerSeriesSource.html":[4,0,1,656],
-"classinviwo_1_1LayerSeriesSource.html#aea30cb6666738675f1947f7b4a93618e":[2,0,0,639,0],
-"classinviwo_1_1LayerSeriesSource.html#aea30cb6666738675f1947f7b4a93618e":[4,0,1,656,0]
+"classinviwo_1_1LayerRepresentation.html#afe2eb7583e5a6eb84b5140225f785d47":[1,1,26,0]
 };

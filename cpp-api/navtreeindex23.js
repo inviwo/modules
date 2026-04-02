@@ -1,5 +1,13 @@
 var NAVTREEINDEX23 =
 {
+"classinviwo_1_1TensorGlyphProperty.html#ab0b12ef3fbddfa994f606401becdfb2b":[2,0,0,1273,0],
+"classinviwo_1_1TensorGlyphProperty.html#ab0b12ef3fbddfa994f606401becdfb2b":[4,0,1,1290,0],
+"classinviwo_1_1TensorGlyphRenderer.html":[2,0,0,1274],
+"classinviwo_1_1TensorGlyphRenderer.html":[4,0,1,1291],
+"classinviwo_1_1TensorGlyphRenderer.html#a06988007f22975a1b7cb965a39b435eb":[2,0,0,1274,1],
+"classinviwo_1_1TensorGlyphRenderer.html#a06988007f22975a1b7cb965a39b435eb":[4,0,1,1291,1],
+"classinviwo_1_1TensorGlyphRenderer.html#abf2b02381c44ea9e70fe9ad06b23ce08":[2,0,0,1274,0],
+"classinviwo_1_1TensorGlyphRenderer.html#abf2b02381c44ea9e70fe9ad06b23ce08":[4,0,1,1291,0],
 "classinviwo_1_1TensorInformation.html":[2,0,0,1275],
 "classinviwo_1_1TensorInformation.html":[4,0,1,1292],
 "classinviwo_1_1TensorInformation.html#ab7e86d8f634e1fe695a591181965f4e5":[2,0,0,1275,0],
@@ -241,13 +249,5 @@ var NAVTREEINDEX23 =
 "classinviwo_1_1TouchPoint.html#a4c2acb1d386f8132b3080931e006c599":[4,0,1,1375,0],
 "classinviwo_1_1TouchPoint.html#a64d31ed348016e6d61aee6b142705f48":[2,0,0,1358,2],
 "classinviwo_1_1TouchPoint.html#a64d31ed348016e6d61aee6b142705f48":[4,0,1,1375,2],
-"classinviwo_1_1TouchPoint.html#a868a4df4eaaef52b3ec8518b5930bd09":[2,0,0,1358,8],
-"classinviwo_1_1TouchPoint.html#a868a4df4eaaef52b3ec8518b5930bd09":[4,0,1,1375,8],
-"classinviwo_1_1TouchPoint.html#a9fc1331edf96039162953c6e70dc68e6":[2,0,0,1358,11],
-"classinviwo_1_1TouchPoint.html#a9fc1331edf96039162953c6e70dc68e6":[4,0,1,1375,11],
-"classinviwo_1_1TouchPoint.html#aa9a8f4d8a92c9936bef50e68e8d3f053":[2,0,0,1358,5],
-"classinviwo_1_1TouchPoint.html#aa9a8f4d8a92c9936bef50e68e8d3f053":[4,0,1,1375,5],
-"classinviwo_1_1TouchPoint.html#ab17bb87a2f41e0d2bdfd4c8e6f5f6b55":[2,0,0,1358,3],
-"classinviwo_1_1TouchPoint.html#ab17bb87a2f41e0d2bdfd4c8e6f5f6b55":[4,0,1,1375,3],
-"classinviwo_1_1TouchPoint.html#ac89d637fa161eef884338c468ab129bf":[2,0,0,1358,1]
+"classinviwo_1_1TouchPoint.html#a868a4df4eaaef52b3ec8518b5930bd09":[2,0,0,1358,8]
 };

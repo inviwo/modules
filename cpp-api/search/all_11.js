@@ -23,7 +23,7 @@ var searchData=
   ['rangeofvec_20',['RangeOfVec',['../conceptinviwo_1_1util_1_1RangeOfVec.html',1,'inviwo::util']]],
   ['rangeslider_21',['RangeSlider',['../classinviwo_1_1glui_1_1RangeSlider.html',1,'inviwo::glui']]],
   ['rangesliderqt_22',['RangeSliderQt',['../classinviwo_1_1RangeSliderQt.html',1,'inviwo']]],
-  ['rank_23',['rank',['../structinviwo_1_1util_1_1rank.html',1,'inviwo::util::rank&lt; T &gt;'],['../classinviwo_1_1BitSet.html#a1ce087c46b7ce2754975b2257b4c341f',1,'inviwo::BitSet::rank()']]],
+  ['rank_23',['rank',['../structinviwo_1_1util_1_1rank.html',1,'inviwo::util::rank&lt; T &gt;'],['../classinviwo_1_1BitSet.html#a1ce087c46b7ce2754975b2257b4c341f',1,'inviwo::BitSet::rank()'],['../classinviwo_1_1DataFormat.html#a4651e45ae6d933f77788320fb5268a5b',1,'inviwo::DataFormat::rank()']]],
   ['rank_3c_20const_20t_20_3e_24',['rank&lt; const T &gt;',['../structinviwo_1_1util_1_1rank_3_01const_01T_01_4.html',1,'inviwo::util']]],
   ['rasterization_25',['Rasterization',['../classinviwo_1_1Rasterization.html',1,'inviwo']]],
   ['rasterizationinport_26',['RasterizationInport',['../classinviwo_1_1RasterizationInport.html',1,'inviwo']]],

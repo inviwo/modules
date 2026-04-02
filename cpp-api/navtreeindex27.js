@@ -1,5 +1,13 @@
 var NAVTREEINDEX27 =
 {
+"classinviwo_1_1WorkspaceManager.html":[2,0,0,1529],
+"classinviwo_1_1WorkspaceManager.html":[4,0,1,1546],
+"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[2,0,0,1529,7],
+"classinviwo_1_1WorkspaceManager.html#a008234b62dad6d13e0aaaa7adf6a8f77":[4,0,1,1546,7],
+"classinviwo_1_1WorkspaceManager.html#a2adb05d088c1fd3f407b8bb7a4b5c6c4":[2,0,0,1529,3],
+"classinviwo_1_1WorkspaceManager.html#a2adb05d088c1fd3f407b8bb7a4b5c6c4":[4,0,1,1546,3],
+"classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98":[2,0,0,1529,11],
+"classinviwo_1_1WorkspaceManager.html#a2ec67fa2a267bbd793fceef50db09f98":[4,0,1,1546,11],
 "classinviwo_1_1WorkspaceManager.html#a315040dfffc86ac9677806c3d75a783d":[2,0,0,1529,8],
 "classinviwo_1_1WorkspaceManager.html#a315040dfffc86ac9677806c3d75a783d":[4,0,1,1546,8],
 "classinviwo_1_1WorkspaceManager.html#a37c01880a5705834847dadb6ef7ab545":[2,0,0,1529,10],
@@ -241,13 +249,5 @@ var NAVTREEINDEX27 =
 "classinviwo_1_1animation_1_1ImageRecorderFactory.html":[2,0,0,0,38],
 "classinviwo_1_1animation_1_1ImageRecorderFactory.html":[4,0,1,2,39],
 "classinviwo_1_1animation_1_1Interpolation.html":[2,0,0,0,39],
-"classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,2,40],
-"classinviwo_1_1animation_1_1InterpolationFactory.html":[2,0,0,0,40],
-"classinviwo_1_1animation_1_1InterpolationFactory.html":[4,0,1,2,41],
-"classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[2,0,0,0,41],
-"classinviwo_1_1animation_1_1InterpolationFactoryObject.html":[4,0,1,2,42],
-"classinviwo_1_1animation_1_1InterpolationFactoryObjectKeyframe.html":[2,0,0,0,42],
-"classinviwo_1_1animation_1_1InterpolationFactoryObjectKeyframe.html":[4,0,1,2,43],
-"classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html":[2,0,0,0,43],
-"classinviwo_1_1animation_1_1InterpolationFactoryObjectTemplate.html":[4,0,1,2,44]
+"classinviwo_1_1animation_1_1Interpolation.html":[4,0,1,2,40]
 };

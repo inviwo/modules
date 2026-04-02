@@ -1,5 +1,13 @@
 var NAVTREEINDEX22 =
 {
+"classinviwo_1_1TFEditorMaskMax.html":[2,0,0,1320],
+"classinviwo_1_1TFEditorMaskMax.html":[4,0,1,1337],
+"classinviwo_1_1TFEditorMaskMin.html":[2,0,0,1321],
+"classinviwo_1_1TFEditorMaskMin.html":[4,0,1,1338],
+"classinviwo_1_1TFEditorPrimitive.html":[2,0,0,1322],
+"classinviwo_1_1TFEditorPrimitive.html":[4,0,1,1339],
+"classinviwo_1_1TFEditorPrimitive.html#a2b050bcde256279bb2602242c21dacab":[2,0,0,1322,1],
+"classinviwo_1_1TFEditorPrimitive.html#a2b050bcde256279bb2602242c21dacab":[4,0,1,1339,1],
 "classinviwo_1_1TFEditorPrimitive.html#acf47dac0ca87b2deed512b0d652a540c":[2,0,0,1322,0],
 "classinviwo_1_1TFEditorPrimitive.html#acf47dac0ca87b2deed512b0d652a540c":[4,0,1,1339,0],
 "classinviwo_1_1TFEditorView.html":[2,0,0,1323],
@@ -241,13 +249,5 @@ var NAVTREEINDEX22 =
 "classinviwo_1_1TensorGlyphProcessor.html#aae6be7f0290080aa4ad5d5fc3f8eb692":[2,0,0,1272,0],
 "classinviwo_1_1TensorGlyphProcessor.html#aae6be7f0290080aa4ad5d5fc3f8eb692":[4,0,1,1289,0],
 "classinviwo_1_1TensorGlyphProperty.html":[2,0,0,1273],
-"classinviwo_1_1TensorGlyphProperty.html":[4,0,1,1290],
-"classinviwo_1_1TensorGlyphProperty.html#ab0b12ef3fbddfa994f606401becdfb2b":[2,0,0,1273,0],
-"classinviwo_1_1TensorGlyphProperty.html#ab0b12ef3fbddfa994f606401becdfb2b":[4,0,1,1290,0],
-"classinviwo_1_1TensorGlyphRenderer.html":[2,0,0,1274],
-"classinviwo_1_1TensorGlyphRenderer.html":[4,0,1,1291],
-"classinviwo_1_1TensorGlyphRenderer.html#a06988007f22975a1b7cb965a39b435eb":[2,0,0,1274,1],
-"classinviwo_1_1TensorGlyphRenderer.html#a06988007f22975a1b7cb965a39b435eb":[4,0,1,1291,1],
-"classinviwo_1_1TensorGlyphRenderer.html#abf2b02381c44ea9e70fe9ad06b23ce08":[2,0,0,1274,0],
-"classinviwo_1_1TensorGlyphRenderer.html#abf2b02381c44ea9e70fe9ad06b23ce08":[4,0,1,1291,0]
+"classinviwo_1_1TensorGlyphProperty.html":[4,0,1,1290]
 };

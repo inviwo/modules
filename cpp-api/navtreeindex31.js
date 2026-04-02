@@ -1,5 +1,13 @@
 var NAVTREEINDEX31 =
 {
+"namespaceinviwo_1_1colorbrewer.html#a1f898b879b266998202e04b7b28937d0":[2,0,0,4,5],
+"namespaceinviwo_1_1colorbrewer.html#a52a53d907120c5bf19d4c4feedc92141":[2,0,0,4,6],
+"namespaceinviwo_1_1colorbrewer.html#a5cdbb888d09bb277866d63b96eaf831c":[2,0,0,4,10],
+"namespaceinviwo_1_1colorbrewer.html#a6767f4a4c5656063e2c9cf227da9f46d":[2,0,0,4,4],
+"namespaceinviwo_1_1colorbrewer.html#a7f6a7b3c8ed8655aa2418c95b8e3bb34":[2,0,0,4,7],
+"namespaceinviwo_1_1colorbrewer.html#a81425a791cee8e6d7c8e5bc8b3193cbb":[2,0,0,4,11],
+"namespaceinviwo_1_1colorbrewer.html#a873e687819a228bb55a936bb9e81670b":[2,0,0,4,3],
+"namespaceinviwo_1_1colorbrewer.html#aa3072fc0a884eb2320fa28e8ca1f35e5":[2,0,0,4,8],
 "namespaceinviwo_1_1colorbrewer.html#ac8a9bdc97c766b69210ce5f8593b7d8d":[2,0,0,4,9],
 "namespaceinviwo_1_1csvfilters.html":[2,0,0,5],
 "namespaceinviwo_1_1csvfilters.html#a37a5bc0c53de736dc67eb05ab8e8cc89":[2,0,0,5,4],
@@ -241,13 +249,5 @@ var NAVTREEINDEX31 =
 "namespaceinviwo_1_1util.html#a74a73f5197bbfc5940421cee5d8f5755":[2,0,0,21,93],
 "namespaceinviwo_1_1util.html#a7669f35617341a0ec4465acb3a0b4a93":[2,0,0,21,243],
 "namespaceinviwo_1_1util.html#a777c6629181cd035dde67507f9be94a9":[2,0,0,21,120],
-"namespaceinviwo_1_1util.html#a78172b271a10c03a2bb4a1a41bbde23e":[2,0,0,21,294],
-"namespaceinviwo_1_1util.html#a787f4da3b201153820af19c27c2a7fac":[2,0,0,21,115],
-"namespaceinviwo_1_1util.html#a78fe508315d93a69417c6ee9614303d6":[2,0,0,21,274],
-"namespaceinviwo_1_1util.html#a7a96dd02792cfa20cef05e9d001b497b":[2,0,0,21,302],
-"namespaceinviwo_1_1util.html#a7e303f4a0c646b1328474d4df906e534":[2,0,0,21,308],
-"namespaceinviwo_1_1util.html#a818812ab794f5de214f651c8b9e04137":[2,0,0,21,200],
-"namespaceinviwo_1_1util.html#a818947e6c0c72cbdeb18b6631686091b":[2,0,0,21,113],
-"namespaceinviwo_1_1util.html#a819d6ed95184ff0ae2c68b501dcd0cff":[2,0,0,21,247],
-"namespaceinviwo_1_1util.html#a822bd9c723e6c3ff5b8811c1661ab619":[2,0,0,21,202]
+"namespaceinviwo_1_1util.html#a78172b271a10c03a2bb4a1a41bbde23e":[2,0,0,21,294]
 };
