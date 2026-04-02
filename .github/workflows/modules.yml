@@ -12,6 +12,11 @@ on:
         description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
         required: false
         default: false
+      inviwo_ref:
+        type: string
+        description: 'Branch/tag/SHA to use for the inviwo/inviwo checkout (default: master). Can also be set in the PR body using /inviwo-ref <ref>'
+        required: false
+        default: 'master'
 
 permissions:
   contents: write  # Enable vcpkg to write to the dependency graph
@@ -125,6 +130,24 @@ jobs:
     timeout-minutes: 360
     
     steps:
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: Free Disk Space
       if: matrix.system == 'linux'
       uses: jlumbroso/free-disk-space@main
@@ -147,7 +170,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: ${{ steps.inviwo_ref.outputs.ref }}
         path: inviwo
         submodules: false
 
@@ -245,6 +268,24 @@ jobs:
     timeout-minutes: 320
     steps:
 
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: "Clone Modules"
       uses: actions/checkout@v6
       with:
@@ -254,7 +295,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: ${{ steps.inviwo_ref.outputs.ref }}
         path: inviwo
 
     - name: "Get Vcpkg SHA"
@@ -409,6 +450,24 @@ jobs:
     timeout-minutes: 320
     steps:
 
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo_ref || 'master' }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT
+
     - name: "Clone Modules"
       uses: actions/checkout@v6
       with:
@@ -418,7 +477,7 @@ jobs:
       uses: actions/checkout@v6
       with:
         repository: inviwo/inviwo
-        ref: master
+        ref: ${{ steps.inviwo_ref.outputs.ref }}
         path: inviwo
         
     - name: "Install dependencies"
