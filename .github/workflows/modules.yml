@@ -142,7 +142,7 @@ jobs:
         else
           PR_BODY=""
         fi
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
@@ -280,7 +280,7 @@ jobs:
         else
           PR_BODY=""
         fi
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
@@ -462,7 +462,7 @@ jobs:
         else
           PR_BODY=""
         fi
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1)
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
         if [ -z "$REF" ]; then
           REF="${{ inputs.inviwo_ref || 'master' }}"
         fi
