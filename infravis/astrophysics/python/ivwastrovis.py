@@ -6,6 +6,7 @@ import ivwbase
 from inviwopy import glm
 
 import numpy as np
+import math
 from contextlib import suppress
 from collections.abc import Callable
 
@@ -199,3 +200,24 @@ def createFitsCompositeProperty(identifier: str,
                         crpix3, crval3, cdelt3, restFrequency,
                         extent, offset, valueName, valueUnit, dataRange])
     return prop
+
+
+def scaleRange(r: glm.dvec2) -> tuple[glm.dvec2, int]:
+    """
+    Determine an appropriate scaling factor for the input range based on thousand separators,
+    i.e. digits grouped by 3.
+
+    Parameters
+    ----------
+    r: glm.dvec2
+        input range
+
+    Returns
+    -------
+    A tuple containing the scaled range and the exponent for base 10
+    """
+    s: int = 3
+    exp: float = math.floor(math.log10(glm.compMax(glm.abs(r))))
+    major_exp: float = math.floor(exp / s) * s if exp > 0 else math.round(exp / s) * s
+    factor: float = math.pow(10.0, -major_exp)
+    return (r * factor, int(major_exp))

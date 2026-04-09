@@ -8,6 +8,7 @@ from astroviscommon import LatLong
 import ivwastrovis
 
 import numpy as np
+import math
 from pathlib import Path
 from collections.abc import Callable
 from enum import Enum
@@ -156,7 +157,7 @@ class FitsVolumeSource(ivw.Processor):
         extent_xy, offset_xy, unit = astroviscommon.getLatLongBasis(
             fits_data.params, LatLong(self.latLonCoords.value))
 
-        axes = [("x", unit), ("y", unit), ("z", "")]
+        axes = [("x", ivw.data.Unit(unit)), ("y", ivw.data.Unit(unit)), ("z", ivw.data.Unit(""))]
 
         extent_z: float = 0.0
         offset_z: float = 0.0
@@ -165,18 +166,22 @@ class FitsVolumeSource(ivw.Processor):
             case AxisType.SliceIndex:
                 extent_z = float(dim[0] - 1)
                 offset_z = 0
-                axes[2] = ("Channel", "")
+                axes[2] = ("Channel", ivw.data.Unit(""))
             case AxisType.Dataset:
                 freq_func = astroviscommon.frequencyFunc(fits_data.params)
                 freq_range = (freq_func(0), freq_func(dim[0] - 1))
-                extent_z = freq_range[1] - freq_range[0]
-                offset_z = freq_range[0]
-                axes[2] = (fits_data.params.ctype[2], fits_data.params.cunit[2])
+                # rescale range, e.g. 345 GHz instead of 3.45e11 Hz
+                scaled_range, exponent = ivwastrovis.scaleRange(glm.dvec2(freq_range))
+                extent_z = scaled_range.y - scaled_range.x
+                offset_z = scaled_range.x
+                axes[2] = (fits_data.params.ctype[2],
+                           ivw.data.Unit(math.pow(10.0, exponent),
+                                         ivw.data.Unit(fits_data.params.cunit[2])))
             case AxisType.Velocity:
                 vel_range = (vel_func(0), vel_func(dim[0] - 1))
                 extent_z = vel_range[1] - vel_range[0]
                 offset_z = vel_range[0]
-                axes[2] = ("Velocity", "km/s")
+                axes[2] = ("Velocity", ivw.data.Unit("km/s"))
             case _:
                 raise ValueError(f"Unexpected axis type {self.axisType.value}")
 
@@ -194,7 +199,7 @@ class FitsVolumeSource(ivw.Processor):
 
         for i, (label, unit) in enumerate(axes):
             volume_intensity.axes[i].name = label
-            volume_intensity.axes[i].unit = ivw.data.Unit(unit)
+            volume_intensity.axes[i].unit = unit
 
         m = ivw.glm.dmat4(1.0)
         m[0][0] = extent_xy[0]
