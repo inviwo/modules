@@ -182,6 +182,12 @@ class FitsVolumeSource(ivw.Processor):
 
         volume_intensity = FitsVolumeSource.createVolume(fits_data)
         volume_intensity.dataMap.valueAxis.name = fits_data.params.btype
+        if fits_data.params.bunit in ['deg', 'rad'] and fits_data.params.btype != 'Angle':
+            # overriding btype as it does not match the unit
+            volume_intensity.dataMap.valueAxis.name = 'Angle'
+            ivw.logWarn(f"{self.identifier}: "
+                        f"Value axis set to 'Angle' since FITS btype '{fits_data.params.btype}' "
+                        f"does not match bunit '{fits_data.params.bunit}'")
         # hdul[0].header['bunit'] is 'Jy/beam ', which is not a valid unit in Inviwo
         volume_intensity.dataMap.valueAxis.unit = ivw.data.Unit(
             fits_data.params.bunit.replace('/beam', ''))
