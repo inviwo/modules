@@ -69,8 +69,8 @@ class FitsPolarizationSource(ivw.Processor):
         volume = ivw.data.Volume(volumerep)
 
         # TODO: extract extent from hdul[0].header
-        volume.basis = ivw.glm.mat3(1)
-        volume.offset = ivw.glm.vec3(-0.5, -0.5, -0.5)
+        volume.basis = ivw.glm.dmat3(1)
+        volume.offset = ivw.glm.dvec3(-0.5, -0.5, -0.5)
 
         max_len: float = np.nanmax(length)
         datarange = ivw.glm.dvec2(-max_len, max_len)
