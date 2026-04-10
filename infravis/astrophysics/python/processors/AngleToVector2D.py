@@ -36,7 +36,7 @@ class AngleToVector2D(ivw.Processor):
 
     def process(self):
         volume_angle = self.inports.angle.getData()
-        volume_magnitude = self.inports.magnitude.getData()
+        volume_magnitude = self.inports.magnitude.getData() if self.inports.magnitude.hasData() else None
 
         use_degree: bool = True
         # assume degree if anything other than radians is stated as unit
@@ -44,7 +44,7 @@ class AngleToVector2D(ivw.Processor):
             use_degree = False
 
         angle = volume_angle.data
-        magnitude = volume_magnitude.data
+        magnitude = volume_magnitude.data if volume_magnitude else 1.0
 
         if use_degree:
             angle = angle * np.pi / 180.0
@@ -58,10 +58,13 @@ class AngleToVector2D(ivw.Processor):
         volume.dataMap.dataRange = datarange
         volume.dataMap.valueRange = datarange
 
-        volume.dataMap.valueAxis = volume_magnitude.dataMap.valueAxis
-        volume.modelMatrix = volume_magnitude.modelMatrix
-        volume.worldMatrix = volume_magnitude.worldMatrix
-        volume.axes = volume_magnitude.axes
-        volume.copyMetaDataFrom(volume_magnitude)
+        volume.modelMatrix = volume_angle.modelMatrix
+        volume.worldMatrix = volume_angle.worldMatrix
+        volume.axes = volume_angle.axes
+        if volume_magnitude:
+            volume.dataMap.valueAxis = volume_magnitude.dataMap.valueAxis
+            volume.copyMetaDataFrom(volume_magnitude)
+        else:
+            volume.copyMetaDataFrom(volume_angle)
 
         self.outports.outport.setData(volume)
