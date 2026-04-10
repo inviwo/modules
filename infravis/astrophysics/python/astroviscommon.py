@@ -59,19 +59,25 @@ def readFITSData(filepath: Path,
 
 
 def extractFITSParams(header: fits.header.Header) -> FitsParams:
-    rest_frequency: float = header['restfrq']  # equals 345_339_760_000
+    def get_attrib(attrib: str,
+                   default_value: str | int | float | None = None) -> str | int | float | None:
+        if attrib in header:
+            return header[attrib]
+        return default_value
+
+    rest_frequency: float = get_attrib('restfrq', 1.0)  # equals 345_339_760_000
     # rest_frequency = 345_339_769_300  # [hz]
 
     return FitsParams(
-        objectName=str(header['object']),
-        naxis=tuple(header[f'naxis{i}'] for i in range(1, header['naxis'] + 1)),
-        ctype=tuple(header[f'ctype{i}'].lower() for i in range(1, 4)),
-        cunit=tuple(header[f'cunit{i}'] for i in range(1, 4)),
-        crpix=tuple(header[f'crpix{i}'] for i in range(1, 4)),
-        crval=tuple(header[f'crval{i}'] for i in range(1, 4)),
-        cdelt=tuple(header[f'cdelt{i}'] for i in range(1, 4)),
-        btype=header['btype'],
-        bunit=header['bunit'],
+        objectName=str(get_attrib('object')),
+        naxis=tuple(get_attrib(f'naxis{i}', 0) for i in range(1, get_attrib('naxis', 0) + 1)),
+        ctype=tuple(get_attrib(f'ctype{i}', '').lower() for i in range(1, 4)),
+        cunit=tuple(get_attrib(f'cunit{i}') for i in range(1, 4)),
+        crpix=tuple(get_attrib(f'crpix{i}', 0.0) for i in range(1, 4)),
+        crval=tuple(get_attrib(f'crval{i}', 0.0) for i in range(1, 4)),
+        cdelt=tuple(get_attrib(f'cdelt{i}', 0.0) for i in range(1, 4)),
+        btype=get_attrib('btype', ''),
+        bunit=get_attrib('bunit', ''),
         rest_frequency=rest_frequency)
 
 
