@@ -150,10 +150,6 @@ class FitsVolumeSource(ivw.Processor):
 
         # print(astroviscommon.readFITSData.cache_info())
 
-        vel_func: Callable[[float], int] = astroviscommon.frequencyToVelocityFunc(fits_data.params)
-        velocity: list = [vel_func(channel) for channel in range(dim[0])]
-        print(f'Velocity matching frequency: {velocity}')
-
         extent_xy, offset_xy, unit = astroviscommon.getLatLongBasis(
             fits_data.params, LatLong(self.latLonCoords.value))
 
@@ -178,6 +174,11 @@ class FitsVolumeSource(ivw.Processor):
                            ivw.data.Unit(math.pow(10.0, exponent),
                                          ivw.data.Unit(fits_data.params.cunit[2])))
             case AxisType.Velocity:
+                vel_func: Callable[[float], int] = astroviscommon.frequencyToVelocityFunc(
+                    fits_data.params)
+                velocity: list = [vel_func(channel) for channel in range(dim[0])]
+                print(f'Velocity matching frequency: {velocity}')
+
                 vel_range = (vel_func(0), vel_func(dim[0] - 1))
                 extent_z = vel_range[1] - vel_range[0]
                 offset_z = vel_range[0]
