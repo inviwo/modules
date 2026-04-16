@@ -87,7 +87,7 @@ private:
 
     CameraProperty camera_;
     CameraTrackball trackball_;
-    OptionPropertyInt cullFace_;
+    OptionProperty<GLenum> cullFace_;
     SimpleLightingProperty lighting_;
 
     PickingMapper picking_;
