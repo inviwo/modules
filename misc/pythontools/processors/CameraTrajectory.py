@@ -19,8 +19,8 @@ def interpolate(ctrlpts, steps=100, order=3):
     return np.array(points)
 
 
-def rotateVec(m, v):
-    return glm.vec3(m * glm.vec4(v, 1.0))
+def rotateVec(m: glm.dmat4, v: glm.dvec3) -> glm.dvec3:
+    return glm.dvec3(m * glm.dvec4(v, 1.0))
 
 
 class CameraTrajectory(ivw.Processor):
@@ -47,10 +47,10 @@ class CameraTrajectory(ivw.Processor):
 
         self.outCamera = ivw.properties.CameraProperty("outCamera", "outCamera")
         self.addProperty(self.outCamera, owner=False)
-        self.outCamera.properties.lookFrom.minValue = glm.vec3(-10000.0)
-        self.outCamera.properties.lookFrom.maxValue = glm.vec3(+10000.0)
-        self.outCamera.properties.lookTo.minValue = glm.vec3(-10000.0)
-        self.outCamera.properties.lookTo.maxValue = glm.vec3(+10000.0)
+        self.outCamera.properties.lookFrom.minValue = glm.dvec3(-10000.0)
+        self.outCamera.properties.lookFrom.maxValue = glm.dvec3(+10000.0)
+        self.outCamera.properties.lookTo.minValue = glm.dvec3(-10000.0)
+        self.outCamera.properties.lookTo.maxValue = glm.dvec3(+10000.0)
         self.outCamera.properties.lookFrom.semantics = ivw.properties.PropertySemantics.SpinBox
         self.outCamera.properties.lookTo.semantics = ivw.properties.PropertySemantics.SpinBox
         self.outCamera.properties.lookUp.semantics = ivw.properties.PropertySemantics.SpinBox
@@ -116,14 +116,14 @@ class CameraTrajectory(ivw.Processor):
     def updateFrame(self):
         currentFrame = self.frame.value
         if currentFrame < len(self.fromTrack):
-            self.outCamera.properties.lookFrom.minValue = glm.vec3(-10000.0)
-            self.outCamera.properties.lookFrom.maxValue = glm.vec3(+10000.0)
-            self.outCamera.properties.lookTo.minValue = glm.vec3(-10000.0)
-            self.outCamera.properties.lookTo.maxValue = glm.vec3(+10000.0)
+            self.outCamera.properties.lookFrom.minValue = glm.dvec3(-10000.0)
+            self.outCamera.properties.lookFrom.maxValue = glm.dvec3(+10000.0)
+            self.outCamera.properties.lookTo.minValue = glm.dvec3(-10000.0)
+            self.outCamera.properties.lookTo.maxValue = glm.dvec3(+10000.0)
 
-            fromVec = glm.vec3(self.fromTrack[currentFrame])
-            toVec = glm.vec3(self.toTrack[currentFrame])
-            upVec = glm.vec3(self.upTrack[currentFrame])
+            fromVec = glm.dvec3(self.fromTrack[currentFrame])
+            toVec = glm.dvec3(self.toTrack[currentFrame])
+            upVec = glm.dvec3(self.upTrack[currentFrame])
 
             normal = toVec - fromVec
             right = glm.cross(normal, upVec)
