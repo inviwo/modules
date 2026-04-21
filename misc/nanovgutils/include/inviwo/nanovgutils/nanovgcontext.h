@@ -33,7 +33,7 @@
 #include <inviwo/nanovgutils/nanovgutilsmoduledefine.h>
 #include <inviwo/core/util/enumtraits.h>
 
-#include <GL/glew.h>
+#include <modules/opengl/inviwoopengl.h>
 
 #include <warn/push>
 #include <warn/ignore/all>
