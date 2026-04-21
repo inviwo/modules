@@ -166,7 +166,7 @@ dmat4 VTKTetraMesh::getBoundingBox() const {
     }
 
     auto m = glm::scale(dataMax - dataMin);
-    m[3] = dvec4(dataMin, 1.0f);
+    m[3] = dvec4(dataMin, 1.0);
     return m;
 }
 
