@@ -30,16 +30,18 @@
 #include <inviwo/molvisbase/algorithm/boundingbox.h>
 
 #include <inviwo/molvisbase/datastructures/molecularstructure.h>
+#include <inviwo/core/algorithm/boundingbox.h>
 
 #include <inviwo/core/util/zip.h>
 #include <numeric>
 #include <utility>
+#include <ranges>
 
 namespace inviwo {
 
 namespace molvis {
 
-dmat4 boundingBox(const MolecularStructure& structure) {
+std::optional<dmat4> calcBoundingBox(const MolecularStructure& structure) {
     dvec3 worldMin(std::numeric_limits<double>::max());
     dvec3 worldMax(std::numeric_limits<double>::lowest());
 
@@ -59,38 +61,7 @@ dmat4 boundingBox(const MolecularStructure& structure) {
             }
         }
     } else {
-        worldMin = worldMax = dvec3(0.0, 0.0, 0.0);
-    }
-
-    auto m = glm::scale(worldMax - worldMin);
-    m[3] = dvec4(worldMin, 1.0);
-    return m;
-}
-
-template <typename const_iterator>
-dmat4 boundingBox(const_iterator begin, const_iterator end) {
-    if (begin == end) return dmat4(0.0);
-
-    dvec3 worldMin(std::numeric_limits<float>::max());
-    dvec3 worldMax(std::numeric_limits<float>::lowest());
-
-    const std::array<dvec3, 8> corners = {dvec3{0, 0, 0}, dvec3{1, 0, 0}, dvec3{1, 1, 0},
-                                          dvec3{0, 1, 0}, dvec3{0, 0, 1}, dvec3{1, 0, 1},
-                                          dvec3{1, 1, 1}, dvec3{0, 1, 1}};
-    bool validBbox = false;
-    while (begin != end) {
-        auto structure = *begin++;
-        if (!structure->hasAtoms()) continue;
-        validBbox = true;
-        auto bb = boundingBox(*structure);
-        for (const auto& corner : corners) {
-            const auto point = dvec3(bb * dvec4(corner, 1.));
-            worldMin = glm::min(worldMin, point);
-            worldMax = glm::max(worldMax, point);
-        }
-    }
-    if (!validBbox) {
-        worldMin = worldMax = dvec3(0.0, 0.0, 0.0);
+        return std::nullopt;
     }
 
     auto m = glm::scale(worldMax - worldMin);
@@ -101,7 +72,7 @@ dmat4 boundingBox(const_iterator begin, const_iterator end) {
 std::function<std::optional<dmat4>()> boundingBox(const MolecularStructureInport& structure) {
     return [port = &structure]() -> std::optional<mat4> {
         if (port->hasData()) {
-            return boundingBox(*port->getData());
+            return calcBoundingBox(*port->getData());
         } else {
             return std::nullopt;
         }
@@ -109,9 +80,11 @@ std::function<std::optional<dmat4>()> boundingBox(const MolecularStructureInport
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const MolecularStructureMultiInport& structures) {
-    return [port = &structures]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(port->begin(), port->end());
+    return [&structures]() -> std::optional<mat4> {
+        if (structures.hasData()) {
+            auto dataView = structures |
+                                 std::views::transform([](auto ptr) -> decltype(auto) { return *ptr; });
+            return util::calcBoundingBox(dataView);
         } else {
             return std::nullopt;
         }
@@ -120,9 +93,11 @@ std::function<std::optional<dmat4>()> boundingBox(const MolecularStructureMultiI
 
 std::function<std::optional<dmat4>()> boundingBox(
     const MolecularStructureFlatMultiInport& structures) {
-    return [port = &structures]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(port->begin(), port->end());
+    return [&structures]() -> std::optional<mat4> {
+        if (structures.hasData()) {
+            return calcBoundingBox(
+                util::as_range(structures) |
+                std::views::transform([](auto ptr) -> decltype(auto) { return *ptr; }));
         } else {
             return std::nullopt;
         }
@@ -130,9 +105,9 @@ std::function<std::optional<dmat4>()> boundingBox(
 }
 
 std::function<std::optional<dmat4>()> boundingBox(const MolecularStructureOutport& structure) {
-    return [port = &structure]() -> std::optional<mat4> {
-        if (port->hasData()) {
-            return boundingBox(*port->getData());
+    return [&structure]() -> std::optional<mat4> {
+        if (structure.hasData()) {
+            return calcBoundingBox(*structure.getData());
         } else {
             return std::nullopt;
         }
