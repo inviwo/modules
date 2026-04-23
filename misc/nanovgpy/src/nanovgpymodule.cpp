@@ -29,6 +29,8 @@
 
 #include <inviwo/nanovgpy/nanovgpymodule.h>
 
+#include <inviwo/core/util/moduleutils.h>
+
 #include <modules/python3/python3module.h>
 
 #include <inviwo/nanovgpy/processors/nanovgpyprocessor.h>
@@ -39,8 +41,8 @@ namespace inviwo {
 NanoVGPyModule::NanoVGPyModule(InviwoApplication* app) : InviwoModule(app, "NanoVGPy") {
     registerProcessor<NanoVGPyProcessor>();
 
-    auto module = app->getModuleByType<Python3Module>();
-    if (module) {
+    auto* pyModule = util::getModuleByType<Python3Module>(app);
+    if (pyModule) {
         auto inviwopy = pybind11::module::import("inviwopy");
         nanopy::init(inviwopy, app);
     } else {
