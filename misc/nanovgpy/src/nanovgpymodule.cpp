@@ -43,6 +43,7 @@ NanoVGPyModule::NanoVGPyModule(InviwoApplication* app) : InviwoModule(app, "Nano
 
     auto* pyModule = util::getModuleByType<Python3Module>(app);
     if (pyModule) {
+        const pybind11::gil_scoped_acquire gil;
         auto inviwopy = pybind11::module::import("inviwopy");
         nanopy::init(inviwopy, app);
     } else {
