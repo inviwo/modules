@@ -50,7 +50,7 @@ def _adjustMargins(pos, margin: float, func: Callable[[List[float]], None]):
 
 def createMesh(pos: List[numpy.array],
                elements: List[atomicelement.element],
-               basis: ivw.glm.mat3 = None, offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0),
+               basis: ivw.glm.dmat3 = None, offset: ivw.glm.dvec3 = ivw.glm.dvec3(0, 0, 0),
                pm: ivw.PickingMapper = None,
                margin: float = 0.0,
                radiusscaling: float = 1.0,
@@ -95,8 +95,8 @@ def createMesh(pos: List[numpy.array],
 
     mesh = ivw.data.Mesh()
     if basis:
-        mesh.basis = ivw.glm.mat3(basis)
-    mesh.offset = ivw.glm.vec3(offset)
+        mesh.basis = ivw.glm.dmat3(basis)
+    mesh.offset = ivw.glm.dvec3(offset)
 
     mesh.addBuffer(ivw.data.BufferType.PositionAttrib, ivw.data.Buffer(
         numpy.array(position).astype(numpy.float32)))
@@ -115,8 +115,8 @@ def createMesh(pos: List[numpy.array],
 def createMolecularStructure(pos: List[numpy.array],
                              elements: List[atomicelement.element],
                              margin: float = 0.0,
-                             basis: ivw.glm.mat3 = None,
-                             offset: ivw.glm.vec3 = ivw.glm.vec3(0, 0, 0)):
+                             basis: ivw.glm.dmat3 = None,
+                             offset: ivw.glm.dvec3 = ivw.glm.dvec3(0, 0, 0)):
     """
     Create a molecular representation from a list of 3D positions.
 
@@ -158,7 +158,7 @@ def createMolecularStructure(pos: List[numpy.array],
 
 def createDataFrame(pos: List[numpy.array],
                     elements: List[atomicelement.element],
-                    modelmat: ivw.glm.mat4 = ivw.glm.mat4(1.0)):
+                    modelmat: ivw.glm.dmat4 = ivw.glm.dmat4(1.0)):
     """
     Create a DataFrame from a list of 3D positions and elements.
 
@@ -175,7 +175,7 @@ def createDataFrame(pos: List[numpy.array],
     r = dataframe.addFloatColumn("r", 0, ivw.data.Unit("Angstrom"))
 
     for elem, p in zip(elements, pos):
-        mp = modelmat * ivw.glm.vec4(p[0], p[1], p[2], 1.0)
+        mp = modelmat * ivw.glm.dvec4(p[0], p[1], p[2], 1.0)
 
         ct.add(atomicelement.symbol(elem))
         cx.add(mp[0])
