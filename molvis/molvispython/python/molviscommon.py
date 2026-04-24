@@ -150,8 +150,8 @@ def createMolecularStructure(pos: List[numpy.array],
                                                               residues=[], chains=[],
                                                               bonds=bonds))
     if basis:
-        ms.basis = ivw.glm.mat3(basis)
-    ms.offset = ivw.glm.vec3(offset)
+        ms.basis = ivw.glm.dmat3(basis)
+    ms.offset = ivw.glm.dvec3(offset)
 
     return ms
 
