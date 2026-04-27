@@ -54,7 +54,7 @@ private:
     DataInport<std::vector<vec3>> positionsInport_;
     DataInport<std::vector<std::string>> namesInport_;
 
-    DataOutport<mat4> transform_;
+    DataOutport<dmat4> transform_;
 
     OrdinalProperty<size_t> frameIdx_;
     BoolProperty logError_;

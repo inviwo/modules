@@ -300,7 +300,7 @@ void MolecularRasterizer::setUniforms(Shader& shader) {
     utilgl::setShaderUniforms(shader, showFiltered_, "showFiltered");
 }
 
-void MolecularRasterizer::rasterize(const ivec2& imageSize, const mat4& worldMatrixTransform) {
+void MolecularRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMatrixTransform) {
 
     auto drawMesh = [](std::shared_ptr<const Mesh> mesh, MeshDrawerGL::DrawObject& drawer,
                        DrawType dt) {
@@ -391,7 +391,7 @@ Document MolecularRasterizer::getInfo() const {
     return doc;
 }
 
-std::optional<mat4> MolecularRasterizer::boundingBox() const {
+std::optional<dmat4> MolecularRasterizer::boundingBox() const {
     return molvis::boundingBox(inport_)();
 }
 

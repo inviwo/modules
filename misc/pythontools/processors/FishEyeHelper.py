@@ -26,7 +26,7 @@ class FishEyeHelper(ivw.Processor):
         ], 0)
         self.addProperty(self.current)
 
-        self.separation = ivw.properties.FloatProperty("offset", "Eye Separation", 0.01, 0.0, 0.1)
+        self.separation = ivw.properties.DoubleProperty("offset", "Eye Separation", 0.01, 0.0, 0.1)
         self.addProperty(self.separation, owner=False)
 
         self.tilt = ivw.properties.FloatProperty("tilt", "View Tilt", 27, -90, 90)
@@ -44,12 +44,12 @@ class FishEyeHelper(ivw.Processor):
         self.tilt.onChange(self.updateCamera)
 
         self.camera.properties.cameraType.value = "SkewedPerspectiveCamera"
-        self.camera.properties.lookFrom.minValue = glm.vec3(-10000.0)
-        self.camera.properties.lookFrom.maxValue = glm.vec3(+10000.0)
-        self.camera.properties.lookTo.minValue = glm.vec3(-10000.0)
-        self.camera.properties.lookTo.maxValue = glm.vec3(+10000.0)
-        self.camera.properties.offset.minValue = glm.vec2(-10000.0)
-        self.camera.properties.offset.maxValue = glm.vec2(+10000.0)
+        self.camera.properties.lookFrom.minValue = glm.dvec3(-10000.0)
+        self.camera.properties.lookFrom.maxValue = glm.dvec3(+10000.0)
+        self.camera.properties.lookTo.minValue = glm.dvec3(-10000.0)
+        self.camera.properties.lookTo.maxValue = glm.dvec3(+10000.0)
+        self.camera.properties.offset.minValue = glm.dvec2(-10000.0)
+        self.camera.properties.offset.maxValue = glm.dvec2(+10000.0)
         self.camera.properties.fov.value = 90
 
         self.camera.properties.lookFrom.semantics = ivw.properties.PropertySemantics.SpinBox
@@ -63,7 +63,7 @@ class FishEyeHelper(ivw.Processor):
         viewDir = self.master.lookTo - self.master.lookFrom
         rightDir = glm.cross(viewDir, self.master.lookUp)
 
-        tilt = glm.rotate(glm.mat4(1.0), self.tilt.value * math.pi / 180, rightDir)
+        tilt = glm.rotate(glm.dmat4(1.0), self.tilt.value * math.pi / 180, rightDir)
         leftRot = glm.rotate(tilt, math.pi / 4, self.master.lookUp)
 
         if self.current.selectedValue == 0 or self.current.selectedValue == 4:
@@ -83,7 +83,7 @@ class FishEyeHelper(ivw.Processor):
 
     def updateCamera(self):
         def rotateVec(m, v):
-            return glm.vec3(m * glm.vec4(v, 1.0))
+            return glm.dvec3(m * glm.dvec4(v, 1.0))
 
         self.camera.near.minValue = self.master.near.minValue
         self.camera.near.maxValue = self.master.near.maxValue
@@ -101,7 +101,7 @@ class FishEyeHelper(ivw.Processor):
         self.camera.lookTo = self.master.lookFrom + rotateVec(rot, viewDir)
         self.camera.lookUp = rotateVec(rot, self.master.lookUp)
 
-        self.camera.properties.offset.value = glm.vec2(offset, 0)
+        self.camera.properties.offset.value = glm.dvec2(offset, 0)
 
     @staticmethod
     def processorInfo():

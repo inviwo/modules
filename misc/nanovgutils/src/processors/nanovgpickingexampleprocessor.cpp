@@ -99,7 +99,7 @@ void NanoVGPickingExampleProcessor::onItemPicked(PickingEvent* p) {
     if (p->getState() == PickingState::Updated && p->getPressState() == PickingPressState::Press &&
         p->getPressItem() == PickingPressItem::Primary) {
         auto [_, id] = p->getCurrentLocalPickingId();
-        LogInfo("Item " << id << " picked");
+        log::info("Item {} picked", id);
     }
 }
 

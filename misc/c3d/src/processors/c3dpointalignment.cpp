@@ -204,7 +204,7 @@ void C3DPointAlignment::process() {
         }
     }
 
-    transform_.setData(std::make_shared<mat4>(trafo));
+    transform_.setData(std::make_shared<dmat4>(trafo));
 }
 
 }  // namespace inviwo

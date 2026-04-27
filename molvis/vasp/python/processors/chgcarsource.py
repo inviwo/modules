@@ -100,13 +100,13 @@ class ChgcarSource(ivw.Processor):
             "centerData", "Center Data", True)
         self.addProperty(self.centerData)
 
-        self.margin = ivw.properties.FloatProperty(
+        self.margin = ivw.properties.DoubleProperty(
             "margin", "Border Repetition Margin", 0.05,
             min=(0.0, ivw.properties.ConstraintBehavior.Immutable),
             max=(0.5, ivw.properties.ConstraintBehavior.Editable), increment=0.01)
         self.addProperty(self.margin)
 
-        self.radiusScaling = ivw.properties.FloatProperty(
+        self.radiusScaling = ivw.properties.DoubleProperty(
             "radiusScaling", "Radius Scaling", 0.25, 0.0, 2.0, 0.01)
         self.addProperty(self.radiusScaling)
         # Add wrapping option for VASP. Default is repeat since the data is most likely periodic.

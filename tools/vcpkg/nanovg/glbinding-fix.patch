@@ -1,0 +1,13 @@
+diff --git forkSrcPrefix/src/nanovg_gl.h forkDstPrefix/src/nanovg_gl.h
+index 798b2369a901005ae210aaa6ff035389a32ad8d4..a959e3ca8ba02c3cbcc0c4030b9752dc168698e3 100644
+--- forkSrcPrefix/src/nanovg_gl.h
++++ forkDstPrefix/src/nanovg_gl.h
+@@ -430,7 +430,7 @@ static void glnvg__checkError(GLNVGcontext* gl, const char* str)
+ 
+ static int glnvg__createShader(GLNVGshader* shader, const char* name, const char* header, const char* opts, const char* vshader, const char* fshader)
+ {
+-	GLint status;
++	GLboolean status;
+ 	GLuint prog, vert, frag;
+ 	const char* str[3];
+ 	str[0] = header;

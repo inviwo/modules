@@ -72,14 +72,14 @@ std::vector<vec2> getQuadraticBezierCurveControlPoints(
     const auto n = startAndEndPoints.size();
 
     if (n < 1) {
-        LogErrorCustom("nanovgutils.cpp", "At least two knot points required.");
+        log::error("At least two knot points required.");
         return controlPoints;
     }
 
     const auto m = intermediatePoints.size();
 
     if (m != n - 1) {
-        LogErrorCustom("nanovgutils.cpp", "Requirement n-1 == m not satisfied.");
+        log::error("Requirement n-1 == m not satisfied.");
         return controlPoints;
     }
 
@@ -103,7 +103,7 @@ std::pair<std::vector<vec2>, std::vector<vec2>> getCubicBezierCurveControlPoints
     const auto n = knots.size() - 1;
 
     if (n < 1) {
-        LogErrorCustom("getCubicBezierCurveControlPoints", "At least two knot points required");
+        log::error("At least two knot points required");
         return controlPoints;
     }
 

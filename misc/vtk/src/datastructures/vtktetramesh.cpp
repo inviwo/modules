@@ -155,18 +155,18 @@ void VTKTetraMesh::get(std::vector<vec4>& nodes, std::vector<ivec4>& nodeIds) co
     utiltetra::fixFaceOrientation(nodes, nodeIds);
 }
 
-mat4 VTKTetraMesh::getBoundingBox() const {
-    vec3 dataMin{0.0f};
-    vec3 dataMax{0.0f};
+dmat4 VTKTetraMesh::getBoundingBox() const {
+    dvec3 dataMin{0.0f};
+    dvec3 dataMax{0.0f};
     if (vtkData_) {
         vtkData_->ComputeBounds();
         auto bounds = vtkData_->GetBounds();
-        dataMin = vec3{bounds[0], bounds[2], bounds[4]};
-        dataMax = vec3{bounds[1], bounds[3], bounds[5]};
+        dataMin = dvec3{bounds[0], bounds[2], bounds[4]};
+        dataMax = dvec3{bounds[1], bounds[3], bounds[5]};
     }
 
     auto m = glm::scale(dataMax - dataMin);
-    m[3] = vec4(dataMin, 1.0f);
+    m[3] = dvec4(dataMin, 1.0);
     return m;
 }
 
