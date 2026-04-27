@@ -1,6 +1,7 @@
 var annotated_dup =
 [
     [ "fmt", null, [
+      [ "formatter&lt; gl::GLenum &gt;", "structfmt_1_1formatter_3_01gl_1_1GLenum_01_4.html", null ],
       [ "formatter&lt; inviwo::UnicodeFloat &gt;", "structfmt_1_1formatter_3_01inviwo_1_1UnicodeFloat_01_4.html", null ],
       [ "formatter&lt; std::filesystem::file_time_type, char &gt;", "structfmt_1_1formatter_3_01std_1_1filesystem_1_1file__time__type_00_01char_01_4.html", null ]
     ] ],
@@ -166,7 +167,9 @@ var annotated_dup =
         [ "Node", "structinviwo_1_1deserializer_1_1Node.html", null ]
       ] ],
       [ "detail", null, [
+        [ "begin_tag_t", "structinviwo_1_1detail_1_1begin__tag__t.html", null ],
         [ "Build", "classinviwo_1_1detail_1_1Build.html", null ],
+        [ "CodePointsAdaptor", "structinviwo_1_1detail_1_1CodePointsAdaptor.html", null ],
         [ "ColorConverter", "structinviwo_1_1detail_1_1ColorConverter.html", null ],
         [ "ColorConverter&lt; dvec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec3_01_4.html", null ],
         [ "ColorConverter&lt; dvec4 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01dvec4_01_4.html", null ],
@@ -174,8 +177,12 @@ var annotated_dup =
         [ "ColorConverter&lt; ivec4 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01ivec4_01_4.html", null ],
         [ "ColorConverter&lt; vec3 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01vec3_01_4.html", null ],
         [ "ColorConverter&lt; vec4 &gt;", "structinviwo_1_1detail_1_1ColorConverter_3_01vec4_01_4.html", null ],
+        [ "concat_fn", "structinviwo_1_1detail_1_1concat__fn.html", null ],
+        [ "concat_iter_variant_helper", "structinviwo_1_1detail_1_1concat__iter__variant__helper.html", null ],
+        [ "concat_iter_variant_helper&lt; Ranges, std::index_sequence&lt; Is... &gt; &gt;", "structinviwo_1_1detail_1_1concat__iter__variant__helper_3_01Ranges_00_01std_1_1index__sequence_3_01Is_8_8_8_01_4_01_4.html", null ],
         [ "DynPort", "structinviwo_1_1detail_1_1DynPort.html", null ],
         [ "DynUniform", "structinviwo_1_1detail_1_1DynUniform.html", null ],
+        [ "end_tag_t", "structinviwo_1_1detail_1_1end__tag__t.html", null ],
         [ "hasProcessorInfo", "classinviwo_1_1detail_1_1hasProcessorInfo.html", null ],
         [ "helper", "structinviwo_1_1detail_1_1helper.html", null ],
         [ "helper&lt; F, 0 &gt;", "structinviwo_1_1detail_1_1helper_3_01F_00_010_01_4.html", null ],
@@ -190,6 +197,8 @@ var annotated_dup =
         [ "static_size_t", "structinviwo_1_1detail_1_1static__size__t.html", null ],
         [ "static_size_t&lt; char[N]&gt;", "structinviwo_1_1detail_1_1static__size__t_3_01char_0fN_0e_4.html", null ],
         [ "static_size_t&lt; StaticString&lt; N &gt; &gt;", "structinviwo_1_1detail_1_1static__size__t_3_01StaticString_3_01N_01_4_01_4.html", null ],
+        [ "Utf8CodePointIterator", "classinviwo_1_1detail_1_1Utf8CodePointIterator.html", null ],
+        [ "Utf8CodePointRange", "classinviwo_1_1detail_1_1Utf8CodePointRange.html", null ],
         [ "VolumeConf", "structinviwo_1_1detail_1_1VolumeConf.html", null ]
       ] ],
       [ "dispatching", "namespaceinviwo_1_1dispatching.html", [
@@ -489,6 +498,7 @@ var annotated_dup =
         [ "DefaultColorRepresentation&lt; ivec3 &gt;", "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec3_01_4.html", null ],
         [ "DefaultColorRepresentation&lt; ivec4 &gt;", "structinviwo_1_1util_1_1DefaultColorRepresentation_3_01ivec4_01_4.html", null ],
         [ "DefaultTraversalFilter", "structinviwo_1_1util_1_1DefaultTraversalFilter.html", null ],
+        [ "ends_with_fn", "structinviwo_1_1util_1_1ends__with__fn.html", null ],
         [ "extent", "structinviwo_1_1util_1_1extent.html", null ],
         [ "extent&lt; const T, N &gt;", "structinviwo_1_1util_1_1extent_3_01const_01T_00_01N_01_4.html", null ],
         [ "flat_extent", "structinviwo_1_1util_1_1flat__extent.html", null ],
@@ -539,6 +549,7 @@ var annotated_dup =
         [ "SawToothOptions", "structinviwo_1_1util_1_1SawToothOptions.html", null ],
         [ "sequence", "structinviwo_1_1util_1_1sequence.html", "structinviwo_1_1util_1_1sequence" ],
         [ "SharedSequenceData", "structinviwo_1_1util_1_1SharedSequenceData.html", null ],
+        [ "starts_with_fn", "structinviwo_1_1util_1_1starts__with__fn.html", null ],
         [ "TempFileHandle", "classinviwo_1_1util_1_1TempFileHandle.html", null ],
         [ "TextureAtlas", "classinviwo_1_1util_1_1TextureAtlas.html", null ],
         [ "TransformIterator", "structinviwo_1_1util_1_1TransformIterator.html", null ],
@@ -548,6 +559,12 @@ var annotated_dup =
         [ "TableBuilder", "classinviwo_1_1utildoc_1_1TableBuilder.html", "classinviwo_1_1utildoc_1_1TableBuilder" ]
       ] ],
       [ "utilgl", "namespaceinviwo_1_1utilgl.html", [
+        [ "detail", null, [
+          [ "DepthFuncPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthFuncPolicy.html", null ],
+          [ "DepthMaskPolicy", "structinviwo_1_1utilgl_1_1detail_1_1DepthMaskPolicy.html", null ],
+          [ "LineWidthPolicy", "structinviwo_1_1utilgl_1_1detail_1_1LineWidthPolicy.html", null ],
+          [ "PointSizePolicy", "structinviwo_1_1utilgl_1_1detail_1_1PointSizePolicy.html", null ]
+        ] ],
         [ "Activate", "structinviwo_1_1utilgl_1_1Activate.html", null ],
         [ "ActivateFBO", "classinviwo_1_1utilgl_1_1ActivateFBO.html", null ],
         [ "BlendModeEquationState", "structinviwo_1_1utilgl_1_1BlendModeEquationState.html", "structinviwo_1_1utilgl_1_1BlendModeEquationState" ],
@@ -563,6 +580,7 @@ var annotated_dup =
         [ "Enable", "structinviwo_1_1utilgl_1_1Enable.html", null ],
         [ "FormatConversion", "structinviwo_1_1utilgl_1_1FormatConversion.html", null ],
         [ "GlBoolState", "structinviwo_1_1utilgl_1_1GlBoolState.html", null ],
+        [ "LineWidthPolicy", "structinviwo_1_1utilgl_1_1LineWidthPolicy.html", null ],
         [ "NormalizationMap", "structinviwo_1_1utilgl_1_1NormalizationMap.html", null ],
         [ "PolygonModeState", "structinviwo_1_1utilgl_1_1PolygonModeState.html", null ],
         [ "RangeConversionMap", "structinviwo_1_1utilgl_1_1RangeConversionMap.html", null ],
@@ -717,6 +735,8 @@ var annotated_dup =
       [ "CaseInsensitiveEqual", "structinviwo_1_1CaseInsensitiveEqual.html", null ],
       [ "CaseInsensitiveLess", "structinviwo_1_1CaseInsensitiveLess.html", null ],
       [ "CaseInsensitiveStringHash", "structinviwo_1_1CaseInsensitiveStringHash.html", null ],
+      [ "CaseSensitiveEqual", "structinviwo_1_1CaseSensitiveEqual.html", null ],
+      [ "CaseSensitiveLess", "structinviwo_1_1CaseSensitiveLess.html", null ],
       [ "CategoricalColumn", "classinviwo_1_1CategoricalColumn.html", "classinviwo_1_1CategoricalColumn" ],
       [ "CefImageConverter", "classinviwo_1_1CefImageConverter.html", "classinviwo_1_1CefImageConverter" ],
       [ "CEFInteractionHandler", "classinviwo_1_1CEFInteractionHandler.html", null ],
@@ -760,6 +780,7 @@ var annotated_dup =
       [ "ComputeShaderExamplesModule", "classinviwo_1_1ComputeShaderExamplesModule.html", null ],
       [ "ComputeShaderImageExample", "classinviwo_1_1ComputeShaderImageExample.html", "classinviwo_1_1ComputeShaderImageExample" ],
       [ "ComputeShaderMinMax", "classinviwo_1_1ComputeShaderMinMax.html", "classinviwo_1_1ComputeShaderMinMax" ],
+      [ "concat_view", "classinviwo_1_1concat__view.html", null ],
       [ "ConnectionGraphicsItem", "classinviwo_1_1ConnectionGraphicsItem.html", "classinviwo_1_1ConnectionGraphicsItem" ],
       [ "ConnectionInDragHelper", "classinviwo_1_1ConnectionInDragHelper.html", null ],
       [ "ConnectionInportDragGraphicsItem", "classinviwo_1_1ConnectionInportDragGraphicsItem.html", null ],
@@ -1377,7 +1398,10 @@ var annotated_dup =
       [ "NodeVersionConverter", "classinviwo_1_1NodeVersionConverter.html", null ],
       [ "NoiseGenerator2D", "classinviwo_1_1NoiseGenerator2D.html", "classinviwo_1_1NoiseGenerator2D" ],
       [ "NoiseGenerator3D", "classinviwo_1_1NoiseGenerator3D.html", "classinviwo_1_1NoiseGenerator3D" ],
+      [ "NrrdLayerReader", "classinviwo_1_1NrrdLayerReader.html", null ],
       [ "NRRDReader", "classinviwo_1_1NRRDReader.html", "classinviwo_1_1NRRDReader" ],
+      [ "NrrdVolumeReader", "classinviwo_1_1NrrdVolumeReader.html", null ],
+      [ "NrrdVolumeSequenceReader", "classinviwo_1_1NrrdVolumeSequenceReader.html", null ],
       [ "NullPointerException", "classinviwo_1_1NullPointerException.html", null ],
       [ "NumberLineEdit", "classinviwo_1_1NumberLineEdit.html", "classinviwo_1_1NumberLineEdit" ],
       [ "NumberWidget", "classinviwo_1_1NumberWidget.html", null ],

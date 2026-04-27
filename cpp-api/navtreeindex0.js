@@ -1,5 +1,7 @@
 var NAVTREEINDEX0 =
 {
+"D_1_2a_2modules_2modules_2inviwo_2include_2inviwo_2core_2util_2concat_8h-example.html":[5,0],
+"D_1_2a_2modules_2modules_2inviwo_2include_2inviwo_2core_2util_2utfutils_8h-example.html":[5,1],
 "annotated.html":[4,0],
 "classes.html":[4,1],
 "classinviwo_1_1AbortException.html":[2,0,0,27],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "classinviwo_1_1BitSet_1_1BitSetIterator.html":[4,0,1,84,0],
 "classinviwo_1_1BoolCompositeProperty.html":[1,4,2],
 "classinviwo_1_1BoolCompositeProperty.html#a1a7235ba1866c8d34d9c6c7856b73d66":[1,4,2,1],
-"classinviwo_1_1BoolCompositeProperty.html#a7bf54b1bc0e565b71726b0f582a85808":[1,4,2,0],
-"classinviwo_1_1BoolCompositePropertyWidgetQt.html":[2,0,0,69],
-"classinviwo_1_1BoolCompositePropertyWidgetQt.html":[4,0,1,86]
+"classinviwo_1_1BoolCompositeProperty.html#a7bf54b1bc0e565b71726b0f582a85808":[1,4,2,0]
 };

@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"classinviwo_1_1BoolCompositePropertyWidgetQt.html":[2,0,0,69],
+"classinviwo_1_1BoolCompositePropertyWidgetQt.html":[4,0,1,86],
 "classinviwo_1_1BoolCompositePropertyWidgetQt.html#a8f83406c65c3bd54543d53c7ad287139":[2,0,0,69,0],
 "classinviwo_1_1BoolCompositePropertyWidgetQt.html#a8f83406c65c3bd54543d53c7ad287139":[4,0,1,86,0],
 "classinviwo_1_1BoolProperty.html":[1,4,3],
@@ -238,16 +240,14 @@ var NAVTREEINDEX1 =
 "classinviwo_1_1C3DTransformPoints.html":[4,0,1,123],
 "classinviwo_1_1C3DTransformPoints.html#aa801a0685831bb51f403ec65aa6f9fde":[2,0,0,106,0],
 "classinviwo_1_1C3DTransformPoints.html#aa801a0685831bb51f403ec65aa6f9fde":[4,0,1,123,0],
-"classinviwo_1_1CEFInteractionHandler.html":[2,0,0,139],
-"classinviwo_1_1CEFInteractionHandler.html":[4,0,1,156],
+"classinviwo_1_1CEFInteractionHandler.html":[2,0,0,141],
+"classinviwo_1_1CEFInteractionHandler.html":[4,0,1,158],
 "classinviwo_1_1CImgLayerReader.html":[1,0,5],
 "classinviwo_1_1CImgLayerWriter.html":[1,0,6],
 "classinviwo_1_1CImgLayerWriter.html#a77fc3d9d467dfceaa9cfa9567590a318":[1,0,6,0],
-"classinviwo_1_1CImgModule.html":[2,0,0,143],
-"classinviwo_1_1CImgModule.html":[4,0,1,160],
-"classinviwo_1_1CImgVolumeRAMLoader.html":[2,0,0,144],
-"classinviwo_1_1CImgVolumeRAMLoader.html":[4,0,1,161],
-"classinviwo_1_1CImgVolumeReader.html":[1,0,7],
-"classinviwo_1_1CSVReader.html":[1,0,8],
-"classinviwo_1_1CSVReader.html#a036893742ff73fd0c94ff6048455fedf":[1,0,8,14]
+"classinviwo_1_1CImgModule.html":[2,0,0,145],
+"classinviwo_1_1CImgModule.html":[4,0,1,162],
+"classinviwo_1_1CImgVolumeRAMLoader.html":[2,0,0,146],
+"classinviwo_1_1CImgVolumeRAMLoader.html":[4,0,1,163],
+"classinviwo_1_1CImgVolumeReader.html":[1,0,7]
 };

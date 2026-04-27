@@ -70,6 +70,9 @@ var group__dataio =
     [ "inviwo::JSONDataFrameWriter", "classinviwo_1_1JSONDataFrameWriter.html", [
       [ "writeData", "classinviwo_1_1JSONDataFrameWriter.html#abbaa06d8e0b82d71a58ae10d71a3c30e", null ]
     ] ],
+    [ "inviwo::NrrdLayerReader", "classinviwo_1_1NrrdLayerReader.html", null ],
+    [ "inviwo::NrrdVolumeReader", "classinviwo_1_1NrrdVolumeReader.html", null ],
+    [ "inviwo::NrrdVolumeSequenceReader", "classinviwo_1_1NrrdVolumeSequenceReader.html", null ],
     [ "inviwo::OpenMeshReader", "classinviwo_1_1OpenMeshReader.html", null ],
     [ "inviwo::OpenMeshWriter", "classinviwo_1_1OpenMeshWriter.html", [
       [ "writeData", "classinviwo_1_1OpenMeshWriter.html#a5e6d5b8f5a1ffa078b1de938f4da792f", null ]

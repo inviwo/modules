@@ -35,9 +35,12 @@ var searchData=
   ['normalbuffer_32',['NormalBuffer',['../classinviwo_1_1buffertraits_1_1NormalBuffer.html',1,'inviwo::buffertraits']]],
   ['normalizationmap_33',['NormalizationMap',['../structinviwo_1_1utilgl_1_1NormalizationMap.html',1,'inviwo::utilgl']]],
   ['notificationblocker_34',['NotificationBlocker',['../classinviwo_1_1util_1_1NotificationBlocker.html',1,'inviwo::util']]],
-  ['nrrdreader_35',['NRRDReader',['../classinviwo_1_1NRRDReader.html',1,'inviwo']]],
-  ['nullpointerexception_36',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
-  ['numberlineedit_37',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
-  ['numberwidget_38',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
-  ['numberwidgetconfig_39',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
+  ['nrrdlayerreader_35',['NrrdLayerReader',['../classinviwo_1_1NrrdLayerReader.html',1,'inviwo']]],
+  ['nrrdreader_36',['NRRDReader',['../classinviwo_1_1NRRDReader.html',1,'inviwo']]],
+  ['nrrdvolumereader_37',['NrrdVolumeReader',['../classinviwo_1_1NrrdVolumeReader.html',1,'inviwo']]],
+  ['nrrdvolumesequencereader_38',['NrrdVolumeSequenceReader',['../classinviwo_1_1NrrdVolumeSequenceReader.html',1,'inviwo']]],
+  ['nullpointerexception_39',['NullPointerException',['../classinviwo_1_1NullPointerException.html',1,'inviwo']]],
+  ['numberlineedit_40',['NumberLineEdit',['../classinviwo_1_1NumberLineEdit.html',1,'inviwo']]],
+  ['numberwidget_41',['NumberWidget',['../classinviwo_1_1NumberWidget.html',1,'inviwo']]],
+  ['numberwidgetconfig_42',['NumberWidgetConfig',['../structinviwo_1_1NumberWidgetConfig.html',1,'inviwo']]]
 ];

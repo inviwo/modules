@@ -9,5 +9,7 @@ var searchData=
   ['unitsettings_6',['UnitSettings',['../classinviwo_1_1UnitSettings.html',1,'inviwo']]],
   ['unsupportednumberofcolorsexception_7',['UnsupportedNumberOfColorsException',['../classinviwo_1_1colorbrewer_1_1UnsupportedNumberOfColorsException.html',1,'inviwo::colorbrewer']]],
   ['update_8',['Update',['../structinviwo_1_1command_1_1Update.html',1,'inviwo::command']]],
-  ['userinterfaceglmodule_9',['UserInterfaceGLModule',['../classinviwo_1_1UserInterfaceGLModule.html',1,'inviwo']]]
+  ['userinterfaceglmodule_9',['UserInterfaceGLModule',['../classinviwo_1_1UserInterfaceGLModule.html',1,'inviwo']]],
+  ['utf8codepointiterator_10',['Utf8CodePointIterator',['../classinviwo_1_1detail_1_1Utf8CodePointIterator.html',1,'inviwo::detail']]],
+  ['utf8codepointrange_11',['Utf8CodePointRange',['../classinviwo_1_1detail_1_1Utf8CodePointRange.html',1,'inviwo::detail']]]
 ];
