@@ -109,7 +109,7 @@ void VolumeNormalizationGLProcessor::process() {
         apply = apply || dynamic_cast<BoolProperty*>(channelProperties[i])->get();
     }
     if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
-        LogWarn("Numeric type of input volume is not floating point.");
+        log::warn("Numeric type of input volume is not floating point.");
     }
 
     if (!apply) {
