@@ -32,7 +32,6 @@
 
 #include <string>
 #include <exception>
-#include <ios>
 #include <streambuf>
 #include <ostream>
 #include <iostream>
@@ -78,21 +77,20 @@ protected:
             if (ch == '\n') {
                 if (!buffer.empty()) {
                     // at the end of a line we want to pass the message to Inviwo's logging system
-                    inviwo::LogCentral::getPtr()->log("Gdcm Volume Importer", loglevel,
-                                                      LogAudience::User, "<GDCM library>", "", 0,
-                                                      buffer);
+                    LogCentral::getPtr()->log("Gdcm Volume Importer", loglevel, LogAudience::User,
+                                              "<GDCM library>", "", 0, buffer);
                 }
                 buffer.clear();
             } else if (!Traits::eq_int_type(ch, Traits::eof())) {
                 buffer.push_back(static_cast<CharT>(ch));
             }
-        } catch (std::exception& ex) {
+        } catch (const std::exception& ex) {
             // error while logging, print what we've got so far
-            inviwo::LogCentral::getPtr()->log("Gdcm Volume Importer", loglevel, LogAudience::User,
-                                              "<GDCM library>", "", 0, buffer);
+            LogCentral::getPtr()->log("Gdcm Volume Importer", loglevel, LogAudience::User,
+                                      "<GDCM library>", "", 0, buffer);
             buffer.clear();
-            // and tell the user what hargspened
-            LogError("Exception while logging Gdcm: " << ex.what());
+            // and tell the user what happened
+            log::error("Exception while logging Gdcm: {}", ex.what());
             // return traits::eof on failure
             return Traits::eof();
         }

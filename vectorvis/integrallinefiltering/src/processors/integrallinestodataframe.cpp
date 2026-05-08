@@ -108,12 +108,12 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
     double d;
     while (iss >> d) {
         if (d < 0) {
-            throw Exception(fmt::format("Percentile cant be negative (got: {})", d), IVW_CONTEXT);
+            throw Exception(SourceContext{}, "Percentile cant be negative (got: {})", d);
         }
         if (d > 100) {
 
-            throw Exception(fmt::format("Percentile cant needs to be less than 100 (got: {})", d),
-                            IVW_CONTEXT);
+            throw Exception(SourceContext{}, "Percentile cant needs to be less than 100 (got: {})",
+                            d);
         }
         if (d > 1) d /= 100;  // from percent to ratio
         percentiles.push_back(d);
