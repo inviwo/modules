@@ -136,8 +136,8 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
          */
         const auto numVolumes = sourceVectorData.size();
         if (numVolumes > maxVolumes_) {
-            LogWarn(fmt::format("More than {} volumes connected ({}). Ignoring remaining ones.",
-                                maxVolumes_, numVolumes));
+            log::warn("More than {} volumes connected ({}). Ignoring remaining ones.", maxVolumes_,
+                      numVolumes);
             return;
         }
 
@@ -233,8 +233,8 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
         const auto sourceVectorData = volumes_.getSourceVectorData();
 
         if (const auto numVolumes = sourceVectorData.size(); numVolumes > maxVolumes_) {
-            LogWarn(fmt::format("More than {} volumes connected ({}). Ignoring remaining ones.",
-                                maxVolumes_, numVolumes));
+            log::warn("More than {} volumes connected ({}). Ignoring remaining ones.", maxVolumes_,
+                      numVolumes);
             return;
         }
         /*
@@ -285,10 +285,9 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
 
     capMaxDistance_.onChange([this]() {
         if (capMaxDistance_.get()) {
-            LogInfoCustom("Feature Level Sets",
-                          fmt::format("Capping max distance at {}.", maxDist_));
+            log::info("Capping max distance at {}.", maxDist_);
         } else {
-            LogInfoCustom("Feature Level Sets", "Capping disabled.");
+            log::info("Capping disabled.");
         }
     });
 }
@@ -326,13 +325,12 @@ void FeatureLevelSetProcessorGL::checkInput() const {
     const size3_t dims = volumes_.getData()->getDimensions();
     for (const auto vol : volumes_) {
         if (dims != vol->getDimensions()) {
-            throw Exception(fmt::format("Different volume dimensions: {}, expected {}",
-                                        glm::to_string(vol->getDimensions()), glm::to_string(dims)),
-                            IVW_CONTEXT);
+            throw Exception(SourceContext{}, "Different volume dimensions: {}, expected {}",
+                            glm::to_string(vol->getDimensions()), glm::to_string(dims));
         }
 
         if (vol->getDataFormat()->getNumericType() != NumericType::Float) {
-            LogWarn("Sampling non-float volume, shader will normalize values.");
+            log::warn("Sampling non-float volume, shader will normalize values.");
         }
     }
 }
@@ -398,9 +396,7 @@ std::vector<vec2> FeatureLevelSetProcessorGL::gatherVolumeRanges() const {
 
 void FeatureLevelSetProcessorGL::normalizeVolumeRanges(std::vector<vec2>& volumeRanges) const {
     std::transform(std::begin(volumeRanges), std::end(volumeRanges), std::begin(volumeRanges),
-                   [](const auto&) {
-                       return vec2{0.f, 1.f};
-                   });
+                   [](const auto&) { return vec2{0.f, 1.f}; });
 }
 
 void FeatureLevelSetProcessorGL::setUniforms() {
@@ -413,8 +409,7 @@ void FeatureLevelSetProcessorGL::setUniforms() {
 
         for (auto& [outport, volume] : volumes_.getSourceVectorData()) {
             if (idx >= maxVolumes_) break;
-            LogInfo("Binding " + outport->getProcessor()->getDisplayName() + " at index " +
-                    std::to_string(idx));
+            log::info("Binding {} at index {}", outport->getProcessor()->getDisplayName(), idx);
             TextureUnit unit;
             utilgl::bindTexture(*volume, unit);
             shader_.setUniform(StrBuffer{"volume[{}]", idx}, unit.getUnitNumber());
@@ -424,7 +419,7 @@ void FeatureLevelSetProcessorGL::setUniforms() {
     } else {
         for (auto&& [index, volume] : util::enumerate(normalizedVolumesCache_)) {
             if (index >= maxVolumes_) break;
-            LogInfo("Binding " + volume.first + " at index " + std::to_string(index));
+            log::info("Binding {} at index {}", volume.first, index);
             auto vol = volume.second;
             TextureUnit unit;
             utilgl::bindTexture(*vol, unit);
@@ -434,7 +429,7 @@ void FeatureLevelSetProcessorGL::setUniforms() {
         }
     }
 
-    LogInfo("--------------------------------------");
+    log::info("--------------------------------------");
 
     shader_.setUniform("dest", 0);
 
@@ -464,12 +459,12 @@ std::shared_ptr<Volume> FeatureLevelSetProcessorGL::bindOutputTexture() {
 
     for (auto volume : inputVolumes) {
         if (glm::any(glm::notEqual(referenceBasis, volume->getBasis()))) {
-            LogWarn(
+            log::warn(
                 "Input volumes do not have the same bases. Setting basis of input volume 1 for the "
                 "output volume.");
         }
         if (glm::any(glm::notEqual(referenceOffset, volume->getOffset()))) {
-            LogWarn(
+            log::warn(
                 "Input volumes do not have the same offsets. Setting offset of input volume 1 for "
                 "the output volume.");
         }
