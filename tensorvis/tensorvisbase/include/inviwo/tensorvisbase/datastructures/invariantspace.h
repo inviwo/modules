@@ -51,8 +51,8 @@ struct IVW_MODULE_TENSORVISBASE_API InvariantSpace {
         else
             return data_[0]->size();
     }
-    void addAxis(const std::string& identifier, std::vector<double>* data, TensorFeature type) {
-        identifiers_.push_back(identifier);
+    void addAxis(std::string_view identifier, std::vector<double>* data, TensorFeature type) {
+        identifiers_.emplace_back(identifier);
         metaDataTypes_.push_back(type);
 
         auto minmax = std::minmax_element(data->begin(), data->end());
@@ -64,7 +64,7 @@ struct IVW_MODULE_TENSORVISBASE_API InvariantSpace {
 
     template <typename T>
     void addAxis(const tensor::MetaDataType<T>* metaData, std::string_view name = "") {
-        identifiers_.push_back(name.empty() ? metaData->getDisplayName() : std::string{name});
+        identifiers_.emplace_back(name.empty() ? metaData->getDisplayName() : name);
         metaDataTypes_.push_back(metaData->type_);
         minmax_.push_back({{metaData->getMinMax().first, metaData->getMinMax().second}});
 
