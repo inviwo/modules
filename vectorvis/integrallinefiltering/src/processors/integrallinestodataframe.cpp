@@ -136,7 +136,7 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
                                                                df = &dataFrame](auto ramT) {
             using T = typename util::PrecisionValueType<decltype(ramT)>;
             if (useMagnitude_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "", [c](const T& v) -> float {
+                createFunction<T>(funcs, *df, percentiles, name, [c](const T& v) -> float {
                     float l = 0;
                     for (size_t i = 0; i < c; i++) {
                         l += static_cast<float>(util::glmcomp(v, i) * util::glmcomp(v, i));
@@ -145,24 +145,24 @@ void IntegralLinesToDataFrame::MetaDataSettings::initFunctions(
                 });
             }
             if (x_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-x", [](const T& v) -> float {
-                    return static_cast<float>(util::glmcomp(v, 0));
-                });
+                createFunction<T>(
+                    funcs, *df, percentiles, fmt::format("{}-x", name),
+                    [](const T& v) -> float { return static_cast<float>(util::glmcomp(v, 0)); });
             }
             if (y_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-y", [](const T& v) -> float {
-                    return static_cast<float>(util::glmcomp(v, 1));
-                });
+                createFunction<T>(
+                    funcs, *df, percentiles, fmt::format("{}-y", name),
+                    [](const T& v) -> float { return static_cast<float>(util::glmcomp(v, 1)); });
             }
             if (z_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-w", [](const T& v) -> float {
-                    return static_cast<float>(util::glmcomp(v, 2));
-                });
+                createFunction<T>(
+                    funcs, *df, percentiles, fmt::format("{}-w", name),
+                    [](const T& v) -> float { return static_cast<float>(util::glmcomp(v, 2)); });
             }
             if (w_.get()) {
-                createFunction<T>(funcs, *df, percentiles, name + "-z", [](const T& v) -> float {
-                    return static_cast<float>(util::glmcomp(v, 3));
-                });
+                createFunction<T>(
+                    funcs, *df, percentiles, fmt::format("{}-z", name),
+                    [](const T& v) -> float { return static_cast<float>(util::glmcomp(v, 3)); });
             }
         });
     }
