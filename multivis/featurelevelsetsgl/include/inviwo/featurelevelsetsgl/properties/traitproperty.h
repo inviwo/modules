@@ -36,9 +36,12 @@ namespace inviwo {
 class IVW_MODULE_FEATURELEVELSETSGL_API TraitProperty : public CompositeProperty {
 public:
     TraitProperty() = delete;
-    TraitProperty(const std::string& identifier, const std::string& displayName)
+    TraitProperty(std::string_view identifier, std::string_view displayName)
         : CompositeProperty(identifier, displayName), numInitializedAttributes_(0) {}
-    TraitProperty(const TraitProperty& p) : CompositeProperty(p), numInitializedAttributes_(0) {}
+    TraitProperty(const TraitProperty& p) = default;
+    TraitProperty(TraitProperty&& p) = default;
+    TraitProperty& operator=(const TraitProperty& p) = delete;
+    TraitProperty& operator=(TraitProperty&& p) = default;
 
     virtual ~TraitProperty() override = default;
 
@@ -47,7 +50,7 @@ public:
     std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.TraitProperty"};
 
-    virtual void addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+    virtual void addAttribute(std::string_view name, std::shared_ptr<const Volume> volume,
                               bool useVolumeDataMap) = 0;
 
     size_t numInitializedAttributes() const { return numInitializedAttributes_; }
@@ -55,7 +58,7 @@ public:
     void reset() { numInitializedAttributes_ = 0; }
 
 private:
-    size_t numInitializedAttributes_;
+    size_t numInitializedAttributes_{0};
 };
 
 }  // namespace inviwo

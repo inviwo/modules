@@ -76,7 +76,7 @@ public:
 
     vec4 getAsVec4() const;
 
-    void addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+    void addAttribute(std::string_view name, std::shared_ptr<const Volume> volume,
                       bool useVolumeDataMap) final;
 
 private:

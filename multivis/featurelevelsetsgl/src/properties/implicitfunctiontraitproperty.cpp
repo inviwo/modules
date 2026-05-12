@@ -39,7 +39,7 @@ std::string_view ImplicitFunctionTraitProperty::getClassIdentifier() const {
     return classIdentifier;
 }
 
-void ImplicitFunctionTraitProperty::addAttribute(const std::string&, std::shared_ptr<const Volume>,
+void ImplicitFunctionTraitProperty::addAttribute(std::string_view, std::shared_ptr<const Volume>,
                                                  bool) {}
 
 void ImplicitFunctionTraitProperty::inject(Shader& shader) const {

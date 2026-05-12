@@ -44,12 +44,9 @@ public:
         "result\nresult = point[0];"};
 
     ImplicitFunctionTraitProperty() = delete;
-    ImplicitFunctionTraitProperty(const ImplicitFunctionTraitProperty& p)
-        : ImplicitFunctionTraitProperty(p.getIdentifier(), p.getDisplayName()) {}
-
-    ImplicitFunctionTraitProperty(const std::string& identifier, const std::string& displayName)
+    ImplicitFunctionTraitProperty(std::string_view identifier, std::string_view displayName)
         : TraitProperty(identifier, displayName)
-        , shaderInjection_("shaderInjection", "Implicit function", std::string(stub),
+        , shaderInjection_("shaderInjection", "Implicit function", stub,
                            InvalidationLevel::InvalidOutput, PropertySemantics::ShaderEditor) {
         addProperties(shaderInjection_);
     }
@@ -57,13 +54,12 @@ public:
     virtual ImplicitFunctionTraitProperty* clone() const final {
         return new ImplicitFunctionTraitProperty(*this);
     }
+    virtual ~ImplicitFunctionTraitProperty() = default;
 
     std::string_view getClassIdentifier() const override;
     static constexpr std::string_view classIdentifier{"org.inviwo.ImplicitFunctionTraitProperty"};
 
-    virtual ~ImplicitFunctionTraitProperty() = default;
-
-    void addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+    void addAttribute(std::string_view name, std::shared_ptr<const Volume> volume,
                       bool useVolumeDataMap) final;
 
     void inject(Shader& shader) const;

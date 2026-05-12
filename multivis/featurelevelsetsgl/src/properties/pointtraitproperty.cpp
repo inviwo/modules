@@ -38,7 +38,7 @@ vec4 PointTraitProperty::getAsVec4() const {
     return vec4(attribute1_.get(), attribute2_.get(), attribute3_.get(), attribute4_.get());
 }
 
-void PointTraitProperty::addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+void PointTraitProperty::addAttribute(std::string_view name, std::shared_ptr<const Volume> volume,
                                       bool useVolumeDataMap) {
     const auto minVal = useVolumeDataMap
                             ? vec2(volume->dataMap.valueRange).x

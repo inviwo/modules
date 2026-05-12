@@ -52,7 +52,7 @@ mat4 RangeTraitProperty::getAsMat4() const {
     return minMaxes;
 }
 
-void RangeTraitProperty::addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+void RangeTraitProperty::addAttribute(std::string_view name, std::shared_ptr<const Volume> volume,
                                       bool useVolumeDataMap) {
     const auto minVal = useVolumeDataMap
                             ? vec2(volume->dataMap.valueRange).x

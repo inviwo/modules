@@ -74,7 +74,7 @@ public:
 
     mat4 getAsMat4() const;
 
-    void addAttribute(const std::string& name, std::shared_ptr<const Volume> volume,
+    void addAttribute(std::string_view name, std::shared_ptr<const Volume> volume,
                       bool useVolumeDataMap) final;
 
 private:

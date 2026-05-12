@@ -152,9 +152,9 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
         auto [namesToAdd, namesToRemove] = [&inputVolumes = sourceVectorData,
                                             &volumeNameCache = volumeNameCache_]() {
             auto sortedCache = std::vector(volumeNameCache);
-            auto inputNames = std::vector<std::string>{};
-            auto namesToAdd = std::vector<std::string>{};
-            auto namesToRemove = std::vector<std::string>{};
+            auto inputNames = std::vector<std::string_view>{};
+            auto namesToAdd = std::vector<std::string_view>{};
+            auto namesToRemove = std::vector<std::string_view>{};
 
             // auto inputVolumes = volumes_.getSourceVectorData();
             for (const auto& [outport, volume] : inputVolumes) {
@@ -243,9 +243,9 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
         auto [namesToAdd, namesToRemove] = [inputVolumes = volumes_.getSourceVectorData(),
                                             &volumeNameCache = volumeNameCache_]() {
             auto sortedCache = std::vector(volumeNameCache);
-            auto inputNames = std::vector<std::string>{};
-            auto namesToAdd = std::vector<std::string>{};
-            auto namesToRemove = std::vector<std::string>{};
+            auto inputNames = std::vector<std::string_view>{};
+            auto namesToAdd = std::vector<std::string_view>{};
+            auto namesToRemove = std::vector<std::string_view>{};
 
             // auto inputVolumes = volumes_.getSourceVectorData();
             for (const auto& [outport, volume] : inputVolumes) {
@@ -540,19 +540,18 @@ void FeatureLevelSetProcessorGL::updateNormalizedVolumesCache() {
 }
 
 bool FeatureLevelSetProcessorGL::compareInputsToCache() const {
-    std::vector<std::string> names{};
-    std::vector<std::string> intersection{};
+    std::vector<std::string_view> names{};
+    std::vector<std::string_view> intersection{};
     std::vector<std::string> nameCache(volumeNameCache_);
 
     for (auto [outport, volume] : volumes_.getSourceVectorData()) {
         names.push_back(outport->getProcessor()->getDisplayName());
     }
 
-    std::sort(std::begin(names), std::end(names));
-    std::sort(std::begin(nameCache), std::end(nameCache));
+    std::ranges::sort(names);
+    std::ranges::sort(nameCache);
 
-    std::set_intersection(std::begin(names), std::end(names), std::begin(nameCache),
-                          std::end(nameCache), std::back_inserter(intersection));
+    std::ranges::set_intersection(names, nameCache, std::back_inserter(intersection));
 
     const auto matchesAll = nameCache.size() == intersection.size();
     const auto sameAmount = names.size() == nameCache.size();
@@ -563,15 +562,12 @@ bool FeatureLevelSetProcessorGL::compareInputsToCache() const {
 void FeatureLevelSetProcessorGL::updateVolumeNamesCache() {
     auto volumes = volumes_.getSourceVectorData();
 
-    std::vector<std::string> names{};
-
-    names.reserve(volumes.size());
+    volumeNameCache_.clear();
+    volumeNameCache_.reserve(volumes.size());
 
     for (const auto& [outport, volume] : volumes) {
-        names.push_back(outport->getProcessor()->getDisplayName());
+        volumeNameCache_.push_back(std::string{outport->getProcessor()->getDisplayName()});
     }
-
-    volumeNameCache_ = names;
 }
 
 void FeatureLevelSetProcessorGL::resizeTraitAllocation() {
