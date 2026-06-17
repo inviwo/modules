@@ -41,8 +41,32 @@
 #include <modules/basegl/shadercomponents/sampletransformcomponent.h>
 #include <modules/basegl/shadercomponents/volumecomponent.h>
 #include <modules/basegl/shadercomponents/maskcomponent.h>
+#include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
+
+class IVW_MODULE_BASEGL_API NemoVolumeComponent : public ShaderComponent {
+public:
+    enum class Gradients { None, Single };
+    explicit NemoVolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
+                                 Document help = {});
+
+    virtual std::string_view getName() const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual std::vector<Segment> getSegments() override;
+
+    std::string getGradientString() const;
+
+    std::optional<size_t> channelsForVolume() const;
+
+    virtual std::vector<Property*> getProperties() override;
+
+    VolumeInport volumePort;
+    Gradients gradients;
+
+    FloatProperty zZoom;
+};
 
 class IVW_MODULE_OCEANFLOW_API OceanRaycaster : public VolumeRaycasterBase {
 public:
@@ -55,7 +79,7 @@ public:
     virtual void process() override;
 
 private:
-    VolumeComponent volume_;
+    NemoVolumeComponent volume_;
     EntryExitComponent entryExit_;
     BackgroundComponent background_;
     IsoTFComponent<1> isoTF_;
