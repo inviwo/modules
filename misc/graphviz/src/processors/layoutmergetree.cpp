@@ -128,12 +128,12 @@ void LayoutMergeTree::process() {
     mesh->reserveSizeInVertexBuffer(downsTyped->getSize());
 
     pm_.resize(downsTyped->getSize());
-    size_t startPickId = pm_.getPickingId(0);
+    const auto startPickId = static_cast<std::uint32_t>(pm_.getPickingId(0));
 
     const auto colorRange = colors->getRange();
 
     std::unordered_map<size_t, uint32_t> nodeToVertex;
-    for (auto&& [index, node] : util::enumerate(*downsTyped)) {
+    for (auto&& [index, node] : util::enumerate<std::uint32_t>(*downsTyped)) {
         Agnode_t* n = agnode(G, const_cast<char*>(buff.replace("{}", node).c_str()), 0);
         if (n != nullptr) {
             auto& coord = ND_coord(n);
