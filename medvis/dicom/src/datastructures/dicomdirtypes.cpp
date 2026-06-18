@@ -83,7 +83,7 @@ void Image::updateInfo(const gdcm::DataSet& dataset) {
     // Pixel Spacing https://dicom.innolitics.com/ciods/ct-image/image-plane/00280030
     gdcm::Attribute<0x0028, 0x0030> pixelSpacingAttr{{1.0, 1.0}};
     pixelSpacingAttr.Set(dataset);
-    pixelSpacing = gdcmutil::toGlmVec<3>(pixelSpacingAttr.GetValues());
+    pixelSpacing = dvec3{gdcmutil::toGlmVec<2>(pixelSpacingAttr.GetValues()), 0.0};
 
     updateZpos();
 }
