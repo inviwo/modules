@@ -234,8 +234,7 @@ var searchData=
   ['pythonpropertywidgetqt_231',['PythonPropertyWidgetQt',['../classinviwo_1_1PythonPropertyWidgetQt.html',1,'inviwo']]],
   ['pythonscript_232',['PythonScript',['../classinviwo_1_1PythonScript.html',1,'inviwo']]],
   ['pythonsyntaxhighlight_233',['PythonSyntaxHighlight',['../classinviwo_1_1PythonSyntaxHighlight.html',1,'inviwo']]],
-  ['pythontoolsmodule_234',['PythonToolsModule',['../classinviwo_1_1PythonToolsModule.html',1,'inviwo']]],
-  ['pythonworkspacescriptmenu_235',['PythonWorkspaceScriptMenu',['../classinviwo_1_1PythonWorkspaceScriptMenu.html',1,'inviwo']]],
-  ['pythonworkspacescripts_236',['PythonWorkspaceScripts',['../classinviwo_1_1PythonWorkspaceScripts.html',1,'inviwo']]],
-  ['pythonworkspacescriptsobserver_237',['PythonWorkspaceScriptsObserver',['../classinviwo_1_1PythonWorkspaceScriptsObserver.html',1,'inviwo']]]
+  ['pythonworkspacescriptmenu_234',['PythonWorkspaceScriptMenu',['../classinviwo_1_1PythonWorkspaceScriptMenu.html',1,'inviwo']]],
+  ['pythonworkspacescripts_235',['PythonWorkspaceScripts',['../classinviwo_1_1PythonWorkspaceScripts.html',1,'inviwo']]],
+  ['pythonworkspacescriptsobserver_236',['PythonWorkspaceScriptsObserver',['../classinviwo_1_1PythonWorkspaceScriptsObserver.html',1,'inviwo']]]
 ];
