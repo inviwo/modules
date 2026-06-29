@@ -149,10 +149,12 @@ std::shared_ptr<Volume> MevisVolumeReader::readData(const std::filesystem::path&
     gdcm::ImageReader reader;
     reader.SetFileName(dcm_file_.string().c_str());
     if (reader.Read()) {
-        LogWarn("dcm file " << dcm_file_ << " contains an image/volume - maybe the data in "
-                            << tif_file_ << " does not belong to this dcm file?")
+        log::warn(
+            "dcm file '{}' contains an image/volume - maybe the data in '{}' does not belong to "
+            "this dcm file?",
+            dcm_file_, tif_file_);
     } else {
-        LogInfo("You can savely ignore the last \"no pixel data found!\" warning from gdcm.");
+        log::info("You can savely ignore the last \"no pixel data found!\" warning from gdcm.");
         // as a alternative call gdcm::Trace::WarningOff(); before reader.Read()
     }
 
@@ -215,8 +217,9 @@ std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation
             auto data = std::make_unique<T[]>(size);
             if (!data) {
                 throw DataReaderException(
-                    IVW_CONTEXT,
-                    "Error: Could not allocate memory for loading mevis volume data: ", tif_file_);
+                    SourceContext{},
+                    "Error: Could not allocate memory for loading mevis volume data: {}",
+                    tif_file_);
             }
 
             readDataInto(reinterpret_cast<char*>(data.get()));
@@ -292,9 +295,9 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
 
 #if defined(IVW_DEBUG)
     unsigned int number_of_tiles = TIFFNumberOfTiles(tiffimage);
-    LogInfo("number of tiles: " << number_of_tiles);
-    LogInfo(fmt::format("tilesize: {} ({}x{}x{})", tilesz, tilesize.x, tilesize.y, tilesize.z));
-    LogInfo(fmt::format("rowbyte: {}, bytespersample: {}", tilerowbytes, bytespersample));
+    log::info("number of tiles: {}", number_of_tiles);
+    log::info("tilesize: {} ({}x{}x{})", tilesz, tilesize.x, tilesize.y, tilesize.z);
+    log::info("rowbyte: {}, bytespersample: {}", tilerowbytes, bytespersample);
 #endif
 
     IVW_ASSERT(tilerowbytes == tilesize.x * bytespersample,

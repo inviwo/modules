@@ -31,7 +31,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES})
 
 find_package(TIFF REQUIRED)
-find_package(gdcm CONFIG REQUIRED)
+find_package(GDCM CONFIG REQUIRED)
 
 target_link_libraries(inviwo-module-dicom 
     PUBLIC 
@@ -48,8 +48,8 @@ target_link_libraries(inviwo-module-dicom
     PRIVATE
     TIFF::TIFF
 )
-target_include_directories(inviwo-module-dicom PUBLIC gdcm)
-ivw_vcpkg_install(gdcm MODULE DICOM)
+target_include_directories(inviwo-module-dicom PUBLIC GDCM)
+ivw_vcpkg_install(GDCM MODULE DICOM)
 
 #--------------------------------------------------------------------
 ivw_make_package(InviwoDICOMModule inviwo-module-dicom)

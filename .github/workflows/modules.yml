@@ -63,7 +63,7 @@ jobs:
             artifact: 'build/inviwo-v*.dmg'
 
           - system: linux
-            os: 'ubuntu-24.04'
+            os: 'ubuntu-26.04'
             targets: 'all'
             installer: 'inviwo-installer-linux'
             artifact: 'build/inviwo-v*.AppImage'
@@ -446,7 +446,7 @@ jobs:
       pull-requests: write
     env:
       LLVM_VERSION: 19
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     timeout-minutes: 320
     steps:
 
@@ -627,7 +627,7 @@ jobs:
     name: "Test Installer Linux"
     needs: build
        
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - name: "Download artifact"
       uses: actions/download-artifact@v7
@@ -668,7 +668,7 @@ jobs:
 
   create-changelog:
     name: "Create Changelog"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
     - name: "Generate Changelog"
       id: changelog
@@ -696,7 +696,7 @@ jobs:
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression]
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: "Clone Inviwo"
         uses: actions/checkout@v6
@@ -739,7 +739,7 @@ jobs:
     name: "Update latest release"
     if: github.ref == 'refs/heads/master'
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression, create-changelog]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     steps:
     - name: "Download installer"

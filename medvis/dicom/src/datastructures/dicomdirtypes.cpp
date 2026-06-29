@@ -83,7 +83,7 @@ void Image::updateInfo(const gdcm::DataSet& dataset) {
     // Pixel Spacing https://dicom.innolitics.com/ciods/ct-image/image-plane/00280030
     gdcm::Attribute<0x0028, 0x0030> pixelSpacingAttr{{1.0, 1.0}};
     pixelSpacingAttr.Set(dataset);
-    pixelSpacing = gdcmutil::toGlmVec<3>(pixelSpacingAttr.GetValues());
+    pixelSpacing = dvec3{gdcmutil::toGlmVec<2>(pixelSpacingAttr.GetValues()), 0.0};
 
     updateZpos();
 }
@@ -185,20 +185,19 @@ void Series::updateImageInformation(const std::filesystem::path& dicompath) {
     auto sanityCheck = [&](const ImageMetaData& ref, const ImageMetaData& img) {
         if (ref.dims != img.dims) {
             throw DataReaderException(
-                fmt::format(
-                    "image sizes differ in DICOM series '{}', expected {} but found {} ('{}')",
-                    desc, toString(ref.dims), toString(img.dims), dicompath),
-                IVW_CONTEXT);
+                SourceContext{},
+                "image sizes differ in DICOM series '{}', expected {} but found {} ('{}')", desc,
+                toString(ref.dims), toString(img.dims), dicompath);
         }
         if (ref.pixelformat != img.pixelformat) {
-            throw DataReaderException(
-                fmt::format("pixel formats differ in DICOM series '{}' ('{}')", desc, dicompath),
-                IVW_CONTEXT);
+            throw DataReaderException(SourceContext{},
+                                      "pixel formats differ in DICOM series '{}' ('{}')", desc,
+                                      dicompath);
         }
         if (!ref.photometric.IsSameColorSpace(img.photometric)) {
-            throw DataReaderException(
-                fmt::format("photometric info differ in DICOM series '{}' ('{}')", desc, dicompath),
-                IVW_CONTEXT);
+            throw DataReaderException(SourceContext{},
+                                      "photometric info differ in DICOM series '{}' ('{}')", desc,
+                                      dicompath);
         }
         const double dicomDelta = 1.0e-4;
         if (std::abs(ref.slope - img.slope) > dicomDelta ||
@@ -232,10 +231,9 @@ void Series::updateImageInformation(const std::filesystem::path& dicompath) {
             continue;
         }
         if (!imageReader.Read()) {
-            throw DataReaderException(
-                fmt::format("could not read image '{}' in DICOM series '{}' ('{}')", imgInfo.path,
-                            desc, dicompath),
-                IVW_CONTEXT);
+            throw DataReaderException(SourceContext{},
+                                      "could not read image '{}' in DICOM series '{}' ('{}')",
+                                      imgInfo.path, desc, dicompath);
         }
 
         imgInfo.updateInfo(imageReader);
@@ -249,19 +247,17 @@ void Series::updateImageInformation(const std::filesystem::path& dicompath) {
     }
 
     if (warnSlopeIntercept) {
-        LogWarn(
-            fmt::format("varying slopes/intercepts in DICOM series '{}' ('{}')", desc, dicompath));
+        log::warn("varying slopes/intercepts in DICOM series '{}' ('{}')", desc, dicompath);
     }
     if (warnPixelSpacing) {
-        LogWarn(fmt::format("pixel spacings differ in DICOM series '{}', expected {} ('{}')", desc,
-                            toString(refImage.pixelSpacing), dicompath));
+        log::warn("pixel spacings differ in DICOM series '{}', expected {} ('{}')", desc,
+                  toString(refImage.pixelSpacing), dicompath);
     }
     if (warnOrientation) {
-        LogWarn(
-            fmt::format("image orientations differ in DICOM series '{}' ('{}')", desc, dicompath));
+        log::warn("image orientations differ in DICOM series '{}' ('{}')", desc, dicompath);
     }
     if (warnOrigin) {
-        LogWarn(fmt::format("origins differ in DICOM series '{}' ('{}')", desc, dicompath));
+        log::warn("origins differ in DICOM series '{}' ('{}')", desc, dicompath);
     }
 
     util::erase_remove_if(images, [](dicomdir::Image& image) { return image.empty(); });

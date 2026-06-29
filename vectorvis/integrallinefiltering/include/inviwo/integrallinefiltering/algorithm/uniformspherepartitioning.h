@@ -103,7 +103,7 @@ public:
      */
     UniformSpherePartitioning(const size_t segments = 20) {
         if (segments == 0) {
-            throw Exception("Zero segments not allowed", IVW_CONTEXT);
+            throw Exception("Zero segments not allowed");
         } else if (segments == 1) {
             collars_.emplace_back(glm::pi<T>(), 1);
             return;

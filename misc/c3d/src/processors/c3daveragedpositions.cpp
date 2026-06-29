@@ -172,7 +172,7 @@ void C3DAveragedPositions::process() {
         radii.emplace_back(markerRadius_.get());
 
         index.emplace_back(static_cast<uint32_t>(pointIdx));
-        pickIds.emplace_back(picking_.getPickingId(pointIdx));
+        pickIds.emplace_back(static_cast<uint32_t>(picking_.getPickingId(pointIdx)));
     }
 
     for (size_t frameIdx = startFrame; frameIdx <= endFrame; ++frameIdx) {

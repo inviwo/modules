@@ -56,10 +56,10 @@ C3DTransformPoints::C3DTransformPoints()
     : Processor{}
     , inport_{"inport", ""_help}
     , outport_{"outport", ""_help}
-    , refs_{{{"ref1", "Referece 1", "phantom:skull1"},
-             {"ref2", "Referece 2", "phantom:skull3"},
-             {"ref3", "Referece 3", "phantom:skull2"},
-             {"ref4", "Referece 4", "phantom:skull4"}}}
+    , refs_{{{"ref1", "Reference 1", "phantom:skull1"},
+             {"ref2", "Reference 2", "phantom:skull3"},
+             {"ref3", "Reference 3", "phantom:skull2"},
+             {"ref4", "Reference 4", "phantom:skull4"}}}
     , refGroup_{"refGroup", "Reference Markers"}
     , transforms_("transformations", "Transformation Stack") {
 

@@ -146,7 +146,8 @@ void C3DToMesh::process() {
             radii.emplace_back(markerRadius_.get());
 
             // Unique ID for each point
-            pickIds.emplace_back(picking_.getPickingId(frameIdx * nbPoints + pointIdx));
+            pickIds.emplace_back(
+                static_cast<uint32_t>(picking_.getPickingId(frameIdx * nbPoints + pointIdx)));
 
             index.emplace_back(static_cast<uint32_t>(frameIdx));
         }

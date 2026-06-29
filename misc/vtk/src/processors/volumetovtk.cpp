@@ -212,7 +212,8 @@ void VolumeToVTK::process() {
         auto scalars = vtkSmartPointer<vtkDataArray>(
             vtkDataArray::CreateDataArray(vtkType(dataFormat->getId())));
         scalars->SetNumberOfComponents(static_cast<int>(dataFormat->getComponents()));
-        scalars->SetName(outport->getProcessor()->getIdentifier().c_str());
+        const std::string identifier{outport->getProcessor()->getIdentifier()};
+        scalars->SetName(identifier.c_str());
         scalars->SetNumberOfTuples(glm::compMul(dim));
 
         void* dstData = scalars->GetVoidPointer(0);

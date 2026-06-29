@@ -242,12 +242,10 @@ void ComputeShaderMinMax::process() {
         const auto loglevel = diffDetected ? inviwo::LogLevel::Warn : inviwo::LogLevel::Info;
 
         if (!logErrorOnly_ || diffDetected) {
-            LogSpecial(inviwo::LogCentral::getPtr(), loglevel,
-                       fmt::format("{} min/max: {:.8} / {:.8}", name, minTest.x, maxTest.x));
-            LogSpecial(inviwo::LogCentral::getPtr(), loglevel,
-                       fmt::format("ref min/max:     {:.8} / {:.8}", refMin.x, refMax.x));
+            log::message(loglevel, "{} min/max: {:.8} / {:.8}", name, minTest.x, maxTest.x);
+            log::message(loglevel, "ref min/max:     {:.8} / {:.8}", refMin.x, refMax.x);
             if (diffDetected) {
-                LogInfo(fmt::format("delta min/max: {:.8} / {:.8}", deltaMin, deltaMax));
+                log::info("delta min/max: {:.8} / {:.8}", deltaMin, deltaMax);
             }
         }
     };

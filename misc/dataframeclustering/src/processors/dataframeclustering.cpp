@@ -32,7 +32,7 @@
 #include <inviwo/core/util/moduleutils.h>
 #include <modules/python3/pybindutils.h>
 
-#include <inviwo/core/common/inviwoapplication.h>
+#include <pybind11/pytypes.h>
 
 namespace inviwo {
 
@@ -159,7 +159,7 @@ void DataFrameClustering::onDataFrameChange() {
                     if (auto pp = dynamic_cast<BoolProperty*>(p)) {
                         return pp;
                     }
-                    throw inviwo::Exception("Property not a BoolProperty", IVW_CONTEXT);
+                    throw inviwo::Exception("Property not a BoolProperty");
                 } else {
                     auto cp = std::make_unique<BoolProperty>(id, header, columns_.size() < 2);
                     cp->setSerializationMode(PropertySerializationMode::All);

@@ -158,7 +158,8 @@ void calculateLayout(StrBuffer& buff, ProcessorNetwork* net, const Func& func) {
         ivec2 center{0};
         int count = 0;
         net->forEachProcessor([&](Processor* p) {
-            if (auto* n = agnode(G, const_cast<char*>(p->getIdentifier().c_str()), 0)) {
+            const std::string identifier{p->getIdentifier()};
+            if (auto* n = agnode(G, const_cast<char*>(identifier.c_str()), 0)) {
                 const auto& coord = ND_coord(n);
                 center += ivec2{coord.x, -coord.y};
                 ++count;
@@ -173,7 +174,8 @@ void calculateLayout(StrBuffer& buff, ProcessorNetwork* net, const Func& func) {
     const dvec2 offset = oldCenter - newCenter;
 
     net->forEachProcessor([&](Processor* p) {
-        if (auto* n = agnode(G, const_cast<char*>(p->getIdentifier().c_str()), 0)) {
+        const std::string identifier{p->getIdentifier()};
+        if (auto* n = agnode(G, const_cast<char*>(identifier.c_str()), 0)) {
             const auto& coord = ND_coord(n);
             func(p, dvec2{coord.x, -coord.y} + offset);
         }

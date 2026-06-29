@@ -67,7 +67,7 @@ std::shared_ptr<Mesh> OpenMeshReader::readData(const std::filesystem::path& file
 
     TriMesh mesh;
     if (!OpenMesh::IO::read_mesh(mesh, filePath.string())) {
-        throw Exception(IVW_CONTEXT, "Failed reading mesh from disk {}", filePath);
+        throw Exception(SourceContext{}, "Failed reading mesh from disk {}", filePath);
     }
     mesh.request_vertex_normals();
     mesh.request_face_normals();

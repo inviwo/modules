@@ -111,17 +111,17 @@ public:
 
         template <typename T, typename C>
         void createFunction(std::vector<MetricCalcFunction>& funcs, DataFrame& dataFrame,
-                            std::vector<double> percentiles, std::string name, C toFloat) {
+                            std::vector<double> percentiles, std::string_view name, C toFloat) {
             std::vector<float>* avg = nullptr;
             std::vector<float>* sds = nullptr;
             if (avg_.get()) {
-                avg = &dataFrame.addColumn<float>(name + " μ")
+                avg = &dataFrame.addColumn<float>(fmt::format("{} μ", name))
                            ->getTypedBuffer()
                            ->getEditableRAMRepresentation()
                            ->getDataContainer();
             }
             if (sd_.get()) {
-                sds = &dataFrame.addColumn<float>(name + " σ")
+                sds = &dataFrame.addColumn<float>(fmt::format("{} σ", name))
                            ->getTypedBuffer()
                            ->getEditableRAMRepresentation()
                            ->getDataContainer();
@@ -129,13 +129,13 @@ public:
             std::vector<std::vector<float>*> percentilesColumns;
             for (auto p : percentiles) {
                 percentilesColumns.push_back(
-                    &dataFrame.addColumn<float>(name + " (p:" + std::to_string(p) + ")")
+                    &dataFrame.addColumn<float>(fmt::format("{} (p:{})", name, p))
                          ->getTypedBuffer()
                          ->getEditableRAMRepresentation()
                          ->getDataContainer());
             }
             funcs.push_back([&](const IntegralLine& line) {
-                auto& vec = line.getMetaData<T>(Property::getDisplayName());
+                auto& vec = line.getMetaData<T>(std::string{Property::getDisplayName()});
                 std::vector<float> values;
                 std::transform(vec.begin() + 1, vec.end() - 1, std::back_inserter(values),
                                [&](const auto& v) {

@@ -154,8 +154,7 @@ std::shared_ptr<Mesh> toInviwo(const OM_Mesh& mesh) {
         }
     }
     if (skipped) {
-        LogWarnCustom("openmeshutil::toInviwo",
-                      "Skipped " << skipped << " faces since they weren't triangles");
+        log::warn("Skipped {} faces since they weren't triangles", skipped);
     }
     return newmesh;
 }
