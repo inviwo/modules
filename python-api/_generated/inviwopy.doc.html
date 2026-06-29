@@ -19,7 +19,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="ivwdataframe" href="ivwdataframe.html" />
+    <link rel="next" title="inviwopy.animation" href="inviwopy.animation.html" />
     <link rel="prev" title="inviwopy.camerautil" href="inviwopy.camerautil.html" /> 
 </head>
 
@@ -43,8 +43,6 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="ivwbase.html">ivwbase</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ivwbnl.html">ivwbnl</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="inviwopy.html">inviwopy</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.data.html">inviwopy.data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.data.formats.html">inviwopy.data.formats</a></li>
@@ -167,6 +165,8 @@
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MeshWriterFactory"><code class="docutils literal notranslate"><span class="pre">MeshWriterFactory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MessageBreakLevel"><code class="docutils literal notranslate"><span class="pre">MessageBreakLevel</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ModuleIdentifierWrapper"><code class="docutils literal notranslate"><span class="pre">ModuleIdentifierWrapper</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ModuleManager"><code class="docutils literal notranslate"><span class="pre">ModuleManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ModuleManagerCallbackHolder"><code class="docutils literal notranslate"><span class="pre">ModuleManagerCallbackHolder</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.ModulePath"><code class="docutils literal notranslate"><span class="pre">ModulePath</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseButton"><code class="docutils literal notranslate"><span class="pre">MouseButton</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.MouseButtons"><code class="docutils literal notranslate"><span class="pre">MouseButtons</span></code></a></li>
@@ -238,6 +238,10 @@
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.VolumeReaderFactory"><code class="docutils literal notranslate"><span class="pre">VolumeReaderFactory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.VolumeWriterFactory"><code class="docutils literal notranslate"><span class="pre">VolumeWriterFactory</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.WheelEvent"><code class="docutils literal notranslate"><span class="pre">WheelEvent</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.WorkspaceManager"><code class="docutils literal notranslate"><span class="pre">WorkspaceManager</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.WorkspaceManagerOnClearChangedCallbackHolder"><code class="docutils literal notranslate"><span class="pre">WorkspaceManagerOnClearChangedCallbackHolder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.WorkspaceManagerOnModifiedCallbackHolder"><code class="docutils literal notranslate"><span class="pre">WorkspaceManagerOnModifiedCallbackHolder</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.WorkspaceSaveMode"><code class="docutils literal notranslate"><span class="pre">WorkspaceSaveMode</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dmat2VectorFlatMultiInport"><code class="docutils literal notranslate"><span class="pre">dmat2VectorFlatMultiInport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dmat2VectorInport"><code class="docutils literal notranslate"><span class="pre">dmat2VectorInport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.dmat2VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">dmat2VectorMultiInport</span></code></a></li>
@@ -326,6 +330,8 @@
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorInport"><code class="docutils literal notranslate"><span class="pre">vec4VectorInport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorMultiInport"><code class="docutils literal notranslate"><span class="pre">vec4VectorMultiInport</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.vec4VectorOutport"><code class="docutils literal notranslate"><span class="pre">vec4VectorOutport</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.__dir__"><code class="docutils literal notranslate"><span class="pre">__dir__()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.__getattr__"><code class="docutils literal notranslate"><span class="pre">__getattr__()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.debugBreak"><code class="docutils literal notranslate"><span class="pre">debugBreak()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.getApp"><code class="docutils literal notranslate"><span class="pre">getApp()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.handlePythonOutput"><code class="docutils literal notranslate"><span class="pre">handlePythonOutput()</span></code></a></li>
@@ -337,9 +343,13 @@
 <li class="toctree-l2"><a class="reference internal" href="inviwopy.html#inviwopy.unindentMd2doc"><code class="docutils literal notranslate"><span class="pre">unindentMd2doc()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="ivwdataframe.html">ivwdataframe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ivwmolvis.html">ivwmolvis</a></li>
-<li class="toctree-l1"><a class="reference internal" href="ivwtensorvis.html">ivwtensorvis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.animation.html">inviwopy.animation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.base.html">inviwopy.base</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.bnl.html">inviwopy.bnl</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.dataframe.html">inviwopy.dataframe</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.json.html">inviwopy.json</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.molvis.html">inviwopy.molvis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="inviwopy.tensorvis.html">inviwopy.tensorvis</a></li>
 </ul>
 
         </div>
@@ -676,7 +686,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="inviwopy.camerautil.html" class="btn btn-neutral float-left" title="inviwopy.camerautil" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="ivwdataframe.html" class="btn btn-neutral float-right" title="ivwdataframe" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="inviwopy.animation.html" class="btn btn-neutral float-right" title="inviwopy.animation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

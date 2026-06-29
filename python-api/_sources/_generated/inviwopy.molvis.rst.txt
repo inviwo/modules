@@ -1,0 +1,21 @@
+﻿inviwopy.molvis
+===============
+
+.. automodule:: inviwopy.molvis
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Atoms
+      Chain
+      MolecularData
+      MolecularStructure
+      MolecularStructureFlatMultiInport
+      MolecularStructureInport
+      MolecularStructureMultiInport
+      MolecularStructureOutport
+      Residue
+      StringVector
+   
