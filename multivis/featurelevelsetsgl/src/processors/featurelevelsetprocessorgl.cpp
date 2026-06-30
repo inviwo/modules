@@ -207,28 +207,6 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
         updateNormalizedVolumesCache();
     });
 
-    volumes_.onChange([this]() {
-        updateVolumeNamesCache();
-
-        auto computeShader = shader_.getShaderObject(ShaderType::Compute);
-
-        computeShader->removeShaderDefine(StrBuffer{"NUM_VOLUMES {}", prevNumberOfVolumes_});
-
-        prevNumberOfVolumes_ = volumes_.getVectorData().size();
-
-        computeShader->addShaderDefine("NUM_VOLUMES", StrBuffer{"{}", prevNumberOfVolumes_});
-
-        checkInput();
-
-        shader_.build();
-
-        updateDataRangesCache();
-
-        updateNormalizedVolumesCache();
-
-        updateMaximumDistance();
-    });
-
     volumes_.onDisconnect([this]() {
         const auto sourceVectorData = volumes_.getSourceVectorData();
 
@@ -293,6 +271,23 @@ FeatureLevelSetProcessorGL::FeatureLevelSetProcessorGL()
 }
 
 void FeatureLevelSetProcessorGL::process() {
+    if (volumes_.isChanged()) {
+        updateVolumeNamesCache();
+
+        auto computeShader = shader_.getShaderObject(ShaderType::Compute);
+
+        computeShader->removeShaderDefine(StrBuffer{"NUM_VOLUMES {}", prevNumberOfVolumes_});
+        prevNumberOfVolumes_ = volumes_.getVectorData().size();
+        computeShader->addShaderDefine("NUM_VOLUMES", StrBuffer{"{}", prevNumberOfVolumes_});
+
+        checkInput();
+
+        shader_.build();
+        updateDataRangesCache();
+        updateNormalizedVolumesCache();
+        updateMaximumDistance();
+    }
+
     if (!volumes_.hasData() || volumes_.getVectorData().empty()) return;
     if (traitPropertiesContainer_.getProperties().empty()) return;
 
