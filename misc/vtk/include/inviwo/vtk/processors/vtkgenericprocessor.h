@@ -152,11 +152,6 @@ inline void updateFieldSelection(vtkDataObject::FieldAssociations assoc, vtkData
 
 void setupFieldSelection(Inport* inport, auto& wrapper) {
     if (auto* vtkinport = dynamic_cast<vtk::VtkInport*>(inport)) {
-        vtkinport->onChange([port = vtkinport, w = &wrapper]() {
-            if (port->isReady()) {
-                updateFieldSelection(w->fieldAssociation.get(), port->getData(), w->name);
-            }
-        });
         wrapper.fieldAssociation.onChange([port = vtkinport, w = &wrapper]() {
             if (port->isReady()) {
                 updateFieldSelection(w->fieldAssociation.get(), port->getData(), w->name);
@@ -269,8 +264,19 @@ public:
 
     virtual void process() override {
         bool ready = true;
-        util::for_each_in_tuple([&](auto& wrapper) { ready &= wrapper.set(*filter_); },
-                                traits_.properties);
+        util::for_each_in_tuple(
+            [&](auto& wrapper) {
+                if constexpr (std::is_base_of_v<FieldSelection, std::decay_t<decltype(wrapper)>>) {
+                    auto* inport = getInport(wrapper.inport);
+                    if (const auto* vtkinport = dynamic_cast<vtk::VtkInport*>(inport);
+                        vtkinport && vtkinport->isChanged() && vtkinport->isReady()) {
+                        updateFieldSelection(wrapper.fieldAssociation.get(), vtkinport->getData(),
+                                             wrapper.name);
+                    }
+                }
+                ready &= wrapper.set(*filter_);
+            },
+            traits_.properties);
 
         if (!ready) return;
 
