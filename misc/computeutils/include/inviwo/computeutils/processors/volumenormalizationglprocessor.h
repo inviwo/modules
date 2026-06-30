@@ -36,6 +36,8 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/computeutils/algorithm/volumenormalizationgl.h>
 
+#include <array>
+
 namespace inviwo {
 
 /**
@@ -59,10 +61,7 @@ private:
     VolumeOutport volumeOutport_;
 
     CompositeProperty channels_;
-    BoolProperty normalizeChannel0_;
-    BoolProperty normalizeChannel1_;
-    BoolProperty normalizeChannel2_;
-    BoolProperty normalizeChannel3_;
+    std::array<BoolProperty, 4> normalizeChannel_;
 
     VolumeNormalizationGL volumeNormalization_;
 };

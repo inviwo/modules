@@ -29,6 +29,8 @@
 #include <inviwo/computeutils/processors/volumenormalizationglprocessor.h>
 #include <inviwo/core/network/networklock.h>
 
+#include <ranges>
+
 namespace inviwo {
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -52,70 +54,48 @@ VolumeNormalizationGLProcessor::VolumeNormalizationGLProcessor()
     , volumeOutport_{"volumeOutport", "Normalized volume"_help}
     , channels_{"channels", "Channels",
                 "Select the channels you wish to normalize to range [0,1]"_help}
-    , normalizeChannel0_{"normalizeChannel0", "Channel 1", true}
-    , normalizeChannel1_{"normalizeChannel1", "Channel 2", false}
-    , normalizeChannel2_{"normalizeChannel2", "Channel 3", false}
-    , normalizeChannel3_{"normalizeChannel3", "Channel 4", false}
-    , volumeNormalization_{[this]() { this->invalidate(InvalidationLevel::InvalidOutput); }} {
+    , normalizeChannel_{{{"normalizeChannel0", "Channel 1", true},
+                         {"normalizeChannel1", "Channel 2", false},
+                         {"normalizeChannel2", "Channel 3", false},
+                         {"normalizeChannel3", "Channel 4", false}}}
+    , volumeNormalization_{[this]() { invalidate(InvalidationLevel::InvalidOutput); }} {
 
     addPorts(volumeInport_, volumeOutport_);
 
-    normalizeChannel1_.setVisible(false);
-    normalizeChannel2_.setVisible(false);
-    normalizeChannel3_.setVisible(false);
-
-    channels_.addProperties(normalizeChannel0_, normalizeChannel1_, normalizeChannel2_,
-                            normalizeChannel3_);
-
+    for (auto& p : normalizeChannel_) {
+        channels_.addProperty(p);
+    }
     addProperties(channels_);
-
-    volumeInport_.onChange([this]() {
-        if (volumeInport_.hasData()) {
-            auto volume = volumeInport_.getData();
-
-            const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
-            if (channels == static_cast<int>(channels_.getProperties().size())) return;
-
-            auto properties = channels_.getProperties();
-
-            dynamic_cast<BoolProperty*>(properties[0])->set(true);
-
-            for (int i = 1; i < 4; i++) {
-                auto boolProp = dynamic_cast<BoolProperty*>(properties[i]);
-                boolProp->set(i < channels);
-                boolProp->setVisible(i < channels);
-            }
-
-            volumeNormalization_.reset();
-        }
-    });
-
-    normalizeChannel0_.onChange(
-        [this]() { volumeNormalization_.setNormalizeChannel(0, normalizeChannel0_.get()); });
-    normalizeChannel1_.onChange(
-        [this]() { volumeNormalization_.setNormalizeChannel(1, normalizeChannel1_.get()); });
-    normalizeChannel2_.onChange(
-        [this]() { volumeNormalization_.setNormalizeChannel(2, normalizeChannel2_.get()); });
-    normalizeChannel3_.onChange(
-        [this]() { volumeNormalization_.setNormalizeChannel(3, normalizeChannel3_.get()); });
 }
 
 void VolumeNormalizationGLProcessor::process() {
-    auto inputVolume = volumeInport_.getData();
-    auto channelProperties = channels_.getProperties();
+    if (volumeInport_.isChanged() && volumeInport_.hasData()) {
+        auto volume = volumeInport_.getData();
 
-    bool apply = false;
-    for (size_t i{0}; i < channelProperties.size(); ++i) {
-        apply = apply || dynamic_cast<BoolProperty*>(channelProperties[i])->get();
+        const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
+        if (channels == static_cast<int>(channels_.getProperties().size())) return;
+
+        for (auto&& [index, p] : normalizeChannel_ | std::views::enumerate) {
+            p.set(index < channels);
+        }
+        volumeNormalization_.reset();
     }
+    for (auto&& [index, p] :
+         normalizeChannel_ | std::views::enumerate |
+             std::views::filter([](auto v) { return std::get<1>(v).isModified(); })) {
+        volumeNormalization_.setNormalizeChannel(index, p);
+    }
+
+    auto inputVolume = volumeInport_.getData();
+
     if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
         log::warn("Numeric type of input volume is not floating point.");
     }
 
-    if (!apply) {
-        volumeOutport_.setData(inputVolume);
-    } else {
+    if (std::ranges::any_of(normalizeChannel_, [](const auto& p) { return p.get(); })) {
         volumeOutport_.setData(volumeNormalization_.normalize(*inputVolume));
+    } else {
+        volumeOutport_.setData(inputVolume);
     }
 }
 

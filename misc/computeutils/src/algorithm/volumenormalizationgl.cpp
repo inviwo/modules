@@ -39,6 +39,8 @@
 #include <inviwo/core/datastructures/volume/volumeram.h>
 #include <inviwo/core/datastructures/volume/volumeramprecision.h>
 
+#include <fmt/base.h>
+
 namespace inviwo {
 
 VolumeNormalizationGL::VolumeNormalizationGL()
@@ -51,13 +53,8 @@ VolumeNormalizationGL::VolumeNormalizationGL()
 void VolumeNormalizationGL::setNormalizeChannel(const size_t channel, const bool normalize) {
     needsCompilation_ = true;
 
-    if (normalize) {
-        shader_.getShaderObject(ShaderType::Compute)
-            ->addShaderDefine(StrBuffer{"NORMALIZE_CHANNEL_{}", channel});
-    } else {
-        shader_.getShaderObject(ShaderType::Compute)
-            ->removeShaderDefine(StrBuffer{"NORMALIZE_CHANNEL_{}", channel});
-    }
+    shader_.getComputeShaderObject()->setShaderDefine(fmt::format("NORMALIZE_CHANNEL_{}", channel),
+                                                      normalize);
 }
 
 void VolumeNormalizationGL::setNormalizeChannels(bvec4 normalize) {

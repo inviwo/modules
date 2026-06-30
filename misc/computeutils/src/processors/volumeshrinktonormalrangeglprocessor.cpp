@@ -52,54 +52,39 @@ VolumeShrinkToNormalRangeGLProcessor::VolumeShrinkToNormalRangeGLProcessor()
     , volumeOutport_{"volumeOutport", "Shrunk volume"_help}
     , channels_{"channels", "Channels",
                 "Select those channels you wish to shrink to range [0 + offset, 1 + offset]"_help}
-    , shrinkChannel0_{"shrinkChannel0", "Channel 1", true}
-    , shrinkChannel1_{"shrinkChannel1", "Channel 2", false}
-    , shrinkChannel2_{"shrinkChannel2", "Channel 3", false}
-    , shrinkChannel3_{"shrinkChannel3", "Channel 4", false}
-    , volumeShrinkToNormalRangeGl_{[&]() { this->invalidate(InvalidationLevel::InvalidOutput); }} {
+    , shrinkChannel_{{{"shrinkChannel0", "Channel 1", true},
+                      {"shrinkChannel1", "Channel 2", false},
+                      {"shrinkChannel2", "Channel 3", false},
+                      {"shrinkChannel3", "Channel 4", false}}}
+    , volumeShrinkToNormalRangeGl_{[this]() { invalidate(InvalidationLevel::InvalidOutput); }} {
 
     addPorts(volumeInport_, volumeOutport_);
 
-    shrinkChannel1_.setVisible(false);
-    shrinkChannel2_.setVisible(false);
-    shrinkChannel3_.setVisible(false);
-
-    channels_.addProperties(shrinkChannel0_, shrinkChannel1_, shrinkChannel2_, shrinkChannel3_);
-
+    for (auto& p : shrinkChannel_) {
+        channels_.addProperty(p);
+    }
     addProperties(channels_);
-
-    volumeInport_.onChange([this]() {
-        if (volumeInport_.hasData()) {
-            auto volume = volumeInport_.getData();
-
-            const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
-            if (channels == static_cast<int>(channels_.getProperties().size())) return;
-
-            auto properties = channels_.getProperties();
-
-            dynamic_cast<BoolProperty*>(properties[0])->set(true);
-
-            for (int i = 1; i < 4; i++) {
-                auto boolProp = dynamic_cast<BoolProperty*>(properties[i]);
-                boolProp->set(i < channels);
-                boolProp->setVisible(i < channels);
-            }
-
-            volumeShrinkToNormalRangeGl_.reset();
-        }
-    });
-
-    shrinkChannel0_.onChange(
-        [this]() { volumeShrinkToNormalRangeGl_.setShrinkChannel(0, shrinkChannel0_.get()); });
-    shrinkChannel1_.onChange(
-        [this]() { volumeShrinkToNormalRangeGl_.setShrinkChannel(1, shrinkChannel1_.get()); });
-    shrinkChannel2_.onChange(
-        [this]() { volumeShrinkToNormalRangeGl_.setShrinkChannel(2, shrinkChannel2_.get()); });
-    shrinkChannel3_.onChange(
-        [this]() { volumeShrinkToNormalRangeGl_.setShrinkChannel(3, shrinkChannel3_.get()); });
 }
 
 void VolumeShrinkToNormalRangeGLProcessor::process() {
+    if (volumeInport_.isChanged() && volumeInport_.hasData()) {
+        auto volume = volumeInport_.getData();
+
+        const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
+        if (channels == static_cast<int>(channels_.getProperties().size())) return;
+
+        for (auto&& [index, p] : shrinkChannel_ | std::views::enumerate) {
+            p.set(index < channels);
+        }
+        volumeShrinkToNormalRangeGl_.reset();
+    }
+    for (auto&& [index, p] :
+         shrinkChannel_ | std::views::enumerate |
+             std::views::filter([](auto v) { return std::get<1>(v).isModified(); })) {
+        volumeShrinkToNormalRangeGl_.setShrinkChannel(index, p);
+    }
+
+
     auto inputVolume = volumeInport_.getData();
     auto channelProperties = channels_.getProperties();
 

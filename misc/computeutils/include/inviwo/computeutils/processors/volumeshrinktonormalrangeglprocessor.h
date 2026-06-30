@@ -36,6 +36,8 @@
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/computeutils/algorithm/volumeshrinktonormalrangegl.h>
 
+#include <array>
+
 namespace inviwo {
 
 class IVW_MODULE_COMPUTEUTILS_API VolumeShrinkToNormalRangeGLProcessor : public Processor {
@@ -53,10 +55,7 @@ private:
     VolumeOutport volumeOutport_;
 
     CompositeProperty channels_;
-    BoolProperty shrinkChannel0_;
-    BoolProperty shrinkChannel1_;
-    BoolProperty shrinkChannel2_;
-    BoolProperty shrinkChannel3_;
+    std::array<BoolProperty, 4> shrinkChannel_;
 
     VolumeShrinkToNormalRangeGL volumeShrinkToNormalRangeGl_;
 };

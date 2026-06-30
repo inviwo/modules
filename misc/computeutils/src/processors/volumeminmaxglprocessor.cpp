@@ -82,23 +82,19 @@ VolumeMinMaxGLProcessor::VolumeMinMaxGLProcessor()
     });
 
     addProperties(disregardingStatus_, disregardingRange_);
-
-    volumeInport_.onChange([this]() {
-        /*
-         * Here we call the volume reduction without any disregarding so we get the real min and max
-         * values.
-         */
-        const auto range = vec2{volumeMinMaxGl_.minmax(volumeInport_.getData())};
-
-        NetworkLock l;
-
-        disregardingRange_.setRangeMin(range.x);
-        disregardingRange_.setRangeMax(range.y);
-        disregardingRange_.set(range);
-    });
 }
 
 void VolumeMinMaxGLProcessor::process() {
+    if (volumeInport_.isChanged()) {
+        // Here we call the volume reduction without any disregarding so we get the real min and max
+        // values.
+        const NetworkLock l;        
+        const auto range = vec2{volumeMinMaxGl_.minmax(volumeInport_.getData())};
+        disregardingRange_.setRangeMin(range.x);
+        disregardingRange_.setRangeMax(range.y);
+        disregardingRange_.set(range);
+    }
+
     auto outVolume = std::shared_ptr<Volume>(volumeInport_.getData()->clone());
     outVolume->dataMap.dataRange = outVolume->dataMap.valueRange = volumeMinMaxGl_.minmax(
         volumeInport_.getData(), disregardingStatus_.get(), disregardingRange_.get());
