@@ -67,7 +67,16 @@ jobs:
             targets: 'all'
             installer: 'inviwo-installer-linux'
             artifact: 'build/inviwo-v*.AppImage'
-            run: QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
+            run: |
+              ulimit -c
+              ulimit -c unlimited
+              QT_QPA_PLATFORM=offscreen ./inviwo --logconsole --quit
+              if [ -f ./core ]; then
+                echo "### core file in current dir"
+                gdb ./inviwo core --ex bt --ex quit
+              elif [ -f /var/crash/core ]; then
+                gdb ./inviwo /var/crash/core --ex bt --ex quit
+              fi
 
           # set triplets
           - system: 'windows'

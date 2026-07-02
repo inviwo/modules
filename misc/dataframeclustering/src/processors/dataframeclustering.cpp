@@ -112,11 +112,13 @@ DataFrameClustering::DataFrameClustering()
         method_, [](const auto& p) { return p.getSelectedIdentifier() == "spectral"; });
 
     method_.set("agglo");
-
-    dataFrame_.onChange([&]() { onDataFrameChange(); });
 }
 
 void DataFrameClustering::process() {
+    if (dataFrame_.isChanged()) {
+        onDataFrameChange();
+    }
+
     pybind11::list cols;
     for (auto& p : columns_.getPropertiesByType<BoolProperty>()) {
         if (p->getVisible() && p->get()) {
