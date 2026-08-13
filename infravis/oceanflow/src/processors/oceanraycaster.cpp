@@ -37,7 +37,7 @@
 #include <modules/opengl/shader/shader.h>
 #include <modules/opengl/shader/shaderutils.h>
 
-#include <fmt/core.h>
+#include <fmt/base.h>
 #include <fmt/format.h>
 
 namespace inviwo {
