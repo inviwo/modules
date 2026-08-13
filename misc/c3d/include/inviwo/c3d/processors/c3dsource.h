@@ -60,7 +60,7 @@ struct C3DSequenceSourceConf {
 
     struct Info {};
     static void add(Info& info, auto& processor) {}
-    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {}
+    static void updateForNew(Info&, const Type&, util::OverwriteState) {}
 };
 }  // namespace detail
 
