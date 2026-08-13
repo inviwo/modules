@@ -90,14 +90,48 @@ bool VtkInport::canConnectTo(const Port* port) const {
     }
     return false;
 }
+
+void VtkInport::connectTo(Outport* outport) {
+    if (!outport) return;
+    if (isConnectedTo(outport)) return;
+
+    if (auto* vtkOutport = dynamic_cast<VtkOutport*>(outport)) {
+        if (getNumberOfConnections() + 1 > getMaxNumberOfConnections()) {
+            throw Exception("Trying to connect to a full port.");
+        }
+        outports_.push_back(vtkOutport);
+
+        doConnectTo(outport);
+    } else {
+        throw Exception("Trying to connect incompatible ports.");
+    }
+}
+void VtkInport::disconnectFrom(Outport* outport) {
+    if (auto it = std::ranges::find_if(outports_, [&](VtkOutport* p) { return p == outport; });
+        it != outports_.end()) {
+
+        outports_.erase(it);
+        doDisconnectFrom(outport);
+    }
+}
+
+Outport* VtkInport::getConnectedOutport(size_t i) const {
+    if (i < outports_.size()) {
+        return outports_[i];
+    } else {
+        return nullptr;
+    }
+}
+
 size_t VtkInport::getMaxNumberOfConnections() const {
     return repeatable_ == Repeatable::Yes ? std::numeric_limits<size_t>::max() : 1;
 }
 
+size_t VtkInport::getNumberOfConnections() const { return outports_.size(); }
+
 vtkDataObject* VtkInport::getData(size_t i) const {
-    if (i < connectedOutports_.size()) {
-        // NOLINTNEXTLINE(cppcoreguidelines-pro-type-static-cast-downcast)
-        return static_cast<VtkOutport*>(connectedOutports_[i])->getData();
+    if (i < outports_.size()) {
+        return outports_[i]->getData();
     }
     return nullptr;
 }
@@ -154,7 +188,7 @@ int VtkInport::getTypeId() const { return typeId_; }
 void VtkInport::setTypeId(int typeId) {
     typeId_ = typeId;
     std::vector<Outport*> portsToRemove =
-        util::copy_if(connectedOutports_, [&](auto port) { return !canConnectTo(port); });
+        util::copy_if(outports_, [&](auto port) { return !canConnectTo(port); });
     for (auto outport : portsToRemove) {
         getProcessor()->getNetwork()->removeConnection(outport, this);
     }
