@@ -80,15 +80,6 @@ C3DToMesh::C3DToMesh()
 
     addPorts(inport_, bnl_, outport_);
     addProperties(frame_, markerRadius_, skipEmpty_, enableTooltips_);
-
-    inport_.onChange([this]() {
-        if (inport_.hasData()) {
-            const auto& header = inport_.getData()->header();
-            const size_t nbFrames = header.nbFrames();
-            const size_t maxFrame = nbFrames > 0 ? nbFrames - 1 : 0;
-            frame_.setRangeMax(maxFrame);
-        }
-    });
 }
 
 void C3DToMesh::process() {
@@ -98,6 +89,9 @@ void C3DToMesh::process() {
 
     const size_t nbFrames = header.nbFrames();
     const size_t nbPoints = header.nb3dPoints();
+
+    const size_t maxFrame = nbFrames > 0 ? nbFrames - 1 : 0;
+    frame_.setRangeMax(maxFrame);
 
     if (nbFrames == 0 || nbPoints == 0) {
         outport_.setData(nullptr);
