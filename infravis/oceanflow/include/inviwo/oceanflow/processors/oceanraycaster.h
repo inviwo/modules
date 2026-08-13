@@ -45,11 +45,12 @@
 
 namespace inviwo {
 
-class IVW_MODULE_BASEGL_API NemoVolumeComponent : public ShaderComponent {
+class IVW_MODULE_OCEANFLOW_API NemoVolumeComponent : public ShaderComponent {
 public:
     enum class Gradients { None, Single };
     explicit NemoVolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
                                  Document help = {});
+    virtual ~NemoVolumeComponent();
 
     virtual std::string_view getName() const override;
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
