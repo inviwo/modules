@@ -187,7 +187,7 @@ int VtkInport::getTypeId() const { return typeId_; }
 
 void VtkInport::setTypeId(int typeId) {
     typeId_ = typeId;
-    std::vector<Outport*> portsToRemove =
+    std::vector<VtkOutport*> portsToRemove =
         util::copy_if(outports_, [&](auto port) { return !canConnectTo(port); });
     for (auto outport : portsToRemove) {
         getProcessor()->getNetwork()->removeConnection(outport, this);
