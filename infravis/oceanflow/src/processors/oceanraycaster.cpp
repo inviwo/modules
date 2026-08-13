@@ -48,6 +48,8 @@ NemoVolumeComponent::NemoVolumeComponent(std::string_view name, Gradients gradie
     , gradients{gradients}
     , zZoom{"zZoom", "Z Zoom factor", util::ordinalScale(1.0f)} {}
 
+NemoVolumeComponent::~NemoVolumeComponent() = default;
+
 std::string_view NemoVolumeComponent::getName() const { return volumePort.getIdentifier(); }
 
 void NemoVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
