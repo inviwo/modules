@@ -29,10 +29,15 @@
 #pragma once
 
 #include <inviwo/c3d/c3dmoduledefine.h>
+
 #include <inviwo/core/processors/processor.h>
+
 #include <modules/base/processors/datasource.h>
+#include <modules/base/processors/sequencesource.h>
 
 #include <inviwo/c3d/ports/c3dport.h>
+#include <inviwo/c3d/datastructures/c3ddata.h>
+#include <inviwo/c3d/datastructures/c3ddatatraits.h>
 
 namespace inviwo {
 
@@ -43,5 +48,25 @@ public:
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
 };
+
+namespace detail {
+struct C3DSequenceSourceConf {
+    using Type = ezc3d::c3d;
+    using Sequence = DataSequence<Type>;
+    using Outport = DataOutport<DataSequence<Type>>;
+    static constexpr auto name = DataTraits<Type>::dataName();
+    static constexpr auto plural = "s";
+    static constexpr size_t dim = 3;
+
+    struct Info {};
+    static void add(Info& info, auto& processor) {}
+    static void updateForNew(Info& info, const Type& data, util::OverwriteState overwrite) {}
+};
+}  // namespace detail
+
+/**
+ * @brief Loads a sequence of Layers
+ */
+using C3DSequenceSource = SequenceSource<detail::C3DSequenceSourceConf>;
 
 }  // namespace inviwo
