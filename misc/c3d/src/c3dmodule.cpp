@@ -44,6 +44,7 @@ C3DModule::C3DModule(InviwoApplication* app) : InviwoModule(app, "C3D") {
     registerProcessor<C3DAveragedPositions>();
     registerProcessor<C3DPointAlignment>();
     registerProcessor<C3DSource>();
+    registerProcessor<C3DSequenceSource>();
     registerProcessor<C3DToDataFrame>();
     registerProcessor<C3DToMesh>();
     registerProcessor<C3DTransformPoints>();

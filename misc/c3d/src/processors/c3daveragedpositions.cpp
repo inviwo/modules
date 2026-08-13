@@ -116,15 +116,6 @@ C3DAveragedPositions::C3DAveragedPositions()
 
     addPorts(inport_, meshOutport_, positionsOutport_, namesOutport_);
     addProperties(frame_, markerRadius_, skipEmpty_, lines_, triangles_);
-
-    inport_.onChange([this]() {
-        if (inport_.hasData()) {
-            const auto& header = inport_.getData()->header();
-            const size_t nbFrames = header.nbFrames();
-            const size_t maxFrame = nbFrames > 0 ? nbFrames - 1 : 0;
-            frame_.setRangeMax(maxFrame);
-        }
-    });
 }
 
 void C3DAveragedPositions::process() {
@@ -132,6 +123,9 @@ void C3DAveragedPositions::process() {
     const auto& header = c3d.header();
     const size_t nbFrames = header.nbFrames();
     const size_t nbPoints = header.nb3dPoints();
+
+    const size_t maxFrame = nbFrames > 0 ? nbFrames - 1 : 0;
+    frame_.setRangeMax(maxFrame);
 
     if (nbFrames == 0 || nbPoints == 0) {
         meshOutport_.clear();
