@@ -41,7 +41,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_C3D_API C3DSource : public DataSource<ezc3d::c3d, C3DDataOutport> {
+class IVW_MODULE_C3D_API C3DSource : public DataSource<C3D, C3DDataOutport> {
 public:
     explicit C3DSource(InviwoApplication* app, const std::filesystem::path& file = {});
 
@@ -51,7 +51,7 @@ public:
 
 namespace detail {
 struct C3DSequenceSourceConf {
-    using Type = ezc3d::c3d;
+    using Type = C3D;
     using Sequence = DataSequence<Type>;
     using Outport = DataOutport<DataSequence<Type>>;
     static constexpr auto name = DataTraits<Type>::dataName();

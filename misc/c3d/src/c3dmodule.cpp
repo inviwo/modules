@@ -44,22 +44,14 @@
 
 namespace inviwo {
 
-namespace {
-
-struct C3DHelper : ezc3d::c3d {
-    const std::string& file() const { return _filePath; }
-};
-
-}  // namespace
-
 template <>
-struct SequenceToDataFrameTraits<ezc3d::c3d> {
+struct SequenceToDataFrameTraits<C3D> {
     static auto header(DataFrame& df) {
         return std::tuple{df.addColumn<int>("Frames"), df.addColumn<int>("Points"),
                           df.addColumn<int>("Analogs"), df.addColumn<float>("Frame Rate"),
                           df.addCategoricalColumn("Filename")};
     }
-    static void add(const ezc3d::c3d& c3d, auto& cols) {
+    static void add(const C3D& c3d, auto& cols) {
         auto& [frames, points, analogs, frameRate, file] = cols;
 
         const auto& header = c3d.header();
@@ -67,7 +59,7 @@ struct SequenceToDataFrameTraits<ezc3d::c3d> {
         points->add(static_cast<int>(header.nb3dPoints()));
         analogs->add(static_cast<int>(header.nbAnalogs()));
         frameRate->add(header.frameRate());
-        file->add(static_cast<const C3DHelper*>(&c3d)->file());
+        file->add(c3d.file());
     }
 };
 
@@ -79,10 +71,10 @@ C3DModule::C3DModule(InviwoApplication* app) : InviwoModule(app, "C3D") {
     registerProcessor<C3DToDataFrame>();
     registerProcessor<C3DToMesh>();
     registerProcessor<C3DTransformPoints>();
-    registerProcessor<SequenceBrush<ezc3d::c3d>>();
-    registerProcessor<SequenceToDataFrame<ezc3d::c3d>>();
+    registerProcessor<SequenceBrush<C3D>>();
+    registerProcessor<SequenceToDataFrame<C3D>>();
 
-    registerDefaultsForDataType<ezc3d::c3d>();
+    registerDefaultsForDataType<C3D>();
 
     registerDataReader(std::make_unique<C3DReader>());
 }

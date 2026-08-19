@@ -44,6 +44,6 @@ const ProcessorInfo C3DSource::processorInfo_{
 const ProcessorInfo& C3DSource::getProcessorInfo() const { return processorInfo_; }
 
 C3DSource::C3DSource(InviwoApplication* app, const std::filesystem::path& file)
-    : DataSource<ezc3d::c3d, C3DDataOutport>(util::getDataReaderFactory(app), file, "c3ddata") {}
+    : DataSource<C3D, C3DDataOutport>(util::getDataReaderFactory(app), file, "c3ddata") {}
 
 }  // namespace inviwo

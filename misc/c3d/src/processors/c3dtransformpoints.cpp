@@ -96,7 +96,7 @@ void C3DTransformPoints::process() {
         }
     }
 
-    auto dst = std::make_shared<ezc3d::c3d>();
+    auto dst = std::make_shared<C3D>();
     const auto& header = src.header();
     const size_t nbFrames = header.nbFrames();
     const size_t nbPoints = header.nb3dPoints();
