@@ -78,7 +78,7 @@ private:
     BoolProperty enableTooltips_;
     PickingMapper picking_;
 
-    std::shared_ptr<const ezc3d::c3d> data_;
+    std::shared_ptr<const C3D> data_;
 };
 
 }  // namespace inviwo
