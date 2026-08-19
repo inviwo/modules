@@ -33,7 +33,7 @@
 
 namespace inviwo {
 
-Document DataTraits<ezc3d::c3d>::info(const ezc3d::c3d& data) {
+Document DataTraits<C3D>::info(const C3D& data) {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;
     Document doc;

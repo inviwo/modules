@@ -43,7 +43,7 @@ namespace inviwo {
  * @see https://www.c3d.org
  * @see https://github.com/pyomeca/ezc3d
  */
-class IVW_MODULE_C3D_API C3DReader : public DataReaderType<ezc3d::c3d> {
+class IVW_MODULE_C3D_API C3DReader : public DataReaderType<C3D> {
 public:
     C3DReader();
     C3DReader(const C3DReader&) = default;
@@ -52,9 +52,9 @@ public:
     C3DReader& operator=(C3DReader&&) noexcept = default;
     virtual C3DReader* clone() const override;
     virtual ~C3DReader() = default;
-    using DataReaderType<ezc3d::c3d>::readData;
+    using DataReaderType<C3D>::readData;
 
-    virtual std::shared_ptr<ezc3d::c3d> readData(const std::filesystem::path& filePath) override;
+    virtual std::shared_ptr<C3D> readData(const std::filesystem::path& filePath) override;
 };
 
 }  // namespace inviwo
