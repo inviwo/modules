@@ -34,7 +34,108 @@
 #include <ezc3d/Parameters.h>
 #include <ezc3d/Data.h>
 
+#include <ezc3d/AnalogsInfo.h>
+#include <ezc3d/PointsInfo.h>
+#include <ezc3d/RotationsInfo.h>
+
+#include <fmt/std.h>
+
 namespace inviwo {
+
+C3D::C3D(const std::filesystem::path& path, Options options) : ezc3d::c3d{} {
+    _filePath = path.generic_string();
+
+    std::fstream stream(path, std::ios::in | std::ios::binary);
+    c_float = std::vector<char>(m_nByteToRead_float + 1);
+    c_float_tp = std::vector<char>(m_nByteToRead_float + 1);
+    c_int = std::vector<char>(m_nByteToReadMax_int + 1);
+    c_int_tp = std::vector<char>(m_nByteToReadMax_int + 1);
+
+    if (!stream.is_open()) {
+        throw std::ios_base::failure("The c3d file could not be opened, please verify the path");
+    }
+
+    // Read all the section
+    _header = std::make_shared<ezc3d::Header>(*this, stream);
+    _parameters = std::make_shared<ezc3d::ParametersNS::Parameters>(*this, stream);
+
+    // header may be inconsistent with the parameters, so it must be
+    // update to make sure sizes are consistent
+    updateHeader();
+
+    // Now read the data
+    _data = std::make_shared<ezc3d::DataNS::Data>();
+
+    // This is a copy of ezc3d::DataNS::Data::Data(ezc3d::c3d &c3d, std::fstream &file)
+    // With some changes to be able to skip analogs for example
+    {
+        // Firstly move the pointer to the data start position
+        stream.seekg(static_cast<int>(_header->dataStart() - 1) * 512, std::ios::beg);
+
+        // Read the data
+        ezc3d::DataNS::Points3dNS::Info pointsInfo{*this};
+        ezc3d::DataNS::AnalogsNS::Info analogsInfo{*this};
+        ezc3d::DataNS::RotationNS::Info rotationsInfo{*this};
+
+        size_t nbFrames = _header->nbFrames();
+        if (nbFrames == 0xFFFF && !_header->hasRotationalData()) {
+            // This is a special case to account for Vicon files which don't provide the
+            // actual number of frames in the header nor in the parameters when the
+            // number of frames is larger than 65535. We need to make sure the
+            // rotational data are not present in the file after the points and analogs
+            // data in order to use "all-of-file" (nbFrames = -1) reading
+            nbFrames = -1;
+        }
+
+        for (size_t j = 0; j < nbFrames; ++j) {
+            ezc3d::DataNS::Frame f;
+            // Read point 3d
+            f.add(ezc3d::DataNS::Points3dNS::Points(*this, stream, pointsInfo));
+
+            // Read analogs
+            if (options.readAnalogs) {
+                f.add(ezc3d::DataNS::AnalogsNS::Analogs(*this, stream, analogsInfo));
+            } else {
+                stream.seekg(sizeof(float) * _header->nbAnalogByFrame() * _header->nbAnalogs(),
+                             std::ios::cur);
+            }
+            // If we ran out of space, then leave. The reason we test here is because
+            // is set after failing, resulting in one extra frame added if this if
+            // is after the push_back
+            if (stream.eof()) break;
+
+            _data->frame(f);
+        }
+
+        // Read the rotation data
+        if (_header->hasRotationalData() && options.readRotations) {
+            // Prepare the reading
+
+            // If the max length of the file is smaller than the data start, then there
+            // is no data
+            std::streampos fileSize = stream.seekg(0, std::ios::end).tellg();
+            int targetPos(static_cast<int>(rotationsInfo.dataStart() - 1) * 512);
+            if (fileSize < targetPos) {
+                return;
+            }
+            stream.seekg(targetPos, std::ios::beg);
+
+            for (size_t i = 0; i < _header->nbFrames(); ++i) {
+                if (stream.eof()) break;
+
+                _data->frame(i).add(
+                    ezc3d::DataNS::RotationNS::Rotations(*this, stream, rotationsInfo));
+            }
+        }
+    }
+
+    // Parameters and header may be inconsistent with data,
+    // so reprocess them if needed
+    updateParameters();
+
+    // Close the file
+    stream.close();
+}
 
 ezc3d::DataNS::Points3dNS::Points copyPoints(const ezc3d::DataNS::Frame& srcFrame) {
     ezc3d::DataNS::Points3dNS::Points pts;

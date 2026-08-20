@@ -45,8 +45,27 @@ C3DReader* C3DReader::clone() const { return new C3DReader(*this); }
 std::shared_ptr<C3D> C3DReader::readData(const std::filesystem::path& filePath) {
     const auto localPath = downloadAndCacheIfUrl(filePath);
     checkExists(localPath);
+    return std::make_shared<C3D>(localPath, opts);
+}
 
-    return std::make_shared<C3D>(localPath.generic_string());
+bool C3DReader::setOption(std::string_view key, std::any value) {
+    if (auto* readAnalogs = std::any_cast<bool>(&value); readAnalogs && key == "ReadAnalogs") {
+        opts.readAnalogs = *readAnalogs;
+        return true;
+    } else if (auto* readRotations = std::any_cast<bool>(&value);
+               readRotations && key == "ReadRotations") {
+        opts.readRotations = *readRotations;
+        return true;
+    }
+    return false;
+}
+std::any C3DReader::getOption(std::string_view key) {
+    if (key == "ReadAnalogs") {
+        return opts.readAnalogs;
+    } else if (key == "ReadRotations") {
+        return opts.readAnalogs;
+    }
+    return {};
 }
 
 }  // namespace inviwo
