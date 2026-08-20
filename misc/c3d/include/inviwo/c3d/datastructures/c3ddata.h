@@ -41,6 +41,13 @@ class IVW_MODULE_C3D_API C3D : public ezc3d::c3d {
 public:
     using ezc3d::c3d::c3d;
 
+    struct Options {
+        bool readAnalogs = true;
+        bool readRotations = true;
+    };
+
+    C3D(const std::filesystem::path& path, Options options);
+
     C3D(const C3D& rhs) : ezc3d::c3d{static_cast<const ezc3d::c3d&>(rhs).clone()} {}
     C3D(C3D&&) = default;
 

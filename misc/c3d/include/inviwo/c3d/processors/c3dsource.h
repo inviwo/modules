@@ -31,6 +31,7 @@
 #include <inviwo/c3d/c3dmoduledefine.h>
 
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
 
 #include <modules/base/processors/datasource.h>
 #include <modules/base/processors/sequencesource.h>
@@ -47,6 +48,11 @@ public:
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+protected:
+    BoolProperty readAnalogs_;
+    BoolProperty readRotations_;
+    virtual void configureReader(DataReader& reader) override;
 };
 
 namespace detail {
@@ -58,9 +64,22 @@ struct C3DSequenceSourceConf {
     static constexpr auto plural = "s";
     static constexpr size_t dim = 3;
 
-    struct Info {};
-    static void add(Info& info, auto& processor) {}
+    struct Info {
+        BoolProperty readAnalogs{"readAnalogs", "Read Analogs", true};
+        BoolProperty readRotations{"readRotations", "Read Rotations", true};
+    };
+    static void add(Info& info, auto& processor) {
+        processor.addProperties(info.readAnalogs, info.readRotations);
+    }
     static void updateForNew(Info&, const Type&, util::OverwriteState) {}
+
+    static auto getReaderConfig(Info& info) -> std::function<void(DataReader&)> {
+        return [readAnalogs = info.readAnalogs.get(),
+                readRotations = info.readRotations.get()](DataReader& reader) {
+            reader.setOption("ReadAnalogs", readAnalogs);
+            reader.setOption("ReadRotations", readRotations);
+        };
+    }
 };
 }  // namespace detail
 

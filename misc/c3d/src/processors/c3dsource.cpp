@@ -44,6 +44,16 @@ const ProcessorInfo C3DSource::processorInfo_{
 const ProcessorInfo& C3DSource::getProcessorInfo() const { return processorInfo_; }
 
 C3DSource::C3DSource(InviwoApplication* app, const std::filesystem::path& file)
-    : DataSource<C3D, C3DDataOutport>(util::getDataReaderFactory(app), file, "c3ddata") {}
+    : DataSource<C3D, C3DDataOutport>(util::getDataReaderFactory(app), file, "c3ddata")
+    , readAnalogs_{"readAnalogs", "Read Analogs", true}
+    , readRotations_{"readRotations", "Read Rotations", true} {
+
+    addProperties(readAnalogs_, readRotations_);
+}
+
+void C3DSource::configureReader(DataReader& reader) {
+    reader.setOption("ReadAnalogs", readAnalogs_.get());
+    reader.setOption("ReadRotations", readRotations_.get());
+}
 
 }  // namespace inviwo

@@ -55,6 +55,12 @@ public:
     using DataReaderType<C3D>::readData;
 
     virtual std::shared_ptr<C3D> readData(const std::filesystem::path& filePath) override;
+
+    virtual bool setOption(std::string_view key, std::any value) override;
+    virtual std::any getOption(std::string_view key) override;
+
+private:
+    C3D::Options opts;
 };
 
 }  // namespace inviwo
