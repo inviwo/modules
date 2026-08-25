@@ -30,7 +30,7 @@
 #pragma once
 
 #include <inviwo/c3d/c3dmoduledefine.h>
-#include <inviwo/core/processors/processor.h>
+#include <inviwo/core/processors/poolprocessor.h>
 #include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/properties/boolcompositeproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
@@ -47,7 +47,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_C3D_API C3DTransformPoints : public Processor {
+class IVW_MODULE_C3D_API C3DTransformPoints : public PoolProcessor {
 public:
     C3DTransformPoints();
 
