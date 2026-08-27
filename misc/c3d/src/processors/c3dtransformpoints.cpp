@@ -103,54 +103,35 @@ void C3DTransformPoints::process() {
             }
         }
 
-        auto dst = std::make_shared<C3D>();
-        const auto& header = src->header();
+        auto dst = std::shared_ptr<C3D>(src->clone());
+
+        const auto& header = dst->header();
         const size_t nbFrames = header.nbFrames();
         const size_t nbPoints = header.nb3dPoints();
 
-        const auto& srcParams = src->parameters();
-        for (size_t g = 0; g < srcParams.nbGroups(); ++g) {
-            const auto& group = srcParams.group(g);
-            for (size_t p = 0; p < group.nbParameters(); ++p) {
-                dst->parameter(group.name(), group.parameter(p));
-            }
-        }
-
         for (size_t f = 0; f < nbFrames; ++f) {
             if (f % 100 == 0) progress(f, nbFrames);
-            const auto& srcFrame = src->data().frame(f);
-            const auto& srcPoints = srcFrame.points();
+            auto& frame = dst->data().frame(f);
+            auto& points = frame.points();
             const auto basis = [&]() {
                 if (refGroup) {
-                    const auto a = toGLM(srcPoints.point(refIndices[0]));
-                    const auto b = toGLM(srcPoints.point(refIndices[1]));
-                    const auto c = toGLM(srcPoints.point(refIndices[2]));
-                    const auto d = toGLM(srcPoints.point(refIndices[3]));
+                    const auto a = toGLM(points.point(refIndices[0]));
+                    const auto b = toGLM(points.point(refIndices[1]));
+                    const auto c = toGLM(points.point(refIndices[2]));
+                    const auto d = toGLM(points.point(refIndices[3]));
                     return glm::inverse(basisEstimation(a, b, c, d));
                 } else {
                     return dmat4{1.0};
                 }
             }();
-            ezc3d::DataNS::Frame dstFrame;
 
-            ezc3d::DataNS::Points3dNS::Points pts{nbPoints};
             for (size_t p = 0; p < nbPoints; ++p) {
-                const auto& sp = srcPoints.point(p);
-                const auto point = dvec3{dmat4{transform} * basis * dvec4{toGLM(sp), 1.0}};
-
-                auto& pt = pts.point(p);
-                pt.set(point.x, point.y, point.z);
-                pt.residual(sp.residual());
-                pt.cameraMask(sp.cameraMask());
+                auto& point = points.point(p);
+                const auto newPos = dvec3{dmat4{transform} * basis * dvec4{toGLM(point), 1.0}};
+                point.set(newPos.x, newPos.y, newPos.z);
             }
-            dstFrame.add(pts);
-
-            copyAnalogs(srcFrame, dstFrame);
-            copyRotations(srcFrame, dstFrame);
-
-            dst->frame(dstFrame);
-            progress(1.0);
         }
+        progress(1.0);
         return dst;
     };
 

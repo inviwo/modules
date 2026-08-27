@@ -62,6 +62,9 @@ public:
     const std::string& file() const { return _filePath; }
 
     C3D* clone() const { return new C3D{*this}; }
+
+    ezc3d::DataNS::Data& data() { return *_data; }
+    const ezc3d::DataNS::Data& data() const { return *_data; }
 };
 
 /**
