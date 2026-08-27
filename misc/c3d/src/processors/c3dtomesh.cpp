@@ -62,7 +62,10 @@ const ProcessorInfo& C3DToMesh::getProcessorInfo() const { return processorInfo_
 C3DToMesh::C3DToMesh()
     : Processor{}
     , inport_{"inport", ""_help}
-    , bnl_{"bnl"}
+    , bnl_{"bnl",
+           {{BrushingModification::Filtered | BrushingModification::Selected |
+                 BrushingModification::Highlighted,
+             InvalidationLevel::Valid}}}
     , outport_{"outport", ""_help}
     , frame_{"frame", "Frame Range", "Range of frame indices to include in the mesh"_help, 0, 0, 0,
              0}
