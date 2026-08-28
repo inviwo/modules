@@ -41,6 +41,7 @@
 #include <numeric>
 
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 
 namespace inviwo {
 
@@ -79,10 +80,14 @@ C3DToMesh::C3DToMesh()
                  "Skip markers with negative residuals (indicating invalid data)"_help, true}
     , enableTooltips_{"enableTooltips", "Enable Tooltips",
                       "Show point name, frame, time, and position on hover"_help, true}
+
+    , pointSelection_{"pointSelection", "PointSelection",
+                      std::make_unique<StringProperty>("point", "Point")}
+
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
 
     addPorts(inport_, bnl_, outport_);
-    addProperties(frame_, markerRadius_, skipEmpty_, enableTooltips_);
+    addProperties(frame_, markerRadius_, skipEmpty_, enableTooltips_, pointSelection_);
 }
 
 void C3DToMesh::process() {
@@ -99,6 +104,22 @@ void C3DToMesh::process() {
     if (nbFrames == 0 || nbPoints == 0) {
         outport_.setData(nullptr);
         return;
+    }
+
+    std::vector<size_t> pointIndices;
+    if (pointSelection_.empty()) {
+        pointIndices.assign_range(std::views::iota(0uz, nbPoints));
+    } else {
+        for (const auto* prop : pointSelection_) {
+            const auto* sp = static_cast<const StringProperty*>(prop);
+            try {
+                pointIndices.emplace_back(c3d.pointIdx(sp->get()));
+            } catch (const std::invalid_argument&) {
+                throw Exception{SourceContext{},
+                                "Point name {} does not exist, Available names are {}", sp->get(),
+                                fmt::join(c3d.pointNames(), ", ")};
+            }
+        }
     }
 
     const size_t startFrame = std::min(frame_.getStart(), nbFrames - 1);
@@ -121,7 +142,7 @@ void C3DToMesh::process() {
     for (size_t frameIdx = startFrame; frameIdx <= endFrame; ++frameIdx) {
         const auto& framePoints = c3d.data().frame(frameIdx).points();
 
-        for (size_t pointIdx = 0; pointIdx < nbPoints; ++pointIdx) {
+        for (auto pointIdx : pointIndices) {
             const auto& point = framePoints.point(pointIdx);
 
             if (skipEmpty_ && point.residual() < 0.0) {
