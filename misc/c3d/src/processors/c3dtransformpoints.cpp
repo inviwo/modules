@@ -53,7 +53,7 @@ const ProcessorInfo C3DTransformPoints::processorInfo_{
 const ProcessorInfo& C3DTransformPoints::getProcessorInfo() const { return processorInfo_; }
 
 C3DTransformPoints::C3DTransformPoints()
-    : Processor{}
+    : PoolProcessor{}
     , inport_{"inport", ""_help}
     , outport_{"outport", ""_help}
     , refs_{{{"ref1", "Reference 1", "phantom:skull1"},
@@ -87,64 +87,58 @@ dvec3 toGLM(const ezc3d::DataNS::Points3dNS::Point& p) { return dvec3{p.x(), p.y
 }  // namespace
 
 void C3DTransformPoints::process() {
-    const auto& src = *inport_.getData();
 
-    std::array<size_t, refPoints> refIndices{};
-    if (refGroup_.isChecked()) {
-        for (auto&& [ref, ind] : std::views::zip(refs_, refIndices)) {
-            ind = src.pointIdx(ref.get());
-        }
-    }
+    const auto calc = [src = inport_.getData(), refGroup = refGroup_.isChecked(),
+                       transform = transforms_.getMatrix(),
+                       refs = refs_ | std::views::transform([](auto& p) { return p.get(); }) |
+                              std::ranges::to<std::vector>()](
+                          pool::Stop stop, pool::Progress progress) -> std::shared_ptr<C3D> {
+        if (stop) return {};
+        progress(0.0);
 
-    auto dst = std::make_shared<ezc3d::c3d>();
-    const auto& header = src.header();
-    const size_t nbFrames = header.nbFrames();
-    const size_t nbPoints = header.nb3dPoints();
-
-    const auto& srcParams = src.parameters();
-    for (size_t g = 0; g < srcParams.nbGroups(); ++g) {
-        const auto& group = srcParams.group(g);
-        for (size_t p = 0; p < group.nbParameters(); ++p) {
-            dst->parameter(group.name(), group.parameter(p));
-        }
-    }
-
-    for (size_t f = 0; f < nbFrames; ++f) {
-        const auto& srcFrame = src.data().frame(f);
-        const auto& srcPoints = srcFrame.points();
-        const auto basis = [&]() {
-            if (refGroup_.isChecked()) {
-                const auto a = toGLM(srcPoints.point(refIndices[0]));
-                const auto b = toGLM(srcPoints.point(refIndices[1]));
-                const auto c = toGLM(srcPoints.point(refIndices[2]));
-                const auto d = toGLM(srcPoints.point(refIndices[3]));
-                return glm::inverse(basisEstimation(a, b, c, d));
-            } else {
-                return dmat4{1.0};
+        std::array<size_t, refPoints> refIndices{};
+        if (refGroup) {
+            for (auto&& [ref, ind] : std::views::zip(refs, refIndices)) {
+                ind = src->pointIdx(ref);
             }
-        }();
-        ezc3d::DataNS::Frame dstFrame;
-
-        ezc3d::DataNS::Points3dNS::Points pts;
-        for (size_t p = 0; p < nbPoints; ++p) {
-            const auto& sp = srcPoints.point(p);
-            const auto point =
-                dvec3{dmat4{transforms_.getMatrix()} * basis * dvec4{toGLM(sp), 1.0}};
-
-            ezc3d::DataNS::Points3dNS::Point pt;
-            pt.set(point.x, point.y, point.z, sp.residual());
-            pt.cameraMask(sp.cameraMask());
-            pts.point(pt);
         }
-        dstFrame.add(pts);
 
-        copyAnalogs(srcFrame, dstFrame);
-        copyRotations(srcFrame, dstFrame);
+        auto dst = std::shared_ptr<C3D>(src->clone());
 
-        dst->frame(dstFrame);
-    }
+        const auto& header = dst->header();
+        const size_t nbFrames = header.nbFrames();
+        const size_t nbPoints = header.nb3dPoints();
 
-    outport_.setData(dst);
+        for (size_t f = 0; f < nbFrames; ++f) {
+            if (f % 100 == 0) progress(f, nbFrames);
+            auto& frame = dst->data().frame(f);
+            auto& points = frame.points();
+            const auto basis = [&]() {
+                if (refGroup) {
+                    const auto a = toGLM(points.point(refIndices[0]));
+                    const auto b = toGLM(points.point(refIndices[1]));
+                    const auto c = toGLM(points.point(refIndices[2]));
+                    const auto d = toGLM(points.point(refIndices[3]));
+                    return glm::inverse(basisEstimation(a, b, c, d));
+                } else {
+                    return dmat4{1.0};
+                }
+            }();
+
+            for (size_t p = 0; p < nbPoints; ++p) {
+                auto& point = points.point(p);
+                const auto newPos = dvec3{dmat4{transform} * basis * dvec4{toGLM(point), 1.0}};
+                point.set(newPos.x, newPos.y, newPos.z);
+            }
+        }
+        progress(1.0);
+        return dst;
+    };
+
+    dispatchOne(calc, [this](std::shared_ptr<C3D> data) {
+        outport_.setData(std::move(data));
+        newResults();
+    });
 }
 
 }  // namespace inviwo

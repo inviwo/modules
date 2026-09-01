@@ -29,19 +29,63 @@
 #pragma once
 
 #include <inviwo/c3d/c3dmoduledefine.h>
+
 #include <inviwo/core/processors/processor.h>
+#include <inviwo/core/properties/boolproperty.h>
+
 #include <modules/base/processors/datasource.h>
+#include <modules/base/processors/sequencesource.h>
 
 #include <inviwo/c3d/ports/c3dport.h>
+#include <inviwo/c3d/datastructures/c3ddata.h>
+#include <inviwo/c3d/datastructures/c3ddatatraits.h>
 
 namespace inviwo {
 
-class IVW_MODULE_C3D_API C3DSource : public DataSource<ezc3d::c3d, C3DDataOutport> {
+class IVW_MODULE_C3D_API C3DSource : public DataSource<C3D, C3DDataOutport> {
 public:
     explicit C3DSource(InviwoApplication* app, const std::filesystem::path& file = {});
 
     virtual const ProcessorInfo& getProcessorInfo() const override;
     static const ProcessorInfo processorInfo_;
+
+protected:
+    BoolProperty readAnalogs_;
+    BoolProperty readRotations_;
+    virtual void configureReader(DataReader& reader) override;
 };
+
+namespace detail {
+struct C3DSequenceSourceConf {
+    using Type = C3D;
+    using Sequence = DataSequence<Type>;
+    using Outport = DataOutport<DataSequence<Type>>;
+    static constexpr auto name = DataTraits<Type>::dataName();
+    static constexpr auto plural = "s";
+    static constexpr size_t dim = 3;
+
+    struct Info {
+        BoolProperty readAnalogs{"readAnalogs", "Read Analogs", true};
+        BoolProperty readRotations{"readRotations", "Read Rotations", true};
+    };
+    static void add(Info& info, auto& processor) {
+        processor.addProperties(info.readAnalogs, info.readRotations);
+    }
+    static void updateForNew(Info&, const Type&, util::OverwriteState) {}
+
+    static auto getReaderConfig(Info& info) -> std::function<void(DataReader&)> {
+        return [readAnalogs = info.readAnalogs.get(),
+                readRotations = info.readRotations.get()](DataReader& reader) {
+            reader.setOption("ReadAnalogs", readAnalogs);
+            reader.setOption("ReadRotations", readRotations);
+        };
+    }
+};
+}  // namespace detail
+
+/**
+ * @brief Loads a sequence of Layers
+ */
+using C3DSequenceSource = SequenceSource<detail::C3DSequenceSourceConf>;
 
 }  // namespace inviwo

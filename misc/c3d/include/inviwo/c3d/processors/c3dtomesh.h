@@ -33,6 +33,8 @@
 #include <inviwo/core/properties/minmaxproperty.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/boolproperty.h>
+#include <inviwo/core/properties/listproperty.h>
+#include <inviwo/core/properties/stringproperty.h>
 #include <inviwo/core/ports/meshport.h>
 #include <inviwo/core/interaction/pickingmapper.h>
 
@@ -76,9 +78,12 @@ private:
     FloatProperty markerRadius_;
     BoolProperty skipEmpty_;
     BoolProperty enableTooltips_;
+
+	ListProperty pointSelection_;
+
     PickingMapper picking_;
 
-    std::shared_ptr<const ezc3d::c3d> data_;
+    std::shared_ptr<const C3D> data_;
 };
 
 }  // namespace inviwo

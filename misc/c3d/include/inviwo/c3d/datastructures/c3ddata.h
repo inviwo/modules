@@ -37,6 +37,36 @@
 
 namespace inviwo {
 
+class IVW_MODULE_C3D_API C3D : public ezc3d::c3d {
+public:
+    using ezc3d::c3d::c3d;
+
+    struct Options {
+        bool readAnalogs = true;
+        bool readRotations = true;
+    };
+
+    C3D(const std::filesystem::path& path, Options options);
+
+    C3D(const C3D& rhs) : ezc3d::c3d{static_cast<const ezc3d::c3d&>(rhs).clone()} {}
+    C3D(C3D&&) = default;
+
+    C3D& operator=(const C3D& that) {
+        if (this != &that) {
+            ezc3d::c3d::operator=(static_cast<const ezc3d::c3d&>(that).clone());
+        }
+        return *this;
+    }
+    C3D& operator=(C3D&&) = default;
+
+    const std::string& file() const { return _filePath; }
+
+    C3D* clone() const { return new C3D{*this}; }
+
+    ezc3d::DataNS::Data& data() { return *_data; }
+    const ezc3d::DataNS::Data& data() const { return *_data; }
+};
+
 /**
  * \brief Create an independent deep copy of this ezc3d::c3d.
  *
