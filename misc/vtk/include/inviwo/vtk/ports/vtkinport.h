@@ -44,6 +44,8 @@ namespace inviwo {
 
 namespace vtk {
 
+class VtkOutport;
+
 class IVW_MODULE_VTK_API VtkInport : public Inport {
 public:
     enum class Repeatable : std::uint8_t { Yes, No };
@@ -59,7 +61,12 @@ public:
     using type = vtkDataObject;
 
     virtual bool canConnectTo(const Port* port) const override;
+    virtual void connectTo(Outport* outport) override;
+    virtual void disconnectFrom(Outport* outport) override;
+    
+    virtual Outport* getConnectedOutport(size_t i) const override;
     virtual size_t getMaxNumberOfConnections() const override;
+    virtual size_t getNumberOfConnections() const override;
     virtual std::string_view getClassIdentifier() const override;
     virtual glm::uvec3 getColorCode() const override;
     virtual Document getInfo() const override;
@@ -71,6 +78,7 @@ public:
     void setTypeId(int typeId);
 
 private:
+    std::vector<VtkOutport*> outports_;
     int typeId_;
     Repeatable repeatable_;
 };
