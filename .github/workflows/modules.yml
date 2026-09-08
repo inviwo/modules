@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - projects/*
   pull_request:
   workflow_dispatch:
     inputs:
@@ -743,7 +744,7 @@ jobs:
 
   update-latest-release:
     name: "Update latest release"
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/projects/')
     needs: [build, test-installer-windows, test-installer-macos, test-installer-linux, regression, create-changelog]
     runs-on: ubuntu-26.04
 
@@ -760,6 +761,6 @@ jobs:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         file: inviwo-*
         file_glob: true
-        tag: latest
+        tag: "${{ github.ref == 'refs/heads/master' && 'latest' || github.ref }}"
         overwrite: true
         body: "The latest inviwo build, updated for every merged pull request."
