@@ -14,7 +14,7 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
-	# Add shaders
+    # Add shaders
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 

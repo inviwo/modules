@@ -38,10 +38,10 @@ namespace inviwo {
 const ProcessorInfo Hungarian::processorInfo_{
     "org.inviwo.Hungarian",   // Class identifier
     "Hungarian",              // Display name
-    "Undefined",              // Category
+    "OR-Tools",               // Category
     CodeState::Experimental,  // Code state
-    Tags::None,               // Tags
-    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+    Tags::CPU,                // Tags
+    R"(Wrapper over MinimizeLinearAssignment from OR-Tools)"_unindentHelp,
 };
 
 const ProcessorInfo& Hungarian::getProcessorInfo() const { return processorInfo_; }
