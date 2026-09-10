@@ -35,6 +35,10 @@
 
 #include <ezc3d/ezc3d.h>
 
+#include <warn/push>
+#include <warn/ignore/dll-interface-base>
+#include <warn/ignore/dll-interface>
+
 namespace inviwo {
 
 class IVW_MODULE_C3D_API C3D : public ezc3d::c3d {
@@ -65,6 +69,11 @@ public:
 
     ezc3d::DataNS::Data& data() { return *_data; }
     const ezc3d::DataNS::Data& data() const { return *_data; }
+
+
+private:
+    void updateHeaderImpl();
+    void updateParametersImpl();
 };
 
 /**
@@ -92,3 +101,5 @@ IVW_MODULE_C3D_API void copyRotations(const ezc3d::DataNS::Frame& srcFrame,
                                       ezc3d::DataNS::Frame& dstFrame);
 
 }  // namespace inviwo
+
+#include <warn/pop>
