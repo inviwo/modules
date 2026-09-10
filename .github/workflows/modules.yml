@@ -490,7 +490,7 @@ jobs:
     - name: "Install dependencies"
       uses: ./inviwo/.github/actions/install-dependencies
       with:
-        linux-compilter: clang
+        linux-compiler: clang
 
     - name: "Configure build environment"
       uses: ./inviwo/.github/actions/configure-build-env
