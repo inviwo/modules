@@ -33,16 +33,23 @@
 
 namespace inviwo {
 
-Document DataTraits<ezc3d::c3d>::info(const ezc3d::c3d& data) {
+Document DataTraits<C3D>::info(const C3D& data) {
     using H = utildoc::TableBuilder::Header;
     using P = Document::PathComponent;
     Document doc;
     doc.append("b", "C3D Data", {{"style", "color:white;"}});
+
+    utildoc::TableBuilder tb2(doc.handle(), P::end());
+    tb2(H(fmt::format("Points ({})", data.header().nb3dPoints())));
+    for (auto& name : data.pointNames()) {
+        tb2(name);
+    }
+
     utildoc::TableBuilder tb(doc.handle(), P::end());
-    tb(H("Points"), data.header().nb3dPoints());
     tb(H("Frames"), data.header().nbFrames());
     tb(H("Analogs"), data.header().nbAnalogs());
     tb(H("Frame Rate"), data.header().frameRate());
+
     return doc;
 }
 
