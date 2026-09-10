@@ -491,7 +491,6 @@ jobs:
       uses: ./inviwo/.github/actions/install-dependencies
       with:
         linux-compilter: clang
-        clang-version: ${{ env.LLVM_VERSION }}
 
     - name: "Configure build environment"
       uses: ./inviwo/.github/actions/configure-build-env
