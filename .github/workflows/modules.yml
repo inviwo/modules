@@ -44,7 +44,7 @@ jobs:
         
         include:
           - system: windows
-            os: 'windows-2022'
+            os: 'windows-2025-vs2026'
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-win'
             artifact: 'build/inviwo-v*.exe'
@@ -57,7 +57,7 @@ jobs:
               fi
 
           - system: macos
-            os: 'macos-15'
+            os: 'macos-26'
             targets: 'ALL_BUILD'
             installer: 'inviwo-installer-macos'
             artifact: 'build/inviwo-v*.dmg'
@@ -170,13 +170,13 @@ jobs:
         swap-storage: true
     
     - name: "Clone Modules"
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         path: modules
         submodules: false
 
     - name: "Clone Inviwo"
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: inviwo/inviwo
         ref: ${{ steps.inviwo_ref.outputs.ref }}
@@ -229,35 +229,35 @@ jobs:
 
     - name: "Upload installer"
       if: matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.installer }}
         path: ${{ matrix.artifact }}
 
     - name: "Upload doxygen"
       if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: inviwo-cpp-api
         path: build/docs/inviwo/html/*
 
     - name: "Upload shpinx"
       if: matrix.system == 'windows' &&  matrix.linkage == 'dynamic' && matrix.configuration == 'Release'
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: inviwo-python-api
         path: build/docs/python-api/*
     
     - name: "Upload ccache-logs"
       if: "${{ contains( github.event.pull_request.labels.*.name, 'CI: Cache Debug') }}"
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: ccache-log-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: ccache-debug/*
 
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: vcpkg-logs-${{ matrix.system }}-${{ matrix.linkage }}-${{ matrix.configuration }}
         path: vcpkg/buildtrees/**/*.log
@@ -296,12 +296,12 @@ jobs:
         echo "ref=${REF}" >> $GITHUB_OUTPUT
 
     - name: "Clone Modules"
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         path: modules
 
     - name: "Clone Inviwo"
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: inviwo/inviwo
         ref: ${{ steps.inviwo_ref.outputs.ref }}
@@ -359,7 +359,7 @@ jobs:
       run: ./inviwo-integrationtests
 
     - name: "Clone Regression"
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         repository: inviwo/regression
         ref: main
@@ -453,8 +453,6 @@ jobs:
     if: github.ref != 'refs/heads/master'
     permissions:
       pull-requests: write
-    env:
-      LLVM_VERSION: 19
     runs-on: ubuntu-26.04
     timeout-minutes: 320
     steps:
@@ -543,7 +541,7 @@ jobs:
 
     - name: "Upload Vcpkg build Logs"
       if: "${{ failure() }}"
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: vcpkg-logs-clang-tidy
         path: vcpkg/buildtrees/**/*.log
@@ -708,7 +706,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
       - name: "Clone Inviwo"
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: gh-pages
           path: modules
