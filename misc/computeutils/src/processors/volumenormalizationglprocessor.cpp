@@ -1,0 +1,102 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2021-2026 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+#include <inviwo/computeutils/processors/volumenormalizationglprocessor.h>
+#include <inviwo/core/network/networklock.h>
+
+#include <ranges>
+
+namespace inviwo {
+
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo VolumeNormalizationGLProcessor::processorInfo_{
+    "org.inviwo.VolumeNormalizationGLProcessor",  // Class identifier
+    "Volume Normalization",                       // Display name
+    "Volume Operation",                           // Category
+    CodeState::Stable,                            // Code state
+    Tags::GL,                                     // Tags
+    R"( Normalizes the selected channels of the input volume to range [0,1].
+    Note that this algorithm normalizes channels independently, it does not 
+    normalize a multi-channel volume in terms of vector norms!)"_unindentHelp,
+};
+const ProcessorInfo& VolumeNormalizationGLProcessor::getProcessorInfo() const {
+    return processorInfo_;
+}
+
+VolumeNormalizationGLProcessor::VolumeNormalizationGLProcessor()
+    : Processor{}
+    , volumeInport_{"volumeInport", "Input Volume"_help}
+    , volumeOutport_{"volumeOutport", "Normalized volume"_help}
+    , channels_{"channels", "Channels",
+                "Select the channels you wish to normalize to range [0,1]"_help}
+    , normalizeChannel_{{{"normalizeChannel0", "Channel 1", true},
+                         {"normalizeChannel1", "Channel 2", false},
+                         {"normalizeChannel2", "Channel 3", false},
+                         {"normalizeChannel3", "Channel 4", false}}}
+    , volumeNormalization_{[this]() { invalidate(InvalidationLevel::InvalidOutput); }} {
+
+    addPorts(volumeInport_, volumeOutport_);
+
+    for (auto& p : normalizeChannel_) {
+        channels_.addProperty(p);
+    }
+    addProperties(channels_);
+}
+
+void VolumeNormalizationGLProcessor::process() {
+    if (volumeInport_.isChanged() && volumeInport_.hasData()) {
+        auto volume = volumeInport_.getData();
+
+        const auto channels = static_cast<int>(volume->getDataFormat()->getComponents());
+        if (channels == static_cast<int>(channels_.getProperties().size())) return;
+
+        for (auto&& [index, p] : normalizeChannel_ | std::views::enumerate) {
+            p.set(index < channels);
+        }
+        volumeNormalization_.reset();
+    }
+    for (auto&& [index, p] :
+         normalizeChannel_ | std::views::enumerate |
+             std::views::filter([](auto v) { return std::get<1>(v).isModified(); })) {
+        volumeNormalization_.setNormalizeChannel(index, p);
+    }
+
+    auto inputVolume = volumeInport_.getData();
+
+    if (inputVolume->getDataFormat()->getNumericType() != NumericType::Float) {
+        log::warn("Numeric type of input volume is not floating point.");
+    }
+
+    if (std::ranges::any_of(normalizeChannel_, [](const auto& p) { return p.get(); })) {
+        volumeOutport_.setData(volumeNormalization_.normalize(*inputVolume));
+    } else {
+        volumeOutport_.setData(inputVolume);
+    }
+}
+
+}  // namespace inviwo
