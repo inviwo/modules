@@ -59,6 +59,7 @@ std::vector<Property*> NemoVolumeComponent::getProperties() {
     return props;
 }
 
+namespace nemo {
 namespace {
 
 constexpr std::string_view uniformsZoom = util::trim(R"(
@@ -96,23 +97,23 @@ vec3 mapPositionToTexture(vec3 position) {{
 constexpr std::string_view sample = util::trim(R"(
 {0}SamplePosition = mapPositionToTexture({0}SamplePosition);
 )");
-
 }  // namespace
+}  // namespace nemo
 
 auto NemoVolumeComponent::getSegments() -> std::vector<Segment> {
     auto segments = TemporalVolumeComponent::getSegments();
 
-    segments.emplace_back(Segment{.snippet = fmt::format(uniformsZoom, getName()),
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::uniformsZoom, getName()),
                                   .placeholder = placeholder::uniform,
                                   .priority = 400});
-    segments.emplace_back(Segment{.snippet = fmt::format(depth, getName()),
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::depth, getName()),
                                   .placeholder = placeholder::uniform,
                                   .priority = 410});
 
-    segments.emplace_back(Segment{.snippet = fmt::format(sample, getName()),
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::sample, getName()),
                                   .placeholder = placeholder::first,
                                   .priority = 401});
-    segments.emplace_back(Segment{.snippet = fmt::format(sample, getName()),
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::sample, getName()),
                                   .placeholder = placeholder::loop,
                                   .priority = 401});
     return segments;
@@ -127,13 +128,15 @@ void VolumeMaskComponent::process(Shader& shader, TextureUnitContainer& cont) {
     utilgl::bindAndSetUniforms(shader, cont, *mask_.getData(), getName());
 }
 
+namespace mask {
 namespace {
-constexpr std::string_view maskUniforms = util::trim(R"(
+
+constexpr std::string_view uniforms = util::trim(R"(
 uniform VolumeParameters {0}Parameters;
 uniform sampler3D {0};
 )");
 
-constexpr std::string_view maskFirst = util::trim(R"(
+constexpr std::string_view first = util::trim(R"(
 float {0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
 float {0}ValuePrev = {0}Value;
 if ({0}Value > 0.0) {{
@@ -141,7 +144,7 @@ if ({0}Value > 0.0) {{
 }}
 )");
 
-constexpr std::string_view maskLoop = util::trim(R"(
+constexpr std::string_view loop = util::trim(R"(
 {0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
 if ({0}Value > 0.0) {{
    {0}ValuePrev = {0}Value;
@@ -149,7 +152,7 @@ if ({0}Value > 0.0) {{
 }}
 )");
 
-constexpr std::string_view maskLoop2 = util::trim(R"(
+constexpr std::string_view loop2 = util::trim(R"(
 if ({0}ValuePrev > 0.0) {{
     // We just left a masked region.
     // Reset the prev values to the current value.
@@ -158,20 +161,20 @@ if ({0}ValuePrev > 0.0) {{
 }}
 {0}ValuePrev = {0}Value;
 )");
-
+}
 }  // namespace
 
 std::vector<ShaderComponent::Segment> VolumeMaskComponent::getSegments() {
-    return {{.snippet = fmt::format(maskUniforms, getName()),
+    return {{.snippet = fmt::format(mask::uniforms, getName()),
              .placeholder = placeholder::uniform,
              .priority = 410},
-            {.snippet = fmt::format(maskFirst, getName(), volumeName_),
+            {.snippet = fmt::format(mask::first, getName(), volumeName_),
              .placeholder = placeholder::first,
              .priority = 950},
-            {.snippet = fmt::format(maskLoop, getName(), volumeName_),
+            {.snippet = fmt::format(mask::loop, getName(), volumeName_),
              .placeholder = placeholder::loop,
              .priority = 410},
-            {.snippet = fmt::format(maskLoop2, getName(), volumeName_),
+            {.snippet = fmt::format(mask::loop2, getName(), volumeName_),
              .placeholder = placeholder::loop,
              .priority = 550}};
 }
