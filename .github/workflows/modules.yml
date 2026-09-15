@@ -129,9 +129,6 @@ jobs:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
             configuration: Debug
-          # Windows static runs out of memory
-          - system: windows
-            linkage: static
           # This build fails very close to the end with "ninja: build stopped: interrupted by user."
           - system: linux
             linkage: static
