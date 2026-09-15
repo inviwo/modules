@@ -59,7 +59,7 @@ public:
     FloatProperty zZoom;
 };
 
-class IVW_MODULE_BASEGL_API VolumeMaskComponent : public ShaderComponent {
+class IVW_MODULE_OCEANFLOW_API VolumeMaskComponent : public ShaderComponent {
 public:
     explicit VolumeMaskComponent(std::string_view maskName, std::string_view volumeName);
 
