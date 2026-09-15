@@ -41,32 +41,38 @@
 #include <modules/basegl/shadercomponents/sampletransformcomponent.h>
 #include <modules/basegl/shadercomponents/volumecomponent.h>
 #include <modules/basegl/shadercomponents/maskcomponent.h>
+#include <modules/basegl/shadercomponents/temporalvolumecomponent.h>
 #include <inviwo/core/ports/volumeport.h>
 
 namespace inviwo {
 
-class IVW_MODULE_OCEANFLOW_API NemoVolumeComponent : public ShaderComponent {
+class IVW_MODULE_OCEANFLOW_API NemoVolumeComponent : public TemporalVolumeComponent {
 public:
-    enum class Gradients { None, Single };
     explicit NemoVolumeComponent(std::string_view name, Gradients gradients = Gradients::Single,
                                  Document help = {});
     virtual ~NemoVolumeComponent();
 
-    virtual std::string_view getName() const override;
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
-    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual std::vector<Property*> getProperties() override;
     virtual std::vector<Segment> getSegments() override;
 
-    std::string getGradientString() const;
-
-    std::optional<size_t> channelsForVolume() const;
-
-    virtual std::vector<Property*> getProperties() override;
-
-    VolumeInport volumePort;
-    Gradients gradients;
-
     FloatProperty zZoom;
+};
+
+class IVW_MODULE_BASEGL_API VolumeMaskComponent : public ShaderComponent {
+public:
+    explicit VolumeMaskComponent(std::string_view maskName, std::string_view volumeName);
+
+    virtual std::string_view getName() const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual std::vector<Segment> getSegments() override;
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override {
+        return {{&mask_, std::string{"volumes"}}};
+    }
+
+private:
+    VolumeInport mask_;
+    std::string volumeName_;
 };
 
 class IVW_MODULE_OCEANFLOW_API OceanRaycaster : public VolumeRaycasterBase {
@@ -89,7 +95,7 @@ private:
     LightComponent light_;
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
-    MaskComponent mask_;
+    VolumeMaskComponent mask_;
 };
 
 }  // namespace inviwo
