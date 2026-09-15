@@ -129,7 +129,7 @@ jobs:
           # Windows debug build are to big, they run out of diskspace
           - system: windows
             configuration: Debug
-          # Windows stattic runs out of memory
+          # Windows static runs out of memory
           - system: windows
             linkage: static
             configuration: Release
