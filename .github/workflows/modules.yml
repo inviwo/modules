@@ -132,6 +132,7 @@ jobs:
           # Windows stattic runs out of memory
           - system: windows
             linkage: static
+            configuration: Debug
           # This build fails very close to the end with "ninja: build stopped: interrupted by user."
           - system: linux
             linkage: static
