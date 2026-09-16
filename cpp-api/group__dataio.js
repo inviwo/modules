@@ -1,5 +1,6 @@
 var group__dataio =
 [
+    [ "inviwo::reader::option", "namespaceinviwo_1_1reader_1_1option.html", null ],
     [ "inviwo::AmiraMeshReader", "classinviwo_1_1AmiraMeshReader.html", null ],
     [ "inviwo::AmiraVolumeReader", "classinviwo_1_1AmiraVolumeReader.html", null ],
     [ "inviwo::AssimpReader", "classinviwo_1_1AssimpReader.html", [
@@ -7,7 +8,10 @@ var group__dataio =
       [ "setOption", "classinviwo_1_1AssimpReader.html#aed86b7a704398c48d49eeb32c1f9744f", null ]
     ] ],
     [ "inviwo::BasicPDBReader", "classinviwo_1_1BasicPDBReader.html", null ],
-    [ "inviwo::C3DReader", "classinviwo_1_1C3DReader.html", null ],
+    [ "inviwo::C3DReader", "classinviwo_1_1C3DReader.html", [
+      [ "getOption", "classinviwo_1_1C3DReader.html#ab9c8fefefbcf6dca278f5d0b8608748d", null ],
+      [ "setOption", "classinviwo_1_1C3DReader.html#ab0b0df25fa7393bba4a8f41d0a57dc8e", null ]
+    ] ],
     [ "inviwo::CImgLayerReader", "classinviwo_1_1CImgLayerReader.html", null ],
     [ "inviwo::CImgLayerWriter", "classinviwo_1_1CImgLayerWriter.html", [
       [ "writeData", "classinviwo_1_1CImgLayerWriter.html#a77fc3d9d467dfceaa9cfa9567590a318", null ]
@@ -39,7 +43,7 @@ var group__dataio =
       [ "getOption", "classinviwo_1_1DataReader.html#af1dd2c460dea514384a877eb0ceb6e88", null ],
       [ "setOption", "classinviwo_1_1DataReader.html#a0ac5d98ed2647ec10447661f4f371148", null ]
     ] ],
-    [ "inviwo::DataReaderType&lt; T &gt;", "classinviwo_1_1DataReaderType.html", [
+    [ "inviwo::DataReaderType< T >", "classinviwo_1_1DataReaderType.html", [
       [ "readData", "classinviwo_1_1DataReaderType.html#ae0105fa2debe3f46d4d90358e7d0f92b", null ]
     ] ],
     [ "inviwo::DataWriter", "classinviwo_1_1DataWriter.html", [
@@ -48,12 +52,20 @@ var group__dataio =
       [ "open", "classinviwo_1_1DataWriter.html#af933bbb0c4c4fe85cd94e41f332cb8f6", null ],
       [ "setOption", "classinviwo_1_1DataWriter.html#ad2352d071b77129614c1e0d172dd2099", null ]
     ] ],
-    [ "inviwo::DataWriterType&lt; T &gt;", "classinviwo_1_1DataWriterType.html", [
+    [ "inviwo::DataWriterType< T >", "classinviwo_1_1DataWriterType.html", [
       [ "writeData", "classinviwo_1_1DataWriterType.html#a4b83251ea40195bb115873327cbc7e3e", null ]
     ] ],
     [ "inviwo::DatVolumeSequenceReader", "classinviwo_1_1DatVolumeSequenceReader.html", null ],
     [ "inviwo::DatVolumeWriter", "classinviwo_1_1DatVolumeWriter.html", [
       [ "writeData", "classinviwo_1_1DatVolumeWriter.html#a7c1dfa398abd67cb31c4e7a9c0caa72a", null ]
+    ] ],
+    [ "inviwo::FFmpegLayerReader", "classinviwo_1_1FFmpegLayerReader.html", [
+      [ "getOption", "classinviwo_1_1FFmpegLayerReader.html#aeb2cf9bfd5fe86a870b30140c802fa1f", null ],
+      [ "setOption", "classinviwo_1_1FFmpegLayerReader.html#a9c6fbef4b12f16c401085b26e933e16f", null ]
+    ] ],
+    [ "inviwo::FFmpegLayerSequenceReader", "classinviwo_1_1FFmpegLayerSequenceReader.html", [
+      [ "getOption", "classinviwo_1_1FFmpegLayerSequenceReader.html#ab4f2ae9f9a95159ef897f0f269e89594", null ],
+      [ "setOption", "classinviwo_1_1FFmpegLayerSequenceReader.html#a5003a3315f8caabcf9f465e095dedde7", null ]
     ] ],
     [ "inviwo::IvfVolumeReader", "classinviwo_1_1IvfVolumeReader.html", null ],
     [ "inviwo::IvfVolumeSequenceReader", "classinviwo_1_1IvfVolumeSequenceReader.html", null ],
@@ -77,7 +89,9 @@ var group__dataio =
     [ "inviwo::OpenMeshWriter", "classinviwo_1_1OpenMeshWriter.html", [
       [ "writeData", "classinviwo_1_1OpenMeshWriter.html#a5e6d5b8f5a1ffa078b1de938f4da792f", null ]
     ] ],
-    [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", null ],
+    [ "inviwo::RawVolumeReader", "classinviwo_1_1RawVolumeReader.html", [
+      [ "readData", "classinviwo_1_1RawVolumeReader.html#a3b20c9c2a09079fe825920d3f3fd08d3", null ]
+    ] ],
     [ "inviwo::TextFileReader", "classinviwo_1_1TextFileReader.html", [
       [ "read", "classinviwo_1_1TextFileReader.html#a5d85a6c7f74a6b75c4faa7b482edf5f5", null ],
       [ "read", "classinviwo_1_1TextFileReader.html#aaf0c5d25218422413b74567840764bad", null ]

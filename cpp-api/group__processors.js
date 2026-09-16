@@ -3,10 +3,6 @@ var group__processors =
     [ "inviwo::DataFrameClustering", "classinviwo_1_1DataFrameClustering.html", [
       [ "process", "classinviwo_1_1DataFrameClustering.html#ae732c66438ca27bd7b37a0c3ccd20146", null ]
     ] ],
-    [ "inviwo::ImageLayoutGL", "classinviwo_1_1ImageLayoutGL.html", [
-      [ "isConnectionActive", "classinviwo_1_1ImageLayoutGL.html#aafc196718198091c7853eb41219ba61e", null ],
-      [ "process", "classinviwo_1_1ImageLayoutGL.html#ae42039a3d67ced931a062d97de7820c5", null ]
-    ] ],
     [ "inviwo::IntegralLinesToDataFrame", "classinviwo_1_1IntegralLinesToDataFrame.html", [
       [ "MetaDataSettings", "classinviwo_1_1IntegralLinesToDataFrame_1_1MetaDataSettings.html", [
         [ "clone", "classinviwo_1_1IntegralLinesToDataFrame_1_1MetaDataSettings.html#a6d9bb4fa4702c9304d5f0061a4a5afd1", null ]
@@ -29,8 +25,8 @@ var group__processors =
       [ "Processor", "classinviwo_1_1Processor.html#a1d4bc7897d472833b1a7680153f683d6", null ],
       [ "accept", "classinviwo_1_1Processor.html#a06088cebce8b3d454b56abf70458b62e", null ],
       [ "addInteractionHandler", "classinviwo_1_1Processor.html#adac1b6040b74014c3fe47b7c250b7323", null ],
-      [ "addPort", "classinviwo_1_1Processor.html#a68fcf649e5f55f7e51d0eeef7de8b285", null ],
       [ "addPort", "classinviwo_1_1Processor.html#ab55329e163be5b8a78fed66b09d7af85", null ],
+      [ "addPort", "classinviwo_1_1Processor.html#a68fcf649e5f55f7e51d0eeef7de8b285", null ],
       [ "addPort", "classinviwo_1_1Processor.html#a07f01fa6e270613b6f87d0541c8bf962", null ],
       [ "addPorts", "classinviwo_1_1Processor.html#a309bb6a3f5ba45bdf81b83e4ccbf532a", null ],
       [ "addPortToGroup", "classinviwo_1_1Processor.html#a8b02d56fdf37b42ec6cfd600990bebc8", null ],

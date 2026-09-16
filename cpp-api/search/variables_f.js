@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['screentodata_5f_0',['screenToData_',['../classinviwo_1_1plot_1_1BoxSelection.html#a5f2162752427b706421dd49850632254',1,'inviwo::plot::BoxSelection']]],
+  ['screentodata_5f_0',['screenToData_',['../classinviwo_1_1plot_1_1BoxSelection.html#a57a50de1a7a19beab939e8f2d8e2f424',1,'inviwo::plot::BoxSelection']]],
   ['scrollarea_5f_1',['scrollArea_',['../classinviwo_1_1AnnotationsWidget.html#a529245cdc9244373490b2cc4dea2b2fe',1,'inviwo::AnnotationsWidget::scrollArea_'],['../classinviwo_1_1SettingsWidget.html#a822a1423700f54362fc97fc123c5b6f0',1,'inviwo::SettingsWidget::scrollArea_']]],
   ['seed_5f_2',['seed_',['../classinviwo_1_1NoiseGenerator2D.html#aedbe030941ebe3f092273ead0ec11029',1,'inviwo::NoiseGenerator2D']]],
   ['sensitivity_5f_3',['sensitivity_',['../classinviwo_1_1Trackball.html#a9ceddd5383ab808e63558aeef7244fb6',1,'inviwo::Trackball']]],
@@ -12,5 +12,7 @@ var searchData=
   ['snippet_9',['snippet',['../structinviwo_1_1ShaderComponent_1_1Segment.html#ac3189a604789226d2a842af5840ff149',1,'inviwo::ShaderComponent::Segment::snippet'],['../structinviwo_1_1ShaderSegment.html#a82147fea140d5ac41e14e396093b60c6',1,'inviwo::ShaderSegment::snippet']]],
   ['spacing_10',['spacing',['../structinviwo_1_1StipplingData.html#a250e19f0d8601679d5e7159b4d6a5976',1,'inviwo::StipplingData']]],
   ['squaregl_5f_11',['squareGL_',['../classinviwo_1_1CanvasGL.html#a437a2f4ff36685129ccfcaac704fb277',1,'inviwo::CanvasGL']]],
-  ['state_5f_12',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]]
+  ['state_5f_12',['state_',['../classinviwo_1_1animation_1_1AnimationController.html#a75346c1ad06be1cf2912efeb43ab635d',1,'inviwo::animation::AnimationController']]],
+  ['stream_13',['stream',['../namespaceinviwo_1_1videoreader_1_1option.html#ad32b729e0b40eb66af83302eef8d1f74',1,'inviwo::videoreader::option']]],
+  ['stride_14',['stride',['../namespaceinviwo_1_1reader_1_1option.html#a7f0dda54f4356eab8c14ea90797f92f0',1,'inviwo::reader::option']]]
 ];
