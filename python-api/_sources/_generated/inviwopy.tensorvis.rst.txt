@@ -10,8 +10,10 @@
    
       StringVector
       TensorField3D
+      TensorField3DFlatInportIteratorGenerator
       TensorField3DFlatMultiInport
       TensorField3DInport
       TensorField3DMultiInport
       TensorField3DOutport
+      TensorField3DRegularInportIteratorGenerator
    

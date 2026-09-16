@@ -12,10 +12,12 @@
       Chain
       MolecularData
       MolecularStructure
+      MolecularStructureFlatInportIteratorGenerator
       MolecularStructureFlatMultiInport
       MolecularStructureInport
       MolecularStructureMultiInport
       MolecularStructureOutport
+      MolecularStructureRegularInportIteratorGenerator
       Residue
       StringVector
    
