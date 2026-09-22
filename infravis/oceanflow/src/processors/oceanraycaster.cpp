@@ -304,7 +304,7 @@ SphericalEntryExitPoints::SphericalEntryExitPoints()
     , eepHelper{} {}
 
 std::string_view SphericalEntryExitPoints::getName() const { return "Spherical EEP"; }
-void SphericalEntryExitPoints::initializeResources(Shader& shader) {}
+void SphericalEntryExitPoints::initializeResources(Shader&) {}
 void SphericalEntryExitPoints::process(Shader& shader, TextureUnitContainer& cont) {
 
     utilgl::bindAndSetUniforms(shader, cont, entryPoints, "entry", ImageType::ColorDepth);
@@ -332,6 +332,56 @@ void SphericalEntryExitPoints::preprocess(Camera& camera, size2_t dim) {
 
     eepHelper(entryPoints, exitPoints, camera, sphereMesh, algorithm::CapNearClip::Yes,
               algorithm::IncludeNormals::Yes);
+}
+
+SurfaceComponent::SurfaceComponent(Processor& processor)
+    : ShaderComponent()
+    , surfaceTexture("surface",
+                     "Optional surface / depth texture. "
+                     ""_help) {
+    surfaceTexture.setOptional(true);
+
+    surfaceTexture.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
+    surfaceTexture.onDisconnect(
+        [&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
+}
+
+std::string_view SurfaceComponent::getName() const { return surfaceTexture.getIdentifier(); }
+
+void SurfaceComponent::process(Shader& shader, TextureUnitContainer& cont) {
+    if (surfaceTexture.isReady()) {
+        utilgl::bindAndSetUniforms(shader, cont, surfaceTexture);
+    }
+}
+
+std::vector<std::tuple<Inport*, std::string>> SurfaceComponent::getInports() {
+    return {{&surfaceTexture, std::string{"surface"}}};
+}
+
+namespace surface {
+namespace {
+
+constexpr std::string_view uniforms = util::trim(R"(
+uniform ImageParameters {name}Parameters;
+uniform sampler2D {name}Color;
+)");
+
+constexpr std::string_view setup = util::trim(R"(
+vec4 {name}ColorVal = texture({name}Color, texCoords);
+
+)");
+
+}  // namespace
+}  // namespace surface
+
+auto SurfaceComponent::getSegments() -> std::vector<Segment> {
+    using namespace fmt::literals;
+    if (surfaceTexture.isConnected()) {
+        return {{fmt::format(surface::uniforms, "name"_a = getName()), placeholder::uniform, 900},
+                {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900}};
+    } else {
+        return {};
+    }
 }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -368,10 +418,11 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sampleTransform_{}
-    , mask_{"Mask", volume_.volumePort.getIdentifier()} {
+    , mask_{"Mask", volume_.volumePort.getIdentifier()}
+    , surface_{*this} {
 
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
-                       positionIndicator_, sampleTransform_, mask_);
+                       positionIndicator_, sampleTransform_, mask_, surface_);
 }
 
 void OceanRaycaster::process() {
