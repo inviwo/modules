@@ -96,6 +96,10 @@ public:
             cp->onChange(makeAltCallback(cp.get(), i));
         }
     }
+    AlternativeShaderComponent(const AlternativeShaderComponent&) = delete;
+    AlternativeShaderComponent(AlternativeShaderComponent&&) = delete;
+    AlternativeShaderComponent& operator=(const AlternativeShaderComponent&) = delete;
+	AlternativeShaderComponent& operator=(AlternativeShaderComponent&&) = delete;
 
     virtual std::string_view getName() const override { return name; }
     virtual void initializeResources(Shader& shader) override {
@@ -154,7 +158,7 @@ private:
     std::string volumeName_;
 };
 
-class SphericalEntryExitPoints : public ShaderComponent {
+class IVW_MODULE_OCEANFLOW_API SphericalEntryExitPoints : public ShaderComponent {
 public:
     SphericalEntryExitPoints();
 
@@ -175,6 +179,20 @@ public:
 
     algorithm::EntryExitPointsHelper eepHelper;
 };
+
+
+class IVW_MODULE_OCEANFLOW_API SurfaceComponent : public ShaderComponent {
+public:
+    SurfaceComponent(Processor& processor);
+    virtual std::string_view getName() const override;
+    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
+    virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
+    virtual std::vector<Segment> getSegments() override;
+
+private:
+    LayerInport surfaceTexture;
+};
+
 
 class IVW_MODULE_OCEANFLOW_API OceanRaycaster : public VolumeRaycasterBase {
 public:
@@ -199,6 +217,7 @@ private:
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
     VolumeMaskComponent mask_;
+    SurfaceComponent surface_;
 };
 
 }  // namespace inviwo
