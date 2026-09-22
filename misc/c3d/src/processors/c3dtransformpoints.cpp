@@ -92,8 +92,8 @@ void C3DTransformPoints::process() {
                        transform = transforms_.getMatrix(),
                        refs = refs_ | std::views::transform([](auto& p) { return p.get(); }) |
                               std::ranges::to<std::vector>()](
-                          pool::Stop stop, pool::Progress progress) -> std::shared_ptr<C3D> {
-        if (stop) return {};
+                          std::stop_token stop, pool::Progress progress) -> std::shared_ptr<C3D> {
+        if (stop.stop_requested()) return {};
         progress(0.0);
 
         std::array<size_t, refPoints> refIndices{};
