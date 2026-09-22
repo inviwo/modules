@@ -419,7 +419,7 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
     return ms;
 }
 
-std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file, pool::Stop stop,
+std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file, std::stop_token stop,
                                                    pool::Progress progress) {
     const auto voxels = glm::compMul(chg.dims);
 
@@ -462,7 +462,7 @@ std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file
             ++i;
         });
 
-        if (stop) return {};
+        if (stop.stop_requested()) return {};
         if (i % 1'000'000 == 0) {
             progress(static_cast<float>(i) / voxels);
         }
