@@ -293,7 +293,7 @@ vec3 rayDirection = normalize(exitPoint - entryPoint);
 
 }  // namespace
 }  // namespace eep
-SphericalEntryExitPoints::SphericalEntryExitPoints()
+SphericalEntryExitPoints::SphericalEntryExitPoints(CameraProperty* camera)
     : ShaderComponent{}
     , basis{"basis", "Basis", util::ordinalMatrix(dmat4{1.0})}
     , outerRadius{"outerRadius", "outerRadius", util::ordinalScale(1.0)}
@@ -301,7 +301,8 @@ SphericalEntryExitPoints::SphericalEntryExitPoints()
     , sphereMesh{eep::sphere(outerRadius.get(), innerRadius.get(), 16, 32)}
     , entryPoints{LayerConfig::defaultDimensions, DataVec4UInt16::get()}
     , exitPoints{LayerConfig::defaultDimensions, DataVec4UInt16::get()}
-    , eepHelper{} {}
+    , eepHelper{}
+    , trackball{camera} {}
 
 std::string_view SphericalEntryExitPoints::getName() const { return "Spherical EEP"; }
 void SphericalEntryExitPoints::initializeResources(Shader&) {}
@@ -310,18 +311,20 @@ void SphericalEntryExitPoints::process(Shader& shader, TextureUnitContainer& con
     utilgl::bindAndSetUniforms(shader, cont, entryPoints, "entry", ImageType::ColorDepth);
     utilgl::bindAndSetUniforms(shader, cont, exitPoints, "exit", ImageType::ColorDepth);
     shader.setUniform("useSurfaceNormals", true);
+    shader.setUniform("sphereBasis", basis.get());
 }
 
 auto SphericalEntryExitPoints::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
     return {{fmt::format(eep::uniforms, "entry"), placeholder::uniform, 100},
             {fmt::format(eep::uniforms, "exit"), placeholder::uniform, 101},
+            {"uniform mat4 sphereBasis",placeholder::uniform, 102},
             {std::string{eep::surfaceNormalUniforms}, placeholder::uniform, 102},
             {std::string{eep::setup}, placeholder::setup, 100}};
 }
 
 std::vector<Property*> SphericalEntryExitPoints::getProperties() {
-    return {&basis, &outerRadius, &innerRadius};
+    return {&basis, &outerRadius, &innerRadius, &trackball};
 }
 
 void SphericalEntryExitPoints::preprocess(Camera& camera, size2_t dim) {
@@ -334,28 +337,17 @@ void SphericalEntryExitPoints::preprocess(Camera& camera, size2_t dim) {
               algorithm::IncludeNormals::Yes);
 }
 
-SurfaceComponent::SurfaceComponent(Processor& processor)
-    : ShaderComponent()
-    , surfaceTexture("surface",
-                     "Optional surface / depth texture. "
-                     ""_help) {
-    surfaceTexture.setOptional(true);
+SurfaceComponent::SurfaceComponent()
+    : ShaderComponent(), surface{"surface", "Surface / depth texture"_help} {}
 
-    surfaceTexture.onConnect([&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
-    surfaceTexture.onDisconnect(
-        [&]() { processor.invalidate(InvalidationLevel::InvalidResources); });
-}
-
-std::string_view SurfaceComponent::getName() const { return surfaceTexture.getIdentifier(); }
+std::string_view SurfaceComponent::getName() const { return surface.getIdentifier(); }
 
 void SurfaceComponent::process(Shader& shader, TextureUnitContainer& cont) {
-    if (surfaceTexture.isReady()) {
-        utilgl::bindAndSetUniforms(shader, cont, surfaceTexture);
-    }
+    utilgl::bindAndSetUniforms(shader, cont, surface);
 }
 
 std::vector<std::tuple<Inport*, std::string>> SurfaceComponent::getInports() {
-    return {{&surfaceTexture, std::string{"surface"}}};
+    return {{&surface, std::string{"surface"}}};
 }
 
 namespace surface {
@@ -363,12 +355,53 @@ namespace {
 
 constexpr std::string_view uniforms = util::trim(R"(
 uniform ImageParameters {name}Parameters;
-uniform sampler2D {name}Color;
+uniform sampler2D {name};
+
+const float PI = 3.14159265358979323846;
+vec3 cartesianToSpherical(vec3 p) {{
+    float r = length(p);
+    float theta = atan(p.y, p.x);           // azimuth, [-π, π]
+    float phi = atan(length(p.xy), p.z);    // polar angle, [0, π]
+
+    return vec3(r, theta, phi);
+}}
+
+vec3 cartesianToLatLongNormalized(vec3 p) {{
+    vec3 rThetaPhi = cartesianToSpherical(p);
+    return vec3(rThetaPhi.x, 1.0 - (rThetaPhi.y / PI / 2.0 + 0.5), rThetaPhi.z / PI);
+}}
+
+// Take a texture pos [0,1] return a pos [-1,1]
+vec3 textureSamplePosToSpherePos(vec3 p) {{
+    return 2.0 * p - vec3(1.0);
+}}
+
+vec3 radiiAtTexturePos(vec3 p) {{
+    vec3 rLatLong = cartesianToLatLongNormalized(textureSamplePosToSpherePos(p));
+    float depth = texture({name}, rLatLong.yz).x;
+    const float maxDepth = 10000.0;
+    const float depthFrac = 0.05;
+    float normDepth = depth / maxDepth;
+    float surfaceNormRadii = 1.0 + depthFrac * normDepth;
+    return vec3(rLatLong.x, surfaceNormRadii, 1.0 + normDepth);
+}}
+
 )");
 
-constexpr std::string_view setup = util::trim(R"(
-vec4 {name}ColorVal = texture({name}Color, texCoords);
+constexpr std::string_view setup = util::trim(R"()");
 
+constexpr std::string_view loop = util::trim(R"(
+vec3 rs = radiiAtTexturePos(samplePosition);
+if (rs.x < rs.y) {{
+    vec4 c = vec4(1,rs.z,0,1);
+    shadingParams.colors = defaultMaterialColors(c.rgb);
+    shadingParams.normal = normalize(textureSamplePosToSpherePos(samplePosition));
+    shadingParams.worldPosition = (mat4(1.0) * vec4(samplePosition, 1.0)).xyz;
+    c.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);
+    
+    result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
+    result.a = result.a + (1.0 - result.a) * c.a;
+}}
 )");
 
 }  // namespace
@@ -376,9 +409,10 @@ vec4 {name}ColorVal = texture({name}Color, texCoords);
 
 auto SurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
-    if (surfaceTexture.isConnected()) {
+    if (surface.isConnected()) {
         return {{fmt::format(surface::uniforms, "name"_a = getName()), placeholder::uniform, 900},
-                {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900}};
+                {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900},
+                {fmt::format(surface::loop, "name"_a = getName()), placeholder::loop, 1400}};
     } else {
         return {};
     }
@@ -400,26 +434,32 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     : VolumeRaycasterBase(identifier, displayName)
     , volume_{"volume", NemoVolumeComponent::Gradients::Single,
               "input Nemo volume (Only one channel will be rendered)"_help}
+    , camera_{"camera",
+              [this]() -> std::optional<dmat4> {
+                  if (entryExit_.active == 0) {
+                      if (auto data = volume_.volumePort.getData()) {
+                          return data->prototype().world.value_or(VolumeConfig::defaultWorld) *
+                                 data->prototype().model.value_or(VolumeConfig::defaultModel);
+                      } else {
+                          return std::nullopt;
+                      }
+                  } else {
+                      return dmat4{1.0};
+                  }
+              }}
+
     , cubeEntryExit_{}
-    , sphericalEntryExit_{}
+    , sphericalEntryExit_{&camera_.camera}
     , entryExit_{"Entry Exit", {&cubeEntryExit_, &sphericalEntryExit_}}
     , background_{*this}
     , isoTF_{&volume_.volumePort}
     , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
-    , camera_{"camera",
-              [this]() -> std::optional<dmat4> {
-                  if (auto data = volume_.volumePort.getData()) {
-                      return data->prototype().world.value_or(VolumeConfig::defaultWorld) *
-                             data->prototype().model.value_or(VolumeConfig::defaultModel);
-                  } else {
-                      return std::nullopt;
-                  }
-              }}
+
     , light_{&camera_.camera}
     , positionIndicator_{}
     , sampleTransform_{}
     , mask_{"Mask", volume_.volumePort.getIdentifier()}
-    , surface_{*this} {
+    , surface_{} {
 
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
                        positionIndicator_, sampleTransform_, mask_, surface_);
@@ -428,7 +468,7 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
 void OceanRaycaster::process() {
     util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
 
-    if (entryExit_.active == 1) {
+    if (entryExit_.activeComponent() == &sphericalEntryExit_) {
         if (sphericalEntryExit_.innerRadius.isModified() ||
             sphericalEntryExit_.outerRadius.isModified()) {
             sphericalEntryExit_.sphereMesh =
