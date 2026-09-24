@@ -192,7 +192,7 @@ Mesh sphere(double outerRadius, double innerRadius, unsigned int numLoops,
 
     // Create Vertices
     const auto shellSize = (numLoops + 1) * (segmentsPerLoop + 1);
-    const auto points = (innerRadius == 0 ? 1 : 2) * shellSize;
+    const auto points = (innerRadius == 0.0 ? 1 : 2) * shellSize;
 
     std::vector<vec3> vertices;
     vertices.reserve(points);
@@ -296,8 +296,8 @@ vec3 rayDirection = normalize(exitPoint - entryPoint);
 SphericalEntryExitPoints::SphericalEntryExitPoints(CameraProperty* camera)
     : ShaderComponent{}
     , basis{"basis", "Basis", util::ordinalMatrix(dmat4{1.0})}
-    , outerRadius{"outerRadius", "outerRadius", util::ordinalScale(1.0)}
-    , innerRadius{"innerRadius", "innerRadius", util::ordinalScale(0.5)}
+    , outerRadius{"outerRadius", "outerRadius", util::ordinalScale(1.0, 5.0).setInc(0.01)}
+    , innerRadius{"innerRadius", "innerRadius", util::ordinalScale(0.9, 5.0).setInc(0.01)}
     , sphereMesh{eep::sphere(outerRadius.get(), innerRadius.get(), 16, 32)}
     , entryPoints{LayerConfig::defaultDimensions, DataVec4UInt16::get()}
     , exitPoints{LayerConfig::defaultDimensions, DataVec4UInt16::get()}
@@ -312,13 +312,17 @@ void SphericalEntryExitPoints::process(Shader& shader, TextureUnitContainer& con
     utilgl::bindAndSetUniforms(shader, cont, exitPoints, "exit", ImageType::ColorDepth);
     shader.setUniform("useSurfaceNormals", true);
     shader.setUniform("sphereBasis", basis.get());
+    shader.setUniform("outerRadius", outerRadius.get());
+    shader.setUniform("innerRadius", innerRadius.get());
 }
 
 auto SphericalEntryExitPoints::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
     return {{fmt::format(eep::uniforms, "entry"), placeholder::uniform, 100},
             {fmt::format(eep::uniforms, "exit"), placeholder::uniform, 101},
-            {"uniform mat4 sphereBasis",placeholder::uniform, 102},
+            {"uniform mat4 sphereBasis;", placeholder::uniform, 102},
+            {"uniform float outerRadius;", placeholder::uniform, 103},
+            {"uniform float innerRadius;", placeholder::uniform, 104},
             {std::string{eep::surfaceNormalUniforms}, placeholder::uniform, 102},
             {std::string{eep::setup}, placeholder::setup, 100}};
 }
@@ -380,7 +384,7 @@ vec3 radiiAtTexturePos(vec3 p) {{
     vec3 rLatLong = cartesianToLatLongNormalized(textureSamplePosToSpherePos(p));
     float depth = texture({name}, rLatLong.yz).x;
     const float maxDepth = 10000.0;
-    const float depthFrac = 0.05;
+    const float depthFrac = (outerRadius - innerRadius) / outerRadius;
     float normDepth = depth / maxDepth;
     float surfaceNormRadii = 1.0 + depthFrac * normDepth;
     return vec3(rLatLong.x, surfaceNormRadii, 1.0 + normDepth);
@@ -469,16 +473,13 @@ void OceanRaycaster::process() {
     util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
 
     if (entryExit_.activeComponent() == &sphericalEntryExit_) {
-        if (sphericalEntryExit_.innerRadius.isModified() ||
-            sphericalEntryExit_.outerRadius.isModified()) {
+        if (sphericalEntryExit_.outerRadius.isModified()) {
             sphericalEntryExit_.sphereMesh =
-                eep::sphere(sphericalEntryExit_.outerRadius.get(),
-                            sphericalEntryExit_.innerRadius.get(), 16, 32);
+                eep::sphere(sphericalEntryExit_.outerRadius.get(), 0.0, 16, 32);
         }
 
         if (camera_.camera.isModified() ||
             outport_.getDimensions() != sphericalEntryExit_.entryPoints.getDimensions() ||
-            sphericalEntryExit_.innerRadius.isModified() ||
             sphericalEntryExit_.outerRadius.isModified()) {
             sphericalEntryExit_.preprocess(camera_.camera.get(), outport_.getDimensions());
         }
