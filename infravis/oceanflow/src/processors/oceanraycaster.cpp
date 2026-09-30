@@ -467,6 +467,9 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
 
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
                        positionIndicator_, sampleTransform_, mask_, surface_);
+
+    isoTF_.isoTFs[0].setHistogramSelection(histogramSelectionAll);
+
 }
 
 void OceanRaycaster::process() {
