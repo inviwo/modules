@@ -1,0 +1,37 @@
+name: 'Read Inviwo Ref'
+description: 'Resolve the inviwo/inviwo ref to check out, from the PR body "/inviwo-ref <ref>" tag or a fallback input'
+
+inputs:
+  inviwo-ref:
+    description: 'Fallback branch/tag/SHA to use if none is set in the PR body'
+    required: false
+    default: 'master'
+  gh-token:
+    description: 'GitHub token used to query the PR body via the gh api'
+    required: true
+
+outputs:
+  ref:
+    description: 'Resolved branch/tag/SHA for the inviwo/inviwo checkout'
+    value: ${{ steps.inviwo_ref.outputs.ref }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.gh-token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+      run: |
+        if [ -n "$PR_NUMBER" ]; then
+          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
+        else
+          PR_BODY=""
+        fi
+        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
+        if [ -z "$REF" ]; then
+          REF="${{ inputs.inviwo-ref }}"
+        fi
+        echo "ref=${REF}" >> $GITHUB_OUTPUT

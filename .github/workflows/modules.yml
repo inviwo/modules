@@ -26,8 +26,7 @@ env:
   VCPKG_CACHE_TOKEN: ${{ secrets.VCPKG_CACHE_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   CCACHE_BASEDIR: ${{ github.workspace }}
-  CCACHE_NODIRECT: true
-  CCACHE_NODEPEND: true
+  CCACHE_SLOPPINESS: pch_defines,time_macros
 
 # Information about the github runners can be found here
 # https://github.com/actions/runner-images
@@ -140,24 +139,6 @@ jobs:
     timeout-minutes: 360
     
     steps:
-    - name: "Read Inviwo Branch"
-      id: inviwo_ref
-      shell: bash
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-      run: |
-        if [ -n "$PR_NUMBER" ]; then
-          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
-        else
-          PR_BODY=""
-        fi
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
-        if [ -z "$REF" ]; then
-          REF="${{ inputs.inviwo_ref || 'master' }}"
-        fi
-        echo "ref=${REF}" >> $GITHUB_OUTPUT
-
     - name: Free Disk Space
       if: matrix.system == 'linux'
       uses: jlumbroso/free-disk-space@main
@@ -169,12 +150,19 @@ jobs:
         large-packages: false
         docker-images: true
         swap-storage: true
-    
+
     - name: "Clone Modules"
       uses: actions/checkout@v7
       with:
         path: modules
         submodules: false
+
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      uses: ./modules/.github/actions/read-inviwo-ref
+      with:
+        inviwo-ref: ${{ inputs.inviwo_ref || 'master' }}
+        gh-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v7
@@ -270,6 +258,32 @@ jobs:
       with:
         limit-access-to-actor: true
 
+  ccache-summary:
+    name: "Ccache Statistics"
+    needs: build
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Clone Inviwo"
+      uses: actions/checkout@v7
+      with:
+        repository: inviwo/inviwo
+        path: inviwo
+        submodules: false
+        sparse-checkout: |
+          .github/scripts
+
+    - name: "Download ccache summaries"
+      uses: actions/download-artifact@v8
+      with:
+        pattern: inviwo-ccache-summary-*
+        path: ccache-summaries
+      continue-on-error: true
+
+    - name: "Generate combined ccache summary"
+      shell: bash
+      run: python3 inviwo/.github/scripts/ccache-summary.py ccache-summaries >> "$GITHUB_STEP_SUMMARY"
+
   regression:
     name: "Regression"
     runs-on: [regression, macOS]
@@ -278,28 +292,17 @@ jobs:
     timeout-minutes: 320
     steps:
 
-    - name: "Read Inviwo Branch"
-      id: inviwo_ref
-      shell: bash
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-      run: |
-        if [ -n "$PR_NUMBER" ]; then
-          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
-        else
-          PR_BODY=""
-        fi
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
-        if [ -z "$REF" ]; then
-          REF="${{ inputs.inviwo_ref || 'master' }}"
-        fi
-        echo "ref=${REF}" >> $GITHUB_OUTPUT
-
     - name: "Clone Modules"
       uses: actions/checkout@v7
       with:
         path: modules
+
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      uses: ./modules/.github/actions/read-inviwo-ref
+      with:
+        inviwo-ref: ${{ inputs.inviwo_ref || 'master' }}
+        gh-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v7
@@ -458,28 +461,17 @@ jobs:
     timeout-minutes: 320
     steps:
 
-    - name: "Read Inviwo Branch"
-      id: inviwo_ref
-      shell: bash
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-      run: |
-        if [ -n "$PR_NUMBER" ]; then
-          PR_BODY=$(gh api "repos/${{ github.repository }}/pulls/$PR_NUMBER" --jq '.body // empty')
-        else
-          PR_BODY=""
-        fi
-        REF=$(echo "$PR_BODY" | grep -oE '/inviwo-ref \S+' | sed 's|/inviwo-ref ||' | head -1) || true
-        if [ -z "$REF" ]; then
-          REF="${{ inputs.inviwo_ref || 'master' }}"
-        fi
-        echo "ref=${REF}" >> $GITHUB_OUTPUT
-
     - name: "Clone Modules"
       uses: actions/checkout@v6
       with:
         path: modules
+
+    - name: "Read Inviwo Branch"
+      id: inviwo_ref
+      uses: ./modules/.github/actions/read-inviwo-ref
+      with:
+        inviwo-ref: ${{ inputs.inviwo_ref || 'master' }}
+        gh-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: "Clone Inviwo"
       uses: actions/checkout@v6
@@ -559,7 +551,7 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: "Download artifact"
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: inviwo-installer-win
 
@@ -601,7 +593,7 @@ jobs:
     runs-on: macos-latest
     steps:
     - name: "Download artifact"
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: inviwo-installer-macos
 
@@ -637,7 +629,7 @@ jobs:
     runs-on: ubuntu-26.04
     steps:
     - name: "Download artifact"
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         name: inviwo-installer-linux
 
@@ -693,7 +685,7 @@ jobs:
         echo "${{ steps.changelog.outputs.changelog }}"
         echo "-- End --"
     - name: "Upload Changelog"
-      uses: actions/upload-artifact@v6
+      uses: actions/upload-artifact@v7
       with:
         name: changelog.md
         path: changelog.md
@@ -713,13 +705,13 @@ jobs:
           submodules: false
 
       - name: "Download python-api"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: inviwo-python-api
           path: modules/python-api
 
       - name: "Download cpp-api"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: inviwo-cpp-api
           path: modules/cpp-api
@@ -750,7 +742,7 @@ jobs:
 
     steps:
     - name: "Download installer"
-      uses: actions/download-artifact@v7
+      uses: actions/download-artifact@v8
       with:
         pattern: inviwo-installer-*
         merge-multiple: true
