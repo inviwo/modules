@@ -267,6 +267,7 @@ jobs:
     - name: "Clone Inviwo"
       uses: actions/checkout@v7
       with:
+        repository: inviwo/inviwo
         path: inviwo
         submodules: false
         sparse-checkout: |
