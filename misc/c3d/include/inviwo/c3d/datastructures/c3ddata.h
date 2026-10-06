@@ -30,6 +30,8 @@
 
 #include <inviwo/c3d/c3dmoduledefine.h>
 
+#include <inviwo/core/metadata/metadataowner.h>
+
 #include <memory>
 #include <string>
 #include <filesystem>
@@ -42,7 +44,7 @@
 
 namespace inviwo {
 
-class IVW_MODULE_C3D_API C3D : public ezc3d::c3d {
+class IVW_MODULE_C3D_API C3D : public ezc3d::c3d, public MetaDataOwner {
 public:
     using ezc3d::c3d::c3d;
 
@@ -53,12 +55,14 @@ public:
 
     C3D(const std::filesystem::path& path, Options options);
 
-    C3D(const C3D& rhs) : ezc3d::c3d{static_cast<const ezc3d::c3d&>(rhs).clone()} {}
+    C3D(const C3D& rhs)
+        : ezc3d::c3d{static_cast<const ezc3d::c3d&>(rhs).clone()}, MetaDataOwner{rhs} {}
     C3D(C3D&&) = default;
 
     C3D& operator=(const C3D& that) {
         if (this != &that) {
             ezc3d::c3d::operator=(static_cast<const ezc3d::c3d&>(that).clone());
+            MetaDataOwner::operator=(that);
         }
         return *this;
     }
@@ -70,7 +74,6 @@ public:
 
     ezc3d::DataNS::Data& data() { return *_data; }
     const ezc3d::DataNS::Data& data() const { return *_data; }
-
 
 private:
     void updateHeaderImpl();

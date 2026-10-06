@@ -78,9 +78,13 @@ void C3DToDataFrame::process() {
     const size_t nbPoints = header.nb3dPoints();
     const float frameRate = header.frameRate();
 
+    const size_t index = c3d.getMetaData<SizeMetaData>("sequenceIndex", 0uz);
+    const size_t sequenceSize = c3d.getMetaData<SizeMetaData>("sequenceSize", 0uz);
+
     // Build the points DataFrame
     {
         auto df = std::make_shared<DataFrame>();
+        df->copyMetaDataFrom(c3d);
 
         // Frame index column
         std::vector<int> frameIndices(nbFrames);
@@ -91,6 +95,9 @@ void C3DToDataFrame::process() {
         }
         df->addColumn("Frame", std::move(frameIndices));
         df->addColumn("Time", std::move(timeValues));
+        df->addColumn("sequenceIndex", std::views::repeat(static_cast<int>(index), nbFrames) |
+                                           std::ranges::to<std::vector<int>>())
+            ->setCustomRange(dvec2{0.0, sequenceSize});
 
         // Per-point columns
         for (size_t p = 0; p < nbPoints; ++p) {
