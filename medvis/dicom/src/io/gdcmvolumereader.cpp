@@ -687,7 +687,7 @@ GCDMVolumeRAMLoader::GCDMVolumeRAMLoader(const std::filesystem::path& file, size
 GCDMVolumeRAMLoader* GCDMVolumeRAMLoader::clone() const { return new GCDMVolumeRAMLoader(*this); }
 
 std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation& src) const {
+    const VolumeRepresentation& src, std::stop_token stop) const {
 
     const std::size_t voxels = dimension_[0] * dimension_[1] * dimension_[2];
     const auto voxelSize = format_->getSizeInBytes();
@@ -702,8 +702,10 @@ std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
         const gdcm::Image& image = reader.GetImage();
         image.GetBuffer(data.get());
     } else {
-        getVolumeData(series_, static_cast<void*>(data.get()));
+        getVolumeData(series_, static_cast<void*>(data.get()), stop);
     }
+    if (stop.stop_requested()) return nullptr;
+
     auto volumeRAM =
         createVolumeRAM(src.getDimensions(), src.getDataFormat(), data.get(), src.getSwizzleMask(),
                         src.getInterpolation(), src.getWrapping());
@@ -716,9 +718,11 @@ std::shared_ptr<VolumeRepresentation> GCDMVolumeRAMLoader::createRepresentation(
  * Reads DICOM volume data from disk to RAM
  * @param series represents the volume as collection of image file paths
  */
-void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* outData) const {
+void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* outData,
+                                        std::stop_token stop) const {
     unsigned long totalByteCount = 0;
     for (const auto& imgInfo : series.images) {
+        if (stop.stop_requested()) return;
         gdcm::ImageReader imageReader;
 
         std::ifstream imageInputStream(imgInfo.path, std::ios::binary);
@@ -746,7 +750,8 @@ void GCDMVolumeRAMLoader::getVolumeData(const dicomdir::Series& series, void* ou
 }
 
 void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                               const VolumeRepresentation&) const {
+                                               const VolumeRepresentation&,
+                                               std::stop_token stop) const {
     if (!isPartOfSequence_) {
         gdcm::ImageReader reader;
         reader.SetFileName(file_.string().c_str());
@@ -760,7 +765,7 @@ void GCDMVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentat
         image.GetBuffer(reinterpret_cast<char*>(data));
     } else {
         std::shared_ptr<VolumeRAM> volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
-        getVolumeData(series_, volumeDst->getData());
+        getVolumeData(series_, volumeDst->getData(), stop);
     }
 }
 

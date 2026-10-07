@@ -74,12 +74,13 @@ public:
     virtual ~MevisVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation&) const override;
+        const VolumeRepresentation&, std::stop_token stop) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation&) const override;
+                                      const VolumeRepresentation&,
+                                      std::stop_token stop) const override;
 
 private:
-    void readDataInto(void* destination) const;
+    void readDataInto(void* destination, std::stop_token stop) const;
     std::filesystem::path tif_file_;
     size3_t dimension_;
     const DataFormatBase* format_;
