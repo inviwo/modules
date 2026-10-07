@@ -157,8 +157,8 @@ auto createDiagonalGridDiagonal(size2_t gridDim, glm::vec<N, ComponentType> orig
     for (std::size_t j = 0; j < gridDim.y; ++j) {
         for (std::size_t i = 0; i < gridDim.x; ++i) {
             Vector pos{};
-            pos.x = deltaDist.x * i;
-            pos.y = -deltaDist.y * j;
+            pos.x = deltaDist.x * static_cast<ComponentType>(i);
+            pos.y = -deltaDist.y * static_cast<ComponentType>(j);
             res.positions[i + gridDim.x * j] = origin + pos;
         }
     }
@@ -244,27 +244,33 @@ auto createHexagonalGrid(size2_t gridDim, glm::vec<N, ComponentType> origin,
             // first case, n nodes, connected vertically down
             verticalLinePos -= static_cast<ComponentType>(0.5) * height;
             for (std::size_t i = 0; i < nodesPerLine; ++i) {
-                res.positions.push_back(origin + Vec(width * i, verticalLinePos));
+                res.positions.push_back(
+                    origin + Vec(width * static_cast<ComponentType>(i), verticalLinePos));
                 res.springs.push_back({lineIndex - nodesPerLine + i, lineIndex + i});
             }
         } else if (line == 2) {
             verticalLinePos -= static_cast<ComponentType>(0.25) * height;
             for (std::size_t i = 0; i < nodesPerLine - 1; ++i) {
-                res.positions.push_back(origin + Vec(width * i + 0.5f * width, verticalLinePos));
+                res.positions.push_back(
+                    origin +
+                    Vec(width * static_cast<ComponentType>(i) + 0.5f * width, verticalLinePos));
                 res.springs.push_back({lineIndex + i, lineIndex - nodesPerLine + i});
                 res.springs.push_back({lineIndex + i, lineIndex - nodesPerLine + i + 1});
             }
         } else if (line == 3) {
             verticalLinePos -= static_cast<ComponentType>(0.5) * height;
             for (std::size_t i = 0; i < nodesPerLine - 1; ++i) {
-                res.positions.push_back(origin + Vec(width * i + 0.5f * width, verticalLinePos));
+                res.positions.push_back(
+                    origin +
+                    Vec(width * static_cast<ComponentType>(i) + 0.5f * width, verticalLinePos));
                 res.springs.push_back({lineIndex - (nodesPerLine - 1) + i, lineIndex + i});
             }
         } else {
             // fourth case
             verticalLinePos -= static_cast<ComponentType>(0.25) * height;
             for (std::size_t i = 0; i < nodesPerLine; ++i) {
-                res.positions.push_back(origin + Vec(width * i, verticalLinePos));
+                res.positions.push_back(
+                    origin + Vec(width * static_cast<ComponentType>(i), verticalLinePos));
                 if (i == 0) {
                     // spring at the outer-left edge
                     res.springs.push_back({lineIndex, lineIndex - 3 * nodesPerLine + 2});
