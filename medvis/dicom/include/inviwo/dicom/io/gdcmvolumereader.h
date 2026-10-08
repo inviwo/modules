@@ -118,12 +118,13 @@ public:
     virtual ~GCDMVolumeRAMLoader() = default;
 
     virtual std::shared_ptr<VolumeRepresentation> createRepresentation(
-        const VolumeRepresentation& src) const override;
+        const VolumeRepresentation& src, std::stop_token stop) const override;
     virtual void updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                      const VolumeRepresentation&) const override;
+                                      const VolumeRepresentation&,
+                                      std::stop_token stop) const override;
 
 private:
-    void getVolumeData(const dicomdir::Series& series, void* outData) const;  // static here?
+    void getVolumeData(const dicomdir::Series& series, void* outData, std::stop_token stop) const;
     std::filesystem::path file_;  // only relevant for single volumes
     size3_t dimension_;
     const DataFormatBase* format_;

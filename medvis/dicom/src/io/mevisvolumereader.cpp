@@ -209,10 +209,10 @@ MevisVolumeRAMLoader* MevisVolumeRAMLoader::clone() const {
 }
 
 std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation(
-    const VolumeRepresentation&) const {
+    const VolumeRepresentation&, std::stop_token stop) const {
     return dispatching::singleDispatch<std::shared_ptr<VolumeRepresentation>,
                                        dispatching::filter::All>(
-        format_->getId(), [this]<typename T>() {
+        format_->getId(), [&]<typename T>() -> std::shared_ptr<VolumeRAMPrecision<T>> {
             const std::size_t size = glm::compMul(dimension_);
             auto data = std::make_unique<T[]>(size);
             if (!data) {
@@ -222,7 +222,8 @@ std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation
                     tif_file_);
             }
 
-            readDataInto(reinterpret_cast<char*>(data.get()));
+            readDataInto(reinterpret_cast<char*>(data.get()), stop);
+            if (stop.stop_requested()) return nullptr;
             auto repr = std::make_shared<VolumeRAMPrecision<T>>(data.get(), dimension_);
             data.release();
             return repr;
@@ -230,14 +231,15 @@ std::shared_ptr<VolumeRepresentation> MevisVolumeRAMLoader::createRepresentation
 }
 
 void MevisVolumeRAMLoader::updateRepresentation(std::shared_ptr<VolumeRepresentation> dest,
-                                                const VolumeRepresentation&) const {
+                                                const VolumeRepresentation&,
+                                                std::stop_token stop) const {
     auto volumeDst = std::static_pointer_cast<VolumeRAM>(dest);
     auto data = volumeDst->getData();
 
-    readDataInto(reinterpret_cast<void*>(data));
+    readDataInto(reinterpret_cast<void*>(data), std::move(stop));
 }
 
-void MevisVolumeRAMLoader::readDataInto(void* destination) const {
+void MevisVolumeRAMLoader::readDataInto(void* destination, std::stop_token stop) const {
     // currently only packed, tiled volume data is supported
 
     auto formatErrorMsg = [filename = tif_file_](const auto& msg) {
@@ -303,6 +305,8 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     IVW_ASSERT(tilerowbytes == tilesize.x * bytespersample,
                "tilerowbytes and tilesize.x * bytespersample differ");
 
+    if (stop.stop_requested()) return;
+
     unsigned char* tilebuf = static_cast<unsigned char*>(_TIFFmalloc(tilesz));
     if (!tilebuf) {
         throw DataReaderException(formatErrorMsg("could not allocate tile buffer"));
@@ -316,6 +320,7 @@ void MevisVolumeRAMLoader::readDataInto(void* destination) const {
     });
 
     for (std::size_t z0 = 0; z0 < dimension_[2]; z0 += tilesize.z) {
+        if (stop.stop_requested()) return;
         for (std::size_t y0 = 0; y0 < dimension_[1]; y0 += tilesize.y) {
             for (std::size_t x0 = 0; x0 < dimension_[0]; x0 += tilesize.x) {
                 const auto tiffreadtile_ret = TIFFReadTile(
