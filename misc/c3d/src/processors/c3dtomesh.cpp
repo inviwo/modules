@@ -68,6 +68,10 @@ C3DToMesh::C3DToMesh()
                  BrushingModification::Highlighted,
              InvalidationLevel::Valid}}}
     , outport_{"outport", ""_help}
+    , cropFrames_{"crop", "Crop Frames",
+                  "Will use the `Frame Range` property to crop the frames of the input data "
+                  "if enabled"_help,
+                  false}
     , frame_{"frame", "Frame Range", "Range of frame indices to include in the mesh"_help, 0, 0, 0,
              0}
     , markerRadius_{"markerRadius",
@@ -87,7 +91,7 @@ C3DToMesh::C3DToMesh()
     , picking_{this, 1, [this](PickingEvent* e) { handlePicking(e); }} {
 
     addPorts(inport_, bnl_, outport_);
-    addProperties(frame_, markerRadius_, skipEmpty_, enableTooltips_, pointSelection_);
+    addProperties(cropFrames_, frame_, markerRadius_, skipEmpty_, enableTooltips_, pointSelection_);
 }
 
 void C3DToMesh::process() {
@@ -122,8 +126,9 @@ void C3DToMesh::process() {
         }
     }
 
-    const size_t startFrame = std::min(frame_.getStart(), nbFrames - 1);
-    const size_t endFrame = std::min(frame_.getEnd(), nbFrames - 1);
+    const size_t startFrame = std::min(cropFrames_ ? frame_.getStart() : 0uz, nbFrames - 1uz);
+    const size_t endFrame =
+        std::min(cropFrames_ ? frame_.getEnd() : nbFrames - 1uz, nbFrames - 1uz);
 
     std::vector<vec3> positions;
     std::vector<vec4> colors;

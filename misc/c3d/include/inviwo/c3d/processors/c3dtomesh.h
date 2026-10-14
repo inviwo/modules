@@ -74,6 +74,7 @@ private:
     BrushingAndLinkingInport bnl_;
     MeshOutport outport_;
 
+    BoolProperty cropFrames_;
     IntSizeTMinMaxProperty frame_;
     FloatProperty markerRadius_;
     BoolProperty skipEmpty_;
