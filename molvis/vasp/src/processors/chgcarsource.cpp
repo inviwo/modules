@@ -490,7 +490,7 @@ std::shared_ptr<Volume> createVolume(std::string_view name, dvec2 dataRange, con
                                      std::shared_ptr<VolumeRAMPrecision<float>> rep) {
     auto volume = std::make_shared<Volume>(
         VolumeConfig{.dimensions = rep->getDimensions(),
-                     .format = DataFormat<float>::get(),
+                     .formatId = DataFormatId::Float32,
                      .wrapping = wrapping3d::repeatAll,
                      .xAxis = Axis{"x", units::unit_from_string("Angstrom")},
                      .yAxis = Axis{"y", units::unit_from_string("Angstrom")},
