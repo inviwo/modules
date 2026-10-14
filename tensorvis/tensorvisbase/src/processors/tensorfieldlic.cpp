@@ -185,7 +185,7 @@ void TensorFieldLIC::process() {
     }
 
     LayerConfig newConfig{.dimensions = outputDimensions_.get(),
-                          .format = DataFormatBase::get(DataFormatId::Vec4Float32),
+                          .formatId = DataFormatId::Vec4Float32,
                           .swizzleMask = swizzlemasks::defaultData(1),
                           .dataRange = dvec2{0.0, 1.0},
                           .valueRange = dvec2{0.0, 1.0}};
