@@ -54,6 +54,7 @@ public:
     };
 
     C3D(const std::filesystem::path& path, Options options);
+    C3D(const C3D& source, size_t firstFrame, size_t lastFrame);
 
     C3D(const C3D& rhs)
         : ezc3d::c3d{static_cast<const ezc3d::c3d&>(rhs).clone()}, MetaDataOwner{rhs} {}
