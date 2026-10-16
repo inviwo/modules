@@ -55,7 +55,7 @@ const ProcessorInfo& C3DSequenceCrop::getProcessorInfo() const { return processo
 
 C3DSequenceCrop::C3DSequenceCrop()
     : PoolProcessor{}
-    , inport_{"c3dsequnence", "C3D sequence data to be cropped"_help}
+    , inport_{"c3dsequence", "C3D sequence data to be cropped"_help}
     , outport_{"outport", "Resulting cropped frame subset of the C3D input"_help}
     , dataframe_{"dataframe",
                  "DataFrame providing start and stop frames along with sequence IDs"_help}

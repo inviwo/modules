@@ -13,6 +13,7 @@ set(HEADER_FILES
     include/inviwo/c3d/processors/c3dcrop.h
     include/inviwo/c3d/processors/c3dpointalignment.h
     include/inviwo/c3d/processors/c3dsequencecrop.h
+    include/inviwo/c3d/processors/c3dsequenceinfo.h
     include/inviwo/c3d/processors/c3dsource.h
     include/inviwo/c3d/processors/c3dtodataframe.h
     include/inviwo/c3d/processors/c3dtomesh.h
@@ -31,6 +32,7 @@ set(SOURCE_FILES
     src/processors/c3dcrop.cpp
     src/processors/c3dpointalignment.cpp
     src/processors/c3dsequencecrop.cpp
+    src/processors/c3dsequenceinfo.cpp
     src/processors/c3dsource.cpp
     src/processors/c3dtodataframe.cpp
     src/processors/c3dtomesh.cpp
