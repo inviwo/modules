@@ -84,7 +84,7 @@ C3D::C3D(const std::filesystem::path& path, Options options) : ezc3d::c3d{} {
             // number of frames is larger than 65535. We need to make sure the
             // rotational data are not present in the file after the points and analogs
             // data in order to use "all-of-file" (nbFrames = -1) reading
-            nbFrames = -1;
+            nbFrames = static_cast<size_t>(-1);
         }
 
         for (size_t j = 0; j < nbFrames; ++j) {
@@ -135,6 +135,36 @@ C3D::C3D(const std::filesystem::path& path, Options options) : ezc3d::c3d{} {
 
     // Close the file
     stream.close();
+}
+
+C3D::C3D(const C3D& source, size_t firstFrame, size_t lastFrame)
+    : ezc3d::c3d{}, MetaDataOwner{source} {
+
+    // identical with ezc3d::c3d::clone() except for cloning the data
+    _filePath = source._filePath;
+    options = source.options.clone();
+    _header = std::make_shared<ezc3d::Header>(source._header->clone());
+    _parameters = std::make_shared<ezc3d::ParametersNS::Parameters>(source._parameters->clone());
+    _data = std::make_shared<ezc3d::DataNS::Data>();
+
+    // clone only valid subset of frames
+    firstFrame = std::max(firstFrame, _header->firstFrame());
+    lastFrame = std::min(lastFrame, _header->lastFrame());
+
+    // create firstFrame - 1 empty frames so we can subsequently add the actual frames
+    if (firstFrame > 0) {
+        _data->frame({}, firstFrame - 1u);
+    }
+    for (const auto& frame : source._data->frames() | std::views::drop(firstFrame) |
+                                 std::views::take(lastFrame - firstFrame + 1)) {
+        _data->frame(frame.clone());
+    }
+
+    // update header
+    _header->firstFrame(firstFrame);
+    _header->lastFrame(lastFrame);
+
+    updateParametersImpl();
 }
 
 ezc3d::DataNS::Points3dNS::Points copyPoints(const ezc3d::DataNS::Frame& srcFrame) {
@@ -253,7 +283,8 @@ std::shared_ptr<ezc3d::c3d> copy(const ezc3d::c3d& src) {
 }
 
 // The updateHeader and updateParameters functions are not exported using EZC3D_API so we can't call
-// them So as a _ugly_ _ugly_ workaround, we copy the code here. This is not ideal but it works for now.
+// them So as a _ugly_ _ugly_ workaround, we copy the code here. This is not ideal but it works for
+// now.
 
 void C3D::updateHeaderImpl() {
     // Parameter is always consider as the right value.
