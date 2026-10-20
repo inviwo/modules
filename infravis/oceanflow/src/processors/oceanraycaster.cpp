@@ -90,9 +90,46 @@ float mapDepthToTexture(float depth) {{
     return c.x + depth * c.y + depth*depth*c.z + depth*depth*depth*c.w;
 }}
 
-vec3 mapPositionToTexture(vec3 position) {{
+const float PI = 3.14159265358979323846;
+vec3 cartesianToSpherical(vec3 p) {{
+    float r = length(p);
+    float theta = atan(p.y, p.x);           // azimuth, [-π, π]
+    float phi = atan(length(p.xy), p.z);    // polar angle, [0, π]
+
+    return vec3(r, theta, phi);
+}}
+
+vec3 cartesianToLatLongNormalized(vec3 p) {{
+    vec3 rThetaPhi = cartesianToSpherical(p);
+    return vec3(rThetaPhi.x, 1.0 - (rThetaPhi.y / PI / 2.0 + 0.5), rThetaPhi.z / PI);
+}}
+
+// Take a texture pos [0,1] return a pos [-1,1]
+vec3 textureSamplePosToSpherePos(vec3 p) {{
+    return 2.0 * p - vec3(1.0);
+}}
+
+vec3 mapZPositionToTexture(vec3 position) {{
     float z = mapDepthToTexture(position.z * 6000.0 / zZoom) / {0}Parameters.dimensions.z;
     return vec3(position.x, position.y, z);
+}}
+
+const vec2 lonRange = vec2(-4.15278, 30.18021);
+const vec2 latRange = vec2(48.491699, 65.891418);
+
+float linearMap(float val, vec2 from, vec2 to) {{
+    return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
+}}
+vec3 mapPositionToTexture(vec3 position) {{
+    vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(position));    
+    float r = linearMap(1-rThetaPhi.x, vec2(0, 1), vec2(0, 1));
+    float theta = -rThetaPhi.y;
+    float phi = rThetaPhi.z;
+
+    float x = linearMap(theta * 180 / PI, lonRange, vec2(0, 1));
+    float y = linearMap(phi * 180 / PI - 90, latRange, vec2(0, 1));
+    float z = mapDepthToTexture(r * 6000.0 / zZoom) / {0}Parameters.dimensions.z;
+    return vec3(x, y, z);
 }}
 
 )");
@@ -100,6 +137,12 @@ vec3 mapPositionToTexture(vec3 position) {{
 constexpr std::string_view sample = util::trim(R"(
 {0}SamplePosition = mapPositionToTexture({0}SamplePosition);
 )");
+
+constexpr std::string_view continueIfOutside = util::trim(R"(
+if (any(lessThan({0}SamplePosition, vec3(0.0))) || any(greaterThan({0}SamplePosition, vec3(1.0)))) {{
+    continue;
+}})");
+
 }  // namespace
 }  // namespace nemo
 
@@ -119,6 +162,9 @@ auto NemoVolumeComponent::getSegments() -> std::vector<Segment> {
     segments.emplace_back(Segment{.snippet = fmt::format(nemo::sample, getName()),
                                   .placeholder = placeholder::loop,
                                   .priority = 401});
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::continueIfOutside, getName()),
+                                  .placeholder = placeholder::loop,
+                                  .priority = 402});
     return segments;
 }
 
@@ -361,30 +407,11 @@ constexpr std::string_view uniforms = util::trim(R"(
 uniform ImageParameters {name}Parameters;
 uniform sampler2D {name};
 
-const float PI = 3.14159265358979323846;
-vec3 cartesianToSpherical(vec3 p) {{
-    float r = length(p);
-    float theta = atan(p.y, p.x);           // azimuth, [-π, π]
-    float phi = atan(length(p.xy), p.z);    // polar angle, [0, π]
-
-    return vec3(r, theta, phi);
-}}
-
-vec3 cartesianToLatLongNormalized(vec3 p) {{
-    vec3 rThetaPhi = cartesianToSpherical(p);
-    return vec3(rThetaPhi.x, 1.0 - (rThetaPhi.y / PI / 2.0 + 0.5), rThetaPhi.z / PI);
-}}
-
-// Take a texture pos [0,1] return a pos [-1,1]
-vec3 textureSamplePosToSpherePos(vec3 p) {{
-    return 2.0 * p - vec3(1.0);
-}}
-
 vec3 radiiAtTexturePos(vec3 p) {{
     vec3 rLatLong = cartesianToLatLongNormalized(textureSamplePosToSpherePos(p));
     float depth = texture({name}, rLatLong.yz).x;
-    const float maxDepth = 10000.0;
-    const float depthFrac = (outerRadius - innerRadius) / outerRadius;
+    const float maxDepth = 100.0;
+    float depthFrac = 0.2;//(outerRadius - innerRadius) / outerRadius;
     float normDepth = depth / maxDepth;
     float surfaceNormRadii = 1.0 + depthFrac * normDepth;
     return vec3(rLatLong.x, surfaceNormRadii, 1.0 + normDepth);
@@ -408,15 +435,33 @@ if (rs.x < rs.y) {{
 }}
 )");
 
+constexpr std::string_view post = util::trim(R"(
+vec3 rs = radiiAtTexturePos(entryPoint);
+vec4 c = pow(vec4(0.3 * vec3(clamp(rs.z/3000,0,1)), 0.3), vec4(.2));  
+result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
+result.a = result.a + (1.0 - result.a) * c.a;
+)");
+
+constexpr std::string_view grid = util::trim(R"(
+vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(entryPoint));
+if (mod(rThetaPhi.y*180 / PI, 15) < 0.2 || mod(rThetaPhi.z*180 / PI, 15) < 0.1) {{
+    result = mix(result, vec4(0.4,0.4,0.4,1), 0.5);
+}}
+)");
+
 }  // namespace
 }  // namespace surface
 
 auto SurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
     if (surface.isConnected()) {
-        return {{fmt::format(surface::uniforms, "name"_a = getName()), placeholder::uniform, 900},
-                {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900},
-                {fmt::format(surface::loop, "name"_a = getName()), placeholder::loop, 1400}};
+        return {
+            {fmt::format(surface::uniforms, "name"_a = getName()), placeholder::uniform, 900},
+            {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900},
+            {fmt::format(surface::loop, "name"_a = getName()), placeholder::loop, 1400},
+            {fmt::format(surface::post, "name"_a = getName()), placeholder::post, 500},
+            {fmt::format(surface::grid, "name"_a = getName()), placeholder::post, 2000},
+        };
     } else {
         return {};
     }
@@ -454,7 +499,18 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
 
     , cubeEntryExit_{}
     , sphericalEntryExit_{&camera_.camera}
-    , entryExit_{"Entry Exit", {&cubeEntryExit_, &sphericalEntryExit_}}
+    , analyticalEntryExit_{[this](CoordinateSpace from, CoordinateSpace to) -> glm::dmat4 {
+                                return mat4{1.0};
+                               /*auto data = volume_.volumePort.getData();
+                               if (!data) return mat4{1.0};
+                               SpatialIdentity spatial{
+                                   data->prototype().model.value_or(VolumeConfig::defaultModel),
+                                   data->prototype().world.value_or(VolumeConfig::defaultWorld)};
+                               return spatial.getCoordinateTransformer().getMatrix(from, to);
+                                */
+                           },
+                           camera_.getName()}
+    , entryExit_{"Entry Exit", {&cubeEntryExit_, &sphericalEntryExit_, &analyticalEntryExit_}}
     , background_{*this}
     , isoTF_{&volume_.volumePort}
     , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
@@ -469,7 +525,6 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
                        positionIndicator_, sampleTransform_, mask_, surface_);
 
     isoTF_.isoTFs[0].setHistogramSelection(histogramSelectionAll);
-
 }
 
 void OceanRaycaster::process() {
