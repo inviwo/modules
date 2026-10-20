@@ -73,9 +73,9 @@ auto createLineGrid(std::size_t numNodes, ComponentType deltaDist) -> Grid<N, Co
                         std::vector<bool>(numNodes, false)};
 
     // add nodes placed equidistantly
-    const ComponentType origin((numNodes - 1) * deltaDist * 0.5);
+    const ComponentType origin(static_cast<double>(numNodes - 1) * deltaDist * 0.5);
     for (std::size_t i = 0; i < numNodes; ++i) {
-        res.positions[i].x = -origin + deltaDist * i;
+        res.positions[i].x = -origin + deltaDist * static_cast<double>(i);
     }
     // add springs in between nodes
     for (std::size_t i = 0; i < numNodes - 1; ++i) {
@@ -106,8 +106,8 @@ auto createRectangularGrid(size2_t gridDim, glm::vec<N, ComponentType> origin,
     for (std::size_t j = 0; j < gridDim.y; ++j) {
         for (std::size_t i = 0; i < gridDim.x; ++i) {
             Vector pos{};
-            pos.x = deltaDist.x * i;
-            pos.y = -deltaDist.y * j;
+            pos.x = deltaDist.x * static_cast<double>(i);
+            pos.y = -deltaDist.y * static_cast<double>(j);
             res.positions[i + gridDim.x * j] = origin + pos;
         }
     }
