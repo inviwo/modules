@@ -14,7 +14,7 @@ ivw_group("Source Files" ${SOURCE_FILES})
 set(PYTHON_FILES
     python/processors/DataFrameColumnMatcher.py
     python/processors/DataFrameL2norm.py
-    python/processors/PlotConfiguration.py
+    python/processors/PlotColumnConfiguration.py
 )
 ivw_group("Python Files" ${PYTHON_FILES})
 
