@@ -40,6 +40,7 @@
 #include <modules/basegl/algorithm/entryexitpoints.h>
 #include <modules/basegl/processors/raycasting/volumeraycasterbase.h>
 #include <modules/basegl/shadercomponents/alternativeshadercomponent.h>
+#include <modules/basegl/shadercomponents/analyticentryexitcomponent.h>
 #include <modules/basegl/shadercomponents/backgroundcomponent.h>
 #include <modules/basegl/shadercomponents/cameracomponent.h>
 #include <modules/basegl/shadercomponents/entryexitcomponent.h>
@@ -134,6 +135,7 @@ private:
     CameraComponent camera_;
     EntryExitComponent cubeEntryExit_;
     SphericalEntryExitPoints sphericalEntryExit_;
+    AnalyticEntryExitComponent analyticalEntryExit_;
     AlternativeShaderComponent entryExit_;
     BackgroundComponent background_;
     IsoTFComponent<1> isoTF_;
