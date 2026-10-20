@@ -151,18 +151,24 @@ C3D::C3D(const C3D& source, size_t firstFrame, size_t lastFrame)
     firstFrame = std::max(firstFrame, _header->firstFrame());
     lastFrame = std::min(lastFrame, _header->lastFrame());
 
-    // create firstFrame - 1 empty frames so we can subsequently add the actual frames
-    if (firstFrame > 0) {
-        _data->frame({}, firstFrame - 1u);
-    }
+    // Only add the frames to keep. Adding empty placeholders, as expected by ezc3d causes issues in
+    // connection with the frame count stored in the header, the point parameters, and _data
+    // itself. The ezc3d implementation updates the header frame count based on point parameters and
+    // data, which leads to a total frame count of firstFrame + (lastFrame - firstFrame + 1). The
+    // problem with this is that frame indices are still zero-based (not firstFrame), but the max
+    // frame index in the header is now beyond the vector of frames in _data.
     for (const auto& frame : source._data->frames() | std::views::drop(firstFrame) |
                                  std::views::take(lastFrame - firstFrame + 1)) {
         _data->frame(frame.clone());
     }
 
-    // update header
-    _header->firstFrame(firstFrame);
-    _header->lastFrame(lastFrame);
+    // update header, reset firstFrame to 0 since we did not any empty placeholder frames
+    _header->firstFrame(0);
+    _header->lastFrame(lastFrame - firstFrame);
+
+    // update frame count in point parameters
+    auto& grpPoint(_parameters->group(parameters().groupIdx("POINT")));
+    grpPoint.parameter(grpPoint.parameterIdx("FRAMES")).set(_header->nbFrames());
 
     updateParametersImpl();
 }
