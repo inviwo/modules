@@ -54,7 +54,7 @@ FitsVolumeRaycaster::FitsVolumeRaycaster(std::string_view identifier, std::strin
     , fits_{"volume"}
     , entryExit_{}
     , background_{*this}
-    , isoTF_{fits_.volumePort_}
+    , isoTF_{TFData{&fits_.volumePort_}}
     , raycasting_{fits_.getName(), isoTF_.isoTFs[0]}
     , camera_{"camera", util::boundingBox(fits_.volumePort_)}
     , light_{&camera_.camera} {
