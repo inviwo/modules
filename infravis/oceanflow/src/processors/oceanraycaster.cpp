@@ -410,7 +410,7 @@ uniform sampler2D {name};
 vec3 radiiAtTexturePos(vec3 p) {{
     vec3 rLatLong = cartesianToLatLongNormalized(textureSamplePosToSpherePos(p));
     float depth = texture({name}, rLatLong.yz).x;
-    const float maxDepth = 100.0;
+    const float maxDepth = 5000.0;
     float depthFrac = 0.2;//(outerRadius - innerRadius) / outerRadius;
     float normDepth = depth / maxDepth;
     float surfaceNormRadii = 1.0 + depthFrac * normDepth;
@@ -437,7 +437,8 @@ if (rs.x < rs.y) {{
 
 constexpr std::string_view post = util::trim(R"(
 vec3 rs = radiiAtTexturePos(entryPoint);
-vec4 c = pow(vec4(0.3 * vec3(clamp(rs.z/3000,0,1)), 0.3), vec4(.2));  
+vec4 c = applyTF(surfaceTF, rs.z);
+//vec4 c = pow(vec4(0.3 * vec3(clamp(rs.z/3000,0,1)), 0.3), vec4(.2));  
 result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
 result.a = result.a + (1.0 - result.a) * c.a;
 )");
@@ -500,14 +501,13 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     , cubeEntryExit_{}
     , sphericalEntryExit_{&camera_.camera}
     , analyticalEntryExit_{[this](CoordinateSpace from, CoordinateSpace to) -> glm::dmat4 {
-                                return mat4{1.0};
-                               /*auto data = volume_.volumePort.getData();
-                               if (!data) return mat4{1.0};
-                               SpatialIdentity spatial{
-                                   data->prototype().model.value_or(VolumeConfig::defaultModel),
-                                   data->prototype().world.value_or(VolumeConfig::defaultWorld)};
-                               return spatial.getCoordinateTransformer().getMatrix(from, to);
-                                */
+                               return mat4{1.0};
+                               // auto data = volume_.volumePort.getData();
+                               // if (!data) return mat4{1.0};
+                               // SpatialIdentity spatial{
+                               //     data->prototype().model.value_or(VolumeConfig::defaultModel),
+                               //     data->prototype().world.value_or(VolumeConfig::defaultWorld)};
+                               // return spatial.getCoordinateTransformer().getMatrix(from, to);
                            },
                            camera_.getName()}
     , entryExit_{"Entry Exit", {&cubeEntryExit_, &sphericalEntryExit_, &analyticalEntryExit_}}
@@ -519,10 +519,12 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     , positionIndicator_{}
     , sampleTransform_{}
     , mask_{"Mask", volume_.volumePort.getIdentifier()}
-    , surface_{} {
+    , surface_{}
+    , surfaceTF_{fmt::format("{}TF", surface_.getName()), fmt::format("{} TF", surface_.getName()),
+                 ""_help, TFData{&surface_.surface}} {
 
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
-                       positionIndicator_, sampleTransform_, mask_, surface_);
+                       positionIndicator_, sampleTransform_, mask_, surface_, surfaceTF_);
 
     isoTF_.isoTFs[0].setHistogramSelection(histogramSelectionAll);
 }

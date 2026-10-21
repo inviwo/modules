@@ -52,6 +52,7 @@
 #include <modules/basegl/shadercomponents/volumecomponent.h>
 #include <modules/basegl/shadercomponents/maskcomponent.h>
 #include <modules/basegl/shadercomponents/temporalvolumecomponent.h>
+#include <modules/basegl/shadercomponents/tfcomponent.h>
 
 namespace inviwo {
 
@@ -116,7 +117,6 @@ public:
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
     virtual std::vector<Segment> getSegments() override;
 
-private:
     LayerInport surface;
 };
 
@@ -144,7 +144,9 @@ private:
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
     VolumeMaskComponent mask_;
-    SurfaceComponent surface_;
+	
+	SurfaceComponent surface_;
+    TFComponent surfaceTF_;
 };
 
 }  // namespace inviwo
