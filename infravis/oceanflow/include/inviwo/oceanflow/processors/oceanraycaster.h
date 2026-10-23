@@ -32,6 +32,7 @@
 #include <inviwo/oceanflow/oceanflowmoduledefine.h>
 
 #include <inviwo/core/datastructures/geometry/mesh.h>
+#include <inviwo/core/interaction/cameratrackball.h>
 #include <inviwo/core/ports/volumeport.h>
 #include <inviwo/core/util/utilities.h>
 
@@ -85,30 +86,6 @@ private:
     std::string volumeName_;
 };
 
-class IVW_MODULE_OCEANFLOW_API SphericalEntryExitPoints : public ShaderComponent {
-public:
-    SphericalEntryExitPoints(CameraProperty* object);
-
-    virtual std::string_view getName() const override;
-    virtual void initializeResources(Shader& shader) override;
-    virtual void process(Shader& shader, TextureUnitContainer& cont) override;
-    virtual std::vector<Segment> getSegments() override;
-    virtual std::vector<Property*> getProperties() override;
-
-    void preprocess(Camera& camera, size2_t dim);
-
-    OrdinalProperty<dmat4> basis;
-    OrdinalProperty<double> outerRadius;
-    OrdinalProperty<double> innerRadius;
-    Mesh sphereMesh;
-    Image entryPoints;
-    Image exitPoints;
-
-    algorithm::EntryExitPointsHelper eepHelper;
-
-    CameraTrackball trackball;
-};
-
 class IVW_MODULE_OCEANFLOW_API SurfaceComponent : public ShaderComponent {
 public:
     SurfaceComponent();
@@ -133,10 +110,7 @@ public:
 private:
     NemoVolumeComponent volume_;
     CameraComponent camera_;
-    EntryExitComponent cubeEntryExit_;
-    SphericalEntryExitPoints sphericalEntryExit_;
-    AnalyticEntryExitComponent analyticalEntryExit_;
-    AlternativeShaderComponent entryExit_;
+    AnalyticEntryExitComponent entryExit_;
     BackgroundComponent background_;
     IsoTFComponent<1> isoTF_;
     RaycastingComponent raycasting_;
@@ -144,9 +118,9 @@ private:
     PositionIndicatorComponent positionIndicator_;
     SampleTransformComponent sampleTransform_;
     VolumeMaskComponent mask_;
-	
 	SurfaceComponent surface_;
     TFComponent surfaceTF_;
+    CameraTrackball trackball_;
 };
 
 }  // namespace inviwo
