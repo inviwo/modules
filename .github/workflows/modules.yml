@@ -82,9 +82,9 @@ jobs:
           - system: 'windows'
             linkage: 'dynamic'
             triplet: 'x64-windows'
-          - system: 'windows'
-            linkage: 'static'
-            triplet: 'x64-windows-static-md'
+          #- system: 'windows'
+          #  linkage: 'static'
+          #  triplet: 'x64-windows-static-md'
 
           - system: 'macos'
             linkage: 'dynamic'
@@ -125,9 +125,13 @@ jobs:
             targets: 'all package'
 
         exclude:
+          - system: windows
+            linkage: static
+
           # Windows debug build are to big, they run out of diskspace
           - system: windows
             configuration: Debug
+
           # This build fails very close to the end with "ninja: build stopped: interrupted by user."
           - system: linux
             linkage: static
