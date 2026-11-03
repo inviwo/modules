@@ -356,6 +356,7 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     addProperties(trackball_);
 
     isoTF_.isoTFs[0].setHistogramSelection(histogramSelectionAll);
+    isoTF_.isoTFs[0].setCurrentStateAsDefault();
 }
 
 void OceanRaycaster::process() {
