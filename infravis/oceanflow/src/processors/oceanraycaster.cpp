@@ -1,0 +1,368 @@
+/*********************************************************************************
+ *
+ * Inviwo - Interactive Visualization Workshop
+ *
+ * Copyright (c) 2026 Inviwo Foundation
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR
+ * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ *********************************************************************************/
+
+#include <inviwo/oceanflow/processors/oceanraycaster.h>
+
+#include <inviwo/core/algorithm/boundingbox.h>
+#include <inviwo/core/util/stringconversion.h>
+
+#include <modules/opengl/shader/shader.h>
+#include <modules/opengl/shader/shaderutils.h>
+#include <modules/basegl/shadercomponents/shadercomponentutil.h>
+#include <modules/opengl/texture/textureutils.h>
+#include <modules/opengl/volume/volumeutils.h>
+
+#include <fmt/base.h>
+#include <fmt/format.h>
+
+#include <numbers>
+
+namespace inviwo {
+
+NemoVolumeComponent::NemoVolumeComponent(std::string_view name, Gradients gradients, Document help)
+    : TemporalVolumeComponent(name, gradients, std::move(help))
+    , zZoom{"zZoom", "Z Zoom factor", util::ordinalScale(1.0f)} {}
+
+NemoVolumeComponent::~NemoVolumeComponent() = default;
+
+void NemoVolumeComponent::process(Shader& shader, TextureUnitContainer& cont) {
+    TemporalVolumeComponent::process(shader, cont);
+    utilgl::setUniforms(shader, zZoom);
+}
+
+std::vector<Property*> NemoVolumeComponent::getProperties() {
+    auto props = TemporalVolumeComponent::getProperties();
+    props.emplace_back(&zZoom);
+    return props;
+}
+
+namespace nemo {
+namespace {
+
+constexpr std::string_view uniformsZoom = util::trim(R"(
+uniform float zZoom;
+)");
+
+constexpr std::string_view depth = util::trim(R"(
+int coeffIndex(float d) {{
+    return int(floor((200*log((6 + d)/6.))/173.));
+}}
+
+vec4 nemoCoeffs[8] = vec4[](
+ vec4(-0.5020485620454235, 1.0064965390207923, -0.026022656770173513, 0.00011339152867423767),
+ vec4(-0.040511845501916374, 0.9188060606908754, -0.02326253117084194, 0.0002693122897196264),
+ vec4(4.947890418847749, 0.38650206094726314, -0.0035014310967430335, 0.000015357339276672554),
+ vec4(9.435867702868881, 0.19363090075034473, -0.0006519616483171304, 9.953310338937843e-7),
+ vec4(15.290389876996707, 0.10380091532715348, -0.000176565679655483, 1.2741608192830535e-7),
+ vec4(24.71897593205658, 0.03985744167034901, -0.000027506296541509556, 8.466529994835795e-9),
+ vec4(33.024019406608886, 0.015991187545708305, -3.9489148091425246e-6, 5.183556638826113e-10),
+ vec4(40.021437807532486, 0.007584806553897775, -4.797526641657579e-7, 2.882092803741341e-11));
+
+float mapDepthToTexture(float depth) {{
+    int index = clamp(coeffIndex(depth), 0, 7);
+    vec4 c = nemoCoeffs[index];
+    return c.x + depth * c.y + depth*depth*c.z + depth*depth*depth*c.w;
+}}
+
+const float PI = 3.14159265358979323846;
+vec3 cartesianToSpherical(vec3 p) {{
+    float r = length(p);
+    float theta = atan(p.y, p.x);           // azimuth, [-π, π]
+    float phi = atan(length(p.xy), p.z);    // polar angle, [0, π]
+
+    return vec3(r, theta, phi);
+}}
+
+vec3 cartesianToLatLongNormalized(vec3 p) {{
+    vec3 rThetaPhi = cartesianToSpherical(p);
+    return vec3(rThetaPhi.x, 1.0 - (rThetaPhi.y / PI / 2.0 + 0.5), rThetaPhi.z / PI);
+}}
+
+// Take a texture pos [0,1] return a pos [-1,1]
+vec3 textureSamplePosToSpherePos(vec3 p) {{
+    return 2.0 * p - vec3(1.0);
+}}
+
+vec3 mapZPositionToTexture(vec3 position) {{
+    float z = mapDepthToTexture(position.z * 6000.0 / zZoom) / {0}Parameters.dimensions.z;
+    return vec3(position.x, position.y, z);
+}}
+
+const vec2 lonRange = vec2(-4.15278, 30.18021);
+const vec2 latRange = vec2(48.491699, 65.891418);
+
+float linearMap(float val, vec2 from, vec2 to) {{
+    return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
+}}
+vec3 mapPositionToTexture(vec3 position) {{
+    vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(position));    
+    float r = linearMap(1-rThetaPhi.x, vec2(0, 1), vec2(0, 1));
+    float theta = -rThetaPhi.y;
+    float phi = rThetaPhi.z;
+
+    float x = linearMap(theta * 180 / PI, lonRange, vec2(0, 1));
+    float y = linearMap(phi * 180 / PI - 90, latRange, vec2(0, 1));
+    float z = mapDepthToTexture(r * 6000.0 / zZoom) / {0}Parameters.dimensions.z;
+    return vec3(x, y, z);
+}}
+
+)");
+
+constexpr std::string_view sample = util::trim(R"(
+{0}SamplePosition = mapPositionToTexture({0}SamplePosition);
+)");
+
+constexpr std::string_view continueIfOutside = util::trim(R"(
+if (any(lessThan({0}SamplePosition, vec3(0.0))) || any(greaterThan({0}SamplePosition, vec3(1.0)))) {{
+    continue;
+}})");
+
+}  // namespace
+}  // namespace nemo
+
+auto NemoVolumeComponent::getSegments() -> std::vector<Segment> {
+    auto segments = TemporalVolumeComponent::getSegments();
+
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::uniformsZoom, getName()),
+                                  .placeholder = placeholder::uniform,
+                                  .priority = 400});
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::depth, getName()),
+                                  .placeholder = placeholder::uniform,
+                                  .priority = 410});
+
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::sample, getName()),
+                                  .placeholder = placeholder::first,
+                                  .priority = 401});
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::sample, getName()),
+                                  .placeholder = placeholder::loop,
+                                  .priority = 401});
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::continueIfOutside, getName()),
+                                  .placeholder = placeholder::loop,
+                                  .priority = 402});
+    return segments;
+}
+
+VolumeMaskComponent::VolumeMaskComponent(std::string_view maskName, std::string_view volumeName)
+    : mask_{maskName}, volumeName_{volumeName} {}
+
+std::string_view VolumeMaskComponent::getName() const { return mask_.getIdentifier(); }
+
+void VolumeMaskComponent::process(Shader& shader, TextureUnitContainer& cont) {
+    utilgl::bindAndSetUniforms(shader, cont, *mask_.getData(), getName());
+}
+
+namespace mask {
+namespace {
+
+constexpr std::string_view uniforms = util::trim(R"(
+uniform VolumeParameters {0}Parameters;
+uniform sampler3D {0};
+)");
+
+constexpr std::string_view first = util::trim(R"(
+float {0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
+float {0}ValuePrev = {0}Value;
+if ({0}Value > 0.0) {{
+   color = vec4(0);
+}}
+)");
+
+constexpr std::string_view loop = util::trim(R"(
+{0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
+if ({0}Value > 0.0) {{
+   {0}ValuePrev = {0}Value;
+   continue;
+}}
+)");
+
+constexpr std::string_view loop2 = util::trim(R"(
+if ({0}ValuePrev > 0.0) {{
+    // We just left a masked region.
+    // Reset the prev values to the current value.
+    {1}VoxelPrev = {1}Voxel;
+    {1}GradientPrev = {1}Gradient;
+}}
+{0}ValuePrev = {0}Value;
+)");
+}  // namespace
+}  // namespace mask
+
+std::vector<ShaderComponent::Segment> VolumeMaskComponent::getSegments() {
+    return {{.snippet = fmt::format(mask::uniforms, getName()),
+             .placeholder = placeholder::uniform,
+             .priority = 410},
+            {.snippet = fmt::format(mask::first, getName(), volumeName_),
+             .placeholder = placeholder::first,
+             .priority = 950},
+            {.snippet = fmt::format(mask::loop, getName(), volumeName_),
+             .placeholder = placeholder::loop,
+             .priority = 410},
+            {.snippet = fmt::format(mask::loop2, getName(), volumeName_),
+             .placeholder = placeholder::loop,
+             .priority = 550}};
+}
+
+SurfaceComponent::SurfaceComponent()
+    : ShaderComponent(), surface{"surface", "Surface / depth texture"_help} {}
+
+std::string_view SurfaceComponent::getName() const { return surface.getIdentifier(); }
+
+void SurfaceComponent::process(Shader& shader, TextureUnitContainer& cont) {
+    utilgl::bindAndSetUniforms(shader, cont, surface);
+}
+
+std::vector<std::tuple<Inport*, std::string>> SurfaceComponent::getInports() {
+    return {{&surface, std::string{"surface"}}};
+}
+
+namespace surface {
+namespace {
+
+constexpr std::string_view uniforms = util::trim(R"(
+uniform ImageParameters {name}Parameters;
+uniform sampler2D {name};
+
+vec3 radiiAtTexturePos(vec3 p) {{
+    vec3 rLatLong = cartesianToLatLongNormalized(textureSamplePosToSpherePos(p));
+    float depth = texture({name}, rLatLong.yz).x;
+    const float maxDepth = 5000.0;
+    float depthFrac = 0.2;//(outerRadius - innerRadius) / outerRadius;
+    float normDepth = depth / maxDepth;
+    float surfaceNormRadii = 1.0 + depthFrac * normDepth;
+    return vec3(rLatLong.x, surfaceNormRadii, 1.0 + normDepth);
+}}
+
+)");
+
+constexpr std::string_view setup = util::trim(R"()");
+
+constexpr std::string_view loop = util::trim(R"(
+vec3 rs = radiiAtTexturePos(samplePosition);
+if (rs.x < rs.y) {{
+    vec4 c = vec4(1,rs.z,0,1);
+    shadingParams.colors = defaultMaterialColors(c.rgb);
+    shadingParams.normal = normalize(textureSamplePosToSpherePos(samplePosition));
+    shadingParams.worldPosition = (mat4(1.0) * vec4(samplePosition, 1.0)).xyz;
+    c.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);
+    
+    result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
+    result.a = result.a + (1.0 - result.a) * c.a;
+}}
+)");
+
+constexpr std::string_view post = util::trim(R"(
+vec3 rs = radiiAtTexturePos(entryPoint);
+vec4 c = applyTF(surfaceTF, rs.z);
+//vec4 c = pow(vec4(0.3 * vec3(clamp(rs.z/3000,0,1)), 0.3), vec4(.2));  
+result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
+result.a = result.a + (1.0 - result.a) * c.a;
+)");
+
+constexpr std::string_view grid = util::trim(R"(
+vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(entryPoint));
+if (mod(rThetaPhi.y*180 / PI, 15) < 0.2 || mod(rThetaPhi.z*180 / PI, 15) < 0.1) {{
+    result = mix(result, vec4(0.4,0.4,0.4,1), 0.5);
+}}
+)");
+
+}  // namespace
+}  // namespace surface
+
+auto SurfaceComponent::getSegments() -> std::vector<Segment> {
+    using namespace fmt::literals;
+    if (surface.isConnected()) {
+        return {
+            {fmt::format(surface::uniforms, "name"_a = getName()), placeholder::uniform, 900},
+            {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900},
+            {fmt::format(surface::loop, "name"_a = getName()), placeholder::loop, 1400},
+            {fmt::format(surface::post, "name"_a = getName()), placeholder::post, 500},
+            {fmt::format(surface::grid, "name"_a = getName()), placeholder::post, 2000},
+        };
+    } else {
+        return {};
+    }
+}
+
+// The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
+const ProcessorInfo OceanRaycaster::processorInfo_{
+    "org.inviwo.OceanRaycaster",                  // Class identifier
+    "Ocean Raycaster",                            // Display name
+    "Volume Rendering",                           // Category
+    CodeState::Stable,                            // Code state
+    Tags::GL | Tag{"Volume"} | Tag{"Raycaster"},  // Tags
+    R"(<Explanation of how to use the processor.>)"_unindentHelp,
+};
+
+const ProcessorInfo& OceanRaycaster::getProcessorInfo() const { return processorInfo_; }
+
+OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view displayName)
+    : VolumeRaycasterBase(identifier, displayName)
+    , volume_{"volume", NemoVolumeComponent::Gradients::Single,
+              "input Nemo volume (Only one channel will be rendered)"_help}
+    , camera_{"camera", [this]() -> std::optional<dmat4> { return entryExit_.model(); }}
+    , entryExit_{[](CoordinateSpace from, CoordinateSpace to) -> glm::dmat4 {
+                     return mat4{1.0};
+                     /*auto data = volume_.volumePort.getData();
+                     if (!data) return mat4{1.0};
+                     SpatialIdentity spatial{
+                         data->prototype().model.value_or(VolumeConfig::defaultModel),
+                         data->prototype().world.value_or(VolumeConfig::defaultWorld)};
+                     return spatial.getCoordinateTransformer().getMatrix(from, to);
+                      */
+                 },
+                 camera_.getName()}
+    , background_{*this}
+    , isoTF_{&volume_.volumePort}
+    , raycasting_{volume_.getName(), isoTF_.isoTFs[0]}
+
+    , light_{&camera_.camera}
+    , positionIndicator_{}
+    , sampleTransform_{}
+    , mask_{"Mask", volume_.volumePort.getIdentifier()}
+    , surface_{}
+    , surfaceTF_{fmt::format("{}TF", surface_.getName()), fmt::format("{} TF", surface_.getName()),
+                 ""_help, TFData{&surface_.surface}}
+    , trackball_{&camera_.camera} {
+
+    registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,
+                       positionIndicator_, sampleTransform_, mask_, surface_, surfaceTF_);
+
+    addProperties(trackball_);
+
+    isoTF_.isoTFs[0].setHistogramSelection(histogramSelectionAll);
+    isoTF_.isoTFs[0].setCurrentStateAsDefault();
+}
+
+void OceanRaycaster::process() {
+    util::checkValidChannel(raycasting_.selectedChannel(), volume_.channelsForVolume().value_or(0));
+
+    VolumeRaycasterBase::process();
+}
+
+}  // namespace inviwo
