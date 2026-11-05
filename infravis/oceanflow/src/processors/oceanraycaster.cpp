@@ -277,18 +277,23 @@ if (rs.x < rs.y) {{
 )");
 
 constexpr std::string_view post = util::trim(R"(
-vec3 rs = radiiAtTexturePos(entryPoint);
-vec4 c = applyTF(surfaceTF, rs.z);
-//vec4 c = pow(vec4(0.3 * vec3(clamp(rs.z/3000,0,1)), 0.3), vec4(.2));  
-result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
-result.a = result.a + (1.0 - result.a) * c.a;
+vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(entryPoint));
+if (result.a < 0.001) {{
+    vec3 rs = radiiAtTexturePos(entryPoint);
+    vec4 c = rThetaPhi.r < 1.0 - 10E-6 ? vec4(0.3,0.3,0.3,1.0) : applyTF(surfaceTF, rs.z);
+    vec4 c = applyTF(surfaceTF, rs.z);
+    result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
+    result.a = result.a + (1.0 - result.a) * c.a;
+}}
 )");
 
 constexpr std::string_view grid = util::trim(R"(
-vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(entryPoint));
 if (mod(rThetaPhi.y*180 / PI, 15) < 0.2 || mod(rThetaPhi.z*180 / PI, 15) < 0.1) {{
     result = mix(result, vec4(0.4,0.4,0.4,1), 0.5);
 }}
+if (mod(rThetaPhi.r*100+1, 3) < 0.2) {
+    result = mix(result, vec4(0.4,0.4,0.4,1), 0.5);
+}
 )");
 
 }  // namespace
@@ -325,7 +330,7 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     : VolumeRaycasterBase(identifier, displayName)
     , volume_{"volume", NemoVolumeComponent::Gradients::Single,
               "input Nemo volume (Only one channel will be rendered)"_help}
-    , camera_{"camera", [this]() -> std::optional<dmat4> { return entryExit_.model(); }}
+    , camera_{"camera", [this]() -> std::optional<dmat4> { return entryExit_.boundingBox(); }}
     , entryExit_{[](CoordinateSpace from, CoordinateSpace to) -> glm::dmat4 {
                      return mat4{1.0};
                      /*auto data = volume_.volumePort.getData();
