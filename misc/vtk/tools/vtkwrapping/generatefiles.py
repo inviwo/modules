@@ -107,7 +107,7 @@ def generate_files(destination: Path,
             f.write(f'#include "ivw_{name.lower()}.h"\n{source}')
 
         includes.append(f'#include "ivw_{name.lower()}.h"')
-        register.append(f"    register{data.className}(module);")
+        register.append(f"    module->registerProcessor(register{data.className}());")
 
         formatFile(destination / f"ivw_{name.lower()}.h", clangformat)
         formatFile(destination / f"ivw_{name.lower()}.cpp", clangformat)

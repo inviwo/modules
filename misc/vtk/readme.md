@@ -41,10 +41,19 @@ Recommended folder structure:
 ## Updating VTK and TTK filter processors (Maintainer Only)
 
 To generate the wrappers run the following Python script from within `modules/misc/vtk/`
+```
+python -m pip install rich requests
+```
 
 ```
 python ./tools/parsefilter.py -o generated/ --quiet --mode vtk
 ```
+or
+```
+python ./tools/parsefilter.py -o generated/ --quiet --mode vtk --clangformat "C:\Program Files\Microsoft Visual Studio\18\Community\VC\Tools\Llvm\x64\bin\clang-format.exe"
+
+```
+
 
 Currently, the wrappers are based on a XML description of the VTK ParaView filters [filters/filters.xml](https://github.com/Kitware/ParaView/blob/v5.7.0/ParaViewCore/ServerManager/SMApplication/Resources/filters.xml).
 Note that this list may be outdated. After ParaView version 5.7, the filters were split up into many more files, and even more filters became vtkPV filters which are defined for a derived ParaView subclass.
@@ -62,3 +71,4 @@ It is possible to use the TTK sources from the local vcpkg build tree. For examp
 ```
 python ./tools/parsefilter.py --ttkrepo ../../../vcpkg/buildtrees/topology-tool-kit/src/deecb0fbde-06c39bfe06.clean/ -o ../../topovis/ttk/generated/ --quiet --mode ttk
 ```
+

@@ -98,7 +98,9 @@ vtk_paraview_filters = [
     "vtkTimeToTextConvertor",
     "vtkUnstructuredGridGhostCellsGenerator",
 
-    "vtkMergeArrays", # missing inport for AppendAttributes, unknown VTK dataType
-    "vtkPassThrough"  # missing inport for PipelineConnection, unknown VTK dataType
+    "vtkMergeArrays",  # missing inport for AppendAttributes, unknown VTK dataType
+    "vtkPassThrough",  # missing inport for PipelineConnection, unknown VTK dataType
 
+    "vtkXMLPartitionedDataSetCollectionReader", # 'AddSelector': is not a member of 'vtkXMLPartitionedDataSetCollectionReader'
+    "vtkXMLMultiBlockDataReader"                # 'AddSelector': is not a member of 'vtkXMLPartitionedDataSetCollectionReader'
 ]

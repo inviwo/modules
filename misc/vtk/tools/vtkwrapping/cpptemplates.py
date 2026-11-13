@@ -29,15 +29,18 @@
 # ********************************************************************************
 
 headerTemplate = """#pragma once
+
+#include <memory>
+
 namespace inviwo {{
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {{
-void register{className}(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> register{className}();
 }}  // namespace vtkwrapper
 }}  // namespace inviwo
 """
 
-sourceTemplate = """#include <inviwo/core/common/inviwomodule.h>
+sourceTemplate = """#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -85,8 +88,8 @@ struct VTKTraits<{className}> {{
     static constexpr std::string_view doc = R"ivw({doc})ivw";
 }};
 
-void register{className}(InviwoModule* module) {{
-    module->registerProcessor<VTKGenericProcessor<{className}>>();
+std::unique_ptr<ProcessorFactoryObject> register{className}() {{
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<{className}>>>();
 }}
 
 }}  // namespace vtkwrapper
@@ -103,7 +106,8 @@ void registerVTKFilters(InviwoModule* module);
 }  // namespace vtkwrapper
 }  // namespace inviwo
 """
-mainSourceTemplate = """{includes}
+mainSourceTemplate = """#include <inviwo/core/common/inviwomodule.h>
+{includes}
 
 namespace inviwo {{
 namespace vtkwrapper {{
