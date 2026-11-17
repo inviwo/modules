@@ -50,6 +50,9 @@ public:
     TopologyFilterProperty(std::string identifier, std::string displayName);
 
     TopologyFilterProperty(const TopologyFilterProperty& rhs);
+    TopologyFilterProperty(TopologyFilterProperty&&) = delete;
+    TopologyFilterProperty& operator=(const TopologyFilterProperty&) = delete;
+    TopologyFilterProperty& operator=(TopologyFilterProperty&&) = delete;
     virtual TopologyFilterProperty* clone() const override;
     virtual ~TopologyFilterProperty() = default;
 

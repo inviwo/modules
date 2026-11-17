@@ -86,6 +86,9 @@ public:
 
         MetaDataSettings(std::string identifier, std::string displayName);
         MetaDataSettings(const MetaDataSettings& that);
+        MetaDataSettings(MetaDataSettings&&) = delete;
+        MetaDataSettings& operator=(const MetaDataSettings&) = delete;
+        MetaDataSettings& operator=(MetaDataSettings&&) = delete;
 
         virtual MetaDataSettings* clone() const override { return new MetaDataSettings(*this); }
 

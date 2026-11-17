@@ -65,26 +65,16 @@ OrdinalPropertyState<T> transformState(T val = T{1}) {
 
 ArrayUsage toArrayUsage(BufferType t) {
     switch (t) {
-        case BufferType::PositionAttrib:
-            return ArrayUsage::Position;
-        case BufferType::NormalAttrib:
-            return ArrayUsage::Normal;
-        case BufferType::ColorAttrib:
-            return ArrayUsage::Color;
-        case BufferType::TexCoordAttrib:
-            return ArrayUsage::TexCoord;
-        case BufferType::CurvatureAttrib:
-            return ArrayUsage::Curvature;
-        case BufferType::IndexAttrib:
-            return ArrayUsage::Index;
-        case BufferType::RadiiAttrib:
-            return ArrayUsage::Radii;
-        case BufferType::PickingAttrib:
-            return ArrayUsage::Picking;
-        case BufferType::ScalarMetaAttrib:
-            return ArrayUsage::Scalar;
-        default:
-            return ArrayUsage::Unknown;
+        case BufferType::PositionAttrib: return ArrayUsage::Position;
+        case BufferType::NormalAttrib: return ArrayUsage::Normal;
+        case BufferType::ColorAttrib: return ArrayUsage::Color;
+        case BufferType::TexCoordAttrib: return ArrayUsage::TexCoord;
+        case BufferType::CurvatureAttrib: return ArrayUsage::Curvature;
+        case BufferType::IndexAttrib: return ArrayUsage::Index;
+        case BufferType::RadiiAttrib: return ArrayUsage::Radii;
+        case BufferType::PickingAttrib: return ArrayUsage::Picking;
+        case BufferType::ScalarMetaAttrib: return ArrayUsage::Scalar;
+        default: return ArrayUsage::Unknown;
     }
 }
 
@@ -94,25 +84,46 @@ ArrayBufferMapper::ArrayBufferMapper(Processor& processor, ArrayUsageSelection t
                                      PickingAction::Callback callback)
     : infos{{{BufferType::PositionAttrib,
               {SourceType::Point, 1},
-              OrdinalProperty<dmat4>("transform", "Transform", transformState<dmat4>())},
+              []() -> BufferInfo::Transform {
+                  return BufferInfo::Transform{std::in_place_type_t<OrdinalProperty<dmat4>>{},
+                                               "transform", "Transform", transformState<dmat4>()};
+              }},
              {BufferType::NormalAttrib,
               {SourceType::Attribute, vtkDataSetAttributes::NORMALS},
-              OrdinalProperty<dmat4>("transform", "Transform", transformState<dmat4>())},
+              []() -> BufferInfo::Transform {
+                  return BufferInfo::Transform{std::in_place_type_t<OrdinalProperty<dmat4>>{},
+                                               "transform", "Transform", transformState<dmat4>()};
+              }},
              {BufferType::ColorAttrib,
               {SourceType::Attribute, vtkDataSetAttributes::SCALARS},
-              TransferFunctionProperty("transform", "Transform")},
+              []() -> BufferInfo::Transform {
+                  return BufferInfo::Transform{std::in_place_type_t<TransferFunctionProperty>{},
+                                               "transform", "Transform"};
+              }},
              {BufferType::TexCoordAttrib,
               {SourceType::Attribute, vtkDataSetAttributes::TCOORDS},
-              OrdinalProperty<dmat4>("transform", "Transform", transformState<dmat4>())},
-             {BufferType::CurvatureAttrib, {SourceType::None, 0}, ScaleAndOffset{}},
+              []() -> BufferInfo::Transform {
+                  return BufferInfo::Transform{std::in_place_type_t<OrdinalProperty<dmat4>>{},
+                                               "transform", "Transform", transformState<dmat4>()};
+              }},
+             {BufferType::CurvatureAttrib,
+              {SourceType::None, 0},
+              []() -> BufferInfo::Transform { return ScaleAndOffset{}; }},
              {BufferType::IndexAttrib,
               {SourceType::Attribute, vtkDataSetAttributes::GLOBALIDS},
-              ScaleAndOffset{}},
-             {BufferType::RadiiAttrib, {SourceType::None, 0}, ScaleAndOffset{}},
+              []() -> BufferInfo::Transform { return ScaleAndOffset{}; }},
+             {BufferType::RadiiAttrib,
+              {SourceType::None, 0},
+              []() -> BufferInfo::Transform { return ScaleAndOffset{}; }},
              {BufferType::PickingAttrib,
               {SourceType::None, 0},
-              OffsetAndPicking{&processor, 0, callback}},
-             {BufferType::ScalarMetaAttrib, {SourceType::None, 0}, ScaleAndOffset{}}}} {
+              [&]() -> BufferInfo::Transform {
+                  return BufferInfo::Transform{std::in_place_type_t<OffsetAndPicking>{}, &processor,
+                                               0, callback};
+              }},
+             {BufferType::ScalarMetaAttrib, {SourceType::None, 0}, []() -> BufferInfo::Transform {
+                  return ScaleAndOffset{};
+              }}}} {
 
     updateSources(nullptr);
 
@@ -224,8 +235,8 @@ std::shared_ptr<BufferBase> vtkArrayToBuffer(vtkDataArray* array,
                     so.pickingMapper.resize(static_cast<size_t>(range[1] - range[0] + 1.0));
 
                     auto trans = [&](auto val) {
-                        auto i =
-                            util::glmcomp(val, 0) + so.offset.get() - static_cast<int>(range[0]);
+                        auto i = static_cast<int>(util::glmcomp(val, 0)) + so.offset.get() -
+                                 static_cast<int>(range[0]);
                         i = std::clamp(i, decltype(i){0},
                                        static_cast<decltype(i)>(so.pickingMapper.getSize()));
                         return static_cast<unsigned int>(
@@ -245,7 +256,8 @@ std::shared_ptr<BufferBase> vtkArrayToBuffer(vtkDataArray* array,
                     dvec2 range;
                     array->GetRange(glm::value_ptr(range));
                     auto trans = [&](auto val) {
-                        const auto n = (util::glmcomp(val, 0) - range[0]) / (range[1] - range[0]);
+                        const auto n = (static_cast<double>(util::glmcomp(val, 0)) - range[0]) /
+                                       (range[1] - range[0]);
                         return tf.get().sample(n);
                     };
                     return vtk::arrayToBuffer(array, trans, repeat);
@@ -384,7 +396,7 @@ auto ArrayBufferMapper::getBufferInfo(ArrayUsage type) -> BufferInfo* {
 }
 
 ArrayBufferMapper::BufferInfo::BufferInfo(BufferType type, Source defaultSource,
-                                          Transform aTransform)
+                                          std::function<Transform()> makeTransform)
     : type{type}
     , comp{toLower(enumToStr(type)), enumToStr(type)}
     , source{"source", "Source"}
@@ -392,7 +404,7 @@ ArrayBufferMapper::BufferInfo::BufferInfo(BufferType type, Source defaultSource,
             std::numeric_limits<double>::lowest(), std::numeric_limits<double>::max(), 1, 0,
             InvalidationLevel::Valid, PropertySemantics::Text)
     , doTransform("doTransform", "Apply transformation", false)
-    , transform{std::move(aTransform)}
+    , transform{makeTransform()}
     , defaultSource{defaultSource} {
     comp.addProperties(source, range, doTransform);
     range.setReadOnly(true);

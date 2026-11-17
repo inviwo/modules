@@ -49,6 +49,9 @@ public:
     TopologyColorsProperty(std::string identifier, std::string displayName);
 
     TopologyColorsProperty(const TopologyColorsProperty& rhs);
+    TopologyColorsProperty(TopologyColorsProperty&&) = delete;
+    TopologyColorsProperty& operator=(const TopologyColorsProperty&) = delete;
+    TopologyColorsProperty& operator=(TopologyColorsProperty&&) = delete;
     virtual TopologyColorsProperty* clone() const override;
     virtual ~TopologyColorsProperty() = default;
 

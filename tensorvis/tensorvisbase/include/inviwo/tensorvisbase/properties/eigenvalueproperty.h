@@ -44,6 +44,9 @@ public:
     EigenValueProperty(std::string identifier = std::string("eigenValueProperty"),
                        std::string displayName = std::string("Eigenvalues"));
     EigenValueProperty(const EigenValueProperty& rhs);
+    EigenValueProperty(EigenValueProperty&&) = delete;
+    EigenValueProperty& operator=(const EigenValueProperty&) = delete;
+    EigenValueProperty& operator=(EigenValueProperty&&) = delete;
     virtual EigenValueProperty* clone() const override;
     virtual ~EigenValueProperty();
 

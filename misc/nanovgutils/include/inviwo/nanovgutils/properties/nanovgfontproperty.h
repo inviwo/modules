@@ -17,6 +17,9 @@ public:
 
     NanoVGFontProperty(std::string identifier, std::string displayName);
     NanoVGFontProperty(const NanoVGFontProperty& rhs);
+    NanoVGFontProperty(NanoVGFontProperty&&) = delete;
+    NanoVGFontProperty& operator=(const NanoVGFontProperty&) = delete;
+    NanoVGFontProperty& operator=(NanoVGFontProperty&&) = delete;
     virtual NanoVGFontProperty* clone() const override { return new NanoVGFontProperty(*this); }
     virtual ~NanoVGFontProperty() = default;
 

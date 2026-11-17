@@ -108,3 +108,4 @@ IVW_MODULE_C3D_API void copyRotations(const ezc3d::DataNS::Frame& srcFrame,
 }  // namespace inviwo
 
 #include <warn/pop>
+

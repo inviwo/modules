@@ -70,7 +70,7 @@ enum class ArrayUsage {
     Unknown = 1 << 9
 };
 
-}
+}  // namespace utilvtk
 
 ALLOW_FLAGS_FOR_ENUM(utilvtk::ArrayUsage);
 
@@ -165,7 +165,8 @@ public:
     struct IVW_MODULE_VTK_API BufferInfo {
         using Transform = std::variant<OrdinalProperty<dmat4>, ScaleAndOffset, OffsetAndPicking,
                                        TransferFunctionProperty>;
-        BufferInfo(BufferType type, Source defaultSource, Transform transform);
+
+        BufferInfo(BufferType type, Source defaultSource, std::function<Transform()> makeTransform);
 
         dvec2 getDataRange() const;
 
