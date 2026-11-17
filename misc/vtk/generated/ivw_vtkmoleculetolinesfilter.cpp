@@ -1,5 +1,5 @@
 #include "ivw_vtkmoleculetolinesfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -46,8 +46,9 @@ struct VTKTraits<vtkMoleculeToLinesFilter> {
         R"ivw(Convert a molecule into lines. Each atom of the input becomes a point of the output polydata, each bond a line.)ivw";
 };
 
-void registervtkMoleculeToLinesFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkMoleculeToLinesFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkMoleculeToLinesFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkMoleculeToLinesFilter>>>();
 }
 
 }  // namespace vtkwrapper

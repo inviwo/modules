@@ -1,5 +1,5 @@
 #include "ivw_vtktrianglefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -61,8 +61,9 @@ require polygonal input, and the Tetrahedralize filter
 produces unstructured grid output.)ivw";
 };
 
-void registervtkTriangleFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTriangleFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTriangleFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTriangleFilter>>>();
 }
 
 }  // namespace vtkwrapper

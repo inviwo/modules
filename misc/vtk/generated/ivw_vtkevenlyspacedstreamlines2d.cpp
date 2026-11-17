@@ -1,5 +1,5 @@
 #include "ivw_vtkevenlyspacedstreamlines2d.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -258,8 +258,9 @@ point-centered vectors aligned with plane XY.
 The output is polygonal data containing polylines.)ivw";
 };
 
-void registervtkEvenlySpacedStreamlines2D(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkEvenlySpacedStreamlines2D>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkEvenlySpacedStreamlines2D() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkEvenlySpacedStreamlines2D>>>();
 }
 
 }  // namespace vtkwrapper

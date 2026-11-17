@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkDepthImageBasedGeometryApproximation(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkDepthImageBasedGeometryApproximation();
 }  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,5 +1,5 @@
 #include "ivw_vtkgenericcontourfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -138,8 +138,9 @@ least one point-centered scalar (single-component) array.
 The output of this filter is polygonal.)ivw";
 };
 
-void registervtkGenericContourFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGenericContourFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGenericContourFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGenericContourFilter>>>();
 }
 
 }  // namespace vtkwrapper

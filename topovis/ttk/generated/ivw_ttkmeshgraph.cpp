@@ -1,5 +1,5 @@
 #include "ivw_ttkmeshgraph.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -196,8 +196,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
-void registerttkMeshGraph(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMeshGraph>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMeshGraph() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMeshGraph>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkpersistencediagram.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -484,8 +484,9 @@ https://topology-tool-kit.github.io/examples/topologicalOptimization_pegasus/
 - https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
-void registerttkPersistenceDiagram(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPersistenceDiagram>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPersistenceDiagram() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPersistenceDiagram>>>();
 }
 
 }  // namespace vtkwrapper

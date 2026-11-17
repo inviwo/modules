@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkQuadraturePointInterpolator(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkQuadraturePointInterpolator();
 }  // namespace vtkwrapper
 }  // namespace inviwo

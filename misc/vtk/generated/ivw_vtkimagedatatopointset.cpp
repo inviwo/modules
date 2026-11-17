@@ -1,5 +1,5 @@
 #include "ivw_vtkimagedatatopointset.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -51,8 +51,9 @@ overhead. This filter can be helpful in applying filters that
 expect or manipulate point coordinates.)ivw";
 };
 
-void registervtkImageDataToPointSet(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageDataToPointSet>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageDataToPointSet() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageDataToPointSet>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkdelaunay3d.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -201,8 +201,8 @@ will be found. However, in degenerate cases an enclosing tetrahedron may not be
 found and the point will be rejected.)ivw";
 };
 
-void registervtkDelaunay3D(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDelaunay3D>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDelaunay3D() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDelaunay3D>>>();
 }
 
 }  // namespace vtkwrapper

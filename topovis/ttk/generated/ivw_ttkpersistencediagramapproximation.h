@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkPersistenceDiagramApproximation(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkPersistenceDiagramApproximation();
 }  // namespace vtkwrapper
 }  // namespace inviwo

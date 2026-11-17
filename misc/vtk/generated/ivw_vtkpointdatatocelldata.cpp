@@ -1,5 +1,5 @@
 #include "ivw_vtkpointdatatocelldata.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -91,8 +91,9 @@ and the output dataset is the same type as the
 input.)ivw";
 };
 
-void registervtkPointDataToCellData(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPointDataToCellData>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPointDataToCellData() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPointDataToCellData>>>();
 }
 
 }  // namespace vtkwrapper

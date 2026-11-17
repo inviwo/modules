@@ -1,5 +1,5 @@
 #include "ivw_ttkpointdataconverter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -174,8 +174,9 @@ struct VTKTraits<ttkPointDataConverter> {
 scalar fields (for instance, from double to float).)ivw";
 };
 
-void registerttkPointDataConverter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPointDataConverter>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPointDataConverter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPointDataConverter>>>();
 }
 
 }  // namespace vtkwrapper

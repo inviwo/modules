@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkTextureMapFromField(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkTextureMapFromField();
 }  // namespace vtkwrapper
 }  // namespace inviwo

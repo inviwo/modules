@@ -1,5 +1,5 @@
 #include "ivw_vtkgenericclip.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -125,8 +125,8 @@ data sets, and it returns unstructured grid data on
 output.)ivw";
 };
 
-void registervtkGenericClip(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGenericClip>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGenericClip() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGenericClip>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkpointmerger.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -136,8 +136,8 @@ struct VTKTraits<ttkPointMerger> {
 a user defined threshold.)ivw";
 };
 
-void registerttkPointMerger(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPointMerger>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPointMerger() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPointMerger>>>();
 }
 
 }  // namespace vtkwrapper

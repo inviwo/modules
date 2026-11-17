@@ -1,5 +1,5 @@
 #include "ivw_ttkdistancematrixdistortion.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -176,8 +176,9 @@ struct VTKTraits<ttkDistanceMatrixDistortion> {
         R"ivw(This plugin, given two distance matrices representing the same points, computes the distortion between the two, according the SIM formula. It also provides, for each point, the distortion for its own distances to the other points.)ivw";
 };
 
-void registerttkDistanceMatrixDistortion(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkDistanceMatrixDistortion>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkDistanceMatrixDistortion() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkDistanceMatrixDistortion>>>();
 }
 
 }  // namespace vtkwrapper

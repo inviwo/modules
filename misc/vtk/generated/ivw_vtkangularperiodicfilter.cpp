@@ -1,5 +1,5 @@
 #include "ivw_vtkangularperiodicfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -153,8 +153,9 @@ struct VTKTraits<vtkAngularPeriodicFilter> {
 multiblock dataset)ivw";
 };
 
-void registervtkAngularPeriodicFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkAngularPeriodicFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkAngularPeriodicFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkAngularPeriodicFilter>>>();
 }
 
 }  // namespace vtkwrapper

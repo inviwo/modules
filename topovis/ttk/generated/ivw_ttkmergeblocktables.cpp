@@ -1,5 +1,5 @@
 #include "ivw_ttkmergeblocktables.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -122,8 +122,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
-void registerttkMergeBlockTables(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMergeBlockTables>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMergeBlockTables() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMergeBlockTables>>>();
 }
 
 }  // namespace vtkwrapper

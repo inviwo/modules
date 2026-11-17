@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlppolydatareader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -71,8 +71,9 @@ files. The expected file extension is
 .pvtp.)ivw";
 };
 
-void registervtkXMLPPolyDataReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLPPolyDataReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLPPolyDataReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLPPolyDataReader>>>();
 }
 
 }  // namespace vtkwrapper

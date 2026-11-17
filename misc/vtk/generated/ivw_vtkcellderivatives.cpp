@@ -1,5 +1,5 @@
 #include "ivw_vtkcellderivatives.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -150,8 +150,9 @@ input vectors (a tensor); or you may choose to pass data
 through to the output.)ivw";
 };
 
-void registervtkCellDerivatives(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkCellDerivatives>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkCellDerivatives() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkCellDerivatives>>>();
 }
 
 }  // namespace vtkwrapper

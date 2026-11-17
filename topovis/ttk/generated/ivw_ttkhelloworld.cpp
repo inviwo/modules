@@ -1,5 +1,5 @@
 #include "ivw_ttkhelloworld.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -152,8 +152,8 @@ struct VTKTraits<ttkHelloWorld> {
         R"ivw(This filter is a well documented ttk example filter that computes for each vertex of a vtkDataSet the average scalar value of itself and its neighbors.)ivw";
 };
 
-void registerttkHelloWorld(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkHelloWorld>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkHelloWorld() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkHelloWorld>>>();
 }
 
 }  // namespace vtkwrapper

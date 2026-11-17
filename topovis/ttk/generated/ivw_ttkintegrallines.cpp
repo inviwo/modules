@@ -1,5 +1,5 @@
 #include "ivw_ttkintegrallines.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -267,8 +267,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/mpiExample/)ivw";
 };
 
-void registerttkIntegralLines(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkIntegralLines>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkIntegralLines() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkIntegralLines>>>();
 }
 
 }  // namespace vtkwrapper

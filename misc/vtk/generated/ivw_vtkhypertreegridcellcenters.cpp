@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridcellcenters.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -61,8 +61,9 @@ These points can be used for placing glyphs or labeling.
 The cell attributes will be associated with the points in the output.)ivw";
 };
 
-void registervtkHyperTreeGridCellCenters(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridCellCenters>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridCellCenters() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridCellCenters>>>();
 }
 
 }  // namespace vtkwrapper

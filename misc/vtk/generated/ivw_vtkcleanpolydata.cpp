@@ -1,5 +1,5 @@
 #include "ivw_vtkcleanpolydata.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -167,8 +167,9 @@ appropriate forms (e.g., a triangle is converted into a
 line if two of its points are merged).)ivw";
 };
 
-void registervtkCleanPolyData(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkCleanPolyData>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkCleanPolyData() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkCleanPolyData>>>();
 }
 
 }  // namespace vtkwrapper

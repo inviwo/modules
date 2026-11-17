@@ -1,5 +1,5 @@
 #include "ivw_vtkrandomattributegenerator.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -153,8 +153,9 @@ This filter provides that capability to specify the data type
 of the attributes and the range for each of the components.)ivw";
 };
 
-void registervtkRandomAttributeGenerator(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkRandomAttributeGenerator>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkRandomAttributeGenerator() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkRandomAttributeGenerator>>>();
 }
 
 }  // namespace vtkwrapper

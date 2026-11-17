@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkTemporalInterpolator(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalInterpolator();
 }  // namespace vtkwrapper
 }  // namespace inviwo

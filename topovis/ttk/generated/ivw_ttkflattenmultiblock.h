@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkFlattenMultiBlock(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkFlattenMultiBlock();
 }  // namespace vtkwrapper
 }  // namespace inviwo

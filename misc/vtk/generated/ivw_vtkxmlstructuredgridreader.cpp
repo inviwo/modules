@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlstructuredgridreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -70,8 +70,9 @@ grid data file format. The standard extension is
 .vts.)ivw";
 };
 
-void registervtkXMLStructuredGridReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLStructuredGridReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLStructuredGridReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLStructuredGridReader>>>();
 }
 
 }  // namespace vtkwrapper

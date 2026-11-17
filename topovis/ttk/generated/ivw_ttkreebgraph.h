@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkReebGraph(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkReebGraph();
 }  // namespace vtkwrapper
 }  // namespace inviwo

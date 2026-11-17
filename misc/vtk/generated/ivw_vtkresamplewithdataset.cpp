@@ -1,5 +1,5 @@
 #include "ivw_vtkresamplewithdataset.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -141,8 +141,9 @@ point and cell values of this input onto the point locations of the
 the **Source Data Arrays**.")ivw";
 };
 
-void registervtkResampleWithDataSet(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkResampleWithDataSet>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkResampleWithDataSet() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkResampleWithDataSet>>>();
 }
 
 }  // namespace vtkwrapper

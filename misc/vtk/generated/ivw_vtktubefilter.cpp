@@ -1,5 +1,5 @@
 #include "ivw_vtktubefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -218,8 +218,8 @@ creates tubes around the lines in the input polygonal
 dataset. The output is also polygonal.)ivw";
 };
 
-void registervtkTubeFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTubeFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTubeFilter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTubeFilter>>>();
 }
 
 }  // namespace vtkwrapper

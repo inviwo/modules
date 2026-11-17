@@ -1,5 +1,5 @@
 #include "ivw_ttkdimensionreduction.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -740,8 +740,9 @@ H.Doraiswamy, J. Tierny, P. J. S. Silva, L. G. Nonato and C. Silva.
 IEEE Transactions on Visualization and Computer Graphics 27(2): 561-571, 2020.)ivw";
 };
 
-void registerttkDimensionReduction(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkDimensionReduction>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkDimensionReduction() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkDimensionReduction>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkimagemedian3d.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -102,8 +102,9 @@ this filter is useful for removing high-intensity,
 low-probability noise (shot noise).)ivw";
 };
 
-void registervtkImageMedian3D(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageMedian3D>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageMedian3D() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageMedian3D>>>();
 }
 
 }  // namespace vtkwrapper

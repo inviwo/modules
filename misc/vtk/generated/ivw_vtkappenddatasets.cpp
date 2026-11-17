@@ -1,5 +1,5 @@
 #include "ivw_vtkappenddatasets.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -72,8 +72,9 @@ Only the point and cell attributes that all of the input
 datasets have in common will appear in the output.)ivw";
 };
 
-void registervtkAppendDataSets(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkAppendDataSets>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkAppendDataSets() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkAppendDataSets>>>();
 }
 
 }  // namespace vtkwrapper

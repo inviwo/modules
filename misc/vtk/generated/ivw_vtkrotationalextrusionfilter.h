@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkRotationalExtrusionFilter(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkRotationalExtrusionFilter();
 }  // namespace vtkwrapper
 }  // namespace inviwo

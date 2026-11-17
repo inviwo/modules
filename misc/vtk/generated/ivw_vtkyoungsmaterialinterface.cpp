@@ -1,5 +1,5 @@
 #include "ivw_vtkyoungsmaterialinterface.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -109,8 +109,9 @@ cells produced by Eulerian or ALE simulation
 codes)ivw";
 };
 
-void registervtkYoungsMaterialInterface(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkYoungsMaterialInterface>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkYoungsMaterialInterface() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkYoungsMaterialInterface>>>();
 }
 
 }  // namespace vtkwrapper

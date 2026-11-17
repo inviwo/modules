@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkScalarFieldNormalizer(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkScalarFieldNormalizer();
 }  // namespace vtkwrapper
 }  // namespace inviwo

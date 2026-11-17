@@ -1,5 +1,5 @@
 #include "ivw_ttkfibersurface.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -348,8 +348,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
-void registerttkFiberSurface(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkFiberSurface>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkFiberSurface() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkFiberSurface>>>();
 }
 
 }  // namespace vtkwrapper

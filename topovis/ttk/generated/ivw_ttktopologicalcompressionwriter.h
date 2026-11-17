@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkTopologicalCompressionWriter(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkTopologicalCompressionWriter();
 }  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,5 +1,5 @@
 #include "ivw_vtkidfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -92,8 +92,8 @@ field data are generated from the the cell
 ids.)ivw";
 };
 
-void registervtkIdFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkIdFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkIdFilter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkIdFilter>>>();
 }
 
 }  // namespace vtkwrapper

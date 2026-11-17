@@ -1,5 +1,5 @@
 #include "ivw_vtkmeshquality.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -182,8 +182,8 @@ triangles, quadrilaterals, tetrahedra, and hexahedra. For
 other shapes, a value of 0 is assigned.)ivw";
 };
 
-void registervtkMeshQuality(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkMeshQuality>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkMeshQuality() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkMeshQuality>>>();
 }
 
 }  // namespace vtkwrapper

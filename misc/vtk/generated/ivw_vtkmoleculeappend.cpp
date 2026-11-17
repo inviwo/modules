@@ -1,5 +1,5 @@
 #include "ivw_vtkmoleculeappend.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -47,8 +47,9 @@ struct VTKTraits<vtkMoleculeAppend> {
 Note that input data arrays should match (same number of arrays with same names in each input))ivw";
 };
 
-void registervtkMoleculeAppend(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkMoleculeAppend>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkMoleculeAppend() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkMoleculeAppend>>>();
 }
 
 }  // namespace vtkwrapper

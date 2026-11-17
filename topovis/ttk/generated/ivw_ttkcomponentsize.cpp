@@ -1,5 +1,5 @@
 #include "ivw_ttkcomponentsize.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -118,8 +118,9 @@ some thresholding, to only display the largest connected components of a
 data-set.)ivw";
 };
 
-void registerttkComponentSize(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkComponentSize>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkComponentSize() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkComponentSize>>>();
 }
 
 }  // namespace vtkwrapper

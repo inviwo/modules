@@ -1,5 +1,5 @@
 #include "ivw_ttkmergetree.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -292,8 +292,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/mergeTreeWAE/)ivw";
 };
 
-void registerttkMergeTree(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMergeTree>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMergeTree() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMergeTree>>>();
 }
 
 }  // namespace vtkwrapper

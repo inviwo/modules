@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkIdentifierRandomizer(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkIdentifierRandomizer();
 }  // namespace vtkwrapper
 }  // namespace inviwo

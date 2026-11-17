@@ -1,5 +1,5 @@
 #include "ivw_vtktessellatorfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -121,8 +121,9 @@ the original field. This is useful for datasets containing
 quadratic cells.)ivw";
 };
 
-void registervtkTessellatorFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTessellatorFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTessellatorFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTessellatorFilter>>>();
 }
 
 }  // namespace vtkwrapper

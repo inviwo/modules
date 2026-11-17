@@ -1,5 +1,5 @@
 #include "ivw_vtktexturemaptocylinder.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -114,8 +114,9 @@ t-coordinate is controlled by the projection of points
 along the axis.)ivw";
 };
 
-void registervtkTextureMapToCylinder(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTextureMapToCylinder>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTextureMapToCylinder() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTextureMapToCylinder>>>();
 }
 
 }  // namespace vtkwrapper

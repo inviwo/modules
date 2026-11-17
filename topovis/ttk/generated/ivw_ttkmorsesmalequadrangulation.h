@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkMorseSmaleQuadrangulation(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkMorseSmaleQuadrangulation();
 }  // namespace vtkwrapper
 }  // namespace inviwo

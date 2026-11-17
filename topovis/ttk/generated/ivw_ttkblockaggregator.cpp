@@ -1,5 +1,5 @@
 #include "ivw_ttkblockaggregator.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -149,8 +149,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
-void registerttkBlockAggregator(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkBlockAggregator>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkBlockAggregator() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkBlockAggregator>>>();
 }
 
 }  // namespace vtkwrapper

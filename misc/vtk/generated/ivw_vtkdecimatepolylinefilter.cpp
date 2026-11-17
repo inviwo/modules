@@ -1,5 +1,5 @@
 #include "ivw_vtkdecimatepolylinefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -94,8 +94,9 @@ As this filter works on polylines, you may need to call Triangle Strips before c
 this filter.)ivw";
 };
 
-void registervtkDecimatePolylineFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDecimatePolylineFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDecimatePolylineFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDecimatePolylineFilter>>>();
 }
 
 }  // namespace vtkwrapper

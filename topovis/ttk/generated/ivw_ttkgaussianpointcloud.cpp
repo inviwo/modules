@@ -1,5 +1,5 @@
 #include "ivw_ttkgaussianpointcloud.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -150,8 +150,9 @@ struct VTKTraits<ttkGaussianPointCloud> {
 casting samples from a Gaussian distribution.)ivw";
 };
 
-void registerttkGaussianPointCloud(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkGaussianPointCloud>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkGaussianPointCloud() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkGaussianPointCloud>>>();
 }
 
 }  // namespace vtkwrapper

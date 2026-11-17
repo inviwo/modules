@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkStructuredGridOutlineFilter(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkStructuredGridOutlineFilter();
 }  // namespace vtkwrapper
 }  // namespace inviwo

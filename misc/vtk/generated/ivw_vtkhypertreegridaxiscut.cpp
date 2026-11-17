@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridaxiscut.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -73,8 +73,9 @@ struct VTKTraits<vtkHyperTreeGridAxisCut> {
 tree grid. Only works for 3D grids.)ivw";
 };
 
-void registervtkHyperTreeGridAxisCut(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridAxisCut>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridAxisCut() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridAxisCut>>>();
 }
 
 }  // namespace vtkwrapper

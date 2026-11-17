@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkDelaunay2D(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkDelaunay2D();
 }  // namespace vtkwrapper
 }  // namespace inviwo

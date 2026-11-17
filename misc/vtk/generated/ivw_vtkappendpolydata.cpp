@@ -1,5 +1,5 @@
 #include "ivw_vtkappendpolydata.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -53,8 +53,9 @@ point and cell attributes that all of the input data sets
 have in common will appear in the output.)ivw";
 };
 
-void registervtkAppendPolyData(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkAppendPolyData>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkAppendPolyData() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkAppendPolyData>>>();
 }
 
 }  // namespace vtkwrapper

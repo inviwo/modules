@@ -1,5 +1,5 @@
 #include "ivw_ttkfiber.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -205,8 +205,8 @@ Pavol Klacansky, Julien Tierny, Hamish Carr, Zhao Geng
 IEEE Transactions on Visualization and Computer Graphics, 2016.)ivw";
 };
 
-void registerttkFiber(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkFiber>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkFiber() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkFiber>>>();
 }
 
 }  // namespace vtkwrapper

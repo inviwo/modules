@@ -1,5 +1,5 @@
 #include "ivw_vtkextractgeometry.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -93,8 +93,9 @@ option exists to extract cells that are neither inside or outside (i.e.,
 boundary).)ivw";
 };
 
-void registervtkExtractGeometry(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractGeometry>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractGeometry() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractGeometry>>>();
 }
 
 }  // namespace vtkwrapper

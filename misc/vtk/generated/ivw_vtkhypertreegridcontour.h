@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkHyperTreeGridContour(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridContour();
 }  // namespace vtkwrapper
 }  // namespace inviwo

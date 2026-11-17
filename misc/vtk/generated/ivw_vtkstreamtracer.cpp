@@ -1,5 +1,5 @@
 #include "ivw_vtkstreamtracer.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -295,8 +295,8 @@ type of dataset, provided it has point-centered vectors.
 The output is polygonal data containing polylines.)ivw";
 };
 
-void registervtkStreamTracer(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkStreamTracer>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkStreamTracer() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkStreamTracer>>>();
 }
 
 }  // namespace vtkwrapper

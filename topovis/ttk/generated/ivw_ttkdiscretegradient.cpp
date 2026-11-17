@@ -1,5 +1,5 @@
 #include "ivw_ttkdiscretegradient.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -197,8 +197,9 @@ If it's not the case, you can use the filter "Connectivity" (and select "Extract
     static constexpr std::string_view doc = R"ivw(TTK discreteGradient plugin documentation.)ivw";
 };
 
-void registerttkDiscreteGradient(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkDiscreteGradient>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkDiscreteGradient() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkDiscreteGradient>>>();
 }
 
 }  // namespace vtkwrapper

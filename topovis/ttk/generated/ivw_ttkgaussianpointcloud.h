@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkGaussianPointCloud(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkGaussianPointCloud();
 }  // namespace vtkwrapper
 }  // namespace inviwo

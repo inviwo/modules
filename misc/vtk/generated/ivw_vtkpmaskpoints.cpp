@@ -1,5 +1,5 @@
 #include "ivw_vtkpmaskpoints.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -176,8 +176,8 @@ operates on any type of dataset, but produces only points
 / vertices as output.)ivw";
 };
 
-void registervtkPMaskPoints(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPMaskPoints>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPMaskPoints() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPMaskPoints>>>();
 }
 
 }  // namespace vtkwrapper

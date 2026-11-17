@@ -1,5 +1,5 @@
 #include "ivw_ttkscalarfieldnormalizer.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -154,8 +154,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/mpiExample/)ivw";
 };
 
-void registerttkScalarFieldNormalizer(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkScalarFieldNormalizer>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkScalarFieldNormalizer() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkScalarFieldNormalizer>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkcountvertices.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -57,8 +57,9 @@ struct VTKTraits<vtkCountVertices> {
         R"ivw(Adds a new cell data array containing the number of vertices per cell.)ivw";
 };
 
-void registervtkCountVertices(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkCountVertices>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkCountVertices() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkCountVertices>>>();
 }
 
 }  // namespace vtkwrapper

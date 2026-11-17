@@ -1,5 +1,5 @@
 #include "ivw_vtktemporaldatasetcache.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -77,8 +77,9 @@ steps and provide the requested data without having to run
 upstream filters.)ivw";
 };
 
-void registervtkTemporalDataSetCache(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTemporalDataSetCache>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalDataSetCache() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTemporalDataSetCache>>>();
 }
 
 }  // namespace vtkwrapper

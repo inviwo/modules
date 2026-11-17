@@ -1,5 +1,5 @@
 #include "ivw_ttktriangulationwriter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -69,8 +69,9 @@ struct VTKTraits<ttkTriangulationWriter> {
         R"ivw(Export a TTK (Explicit) Triangulation into a file.)ivw";
 };
 
-void registerttkTriangulationWriter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTriangulationWriter>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTriangulationWriter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTriangulationWriter>>>();
 }
 
 }  // namespace vtkwrapper

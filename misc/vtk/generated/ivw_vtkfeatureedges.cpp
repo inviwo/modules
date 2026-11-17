@@ -1,5 +1,5 @@
 #include "ivw_vtkfeatureedges.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -130,8 +130,8 @@ from the input data set. This filter operates on polygonal
 data and produces polygonal output.)ivw";
 };
 
-void registervtkFeatureEdges(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkFeatureEdges>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkFeatureEdges() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkFeatureEdges>>>();
 }
 
 }  // namespace vtkwrapper

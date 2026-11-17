@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlpunstructuredgridreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -71,8 +71,9 @@ associated VTK XML unstructured grid data files. The
 expected file extension is .pvtu.)ivw";
 };
 
-void registervtkXMLPUnstructuredGridReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLPUnstructuredGridReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLPUnstructuredGridReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLPUnstructuredGridReader>>>();
 }
 
 }  // namespace vtkwrapper

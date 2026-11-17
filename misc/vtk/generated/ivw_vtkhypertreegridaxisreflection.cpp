@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridaxisreflection.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -73,8 +73,9 @@ struct VTKTraits<vtkHyperTreeGridAxisReflection> {
 one of the planes parallel to the bounding box of the data set.)ivw";
 };
 
-void registervtkHyperTreeGridAxisReflection(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridAxisReflection>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridAxisReflection() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridAxisReflection>>>();
 }
 
 }  // namespace vtkwrapper

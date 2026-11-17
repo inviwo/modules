@@ -1,5 +1,5 @@
 #include "ivw_vtktemporalpathlinefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -131,8 +131,9 @@ ID. This is intended to handle the output of a filter such as the
 TemporalStreamTracer.)ivw";
 };
 
-void registervtkTemporalPathLineFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTemporalPathLineFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalPathLineFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTemporalPathLineFilter>>>();
 }
 
 }  // namespace vtkwrapper

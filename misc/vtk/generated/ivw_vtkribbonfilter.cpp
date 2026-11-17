@@ -1,5 +1,5 @@
 #include "ivw_vtkribbonfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -190,8 +190,8 @@ data. The input data set must also have at least one
 point-centered vector array.)ivw";
 };
 
-void registervtkRibbonFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkRibbonFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkRibbonFilter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkRibbonFilter>>>();
 }
 
 }  // namespace vtkwrapper

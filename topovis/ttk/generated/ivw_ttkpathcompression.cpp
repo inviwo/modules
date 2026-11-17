@@ -1,5 +1,5 @@
 #include "ivw_ttkpathcompression.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -232,8 +232,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/morseSmaleSegmentation_at/)ivw";
 };
 
-void registerttkPathCompression(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPathCompression>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPathCompression() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPathCompression>>>();
 }
 
 }  // namespace vtkwrapper

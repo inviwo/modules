@@ -1,5 +1,5 @@
 #include "ivw_vtksynchronizetimefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -76,8 +76,9 @@ be if the difference is less than RelativeTolerance multiplied
 by the time range of the first input.)ivw";
 };
 
-void registervtkSynchronizeTimeFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkSynchronizeTimeFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkSynchronizeTimeFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkSynchronizeTimeFilter>>>();
 }
 
 }  // namespace vtkwrapper

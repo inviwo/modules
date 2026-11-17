@@ -1,5 +1,5 @@
 #include "ivw_vtkgenericgeometryfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -59,8 +59,9 @@ Filter.)"}};
 dataset.)ivw";
 };
 
-void registervtkGenericGeometryFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGenericGeometryFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGenericGeometryFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGenericGeometryFilter>>>();
 }
 
 }  // namespace vtkwrapper

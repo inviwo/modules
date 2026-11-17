@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkScalarFieldCriticalPoints(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkScalarFieldCriticalPoints();
 }  // namespace vtkwrapper
 }  // namespace inviwo

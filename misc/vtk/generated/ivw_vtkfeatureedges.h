@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkFeatureEdges(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkFeatureEdges();
 }  // namespace vtkwrapper
 }  // namespace inviwo

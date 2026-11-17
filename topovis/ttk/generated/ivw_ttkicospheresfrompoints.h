@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkIcospheresFromPoints(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkIcospheresFromPoints();
 }  // namespace vtkwrapper
 }  // namespace inviwo

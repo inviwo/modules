@@ -1,5 +1,5 @@
 #include "ivw_ttkdatasettotable.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -135,8 +135,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
-void registerttkDataSetToTable(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkDataSetToTable>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkDataSetToTable() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkDataSetToTable>>>();
 }
 
 }  // namespace vtkwrapper

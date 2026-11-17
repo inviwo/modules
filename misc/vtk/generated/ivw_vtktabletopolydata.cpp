@@ -1,5 +1,5 @@
 #include "ivw_vtktabletopolydata.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -112,8 +112,9 @@ the input table to use as the X, Y and Z coordinates for
 the points in the output.)ivw";
 };
 
-void registervtkTableToPolyData(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTableToPolyData>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTableToPolyData() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTableToPolyData>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkconnectedcomponents.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -171,8 +171,9 @@ struct VTKTraits<ttkConnectedComponents> {
         R"ivw(This filter consumes a scalar field with a feature mask and computes for each edge connected group of vertices with a non-background mask value a so-called connected component via flood-filling, where the background is masked with values smaller-equal zero. The computed components store the size, seed, and center of mass of each component. The flag UseSeedIdAsComponentId controls if the resulting segmentation is either labeled by the index of the component, or by its seed location (which can be used as a deterministic component label).)ivw";
 };
 
-void registerttkConnectedComponents(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkConnectedComponents>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkConnectedComponents() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkConnectedComponents>>>();
 }
 
 }  // namespace vtkwrapper

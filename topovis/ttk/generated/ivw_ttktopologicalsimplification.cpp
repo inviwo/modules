@@ -1,5 +1,5 @@
 #include "ivw_ttktopologicalsimplification.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -592,8 +592,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
-void registerttkTopologicalSimplification(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTopologicalSimplification>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTopologicalSimplification() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTopologicalSimplification>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkgenericcutter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -80,8 +80,9 @@ The output of this filter is polygonal
 data.)ivw";
 };
 
-void registervtkGenericCutter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGenericCutter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGenericCutter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGenericCutter>>>();
 }
 
 }  // namespace vtkwrapper

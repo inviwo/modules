@@ -1,5 +1,5 @@
 #include "ivw_ttkldistancematrix.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -156,8 +156,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)ivw";
 };
 
-void registerttkLDistanceMatrix(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkLDistanceMatrix>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkLDistanceMatrix() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkLDistanceMatrix>>>();
 }
 
 }  // namespace vtkwrapper

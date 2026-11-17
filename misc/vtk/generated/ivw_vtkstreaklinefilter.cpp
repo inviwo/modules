@@ -1,5 +1,5 @@
 #include "ivw_vtkstreaklinefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -180,8 +180,9 @@ containing polylines. This filter is available on the
 Toolbar.)ivw";
 };
 
-void registervtkStreaklineFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkStreaklineFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkStreaklineFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkStreaklineFilter>>>();
 }
 
 }  // namespace vtkwrapper

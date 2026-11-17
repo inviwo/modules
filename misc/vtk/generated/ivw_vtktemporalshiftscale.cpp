@@ -1,5 +1,5 @@
 #include "ivw_vtktemporalshiftscale.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -152,8 +152,9 @@ will request time (t-Shift)/Scale on its
 input.)ivw";
 };
 
-void registervtkTemporalShiftScale(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTemporalShiftScale>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalShiftScale() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTemporalShiftScale>>>();
 }
 
 }  // namespace vtkwrapper

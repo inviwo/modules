@@ -1,5 +1,5 @@
 #include "ivw_vtkconnectivityfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -111,8 +111,9 @@ input and produces unstructured grid
 output.)ivw";
 };
 
-void registervtkConnectivityFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkConnectivityFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkConnectivityFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkConnectivityFilter>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkthreshold.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -155,8 +155,8 @@ value for any of its points is within the chosen
 range.)ivw";
 };
 
-void registervtkThreshold(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkThreshold>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkThreshold() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkThreshold>>>();
 }
 
 }  // namespace vtkwrapper

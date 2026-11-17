@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkBrownianPoints(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkBrownianPoints();
 }  // namespace vtkwrapper
 }  // namespace inviwo

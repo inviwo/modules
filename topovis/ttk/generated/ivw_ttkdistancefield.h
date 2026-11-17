@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkDistanceField(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkDistanceField();
 }  // namespace vtkwrapper
 }  // namespace inviwo

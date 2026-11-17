@@ -1,5 +1,5 @@
 #include "ivw_vtkpprobefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -138,8 +138,8 @@ not it lies at an input point. The Probe filter operates on any type of
 data and produces polygonal output (a line).)ivw";
 };
 
-void registervtkPProbeFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPProbeFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPProbeFilter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPProbeFilter>>>();
 }
 
 }  // namespace vtkwrapper

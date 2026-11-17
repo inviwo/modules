@@ -1,5 +1,5 @@
 #include "ivw_vtkdatasetregionsurfacefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -155,8 +155,9 @@ type of data and produces polygonal data as
 output.)ivw";
 };
 
-void registervtkDataSetRegionSurfaceFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDataSetRegionSurfaceFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDataSetRegionSurfaceFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDataSetRegionSurfaceFilter>>>();
 }
 
 }  // namespace vtkwrapper

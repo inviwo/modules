@@ -1,5 +1,5 @@
 #include "ivw_ttktriangulationreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -125,8 +125,9 @@ Explicit Triangulation File to import it into the current
 dataset.)ivw";
 };
 
-void registerttkTriangulationReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTriangulationReader>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTriangulationReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTriangulationReader>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegriddepthlimiter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -65,8 +65,9 @@ former might be strictly larger than the latter. This is not a bug
 but an expected behavior of which the user should be aware.)ivw";
 };
 
-void registervtkHyperTreeGridDepthLimiter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridDepthLimiter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridDepthLimiter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridDepthLimiter>>>();
 }
 
 }  // namespace vtkwrapper

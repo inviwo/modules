@@ -1,5 +1,5 @@
 #include "ivw_vtkquadricclustering.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -134,8 +134,9 @@ set; points that lie within the same spatial bin are
 collapsed into one representative point.)ivw";
 };
 
-void registervtkQuadricClustering(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkQuadricClustering>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkQuadricClustering() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkQuadricClustering>>>();
 }
 
 }  // namespace vtkwrapper

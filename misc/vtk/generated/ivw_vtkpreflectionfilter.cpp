@@ -1,5 +1,5 @@
 #include "ivw_vtkpreflectionfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -119,8 +119,9 @@ set and produces an unstructured grid
 output.)ivw";
 };
 
-void registervtkPReflectionFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPReflectionFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPReflectionFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPReflectionFilter>>>();
 }
 
 }  // namespace vtkwrapper

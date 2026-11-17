@@ -1,5 +1,5 @@
 #include "ivw_ttktriangulationmanager.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -180,8 +180,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/clusteringKelvinHelmholtzInstabilities/)ivw";
 };
 
-void registerttkTriangulationManager(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTriangulationManager>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTriangulationManager() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTriangulationManager>>>();
 }
 
 }  // namespace vtkwrapper

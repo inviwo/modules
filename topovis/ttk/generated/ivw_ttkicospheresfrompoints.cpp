@@ -1,5 +1,5 @@
 #include "ivw_ttkicospheresfrompoints.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -180,8 +180,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/tectonicPuzzle/)ivw";
 };
 
-void registerttkIcospheresFromPoints(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkIcospheresFromPoints>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkIcospheresFromPoints() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkIcospheresFromPoints>>>();
 }
 
 }  // namespace vtkwrapper

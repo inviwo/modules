@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlimagedatareader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -69,8 +69,9 @@ Data reader reads the VTK XML image data file format. The
 standard extension is .vti.)ivw";
 };
 
-void registervtkXMLImageDataReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLImageDataReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLImageDataReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLImageDataReader>>>();
 }
 
 }  // namespace vtkwrapper

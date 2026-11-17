@@ -1,5 +1,5 @@
 #include "ivw_ttkoffreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -57,8 +57,8 @@ struct VTKTraits<ttkOFFReader> {
         R"ivw(Import an Object File Format mesh into a VTK Unstructured Grid.)ivw";
 };
 
-void registerttkOFFReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkOFFReader>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkOFFReader() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkOFFReader>>>();
 }
 
 }  // namespace vtkwrapper

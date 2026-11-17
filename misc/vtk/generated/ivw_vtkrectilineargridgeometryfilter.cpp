@@ -1,5 +1,5 @@
 #include "ivw_vtkrectilineargridgeometryfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -57,8 +57,9 @@ in a 50x50x50 rectilinear grid is given by (0,49, 0,49,
 0,0).)ivw";
 };
 
-void registervtkRectilinearGridGeometryFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkRectilinearGridGeometryFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkRectilinearGridGeometryFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkRectilinearGridGeometryFilter>>>();
 }
 
 }  // namespace vtkwrapper

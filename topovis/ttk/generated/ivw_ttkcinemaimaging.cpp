@@ -1,5 +1,5 @@
 #include "ivw_ttkcinemaimaging.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -248,8 +248,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/geometryApproximation/)ivw";
 };
 
-void registerttkCinemaImaging(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkCinemaImaging>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkCinemaImaging() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkCinemaImaging>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkprocessidscalars.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -69,8 +69,9 @@ being used. The output data set type is the same as that
 of the input.)ivw";
 };
 
-void registervtkProcessIdScalars(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkProcessIdScalars>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkProcessIdScalars() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkProcessIdScalars>>>();
 }
 
 }  // namespace vtkwrapper

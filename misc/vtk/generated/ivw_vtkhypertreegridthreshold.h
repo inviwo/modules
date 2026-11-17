@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkHyperTreeGridThreshold(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridThreshold();
 }  // namespace vtkwrapper
 }  // namespace inviwo

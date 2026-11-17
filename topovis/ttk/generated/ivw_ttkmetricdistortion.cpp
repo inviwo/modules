@@ -1,5 +1,5 @@
 #include "ivw_ttkmetricdistortion.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -114,8 +114,9 @@ struct VTKTraits<ttkMetricDistortion> {
         R"ivw(This filter computes distance, area and curvature information about a surface and an optional distance matrix (giving the distance between the points of the surface in a metric space).)ivw";
 };
 
-void registerttkMetricDistortion(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMetricDistortion>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMetricDistortion() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMetricDistortion>>>();
 }
 
 }  // namespace vtkwrapper

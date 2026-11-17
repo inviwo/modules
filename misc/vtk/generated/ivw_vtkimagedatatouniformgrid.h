@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkImageDataToUniformGrid(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkImageDataToUniformGrid();
 }  // namespace vtkwrapper
 }  // namespace inviwo

@@ -1,5 +1,5 @@
 #include "ivw_ttkmorsesmalequadrangulation.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -145,8 +145,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/morseSmaleQuadrangulation/)ivw";
 };
 
-void registerttkMorseSmaleQuadrangulation(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMorseSmaleQuadrangulation>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMorseSmaleQuadrangulation() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMorseSmaleQuadrangulation>>>();
 }
 
 }  // namespace vtkwrapper

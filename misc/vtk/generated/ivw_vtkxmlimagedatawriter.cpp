@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlimagedatawriter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -63,8 +63,9 @@ written to the file.)"}};
 for parallel writing.)ivw";
 };
 
-void registervtkXMLImageDataWriter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLImageDataWriter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLImageDataWriter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLImageDataWriter>>>();
 }
 
 }  // namespace vtkwrapper

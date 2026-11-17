@@ -1,5 +1,5 @@
 #include "ivw_vtkimagegradientmagnitude.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -68,8 +68,9 @@ operates on uniform rectilinear (image) data and produces
 image data output.)ivw";
 };
 
-void registervtkImageGradientMagnitude(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageGradientMagnitude>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageGradientMagnitude() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageGradientMagnitude>>>();
 }
 
 }  // namespace vtkwrapper

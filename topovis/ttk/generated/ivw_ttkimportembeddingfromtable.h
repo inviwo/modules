@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkImportEmbeddingFromTable(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkImportEmbeddingFromTable();
 }  // namespace vtkwrapper
 }  // namespace inviwo

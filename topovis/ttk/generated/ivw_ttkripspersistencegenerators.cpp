@@ -1,5 +1,5 @@
 #include "ivw_ttkripspersistencegenerators.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -180,8 +180,9 @@ struct VTKTraits<ttkRipsPersistenceGenerators> {
         R"ivw(TTK plugin for the computation of the persistence generators of Rips complexes.)ivw";
 };
 
-void registerttkRipsPersistenceGenerators(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkRipsPersistenceGenerators>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkRipsPersistenceGenerators() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkRipsPersistenceGenerators>>>();
 }
 
 }  // namespace vtkwrapper

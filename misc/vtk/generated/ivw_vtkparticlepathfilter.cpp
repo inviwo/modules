@@ -1,5 +1,5 @@
 #include "ivw_vtkparticlepathfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -183,8 +183,9 @@ containing polylines. This filter is available on the
 Toolbar.)ivw";
 };
 
-void registervtkParticlePathFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkParticlePathFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkParticlePathFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkParticlePathFilter>>>();
 }
 
 }  // namespace vtkwrapper

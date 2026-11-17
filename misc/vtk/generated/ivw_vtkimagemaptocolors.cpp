@@ -1,5 +1,5 @@
 #include "ivw_vtkimagemaptocolors.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -103,8 +103,9 @@ struct VTKTraits<vtkImageMapToColors> {
         R"ivw(This filter generate a color based image data based on a selected data scalar)ivw";
 };
 
-void registervtkImageMapToColors(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageMapToColors>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageMapToColors() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageMapToColors>>>();
 }
 
 }  // namespace vtkwrapper

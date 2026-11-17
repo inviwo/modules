@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkDecimatePro(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkDecimatePro();
 }  // namespace vtkwrapper
 }  // namespace inviwo

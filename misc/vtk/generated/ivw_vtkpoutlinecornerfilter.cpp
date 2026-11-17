@@ -1,5 +1,5 @@
 #include "ivw_vtkpoutlinecornerfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -68,8 +68,9 @@ type of dataset and produces polygonal
 output.)ivw";
 };
 
-void registervtkPOutlineCornerFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPOutlineCornerFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPOutlineCornerFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPOutlineCornerFilter>>>();
 }
 
 }  // namespace vtkwrapper

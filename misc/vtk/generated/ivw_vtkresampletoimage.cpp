@@ -1,5 +1,5 @@
 #include "ivw_vtkresampletoimage.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -72,8 +72,9 @@ be probed)"}};
         R"ivw(Sample attributes using a 3D image as probing mesh.)ivw";
 };
 
-void registervtkResampleToImage(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkResampleToImage>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkResampleToImage() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkResampleToImage>>>();
 }
 
 }  // namespace vtkwrapper

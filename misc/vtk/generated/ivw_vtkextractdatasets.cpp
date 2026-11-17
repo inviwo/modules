@@ -1,5 +1,5 @@
 #include "ivw_vtkextractdatasets.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -50,8 +50,9 @@ Datasets filter.)"}};
 of datasets from hierarchical datasets.)ivw";
 };
 
-void registervtkExtractDataSets(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractDataSets>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractDataSets() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractDataSets>>>();
 }
 
 }  // namespace vtkwrapper

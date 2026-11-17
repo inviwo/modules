@@ -1,5 +1,5 @@
 #include "ivw_ttkplanargraphlayout.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -317,8 +317,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/nestedTrackingFromOverlap/)ivw";
 };
 
-void registerttkPlanarGraphLayout(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPlanarGraphLayout>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPlanarGraphLayout() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPlanarGraphLayout>>>();
 }
 
 }  // namespace vtkwrapper

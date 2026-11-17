@@ -1,5 +1,5 @@
 #include "ivw_vtkextractblock.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -74,8 +74,8 @@ filter.)"}};
 of groups from a multiblock dataset)ivw";
 };
 
-void registervtkExtractBlock(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractBlock>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractBlock() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractBlock>>>();
 }
 
 }  // namespace vtkwrapper

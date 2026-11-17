@@ -1,5 +1,5 @@
 #include "ivw_vtkcurvatures.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -78,8 +78,8 @@ mean curvatures. ; the type can be selected from the
 Curvature type menu button.)ivw";
 };
 
-void registervtkCurvatures(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkCurvatures>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkCurvatures() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkCurvatures>>>();
 }
 
 }  // namespace vtkwrapper

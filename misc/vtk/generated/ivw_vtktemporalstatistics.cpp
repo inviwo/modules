@@ -1,5 +1,5 @@
 #include "ivw_vtktemporalstatistics.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -107,8 +107,9 @@ integration of the variable if the time spacing
 varies.)ivw";
 };
 
-void registervtkTemporalStatistics(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTemporalStatistics>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalStatistics() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTemporalStatistics>>>();
 }
 
 }  // namespace vtkwrapper

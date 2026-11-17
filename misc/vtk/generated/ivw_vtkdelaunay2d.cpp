@@ -1,5 +1,5 @@
 #include "ivw_vtkdelaunay2d.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -169,8 +169,8 @@ certain cases this implementation may not generate the
 convex hull.)ivw";
 };
 
-void registervtkDelaunay2D(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDelaunay2D>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDelaunay2D() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDelaunay2D>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkPExtractExodusGlobalTemporalVariables(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkPExtractExodusGlobalTemporalVariables();
 }  // namespace vtkwrapper
 }  // namespace inviwo

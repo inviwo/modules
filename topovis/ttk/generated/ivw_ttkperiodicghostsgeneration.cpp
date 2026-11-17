@@ -1,5 +1,5 @@
 #include "ivw_ttkperiodicghostsgeneration.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -113,8 +113,9 @@ struct VTKTraits<ttkPeriodicGhostsGeneration> {
         R"ivw(This filter creates additional ghosts for periodic grids when used in a distributed setting.)ivw";
 };
 
-void registerttkPeriodicGhostsGeneration(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPeriodicGhostsGeneration>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPeriodicGhostsGeneration() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPeriodicGhostsGeneration>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkcinemaproductreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -165,8 +165,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistentGenerators_periodicPicture/)ivw";
 };
 
-void registerttkCinemaProductReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkCinemaProductReader>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkCinemaProductReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkCinemaProductReader>>>();
 }
 
 }  // namespace vtkwrapper

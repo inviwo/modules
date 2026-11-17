@@ -1,5 +1,5 @@
 #include "ivw_vtkoverlappingamrlevelidscalars.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -51,8 +51,9 @@ Scalars filter uses colors to show levels of a
 hierarchical dataset.)ivw";
 };
 
-void registervtkOverlappingAMRLevelIdScalars(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkOverlappingAMRLevelIdScalars>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkOverlappingAMRLevelIdScalars() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkOverlappingAMRLevelIdScalars>>>();
 }
 
 }  // namespace vtkwrapper

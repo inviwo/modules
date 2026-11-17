@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkHyperTreeGridToUnstructuredGrid(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridToUnstructuredGrid();
 }  // namespace vtkwrapper
 }  // namespace inviwo

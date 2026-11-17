@@ -1,5 +1,5 @@
 #include "ivw_ttkclusteringmetrics.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -176,8 +176,9 @@ struct VTKTraits<ttkClusteringMetrics> {
         R"ivw(This filters takes two columns of a vtkTable, each representing a clustering of the points. It computes two metrics indicating how the two clustering are similar: the NMI and the ARI values.)ivw";
 };
 
-void registerttkClusteringMetrics(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkClusteringMetrics>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkClusteringMetrics() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkClusteringMetrics>>>();
 }
 
 }  // namespace vtkwrapper

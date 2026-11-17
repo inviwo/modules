@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkGeometrySmoother(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkGeometrySmoother();
 }  // namespace vtkwrapper
 }  // namespace inviwo

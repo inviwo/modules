@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkRemoveGhosts(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkRemoveGhosts();
 }  // namespace vtkwrapper
 }  // namespace inviwo

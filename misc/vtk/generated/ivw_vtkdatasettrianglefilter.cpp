@@ -1,5 +1,5 @@
 #include "ivw_vtkdatasettrianglefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -53,8 +53,9 @@ filter always produces unstructured grid
 output.)ivw";
 };
 
-void registervtkDataSetTriangleFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDataSetTriangleFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDataSetTriangleFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDataSetTriangleFilter>>>();
 }
 
 }  // namespace vtkwrapper

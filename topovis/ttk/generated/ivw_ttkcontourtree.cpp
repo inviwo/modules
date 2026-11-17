@@ -1,5 +1,5 @@
 #include "ivw_ttkcontourtree.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -256,8 +256,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/dragon/)ivw";
 };
 
-void registerttkContourTree(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkContourTree>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkContourTree() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkContourTree>>>();
 }
 
 }  // namespace vtkwrapper

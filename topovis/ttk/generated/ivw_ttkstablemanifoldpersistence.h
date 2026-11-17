@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkStableManifoldPersistence(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkStableManifoldPersistence();
 }  // namespace vtkwrapper
 }  // namespace inviwo

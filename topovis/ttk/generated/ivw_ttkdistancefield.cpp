@@ -1,5 +1,5 @@
 #include "ivw_ttkdistancefield.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -186,8 +186,9 @@ Related publication: "A note on two problems in connexion with graphs",
 Edsger W. Dijkstra, Numerische Mathematik, 1959.)ivw";
 };
 
-void registerttkDistanceField(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkDistanceField>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkDistanceField() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkDistanceField>>>();
 }
 
 }  // namespace vtkwrapper

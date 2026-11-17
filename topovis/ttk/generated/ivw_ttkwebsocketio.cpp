@@ -1,5 +1,5 @@
 #include "ivw_ttkwebsocketio.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -126,8 +126,8 @@ struct VTKTraits<ttkWebSocketIO> {
         R"ivw(This module provides functions for bi-directional communication between two websockets, where the heavy lifting is done by the websocketpp library. The primary use case for this module is to send data that was computed in a c++ environment to a browser client, which can then freely process/render the data via JavaScript and HTML. To this end, this module needs to run a websocket server, to which a client can connect to via the ttkWebSocketIO.js library. The server can also receive data from the client, which is then fed into the processEvent function. In order to add custom processing of events, one needs to inherit from the WebSocketIO class and override the processEvent method. The vtk wrapper ttkWebSocketIO provides an example on how this abstract base module can be specialized to the application of sending/receiving vtkDataObjects. Specifically, the ttkWebSocketIO filter will send its input vtkDataObject as a serialized JSON object to all connected clients every time the filter is called with a new input. When the server receives a serialized JSON object form the client, then the filter will instantiate a vtkDataObject and pass it as the filter output.)ivw";
 };
 
-void registerttkWebSocketIO(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkWebSocketIO>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkWebSocketIO() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkWebSocketIO>>>();
 }
 
 }  // namespace vtkwrapper

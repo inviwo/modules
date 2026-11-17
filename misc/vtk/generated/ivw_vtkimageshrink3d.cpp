@@ -1,5 +1,5 @@
 #include "ivw_vtkimageshrink3d.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -82,8 +82,9 @@ separately for each dimension of the
 image/volume.)ivw";
 };
 
-void registervtkImageShrink3D(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageShrink3D>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageShrink3D() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageShrink3D>>>();
 }
 
 }  // namespace vtkwrapper

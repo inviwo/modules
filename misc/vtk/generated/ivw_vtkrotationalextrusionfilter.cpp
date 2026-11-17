@@ -1,5 +1,5 @@
 #include "ivw_vtkrotationalextrusionfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -131,8 +131,9 @@ intended to operate on 2D polygonal data. It produces
 polygonal output.)ivw";
 };
 
-void registervtkRotationalExtrusionFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkRotationalExtrusionFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkRotationalExtrusionFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkRotationalExtrusionFilter>>>();
 }
 
 }  // namespace vtkwrapper

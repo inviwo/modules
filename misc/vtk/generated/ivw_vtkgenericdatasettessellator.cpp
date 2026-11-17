@@ -1,5 +1,5 @@
 #include "ivw_vtkgenericdatasettessellator.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -50,8 +50,9 @@ filter.)"}};
 a higher-order dataset.)ivw";
 };
 
-void registervtkGenericDataSetTessellator(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGenericDataSetTessellator>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGenericDataSetTessellator() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGenericDataSetTessellator>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkimagetoamr.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -90,8 +90,8 @@ Point Data filter.)"}};
     static constexpr std::string_view doc = R"ivw()ivw";
 };
 
-void registervtkImageToAMR(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageToAMR>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageToAMR() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageToAMR>>>();
 }
 
 }  // namespace vtkwrapper

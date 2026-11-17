@@ -1,5 +1,5 @@
 #include "ivw_vtkstructuredgridoutlinefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -53,8 +53,9 @@ filter operates on structured grid datasets and produces
 polygonal output.)ivw";
 };
 
-void registervtkStructuredGridOutlineFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkStructuredGridOutlineFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkStructuredGridOutlineFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkStructuredGridOutlineFilter>>>();
 }
 
 }  // namespace vtkwrapper

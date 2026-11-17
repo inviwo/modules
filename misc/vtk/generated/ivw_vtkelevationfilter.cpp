@@ -1,5 +1,5 @@
 #include "ivw_vtkelevationfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -103,8 +103,9 @@ determined by the location along the line to which that
 point projects.)ivw";
 };
 
-void registervtkElevationFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkElevationFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkElevationFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkElevationFilter>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtktabletostructuredgrid.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -89,8 +89,9 @@ points in the output, and the whole
 extent.)ivw";
 };
 
-void registervtkTableToStructuredGrid(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTableToStructuredGrid>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTableToStructuredGrid() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTableToStructuredGrid>>>();
 }
 
 }  // namespace vtkwrapper

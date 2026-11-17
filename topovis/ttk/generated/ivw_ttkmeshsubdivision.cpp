@@ -1,5 +1,5 @@
 #include "ivw_ttkmeshsubdivision.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -143,8 +143,9 @@ type. Also, the filter creates duplicate points, to be merged after the
 fact with "Clean to Grid" under ParaView or vtkMergePoints for instance.)ivw";
 };
 
-void registerttkMeshSubdivision(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMeshSubdivision>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMeshSubdivision() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMeshSubdivision>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttktabledataselector.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -136,8 +136,9 @@ struct VTKTraits<ttkTableDataSelector> {
     static constexpr std::string_view doc = R"ivw(TTK tableDataSelector plugin documentation.)ivw";
 };
 
-void registerttkTableDataSelector(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTableDataSelector>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTableDataSelector() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTableDataSelector>>>();
 }
 
 }  // namespace vtkwrapper

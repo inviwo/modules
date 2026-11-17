@@ -1,5 +1,5 @@
 #include "ivw_vtkimageclip.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -54,8 +54,8 @@ input and output of this filter are uniform rectilinear
 data.)ivw";
 };
 
-void registervtkImageClip(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageClip>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageClip() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageClip>>>();
 }
 
 }  // namespace vtkwrapper

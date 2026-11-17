@@ -1,5 +1,5 @@
 #include "ivw_ttktriangulationrequest.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -166,8 +166,9 @@ struct VTKTraits<ttkTriangulationRequest> {
         R"ivw(TTK triangulationRequest plugin documentation.)ivw";
 };
 
-void registerttkTriangulationRequest(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTriangulationRequest>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTriangulationRequest() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTriangulationRequest>>>();
 }
 
 }  // namespace vtkwrapper

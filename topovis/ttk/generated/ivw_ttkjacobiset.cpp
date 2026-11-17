@@ -1,5 +1,5 @@
 #include "ivw_ttkjacobiset.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -272,8 +272,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
-void registerttkJacobiSet(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkJacobiSet>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkJacobiSet() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkJacobiSet>>>();
 }
 
 }  // namespace vtkwrapper

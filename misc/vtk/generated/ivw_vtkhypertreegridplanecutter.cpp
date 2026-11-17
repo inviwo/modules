@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridplanecutter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -76,8 +76,9 @@ struct VTKTraits<vtkHyperTreeGridPlaneCutter> {
 polygonal data intersection surface.)ivw";
 };
 
-void registervtkHyperTreeGridPlaneCutter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridPlaneCutter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridPlaneCutter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridPlaneCutter>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkcontouraroundpoint.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -200,8 +200,9 @@ arrays: downNodeId: int, upNodeId: int.)"}};
     static constexpr std::string_view doc = R"ivw(TTK contourAroundPoint plugin.)ivw";
 };
 
-void registerttkContourAroundPoint(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkContourAroundPoint>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkContourAroundPoint() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkContourAroundPoint>>>();
 }
 
 }  // namespace vtkwrapper

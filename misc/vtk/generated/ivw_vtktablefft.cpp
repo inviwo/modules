@@ -1,5 +1,5 @@
 #include "ivw_vtktablefft.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -51,8 +51,8 @@ filter.)"}};
 table.)ivw";
 };
 
-void registervtkTableFFT(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTableFFT>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTableFFT() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTableFFT>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkbarycentricsubdivision.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -133,8 +133,9 @@ triangulation. Scalar data on input triangles can be replicated
 on the new triangles.)ivw";
 };
 
-void registerttkBarycentricSubdivision(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkBarycentricSubdivision>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkBarycentricSubdivision() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkBarycentricSubdivision>>>();
 }
 
 }  // namespace vtkwrapper

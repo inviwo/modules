@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkParticlePathFilter(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkParticlePathFilter();
 }  // namespace vtkwrapper
 }  // namespace inviwo

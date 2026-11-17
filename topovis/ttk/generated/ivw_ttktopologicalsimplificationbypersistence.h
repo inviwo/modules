@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkTopologicalSimplificationByPersistence(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkTopologicalSimplificationByPersistence();
 }  // namespace vtkwrapper
 }  // namespace inviwo

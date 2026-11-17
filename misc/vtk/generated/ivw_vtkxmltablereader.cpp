@@ -1,5 +1,5 @@
 #include "ivw_vtkxmltablereader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -69,8 +69,9 @@ reader reads the VTK XML table file format. The
 standard extension is .vtt.)ivw";
 };
 
-void registervtkXMLTableReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLTableReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLTableReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLTableReader>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkpointsettosurface.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -113,8 +113,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistenceDiagramPGA/)ivw";
 };
 
-void registerttkPointSetToSurface(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPointSetToSurface>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPointSetToSurface() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPointSetToSurface>>>();
 }
 
 }  // namespace vtkwrapper

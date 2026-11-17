@@ -1,5 +1,5 @@
 #include "ivw_vtkwarpscalar.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -142,8 +142,8 @@ dataset are copied to the output, so the data can be
 colored by them.)ivw";
 };
 
-void registervtkWarpScalar(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkWarpScalar>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkWarpScalar() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkWarpScalar>>>();
 }
 
 }  // namespace vtkwrapper

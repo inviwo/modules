@@ -1,5 +1,5 @@
 #include "ivw_vtktransformfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -64,8 +64,9 @@ orientation of polygonal, unstructured grid, and
 curvilinear data sets.)ivw";
 };
 
-void registervtkTransformFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTransformFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTransformFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTransformFilter>>>();
 }
 
 }  // namespace vtkwrapper

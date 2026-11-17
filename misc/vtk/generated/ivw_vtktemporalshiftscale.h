@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkTemporalShiftScale(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalShiftScale();
 }  // namespace vtkwrapper
 }  // namespace inviwo

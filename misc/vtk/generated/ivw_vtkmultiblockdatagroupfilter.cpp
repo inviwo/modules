@@ -1,5 +1,5 @@
 #include "ivw_vtkmultiblockdatagroupfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -50,8 +50,9 @@ Datasets filter.)"}};
 dataset)ivw";
 };
 
-void registervtkMultiBlockDataGroupFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkMultiBlockDataGroupFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkMultiBlockDataGroupFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkMultiBlockDataGroupFilter>>>();
 }
 
 }  // namespace vtkwrapper

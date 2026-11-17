@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkDataSetRegionSurfaceFilter(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkDataSetRegionSurfaceFilter();
 }  // namespace vtkwrapper
 }  // namespace inviwo

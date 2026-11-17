@@ -1,5 +1,5 @@
 #include "ivw_vtkshrinkfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -71,8 +71,8 @@ any type of dataset and produces unstructured grid
 output.)ivw";
 };
 
-void registervtkShrinkFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkShrinkFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkShrinkFilter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkShrinkFilter>>>();
 }
 
 }  // namespace vtkwrapper

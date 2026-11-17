@@ -1,5 +1,5 @@
 #include "ivw_vtkrectilineargridtopointset.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -51,8 +51,9 @@ applying filters that expect or manipulate point
 coordinates.)ivw";
 };
 
-void registervtkRectilinearGridToPointSet(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkRectilinearGridToPointSet>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkRectilinearGridToPointSet() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkRectilinearGridToPointSet>>>();
 }
 
 }  // namespace vtkwrapper

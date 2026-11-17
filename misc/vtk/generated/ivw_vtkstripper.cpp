@@ -1,5 +1,5 @@
 #include "ivw_vtkstripper.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -68,8 +68,8 @@ polygonal data sets and produces polygonal
 output.)ivw";
 };
 
-void registervtkStripper(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkStripper>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkStripper() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkStripper>>>();
 }
 
 }  // namespace vtkwrapper

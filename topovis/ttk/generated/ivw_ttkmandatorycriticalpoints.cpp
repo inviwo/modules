@@ -1,5 +1,5 @@
 #include "ivw_ttkmandatorycriticalpoints.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -313,8 +313,9 @@ Online Examples:
 - https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
-void registerttkMandatoryCriticalPoints(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMandatoryCriticalPoints>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMandatoryCriticalPoints() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMandatoryCriticalPoints>>>();
 }
 
 }  // namespace vtkwrapper

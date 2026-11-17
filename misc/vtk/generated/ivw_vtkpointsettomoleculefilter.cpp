@@ -1,5 +1,5 @@
 #include "ivw_vtkpointsettomoleculefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -87,8 +87,9 @@ struct VTKTraits<vtkPointSetToMoleculeFilter> {
 of the output molecule. It needs a point array containing the atomic numbers.)ivw";
 };
 
-void registervtkPointSetToMoleculeFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPointSetToMoleculeFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPointSetToMoleculeFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPointSetToMoleculeFilter>>>();
 }
 
 }  // namespace vtkwrapper

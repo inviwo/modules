@@ -1,5 +1,5 @@
 #include "ivw_vtkpcelldatatopointdata.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -91,8 +91,9 @@ operates on any type of data set, and the output data set
 is of the same type as the input.)ivw";
 };
 
-void registervtkPCellDataToPointData(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPCellDataToPointData>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPCellDataToPointData() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPCellDataToPointData>>>();
 }
 
 }  // namespace vtkwrapper

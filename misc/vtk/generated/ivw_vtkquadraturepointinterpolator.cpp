@@ -1,5 +1,5 @@
 #include "ivw_vtkquadraturepointinterpolator.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -79,8 +79,9 @@ struct VTKTraits<vtkQuadraturePointInterpolator> {
 points.")ivw";
 };
 
-void registervtkQuadraturePointInterpolator(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkQuadraturePointInterpolator>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkQuadraturePointInterpolator() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkQuadraturePointInterpolator>>>();
 }
 
 }  // namespace vtkwrapper

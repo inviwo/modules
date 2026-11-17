@@ -1,5 +1,5 @@
 #include "ivw_vtkremoveghosts.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -50,8 +50,8 @@ information filter.)"}};
 cells and point data and cell data ghost arrays.)ivw";
 };
 
-void registervtkRemoveGhosts(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkRemoveGhosts>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkRemoveGhosts() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkRemoveGhosts>>>();
 }
 
 }  // namespace vtkwrapper

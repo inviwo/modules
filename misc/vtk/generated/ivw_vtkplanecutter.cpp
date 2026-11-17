@@ -1,5 +1,5 @@
 #include "ivw_vtkplanecutter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -111,8 +111,8 @@ dataset as input. The output of this filter is a multiblock of multipiece
 polygonal data. This is a multithreaded implementation.)ivw";
 };
 
-void registervtkPlaneCutter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPlaneCutter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPlaneCutter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPlaneCutter>>>();
 }
 
 }  // namespace vtkwrapper

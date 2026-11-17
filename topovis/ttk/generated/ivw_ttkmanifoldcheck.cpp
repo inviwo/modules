@@ -1,5 +1,5 @@
 #include "ivw_ttkmanifoldcheck.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -120,8 +120,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/manifoldCheck/)ivw";
 };
 
-void registerttkManifoldCheck(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkManifoldCheck>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkManifoldCheck() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkManifoldCheck>>>();
 }
 
 }  // namespace vtkwrapper

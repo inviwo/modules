@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkTriangulationManager(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkTriangulationManager();
 }  // namespace vtkwrapper
 }  // namespace inviwo

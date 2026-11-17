@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkGaussianSplatter(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkGaussianSplatter();
 }  // namespace vtkwrapper
 }  // namespace inviwo

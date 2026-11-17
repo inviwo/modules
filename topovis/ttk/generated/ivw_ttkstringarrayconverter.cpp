@@ -1,5 +1,5 @@
 #include "ivw_ttkstringarrayconverter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -80,8 +80,9 @@ set. The correspondence between a string value and an int is
 to be stored in the output Field Data.)ivw";
 };
 
-void registerttkStringArrayConverter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkStringArrayConverter>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkStringArrayConverter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkStringArrayConverter>>>();
 }
 
 }  // namespace vtkwrapper

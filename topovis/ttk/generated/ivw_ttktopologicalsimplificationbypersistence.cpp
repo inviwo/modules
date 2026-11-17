@@ -1,5 +1,5 @@
 #include "ivw_ttktopologicalsimplificationbypersistence.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -215,8 +215,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/contourTreeAlignment/)ivw";
 };
 
-void registerttkTopologicalSimplificationByPersistence(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTopologicalSimplificationByPersistence>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTopologicalSimplificationByPersistence() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<
+        VTKGenericProcessor<ttkTopologicalSimplificationByPersistence>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_ttkldistance.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -191,8 +191,8 @@ struct VTKTraits<ttkLDistance> {
     static constexpr std::string_view doc = R"ivw(TTK lDistance plugin documentation.)ivw";
 };
 
-void registerttkLDistance(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkLDistance>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkLDistance() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkLDistance>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkQuadratureSchemeDictionaryGenerator(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkQuadratureSchemeDictionaryGenerator();
 }  // namespace vtkwrapper
 }  // namespace inviwo

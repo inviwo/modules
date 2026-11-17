@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlpolydatareader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -69,8 +69,9 @@ reader reads the VTK XML polydata file format. The
 standard extension is .vtp.)ivw";
 };
 
-void registervtkXMLPolyDataReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLPolyDataReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLPolyDataReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLPolyDataReader>>>();
 }
 
 }  // namespace vtkwrapper

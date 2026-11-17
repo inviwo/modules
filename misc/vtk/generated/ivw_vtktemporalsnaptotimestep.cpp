@@ -1,5 +1,5 @@
 #include "ivw_vtktemporalsnaptotimestep.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -67,8 +67,9 @@ resampled by this filter, only the information
 accompanying the data is modified.)ivw";
 };
 
-void registervtkTemporalSnapToTimeStep(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTemporalSnapToTimeStep>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalSnapToTimeStep() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTemporalSnapToTimeStep>>>();
 }
 
 }  // namespace vtkwrapper

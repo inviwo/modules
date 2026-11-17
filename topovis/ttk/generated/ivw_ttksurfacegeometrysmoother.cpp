@@ -1,5 +1,5 @@
 #include "ivw_ttksurfacegeometrysmoother.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -232,8 +232,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistentGenerators_skull/)ivw";
 };
 
-void registerttkSurfaceGeometrySmoother(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkSurfaceGeometrySmoother>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkSurfaceGeometrySmoother() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkSurfaceGeometrySmoother>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridthreshold.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -93,8 +93,9 @@ struct VTKTraits<vtkHyperTreeGridThreshold> {
         R"ivw(This filter thresholds directly from HyperTreeGrid input datasets.)ivw";
 };
 
-void registervtkHyperTreeGridThreshold(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridThreshold>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridThreshold() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridThreshold>>>();
 }
 
 }  // namespace vtkwrapper

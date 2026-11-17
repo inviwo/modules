@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkTemporalSnapToTimeStep(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalSnapToTimeStep();
 }  // namespace vtkwrapper
 }  // namespace inviwo

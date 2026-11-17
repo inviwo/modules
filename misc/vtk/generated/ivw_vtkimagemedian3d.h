@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkImageMedian3D(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkImageMedian3D();
 }  // namespace vtkwrapper
 }  // namespace inviwo

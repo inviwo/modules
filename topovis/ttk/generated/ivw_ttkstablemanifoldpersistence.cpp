@@ -1,5 +1,5 @@
 #include "ivw_ttkstablemanifoldpersistence.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -161,8 +161,9 @@ VTK pipeline.
 See also MorseSmaleComplex, PersistenceDiagram.)ivw";
 };
 
-void registerttkStableManifoldPersistence(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkStableManifoldPersistence>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkStableManifoldPersistence() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkStableManifoldPersistence>>>();
 }
 
 }  // namespace vtkwrapper

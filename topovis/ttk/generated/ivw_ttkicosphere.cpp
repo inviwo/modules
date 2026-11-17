@@ -1,5 +1,5 @@
 #include "ivw_ttkicosphere.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -163,8 +163,8 @@ struct VTKTraits<ttkIcosphere> {
         R"ivw(This filter creates an Icosphere with a specified radius, center, and number of subdivisions. Alternatively, by providing an optional input, the filter will automatically determine the radius and center such that the resulting Icosphere encapsulates the input object. In this case, the entered radius parameter is used as a scaling factor.)ivw";
 };
 
-void registerttkIcosphere(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkIcosphere>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkIcosphere() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkIcosphere>>>();
 }
 
 }  // namespace vtkwrapper

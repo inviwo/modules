@@ -1,5 +1,5 @@
 #include "ivw_ttktexturemapfromfield.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -211,8 +211,9 @@ struct VTKTraits<ttkTextureMapFromField> {
 or to generate texture-based level lines out of a single scalar fields.)ivw";
 };
 
-void registerttkTextureMapFromField(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTextureMapFromField>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTextureMapFromField() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTextureMapFromField>>>();
 }
 
 }  // namespace vtkwrapper

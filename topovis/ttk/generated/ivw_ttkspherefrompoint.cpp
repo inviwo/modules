@@ -1,5 +1,5 @@
 #include "ivw_ttkspherefrompoint.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -204,8 +204,9 @@ struct VTKTraits<ttkSphereFromPoint> {
     static constexpr std::string_view doc = R"ivw(TTK plugin that produces sphere-only glyphs.)ivw";
 };
 
-void registerttkSphereFromPoint(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkSphereFromPoint>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkSphereFromPoint() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkSphereFromPoint>>>();
 }
 
 }  // namespace vtkwrapper

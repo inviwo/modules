@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkPExtractDataArraysOverTime(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkPExtractDataArraysOverTime();
 }  // namespace vtkwrapper
 }  // namespace inviwo

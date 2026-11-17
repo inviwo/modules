@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlhypertreegridreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -83,8 +83,9 @@ struct VTKTraits<vtkXMLHyperTreeGridReader> {
     static constexpr std::string_view doc = R"ivw()ivw";
 };
 
-void registervtkXMLHyperTreeGridReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLHyperTreeGridReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLHyperTreeGridReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLHyperTreeGridReader>>>();
 }
 
 }  // namespace vtkwrapper

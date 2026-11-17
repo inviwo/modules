@@ -1,5 +1,5 @@
 #include "ivw_vtksimplebondperceiver.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -76,8 +76,9 @@ anything other than atomic separations. It will not produce anything other
 than single bonds.)ivw";
 };
 
-void registervtkSimpleBondPerceiver(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkSimpleBondPerceiver>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkSimpleBondPerceiver() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkSimpleBondPerceiver>>>();
 }
 
 }  // namespace vtkwrapper

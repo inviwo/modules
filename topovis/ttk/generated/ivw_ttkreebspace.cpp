@@ -1,5 +1,5 @@
 #include "ivw_ttkreebspace.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -541,8 +541,8 @@ See also ContinuousScatterplot, JacobiSet, Fiber, FiberSurface,
 ProjectionFromField, RangePolygon.)ivw";
 };
 
-void registerttkReebSpace(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkReebSpace>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkReebSpace() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkReebSpace>>>();
 }
 
 }  // namespace vtkwrapper

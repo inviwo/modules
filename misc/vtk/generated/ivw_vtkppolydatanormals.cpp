@@ -1,5 +1,5 @@
 #include "ivw_vtkppolydatanormals.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -154,8 +154,9 @@ polygon in the dataset and then averaging the normals at
 the shared points.)ivw";
 };
 
-void registervtkPPolyDataNormals(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPPolyDataNormals>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPPolyDataNormals() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPPolyDataNormals>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtktexturemaptoplane.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -111,8 +111,9 @@ method is used to generate the plane
 automatically.)ivw";
 };
 
-void registervtkTextureMapToPlane(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTextureMapToPlane>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTextureMapToPlane() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTextureMapToPlane>>>();
 }
 
 }  // namespace vtkwrapper

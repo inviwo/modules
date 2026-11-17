@@ -1,5 +1,5 @@
 #include "ivw_vtkextractedges.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -53,8 +53,8 @@ lines. This filter operates on any type of data set and
 produces polygonal output.)ivw";
 };
 
-void registervtkExtractEdges(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractEdges>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractEdges() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractEdges>>>();
 }
 
 }  // namespace vtkwrapper

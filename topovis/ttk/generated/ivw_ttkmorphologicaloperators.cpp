@@ -1,5 +1,5 @@
 #include "ivw_ttkmorphologicaloperators.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -192,8 +192,9 @@ struct VTKTraits<ttkMorphologicalOperators> {
         R"ivw(This filter either a) dilates a specified label by assigning the label of a corresponding vertex to all its neighbors, or b) erodes a specified label by assigning to a corresponding vertex the largest label among its neighbors.)ivw";
 };
 
-void registerttkMorphologicalOperators(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMorphologicalOperators>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMorphologicalOperators() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMorphologicalOperators>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtkimagedatatouniformgrid.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -86,8 +86,9 @@ for point and/or cell blanking. By default, values of 0 in the specified
 array will result in a point or cell being blanked. Use Reverse to switch this.)ivw";
 };
 
-void registervtkImageDataToUniformGrid(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkImageDataToUniformGrid>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkImageDataToUniformGrid() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkImageDataToUniformGrid>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkXMLImageDataReader(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLImageDataReader();
 }  // namespace vtkwrapper
 }  // namespace inviwo

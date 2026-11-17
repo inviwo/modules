@@ -1,5 +1,5 @@
 #include "ivw_ttkmergetreeautoencoderdecoding.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -133,8 +133,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistenceDiagramWAE/)ivw";
 };
 
-void registerttkMergeTreeAutoencoderDecoding(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMergeTreeAutoencoderDecoding>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMergeTreeAutoencoderDecoding() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMergeTreeAutoencoderDecoding>>>();
 }
 
 }  // namespace vtkwrapper

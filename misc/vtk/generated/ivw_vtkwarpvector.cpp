@@ -1,5 +1,5 @@
 #include "ivw_vtkwarpvector.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -102,8 +102,8 @@ changes the positions of the points, the output dataset
 type is the same as that of the input.)ivw";
 };
 
-void registervtkWarpVector(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkWarpVector>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkWarpVector() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkWarpVector>>>();
 }
 
 }  // namespace vtkwrapper

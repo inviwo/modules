@@ -1,5 +1,5 @@
 #include "ivw_vtkpextractselectedarraysovertime.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -77,8 +77,9 @@ point values are interpolated from the nearby cells, ie
 those of the cell the location lies in.)ivw";
 };
 
-void registervtkPExtractSelectedArraysOverTime(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPExtractSelectedArraysOverTime>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPExtractSelectedArraysOverTime() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPExtractSelectedArraysOverTime>>>();
 }
 
 }  // namespace vtkwrapper

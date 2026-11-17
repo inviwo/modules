@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkOverlappingAMRLevelIdScalars(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkOverlappingAMRLevelIdScalars();
 }  // namespace vtkwrapper
 }  // namespace inviwo

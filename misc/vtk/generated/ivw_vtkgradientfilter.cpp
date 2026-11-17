@@ -1,5 +1,5 @@
 #include "ivw_vtkgradientfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -220,8 +220,9 @@ instead; it will be more efficient for this type of
 dataset.)ivw";
 };
 
-void registervtkGradientFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGradientFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGradientFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGradientFilter>>>();
 }
 
 }  // namespace vtkwrapper

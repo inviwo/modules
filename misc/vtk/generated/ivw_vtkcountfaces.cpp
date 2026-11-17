@@ -1,5 +1,5 @@
 #include "ivw_vtkcountfaces.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -57,8 +57,8 @@ struct VTKTraits<vtkCountFaces> {
         R"ivw(Adds a new cell data array containing the number of faces per cell.)ivw";
 };
 
-void registervtkCountFaces(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkCountFaces>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkCountFaces() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkCountFaces>>>();
 }
 
 }  // namespace vtkwrapper

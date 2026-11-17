@@ -1,5 +1,5 @@
 #include "ivw_vtkdistributeddatafilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -102,8 +102,9 @@ of this filter is of type unstructured
 grid.)ivw";
 };
 
-void registervtkDistributedDataFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDistributedDataFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDistributedDataFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDistributedDataFilter>>>();
 }
 
 }  // namespace vtkwrapper

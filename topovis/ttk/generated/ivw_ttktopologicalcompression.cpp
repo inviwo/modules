@@ -1,5 +1,5 @@
 #include "ivw_ttktopologicalcompression.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -210,8 +210,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/persistenceDrivenCompression/)ivw";
 };
 
-void registerttkTopologicalCompression(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkTopologicalCompression>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkTopologicalCompression() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkTopologicalCompression>>>();
 }
 
 }  // namespace vtkwrapper

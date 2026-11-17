@@ -1,5 +1,5 @@
 #include "ivw_vtktexturemaptosphere.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -73,8 +73,9 @@ in the angular direction measured down from the north pole
 towards the south pole.)ivw";
 };
 
-void registervtkTextureMapToSphere(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTextureMapToSphere>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTextureMapToSphere() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTextureMapToSphere>>>();
 }
 
 }  // namespace vtkwrapper

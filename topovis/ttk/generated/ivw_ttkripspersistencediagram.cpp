@@ -1,5 +1,5 @@
 #include "ivw_ttkripspersistencediagram.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -239,8 +239,9 @@ The diagonal of the diagram can be filtered out by considering its
 PairIdentifier value (set at -1).)ivw";
 };
 
-void registerttkRipsPersistenceDiagram(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkRipsPersistenceDiagram>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkRipsPersistenceDiagram() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkRipsPersistenceDiagram>>>();
 }
 
 }  // namespace vtkwrapper

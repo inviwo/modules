@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlphypertreegridreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -70,8 +70,9 @@ associated VTK XML htg data files. The
 expected file extension is .phtg.)ivw";
 };
 
-void registervtkXMLPHyperTreeGridReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLPHyperTreeGridReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLPHyperTreeGridReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLPHyperTreeGridReader>>>();
 }
 
 }  // namespace vtkwrapper

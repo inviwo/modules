@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkPlanarGraphLayout(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkPlanarGraphLayout();
 }  // namespace vtkwrapper
 }  // namespace inviwo

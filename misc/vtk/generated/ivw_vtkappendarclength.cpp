@@ -1,5 +1,5 @@
 #include "ivw_vtkappendarclength.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -52,8 +52,9 @@ input. For all other cell types, the arc length is set to
 0.)ivw";
 };
 
-void registervtkAppendArcLength(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkAppendArcLength>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkAppendArcLength() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkAppendArcLength>>>();
 }
 
 }  // namespace vtkwrapper

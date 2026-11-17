@@ -1,5 +1,5 @@
 #include "ivw_vtkblockidscalars.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -51,8 +51,9 @@ Scalars filter uses colors to show levels of a multiblock
 dataset.)ivw";
 };
 
-void registervtkBlockIdScalars(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkBlockIdScalars>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkBlockIdScalars() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkBlockIdScalars>>>();
 }
 
 }  // namespace vtkwrapper

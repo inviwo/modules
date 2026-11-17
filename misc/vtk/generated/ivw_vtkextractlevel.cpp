@@ -1,5 +1,5 @@
 #include "ivw_vtkextractlevel.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -50,8 +50,8 @@ filter.)"}};
 of levels from a hierarchical dataset)ivw";
 };
 
-void registervtkExtractLevel(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractLevel>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractLevel() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractLevel>>>();
 }
 
 }  // namespace vtkwrapper

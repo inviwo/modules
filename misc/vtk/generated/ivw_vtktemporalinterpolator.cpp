@@ -1,5 +1,5 @@
 #include "ivw_vtktemporalinterpolator.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -80,8 +80,9 @@ topology between adjacent time steps does not
 change.)ivw";
 };
 
-void registervtkTemporalInterpolator(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTemporalInterpolator>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTemporalInterpolator() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTemporalInterpolator>>>();
 }
 
 }  // namespace vtkwrapper

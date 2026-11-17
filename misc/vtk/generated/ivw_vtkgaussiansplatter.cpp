@@ -1,5 +1,5 @@
 #include "ivw_vtkgaussiansplatter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -250,8 +250,9 @@ results may be incorrect in parallel as points can't splat
 into other processor's cells.)ivw";
 };
 
-void registervtkGaussianSplatter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGaussianSplatter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGaussianSplatter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGaussianSplatter>>>();
 }
 
 }  // namespace vtkwrapper

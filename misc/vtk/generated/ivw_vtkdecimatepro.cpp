@@ -1,5 +1,5 @@
 #include "ivw_vtkdecimatepro.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -115,8 +115,8 @@ that contains polygons other than
 triangles.)ivw";
 };
 
-void registervtkDecimatePro(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkDecimatePro>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkDecimatePro() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkDecimatePro>>>();
 }
 
 }  // namespace vtkwrapper

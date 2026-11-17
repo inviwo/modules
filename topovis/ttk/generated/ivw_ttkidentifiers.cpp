@@ -1,5 +1,5 @@
 #include "ivw_ttkidentifiers.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -116,8 +116,8 @@ This filter is useful to retrieve the global identifiers of vertices or
 cells in subsequent filters throughout the VTK pipeline.)ivw";
 };
 
-void registerttkIdentifiers(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkIdentifiers>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkIdentifiers() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkIdentifiers>>>();
 }
 
 }  // namespace vtkwrapper

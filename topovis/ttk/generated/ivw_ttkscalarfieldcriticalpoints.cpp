@@ -1,5 +1,5 @@
 #include "ivw_ttkscalarfieldcriticalpoints.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -327,8 +327,9 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/uncertainStartingVortex/)ivw";
 };
 
-void registerttkScalarFieldCriticalPoints(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkScalarFieldCriticalPoints>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkScalarFieldCriticalPoints() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkScalarFieldCriticalPoints>>>();
 }
 
 }  // namespace vtkwrapper

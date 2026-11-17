@@ -1,5 +1,5 @@
 #include "ivw_vtkintegrateattributes.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -64,8 +64,9 @@ data over lines and surfaces. It also computes length of
 lines, area of surface, or volume.)ivw";
 };
 
-void registervtkIntegrateAttributes(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkIntegrateAttributes>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkIntegrateAttributes() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkIntegrateAttributes>>>();
 }
 
 }  // namespace vtkwrapper

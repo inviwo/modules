@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registervtkTableToStructuredGrid(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registervtkTableToStructuredGrid();
 }  // namespace vtkwrapper
 }  // namespace inviwo

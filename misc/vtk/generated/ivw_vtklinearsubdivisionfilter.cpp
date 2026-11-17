@@ -1,5 +1,5 @@
 #include "ivw_vtklinearsubdivisionfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -71,8 +71,9 @@ triangles. The output of this filter is also
 polygonal.)ivw";
 };
 
-void registervtkLinearSubdivisionFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkLinearSubdivisionFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkLinearSubdivisionFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkLinearSubdivisionFilter>>>();
 }
 
 }  // namespace vtkwrapper

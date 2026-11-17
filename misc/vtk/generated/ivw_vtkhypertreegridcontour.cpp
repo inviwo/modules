@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridcontour.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -79,8 +79,9 @@ struct VTKTraits<vtkHyperTreeGridContour> {
         R"ivw(This filter extracts isocontours directly from HyperTreeGrid input datasets.)ivw";
 };
 
-void registervtkHyperTreeGridContour(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridContour>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridContour() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridContour>>>();
 }
 
 }  // namespace vtkwrapper

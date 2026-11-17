@@ -1,5 +1,5 @@
 #include "ivw_ttkuncertaindataestimator.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -149,8 +149,9 @@ by a list of scalar fields) and which computes various vertexwise statistics
 See also MandatoryCriticalPoints.)ivw";
 };
 
-void registerttkUncertainDataEstimator(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkUncertainDataEstimator>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkUncertainDataEstimator() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkUncertainDataEstimator>>>();
 }
 
 }  // namespace vtkwrapper

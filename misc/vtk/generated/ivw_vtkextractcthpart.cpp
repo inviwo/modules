@@ -1,5 +1,5 @@
 #include "ivw_vtkextractcthpart.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -116,8 +116,9 @@ This filter only operates on unstructured data. It
 produces polygonal output.)ivw";
 };
 
-void registervtkExtractCTHPart(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractCTHPart>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractCTHPart() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractCTHPart>>>();
 }
 
 }  // namespace vtkwrapper

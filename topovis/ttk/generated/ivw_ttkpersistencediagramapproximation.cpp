@@ -1,5 +1,5 @@
 #include "ivw_ttkpersistencediagramapproximation.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -235,8 +235,9 @@ IEEE Symposium on Large Data Visualization and Analysis (LDAV), 2021
 Online examples:)ivw";
 };
 
-void registerttkPersistenceDiagramApproximation(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkPersistenceDiagramApproximation>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkPersistenceDiagramApproximation() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkPersistenceDiagramApproximation>>>();
 }
 
 }  // namespace vtkwrapper

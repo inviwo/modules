@@ -1,5 +1,5 @@
 #include "ivw_ttkmatrixtoheatmap.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -133,8 +133,9 @@ struct VTKTraits<ttkMatrixToHeatMap> {
     static constexpr std::string_view doc = R"ivw(Converts a distance matrix into a heat map.)ivw";
 };
 
-void registerttkMatrixToHeatMap(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkMatrixToHeatMap>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkMatrixToHeatMap() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkMatrixToHeatMap>>>();
 }
 
 }  // namespace vtkwrapper

@@ -1,5 +1,5 @@
 #include "ivw_vtktensorglyph.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -223,8 +223,8 @@ polygonal. This filter supports symmetric tensors. Symmetric tensor components a
 following order: XX, YY, ZZ, XY, YZ, XZ")ivw";
 };
 
-void registervtkTensorGlyph(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkTensorGlyph>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkTensorGlyph() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkTensorGlyph>>>();
 }
 
 }  // namespace vtkwrapper

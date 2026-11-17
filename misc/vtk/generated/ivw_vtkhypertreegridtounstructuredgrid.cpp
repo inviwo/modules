@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridtounstructuredgrid.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -49,8 +49,9 @@ struct VTKTraits<vtkHyperTreeGridToUnstructuredGrid> {
         R"ivw(This filter converts vtkHyperTreeGrid data to vtkUnstructuredGrid. The converted output consumes much more memory but is compatible with most of the standard filters.)ivw";
 };
 
-void registervtkHyperTreeGridToUnstructuredGrid(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridToUnstructuredGrid>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridToUnstructuredGrid() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridToUnstructuredGrid>>>();
 }
 
 }  // namespace vtkwrapper

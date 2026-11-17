@@ -1,5 +1,5 @@
 #include "ivw_vtkloopsubdivisionfilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -74,8 +74,9 @@ triangle meshes), and it produces polygonal
 output.)ivw";
 };
 
-void registervtkLoopSubdivisionFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkLoopSubdivisionFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkLoopSubdivisionFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkLoopSubdivisionFilter>>>();
 }
 
 }  // namespace vtkwrapper

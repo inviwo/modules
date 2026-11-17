@@ -1,5 +1,5 @@
 #include "ivw_vtkpassarrays.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -60,8 +60,8 @@ only the arrays specified to the output from the
 input.)ivw";
 };
 
-void registervtkPassArrays(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkPassArrays>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkPassArrays() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkPassArrays>>>();
 }
 
 }  // namespace vtkwrapper

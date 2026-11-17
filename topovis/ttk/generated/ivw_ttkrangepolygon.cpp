@@ -1,5 +1,5 @@
 #include "ivw_ttkrangepolygon.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -163,8 +163,8 @@ Online examples:
 - https://topology-tool-kit.github.io/examples/builtInExample2/)ivw";
 };
 
-void registerttkRangePolygon(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkRangePolygon>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkRangePolygon() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkRangePolygon>>>();
 }
 
 }  // namespace vtkwrapper

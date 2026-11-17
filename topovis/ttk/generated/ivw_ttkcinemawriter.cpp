@@ -1,5 +1,5 @@
 #include "ivw_ttkcinemawriter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -195,8 +195,8 @@ struct VTKTraits<ttkCinemaWriter> {
 The field data arrays of the input are used to derive a unique key that identifies the data product in the Cinema database. If another product with the same key already exists then the filter will replace the existing data product, otherwise the data product is simply appended to the database. The data product itself is either stored in a VTK file format)ivw";
 };
 
-void registerttkCinemaWriter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkCinemaWriter>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkCinemaWriter() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkCinemaWriter>>>();
 }
 
 }  // namespace vtkwrapper

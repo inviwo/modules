@@ -1,5 +1,5 @@
 #include "ivw_vtkxmlprectilineargridreader.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -72,8 +72,9 @@ VTK XML rectilinear grid files. The expected file
 extension is .pvtr.)ivw";
 };
 
-void registervtkXMLPRectilinearGridReader(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkXMLPRectilinearGridReader>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkXMLPRectilinearGridReader() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkXMLPRectilinearGridReader>>>();
 }
 
 }  // namespace vtkwrapper

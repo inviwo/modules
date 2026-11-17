@@ -1,5 +1,5 @@
 #include "ivw_vtkcellcenters.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -72,8 +72,8 @@ input and produces a polygonal data set as
 output.)ivw";
 };
 
-void registervtkCellCenters(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkCellCenters>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkCellCenters() {
+    return std::make_unique<ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkCellCenters>>>();
 }
 
 }  // namespace vtkwrapper

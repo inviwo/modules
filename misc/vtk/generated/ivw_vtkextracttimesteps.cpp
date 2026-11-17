@@ -1,5 +1,5 @@
 #include "ivw_vtkextracttimesteps.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -111,8 +111,9 @@ struct VTKTraits<vtkExtractTimeSteps> {
         R"ivw(This filter extracts specified time steps from its input.)ivw";
 };
 
-void registervtkExtractTimeSteps(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkExtractTimeSteps>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkExtractTimeSteps() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkExtractTimeSteps>>>();
 }
 
 }  // namespace vtkwrapper

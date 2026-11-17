@@ -1,5 +1,5 @@
 #include "ivw_vtkhypertreegridtodualgrid.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -49,8 +49,9 @@ struct VTKTraits<vtkHyperTreeGridToDualGrid> {
         R"ivw(This filter converts vtkHyperTreeGrid data to vtkUnstructuredGrid, using the dual grid. The converted output consumes much more memory but is compatible with most of the standard filters.)ivw";
 };
 
-void registervtkHyperTreeGridToDualGrid(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkHyperTreeGridToDualGrid>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkHyperTreeGridToDualGrid() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkHyperTreeGridToDualGrid>>>();
 }
 
 }  // namespace vtkwrapper

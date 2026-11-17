@@ -1,5 +1,5 @@
 #include "ivw_vtkgenericoutlinefilter.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -54,8 +54,9 @@ generic data sets and produces polygonal
 output.)ivw";
 };
 
-void registervtkGenericOutlineFilter(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<vtkGenericOutlineFilter>>();
+std::unique_ptr<ProcessorFactoryObject> registervtkGenericOutlineFilter() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<vtkGenericOutlineFilter>>>();
 }
 
 }  // namespace vtkwrapper

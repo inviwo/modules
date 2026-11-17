@@ -1,7 +1,10 @@
 #pragma once
+
+#include <memory>
+
 namespace inviwo {
-class InviwoModule;
+class ProcessorFactoryObject;
 namespace vtkwrapper {
-void registerttkWebSocketIO(InviwoModule* module);
+std::unique_ptr<ProcessorFactoryObject> registerttkWebSocketIO();
 }  // namespace vtkwrapper
 }  // namespace inviwo

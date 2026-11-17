@@ -1,5 +1,5 @@
 #include "ivw_ttkdimensionreductionmetrics.h"
-#include <inviwo/core/common/inviwomodule.h>
+#include <inviwo/core/processors/processorfactoryobject.h>
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 #include <inviwo/core/properties/ordinalproperty.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -204,8 +204,9 @@ struct VTKTraits<ttkDimensionReductionMetrics> {
     static constexpr std::string_view doc = R"ivw()ivw";
 };
 
-void registerttkDimensionReductionMetrics(InviwoModule* module) {
-    module->registerProcessor<VTKGenericProcessor<ttkDimensionReductionMetrics>>();
+std::unique_ptr<ProcessorFactoryObject> registerttkDimensionReductionMetrics() {
+    return std::make_unique<
+        ProcessorFactoryObjectTemplate<VTKGenericProcessor<ttkDimensionReductionMetrics>>>();
 }
 
 }  // namespace vtkwrapper
