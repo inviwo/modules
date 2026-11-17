@@ -24,7 +24,7 @@ set(TEST_FILES
 )
 ivw_add_unittest(${TEST_FILES})
 
-ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
+ivw_create_module(NO_PCH ${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
 find_package(ortools CONFIG REQUIRED)
 target_link_libraries(inviwo-module-ortools PRIVATE ortools::ortools)

@@ -28,6 +28,8 @@ target_sources(ivwtensorvis
 
 target_link_libraries(ivwtensorvis PUBLIC inviwo::module::tensorvisbase inviwo::module::python3)
 
+ivw_compile_optimize_on_target(ivwtensorvis)
+
 ivw_install_helper(TARGET ivwtensorvis
     NAMESPACE inviwo
     DESTINATION inviwo

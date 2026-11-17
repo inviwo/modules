@@ -25,6 +25,8 @@ target_sources(ivwmolvis
 )
 target_link_libraries(ivwmolvis PUBLIC inviwo::module::molvisbase inviwo::module::python3)
 
+ivw_compile_optimize_on_target(ivwmolvis)
+
 ivw_install_helper(TARGET ivwmolvis
     NAMESPACE inviwo
     DESTINATION inviwo
