@@ -745,9 +745,9 @@ void TensorField3D::computeNormalizedScreenCoordinates(double sliceCoord) {
         for (size_t y = 0; y < dimensions_.y; y++) {
             for (size_t x = 0; x < dimensions_.x; x++) {
                 normalizedVolumePositions_[indexMapper_(size3_t(x, y, z))] =
-                    dvec3(dimensions_.x < 2 ? sliceCoord : x * stepSize.x,
-                          dimensions_.y < 2 ? sliceCoord : y * stepSize.y,
-                          dimensions_.z < 2 ? sliceCoord : z * stepSize.z);
+                    dvec3(dimensions_.x < 2 ? sliceCoord : static_cast<double>(x) * stepSize.x,
+                          dimensions_.y < 2 ? sliceCoord : static_cast<double>(y) * stepSize.y,
+                          dimensions_.z < 2 ? sliceCoord : static_cast<double>(z) * stepSize.z);
             }
         }
     }

@@ -230,7 +230,7 @@ auto createHexagonalGrid(size2_t gridDim, glm::vec<N, ComponentType> origin,
 
     // first line - nodes are 2*w apart
     for (std::size_t i = 0; i < nodesPerLine; ++i) {
-        res.positions.push_back(origin + Vec(width * i, 0));
+        res.positions.push_back(origin + Vec(width * static_cast<ComponentType>(i), 0));
         if (i > 0) {
             res.springs.push_back({i - 1, i});
         }

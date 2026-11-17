@@ -145,8 +145,9 @@ void MolecularMeshRenderer::process() {
 
             shader.activate();
             utilgl::setUniforms(shader, camera_, lighting_, defaultRadius_);
-            shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                               2.0f / outport_.getDimensions().y));
+            shader.setUniform(
+                "viewport", vec4(0.0f, 0.0f, 2.0f / static_cast<float>(outport_.getDimensions().x),
+                                 2.0f / static_cast<float>(outport_.getDimensions().y)));
             shader.setUniform("radiusScaling_", radius);
             utilgl::setShaderUniforms(shader, *mesh, "geometry");
 
@@ -172,25 +173,17 @@ void MolecularMeshRenderer::process() {
     };
 
     switch (representation_) {
-        case Representation::VDW:
-            drawVdW(radiusScaling_);
-            break;
-        case Representation::Licorice:
-            drawLicorice(radiusScaling_);
-            break;
+        case Representation::VDW: drawVdW(radiusScaling_); break;
+        case Representation::Licorice: drawLicorice(radiusScaling_); break;
         case Representation::BallAndStick:
             drawVdW(radiusScaling_ * BallAndStickVDWScale);
             drawLicorice(radiusScaling_ * BallAndStickLicoriceScale);
             break;
-        case Representation::Ribbon:
-            throw Exception("Unsupported representation: 'Ribbon'");
-            break;
+        case Representation::Ribbon: throw Exception("Unsupported representation: 'Ribbon'"); break;
         case Representation::Cartoon:
             throw Exception("Unsupported representation: 'Cartoon'");
             break;
-        default:
-            drawVdW(radiusScaling_);
-            break;
+        default: drawVdW(radiusScaling_); break;
     }
 
     utilgl::deactivateCurrentTarget();

@@ -209,17 +209,12 @@ void MolecularRasterizer::process() {
     const bool updateColorMap = [&]() {
         if (coloring_.isModified()) return true;
         switch (coloring_) {
-            case Coloring::Atoms:
-                return atomColormap_.isModified();
-            case Coloring::Residues:
-                return aminoColormap_.isModified();
-            case Coloring::Fixed:
-                return fixedColor_.isModified();
-            case Coloring::BFactor:
-                return bFactorColormap_.isModified();
+            case Coloring::Atoms: return atomColormap_.isModified();
+            case Coloring::Residues: return aminoColormap_.isModified();
+            case Coloring::Fixed: return fixedColor_.isModified();
+            case Coloring::BFactor: return bFactorColormap_.isModified();
             case Coloring::Chains:
-            default:
-                return false;
+            default: return false;
         }
     }();
 
@@ -323,7 +318,8 @@ void MolecularRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMa
         setUniforms(shader);
         shader.setUniform("radius_", 0.25f * radius);
         shader.setUniform("radiusScaling_", radius);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / imageSize.x, 2.0f / imageSize.y));
+        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / static_cast<float>(imageSize.x),
+                                           2.0f / static_cast<float>(imageSize.y)));
         auto transform = CompositeTransform(mesh->getModelMatrix(),
                                             mesh->getWorldMatrix() * worldMatrixTransform);
         utilgl::setShaderUniforms(shader, transform, "geometry");
@@ -369,9 +365,7 @@ void MolecularRasterizer::rasterize(const ivec2& imageSize, const dmat4& worldMa
             case MolecularRasterizer::Representation::Cartoon:
                 throw Exception("Unsupported representation: 'Cartoon'");
                 break;
-            default:
-                drawVdW(mesh, drawer, radiusScaling_);
-                break;
+            default: drawVdW(mesh, drawer, radiusScaling_); break;
         }
     }
 }
@@ -458,8 +452,7 @@ std::shared_ptr<Mesh> MolecularRasterizer::createMesh(const molvis::MolecularStr
                                              element::color(Element::Unknown, atomColormap_));
                 }
             case Coloring::Fixed:
-            default:
-                return std::vector<vec4>(atomCount, colormap.fixedColor);
+            default: return std::vector<vec4>(atomCount, colormap.fixedColor);
         }
     }();
 

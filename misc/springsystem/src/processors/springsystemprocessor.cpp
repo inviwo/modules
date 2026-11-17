@@ -219,13 +219,13 @@ GravitySpringSystem<2, double> SpringSystemProcessor::getSystem() {
 
     auto grid = [&]() {
         switch (springLayout_.get()) {
-            default:
-                [[fallthrough]];
+            default: [[fallthrough]];
             case 1: {
                 return springmass::createLineGrid<2, double>(nodeCount_, nodeSpacing_);
             }
             case 2: {
-                const double offset = (std::ptrdiff_t{nodeCount_} - 1) * nodeSpacing_ * 0.5;
+                const double offset =
+                    static_cast<double>(std::ptrdiff_t{nodeCount_} - 1) * nodeSpacing_ * 0.5;
                 const dvec2 origin(-offset, offset);
                 return springmass::createRectangularGrid<2, double>(size2_t(nodeCount_), origin,
                                                                     dvec2(nodeSpacing_));

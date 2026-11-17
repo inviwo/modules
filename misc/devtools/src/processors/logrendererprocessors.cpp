@@ -94,9 +94,10 @@ void LogRendererProcessors::process() {
     };
 
     auto height = textRenderer_.computeBoundingBox(getText()).textExtent.y;
-    auto y = (height) / (float)(dim.y);
+    auto y = static_cast<float>(height) / static_cast<float>(dim.y);
 
-    textRenderer_.render(getText(), vec2(-1, 2 * y - 1), invDim, vec4(1, 1, 1, 1));
+    textRenderer_.render(getText(), vec2(-1.0f, 2.0f * y - 1.0f), invDim,
+                         vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
     utilgl::deactivateCurrentTarget();
 }

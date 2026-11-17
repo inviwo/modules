@@ -71,7 +71,7 @@ void DeformableCylinder::createCylinder(const size_t& numTheta, const vec4& colo
     num_indices += 6;
 
     for (glm::uint32_t i = 1; i < numTheta; i++) {
-        const auto cur_vec = glm::rotateY(rot_vector, i * frac);
+        const auto cur_vec = glm::rotateY(rot_vector, static_cast<float>(i) * frac);
 
         mesh_->addVertices({
             {rotation_matrix * (top_center + cur_vec),

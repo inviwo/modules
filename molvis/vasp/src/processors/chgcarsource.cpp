@@ -294,7 +294,8 @@ void updateTF(TransferFunction& tf, const Chgcar& chg, molvis::element::Colormap
                     points.emplace_back(static_cast<double>(runningIndex), color);
                     points.emplace_back(static_cast<double>(runningIndex + 1) - 0.00001, color);
                 });
-    std::ranges::for_each(points, [&](auto& p) { p.pos *= 2.0 / points.size(); });
+    std::ranges::for_each(points,
+                          [&](auto& p) { p.pos *= 2.0 / static_cast<double>(points.size()); });
     tf.set(points);
 }
 
@@ -419,8 +420,8 @@ std::shared_ptr<molvis::MolecularStructure> createMolecularStructure(
     return ms;
 }
 
-std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file, std::stop_token stop,
-                                                   pool::Progress progress) {
+std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file,
+                                                   std::stop_token stop, pool::Progress progress) {
     const auto voxels = glm::compMul(chg.dims);
 
     auto volumeRep = std::make_shared<VolumeRAMPrecision<float>>(
@@ -464,7 +465,7 @@ std::shared_ptr<VolumeRAMPrecision<float>> readChg(const Chgcar& chg, File& file
 
         if (stop.stop_requested()) return {};
         if (i % 1'000'000 == 0) {
-            progress(static_cast<float>(i) / voxels);
+            progress(static_cast<float>(i) / static_cast<float>(voxels));
         }
     }
 
@@ -477,7 +478,7 @@ dvec2 calcDataRange(const std::shared_ptr<VolumeRAMPrecision<float>>& rep) {
 }
 
 std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2> readChgAndRange(
-    const Chgcar& chg, File& file, pool::Stop stop, pool::Progress progress) {
+    const Chgcar& chg, File& file, std::stop_token stop, pool::Progress progress) {
     const auto data = readChg(chg, file, stop, progress);
     if (!data) {
         return {nullptr, {}};
@@ -678,7 +679,7 @@ void ChgcarSource::process() {
     using Result = std::tuple<Chgcar, std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2>,
                               std::pair<std::shared_ptr<VolumeRAMPrecision<float>>, dvec2>>;
     auto calc = [path = file_.get(), readChg = readChg_.get(), readMag = readMag_.get()](
-                    pool::Stop stop, pool::Progress progress) -> Result {
+                    std::stop_token stop, pool::Progress progress) -> Result {
         File file{path};
         Chgcar chg;
 
@@ -1599,14 +1600,10 @@ std::optional<Potential> findPotential(PotentialType type, std::string_view name
 
     const auto pots = [&]() -> std::span<const Potential> {
         switch (type) {
-            case PotentialType::Standard_LDA:
-                return standard_LDA;
-            case PotentialType::Standard_PBE:
-                return standard_PBE;
-            case PotentialType::GW_LDA:
-                return GW_LDA;
-            case PotentialType::GW_PBE:
-                return GW_PBE;
+            case PotentialType::Standard_LDA: return standard_LDA;
+            case PotentialType::Standard_PBE: return standard_PBE;
+            case PotentialType::GW_LDA: return GW_LDA;
+            case PotentialType::GW_PBE: return GW_PBE;
         }
         return standard_LDA;
     }();

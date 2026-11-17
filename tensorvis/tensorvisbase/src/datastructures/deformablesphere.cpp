@@ -67,19 +67,12 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
     faces_.clear();
     faces_.reserve(nFaces);
 
-    auto calcVert = [](vec3& vertex, const float& cosphi, const float& sinphi,
-                       const float& costheta, const float& sintheta) -> auto {
-        auto sgnsinphi = int(glm::sign(sinphi));
-        auto sgncosphi = int(glm::sign(cosphi));
-        auto sgnsintheta = int(glm::sign(sintheta));
-        auto sgncostheta = int(glm::sign(costheta));
-
-        vertex.x = (sgncostheta * std::abs(costheta)) * (sgnsinphi * std::abs(sinphi));
-        vertex.y = (sgnsintheta * std::abs(sintheta)) * (sgnsinphi * std::abs(sinphi));
-        vertex.z = sgncosphi * std::abs(cosphi);
+    auto calcVert = [](const float& cosphi, const float& sinphi, const float& costheta,
+                       const float& sintheta) {
+        return vec3{costheta * sinphi, sintheta * sinphi, cosphi};
     };
     auto addVertex = [&](const vec3& vertex, const vec3& texCoord, const vec3& normal,
-                         const vec4& color) -> auto {
+                         const vec4& color) -> auto{
         vertices.emplace_back(vertex);
         normals.emplace_back(normal);
         texCoords.emplace_back(texCoord);
@@ -90,45 +83,38 @@ void DeformableSphere::createSphere(const size_t& numTheta, const size_t& numPhi
     // Generate main geometry body
     for (size_t j = 1; j < numPhi - 1; j++) {
         for (size_t i = 0; i < numTheta; i++) {
-            auto theta = static_cast<float>(i) * 2.f * static_cast<float>(M_PI) /
-                         (static_cast<float>(numTheta));
-            auto phi = static_cast<float>(j) * static_cast<float>(M_PI) /
-                       (static_cast<float>(numPhi) - 1.f);
+            const auto theta = static_cast<float>(i) * 2.f * static_cast<float>(M_PI) /
+                               (static_cast<float>(numTheta));
+            const auto phi = static_cast<float>(j) * static_cast<float>(M_PI) /
+                             (static_cast<float>(numPhi) - 1.f);
 
-            auto sinphi = std::sin(phi);
-            auto cosphi = std::cos(phi);
-            auto sintheta = std::sin(theta);
-            auto costheta = std::cos(theta);
-
-            vec3 vertex;
-
-            calcVert(vertex, cosphi, sinphi, costheta, sintheta);
+            const auto sinphi = std::sin(phi);
+            const auto cosphi = std::cos(phi);
+            const auto sintheta = std::sin(theta);
+            const auto costheta = std::cos(theta);
+            const auto vertex = calcVert(cosphi, sinphi, costheta, sintheta);
 
             addedIndices.emplace_back(addVertex(vertex, vec3(0), vec3(0), color));
         }
     }
 
-    vec3 vertex;
+    const auto vertex1 = calcVert(1.f, 0.f, 1.f, 0.f);
 
-    calcVert(vertex, 1.f, 0.f, 1.f, 0.f);
-
-    addedIndices.emplace_back(addVertex(vertex, vec3(0), vec3(0), color));
+    addedIndices.emplace_back(addVertex(vertex1, vec3(0), vec3(0), color));
 
     // Generate second extreme point
-    auto theta = (static_cast<float>(numTheta) - 1.f) * 2.f * static_cast<float>(M_PI) /
-                 (static_cast<float>(numTheta) - 1.f);
-    auto phi = (static_cast<float>(numPhi) - 1.f) * static_cast<float>(M_PI) /
-               (static_cast<float>(numPhi) - 1);
+    const auto theta = (static_cast<float>(numTheta) - 1.f) * 2.f * static_cast<float>(M_PI) /
+                       (static_cast<float>(numTheta) - 1.f);
+    const auto phi = (static_cast<float>(numPhi) - 1.f) * static_cast<float>(M_PI) /
+                     (static_cast<float>(numPhi) - 1);
 
-    auto sinphi = std::sin(phi);
-    auto cosphi = std::cos(phi);
+    const auto sinphi = std::sin(phi);
+    const auto cosphi = std::cos(phi);
+    const auto sintheta = std::sin(theta);
+    const auto costheta = std::cos(theta);
+    const auto vertex2 = calcVert(cosphi, sinphi, costheta, sintheta);
 
-    auto sintheta = std::sin(theta);
-    auto costheta = std::cos(theta);
-
-    calcVert(vertex, cosphi, sinphi, costheta, sintheta);
-
-    addedIndices.emplace_back(addVertex(vertex, vec3(0), vec3(0), color));
+    addedIndices.emplace_back(addVertex(vertex2, vec3(0), vec3(0), color));
 
     // Tesselate main geometry
     // First, we create the triangles for the "sides"

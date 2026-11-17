@@ -234,8 +234,9 @@ void MolecularRenderer::process() {
         shader.activate();
         utilgl::setUniforms(shader, camera_, lighting_, defaultRadius_, showFiltered_,
                             showSelected_, showHighlighted_);
-        shader.setUniform("viewport", vec4(0.0f, 0.0f, 2.0f / outport_.getDimensions().x,
-                                           2.0f / outport_.getDimensions().y));
+        shader.setUniform("viewport",
+                          vec4(0.0f, 0.0f, 2.0f / static_cast<float>(outport_.getDimensions().x),
+                               2.0f / static_cast<float>(outport_.getDimensions().y)));
         shader.setUniform("radiusScaling_", radius);
         utilgl::setShaderUniforms(shader, *mesh, "geometry");
         drawMesh(mesh, drawer, DrawType::Points);
@@ -256,17 +257,12 @@ void MolecularRenderer::process() {
     const bool updateColorMap = [&]() {
         if (coloring_.isModified()) return true;
         switch (coloring_) {
-            case Coloring::Atoms:
-                return atomColormap_.isModified();
-            case Coloring::Residues:
-                return aminoColormap_.isModified();
-            case Coloring::Fixed:
-                return fixedColor_.isModified();
-            case Coloring::BFactor:
-                return bFactorColormap_.isModified();
+            case Coloring::Atoms: return atomColormap_.isModified();
+            case Coloring::Residues: return aminoColormap_.isModified();
+            case Coloring::Fixed: return fixedColor_.isModified();
+            case Coloring::BFactor: return bFactorColormap_.isModified();
             case Coloring::Chains:
-            default:
-                return false;
+            default: return false;
         }
     }();
 
@@ -303,12 +299,8 @@ void MolecularRenderer::process() {
         MeshDrawerGL::DrawObject drawer{mesh->getRepresentation<MeshGL>(),
                                         mesh->getDefaultMeshInfo()};
         switch (representation_) {
-            case Representation::VDW:
-                drawVdW(mesh, drawer, radiusScaling_);
-                break;
-            case Representation::Licorice:
-                drawLicorice(mesh, drawer, radiusScaling_);
-                break;
+            case Representation::VDW: drawVdW(mesh, drawer, radiusScaling_); break;
+            case Representation::Licorice: drawLicorice(mesh, drawer, radiusScaling_); break;
             case Representation::BallAndStick:
                 drawVdW(mesh, drawer, radiusScaling_ * BallAndStickVDWScale);
                 drawLicorice(mesh, drawer, radiusScaling_ * BallAndStickLicoriceScale);
@@ -319,9 +311,7 @@ void MolecularRenderer::process() {
             case Representation::Cartoon:
                 throw Exception("Unsupported representation: 'Cartoon'");
                 break;
-            default:
-                drawVdW(mesh, drawer, radiusScaling_);
-                break;
+            default: drawVdW(mesh, drawer, radiusScaling_); break;
         }
     }
 
@@ -430,8 +420,7 @@ std::shared_ptr<Mesh> MolecularRenderer::createMesh(const molvis::MolecularStruc
                                              element::color(Element::Unknown, atomColormap_));
                 }
             case Coloring::Fixed:
-            default:
-                return std::vector<vec4>(atomCount, colormap.fixedColor);
+            default: return std::vector<vec4>(atomCount, colormap.fixedColor);
         }
     }();
 

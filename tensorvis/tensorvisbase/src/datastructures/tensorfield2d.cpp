@@ -437,7 +437,8 @@ void TensorField2D::computeNormalizedScreenCoordinates() {
     for (size_t y = 0; y < dimensions_.y; y++) {
         for (size_t x = 0; x < dimensions_.x; x++) {
             normalizedImagePositions_[indexMapper_(size2_t(x, y))] =
-                dvec2(dimensions_.x < 2 ? 0. : x * xFrac, dimensions_.y < 2 ? 0. : y * yFrac);
+                dvec2(dimensions_.x < 2 ? 0. : static_cast<double>(x) * xFrac,
+                      dimensions_.y < 2 ? 0. : static_cast<double>(y) * yFrac);
         }
     }
 }
