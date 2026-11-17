@@ -30,8 +30,7 @@
 #pragma once
 
 #include <inviwo/vtk/vtkmoduledefine.h>
-#include <inviwo/core/common/inviwoapplication.h>
-#include <inviwo/core/network/processornetwork.h>
+
 #include <inviwo/core/processors/processor.h>
 #include <inviwo/core/properties/property.h>
 #include <inviwo/core/properties/optionproperty.h>
@@ -39,7 +38,6 @@
 #include <inviwo/core/util/foreacharg.h>
 #include <inviwo/core/util/zip.h>
 #include <inviwo/core/util/utilities.h>
-#include <inviwo/core/util/rendercontext.h>
 #include <inviwo/core/algorithm/markdown.h>
 
 #include <inviwo/vtk/ports/vtkinport.h>
@@ -64,7 +62,7 @@
 
 #include <vtkSmartPointer.h>
 #include <vtkExecutive.h>
-#include "vtkCommand.h"
+#include <vtkCommand.h>
 
 #include <warn/pop>
 
@@ -115,16 +113,7 @@ protected:
     ~Command() override = default;
 };
 
-inline std::string toString(vtkInformation* info) {
-    vtkIndent indent;
-    std::stringstream ss;
-    if (!info) {
-        ss << "vtkInformation is nullptr";
-        return ss.str();
-    }
-    info->PrintSelf(ss, indent);
-    return std::move(ss).str();
-}
+IVW_MODULE_VTK_API std::string toString(vtkInformation* info);
 
 inline void updateFieldSelection(vtkDataObject::FieldAssociations assoc, vtkDataObject* data,
                                  OptionPropertyString& opts) {
@@ -159,6 +148,9 @@ void setupFieldSelection(Inport* inport, auto& wrapper) {
         });
     }
 }
+
+IVW_MODULE_VTK_API void processEventsImpl(Processor* processor);
+
 /**
  * @brief A Wrapper for all VTK filters
  */
@@ -177,8 +169,7 @@ public:
                 log::report(LogLevel::Info, static_cast<const char*>(data));
             } else if (eid == vtkCommand::ProgressEvent) {
                 notifyObserversProgressChanged(this, *static_cast<double*>(data));
-                getNetwork()->getApplication()->processEvents();
-                rendercontext::activateDefault();
+                processEventsImpl(this);
             }
         };
 

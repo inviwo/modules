@@ -29,4 +29,29 @@
 
 #include <inviwo/vtk/processors/vtkgenericprocessor.h>
 
-namespace inviwo {}  // namespace inviwo
+#include <inviwo/core/common/inviwoapplication.h>
+#include <inviwo/core/common/inviwoapplicationutil.h>
+#include <inviwo/core/util/rendercontext.h>
+
+namespace inviwo::vtkwrapper {
+
+ std::string toString(vtkInformation* info) {
+    vtkIndent indent;
+    std::stringstream ss;
+    if (!info) {
+        ss << "vtkInformation is nullptr";
+        return ss.str();
+    }
+    info->PrintSelf(ss, indent);
+    return std::move(ss).str();
+}
+
+
+void processEventsImpl(Processor* processor) {
+    if (auto* app = util::getInviwoApplication(processor)) {
+        app->processEvents();
+    }
+    rendercontext::activateDefault();
+}
+
+}  // namespace inviwo::vtkwrapper
