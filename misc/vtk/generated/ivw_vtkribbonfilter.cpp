@@ -43,15 +43,12 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputScalars", "Scalars",
-                              R"(The value of this property indicates the name of the
+    CompositeProperty property{"SelectInputScalars", "Scalars",
+                               R"(The value of this property indicates the name of the
 input scalar array used by this filter. The width of the ribbons will
 be varied based on the values in the specified array if the value of
-the Width property is 1.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+the Width property is 1.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -74,15 +71,12 @@ struct Wrapper1 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputVectors", "Vectors",
-                              R"(The value of this property indicates the name of the
+    CompositeProperty property{"SelectInputVectors", "Vectors",
+                               R"(The value of this property indicates the name of the
 input vector array used by this filter. If the UseDefaultNormal
 property is set to 0, the normal vectors for the ribbons come from the
-specified vector array.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+specified vector array.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

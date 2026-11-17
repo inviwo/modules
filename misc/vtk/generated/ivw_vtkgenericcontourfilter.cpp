@@ -43,14 +43,11 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputScalars", "Contour By",
-                              R"(This property specifies the name of the scalar array
+    CompositeProperty property{"SelectInputScalars", "Contour By",
+                               R"(This property specifies the name of the scalar array
 from which the contour filter will compute isolines and/or
-isosurfaces.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+isosurfaces.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

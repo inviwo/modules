@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"InputOrderingXArray", "Input Ordering X Array",
-                              R"(Select the input ordering X array.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"InputOrderingXArray", "Input Ordering X Array",
+                               R"(Select the input ordering X array.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Domain";
 };
@@ -72,12 +69,9 @@ struct Wrapper1 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"InputOrderingYArray", "Input Ordering Y Array",
-                              R"(Select the input ordering Y array.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"InputOrderingYArray", "Input Ordering Y Array",
+                               R"(Select the input ordering Y array.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Domain";
 };

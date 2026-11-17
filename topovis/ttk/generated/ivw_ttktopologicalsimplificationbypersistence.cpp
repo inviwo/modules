@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"InputArray", "Input Array",
-                              R"(The scalar array that will be simplified.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"InputArray", "Input Array",
+                               R"(The scalar array that will be simplified.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

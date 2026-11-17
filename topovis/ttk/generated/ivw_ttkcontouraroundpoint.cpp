@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ScalarAttribute", "Scalar Attribute",
-                              R"(Select the scalar attribute to consider.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ScalarAttribute", "Scalar Attribute",
+                               R"(Select the scalar attribute to consider.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Domain";
 };

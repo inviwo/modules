@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ScalarField", "Scalar Field",
-                              R"(Select the constraint value scalar field.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ScalarField", "Scalar Field",
+                               R"(Select the constraint value scalar field.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Constraints";
 };
@@ -81,12 +78,9 @@ struct Wrapper2 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ConstraintVerticesIdentifiers", "Constraint Vertices Identifiers",
-                              R"(Select the vertex identifier scalar field in the sources.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ConstraintVerticesIdentifiers", "Constraint Vertices Identifiers",
+                               R"(Select the vertex identifier scalar field in the sources.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Constraints";
 };

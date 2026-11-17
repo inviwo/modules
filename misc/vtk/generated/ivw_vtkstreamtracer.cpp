@@ -43,13 +43,10 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputVectors", "Vectors",
-                              R"(This property contains the name of the vector array from
-which to generate streamlines.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"SelectInputVectors", "Vectors",
+                               R"(This property contains the name of the vector array from
+which to generate streamlines.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

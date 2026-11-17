@@ -43,13 +43,10 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputArray", "SelectInputArray",
-                              R"(This property lists the name of the array from which to
-use.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"SelectInputArray", "SelectInputArray",
+                               R"(This property lists the name of the array from which to
+use.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

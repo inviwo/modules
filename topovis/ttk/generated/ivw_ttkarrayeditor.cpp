@@ -96,12 +96,9 @@ struct Wrapper4 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"TargetArray", "Target Array",
-                              R"(Array that will be modified.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"TargetArray", "Target Array",
+                               R"(Array that will be modified.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Target";
 };

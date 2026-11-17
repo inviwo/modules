@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"UComponentNew", "U Component",
-                              R"(Select the scalar field to use as the U component.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"UComponentNew", "U Component",
+                               R"(Select the scalar field to use as the U component.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -72,12 +69,9 @@ struct Wrapper1 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"VComponentNew", "V Component",
-                              R"(Select the scalar field to use as the V component.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"VComponentNew", "V Component",
+                               R"(Select the scalar field to use as the V component.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -116,12 +110,9 @@ struct Wrapper4 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"_3DCoordinates", "3D Coordinates",
-                              R"(Select the 3D coordinates array.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"_3DCoordinates", "3D Coordinates",
+                               R"(Select the 3D coordinates array.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

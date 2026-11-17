@@ -43,13 +43,10 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputScalars", "Scalars",
-                              R"(The value of this property contains the name of the
-scalar array from which to perform thresholding.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"SelectInputScalars", "Scalars",
+                               R"(The value of this property contains the name of the
+scalar array from which to perform thresholding.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

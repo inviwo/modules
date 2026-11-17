@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ScalarFieldNew", "Scalar Field",
-                              R"(Select the scalar field to process)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ScalarFieldNew", "Scalar Field",
+                               R"(Select the scalar field to process)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -83,13 +80,10 @@ struct Wrapper2 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"OffsetNew", "Input Offset Field",
-                              R"(Select the scalar field to use as a vertex offset
-(used to disambiguate flat plateaus).)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"OffsetNew", "Input Offset Field",
+                               R"(Select the scalar field to use as a vertex offset
+(used to disambiguate flat plateaus).)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

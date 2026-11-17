@@ -43,14 +43,11 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputScalars", "Resample Field",
-                              R"(Choose a scalar array to splat into the output cells. If
+    CompositeProperty property{"SelectInputScalars", "Resample Field",
+                               R"(Choose a scalar array to splat into the output cells. If
 ignore arrays is chosen, point density will be counted
-instead.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+instead.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

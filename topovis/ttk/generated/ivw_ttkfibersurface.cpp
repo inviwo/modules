@@ -44,13 +44,10 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{
-            "DomainUComponent", "Domain U Component",
-            R"(Select the U component of the bivariate field on the input data.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{
+        "DomainUComponent", "Domain U Component",
+        R"(Select the U component of the bivariate field on the input data.)"_help,
+        std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input Domain";
 };
@@ -73,13 +70,10 @@ struct Wrapper1 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{
-            "DomainVComponent", "Domain V Component",
-            R"(Select the V component of the bivariate field on the input data.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{
+        "DomainVComponent", "Domain V Component",
+        R"(Select the V component of the bivariate field on the input data.)"_help,
+        std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input Domain";
 };
@@ -102,13 +96,10 @@ struct Wrapper2 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{
-            "PolygonUComponent", "Polygon U Component",
-            R"(Select the U component of the bivariate field for the range polygon.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{
+        "PolygonUComponent", "Polygon U Component",
+        R"(Select the U component of the bivariate field for the range polygon.)"_help,
+        std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Range Polygon";
 };
@@ -131,13 +122,10 @@ struct Wrapper3 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{
-            "PolygonVComponent", "Polygon V Component",
-            R"(Select the V component of the bivariate field for the range polygon.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{
+        "PolygonVComponent", "Polygon V Component",
+        R"(Select the V component of the bivariate field for the range polygon.)"_help,
+        std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Range Polygon";
 };
@@ -178,8 +166,7 @@ struct Wrapper7 {
         filter.SetTetIds(property.get());
         return true;
     }
-    BoolProperty property{"WithTetIds", "With Tet Identifiers",
-                          R"(Stores the tetrahedron identifier
+    BoolProperty property{"WithTetIds", "With Tet Identifiers", R"(Stores the tetrahedron identifier
 for each triangle of the fiber surface.)"_help,
                           true};
 };

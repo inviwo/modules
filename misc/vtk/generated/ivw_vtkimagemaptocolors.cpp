@@ -43,13 +43,10 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputScalars", "Color By",
-                              R"(This property specifies the name of the scalar array
-from which we will color by.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"SelectInputScalars", "Color By",
+                               R"(This property specifies the name of the scalar array
+from which we will color by.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

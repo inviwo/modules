@@ -44,13 +44,10 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ScalarField1New", "Scalar Field 1",
-                              R"(Scalar field to be used as first component of the
-input bivariate data.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ScalarField1New", "Scalar Field 1",
+                               R"(Scalar field to be used as first component of the
+input bivariate data.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -73,13 +70,10 @@ struct Wrapper1 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ScalarField2New", "Scalar Field 2",
-                              R"(Scalar field to be used as second component of the input
-bivariate data.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ScalarField2New", "Scalar Field 2",
+                               R"(Scalar field to be used as second component of the input
+bivariate data.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

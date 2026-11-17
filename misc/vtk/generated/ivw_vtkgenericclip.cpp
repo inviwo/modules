@@ -43,14 +43,11 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputScalars", "Scalars",
-                              R"(If clipping with scalars, this property specifies the
+    CompositeProperty property{"SelectInputScalars", "Scalars",
+                               R"(If clipping with scalars, this property specifies the
 name of the scalar array on which to perform the clip
-operation.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+operation.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

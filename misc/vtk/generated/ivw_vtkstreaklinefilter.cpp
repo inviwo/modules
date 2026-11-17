@@ -101,13 +101,10 @@ struct Wrapper4 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"SelectInputVectors", "SelectInputVectors",
-                              R"(Specify which vector array should be used for the
-integration through that filter.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"SelectInputVectors", "SelectInputVectors",
+                               R"(Specify which vector array should be used for the
+integration through that filter.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

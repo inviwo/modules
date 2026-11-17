@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"ScalarFieldNew", "Scalar Field",
-                              R"(Select the scalar field to process.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"ScalarFieldNew", "Scalar Field",
+                               R"(Select the scalar field to process.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Domain";
 };
@@ -93,12 +90,9 @@ struct Wrapper3 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"InputVertexScalarField", "Vertex identifier field",
-                              R"(Select the vertex identifier scalar field in the sources.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"InputVertexScalarField", "Vertex identifier field",
+                               R"(Select the vertex identifier scalar field in the sources.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Seeds";
 };
@@ -132,13 +126,10 @@ struct Wrapper5 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"OffsetScalarField", "Input Offset Field",
-                              R"(Select the input offset field (to disambiguate flat
-plateaus).)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"OffsetScalarField", "Input Offset Field",
+                               R"(Select the input offset field (to disambiguate flat
+plateaus).)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Domain";
 };

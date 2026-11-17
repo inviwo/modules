@@ -44,12 +44,9 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"UComponent", "U Component",
-                              R"(Select the U component of the bivariate field.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"UComponent", "U Component",
+                               R"(Select the U component of the bivariate field.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -72,12 +69,9 @@ struct Wrapper1 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"VComponent", "V Component",
-                              R"(Select the V component of the bivariate field.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"VComponent", "V Component",
+                               R"(Select the V component of the bivariate field.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -111,13 +105,10 @@ struct Wrapper3 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"UOffsetField", "U Offset Field",
-                              R"(Select the scalar field to use as a vertex offset for the
-u-coordinate (used to disambiguate collinear edges).)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"UOffsetField", "U Offset Field",
+                               R"(Select the scalar field to use as a vertex offset for the
+u-coordinate (used to disambiguate collinear edges).)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -140,13 +131,10 @@ struct Wrapper4 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"VOffsetField", "V Offset Field",
-                              R"(Select the scalar field to use as a vertex offset for the
-v-coordinate (used to disambiguate collinear edges).)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"VOffsetField", "V Offset Field",
+                               R"(Select the scalar field to use as a vertex offset for the
+v-coordinate (used to disambiguate collinear edges).)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

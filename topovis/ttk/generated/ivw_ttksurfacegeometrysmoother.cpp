@@ -66,12 +66,9 @@ struct Wrapper2 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"VertexIdsField", "Identifiers Field",
-                              R"(Select the vertex identifiers field.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"VertexIdsField", "Identifiers Field",
+                               R"(Select the vertex identifiers field.)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -116,12 +113,9 @@ struct Wrapper5 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{"InputMaskNew", "Mask Field",
-                              R"(Input mask field (used to mark vertices to smooth).)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{"InputMaskNew", "Mask Field",
+                               R"(Input mask field (used to mark vertices to smooth).)"_help,
+                               std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };

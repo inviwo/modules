@@ -43,14 +43,11 @@ struct Wrapper0 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{
-            "SelectInputTensors", "Tensors",
-            R"(This property indicates the name of the tensor array on which to operate. The indicated array's
-eigenvalues and eigenvectors are used for scaling and orienting the glyphs.)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{
+        "SelectInputTensors", "Tensors",
+        R"(This property indicates the name of the tensor array on which to operate. The indicated array's
+eigenvalues and eigenvectors are used for scaling and orienting the glyphs.)"_help,
+        std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
@@ -97,13 +94,10 @@ struct Wrapper3 : FieldSelection {
           vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}},
         3};
 
-    CompositeProperty property{[&]() {
-        CompositeProperty tmp{
-            "SelectInputScalars", "Scalars",
-            R"(This property indicates the name of the scalar array to use for coloring)"_help};
-        tmp.addProperties(name, fieldAssociation);
-        return tmp;
-    }()};
+    CompositeProperty property{
+        "SelectInputScalars", "Scalars",
+        R"(This property indicates the name of the scalar array to use for coloring)"_help,
+        std::tie(name, fieldAssociation)};
 
     static constexpr std::string_view inport = "Input";
 };
