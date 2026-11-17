@@ -105,13 +105,7 @@ struct {structName} {{
         std::pair{{dvec2{{{minValue[4]},{minValue[5]}}}, ConstraintBehavior::Ignore}},
         std::pair{{dvec2{{{maxValue[4]},{maxValue[5]}}}, ConstraintBehavior::Ignore}}}};
 
-    CompositeProperty property{{[&](){{
-        CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
-        tmp.addProperties(x,y,z);
-        return tmp;
-        }}()
-    }};
-
+    CompositeProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, std::tie(x,y,z)}};
 }};
 """
 
@@ -189,12 +183,7 @@ struct {structName} {{
         std::pair{{dvec2{{{minValue[4]},{minValue[5]}}}, ConstraintBehavior::Ignore}},
         std::pair{{dvec2{{{maxValue[4]},{maxValue[5]}}}, ConstraintBehavior::Ignore}}}};
 
-    CompositeProperty property{{[&](){{
-        CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
-        tmp.addProperties(x,y,z);
-        return tmp;
-        }}()
-    }};
+    CompositeProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, std::tie(x,y,z)}};
 
 }};
 """
@@ -254,12 +243,7 @@ struct {structName} {{
     IntSizeTMinMaxProperty y{{"yExtent", "Y Extent", 0, 100, 0, 1000}};
     IntSizeTMinMaxProperty z{{"zExtent", "X Extent", 0, 100, 0, 1000}};
 
-    CompositeProperty property{{[&](){{
-            CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
-            tmp.addProperties(x,y,z);
-            return tmp;
-        }}()
-    }};
+    CompositeProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, std::tie((x,y,z)}};
 }};
 """
 
@@ -292,12 +276,7 @@ struct {structName} : FieldSelection {{
             {{"pointsThenCells","Points then Cells",vtkDataObject::FIELD_ASSOCIATION_POINTS_THEN_CELLS}}
         }}, {defaultValue[3]} }};
 
-    CompositeProperty property{{[&](){{
-            CompositeProperty tmp{{"{identifier}", "{displayName}", R"({doc})"_help}};
-            tmp.addProperties(name, fieldAssociation);
-            return tmp;
-        }}()
-    }};
+    CompositeProperty property{{"{identifier}", "{displayName}", R"({doc})"_help, std::tie(name, fieldAssociation)}};
 
     static constexpr std::string_view inport = "{inport}";
 }};
