@@ -30,45 +30,14 @@
 #include <inviwo/oceanflow/oceanflowmodule.h>
 #include <inviwo/oceanflow/processors/oceanraycaster.h>
 
+#include <inviwo/oceanflow/shader_resources.h>
+
 namespace inviwo {
 
 OceanFlowModule::OceanFlowModule(InviwoApplication* app) : InviwoModule(app, "OceanFlow") {
-    // Add a directory to the search path of the Shadermanager
-    // ShaderManager::getPtr()->addShaderSearchPath(getPath(ModulePath::GLSL));
+	oceanflow::addShaderResources(ShaderManager::getPtr(), {getPath(ModulePath::GLSL)});
 
-    // Register objects that can be shared with the rest of inviwo here:
-
-    // Processors
-    // registerProcessor<OceanFlowProcessor>();
     registerProcessor<OceanRaycaster>();
-
-    // Properties
-    // registerProperty<OceanFlowProperty>();
-
-    // Readers and writes
-    // registerDataReader(std::make_unique<OceanFlowReader>());
-    // registerDataWriter(std::make_unique<OceanFlowWriter>());
-
-    // Data converters
-    // registerRepresentationConverter(std::make_unique<OceanFlowDisk2RAMConverter>());
-
-    // Ports
-    // registerPort<OceanFlowOutport>();
-    // registerPort<OceanFlowInport>();
-
-    // PropertyWidgets
-    // registerPropertyWidget<OceanFlowPropertyWidget, OceanFlowProperty>("Default");
-
-    // Dialogs
-    // registerDialog<OceanFlowDialog>(OceanFlowOutport);
-
-    // Other things
-    // registerCapabilities(std::make_unique<OceanFlowCapabilities>());
-    // registerSettings(std::make_unique<OceanFlowSettings>());
-    // registerMetaData(std::make_unique<OceanFlowMetaData>());
-    // registerPortInspector("OceanFlowOutport", "path/workspace.inv");
-    // registerProcessorWidget(std::string processorClassName, std::unique_ptr<ProcessorWidget> processorWidget); 
-    // registerDrawer(std::make_unique_ptr<OceanFlowDrawer>());
 }
 
 }  // namespace inviwo

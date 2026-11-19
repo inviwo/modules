@@ -93,8 +93,6 @@ public:
     virtual void process(Shader& shader, TextureUnitContainer& cont) override;
     virtual std::vector<std::tuple<Inport*, std::string>> getInports() override;
     virtual std::vector<Segment> getSegments() override;
-
-    LayerInport surface;
 };
 
 class IVW_MODULE_OCEANFLOW_API OceanRaycaster : public VolumeRaycasterBase {

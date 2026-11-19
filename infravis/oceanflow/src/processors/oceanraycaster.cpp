@@ -65,77 +65,20 @@ std::vector<Property*> NemoVolumeComponent::getProperties() {
 namespace nemo {
 namespace {
 
+constexpr std::string_view includes = util::trim(R"(
+#include "orca_inverse.glsl"
+#include "orca_util.glsl"
+)");
+
 constexpr std::string_view uniformsZoom = util::trim(R"(
 uniform float zZoom;
 )");
 
 constexpr std::string_view depth = util::trim(R"(
-int coeffIndex(float d) {{
-    return int(floor((200*log((6 + d)/6.))/173.));
-}}
-
-vec4 nemoCoeffs[8] = vec4[](
- vec4(-0.5020485620454235, 1.0064965390207923, -0.026022656770173513, 0.00011339152867423767),
- vec4(-0.040511845501916374, 0.9188060606908754, -0.02326253117084194, 0.0002693122897196264),
- vec4(4.947890418847749, 0.38650206094726314, -0.0035014310967430335, 0.000015357339276672554),
- vec4(9.435867702868881, 0.19363090075034473, -0.0006519616483171304, 9.953310338937843e-7),
- vec4(15.290389876996707, 0.10380091532715348, -0.000176565679655483, 1.2741608192830535e-7),
- vec4(24.71897593205658, 0.03985744167034901, -0.000027506296541509556, 8.466529994835795e-9),
- vec4(33.024019406608886, 0.015991187545708305, -3.9489148091425246e-6, 5.183556638826113e-10),
- vec4(40.021437807532486, 0.007584806553897775, -4.797526641657579e-7, 2.882092803741341e-11));
-
-float mapDepthToTexture(float depth) {{
-    int index = clamp(coeffIndex(depth), 0, 7);
-    vec4 c = nemoCoeffs[index];
-    return c.x + depth * c.y + depth*depth*c.z + depth*depth*depth*c.w;
-}}
-
-const float PI = 3.14159265358979323846;
-vec3 cartesianToSpherical(vec3 p) {{
-    float r = length(p);
-    float theta = atan(p.y, p.x);           // azimuth, [-π, π]
-    float phi = atan(length(p.xy), p.z);    // polar angle, [0, π]
-
-    return vec3(r, theta, phi);
-}}
-
-vec3 cartesianToLatLongNormalized(vec3 p) {{
-    vec3 rThetaPhi = cartesianToSpherical(p);
-    return vec3(rThetaPhi.x, 1.0 - (rThetaPhi.y / PI / 2.0 + 0.5), rThetaPhi.z / PI);
-}}
-
-// Take a texture pos [0,1] return a pos [-1,1]
-vec3 textureSamplePosToSpherePos(vec3 p) {{
-    return 2.0 * p - vec3(1.0);
-}}
-
-vec3 mapZPositionToTexture(vec3 position) {{
-    float z = mapDepthToTexture(position.z * 6000.0 / zZoom) / {0}Parameters.dimensions.z;
-    return vec3(position.x, position.y, z);
-}}
-
-const vec2 lonRange = vec2(-4.15278, 30.18021);
-const vec2 latRange = vec2(48.491699, 65.891418);
-
-float linearMap(float val, vec2 from, vec2 to) {{
-    return (val - from.x) / (from.y - from.x) * (to.y - to.x) + to.x;
-}}
-vec3 mapPositionToTexture(vec3 position) {{
-    vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(position));    
-    float r = linearMap(1-rThetaPhi.x, vec2(0, 1), vec2(0, 1));
-    float theta = -rThetaPhi.y;
-    float phi = rThetaPhi.z;
-
-    float x = linearMap(theta * 180 / PI, lonRange, vec2(0, 1));
-    float y = linearMap(phi * 180 / PI - 90, latRange, vec2(0, 1));
-    float z = mapDepthToTexture(r * 6000.0 / zZoom) / {0}Parameters.dimensions.z;
-    return vec3(x, y, z);
-}}
-
 )");
 
 constexpr std::string_view sample = util::trim(R"(
-{0}SamplePosition = mapPositionToTexture({0}SamplePosition);
+{0}SamplePosition = mapPositionToTexture({0}SamplePosition, zZoom);
 )");
 
 constexpr std::string_view continueIfOutside = util::trim(R"(
@@ -148,6 +91,10 @@ if (any(lessThan({0}SamplePosition, vec3(0.0))) || any(greaterThan({0}SamplePosi
 
 auto NemoVolumeComponent::getSegments() -> std::vector<Segment> {
     auto segments = TemporalVolumeComponent::getSegments();
+
+    segments.emplace_back(Segment{.snippet = fmt::format(nemo::includes, getName()),
+                                  .placeholder = placeholder::include,
+                                  .priority = 400});
 
     segments.emplace_back(Segment{.snippet = fmt::format(nemo::uniformsZoom, getName()),
                                   .placeholder = placeholder::uniform,
@@ -183,13 +130,17 @@ namespace {
 constexpr std::string_view uniforms = util::trim(R"(
 uniform VolumeParameters {0}Parameters;
 uniform sampler3D {0};
+
+const vec4 landMaskColor = vec4(0.3, 0.31, 0.3, 1.0);
+const vec4 oceanMaskColor = vec4(0.3, 0.30, 0.31, 1.0);
+
 )");
 
 constexpr std::string_view first = util::trim(R"(
 float {0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
 float {0}ValuePrev = {0}Value;
 if ({0}Value > 0.0) {{
-   color = vec4(0);
+   color = landMaskColor;
 }}
 )");
 
@@ -197,6 +148,11 @@ constexpr std::string_view loop = util::trim(R"(
 {0}Value = getNormalizedVoxel({0}, {0}Parameters, {1}SamplePosition).x;
 if ({0}Value > 0.0) {{
    {0}ValuePrev = {0}Value;
+
+   vec4 c = oceanMaskColor;
+   result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
+   result.a = result.a + (1.0 - result.a) * c.a;
+
    continue;
 }}
 )");
@@ -228,65 +184,19 @@ std::vector<ShaderComponent::Segment> VolumeMaskComponent::getSegments() {
              .priority = 550}};
 }
 
-SurfaceComponent::SurfaceComponent()
-    : ShaderComponent(), surface{"surface", "Surface / depth texture"_help} {}
+SurfaceComponent::SurfaceComponent() : ShaderComponent() {}
 
-std::string_view SurfaceComponent::getName() const { return surface.getIdentifier(); }
+std::string_view SurfaceComponent::getName() const { return "surface"; }
 
-void SurfaceComponent::process(Shader& shader, TextureUnitContainer& cont) {
-    utilgl::bindAndSetUniforms(shader, cont, surface);
-}
+void SurfaceComponent::process(Shader&, TextureUnitContainer&) {}
 
-std::vector<std::tuple<Inport*, std::string>> SurfaceComponent::getInports() {
-    return {{&surface, std::string{"surface"}}};
-}
+std::vector<std::tuple<Inport*, std::string>> SurfaceComponent::getInports() { return {}; }
 
 namespace surface {
 namespace {
 
-constexpr std::string_view uniforms = util::trim(R"(
-uniform ImageParameters {name}Parameters;
-uniform sampler2D {name};
-
-vec3 radiiAtTexturePos(vec3 p) {{
-    vec3 rLatLong = cartesianToLatLongNormalized(textureSamplePosToSpherePos(p));
-    float depth = texture({name}, rLatLong.yz).x;
-    const float maxDepth = 5000.0;
-    float depthFrac = 0.2;//(outerRadius - innerRadius) / outerRadius;
-    float normDepth = depth / maxDepth;
-    float surfaceNormRadii = 1.0 + depthFrac * normDepth;
-    return vec3(rLatLong.x, surfaceNormRadii, 1.0 + normDepth);
-}}
-
-)");
-
-constexpr std::string_view setup = util::trim(R"()");
-
-constexpr std::string_view loop = util::trim(R"(
-vec3 rs = radiiAtTexturePos(samplePosition);
-if (rs.x < rs.y) {{
-    vec4 c = vec4(1,rs.z,0,1);
-    shadingParams.colors = defaultMaterialColors(c.rgb);
-    shadingParams.normal = normalize(textureSamplePosToSpherePos(samplePosition));
-    shadingParams.worldPosition = (mat4(1.0) * vec4(samplePosition, 1.0)).xyz;
-    c.rgb = APPLY_LIGHTING_FUNC(lighting, shadingParams, cameraDir);
-    
-    result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
-    result.a = result.a + (1.0 - result.a) * c.a;
-}}
-)");
-
-constexpr std::string_view post = util::trim(R"(
-vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(entryPoint));
-if (result.a < 0.001) {{
-    vec3 rs = radiiAtTexturePos(entryPoint);
-    vec4 c = rThetaPhi.r < 1.0 - 10E-6 ? vec4(0.3,0.3,0.3,1.0) : applyTF(surfaceTF, rs.z);
-    result.rgb = result.rgb + (1.0 - result.a) * c.a * c.rgb;
-    result.a = result.a + (1.0 - result.a) * c.a;
-}}
-)");
-
 constexpr std::string_view grid = util::trim(R"(
+vec3 rThetaPhi = cartesianToSpherical(textureSamplePosToSpherePos(entryPoint));
 if (mod(rThetaPhi.y*180 / PI, 15) < 0.2 || mod(rThetaPhi.z*180 / PI, 15) < 0.1) {{
     result = mix(result, vec4(0.4,0.4,0.4,1), 0.5);
 }}
@@ -300,17 +210,9 @@ if (mod(rThetaPhi.r*100+1, 3) < 0.2) {{
 
 auto SurfaceComponent::getSegments() -> std::vector<Segment> {
     using namespace fmt::literals;
-    if (surface.isConnected()) {
-        return {
-            {fmt::format(surface::uniforms, "name"_a = getName()), placeholder::uniform, 900},
-            {fmt::format(surface::setup, "name"_a = getName()), placeholder::setup, 900},
-            {fmt::format(surface::loop, "name"_a = getName()), placeholder::loop, 1400},
-            {fmt::format(surface::post, "name"_a = getName()), placeholder::post, 500},
-            {fmt::format(surface::grid, "name"_a = getName()), placeholder::post, 2000},
-        };
-    } else {
-        return {};
-    }
+    return {
+        {fmt::format(surface::grid, "name"_a = getName()), placeholder::post, 2000},
+    };
 }
 
 // The Class Identifier has to be globally unique. Use a reverse DNS naming scheme
@@ -330,15 +232,8 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     , volume_{"volume", NemoVolumeComponent::Gradients::Single,
               "input Nemo volume (Only one channel will be rendered)"_help}
     , camera_{"camera", [this]() -> std::optional<dmat4> { return entryExit_.boundingBox(); }}
-    , entryExit_{[](CoordinateSpace from, CoordinateSpace to) -> glm::dmat4 {
+    , entryExit_{[](CoordinateSpace , CoordinateSpace ) -> glm::dmat4 {
                      return mat4{1.0};
-                     /*auto data = volume_.volumePort.getData();
-                     if (!data) return mat4{1.0};
-                     SpatialIdentity spatial{
-                         data->prototype().model.value_or(VolumeConfig::defaultModel),
-                         data->prototype().world.value_or(VolumeConfig::defaultWorld)};
-                     return spatial.getCoordinateTransformer().getMatrix(from, to);
-                      */
                  },
                  camera_.getName()}
     , background_{*this}
@@ -351,7 +246,7 @@ OceanRaycaster::OceanRaycaster(std::string_view identifier, std::string_view dis
     , mask_{"Mask", volume_.volumePort.getIdentifier()}
     , surface_{}
     , surfaceTF_{fmt::format("{}TF", surface_.getName()), fmt::format("{} TF", surface_.getName()),
-                 ""_help, TFData{&surface_.surface}}
+                 ""_help, TFData{}}
     , trackball_{&camera_.camera} {
 
     registerComponents(volume_, entryExit_, background_, raycasting_, isoTF_, camera_, light_,

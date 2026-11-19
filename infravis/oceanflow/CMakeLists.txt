@@ -14,7 +14,8 @@ set(SOURCE_FILES
 ivw_group("Source Files" ${SOURCE_FILES})
 
 set(SHADER_FILES
-	# Add shaders
+	glsl/orca_inverse.glsl
+    glsl/orca_util.glsl
 )
 ivw_group("Shader Files" ${SHADER_FILES})
 
@@ -25,5 +26,6 @@ ivw_add_unittest(${TEST_FILES})
 
 ivw_create_module(${SOURCE_FILES} ${HEADER_FILES} ${SHADER_FILES})
 
-# Add shader directory to install package
-#ivw_add_to_module_pack(${CMAKE_CURRENT_SOURCE_DIR}/glsl)
+
+# Package or build shaders into resources
+ivw_handle_shader_resources(${CMAKE_CURRENT_SOURCE_DIR}/glsl ${SHADER_FILES})
